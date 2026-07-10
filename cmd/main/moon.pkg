@@ -1,0 +1,7 @@
+// import {
+//   "username/svgdiff" @lib,
+// }
+
+options(
+  "is-main": true,
+)
