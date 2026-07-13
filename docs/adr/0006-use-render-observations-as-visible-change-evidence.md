@@ -1,0 +1,3 @@
+# Use render observations as visible-change evidence
+
+Visual-impact conclusions will be based on Render Observations that retain final color, coverage, perceptual measurements, and a Contribution Index under the Comparison Profile, while Computed Appearance remains the source of semantic explanation. A scene model alone cannot prove that a computed distinction affects final pixels, while an ordinary bitmap cannot explain equivalent authoring changes or attribute rendered differences to the Visual Subjects that caused them; unambiguous pixel differences that cannot be attributed must therefore remain reportable as unattributed rendered differences.

@@ -24,3 +24,9 @@ keywords = []
 preferred_target = "wasm-gc"
 
 description = ""
+
+import {
+  "moonbitlang/async@0.19.1",
+  "mizchi/svg@0.2.1",
+  "mizchi/pixelmatch@0.6.1",
+}

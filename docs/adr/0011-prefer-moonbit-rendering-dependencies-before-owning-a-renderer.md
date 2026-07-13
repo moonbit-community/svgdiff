@@ -1,0 +1,5 @@
+# Prefer MoonBit rendering dependencies before owning a renderer
+
+Core v1 will first evaluate pure-MoonBit community packages, beginning with `mizchi/svg`, behind an internal rendering seam while keeping comparison, alignment, measurement, provenance, and reporting in the SVG Diff module. If concrete acceptance cases show that upstream extension is impractical or correctness gaps are too large, the renderer will become a separate MoonBit module managed with the repository workspace; the project will not introduce a Rust production adapter or an in-tree renderer speculatively.
+
+The first executable spike accepts `mizchi/svg` for parsing, public scene inspection, and baseline rendered localization. It does not accept the current integer rasterizer as the sole Difference Magnitude oracle: `x=1.0 -> 0.99999` produced 16 differing pixels while `x=1.0 -> 1.00001` produced zero at the tested scale. The next escalation step is a focused higher-fidelity MoonBit raster path or upstream extension, not immediate creation of the project-owned module.

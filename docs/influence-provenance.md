@@ -1,0 +1,160 @@
+# Influence Provenance and Causal Completeness
+
+Status: accepted design; implementation feasibility under prototype validation
+
+## Objective
+
+For every rendered Difference Region, report a Cause Envelope that is guaranteed to contain every actual changed cause within the supported Deterministic Static SVG scope. False-positive candidates are acceptable. Exact contribution weights, unique causes, and minimal causal subsets are not required.
+
+## Fact universe
+
+Let `Delta` be the complete set of Changed Facts between the two comparison artifacts. A Changed Fact may describe:
+
+- an element's presence, authored value, text, or structural relationship;
+- a CSS rule, inherited value, reference, or paint resource;
+- a referenced image, font, symbol, gradient, pattern, clip, mask, or filter input;
+- document semantics such as `viewBox` or paint order;
+- a declared environmental input when the two artifacts intentionally use different inputs.
+
+Formatting Variations are excluded because normalization has already established that they cannot affect semantics. Undeclared environmental state is not a Changed Fact; it is a coverage failure.
+
+## May-influence graph
+
+The evaluator records a directed graph whose edges mean `may influence`, never `did contribute by a particular weight`:
+
+```text
+Changed Fact
+    -> Computed Property
+    -> Visual Subject or Render Operation
+    -> Group Layer or Effect Operation
+    -> Output Tile or Region
+```
+
+For every graph value `x`, `MayInfluence(x)` is a conservative set of Changed Fact tokens. The governing obligation is:
+
+```text
+if a Changed Fact can affect x under supported semantics,
+then its token is in MayInfluence(x)
+```
+
+The reverse implication is not required.
+
+## Cause Envelope
+
+For a rendered Difference Region `R`, the Cause Envelope is:
+
+```text
+CauseEnvelope(R) = Delta intersect union(
+  MayInfluence(before tiles overlapping R),
+  MayInfluence(after tiles overlapping R)
+)
+```
+
+Both inputs are required. A moved or deleted entity may influence only the vacated region in the before rendering, while an inserted or moved entity may influence only the occupied region in the after rendering.
+
+If no safe influence information is available, the required fallback is:
+
+```text
+CauseEnvelope(R) = Delta
+```
+
+This fallback is maximally imprecise but causally complete.
+
+## Conservative propagation rules
+
+| Operation | Required token propagation |
+|---|---|
+| Computed property resolution | Union tokens from the authored value, inheritance chain, matching CSS rules, references, and relevant document semantics |
+| Geometry and transform | Propagate geometry, transform, viewport, and ancestor transform tokens to every conservatively covered tile |
+| Fill and stroke | Propagate geometry, paint, opacity, paint-server, and paint-order tokens to every conservatively painted tile |
+| Group opacity and isolation | Union all child tokens with the group operation token across the entire group layer |
+| Source-over compositing | Union source tokens, backdrop tokens, opacity tokens, and compositing-order tokens in every possibly affected output tile |
+| Blend modes | Union foreground, backdrop, blend-mode, isolation, and ordering tokens across the conservative blend region |
+| Clip paths and masks | Union content tokens with clip or mask geometry, paint, transform, and reference tokens across the enclosing effect region |
+| Local filters | Dilate the input token region by a conservative kernel or effect bound and add all filter-parameter tokens |
+| Global or unknown filters | Propagate all input and filter tokens to the entire filter layer, or the entire canvas if no smaller bound is proven safe |
+| Reordering or structural change | Propagate the structural token across every region where the affected draw-order interval may overlap |
+| Insertion or deletion | Attach the presence token to the existing side's conservative render region and include both inputs when building the envelope |
+| Unknown supported-path operation | Widen to the enclosing subtree, layer, or complete `Delta`; never drop tokens |
+| Unsupported operation | Revoke Causal Completeness, emit a Diagnostic, and reduce Analysis Coverage |
+
+An implementation may use tile-level bitsets, region sets, or another representation. The representation is valid only if every transfer rule remains a conservative superset.
+
+## Soundness argument
+
+The guarantee follows by structural induction over the evaluated render graph:
+
+1. Each leaf render operation begins with every Changed Fact token read by its geometry, paint, resource, transform, and structural inputs.
+2. Each intermediate operation produces a token set that is a superset of the tokens for every input or parameter that can affect its result.
+3. Therefore every output tile's token set is a superset of all Changed Facts that can affect that tile.
+4. A Difference Region is composed of output tiles from both renderings, so the union of their token sets contains every Changed Fact that can cause the region.
+5. Intersecting with `Delta` removes unchanged context without removing a changed cause.
+
+Any transfer rule that cannot satisfy step 2 must widen its result or revoke the guarantee. Spatial overlap without a proven conservative influence bound is not a sound pruning rule.
+
+## Guarantee boundary
+
+Causal Completeness is conditional, not a proof that the renderer implementation has no bugs. It may be declared only when:
+
+- the comparison artifacts and resource bundles are closed and deterministic;
+- Changed Fact enumeration is complete;
+- every executed semantic and render operation has a conservative transfer rule;
+- all spatial effect bounds are conservative supersets;
+- tokens from both before and after renderings are included;
+- no unsupported feature can affect the region;
+- pruning uses only established independence rules.
+
+If any condition fails, the report uses `not-established` rather than claiming completeness.
+
+## Structured Report shape
+
+```json
+{
+  "cause_envelope": {
+    "guarantee": "sound-overapproximation",
+    "coverage": "complete",
+    "granularity": "tile",
+    "fallback_scope": "group-layer",
+    "candidate_atomic_difference_ids": ["diff:12", "diff:19"],
+    "influence_paths": [
+      {
+        "candidate_id": "diff:12",
+        "nodes": [
+          "source:filter-radius",
+          "computed:filter-graph",
+          "render:group-layer",
+          "region:4"
+        ]
+      }
+    ],
+    "diagnostic_ids": []
+  }
+}
+```
+
+A partial result uses:
+
+```json
+{
+  "cause_envelope": {
+    "guarantee": "not-established",
+    "coverage": "partial",
+    "candidate_atomic_difference_ids": ["diff:12"],
+    "diagnostic_ids": ["diagnostic:unsupported-operation"]
+  }
+}
+```
+
+Candidate ranking may reorder or annotate the Cause Envelope but cannot remove candidates from a causally complete envelope.
+
+## Validation obligations
+
+Before treating this design as feasible, a prototype must demonstrate:
+
+1. token propagation through direct paint, grouped operations, local filter expansion, compositing dependencies, and unknown-operation fallback;
+2. union of before and after provenance for insertion, deletion, and movement;
+3. `actual causes` is a subset of the resulting Cause Envelope in every scenario;
+4. unsupported operations revoke the guarantee rather than returning an incomplete envelope as complete;
+5. conservative rules remove at least some irrelevant Changed Facts compared with the `Delta` fallback.
+
+Production validation must later add mutation/property tests for every supported semantic and render operation. The safe default for a missing rule is always a larger Cause Envelope.
