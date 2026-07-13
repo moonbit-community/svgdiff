@@ -301,12 +301,55 @@ fn alignment_for_event(
 }
 
 ///|
+fn escape_xml_attribute(value : String) -> String {
+  value
+  .replace_all(old="&", new="&amp;")
+  .replace_all(old="\"", new="&quot;")
+  .replace_all(old="<", new="&lt;")
+}
+
+///|
+fn isolated_presence_painted_pixels(
+  subjects : Array[SourceSubject],
+  profile : ComparisonProfile,
+) -> Int? {
+  if subjects.is_empty() {
+    return None
+  }
+  let mut body = ""
+  for subject in subjects {
+    body += "<\{subject.kind}"
+    for item in subject.values {
+      let (property, value) = item
+      body += " \{property}=\"\{escape_xml_attribute(value)}\""
+    }
+    body += "/>"
+  }
+  let source = "<svg width='\{profile.viewport_width}' height='\{profile.viewport_height}'>\{body}</svg>"
+  let document = match @svg.parse_svg_document(source) {
+    Some(document) => document
+    None => return None
+  }
+  let image = @svg.render_svg_document_to_image(
+    document,
+    profile.viewport_width,
+    profile.viewport_height,
+  )
+  let mut painted_pixels = 0
+  for pixel in image.pixels {
+    if pixel.a > 0 {
+      painted_pixels += 1
+    }
+  }
+  Some(painted_pixels)
+}
+
+///|
 fn generic_presence_magnitude_for_difference(
   difference : AtomicDifference,
   alignments : Array[SubjectAlignment],
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-  rendered_images : (@svg.Image, @svg.Image)?,
   profile : ComparisonProfile,
 ) -> PresenceMagnitude? {
   if difference.domain.find("presence.") != Some(0) {
@@ -331,15 +374,6 @@ fn generic_presence_magnitude_for_difference(
       }
     None => return difference.presence_magnitude
   }
-  let image = match rendered_images {
-    Some((before_image, after_image)) =>
-      if difference.domain == "presence.insertion" {
-        after_image
-      } else {
-        before_image
-      }
-    None => return difference.presence_magnitude
-  }
   let viewport_area = profile.viewport_width.to_double() *
     profile.viewport_height.to_double()
   let entity_count = match alignment {
@@ -352,17 +386,19 @@ fn generic_presence_magnitude_for_difference(
     None => 0
   }
   let bounds_area = bounds.width * bounds.height
-  let mut painted_pixels = 0
-  for index, pixel in image.pixels {
-    let x = (index % image.width).to_double()
-    let y = (index / image.width).to_double()
-    if pixel.a > 0 &&
-      x >= bounds.x &&
-      x < bounds.x + bounds.width &&
-      y >= bounds.y &&
-      y < bounds.y + bounds.height {
-      painted_pixels += 1
-    }
+  let presence_subjects = match alignment {
+    Some(alignment) =>
+      if difference.domain == "presence.insertion" {
+        subjects_for_references(after, alignment.after)
+      } else {
+        subjects_for_references(before, alignment.before)
+      }
+    None => return difference.presence_magnitude
+  }
+  let painted_pixels = match
+    isolated_presence_painted_pixels(presence_subjects, profile) {
+    Some(pixels) => pixels
+    None => return difference.presence_magnitude
   }
   let painted_area = painted_pixels.to_double() /
     (profile.comparison_dpr * profile.comparison_dpr)
@@ -460,7 +496,6 @@ fn attach_difference_regions(
         alignments,
         before,
         after,
-        rendered_images,
         report.profile,
       ),
     })

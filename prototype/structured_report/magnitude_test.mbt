@@ -111,3 +111,22 @@ test "presence painted coverage remains nonzero when final pixels are equal" {
   }
   assert_eq(presence.magnitude.raster_changed_pixel_fraction, Some(0.0))
 }
+
+///|
+test "transparent presence does not inherit underlying scene coverage" {
+  let base = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/></svg>"
+  let with_transparent = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='blue' opacity='0'/></svg>"
+  let report = @structured_report.compare(
+    base,
+    with_transparent,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  let presence = [
+      for difference in report.atomic_differences if difference.domain ==
+      "presence.insertion" => difference
+    ][0]
+  match presence.presence_magnitude {
+    Some(magnitude) => assert_eq(magnitude.painted_area_css_px2, 0.0)
+    None => fail("expected isolated presence coverage")
+  }
+}
