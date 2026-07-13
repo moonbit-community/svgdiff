@@ -133,6 +133,126 @@ pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
 }
 
 ///|
+priv enum SourcePreflight {
+  SourceCovered
+  SourcePartial(Array[Diagnostic])
+  SourceFailed
+}
+
+///|
+fn known_source_element(kind : String) -> Bool {
+  match kind {
+    "svg"
+    | "g"
+    | "rect"
+    | "defs"
+    | "linearGradient"
+    | "stop"
+    | "text"
+    | "title"
+    | "desc"
+    | "metadata"
+    | "style" => true
+    _ => false
+  }
+}
+
+///|
+fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
+  let diagnostics : Array[Diagnostic] = []
+  let reader = @xml.NamespaceReader::from_string(input)
+  for event in reader.read_events_until_eof() {
+    match event.kind {
+      Start(element) | Empty(element) => {
+        let kind = element.name.local_name
+        if !known_source_element(kind) {
+          let id = "diagnostic:unsupported-visual-subject:\{kind}"
+          if !diagnostics.any(diagnostic => diagnostic.id == id) {
+            diagnostics.push({
+              id,
+              code: "unsupported_visual_subject",
+              subject_id: kind,
+              affected_evidence_layers: [
+                "computed_appearance", "rendered_evidence",
+              ],
+            })
+          }
+        }
+      }
+      _ => ()
+    }
+  }
+  diagnostics
+}
+
+///|
+fn preflight_source(input : String) -> SourcePreflight {
+  try preflight_source_or_raise(input) catch {
+    _ => SourceFailed
+  } noraise {
+    diagnostics =>
+      if diagnostics.is_empty() {
+        SourceCovered
+      } else {
+        SourcePartial(diagnostics)
+      }
+  }
+}
+
+///|
+fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
+  {
+    schema_version: "0.3-prototype",
+    analysis_status: "failed",
+    profile,
+    changed_facts: [],
+    source_resolutions: [],
+    atomic_differences: [],
+    events: [],
+    diagnostics: [
+      {
+        id: "diagnostic:svg-parse-failed:document",
+        code: "svg_parse_failed",
+        subject_id: "document",
+        affected_evidence_layers: [
+          "source_semantics", "computed_appearance", "rendered_evidence",
+        ],
+      },
+    ],
+  }
+}
+
+///|
+fn apply_preflight_diagnostics(
+  report : StructuredReport,
+  diagnostics : Array[Diagnostic],
+) -> StructuredReport {
+  if diagnostics.is_empty() {
+    return report
+  }
+  let combined = report.diagnostics.copy()
+  for diagnostic in diagnostics {
+    if !combined.any(current => current.id == diagnostic.id) {
+      combined.push(diagnostic)
+    }
+  }
+  {
+    schema_version: report.schema_version,
+    analysis_status: if report.analysis_status == "failed" {
+      "failed"
+    } else {
+      "partial"
+    },
+    profile: report.profile,
+    changed_facts: report.changed_facts,
+    source_resolutions: report.source_resolutions,
+    atomic_differences: report.atomic_differences,
+    events: report.events,
+    diagnostics: combined,
+  }
+}
+
+///|
 fn source_slice(input : String, span : @xml.SourceSpan) -> String {
   let view = input.view(
     start_offset=span.start.offset,
@@ -572,56 +692,75 @@ pub fn compare(
   after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport {
+  let preflight_diagnostics : Array[Diagnostic] = []
+  match (preflight_source(before_svg), preflight_source(after_svg)) {
+    (SourceFailed, _) | (_, SourceFailed) =>
+      return failed_source_report(profile)
+    (SourcePartial(before), SourcePartial(after)) => {
+      preflight_diagnostics.push_iter(before.iter())
+      preflight_diagnostics.push_iter(after.iter())
+    }
+    (SourcePartial(diagnostics), _) | (_, SourcePartial(diagnostics)) =>
+      preflight_diagnostics.push_iter(diagnostics.iter())
+    _ => ()
+  }
   match inherited_fill_report(before_svg, after_svg, profile) {
-    Some(report) => return report
+    Some(report) =>
+      return apply_preflight_diagnostics(report, preflight_diagnostics)
     None => ()
   }
   match
     (@svg.parse_svg_document(before_svg), @svg.parse_svg_document(after_svg)) {
     (Some(before_document), Some(after_document)) => {
       match deferred_font_report(before_svg, after_svg, profile) {
-        Some(report) => return report
+        Some(report) =>
+          return apply_preflight_diagnostics(report, preflight_diagnostics)
         None => ()
       }
       match presence_change_report(before_document, after_document, profile) {
-        Some(report) => return report
+        Some(report) =>
+          return apply_preflight_diagnostics(report, preflight_diagnostics)
         None => ()
       }
       match
         gradient_change_report(
           before_svg, after_svg, before_document, after_document, profile,
         ) {
-        Some(report) => return report
+        Some(report) =>
+          return apply_preflight_diagnostics(report, preflight_diagnostics)
         None => ()
       }
       match
         solid_rect_change_report(
           before_svg, after_svg, before_document, after_document, profile,
         ) {
-        Some(report) => report
+        Some(report) =>
+          apply_preflight_diagnostics(report, preflight_diagnostics)
         None =>
-          {
-            schema_version: "0.3-prototype",
-            analysis_status: "complete",
-            profile,
-            changed_facts: [],
-            source_resolutions: [],
-            atomic_differences: [],
-            events: [],
-            diagnostics: [],
-          }
+          apply_preflight_diagnostics(
+            {
+              schema_version: "0.3-prototype",
+              analysis_status: "partial",
+              profile,
+              changed_facts: [],
+              source_resolutions: [],
+              atomic_differences: [],
+              events: [],
+              diagnostics: [
+                {
+                  id: "diagnostic:analysis-coverage-unproven:document",
+                  code: "analysis_coverage_unproven",
+                  subject_id: "document",
+                  affected_evidence_layers: [
+                    "source_semantics", "computed_appearance", "rendered_evidence",
+                  ],
+                },
+              ],
+            },
+            preflight_diagnostics,
+          )
       }
     }
-    _ =>
-      {
-        schema_version: "0.3-prototype",
-        analysis_status: "failed",
-        profile,
-        changed_facts: [],
-        source_resolutions: [],
-        atomic_differences: [],
-        events: [],
-        diagnostics: [],
-      }
+    _ => failed_source_report(profile)
   }
 }

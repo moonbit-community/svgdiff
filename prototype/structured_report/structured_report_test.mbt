@@ -272,3 +272,33 @@ test "structured report serializes the complete layered result as JSON" {
     _ => fail("serialized report did not preserve the layered result")
   }
 }
+
+///|
+test "unsupported visual subjects cannot produce complete equality" {
+  let source = "<svg width='16' height='16'><circle cx='8' cy='8' r='4' fill='red'/></svg>"
+  let report = @structured_report.compare(
+    source,
+    source,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.atomic_differences.length(), 0)
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "unsupported_visual_subject"
+    }),
+  )
+}
+
+///|
+test "parse failure is diagnosed" {
+  let report = @structured_report.compare(
+    "<svg><rect></svg>",
+    "<svg><rect/></svg>",
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "failed")
+  assert_true(
+    report.diagnostics.any(diagnostic => diagnostic.code == "svg_parse_failed"),
+  )
+}
