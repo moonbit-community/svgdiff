@@ -147,6 +147,7 @@ fn rect_coverage_report(
     schema_version: "0.3-prototype",
     analysis_status: "partial",
     profile,
+    subject_alignments: [],
     changed_facts: [],
     source_resolutions: [],
     atomic_differences: [],
@@ -288,6 +289,7 @@ fn compare_rect_declared_facts(
       "partial"
     },
     profile,
+    subject_alignments: [],
     changed_facts: [],
     source_resolutions: [],
     atomic_differences: differences,

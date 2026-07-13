@@ -526,6 +526,7 @@ fn inherited_fill_report_from_hierarchies(
     schema_version: "0.3-prototype",
     analysis_status: "partial",
     profile,
+    subject_alignments: [],
     changed_facts,
     source_resolutions: resolutions,
     atomic_differences: differences,

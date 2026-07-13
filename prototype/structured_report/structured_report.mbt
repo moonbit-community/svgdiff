@@ -74,6 +74,22 @@ pub(all) struct SourceResolutionPair {
 } derive(ToJson)
 
 ///|
+pub(all) struct SubjectReference {
+  source_index : Int
+  kind : String
+  authored_id : String?
+} derive(ToJson)
+
+///|
+pub(all) struct SubjectAlignment {
+  id : String
+  relation : String
+  before : Array[SubjectReference]
+  after : Array[SubjectReference]
+  basis : String
+} derive(ToJson)
+
+///|
 pub(all) struct ChangedFact {
   id : String
   subject_id : String
@@ -120,6 +136,7 @@ pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
   profile : ComparisonProfile
+  subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]
   source_resolutions : Array[SourceResolutionPair]
   atomic_differences : Array[AtomicDifference]
@@ -205,6 +222,7 @@ fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
     schema_version: "0.3-prototype",
     analysis_status: "failed",
     profile,
+    subject_alignments: [],
     changed_facts: [],
     source_resolutions: [],
     atomic_differences: [],
@@ -244,6 +262,7 @@ fn apply_preflight_diagnostics(
       "partial"
     },
     profile: report.profile,
+    subject_alignments: report.subject_alignments,
     changed_facts: report.changed_facts,
     source_resolutions: report.source_resolutions,
     atomic_differences: report.atomic_differences,
@@ -457,6 +476,7 @@ fn deferred_font_report(
         schema_version: "0.3-prototype",
         analysis_status: "partial",
         profile,
+        subject_alignments: [],
         changed_facts: [],
         source_resolutions: [],
         atomic_differences: [
@@ -526,6 +546,7 @@ fn presence_change_report(
         schema_version: "0.3-prototype",
         analysis_status: "complete",
         profile,
+        subject_alignments: [],
         changed_facts: [],
         source_resolutions: [],
         atomic_differences: [
@@ -620,6 +641,7 @@ fn gradient_change_report(
           schema_version: "0.3-prototype",
           analysis_status: "complete",
           profile,
+          subject_alignments: [],
           changed_facts: [],
           source_resolutions: [],
           atomic_differences: [resource_difference],
@@ -638,6 +660,7 @@ fn gradient_change_report(
           schema_version: "0.3-prototype",
           analysis_status: "complete",
           profile,
+          subject_alignments: [],
           changed_facts: [],
           source_resolutions: [],
           atomic_differences: [
@@ -704,9 +727,10 @@ pub fn compare(
       preflight_diagnostics.push_iter(diagnostics.iter())
     _ => ()
   }
+  let subject_alignments = subject_alignments_for_sources(before_svg, after_svg)
   match inherited_fill_report(before_svg, after_svg, profile) {
     Some(report) =>
-      return apply_preflight_diagnostics(report, preflight_diagnostics)
+      return finish_report(report, preflight_diagnostics, subject_alignments)
     None => ()
   }
   match
@@ -714,12 +738,16 @@ pub fn compare(
     (Some(before_document), Some(after_document)) => {
       match deferred_font_report(before_svg, after_svg, profile) {
         Some(report) =>
-          return apply_preflight_diagnostics(report, preflight_diagnostics)
+          return finish_report(
+            report, preflight_diagnostics, subject_alignments,
+          )
         None => ()
       }
       match presence_change_report(before_document, after_document, profile) {
         Some(report) =>
-          return apply_preflight_diagnostics(report, preflight_diagnostics)
+          return finish_report(
+            report, preflight_diagnostics, subject_alignments,
+          )
         None => ()
       }
       match
@@ -727,7 +755,9 @@ pub fn compare(
           before_svg, after_svg, before_document, after_document, profile,
         ) {
         Some(report) =>
-          return apply_preflight_diagnostics(report, preflight_diagnostics)
+          return finish_report(
+            report, preflight_diagnostics, subject_alignments,
+          )
         None => ()
       }
       match
@@ -735,13 +765,14 @@ pub fn compare(
           before_svg, after_svg, before_document, after_document, profile,
         ) {
         Some(report) =>
-          apply_preflight_diagnostics(report, preflight_diagnostics)
+          finish_report(report, preflight_diagnostics, subject_alignments)
         None =>
-          apply_preflight_diagnostics(
+          finish_report(
             {
               schema_version: "0.3-prototype",
               analysis_status: "partial",
               profile,
+              subject_alignments: [],
               changed_facts: [],
               source_resolutions: [],
               atomic_differences: [],
@@ -758,6 +789,7 @@ pub fn compare(
               ],
             },
             preflight_diagnostics,
+            subject_alignments,
           )
       }
     }
