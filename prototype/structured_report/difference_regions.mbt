@@ -301,6 +301,70 @@ fn alignment_for_event(
 }
 
 ///|
+fn generic_presence_magnitude_for_difference(
+  difference : AtomicDifference,
+  events : Array[VisualEvent],
+  alignments : Array[SubjectAlignment],
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+  profile : ComparisonProfile,
+) -> PresenceMagnitude? {
+  if difference.domain.find("presence.") != Some(0) {
+    return difference.presence_magnitude
+  }
+  let alignment_id = match difference.subject_alignment_id {
+    Some(id) => id
+    None => return difference.presence_magnitude
+  }
+  let mut alignment : SubjectAlignment? = None
+  for candidate in alignments {
+    if candidate.id == alignment_id {
+      alignment = Some(candidate)
+      break
+    }
+  }
+  let bounds = match alignment {
+    Some(alignment) =>
+      match alignment_bounds(alignment, before, after) {
+        Some(bounds) => bounds
+        None => return difference.presence_magnitude
+      }
+    None => return difference.presence_magnitude
+  }
+  let mut rendered : RenderedMagnitude? = None
+  for event in events {
+    if event.atomic_difference_ids.contains(difference.id) {
+      rendered = event.rendered_outcome.magnitude
+      break
+    }
+  }
+  let rendered = match rendered {
+    Some(rendered) => rendered
+    None => return difference.presence_magnitude
+  }
+  let viewport_area = profile.viewport_width.to_double() *
+    profile.viewport_height.to_double()
+  let entity_count = match alignment {
+    Some(alignment) =>
+      if difference.domain == "presence.insertion" {
+        alignment.after.length()
+      } else {
+        alignment.before.length()
+      }
+    None => 0
+  }
+  let bounds_area = bounds.width * bounds.height
+  let painted_area = rendered.changed_pixels.to_double()
+  Some({
+    affected_entity_count: entity_count,
+    bounds_area_css_px2: bounds_area,
+    bounds_viewport_fraction: bounds_area / viewport_area,
+    painted_area_css_px2: painted_area,
+    painted_viewport_fraction: painted_area / viewport_area,
+  })
+}
+
+///|
 fn attach_difference_regions(
   report : StructuredReport,
   before_svg : String,
@@ -376,5 +440,19 @@ fn attach_difference_regions(
     }
     events.push({ ..event, rendered_outcome, difference_regions: regions })
   }
-  { ..report, events, }
+  let differences : Array[AtomicDifference] = []
+  for difference in report.atomic_differences {
+    differences.push({
+      ..difference,
+      presence_magnitude: generic_presence_magnitude_for_difference(
+        difference,
+        events,
+        alignments,
+        before,
+        after,
+        report.profile,
+      ),
+    })
+  }
+  { ..report, atomic_differences: differences, events }
 }

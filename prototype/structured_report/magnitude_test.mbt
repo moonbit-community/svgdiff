@@ -55,3 +55,39 @@ test "same-domain differences are ordered by descending magnitude" {
     report.atomic_differences[1].domain_ordering.components[0],
   )
 }
+
+///|
+test "generic shape insertion and deletion expose numeric presence magnitude" {
+  let base = "<svg width='16' height='16'><rect id='anchor' x='0' y='0' width='1' height='1'/></svg>"
+  let with_circle = "<svg width='16' height='16'><rect id='anchor' x='0' y='0' width='1' height='1'/><circle id='dot' cx='8' cy='8' r='2' fill='red'/></svg>"
+  for
+    report in [
+      @structured_report.compare(
+        base,
+        with_circle,
+        @structured_report.ComparisonProfile::v1_default(),
+      ),
+      @structured_report.compare(
+        with_circle,
+        base,
+        @structured_report.ComparisonProfile::v1_default(),
+      ),
+    ] {
+    let presence_differences = [
+      for difference in report.atomic_differences if difference.domain.find(
+        "presence.",
+      ) ==
+      Some(0) => difference
+    ]
+    assert_eq(presence_differences.length(), 1)
+    match presence_differences[0].presence_magnitude {
+      Some(presence) => {
+        assert_eq(presence.affected_entity_count, 1)
+        assert_eq(presence.bounds_area_css_px2, 16.0)
+        assert_true(presence.painted_area_css_px2 > 0.0)
+        assert_true(presence.painted_viewport_fraction > 0.0)
+      }
+      None => fail("expected generic numeric presence magnitude")
+    }
+  }
+}
