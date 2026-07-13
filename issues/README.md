@@ -31,6 +31,7 @@ graph TD
   ISS_011["ISS-011: Publish the stable JSON API and command-line interface"]
   ISS_012["ISS-012: Generate the self-contained interactive HTML diff report"]
   ISS_013["ISS-013: Add deterministic font-dependent text analysis"]
+  ISS_014["ISS-014: Guard unresolved renderer style precedence"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008

@@ -35,6 +35,30 @@ test "declaration whitespace and XML entity spelling normalize" {
 }
 
 ///|
+test "renderer style precedence conflict cannot produce complete equality" {
+  let before = solid_rect_document(
+    "id='box' x='2' y='2' width='8' height='8' style='fill:red' fill='blue'",
+  )
+  let after = solid_rect_document(
+    "id='box' x='2' y='2' width='8' height='8' fill='blue' style='fill:red'",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.atomic_differences.length(), 0)
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_style_precedence_unresolved" &&
+      diagnostic.affected_evidence_layers ==
+      ["computed_appearance", "rendered_evidence"]
+    }),
+  )
+}
+
+///|
 test "moving fill to inline style is a provenance difference" {
   let before = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' fill='red'",

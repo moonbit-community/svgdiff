@@ -42,6 +42,13 @@ The stable JSON contract is version `1.0`; its schema is in `schema/svgdiff-repo
 
 Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, paths, filters, masks, and deterministic font shaping are not currently evaluated. Unsupported content is never silently treated as equal. The current raster channel is renderer-native RGBA8; linear-sRGB premultiplied evidence remains a renderer-conformance follow-up.
 
+The current renderer dependency does not yet guarantee that inline `style`
+overrides a conflicting presentation attribute independently of XML attribute
+order. Such overlap emits `renderer_style_precedence_unresolved` and reduces
+the report to `partial`; Source Semantics remains normalized, while Computed
+Appearance and Rendered Evidence must be treated as unavailable until the
+upstream fix is released.
+
 ## Validation
 
 Run the MoonBit suite and CLI integration test:

@@ -318,8 +318,18 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
             })
           }
         } else {
+          let presentation_properties : Array[String] = []
+          let mut style_attribute : @xml.NamespaceAttribute? = None
+          let mut subject_id = kind
           for attribute in element.attributes {
             let name = attribute.name.local_name
+            if name == "id" && attribute.value.trim() != "" {
+              subject_id = attribute.value.trim().to_owned()
+            } else if name == "style" {
+              style_attribute = Some(attribute)
+            } else if supported_rect_property(name) {
+              presentation_properties.push(name)
+            }
             if !known_source_attribute(kind, name) {
               let id = "diagnostic:unsupported-visual-attribute:\{kind}:\{name}"
               if !diagnostics.any(diagnostic => diagnostic.id == id) {
@@ -333,6 +343,27 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
                 })
               }
             }
+          }
+          match style_attribute {
+            Some(attribute) => {
+              let style = inline_style_facts(input, attribute)
+              for fact in style.facts {
+                if presentation_properties.contains(fact.property) {
+                  let id = "diagnostic:renderer-style-precedence-unresolved:\{subject_id}:\{fact.property}"
+                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
+                    diagnostics.push({
+                      id,
+                      code: "renderer_style_precedence_unresolved",
+                      subject_id,
+                      affected_evidence_layers: [
+                        "computed_appearance", "rendered_evidence",
+                      ],
+                    })
+                  }
+                }
+              }
+            }
+            None => ()
           }
         }
       }
