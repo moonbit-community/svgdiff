@@ -31,6 +31,15 @@ pub(all) struct RenderedEvidence {
 } derive(ToJson)
 
 ///|
+pub(all) struct CauseEnvelope {
+  guarantee : String
+  coverage : String
+  fallback_scope : String
+  candidate_changed_fact_ids : Array[String]
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
+///|
 pub(all) struct DifferenceRegion {
   id : String
   source : String
@@ -44,6 +53,7 @@ pub(all) struct DifferenceRegion {
   css_height : Double
   changed_pixels : Int
   viewport_fraction : Double
+  cause_envelope : CauseEnvelope
 } derive(ToJson)
 
 ///|
@@ -657,6 +667,52 @@ fn presence_change_report(
               status: "not_applicable",
               reason_code: "before_fact_absent",
               missing_side: Some("before"),
+              diagnostic_ids: [],
+            },
+            parameter_delta_css_px: None,
+            presence_magnitude: Some(presence_magnitude),
+          },
+        ],
+        events: [
+          {
+            id: "event:box",
+            primary_subject_id: "box",
+            atomic_difference_ids: [difference_id],
+            rendered_outcome: computed_rendered_evidence(rendered),
+            difference_regions: [],
+          },
+        ],
+        diagnostics: [],
+      })
+    }
+    (Some(presence_magnitude), None) => {
+      let difference_id = "diff:entity:box:presence"
+      let rendered = rendered_difference(
+        before_document, after_document, profile,
+      )
+      Some({
+        schema_version: "0.3-prototype",
+        analysis_status: "complete",
+        profile,
+        subject_alignments: [],
+        changed_facts: [],
+        source_resolutions: [],
+        atomic_differences: [
+          {
+            id: difference_id,
+            subject_role: "entity",
+            subject_alignment_id: None,
+            domain: "presence.deletion",
+            source_before: "rect#box",
+            source_after: "",
+            source_fact_before: None,
+            source_fact_after: None,
+            changed_fact_ids: [],
+            evidence_layers: ["source_semantics", "computed_appearance"],
+            computed_relation: {
+              status: "not_applicable",
+              reason_code: "after_fact_absent",
+              missing_side: Some("after"),
               diagnostic_ids: [],
             },
             parameter_delta_css_px: None,

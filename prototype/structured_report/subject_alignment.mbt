@@ -472,13 +472,15 @@ fn finish_report(
   before_svg : String,
   after_svg : String,
 ) -> StructuredReport {
-  attach_difference_regions(
-    attach_subject_alignments(
-      apply_preflight_diagnostics(report, diagnostics),
+  attach_cause_envelopes(
+    attach_difference_regions(
+      attach_subject_alignments(
+        apply_preflight_diagnostics(report, diagnostics),
+        alignments,
+      ),
+      before_svg,
+      after_svg,
       alignments,
     ),
-    before_svg,
-    after_svg,
-    alignments,
   )
 }

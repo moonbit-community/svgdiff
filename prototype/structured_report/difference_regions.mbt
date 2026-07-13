@@ -190,6 +190,13 @@ fn pixel_difference_regions(
       changed_pixels,
       viewport_fraction: changed_pixels.to_double() /
       (width * height).to_double(),
+      cause_envelope: {
+        guarantee: "not_established",
+        coverage: "pending",
+        fallback_scope: "comparison",
+        candidate_changed_fact_ids: [],
+        diagnostic_ids: [],
+      },
     })
   }
   regions
@@ -224,6 +231,13 @@ fn computed_bounds_region(
     css_height: bounds.height,
     changed_pixels: 0,
     viewport_fraction: bounds.width * bounds.height / viewport_area,
+    cause_envelope: {
+      guarantee: "not_established",
+      coverage: "pending",
+      fallback_scope: "comparison",
+      candidate_changed_fact_ids: [],
+      diagnostic_ids: [],
+    },
   }
 }
 
