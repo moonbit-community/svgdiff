@@ -21,7 +21,7 @@ license = "Apache-2.0"
 
 keywords = []
 
-preferred_target = "wasm-gc"
+preferred_target = "native"
 
 description = ""
 
@@ -30,4 +30,5 @@ import {
   "mizchi/svg@0.2.1",
   "mizchi/pixelmatch@0.6.1",
   "Milky2018/xml@0.4.0",
+  "moonbitlang/x@0.4.40",
 }

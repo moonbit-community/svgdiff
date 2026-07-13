@@ -1,13 +1,57 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "username/svgdiff"
 
+import {
+  "username/svgdiff/prototype/structured_report",
+}
+
 // Values
+pub fn compare(String, String, @structured_report.ComparisonProfile) -> @structured_report.StructuredReport
 
 // Errors
 
 // Types and methods
 
 // Type aliases
+pub using @structured_report {type AtomicDifference}
+
+pub using @structured_report {type CauseEnvelope}
+
+pub using @structured_report {type ChangedFact}
+
+pub using @structured_report {type ComparisonProfile}
+
+pub using @structured_report {type ComputedRelation}
+
+pub using @structured_report {type DeclaredVisualFact}
+
+pub using @structured_report {type Diagnostic}
+
+pub using @structured_report {type DifferenceMagnitude}
+
+pub using @structured_report {type DifferenceRegion}
+
+pub using @structured_report {type DomainOrdering}
+
+pub using @structured_report {type PresenceMagnitude}
+
+pub using @structured_report {type RenderedEvidence}
+
+pub using @structured_report {type RenderedMagnitude}
+
+pub using @structured_report {type ReportSourceSpan}
+
+pub using @structured_report {type ResolvedVisualFact}
+
+pub using @structured_report {type SourceResolutionPair}
+
+pub using @structured_report {type StructuredReport}
+
+pub using @structured_report {type SubjectAlignment}
+
+pub using @structured_report {type SubjectReference}
+
+pub using @structured_report {type VisualEvent}
 
 // Traits
 

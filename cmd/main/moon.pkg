@@ -1,7 +1,10 @@
-// import {
-//   "username/svgdiff" @lib,
-// }
+import {
+  "username/svgdiff",
+  "moonbitlang/core/string",
+  "moonbitlang/x/fs",
+  "moonbitlang/x/sys",
+}
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")
+
+supported_targets = "+native"

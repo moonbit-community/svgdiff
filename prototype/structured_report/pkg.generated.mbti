@@ -1,0 +1,185 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/svgdiff/prototype/structured_report"
+
+// Values
+pub fn compare(String, String, ComparisonProfile) -> StructuredReport
+
+// Errors
+
+// Types and methods
+pub(all) struct AtomicDifference {
+  id : String
+  subject_role : String
+  subject_alignment_id : String?
+  domain : String
+  source_before : String
+  source_after : String
+  source_fact_before : DeclaredVisualFact?
+  source_fact_after : DeclaredVisualFact?
+  changed_fact_ids : Array[String]
+  evidence_layers : Array[String]
+  computed_relation : ComputedRelation
+  parameter_delta_css_px : Double?
+  presence_magnitude : PresenceMagnitude?
+  magnitude : DifferenceMagnitude
+  domain_ordering : DomainOrdering
+} derive(ToJson)
+
+pub(all) struct CauseEnvelope {
+  guarantee : String
+  coverage : String
+  fallback_scope : String
+  candidate_changed_fact_ids : Array[String]
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
+pub(all) struct ChangedFact {
+  id : String
+  subject_id : String
+  property : String
+  before : DeclaredVisualFact?
+  after : DeclaredVisualFact?
+  affected_subject_ids : Array[String]
+} derive(ToJson)
+
+pub(all) struct ComparisonProfile {
+  viewport_width : Int
+  viewport_height : Int
+} derive(ToJson)
+pub fn ComparisonProfile::v1_default() -> Self
+
+pub(all) struct ComputedRelation {
+  status : String
+  reason_code : String
+  missing_side : String?
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
+pub(all) struct DeclaredVisualFact {
+  property : String
+  authored_value : String
+  declared_value : String
+  origin : String
+  source_span : ReportSourceSpan
+} derive(ToJson)
+
+pub(all) struct Diagnostic {
+  id : String
+  code : String
+  subject_id : String
+  affected_evidence_layers : Array[String]
+} derive(ToJson)
+
+pub(all) struct DifferenceMagnitude {
+  parameter_abs_user_units : Double?
+  parameter_signed_user_units : Double?
+  symmetric_relative : Double?
+  geometry_displacement_css_px : Double?
+  geometry_viewport_fraction : Double?
+  presence_painted_viewport_fraction : Double?
+  raster_changed_pixel_fraction : Double?
+  raster_rgba8_rmse : Double?
+} derive(ToJson)
+
+pub(all) struct DifferenceRegion {
+  id : String
+  source : String
+  pixel_x : Int
+  pixel_y : Int
+  pixel_width : Int
+  pixel_height : Int
+  css_x : Double
+  css_y : Double
+  css_width : Double
+  css_height : Double
+  changed_pixels : Int
+  viewport_fraction : Double
+  cause_envelope : CauseEnvelope
+} derive(ToJson)
+
+pub(all) struct DomainOrdering {
+  policy_id : String
+  components : Array[Double]
+} derive(ToJson)
+
+pub(all) struct PresenceMagnitude {
+  affected_entity_count : Int
+  bounds_area_css_px2 : Double
+  bounds_viewport_fraction : Double
+  painted_area_css_px2 : Double
+  painted_viewport_fraction : Double
+} derive(ToJson)
+
+pub(all) struct RenderedEvidence {
+  status : String
+  reason_code : String?
+  magnitude : RenderedMagnitude?
+} derive(ToJson)
+
+pub(all) struct RenderedMagnitude {
+  changed_pixels : Int
+  changed_pixel_fraction : Double
+  rgba8_rmse : Double
+} derive(ToJson)
+
+pub(all) struct ReportSourceSpan {
+  start_offset : Int
+  end_offset : Int
+} derive(ToJson)
+
+pub(all) struct ResolvedVisualFact {
+  subject_id : String
+  property : String
+  resolved_value : String
+  resolution : String
+  declaration_owner_id : String?
+  declaration : DeclaredVisualFact?
+  inheritance_depth : Int
+} derive(ToJson)
+
+pub(all) struct SourceResolutionPair {
+  subject_id : String
+  property : String
+  before : ResolvedVisualFact?
+  after : ResolvedVisualFact?
+} derive(ToJson)
+
+pub(all) struct StructuredReport {
+  schema_version : String
+  analysis_status : String
+  profile : ComparisonProfile
+  subject_alignments : Array[SubjectAlignment]
+  changed_facts : Array[ChangedFact]
+  source_resolutions : Array[SourceResolutionPair]
+  atomic_differences : Array[AtomicDifference]
+  events : Array[VisualEvent]
+  diagnostics : Array[Diagnostic]
+} derive(ToJson)
+pub fn StructuredReport::to_json_string(Self) -> String
+
+pub(all) struct SubjectAlignment {
+  id : String
+  relation : String
+  before : Array[SubjectReference]
+  after : Array[SubjectReference]
+  basis : String
+} derive(ToJson)
+
+pub(all) struct SubjectReference {
+  source_index : Int
+  kind : String
+  authored_id : String?
+} derive(ToJson)
+
+pub(all) struct VisualEvent {
+  id : String
+  primary_subject_id : String
+  atomic_difference_ids : Array[String]
+  rendered_outcome : RenderedEvidence
+  difference_regions : Array[DifferenceRegion]
+} derive(ToJson)
+
+// Type aliases
+
+// Traits
+

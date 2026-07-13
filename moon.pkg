@@ -1,0 +1,6 @@
+import {
+  "username/svgdiff/prototype/structured_report" @engine,
+  "moonbitlang/core/json",
+}
+
+supported_targets = "+native"

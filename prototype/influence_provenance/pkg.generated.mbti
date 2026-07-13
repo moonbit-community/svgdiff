@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/svgdiff/prototype/influence_provenance"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Analysis
+
+type MoonSvgSpikeResult
+
+type Raster
+
+type Scenario
+
+type TileSample
+
+// Type aliases
+
+// Traits
+
