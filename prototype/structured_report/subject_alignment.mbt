@@ -2,6 +2,7 @@
 priv struct SourceSubject {
   reference : SubjectReference
   signature : String
+  hierarchy_signature : String
   kind : String
   values : Array[(String, String)]
   facts : Array[DeclaredVisualFact]
@@ -39,6 +40,7 @@ fn subject_from_element(
   input : String,
   element : @xml.NamespaceElement,
   source_index : Int,
+  hierarchy_signature : String,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let mut authored_id : String? = None
@@ -70,7 +72,7 @@ fn subject_from_element(
     values.push((fact.property, fact.declared_value.to_lower()))
   }
   values.sort_by(fn(left, right) { left.0.compare(right.0) })
-  let mut signature = element.name.local_name
+  let mut signature = "\{element.name.local_name}|hierarchy=\{hierarchy_signature}"
   for item in values {
     let (name, value) = item
     signature = "\{signature}|\{name}=\{value}"
@@ -78,6 +80,7 @@ fn subject_from_element(
   {
     reference: { source_index, kind: element.name.local_name, authored_id },
     signature,
+    hierarchy_signature,
     kind: element.name.local_name,
     values,
     facts,
@@ -85,16 +88,90 @@ fn subject_from_element(
 }
 
 ///|
+fn hierarchy_element_signature(
+  input : String,
+  element : @xml.NamespaceElement,
+) -> String {
+  let facts : Array[DeclaredVisualFact] = []
+  let mut style_attribute : @xml.NamespaceAttribute? = None
+  for attribute in element.attributes {
+    let property = attribute.name.local_name
+    if property == "style" {
+      style_attribute = Some(attribute)
+    } else if inherited_visual_properties().contains(property) {
+      upsert_declared_fact(facts, presentation_fact(input, property, attribute))
+    }
+  }
+  match style_attribute {
+    Some(attribute) => {
+      let style = inline_style_facts(input, attribute)
+      for fact in style.facts {
+        if inherited_visual_properties().contains(fact.property) {
+          upsert_declared_fact(facts, fact)
+        }
+      }
+    }
+    None => ()
+  }
+  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
+  let mut signature = element.name.local_name
+  for fact in facts {
+    signature = "\{signature}|\{fact.property}=\{fact.declared_value.to_lower()}"
+  }
+  signature
+}
+
+///|
+fn joined_hierarchy_signature(stack : Array[String]) -> String {
+  let mut signature = ""
+  for segment in stack {
+    if signature == "" {
+      signature = segment
+    } else {
+      signature = "\{signature}/\{segment}"
+    }
+  }
+  signature
+}
+
+///|
 fn extract_source_subjects_or_raise(
   input : String,
 ) -> Array[SourceSubject] raise {
   let subjects : Array[SourceSubject] = []
+  let hierarchy : Array[String] = []
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
-      Start(element) | Empty(element) =>
+      Start(element) => {
+        let kind = element.name.local_name
+        if kind == "svg" || kind == "g" {
+          hierarchy.push(hierarchy_element_signature(input, element))
+        } else if visual_subject_kind(kind) {
+          subjects.push(
+            subject_from_element(
+              input,
+              element,
+              subjects.length(),
+              joined_hierarchy_signature(hierarchy),
+            ),
+          )
+        }
+      }
+      Empty(element) =>
         if visual_subject_kind(element.name.local_name) {
-          subjects.push(subject_from_element(input, element, subjects.length()))
+          subjects.push(
+            subject_from_element(
+              input,
+              element,
+              subjects.length(),
+              joined_hierarchy_signature(hierarchy),
+            ),
+          )
+        }
+      End(name) =>
+        if name.local_name == "svg" || name.local_name == "g" {
+          ignore(hierarchy.pop())
         }
       _ => ()
     }
@@ -232,7 +309,11 @@ fn make_alignment(
 
 ///|
 fn subject_distance(left : SourceSubject, right : SourceSubject) -> Double {
-  let mut distance = 0.0
+  let mut distance = if left.hierarchy_signature == right.hierarchy_signature {
+    0.0
+  } else {
+    1000000.0
+  }
   for property in alignment_property_order() {
     let left_value = subject_value(left, property)
     let right_value = subject_value(right, property)

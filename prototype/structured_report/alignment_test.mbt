@@ -125,6 +125,30 @@ test "changed subjects use global rather than greedy minimum cost" {
 }
 
 ///|
+test "inherited hierarchy context participates in exact alignment" {
+  let before = alignment_svg(
+    "<g fill='red'><rect id='red-box' x='2' y='2' width='4' height='4'/></g><g fill='blue'><rect id='blue-box' x='2' y='2' width='4' height='4'/></g>",
+  )
+  let after = alignment_svg(
+    "<g fill='blue'><rect id='renamed-blue' x='2' y='2' width='4' height='4'/></g><g fill='red'><rect id='renamed-red' x='2' y='2' width='4' height='4'/></g>",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before.any(reference => reference.authored_id == Some("red-box")) &&
+      alignment.after.any(reference => {
+        reference.authored_id == Some("renamed-red")
+      }) &&
+      alignment.basis == "exact_visual_signature"
+    }),
+  )
+}
+
+///|
 test "a visual merge is represented set to set and serialized" {
   let before = alignment_svg(
     "<rect x='0' y='0' width='5' height='4' fill='red'/><rect x='5' y='0' width='5' height='4' fill='red'/>",
