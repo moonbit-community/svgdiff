@@ -184,6 +184,12 @@ test "group opacity is compositing rather than inherited child opacity" {
       difference.computed_relation.status == "indeterminate"
     }),
   )
+  assert_true(
+    report.events.any(event => {
+      event.atomic_difference_ids.any(id => id.find("group-opacity") is Some(_)) &&
+      event.difference_regions.is_empty()
+    }),
+  )
 }
 
 ///|
@@ -203,6 +209,25 @@ test "inline group opacity is diagnosed and reported at source level" {
   assert_true(
     report.atomic_differences.any(difference => {
       difference.domain == "compositing.opacity"
+    }),
+  )
+}
+
+///|
+test "root svg opacity is preserved as a source difference" {
+  let before = "<svg width='20' height='20' opacity='1'><rect x='1' y='1' width='4' height='4'/></svg>"
+  let after = "<svg width='20' height='20' opacity='0.5'><rect x='1' y='1' width='4' height='4'/></svg>"
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "compositing.opacity" &&
+      difference.source_before == "1" &&
+      difference.source_after == "0.5"
     }),
   )
 }

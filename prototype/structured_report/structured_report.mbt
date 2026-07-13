@@ -342,6 +342,54 @@ fn paint_server_reference(value : String) -> String? {
 }
 
 ///|
+fn gradient_unsupported_signature_or_raise(input : String) -> String raise {
+  let reader = @xml.NamespaceReader::from_string(input)
+  let mut signature = ""
+  let mut in_gradient = false
+  let mut stop_index = 0
+  for event in reader.read_events_until_eof() {
+    match event.kind {
+      Start(element) if element.name.local_name == "linearGradient" => {
+        in_gradient = true
+        stop_index = 0
+        let attributes : Array[String] = []
+        for attribute in element.attributes {
+          attributes.push(
+            "\{attribute.name.local_name}=\{attribute.value.trim()}",
+          )
+        }
+        attributes.sort()
+        signature += "gradient"
+        for attribute in attributes {
+          signature += "[\{attribute}]"
+        }
+      }
+      Empty(element) if in_gradient && element.name.local_name == "stop" => {
+        let attributes : Array[String] = []
+        for attribute in element.attributes {
+          if stop_index > 0 || attribute.name.local_name != "stop-color" {
+            attributes.push(
+              "\{attribute.name.local_name}=\{attribute.value.trim()}",
+            )
+          }
+        }
+        attributes.sort()
+        signature += "stop:\{stop_index}"
+        for attribute in attributes {
+          signature += "[\{attribute}]"
+        }
+        stop_index += 1
+      }
+      Start(element) if in_gradient =>
+        signature += "child:\{element.name.local_name}"
+      End(name) if name.local_name == "linearGradient" => in_gradient = false
+      _ => ()
+    }
+  }
+  signature
+}
+
+///|
 fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
   let paint_server_ids : Array[String] = []
@@ -1167,6 +1215,26 @@ pub fn compare(
     (SourcePartial(diagnostics), _) | (_, SourcePartial(diagnostics)) =>
       preflight_diagnostics.push_iter(diagnostics.iter())
     _ => ()
+  }
+  let before_gradient_signature = gradient_unsupported_signature_or_raise(
+    before_svg,
+  ) catch {
+    _ => ""
+  }
+  let after_gradient_signature = gradient_unsupported_signature_or_raise(
+    after_svg,
+  ) catch {
+    _ => ""
+  }
+  if before_gradient_signature != after_gradient_signature {
+    preflight_diagnostics.push({
+      id: "diagnostic:gradient-semantics-unsupported:document",
+      code: "gradient_semantics_unsupported",
+      subject_id: "document",
+      affected_evidence_layers: [
+        "source_semantics", "computed_appearance", "rendered_evidence",
+      ],
+    })
   }
   let subject_alignments = subject_alignments_for_sources(before_svg, after_svg)
   match inherited_fill_report(before_svg, after_svg, profile) {

@@ -35,6 +35,7 @@ graph TD
   ISS_015["ISS-015: Complete the recorded v1 comparison profile"]
   ISS_016["ISS-016: Preserve source diffs across unsupported compositing and resources"]
   ISS_017["ISS-017: Isolate presence painted coverage from scene content"]
+  ISS_018["ISS-018: Close container localization and gradient coverage gaps"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -46,6 +47,7 @@ graph TD
   ISS_010 --> ISS_015
   ISS_007 --> ISS_016
   ISS_010 --> ISS_017
+  ISS_016 --> ISS_018
 ```
 
 ## Warnings

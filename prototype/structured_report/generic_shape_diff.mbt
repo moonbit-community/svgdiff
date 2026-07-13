@@ -177,8 +177,9 @@ fn subjects_for_references(
   let selected : Array[SourceSubject] = []
   for reference in references {
     match subjects.get(reference.source_index) {
-      Some(subject) => selected.push(subject)
+      Some(subject) if subject.kind == reference.kind => selected.push(subject)
       None => ()
+      _ => ()
     }
   }
   selected

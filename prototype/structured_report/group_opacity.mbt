@@ -2,6 +2,7 @@
 priv struct OpacityGroup {
   subject_id : String
   source_index : Int
+  kind : String
   fact : DeclaredVisualFact?
 }
 
@@ -11,8 +12,14 @@ fn opacity_groups_or_raise(input : String) -> Array[OpacityGroup] raise {
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
-      Start(element) | Empty(element) if element.name.local_name == "g" => {
-        let mut subject_id = "g:\{groups.length()}"
+      Start(element) | Empty(element) if element.name.local_name == "g" ||
+        element.name.local_name == "svg" => {
+        let kind = element.name.local_name
+        let mut subject_id = if kind == "svg" {
+          "svg"
+        } else {
+          "g:\{groups.length()}"
+        }
         let mut fact : DeclaredVisualFact? = None
         let mut style_attribute : @xml.NamespaceAttribute? = None
         for attribute in element.attributes {
@@ -35,7 +42,7 @@ fn opacity_groups_or_raise(input : String) -> Array[OpacityGroup] raise {
           }
           None => ()
         }
-        groups.push({ subject_id, source_index: groups.length(), fact })
+        groups.push({ subject_id, source_index: groups.length(), kind, fact })
       }
       _ => ()
     }
@@ -89,14 +96,14 @@ fn attach_group_opacity_differences(
       before: [
         {
           source_index: before_group.source_index,
-          kind: "g",
+          kind: before_group.kind,
           authored_id: Some(before_group.subject_id),
         },
       ],
       after: [
         {
           source_index: after_group.source_index,
-          kind: "g",
+          kind: after_group.kind,
           authored_id: Some(after_group.subject_id),
         },
       ],

@@ -156,6 +156,26 @@ test "resource changes and entity outcomes share one rendered event" {
 }
 
 ///|
+test "gradient semantics beyond the first stop are coverage guarded" {
+  let before = gradient_rect_svg("red")
+  let after = before.replace_all(
+    old="stop-color=\"blue\"",
+    new="stop-color=\"green\"",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "gradient_semantics_unsupported"
+    }),
+  )
+}
+
+///|
 test "zero-contribution insertion retains numeric presence footprint" {
   let report = @structured_report.compare(
     empty_svg(),
