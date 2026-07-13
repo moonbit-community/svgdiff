@@ -258,6 +258,8 @@ fn generic_basic_shape_report(
               before_fact, after_fact,
             ),
             presence_magnitude: None,
+            magnitude: empty_difference_magnitude(),
+            domain_ordering: empty_domain_ordering(),
           })
           alignment_difference_ids.push(difference_id)
         }
@@ -313,6 +315,8 @@ fn generic_basic_shape_report(
           },
           parameter_delta_css_px: None,
           presence_magnitude: None,
+          magnitude: empty_difference_magnitude(),
+          domain_ordering: empty_domain_ordering(),
         })
         alignment_difference_ids.push(difference_id)
       }
@@ -348,6 +352,8 @@ fn generic_basic_shape_report(
           },
           parameter_delta_css_px: None,
           presence_magnitude: None,
+          magnitude: empty_difference_magnitude(),
+          domain_ordering: empty_domain_ordering(),
         })
         alignment_difference_ids.push(difference_id)
       }

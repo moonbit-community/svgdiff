@@ -518,6 +518,8 @@ fn inherited_fill_report_from_hierarchies(
           computed_relation: relation,
           parameter_delta_css_px: None,
           presence_magnitude: None,
+          magnitude: empty_difference_magnitude(),
+          domain_ordering: empty_domain_ordering(),
         })
         events.push({
           id: "event:\{subject_id}",

@@ -263,6 +263,8 @@ fn compare_rect_declared_facts(
       computed_relation: relation,
       parameter_delta_css_px,
       presence_magnitude: None,
+      magnitude: empty_difference_magnitude(),
+      domain_ordering: empty_domain_ordering(),
     })
   }
   let events : Array[VisualEvent] = []

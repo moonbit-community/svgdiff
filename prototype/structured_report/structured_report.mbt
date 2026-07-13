@@ -21,6 +21,7 @@ pub(all) struct ComputedRelation {
 pub(all) struct RenderedMagnitude {
   changed_pixels : Int
   changed_pixel_fraction : Double
+  rgba8_rmse : Double
 } derive(ToJson)
 
 ///|
@@ -64,6 +65,43 @@ pub(all) struct PresenceMagnitude {
   painted_area_css_px2 : Double
   painted_viewport_fraction : Double
 } derive(ToJson)
+
+///|
+pub(all) struct DifferenceMagnitude {
+  parameter_abs_user_units : Double?
+  parameter_signed_user_units : Double?
+  symmetric_relative : Double?
+  geometry_displacement_css_px : Double?
+  geometry_viewport_fraction : Double?
+  presence_painted_viewport_fraction : Double?
+  raster_changed_pixel_fraction : Double?
+  raster_rgba8_rmse : Double?
+} derive(ToJson)
+
+///|
+pub(all) struct DomainOrdering {
+  policy_id : String
+  components : Array[Double]
+} derive(ToJson)
+
+///|
+fn empty_difference_magnitude() -> DifferenceMagnitude {
+  {
+    parameter_abs_user_units: None,
+    parameter_signed_user_units: None,
+    symmetric_relative: None,
+    geometry_displacement_css_px: None,
+    geometry_viewport_fraction: None,
+    presence_painted_viewport_fraction: None,
+    raster_changed_pixel_fraction: None,
+    raster_rgba8_rmse: None,
+  }
+}
+
+///|
+fn empty_domain_ordering() -> DomainOrdering {
+  { policy_id: "v1_domain_lexicographic", components: [] }
+}
 
 ///|
 pub(all) struct ReportSourceSpan {
@@ -140,6 +178,8 @@ pub(all) struct AtomicDifference {
   computed_relation : ComputedRelation
   parameter_delta_css_px : Double?
   presence_magnitude : PresenceMagnitude?
+  magnitude : DifferenceMagnitude
+  domain_ordering : DomainOrdering
 } derive(ToJson)
 
 ///|
@@ -537,6 +577,16 @@ fn rendered_difference(
     profile.viewport_width,
     profile.viewport_height,
   )
+  let mut squared_error = 0.0
+  for index in 0..<before_image.pixels.length() {
+    let before_pixel = before_image.pixels[index]
+    let after_pixel = after_image.pixels[index]
+    let red = (before_pixel.r - after_pixel.r).to_double() / 255.0
+    let green = (before_pixel.g - after_pixel.g).to_double() / 255.0
+    let blue = (before_pixel.b - after_pixel.b).to_double() / 255.0
+    let alpha = (before_pixel.a - after_pixel.a).to_double() / 255.0
+    squared_error += red * red + green * green + blue * blue + alpha * alpha
+  }
   let report = @pixelmatch.diff_report(
     to_pixelmatch_image(before_image),
     to_pixelmatch_image(after_image),
@@ -547,6 +597,7 @@ fn rendered_difference(
     changed_pixels: report.diff_count,
     changed_pixel_fraction: report.diff_count.to_double() /
     report.total_pixels.to_double(),
+    rgba8_rmse: (squared_error / (before_image.pixels.length() * 4).to_double()).sqrt(),
   }
 }
 
@@ -599,6 +650,8 @@ fn deferred_font_report(
             },
             parameter_delta_css_px: None,
             presence_magnitude: None,
+            magnitude: empty_difference_magnitude(),
+            domain_ordering: empty_domain_ordering(),
           },
         ],
         events: [
@@ -671,6 +724,8 @@ fn presence_change_report(
             },
             parameter_delta_css_px: None,
             presence_magnitude: Some(presence_magnitude),
+            magnitude: empty_difference_magnitude(),
+            domain_ordering: empty_domain_ordering(),
           },
         ],
         events: [
@@ -717,6 +772,8 @@ fn presence_change_report(
             },
             parameter_delta_css_px: None,
             presence_magnitude: Some(presence_magnitude),
+            magnitude: empty_difference_magnitude(),
+            domain_ordering: empty_domain_ordering(),
           },
         ],
         events: [
@@ -785,6 +842,8 @@ fn gradient_change_report(
         computed_relation: resource_relation,
         parameter_delta_css_px: None,
         presence_magnitude: None,
+        magnitude: empty_difference_magnitude(),
+        domain_ordering: empty_domain_ordering(),
       }
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
@@ -844,6 +903,8 @@ fn gradient_change_report(
               },
               parameter_delta_css_px: None,
               presence_magnitude: None,
+              magnitude: empty_difference_magnitude(),
+              domain_ordering: empty_domain_ordering(),
             },
           ],
           events: [
