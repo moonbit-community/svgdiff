@@ -91,3 +91,23 @@ test "generic shape insertion and deletion expose numeric presence magnitude" {
     }
   }
 }
+
+///|
+test "presence painted coverage remains nonzero when final pixels are equal" {
+  let one = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/></svg>"
+  let duplicate = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='red'/></svg>"
+  let report = @structured_report.compare(
+    one,
+    duplicate,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  let presence = [
+      for difference in report.atomic_differences if difference.domain ==
+      "presence.insertion" => difference
+    ][0]
+  match presence.presence_magnitude {
+    Some(magnitude) => assert_eq(magnitude.painted_area_css_px2, 16.0)
+    None => fail("expected presence coverage")
+  }
+  assert_eq(presence.magnitude.raster_changed_pixel_fraction, Some(0.0))
+}

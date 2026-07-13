@@ -303,10 +303,10 @@ fn alignment_for_event(
 ///|
 fn generic_presence_magnitude_for_difference(
   difference : AtomicDifference,
-  events : Array[VisualEvent],
   alignments : Array[SubjectAlignment],
   before : Array[SourceSubject],
   after : Array[SourceSubject],
+  rendered_images : (@svg.Image, @svg.Image)?,
   profile : ComparisonProfile,
 ) -> PresenceMagnitude? {
   if difference.domain.find("presence.") != Some(0) {
@@ -331,15 +331,13 @@ fn generic_presence_magnitude_for_difference(
       }
     None => return difference.presence_magnitude
   }
-  let mut rendered : RenderedMagnitude? = None
-  for event in events {
-    if event.atomic_difference_ids.contains(difference.id) {
-      rendered = event.rendered_outcome.magnitude
-      break
-    }
-  }
-  let rendered = match rendered {
-    Some(rendered) => rendered
+  let image = match rendered_images {
+    Some((before_image, after_image)) =>
+      if difference.domain == "presence.insertion" {
+        after_image
+      } else {
+        before_image
+      }
     None => return difference.presence_magnitude
   }
   let viewport_area = profile.viewport_width.to_double() *
@@ -354,7 +352,20 @@ fn generic_presence_magnitude_for_difference(
     None => 0
   }
   let bounds_area = bounds.width * bounds.height
-  let painted_area = rendered.changed_pixels.to_double()
+  let mut painted_pixels = 0
+  for index, pixel in image.pixels {
+    let x = (index % image.width).to_double()
+    let y = (index / image.width).to_double()
+    if pixel.a > 0 &&
+      x >= bounds.x &&
+      x < bounds.x + bounds.width &&
+      y >= bounds.y &&
+      y < bounds.y + bounds.height {
+      painted_pixels += 1
+    }
+  }
+  let painted_area = painted_pixels.to_double() /
+    (profile.comparison_dpr * profile.comparison_dpr)
   Some({
     affected_entity_count: entity_count,
     bounds_area_css_px2: bounds_area,
@@ -446,10 +457,10 @@ fn attach_difference_regions(
       ..difference,
       presence_magnitude: generic_presence_magnitude_for_difference(
         difference,
-        events,
         alignments,
         before,
         after,
+        rendered_images,
         report.profile,
       ),
     })
