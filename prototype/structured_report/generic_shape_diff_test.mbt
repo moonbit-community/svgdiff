@@ -118,3 +118,43 @@ test "unsupported visual attributes reduce subject coverage" {
     }),
   )
 }
+
+///|
+test "ordinary inherited stroke changes are reported" {
+  let before = shape_svg(
+    "<g stroke='red'><line id='edge' x1='1' y1='1' x2='15' y2='15'/></g>",
+  )
+  let after = shape_svg(
+    "<g stroke='blue'><line id='edge' x1='1' y1='1' x2='15' y2='15'/></g>",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "paint.stroke" &&
+      difference.source_before == "red" &&
+      difference.source_after == "blue"
+    }),
+  )
+}
+
+///|
+test "incomplete inline style cannot produce complete equality" {
+  let source = shape_svg(
+    "<rect x='1' y='1' width='8' height='8' style='fill:red;unknown-paint:blue'/>",
+  )
+  let report = @structured_report.compare(
+    source,
+    source,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "css_cascade_unsupported"
+    }),
+  )
+}

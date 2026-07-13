@@ -21,7 +21,7 @@ test "fill resolves through the nearest authored ancestor" {
   let source = "<svg id='root' fill='black'><g id='outer' fill='red'><g id='inner' fill='yellow' style='fill: blue'><rect id='box'/><rect id='local' fill='green'/></g></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) => {
-      match resolved_fill_for_subject(hierarchy, "box") {
+      match resolved_visual_for_subject(hierarchy, "box", "fill") {
         Some(resolution) => {
           assert_eq(resolution.resolved_value, "blue")
           assert_eq(resolution.resolution, "inherited")
@@ -38,7 +38,7 @@ test "fill resolves through the nearest authored ancestor" {
         }
         None => fail("expected an inherited fill")
       }
-      match resolved_fill_for_subject(hierarchy, "local") {
+      match resolved_visual_for_subject(hierarchy, "local", "fill") {
         Some(resolution) => {
           assert_eq(resolution.resolved_value, "green")
           assert_eq(resolution.resolution, "local")
@@ -57,7 +57,7 @@ test "undeclared fill resolves to the SVG initial value" {
   let source = "<svg><g><rect id='box'/></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) =>
-      match resolved_fill_for_subject(hierarchy, "box") {
+      match resolved_visual_for_subject(hierarchy, "box", "fill") {
         Some(resolution) => {
           assert_eq(resolution.resolved_value, "black")
           assert_eq(resolution.resolution, "initial")

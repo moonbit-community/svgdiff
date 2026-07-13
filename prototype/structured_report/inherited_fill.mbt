@@ -2,7 +2,7 @@
 priv struct FillSourceElement {
   subject_id : String
   parent_index : Int?
-  fill_declaration : DeclaredVisualFact?
+  visual_declarations : Array[DeclaredVisualFact]
 }
 
 ///|
@@ -10,7 +10,7 @@ priv struct FillHierarchy {
   elements : Array[FillSourceElement]
   rect_subject_ids : Array[String]
   coverage_codes : Array[String]
-  mut has_inherited_fill : Bool
+  mut has_inherited_visual : Bool
 }
 
 ///|
@@ -58,27 +58,38 @@ fn generated_subject_id(kind : String, index : Int) -> String {
 }
 
 ///|
-fn fill_declaration_from_element(
+fn inherited_visual_properties() -> Array[String] {
+  ["fill", "stroke", "stroke-width", "opacity"]
+}
+
+///|
+fn visual_declarations_from_element(
   input : String,
   element : @xml.NamespaceElement,
   coverage_codes : Array[String],
-) -> DeclaredVisualFact? {
-  let mut fill : DeclaredVisualFact? = None
+) -> Array[DeclaredVisualFact] {
+  let declarations : Array[DeclaredVisualFact] = []
   let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
-    match attribute.name.local_name {
-      "class" => push_unique(coverage_codes, "css_cascade_unsupported")
-      "fill" => fill = Some(presentation_fact(input, "fill", attribute))
-      "style" => style_attribute = Some(attribute)
-      _ => ()
+    let property = attribute.name.local_name
+    if property == "class" {
+      push_unique(coverage_codes, "css_cascade_unsupported")
+    } else if property == "style" {
+      style_attribute = Some(attribute)
+    } else if inherited_visual_properties().contains(property) {
+      upsert_declared_fact(
+        declarations,
+        presentation_fact(input, property, attribute),
+      )
     }
   }
   match style_attribute {
     Some(attribute) => {
       let parsed = inline_style_facts(input, attribute)
-      match declared_fact_in_array(parsed.facts, "fill") {
-        Some(style_fill) => fill = Some(style_fill)
-        None => ()
+      for fact in parsed.facts {
+        if inherited_visual_properties().contains(fact.property) {
+          upsert_declared_fact(declarations, fact)
+        }
       }
       if !parsed.complete {
         push_unique(coverage_codes, "css_cascade_unsupported")
@@ -86,8 +97,8 @@ fn fill_declaration_from_element(
     }
     None => ()
   }
-  match fill {
-    Some(fact) => {
+  for fact in declarations {
+    if fact.property == "fill" || fact.property == "stroke" {
       let value = fact.declared_value.to_lower()
       if value == "currentcolor" ||
         value == "inherit" ||
@@ -96,12 +107,14 @@ fn fill_declaration_from_element(
         value == "revert-layer" ||
         value == "unset" ||
         value.find("url(") is Some(_) {
-        push_unique(coverage_codes, "fill_value_semantics_unsupported")
+        push_unique(
+          coverage_codes,
+          "\{fact.property}_value_semantics_unsupported",
+        )
       }
     }
-    None => ()
   }
-  fill
+  declarations
 }
 
 ///|
@@ -135,7 +148,7 @@ fn add_fill_source_element(
   elements.push({
     subject_id,
     parent_index,
-    fill_declaration: fill_declaration_from_element(
+    visual_declarations: visual_declarations_from_element(
       input, element, coverage_codes,
     ),
   })
@@ -159,9 +172,28 @@ fn fill_source_element(
 }
 
 ///|
-fn resolved_fill_for_subject(
+fn initial_visual_value(property : String) -> String {
+  match property {
+    "fill" => "black"
+    "stroke" => "none"
+    "stroke-width" | "opacity" => "1"
+    _ => ""
+  }
+}
+
+///|
+fn local_visual_declaration(
+  element : FillSourceElement,
+  property : String,
+) -> DeclaredVisualFact? {
+  declared_fact_in_array(element.visual_declarations, property)
+}
+
+///|
+fn resolved_visual_for_subject(
   hierarchy : FillHierarchy,
   subject_id : String,
+  property : String,
 ) -> ResolvedVisualFact? {
   match fill_source_element(hierarchy, subject_id) {
     Some((index, _)) => {
@@ -169,11 +201,11 @@ fn resolved_fill_for_subject(
       let mut depth = 0
       while current is Some(current_index) {
         let element = hierarchy.elements[current_index]
-        match element.fill_declaration {
+        match local_visual_declaration(element, property) {
           Some(declaration) =>
             return Some({
               subject_id,
-              property: "fill",
+              property,
               resolved_value: declaration.declared_value,
               resolution: if depth == 0 {
                 "local"
@@ -192,8 +224,8 @@ fn resolved_fill_for_subject(
       }
       Some({
         subject_id,
-        property: "fill",
-        resolved_value: "black",
+        property,
+        resolved_value: initial_visual_value(property),
         resolution: "initial",
         declaration_owner_id: None,
         declaration: None,
@@ -270,15 +302,15 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
     elements,
     rect_subject_ids,
     coverage_codes,
-    has_inherited_fill: false,
+    has_inherited_visual: false,
   }
   for subject_id in rect_subject_ids {
-    match resolved_fill_for_subject(hierarchy, subject_id) {
-      Some({ resolution: "inherited", .. }) => {
-        hierarchy.has_inherited_fill = true
-        break
+    for property in inherited_visual_properties() {
+      match resolved_visual_for_subject(hierarchy, subject_id, property) {
+        Some({ resolution: "inherited", .. }) =>
+          hierarchy.has_inherited_visual = true
+        _ => ()
       }
-      _ => ()
     }
   }
   hierarchy
@@ -294,12 +326,13 @@ fn extract_fill_hierarchy(input : String) -> FillHierarchyExtraction {
 }
 
 ///|
-fn local_fill_declaration(
+fn local_property_declaration(
   hierarchy : FillHierarchy,
   subject_id : String,
+  property : String,
 ) -> DeclaredVisualFact? {
   match fill_source_element(hierarchy, subject_id) {
-    Some((_, element)) => element.fill_declaration
+    Some((_, element)) => local_visual_declaration(element, property)
     None => None
   }
 }
@@ -327,11 +360,12 @@ fn resolution_source_changed(
 }
 
 ///|
-fn resolved_fill_owner(
+fn resolved_visual_owner(
   hierarchy : FillHierarchy,
   subject_id : String,
+  property : String,
 ) -> String? {
-  match resolved_fill_for_subject(hierarchy, subject_id) {
+  match resolved_visual_for_subject(hierarchy, subject_id, property) {
     Some(resolution) => resolution.declaration_owner_id
     None => None
   }
@@ -357,8 +391,9 @@ fn source_element_ids(hierarchy : FillHierarchy) -> Array[String] {
 }
 
 ///|
-fn affected_rects_for_owner(
+fn affected_entities_for_owner(
   owner_id : String,
+  property : String,
   before : FillHierarchy,
   after : FillHierarchy,
 ) -> Array[String] {
@@ -366,14 +401,14 @@ fn affected_rects_for_owner(
   append_unique_subjects(rect_ids, before.rect_subject_ids)
   append_unique_subjects(rect_ids, after.rect_subject_ids)
   [
-    for rect_id in rect_ids if resolved_fill_owner(before, rect_id) ==
+    for rect_id in rect_ids if resolved_visual_owner(before, rect_id, property) ==
     Some(owner_id) ||
-    resolved_fill_owner(after, rect_id) == Some(owner_id) => rect_id
+    resolved_visual_owner(after, rect_id, property) == Some(owner_id) => rect_id
   ]
 }
 
 ///|
-fn compare_changed_fill_facts(
+fn compare_changed_visual_facts(
   before : FillHierarchy,
   after : FillHierarchy,
 ) -> Array[ChangedFact] {
@@ -381,34 +416,24 @@ fn compare_changed_fill_facts(
   append_unique_subjects(subject_ids, source_element_ids(after))
   let changed : Array[ChangedFact] = []
   for subject_id in subject_ids {
-    let before_fact = local_fill_declaration(before, subject_id)
-    let after_fact = local_fill_declaration(after, subject_id)
-    if declared_fact_changed(before_fact, after_fact) {
-      changed.push({
-        id: "changed:source:\{subject_id}:fill",
-        subject_id,
-        property: "fill",
-        before: before_fact,
-        after: after_fact,
-        affected_subject_ids: affected_rects_for_owner(
-          subject_id, before, after,
-        ),
-      })
+    for property in inherited_visual_properties() {
+      let before_fact = local_property_declaration(before, subject_id, property)
+      let after_fact = local_property_declaration(after, subject_id, property)
+      if declared_fact_changed(before_fact, after_fact) {
+        changed.push({
+          id: "changed:source:\{subject_id}:\{property}",
+          subject_id,
+          property,
+          before: before_fact,
+          after: after_fact,
+          affected_subject_ids: affected_entities_for_owner(
+            subject_id, property, before, after,
+          ),
+        })
+      }
     }
   }
   changed
-}
-
-///|
-fn changed_fact_ids_for_subject(
-  changed_facts : Array[ChangedFact],
-  subject_id : String,
-) -> Array[String] {
-  [
-    for fact in changed_facts if fact.affected_subject_ids.contains(subject_id) => {
-      fact.id
-    }
-  ]
 }
 
 ///|
@@ -427,7 +452,7 @@ fn inherited_fill_report_from_hierarchies(
   after : FillHierarchy,
   profile : ComparisonProfile,
 ) -> StructuredReport {
-  let changed_facts = compare_changed_fill_facts(before, after)
+  let changed_facts = compare_changed_visual_facts(before, after)
   let rect_ids : Array[String] = []
   append_unique_subjects(rect_ids, before.rect_subject_ids)
   append_unique_subjects(rect_ids, after.rect_subject_ids)
@@ -458,90 +483,98 @@ fn inherited_fill_report_from_hierarchies(
     ),
   )
   for subject_id in rect_ids {
-    let before_resolution = resolved_fill_for_subject(before, subject_id)
-    let after_resolution = resolved_fill_for_subject(after, subject_id)
-    resolutions.push({
-      subject_id,
-      property: "fill",
-      before: before_resolution,
-      after: after_resolution,
-    })
-    match (before_resolution, after_resolution) {
-      (Some(before_value), Some(after_value)) => {
-        if !resolution_source_changed(Some(before_value), Some(after_value)) {
-          continue
-        }
-        let changed_fact_ids = changed_fact_ids_for_subject(
-          changed_facts, subject_id,
-        )
-        let relation = if !before.coverage_codes.is_empty() ||
-          !after.coverage_codes.is_empty() {
-          {
-            status: "indeterminate",
-            reason_code: "inherited_fill_analysis_coverage_incomplete",
-            missing_side: None,
-            diagnostic_ids: source_resolution_diagnostic_ids(diagnostics),
+    for property in inherited_visual_properties() {
+      let before_resolution = resolved_visual_for_subject(
+        before, subject_id, property,
+      )
+      let after_resolution = resolved_visual_for_subject(
+        after, subject_id, property,
+      )
+      match (before_resolution, after_resolution) {
+        (Some(before_value), Some(after_value)) => {
+          if !resolution_source_changed(Some(before_value), Some(after_value)) {
+            continue
           }
-        } else if before_value.resolved_value == after_value.resolved_value {
-          {
-            status: "equivalent",
-            reason_code: "same_resolved_fill",
-            missing_side: None,
-            diagnostic_ids: [],
-          }
-        } else {
-          let diagnostic_id = add_diagnostic(
-            diagnostics,
-            "computed_fill_value_semantics_deferred",
+          resolutions.push({
             subject_id,
-            ["computed_appearance"],
+            property,
+            before: before_resolution,
+            after: after_resolution,
+          })
+          let changed_fact_ids = [
+            for fact in changed_facts if fact.property == property &&
+            fact.affected_subject_ids.contains(subject_id) => fact.id
+          ]
+          let relation = if !before.coverage_codes.is_empty() ||
+            !after.coverage_codes.is_empty() {
+            {
+              status: "indeterminate",
+              reason_code: "inherited_visual_analysis_coverage_incomplete",
+              missing_side: None,
+              diagnostic_ids: source_resolution_diagnostic_ids(diagnostics),
+            }
+          } else if before_value.resolved_value == after_value.resolved_value {
+            {
+              status: "equivalent",
+              reason_code: "same_resolved_\{property}",
+              missing_side: None,
+              diagnostic_ids: [],
+            }
+          } else {
+            let reason = "computed_\{property}_value_semantics_deferred"
+            let diagnostic_id = add_diagnostic(
+              diagnostics,
+              reason,
+              subject_id,
+              ["computed_appearance"],
+            )
+            {
+              status: "indeterminate",
+              reason_code: reason,
+              missing_side: None,
+              diagnostic_ids: [diagnostic_id],
+            }
+          }
+          let difference_id = "diff:entity:\{subject_id}:\{property}"
+          differences.push({
+            id: difference_id,
+            subject_role: "entity",
+            subject_alignment_id: None,
+            domain: generic_property_domain(property),
+            source_before: before_value.resolved_value,
+            source_after: after_value.resolved_value,
+            source_fact_before: before_value.declaration,
+            source_fact_after: after_value.declaration,
+            changed_fact_ids,
+            evidence_layers: ["source_semantics"],
+            computed_relation: relation,
+            parameter_delta_css_px: None,
+            presence_magnitude: None,
+            magnitude: empty_difference_magnitude(),
+            domain_ordering: empty_domain_ordering(),
+          })
+          events.push({
+            id: "event:\{subject_id}:\{property}",
+            primary_subject_id: subject_id,
+            atomic_difference_ids: [difference_id],
+            rendered_outcome: {
+              status: "not_computed",
+              reason_code: Some("inherited_fill_rendered_evidence_deferred"),
+              magnitude: None,
+            },
+            difference_regions: [],
+          })
+        }
+        _ =>
+          ignore(
+            add_diagnostic(
+              diagnostics,
+              "source_subject_alignment_unsupported",
+              subject_id,
+              ["source_semantics", "computed_appearance", "rendered_evidence"],
+            ),
           )
-          {
-            status: "indeterminate",
-            reason_code: "computed_fill_value_semantics_deferred",
-            missing_side: None,
-            diagnostic_ids: [diagnostic_id],
-          }
-        }
-        let difference_id = "diff:entity:\{subject_id}:fill"
-        differences.push({
-          id: difference_id,
-          subject_role: "entity",
-          subject_alignment_id: None,
-          domain: "paint.fill",
-          source_before: before_value.resolved_value,
-          source_after: after_value.resolved_value,
-          source_fact_before: before_value.declaration,
-          source_fact_after: after_value.declaration,
-          changed_fact_ids,
-          evidence_layers: ["source_semantics"],
-          computed_relation: relation,
-          parameter_delta_css_px: None,
-          presence_magnitude: None,
-          magnitude: empty_difference_magnitude(),
-          domain_ordering: empty_domain_ordering(),
-        })
-        events.push({
-          id: "event:\{subject_id}",
-          primary_subject_id: subject_id,
-          atomic_difference_ids: [difference_id],
-          rendered_outcome: {
-            status: "not_computed",
-            reason_code: Some("inherited_fill_rendered_evidence_deferred"),
-            magnitude: None,
-          },
-          difference_regions: [],
-        })
       }
-      _ =>
-        ignore(
-          add_diagnostic(
-            diagnostics,
-            "source_subject_alignment_unsupported",
-            subject_id,
-            ["source_semantics", "computed_appearance", "rendered_evidence"],
-          ),
-        )
     }
   }
   {
@@ -566,8 +599,8 @@ fn inherited_fill_report(
   match
     (extract_fill_hierarchy(before_svg), extract_fill_hierarchy(after_svg)) {
     (ParsedFillHierarchy(before), ParsedFillHierarchy(after)) => {
-      let handles_source_slice = before.has_inherited_fill ||
-        after.has_inherited_fill ||
+      let handles_source_slice = before.has_inherited_visual ||
+        after.has_inherited_visual ||
         before.coverage_codes.contains("css_cascade_unsupported") ||
         after.coverage_codes.contains("css_cascade_unsupported")
       if handles_source_slice {
