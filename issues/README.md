@@ -32,6 +32,7 @@ graph TD
   ISS_012["ISS-012: Generate the self-contained interactive HTML diff report"]
   ISS_013["ISS-013: Add deterministic font-dependent text analysis"]
   ISS_014["ISS-014: Guard unresolved renderer style precedence"]
+  ISS_015["ISS-015: Complete the recorded v1 comparison profile"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -40,6 +41,7 @@ graph TD
   ISS_009 --> ISS_011
   ISS_010 --> ISS_011
   ISS_011 --> ISS_012
+  ISS_010 --> ISS_015
 ```
 
 ## Warnings

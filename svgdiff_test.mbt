@@ -20,6 +20,27 @@ test "root package exposes the stable comparison seam" {
 }
 
 ///|
+test "v1 profile records canonical rendering conditions" {
+  let report = @svgdiff.compare(
+    "<svg width='16' height='16'><rect width='8' height='8' fill='red' opacity='0.5'/></svg>",
+    "<svg width='16' height='16'><rect width='8' height='8' fill='blue' opacity='0.5'/></svg>",
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.profile.comparison_dpr, 1.0)
+  assert_eq(report.profile.color_interpretation, "srgb")
+  assert_eq(
+    report.profile.raster_representation,
+    "linear_srgb_premultiplied_rgba_f64",
+  )
+  assert_eq(report.profile.renderer_id, "mizchi/svg@0.2.1")
+  match report.events[0].rendered_outcome.magnitude {
+    Some(magnitude) =>
+      assert_true(magnitude.linear_premultiplied_rgba_rmse > 0.0)
+    None => fail("expected canonical rendered magnitude")
+  }
+}
+
+///|
 test "HTML report is self contained and binds report regions" {
   let before = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='red'/><script>alert('unsafe')</script></svg>"
   let after = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='blue'/></svg>"

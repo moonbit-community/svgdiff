@@ -213,6 +213,7 @@ fn rendered_magnitude_for_regions(
 ) -> RenderedMagnitude {
   let mut changed_pixels = 0
   let mut squared_error = 0.0
+  let mut linear_squared_error = 0.0
   for index in 0..<before.pixels.length() {
     let x = index % before.width
     let y = index / before.width
@@ -222,11 +223,8 @@ fn rendered_magnitude_for_regions(
     changed_pixels += 1
     let left = before.pixels[index]
     let right = after.pixels[index]
-    let red = (left.r - right.r).to_double() / 255.0
-    let green = (left.g - right.g).to_double() / 255.0
-    let blue = (left.b - right.b).to_double() / 255.0
-    let alpha = (left.a - right.a).to_double() / 255.0
-    squared_error += red * red + green * green + blue * blue + alpha * alpha
+    squared_error += raw_rgba8_squared_error(left, right)
+    linear_squared_error += linear_premultiplied_rgba_squared_error(left, right)
   }
   let total_pixels = before.pixels.length()
   {
@@ -234,6 +232,8 @@ fn rendered_magnitude_for_regions(
     changed_pixel_fraction: changed_pixels.to_double() /
     total_pixels.to_double(),
     rgba8_rmse: (squared_error / (total_pixels * 4).to_double()).sqrt(),
+    linear_premultiplied_rgba_rmse: (linear_squared_error /
+    (total_pixels * 4).to_double()).sqrt(),
   }
 }
 

@@ -107,6 +107,7 @@ fn main {
     }
   }
   let report = @svgdiff.compare(before_svg, after_svg, {
+    ..@svgdiff.ComparisonProfile::v1_default(),
     viewport_width: config.width,
     viewport_height: config.height,
   })

@@ -30,7 +30,7 @@ The root package exposes one comparison operation:
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 ```
 
-The stable JSON contract is version `1.0`; its schema is in `schema/svgdiff-report.schema.json`.
+The stable JSON contract is version `1.0`; its schema is in `schema/svgdiff-report.schema.json`. The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, and the pinned renderer identity. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 ## Supported static subset
 
@@ -40,7 +40,7 @@ The stable JSON contract is version `1.0`; its schema is in `schema/svgdiff-repo
 - exact continuous parameter magnitudes, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
 
-Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, paths, filters, masks, and deterministic font shaping are not currently evaluated. Unsupported content is never silently treated as equal. The current raster channel is renderer-native RGBA8; linear-sRGB premultiplied evidence remains a renderer-conformance follow-up.
+Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, paths, filters, masks, and deterministic font shaping are not currently evaluated. Unsupported content is never silently treated as equal.
 
 The current renderer dependency does not yet guarantee that inline `style`
 overrides a conflicting presentation attribute independently of XML attribute

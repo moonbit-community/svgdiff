@@ -19,10 +19,23 @@
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "profile": {
       "type": "object",
-      "required": ["viewport_width", "viewport_height"],
+      "required": [
+        "viewport_width",
+        "viewport_height",
+        "comparison_dpr",
+        "color_interpretation",
+        "raster_representation",
+        "renderer_id"
+      ],
       "properties": {
         "viewport_width": { "type": "integer", "minimum": 1 },
-        "viewport_height": { "type": "integer", "minimum": 1 }
+        "viewport_height": { "type": "integer", "minimum": 1 },
+        "comparison_dpr": { "const": 1.0 },
+        "color_interpretation": { "const": "srgb" },
+        "raster_representation": {
+          "const": "linear_srgb_premultiplied_rgba_f64"
+        },
+        "renderer_id": { "const": "mizchi/svg@0.2.1" }
       }
     },
     "subject_alignments": {
@@ -110,7 +123,8 @@
         "geometry_viewport_fraction",
         "presence_painted_viewport_fraction",
         "raster_changed_pixel_fraction",
-        "raster_rgba8_rmse"
+        "raster_rgba8_rmse",
+        "raster_linear_premultiplied_rgba_rmse"
       ],
       "additionalProperties": { "$ref": "#/$defs/nullableNumber" }
     },

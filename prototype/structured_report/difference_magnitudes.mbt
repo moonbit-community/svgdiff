@@ -89,6 +89,10 @@ fn difference_magnitude(
       Some(rendered) => Some(rendered.rgba8_rmse)
       None => None
     },
+    raster_linear_premultiplied_rgba_rmse: match rendered {
+      Some(rendered) => Some(rendered.linear_premultiplied_rgba_rmse)
+      None => None
+    },
   }
 }
 
@@ -111,6 +115,10 @@ fn ordering_for_magnitude(
     push_measurement(components, magnitude.geometry_viewport_fraction)
     push_measurement(components, magnitude.raster_changed_pixel_fraction)
   } else if domain.find("paint.") == Some(0) {
+    push_measurement(
+      components,
+      magnitude.raster_linear_premultiplied_rgba_rmse,
+    )
     push_measurement(components, magnitude.raster_rgba8_rmse)
     push_measurement(components, magnitude.raster_changed_pixel_fraction)
   } else if domain.find("presence.") == Some(0) || domain == "presence" {
@@ -118,6 +126,10 @@ fn ordering_for_magnitude(
     push_measurement(components, magnitude.raster_changed_pixel_fraction)
   } else {
     push_measurement(components, magnitude.raster_changed_pixel_fraction)
+    push_measurement(
+      components,
+      magnitude.raster_linear_premultiplied_rgba_rmse,
+    )
     push_measurement(components, magnitude.raster_rgba8_rmse)
   }
   { policy_id: "v1_domain_lexicographic", components }

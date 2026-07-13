@@ -11,7 +11,7 @@ moon run --target native cmd/main -- testdata/before.svg testdata/after.svg >"$t
 jq -e '.schema_version == "1.0" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/main -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html"
-jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24' "$tmp/output.json" >/dev/null
+jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24 and .profile.comparison_dpr == 1 and .profile.color_interpretation == "srgb" and .profile.raster_representation == "linear_srgb_premultiplied_rgba_f64" and (.events[0].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse > 0)' "$tmp/output.json" >/dev/null
 grep -q '<!doctype html>' "$tmp/report.html"
 grep -q 'sandbox=""' "$tmp/report.html"
 grep -q 'id="report-data"' "$tmp/report.html"

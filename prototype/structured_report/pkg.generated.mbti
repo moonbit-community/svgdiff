@@ -45,6 +45,10 @@ pub(all) struct ChangedFact {
 pub(all) struct ComparisonProfile {
   viewport_width : Int
   viewport_height : Int
+  comparison_dpr : Double
+  color_interpretation : String
+  raster_representation : String
+  renderer_id : String
 } derive(ToJson)
 pub fn ComparisonProfile::v1_default() -> Self
 
@@ -79,6 +83,7 @@ pub(all) struct DifferenceMagnitude {
   presence_painted_viewport_fraction : Double?
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
+  raster_linear_premultiplied_rgba_rmse : Double?
 } derive(ToJson)
 
 pub(all) struct DifferenceRegion {
@@ -120,6 +125,7 @@ pub(all) struct RenderedMagnitude {
   changed_pixels : Int
   changed_pixel_fraction : Double
   rgba8_rmse : Double
+  linear_premultiplied_rgba_rmse : Double
 } derive(ToJson)
 
 pub(all) struct ReportSourceSpan {

@@ -2,11 +2,22 @@
 pub(all) struct ComparisonProfile {
   viewport_width : Int
   viewport_height : Int
+  comparison_dpr : Double
+  color_interpretation : String
+  raster_representation : String
+  renderer_id : String
 } derive(ToJson)
 
 ///|
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
-  { viewport_width: 16, viewport_height: 16 }
+  {
+    viewport_width: 16,
+    viewport_height: 16,
+    comparison_dpr: 1.0,
+    color_interpretation: "srgb",
+    raster_representation: "linear_srgb_premultiplied_rgba_f64",
+    renderer_id: "mizchi/svg@0.2.1",
+  }
 }
 
 ///|
@@ -22,6 +33,7 @@ pub(all) struct RenderedMagnitude {
   changed_pixels : Int
   changed_pixel_fraction : Double
   rgba8_rmse : Double
+  linear_premultiplied_rgba_rmse : Double
 } derive(ToJson)
 
 ///|
@@ -76,6 +88,7 @@ pub(all) struct DifferenceMagnitude {
   presence_painted_viewport_fraction : Double?
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
+  raster_linear_premultiplied_rgba_rmse : Double?
 } derive(ToJson)
 
 ///|
@@ -95,6 +108,7 @@ fn empty_difference_magnitude() -> DifferenceMagnitude {
     presence_painted_viewport_fraction: None,
     raster_changed_pixel_fraction: None,
     raster_rgba8_rmse: None,
+    raster_linear_premultiplied_rgba_rmse: None,
   }
 }
 
@@ -593,6 +607,42 @@ fn exact_pixel_options() -> @pixelmatch.Options {
 }
 
 ///|
+fn raw_rgba8_squared_error(left : @svg.Color, right : @svg.Color) -> Double {
+  let red = (left.r - right.r).to_double() / 255.0
+  let green = (left.g - right.g).to_double() / 255.0
+  let blue = (left.b - right.b).to_double() / 255.0
+  let alpha = (left.a - right.a).to_double() / 255.0
+  red * red + green * green + blue * blue + alpha * alpha
+}
+
+///|
+fn srgb8_to_linear(value : Int) -> Double {
+  let channel = value.to_double() / 255.0
+  if channel <= 0.04045 {
+    channel / 12.92
+  } else {
+    @math.pow((channel + 0.055) / 1.055, 2.4)
+  }
+}
+
+///|
+fn linear_premultiplied_rgba_squared_error(
+  left : @svg.Color,
+  right : @svg.Color,
+) -> Double {
+  let left_alpha = left.a.to_double() / 255.0
+  let right_alpha = right.a.to_double() / 255.0
+  let red = srgb8_to_linear(left.r) * left_alpha -
+    srgb8_to_linear(right.r) * right_alpha
+  let green = srgb8_to_linear(left.g) * left_alpha -
+    srgb8_to_linear(right.g) * right_alpha
+  let blue = srgb8_to_linear(left.b) * left_alpha -
+    srgb8_to_linear(right.b) * right_alpha
+  let alpha = left_alpha - right_alpha
+  red * red + green * green + blue * blue + alpha * alpha
+}
+
+///|
 fn rendered_difference(
   before : @svg.SVGDocument,
   after : @svg.SVGDocument,
@@ -609,14 +659,14 @@ fn rendered_difference(
     profile.viewport_height,
   )
   let mut squared_error = 0.0
+  let mut linear_squared_error = 0.0
   for index in 0..<before_image.pixels.length() {
     let before_pixel = before_image.pixels[index]
     let after_pixel = after_image.pixels[index]
-    let red = (before_pixel.r - after_pixel.r).to_double() / 255.0
-    let green = (before_pixel.g - after_pixel.g).to_double() / 255.0
-    let blue = (before_pixel.b - after_pixel.b).to_double() / 255.0
-    let alpha = (before_pixel.a - after_pixel.a).to_double() / 255.0
-    squared_error += red * red + green * green + blue * blue + alpha * alpha
+    squared_error += raw_rgba8_squared_error(before_pixel, after_pixel)
+    linear_squared_error += linear_premultiplied_rgba_squared_error(
+      before_pixel, after_pixel,
+    )
   }
   let report = @pixelmatch.diff_report(
     to_pixelmatch_image(before_image),
@@ -629,6 +679,8 @@ fn rendered_difference(
     changed_pixel_fraction: report.diff_count.to_double() /
     report.total_pixels.to_double(),
     rgba8_rmse: (squared_error / (before_image.pixels.length() * 4).to_double()).sqrt(),
+    linear_premultiplied_rgba_rmse: (linear_squared_error /
+    (before_image.pixels.length() * 4).to_double()).sqrt(),
   }
 }
 
