@@ -364,7 +364,8 @@ fn gradient_unsupported_signature_or_raise(input : String) -> String raise {
           signature += "[\{attribute}]"
         }
       }
-      Empty(element) if in_gradient && element.name.local_name == "stop" => {
+      Start(element) | Empty(element) if in_gradient &&
+        element.name.local_name == "stop" => {
         let attributes : Array[String] = []
         for attribute in element.attributes {
           if stop_index > 0 || attribute.name.local_name != "stop-color" {

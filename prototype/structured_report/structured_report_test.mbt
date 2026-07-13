@@ -176,6 +176,29 @@ test "gradient semantics beyond the first stop are coverage guarded" {
 }
 
 ///|
+test "paired gradient stop semantics are coverage guarded" {
+  let before = "<svg width=\"16\" height=\"16\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"gradient\"><stop offset=\"0\" stop-color=\"red\"></stop><stop offset=\"1\" stop-color=\"blue\" stop-opacity=\"1\"></stop></linearGradient></defs><rect id=\"box\" x=\"2\" y=\"2\" width=\"8\" height=\"8\" fill=\"url(#gradient)\"/></svg>"
+  for
+    after in [
+      before.replace_all(old="stop-color=\"blue\"", new="stop-color=\"green\""),
+      before.replace_all(old="offset=\"1\"", new="offset=\"0.9\""),
+      before.replace_all(old="stop-opacity=\"1\"", new="stop-opacity=\"0.5\""),
+    ] {
+    let report = @structured_report.compare(
+      before,
+      after,
+      @structured_report.ComparisonProfile::v1_default(),
+    )
+    assert_eq(report.analysis_status, "partial")
+    assert_true(
+      report.diagnostics.any(diagnostic => {
+        diagnostic.code == "gradient_semantics_unsupported"
+      }),
+    )
+  }
+}
+
+///|
 test "zero-contribution insertion retains numeric presence footprint" {
   let report = @structured_report.compare(
     empty_svg(),
