@@ -84,31 +84,34 @@ pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
 }
 
 ///|
-fn prototype_attribute_value(source : String, name : String) -> String? {
-  let prefix = "\{name}=\""
-  match source.view().split_once(prefix) {
-    Some((_, rest)) =>
-      match rest.split_once("\"") {
-        Some((value, _)) => Some("\{value}")
-        None => None
-      }
-    None => None
-  }
-}
-
-///|
-fn prototype_text_content(source : String) -> String? {
-  match source.view().split_once("<text") {
-    Some((_, element)) =>
-      match element.split_once(">") {
-        Some((_, content_and_end)) =>
-          match content_and_end.split_once("</text>") {
-            Some((content, _)) => Some("\{content}")
+fn source_attribute_value(
+  input : String,
+  element_name : String,
+  attribute_name : String,
+) -> String? {
+  match @source.parse(input) {
+    Ok(document) =>
+      match document.elements_named(element_name).get(0) {
+        Some(element) =>
+          match element.attribute(attribute_name) {
+            Some(attribute) => Some(attribute.value)
             None => None
           }
         None => None
       }
-    None => None
+    Err(_) => None
+  }
+}
+
+///|
+fn source_text_content(input : String) -> String? {
+  match @source.parse(input) {
+    Ok(document) =>
+      match document.elements_named("text").get(0) {
+        Some(element) => Some(element.direct_text())
+        None => None
+      }
+    Err(_) => None
   }
 }
 
@@ -261,8 +264,7 @@ fn deferred_font_report(
   after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport? {
-  match
-    (prototype_text_content(before_svg), prototype_text_content(after_svg)) {
+  match (source_text_content(before_svg), source_text_content(after_svg)) {
     (Some(source_before), Some(source_after)) if source_before != source_after => {
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
@@ -377,8 +379,8 @@ fn gradient_change_report(
 ) -> StructuredReport? {
   match
     (
-      prototype_attribute_value(before_svg, "stop-color"),
-      prototype_attribute_value(after_svg, "stop-color"),
+      source_attribute_value(before_svg, "stop", "stop-color"),
+      source_attribute_value(after_svg, "stop", "stop-color"),
     ) {
     (Some(source_before), Some(source_after)) if source_before != source_after => {
       let before_stop = gradient_first_stop(before_document, "gradient")
@@ -503,8 +505,8 @@ pub fn compare(
         Some(report) => return report
         None => ()
       }
-      let before_source = prototype_attribute_value(before_svg, "fill")
-      let after_source = prototype_attribute_value(after_svg, "fill")
+      let before_source = source_attribute_value(before_svg, "rect", "fill")
+      let after_source = source_attribute_value(after_svg, "rect", "fill")
       match (before_source, after_source) {
         (Some(source_before), Some(source_after)) if source_before !=
           source_after => {
@@ -565,8 +567,8 @@ pub fn compare(
           }
         }
         _ => {
-          let before_x_source = prototype_attribute_value(before_svg, "x")
-          let after_x_source = prototype_attribute_value(after_svg, "x")
+          let before_x_source = source_attribute_value(before_svg, "rect", "x")
+          let after_x_source = source_attribute_value(after_svg, "rect", "x")
           match (before_x_source, after_x_source) {
             (Some(source_before), Some(source_after)) if source_before !=
               source_after => {

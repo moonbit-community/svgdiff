@@ -384,7 +384,7 @@ Rendered measurements occur only under `events[].rendered_outcome`; Atomic Diffe
 
 ## Deliberately hidden implementation
 
-The external interface does not expose separate parser, resolver, matcher, renderer, scorer, or event-aggregation interfaces. These are implementation stages of the comparison module. Rendering has an internal seam because a community MoonBit renderer is being evaluated against a possible future project-owned workspace module and an external conformance oracle; dependency-specific scene and image types do not cross the external comparison interface.
+The external interface does not expose separate parser, resolver, matcher, renderer, scorer, or event-aggregation interfaces. These are implementation stages of the comparison module. Source Semantics is implemented by the workspace-owned `source_semantics` module behind an internal seam that returns strict authored structure and Source Spans without renderer types. Rendering has a separate internal seam because a community MoonBit renderer is being evaluated against a possible future project-owned workspace module and an external conformance oracle; dependency-specific source, scene, and image types do not cross the external comparison interface.
 
 ## Open decisions
 

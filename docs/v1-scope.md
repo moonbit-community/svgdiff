@@ -71,3 +71,7 @@ Each deferred capability must eventually be moved into either **In scope** or **
 ## Renderer ownership
 
 Core v1 first evaluates pure-MoonBit community dependencies behind an internal rendering seam. A project-owned renderer is created as a separate workspace-managed MoonBit module only when a concrete acceptance case proves that required correctness or provenance cannot be achieved through the dependency or a focused upstream extension.
+
+## Source Semantics ownership
+
+Core v1 owns strict authored parsing and Source Span provenance in the separate workspace-managed `source_semantics` module. The module rejects incomplete or malformed input rather than repairing it, preserves raw authored values independently of computed SVG normalization, and exposes no renderer-specific types. `moonbit-community/XMLParser@0.2.5` was rejected for this seam because it accepted required well-formedness failures and did not expose element or attribute Source Spans.

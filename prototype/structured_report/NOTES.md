@@ -6,7 +6,7 @@ Status: first scenario-driven vertical slice complete
 
 The layered report abstraction is feasible for the tested slice. MoonBit can preserve authored evidence through a separate source layer, compare resolved scene facts through `mizchi/svg`, obtain canonical raster response through `mizchi/svg` plus `mizchi/pixelmatch`, distinguish resource changes from entity outcomes, represent zero contribution numerically, preserve indeterminate analysis without coercing it to zero, and serialize the resulting report as JSON.
 
-The prototype is not production code. Its fixture-specific source extractor proves the need for a real Source Semantics parser rather than satisfying that need.
+The prototype is not production code. Authored values are now read through the workspace-owned `source_semantics` module rather than fixture-specific string splitting, while comparison and alignment logic remain fixture-specific.
 
 ## Acceptance scenarios
 
@@ -32,7 +32,7 @@ The prototype is not production code. Its fixture-specific source extractor prov
 ## Deliberate prototype shortcuts
 
 - Recognizes only fixture identifiers `box`, `gradient`, and `label`.
-- Extracts only double-quoted `fill`, `x`, `stop-color`, and simple text content with string splitting.
+- Looks up only the fixture element names and identifiers even though the source parser itself handles strict nested markup and source spans.
 - Handles one changed semantic facet per ordinary rect comparison and one fixed gradient dependency pattern.
 - Uses fixed `16 x 16` profile dimensions instead of implementing Comparison Viewport resolution.
 - Uses the current renderer's RGBA8 output; it does not validate the accepted linear-sRGB premultiplied arithmetic contract.

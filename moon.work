@@ -1,0 +1,4 @@
+members = [
+  ".",
+  "modules/source_semantics",
+]

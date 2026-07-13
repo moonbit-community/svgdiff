@@ -102,6 +102,10 @@ _Avoid_: Display Color Space, Unspecified RGB
 An element in an input SVG document together with its source attributes, hierarchy, and style provenance. Source Elements provide evidence but do not define identity across inputs.
 _Avoid_: Object, Visual Element
 
+**Source Span**:
+A half-open interval in the original SVG source that localizes an authored element, attribute, value, or text fragment. Source Spans provide provenance and diagnostics but never define visual identity across inputs.
+_Avoid_: Line Number, Node Identity
+
 **Visual Subject**:
 Any reportable subject with visual semantics, either a placed Visual Entity or a definitional Visual Resource. Identity follows visual role and correspondence rather than SVG element type, identifier, source position, or current pixel contribution.
 _Avoid_: DOM Node, SVG Object
