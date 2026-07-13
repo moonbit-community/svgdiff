@@ -113,20 +113,9 @@ fn pixels_differ(before : @svg.Image, after : @svg.Image, index : Int) -> Bool {
 
 ///|
 fn pixel_difference_regions(
-  before_document : @svg.SVGDocument,
-  after_document : @svg.SVGDocument,
-  profile : ComparisonProfile,
+  before : @svg.Image,
+  after : @svg.Image,
 ) -> Array[DifferenceRegion] {
-  let before = @svg.render_svg_document_to_image(
-    before_document,
-    profile.viewport_width,
-    profile.viewport_height,
-  )
-  let after = @svg.render_svg_document_to_image(
-    after_document,
-    profile.viewport_width,
-    profile.viewport_height,
-  )
   let width = before.width
   let height = before.height
   if width != after.width || height != after.height {
@@ -203,6 +192,52 @@ fn pixel_difference_regions(
 }
 
 ///|
+fn pixel_in_regions(
+  x : Int,
+  y : Int,
+  regions : Array[DifferenceRegion],
+) -> Bool {
+  regions.any(region => {
+    x >= region.pixel_x &&
+    x < region.pixel_x + region.pixel_width &&
+    y >= region.pixel_y &&
+    y < region.pixel_y + region.pixel_height
+  })
+}
+
+///|
+fn rendered_magnitude_for_regions(
+  before : @svg.Image,
+  after : @svg.Image,
+  regions : Array[DifferenceRegion],
+) -> RenderedMagnitude {
+  let mut changed_pixels = 0
+  let mut squared_error = 0.0
+  for index in 0..<before.pixels.length() {
+    let x = index % before.width
+    let y = index / before.width
+    if !pixel_in_regions(x, y, regions) || !pixels_differ(before, after, index) {
+      continue
+    }
+    changed_pixels += 1
+    let left = before.pixels[index]
+    let right = after.pixels[index]
+    let red = (left.r - right.r).to_double() / 255.0
+    let green = (left.g - right.g).to_double() / 255.0
+    let blue = (left.b - right.b).to_double() / 255.0
+    let alpha = (left.a - right.a).to_double() / 255.0
+    squared_error += red * red + green * green + blue * blue + alpha * alpha
+  }
+  let total_pixels = before.pixels.length()
+  {
+    changed_pixels,
+    changed_pixel_fraction: changed_pixels.to_double() /
+    total_pixels.to_double(),
+    rgba8_rmse: (squared_error / (total_pixels * 4).to_double()).sqrt(),
+  }
+}
+
+///|
 fn regions_intersect(region : DifferenceRegion, bounds : CssBounds) -> Bool {
   region.css_x < bounds.x + bounds.width &&
   region.css_x + region.css_width > bounds.x &&
@@ -274,11 +309,29 @@ fn attach_difference_regions(
 ) -> StructuredReport {
   let before = extract_source_subjects_or_raise(before_svg) catch { _ => [] }
   let after = extract_source_subjects_or_raise(after_svg) catch { _ => [] }
-  let pixel_regions = match
+  let rendered_images = match
     (@svg.parse_svg_document(before_svg), @svg.parse_svg_document(after_svg)) {
     (Some(before_document), Some(after_document)) =>
-      pixel_difference_regions(before_document, after_document, report.profile)
-    _ => []
+      Some(
+        (
+          @svg.render_svg_document_to_image(
+            before_document,
+            report.profile.viewport_width,
+            report.profile.viewport_height,
+          ),
+          @svg.render_svg_document_to_image(
+            after_document,
+            report.profile.viewport_width,
+            report.profile.viewport_height,
+          ),
+        ),
+      )
+    _ => None
+  }
+  let pixel_regions = match rendered_images {
+    Some((before_image, after_image)) =>
+      pixel_difference_regions(before_image, after_image)
+    None => []
   }
   let events : Array[VisualEvent] = []
   for event in report.events {
@@ -310,7 +363,18 @@ fn attach_difference_regions(
         None => ()
       }
     }
-    events.push({ ..event, difference_regions: regions })
+    let rendered_outcome = if event.rendered_outcome.status == "computed" {
+      match rendered_images {
+        Some((before_image, after_image)) =>
+          computed_rendered_evidence(
+            rendered_magnitude_for_regions(before_image, after_image, regions),
+          )
+        None => event.rendered_outcome
+      }
+    } else {
+      event.rendered_outcome
+    }
+    events.push({ ..event, rendered_outcome, difference_regions: regions })
   }
   { ..report, events, }
 }
