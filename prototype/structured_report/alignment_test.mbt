@@ -17,6 +17,8 @@ test "reordered and renamed subjects align by visual facts" {
     @structured_report.ComparisonProfile::v1_default(),
   )
   assert_eq(report.subject_alignments.length(), 2)
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 0)
   assert_true(
     report.subject_alignments.all(alignment => {
       alignment.relation == "correspondence" &&

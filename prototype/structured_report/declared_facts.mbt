@@ -20,7 +20,24 @@ priv struct InlineStyleFacts {
 ///|
 fn supported_rect_property(property : String) -> Bool {
   match property {
-    "x" | "y" | "width" | "height" | "fill" | "opacity" => true
+    "x"
+    | "y"
+    | "width"
+    | "height"
+    | "rx"
+    | "ry"
+    | "cx"
+    | "cy"
+    | "r"
+    | "x1"
+    | "y1"
+    | "x2"
+    | "y2"
+    | "points"
+    | "fill"
+    | "stroke"
+    | "stroke-width"
+    | "opacity" => true
     _ => false
   }
 }

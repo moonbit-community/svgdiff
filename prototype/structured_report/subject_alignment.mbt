@@ -4,6 +4,7 @@ priv struct SourceSubject {
   signature : String
   kind : String
   values : Array[(String, String)]
+  facts : Array[DeclaredVisualFact]
 }
 
 ///|
@@ -35,11 +36,13 @@ fn subject_value(subject : SourceSubject, property : String) -> String? {
 
 ///|
 fn subject_from_element(
+  input : String,
   element : @xml.NamespaceElement,
   source_index : Int,
 ) -> SourceSubject {
-  let values : Array[(String, String)] = []
+  let facts : Array[DeclaredVisualFact] = []
   let mut authored_id : String? = None
+  let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
     let name = attribute.name.local_name
     if name == "id" {
@@ -47,9 +50,24 @@ fn subject_from_element(
       if value != "" {
         authored_id = Some(value)
       }
+    } else if name == "style" {
+      style_attribute = Some(attribute)
     } else if alignment_property_order().contains(name) {
-      values.push((name, attribute.value.trim().to_owned().to_lower()))
+      upsert_declared_fact(facts, presentation_fact(input, name, attribute))
     }
+  }
+  match style_attribute {
+    Some(attribute) => {
+      let style = inline_style_facts(input, attribute)
+      for fact in style.facts {
+        upsert_declared_fact(facts, fact)
+      }
+    }
+    None => ()
+  }
+  let values : Array[(String, String)] = []
+  for fact in facts {
+    values.push((fact.property, fact.declared_value.to_lower()))
   }
   values.sort_by(fn(left, right) { left.0.compare(right.0) })
   let mut signature = element.name.local_name
@@ -62,6 +80,7 @@ fn subject_from_element(
     signature,
     kind: element.name.local_name,
     values,
+    facts,
   }
 }
 
@@ -75,7 +94,7 @@ fn extract_source_subjects_or_raise(
     match event.kind {
       Start(element) | Empty(element) =>
         if visual_subject_kind(element.name.local_name) {
-          subjects.push(subject_from_element(element, subjects.length()))
+          subjects.push(subject_from_element(input, element, subjects.length()))
         }
       _ => ()
     }
@@ -400,6 +419,38 @@ fn attach_subject_alignments(
   report : StructuredReport,
   alignments : Array[SubjectAlignment],
 ) -> StructuredReport {
+  let differences : Array[AtomicDifference] = []
+  for difference in report.atomic_differences {
+    let mut alignment_id = difference.subject_alignment_id
+    if alignment_id is None && difference.subject_role == "entity" {
+      let mut report_subject_id : String? = None
+      for event in report.events {
+        if event.atomic_difference_ids.contains(difference.id) {
+          report_subject_id = Some(event.primary_subject_id)
+          break
+        }
+      }
+      match report_subject_id {
+        Some(subject_id) =>
+          for alignment in alignments {
+            let matches_before = alignment.before.any(reference => {
+              reference.authored_id == Some(subject_id) ||
+              "\{reference.kind}:\{reference.source_index}" == subject_id
+            })
+            let matches_after = alignment.after.any(reference => {
+              reference.authored_id == Some(subject_id) ||
+              "\{reference.kind}:\{reference.source_index}" == subject_id
+            })
+            if matches_before || matches_after {
+              alignment_id = Some(alignment.id)
+              break
+            }
+          }
+        None => ()
+      }
+    }
+    differences.push({ ..difference, subject_alignment_id: alignment_id })
+  }
   {
     schema_version: report.schema_version,
     analysis_status: report.analysis_status,
@@ -407,7 +458,7 @@ fn attach_subject_alignments(
     subject_alignments: alignments,
     changed_facts: report.changed_facts,
     source_resolutions: report.source_resolutions,
-    atomic_differences: report.atomic_differences,
+    atomic_differences: differences,
     events: report.events,
     diagnostics: report.diagnostics,
   }

@@ -103,6 +103,7 @@ pub(all) struct ChangedFact {
 pub(all) struct AtomicDifference {
   id : String
   subject_role : String
+  subject_alignment_id : String?
   domain : String
   source_before : String
   source_after : String
@@ -162,6 +163,11 @@ fn known_source_element(kind : String) -> Bool {
     "svg"
     | "g"
     | "rect"
+    | "circle"
+    | "ellipse"
+    | "line"
+    | "polyline"
+    | "polygon"
     | "defs"
     | "linearGradient"
     | "stop"
@@ -170,6 +176,56 @@ fn known_source_element(kind : String) -> Bool {
     | "desc"
     | "metadata"
     | "style" => true
+    _ => false
+  }
+}
+
+///|
+fn known_source_attribute(kind : String, name : String) -> Bool {
+  if name == "id" ||
+    name == "style" ||
+    name == "fill" ||
+    name == "stroke" ||
+    name == "stroke-width" ||
+    name == "opacity" {
+    return true
+  }
+  match kind {
+    "svg" =>
+      name == "width" ||
+      name == "height" ||
+      name == "viewBox" ||
+      name == "preserveAspectRatio" ||
+      name == "xmlns"
+    "rect" =>
+      name == "x" ||
+      name == "y" ||
+      name == "width" ||
+      name == "height" ||
+      name == "rx" ||
+      name == "ry"
+    "circle" => name == "cx" || name == "cy" || name == "r"
+    "ellipse" => name == "cx" || name == "cy" || name == "rx" || name == "ry"
+    "line" => name == "x1" || name == "y1" || name == "x2" || name == "y2"
+    "polyline" | "polygon" => name == "points"
+    "linearGradient" =>
+      name == "x1" ||
+      name == "y1" ||
+      name == "x2" ||
+      name == "y2" ||
+      name == "gradientUnits" ||
+      name == "gradientTransform" ||
+      name == "href"
+    "stop" => name == "offset" || name == "stop-color" || name == "stop-opacity"
+    "text" =>
+      name == "x" ||
+      name == "y" ||
+      name == "dx" ||
+      name == "dy" ||
+      name == "font-family" ||
+      name == "font-size" ||
+      name == "text-anchor"
+    "title" | "desc" | "metadata" => true
     _ => false
   }
 }
@@ -193,6 +249,23 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
                 "computed_appearance", "rendered_evidence",
               ],
             })
+          }
+        } else {
+          for attribute in element.attributes {
+            let name = attribute.name.local_name
+            if !known_source_attribute(kind, name) {
+              let id = "diagnostic:unsupported-visual-attribute:\{kind}:\{name}"
+              if !diagnostics.any(diagnostic => diagnostic.id == id) {
+                diagnostics.push({
+                  id,
+                  code: "unsupported_visual_attribute",
+                  subject_id: kind,
+                  affected_evidence_layers: [
+                    "source_semantics", "computed_appearance", "rendered_evidence",
+                  ],
+                })
+              }
+            }
           }
         }
       }
@@ -483,6 +556,7 @@ fn deferred_font_report(
           {
             id: difference_id,
             subject_role: "entity",
+            subject_alignment_id: None,
             domain: "text.content",
             source_before,
             source_after,
@@ -553,6 +627,7 @@ fn presence_change_report(
           {
             id: difference_id,
             subject_role: "entity",
+            subject_alignment_id: None,
             domain: "presence.insertion",
             source_before: "",
             source_after: "rect#box",
@@ -624,6 +699,7 @@ fn gradient_change_report(
       let resource_difference : AtomicDifference = {
         id: resource_id,
         subject_role: "resource",
+        subject_alignment_id: None,
         domain: "resource.gradient.stop_color",
         source_before,
         source_after,
@@ -668,6 +744,7 @@ fn gradient_change_report(
             {
               id: entity_id,
               subject_role: "entity",
+              subject_alignment_id: None,
               domain: "paint.fill",
               source_before: "url(#gradient)",
               source_after: "url(#gradient)",
@@ -736,6 +813,16 @@ pub fn compare(
   match
     (@svg.parse_svg_document(before_svg), @svg.parse_svg_document(after_svg)) {
     (Some(before_document), Some(after_document)) => {
+      match
+        generic_basic_shape_report(
+          before_svg, after_svg, before_document, after_document, profile, subject_alignments,
+        ) {
+        Some(report) =>
+          return finish_report(
+            report, preflight_diagnostics, subject_alignments,
+          )
+        None => ()
+      }
       match deferred_font_report(before_svg, after_svg, profile) {
         Some(report) =>
           return finish_report(

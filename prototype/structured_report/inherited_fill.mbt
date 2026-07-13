@@ -14,6 +14,26 @@ priv struct FillHierarchy {
 }
 
 ///|
+fn fill_hierarchy_kind(kind : String) -> Bool {
+  match kind {
+    "svg"
+    | "g"
+    | "rect"
+    | "circle"
+    | "ellipse"
+    | "line"
+    | "polyline"
+    | "polygon" => true
+    _ => false
+  }
+}
+
+///|
+fn fill_entity_kind(kind : String) -> Bool {
+  kind != "svg" && kind != "g"
+}
+
+///|
 priv enum FillHierarchyExtraction {
   ParsedFillHierarchy(FillHierarchy)
   FillHierarchyFailed
@@ -119,7 +139,7 @@ fn add_fill_source_element(
       input, element, coverage_codes,
     ),
   })
-  if kind == "rect" {
+  if fill_entity_kind(kind) {
     rect_subject_ids.push(subject_id)
   }
   index
@@ -200,7 +220,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
         let kind = element.name.local_name
         if kind == "style" {
           push_unique(coverage_codes, "css_cascade_unsupported")
-        } else if kind == "svg" || kind == "g" || kind == "rect" {
+        } else if fill_hierarchy_kind(kind) {
           let parent_index = stack.last()
           let index = add_fill_source_element(
             input, element, parent_index, elements, rect_subject_ids, coverage_codes,
@@ -218,7 +238,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
         let kind = element.name.local_name
         if kind == "style" {
           push_unique(coverage_codes, "css_cascade_unsupported")
-        } else if kind == "svg" || kind == "g" || kind == "rect" {
+        } else if fill_hierarchy_kind(kind) {
           ignore(
             add_fill_source_element(
               input,
@@ -240,9 +260,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
         }
       }
       End(name) =>
-        if name.local_name == "svg" ||
-          name.local_name == "g" ||
-          name.local_name == "rect" {
+        if fill_hierarchy_kind(name.local_name) {
           ignore(stack.pop())
         }
       _ => ()
@@ -489,6 +507,7 @@ fn inherited_fill_report_from_hierarchies(
         differences.push({
           id: difference_id,
           subject_role: "entity",
+          subject_alignment_id: None,
           domain: "paint.fill",
           source_before: before_value.resolved_value,
           source_after: after_value.resolved_value,

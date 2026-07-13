@@ -252,6 +252,7 @@ fn compare_rect_declared_facts(
     differences.push({
       id: "diff:entity:\{subject_id}:\{property}",
       subject_role: "entity",
+      subject_alignment_id: None,
       domain: rect_difference_domain(property),
       source_before: declared_value_or_empty(source_fact_before),
       source_after: declared_value_or_empty(source_fact_after),

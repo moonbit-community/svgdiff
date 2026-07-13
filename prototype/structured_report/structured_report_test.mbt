@@ -275,7 +275,7 @@ test "structured report serializes the complete layered result as JSON" {
 
 ///|
 test "unsupported visual subjects cannot produce complete equality" {
-  let source = "<svg width='16' height='16'><circle cx='8' cy='8' r='4' fill='red'/></svg>"
+  let source = "<svg width='16' height='16'><path d='M0 0 L8 8'/></svg>"
   let report = @structured_report.compare(
     source,
     source,
