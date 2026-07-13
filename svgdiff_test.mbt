@@ -41,6 +41,23 @@ test "v1 profile records canonical rendering conditions" {
 }
 
 ///|
+test "comparison normalizes fixed v1 rendering conditions" {
+  let requested = {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    comparison_dpr: 2.0,
+    color_interpretation: "display-p3",
+    raster_representation: "invented",
+    renderer_id: "another-renderer",
+  }
+  let report = @svgdiff.compare(
+    "<svg width='16' height='16'/>", "<svg width='16' height='16'/>", requested,
+  )
+  assert_eq(report.profile.comparison_dpr, 1.0)
+  assert_eq(report.profile.color_interpretation, "srgb")
+  assert_eq(report.profile.renderer_id, "mizchi/svg@0.2.1")
+}
+
+///|
 test "HTML report is self contained and binds report regions" {
   let before = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='red'/><script>alert('unsafe')</script></svg>"
   let after = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='blue'/></svg>"

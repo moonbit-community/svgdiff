@@ -30,6 +30,11 @@ pub fn compare(
   after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport {
-  let report = @engine.compare(before_svg, after_svg, profile)
+  let canonical_profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: profile.viewport_width,
+    viewport_height: profile.viewport_height,
+  }
+  let report = @engine.compare(before_svg, after_svg, canonical_profile)
   { ..report, schema_version: "1.0" }
 }
