@@ -10,7 +10,6 @@ No ready issues.
 
 | ID | Status | Priority | Type | Assignee | Blocked by | Blocks | Title |
 | --- | --- | ---: | --- | --- | --- | --- | --- |
-| [ISS-004](ISS-004.md) | in_progress | 0 | epic | codex | none | none | Deliver the planned SVG diff product slices |
 | [ISS-002](ISS-002.md) | blocked | 1 | bug | unassigned | none | none | Make style precedence independent of attribute order |
 | [ISS-013](ISS-013.md) | deferred | 4 | feature | unassigned | none | none | Add deterministic font-dependent text analysis |
 
@@ -51,6 +50,7 @@ graph TD
   ISS_016 --> ISS_018
   ISS_018 --> ISS_019
 ```
+
 ## Warnings
 
 None.
