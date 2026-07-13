@@ -1,0 +1,5 @@
+# Represent authored visual declarations as facts
+
+Source Semantics will represent each supported authored visual property as a Declared Visual Fact containing the property, exact authored value, normalized declared value, declaration origin, and Source Span. Formatting Variations such as attribute order, quote style, tag-closing style, entity spelling, and declaration whitespace do not create a Difference because comparison uses the normalized declared value rather than the raw source slice. The raw value and span remain available as provenance.
+
+Presentation attributes and inline `style` declarations feed the same property model, with SVG/CSS precedence selecting the effective declaration. Moving an otherwise identical declaration between those origins remains reportable at Source Semantics because it changes cascade provenance and may change behavior under later stylesheet edits, while its Computed Relation may still be `equivalent` and its Rendered Evidence may remain zero. Unsupported CSS widens uncertainty through Diagnostics instead of being interpreted as equality.

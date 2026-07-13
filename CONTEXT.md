@@ -138,6 +138,14 @@ _Avoid_: Event Owner, Root Entity
 The meaning expressed by an SVG document after Formatting Variations have been normalized but before visual properties are fully resolved. Source Semantics preserve distinctions in how equivalent visual content is authored.
 _Avoid_: Text Layer, XML Diff
 
+**Declared Visual Fact**:
+One supported visual property as expressed at Source Semantics, including its normalized declared value, exact authored value, declaration origin, and Source Span. The normalized value and origin determine whether the fact changed; the exact spelling and span are provenance and do not turn Formatting Variations into Differences.
+_Avoid_: Raw Attribute, CSS String, Text Diff
+
+**Resolved Visual Fact**:
+One supported visual property after declaration precedence and inheritance have been applied to a Visual Subject, retaining the winning Declared Visual Fact, its owning Source Element, and inheritance depth. Initial values have no authored declaration or Source Span.
+_Avoid_: Flattened Attribute, Inherited String
+
 **Computed Appearance**:
 The resolved geometry, paint, typography, visibility, compositing, and relationships of visual content after SVG semantics such as inheritance, references, and transforms have been applied.
 _Avoid_: Normalized SVG, Computed Style

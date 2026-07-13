@@ -40,12 +40,59 @@ pub(all) struct PresenceMagnitude {
 } derive(ToJson)
 
 ///|
+pub(all) struct ReportSourceSpan {
+  start_offset : Int
+  end_offset : Int
+} derive(ToJson)
+
+///|
+pub(all) struct DeclaredVisualFact {
+  property : String
+  authored_value : String
+  declared_value : String
+  origin : String
+  source_span : ReportSourceSpan
+} derive(ToJson)
+
+///|
+pub(all) struct ResolvedVisualFact {
+  subject_id : String
+  property : String
+  resolved_value : String
+  resolution : String
+  declaration_owner_id : String?
+  declaration : DeclaredVisualFact?
+  inheritance_depth : Int
+} derive(ToJson)
+
+///|
+pub(all) struct SourceResolutionPair {
+  subject_id : String
+  property : String
+  before : ResolvedVisualFact?
+  after : ResolvedVisualFact?
+} derive(ToJson)
+
+///|
+pub(all) struct ChangedFact {
+  id : String
+  subject_id : String
+  property : String
+  before : DeclaredVisualFact?
+  after : DeclaredVisualFact?
+  affected_subject_ids : Array[String]
+} derive(ToJson)
+
+///|
 pub(all) struct AtomicDifference {
   id : String
   subject_role : String
   domain : String
   source_before : String
   source_after : String
+  source_fact_before : DeclaredVisualFact?
+  source_fact_after : DeclaredVisualFact?
+  changed_fact_ids : Array[String]
   evidence_layers : Array[String]
   computed_relation : ComputedRelation
   parameter_delta_css_px : Double?
@@ -73,6 +120,8 @@ pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
   profile : ComparisonProfile
+  changed_facts : Array[ChangedFact]
+  source_resolutions : Array[SourceResolutionPair]
   atomic_differences : Array[AtomicDifference]
   events : Array[VisualEvent]
   diagnostics : Array[Diagnostic]
@@ -170,35 +219,6 @@ fn source_text_content(input : String) -> String? {
 }
 
 ///|
-fn solid_fill(
-  document : @svg.SVGDocument,
-  id : String,
-) -> (Int, Int, Int, Int)? {
-  let scene = @svg.Scene::new(document.root)
-  match scene.find_node(id) {
-    Some(node) =>
-      match node.fill {
-        SolidColor(color) => Some((color.r, color.g, color.b, color.a))
-        _ => None
-      }
-    None => None
-  }
-}
-
-///|
-fn rect_x(document : @svg.SVGDocument, id : String) -> Double? {
-  let scene = @svg.Scene::new(document.root)
-  match scene.find_node(id) {
-    Some(node) =>
-      match node.shape {
-        Rect(x~, y=_, width=_, height=_, rx=_, ry=_) => Some(x)
-        _ => None
-      }
-    None => None
-  }
-}
-
-///|
 fn has_subject(document : @svg.SVGDocument, id : String) -> Bool {
   let scene = @svg.Scene::new(document.root)
   scene.find_node(id) is Some(_)
@@ -244,15 +264,6 @@ fn gradient_first_stop(
       Some((color.r, color.g, color.b, color.a))
     }
     _ => None
-  }
-}
-
-///|
-fn parse_number(source : String) -> Double? {
-  try @string.parse_double(source) catch {
-    _ => None
-  } noraise {
-    value => Some(value)
   }
 }
 
@@ -323,9 +334,11 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "0.1-prototype",
+        schema_version: "0.3-prototype",
         analysis_status: "partial",
         profile,
+        changed_facts: [],
+        source_resolutions: [],
         atomic_differences: [
           {
             id: difference_id,
@@ -333,6 +346,9 @@ fn deferred_font_report(
             domain: "text.content",
             source_before,
             source_after,
+            source_fact_before: None,
+            source_fact_after: None,
+            changed_fact_ids: [],
             evidence_layers: ["source_semantics"],
             computed_relation: {
               status: "indeterminate",
@@ -387,9 +403,11 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "0.1-prototype",
+        schema_version: "0.3-prototype",
         analysis_status: "complete",
         profile,
+        changed_facts: [],
+        source_resolutions: [],
         atomic_differences: [
           {
             id: difference_id,
@@ -397,6 +415,9 @@ fn presence_change_report(
             domain: "presence.insertion",
             source_before: "",
             source_after: "rect#box",
+            source_fact_before: None,
+            source_fact_after: None,
+            changed_fact_ids: [],
             evidence_layers: ["source_semantics", "computed_appearance"],
             computed_relation: {
               status: "not_applicable",
@@ -465,6 +486,9 @@ fn gradient_change_report(
         domain: "resource.gradient.stop_color",
         source_before,
         source_after,
+        source_fact_before: None,
+        source_fact_after: None,
+        changed_fact_ids: [],
         evidence_layers: ["source_semantics", "computed_appearance"],
         computed_relation: resource_relation,
         parameter_delta_css_px: None,
@@ -473,9 +497,11 @@ fn gradient_change_report(
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
         Some({
-          schema_version: "0.1-prototype",
+          schema_version: "0.3-prototype",
           analysis_status: "complete",
           profile,
+          changed_facts: [],
+          source_resolutions: [],
           atomic_differences: [resource_difference],
           events: [
             {
@@ -489,9 +515,11 @@ fn gradient_change_report(
         })
       } else {
         Some({
-          schema_version: "0.1-prototype",
+          schema_version: "0.3-prototype",
           analysis_status: "complete",
           profile,
+          changed_facts: [],
+          source_resolutions: [],
           atomic_differences: [
             resource_difference,
             {
@@ -500,6 +528,9 @@ fn gradient_change_report(
               domain: "paint.fill",
               source_before: "url(#gradient)",
               source_after: "url(#gradient)",
+              source_fact_before: None,
+              source_fact_after: None,
+              changed_fact_ids: [],
               evidence_layers: ["computed_appearance"],
               computed_relation: {
                 status: if before_stop == after_stop {
@@ -541,6 +572,10 @@ pub fn compare(
   after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport {
+  match inherited_fill_report(before_svg, after_svg, profile) {
+    Some(report) => return report
+    None => ()
+  }
   match
     (@svg.parse_svg_document(before_svg), @svg.parse_svg_document(after_svg)) {
     (Some(before_document), Some(after_document)) => {
@@ -559,153 +594,31 @@ pub fn compare(
         Some(report) => return report
         None => ()
       }
-      let before_source = source_attribute_value(before_svg, "rect", "fill")
-      let after_source = source_attribute_value(after_svg, "rect", "fill")
-      match (before_source, after_source) {
-        (Some(source_before), Some(source_after)) if source_before !=
-          source_after => {
-          let before_fill = solid_fill(before_document, "box")
-          let after_fill = solid_fill(after_document, "box")
-          let rendered = rendered_difference(
-            before_document, after_document, profile,
-          )
-          let computed_relation = if before_fill == after_fill {
-            {
-              status: "equivalent",
-              reason_code: "same_resolved_color",
-              missing_side: None,
-              diagnostic_ids: [],
-            }
-          } else {
-            {
-              status: "different",
-              reason_code: "resolved_colors_differ",
-              missing_side: None,
-              diagnostic_ids: [],
-            }
-          }
-          let evidence_layers : Array[String] = ["source_semantics"]
-          if computed_relation.status == "different" {
-            evidence_layers.push("computed_appearance")
-          }
-          if rendered.changed_pixels > 0 {
-            evidence_layers.push("rendered_evidence")
-          }
-          let difference_id = "diff:entity:box:fill"
+      match
+        solid_rect_change_report(
+          before_svg, after_svg, before_document, after_document, profile,
+        ) {
+        Some(report) => report
+        None =>
           {
-            schema_version: "0.1-prototype",
+            schema_version: "0.3-prototype",
             analysis_status: "complete",
             profile,
-            atomic_differences: [
-              {
-                id: difference_id,
-                subject_role: "entity",
-                domain: "paint.fill",
-                source_before,
-                source_after,
-                evidence_layers,
-                computed_relation,
-                parameter_delta_css_px: None,
-                presence_magnitude: None,
-              },
-            ],
-            events: [
-              {
-                id: "event:box",
-                primary_subject_id: "box",
-                atomic_difference_ids: [difference_id],
-                rendered_outcome: computed_rendered_evidence(rendered),
-              },
-            ],
+            changed_facts: [],
+            source_resolutions: [],
+            atomic_differences: [],
+            events: [],
             diagnostics: [],
           }
-        }
-        _ => {
-          let before_x_source = source_attribute_value(before_svg, "rect", "x")
-          let after_x_source = source_attribute_value(after_svg, "rect", "x")
-          match (before_x_source, after_x_source) {
-            (Some(source_before), Some(source_after)) if source_before !=
-              source_after => {
-              let before_x = rect_x(before_document, "box")
-              let after_x = rect_x(after_document, "box")
-              let rendered = rendered_difference(
-                before_document, after_document, profile,
-              )
-              let computed_relation = if before_x == after_x {
-                {
-                  status: "equivalent",
-                  reason_code: "same_resolved_position",
-                  missing_side: None,
-                  diagnostic_ids: [],
-                }
-              } else {
-                {
-                  status: "different",
-                  reason_code: "resolved_positions_differ",
-                  missing_side: None,
-                  diagnostic_ids: [],
-                }
-              }
-              let evidence_layers : Array[String] = ["source_semantics"]
-              if computed_relation.status == "different" {
-                evidence_layers.push("computed_appearance")
-              }
-              if rendered.changed_pixels > 0 {
-                evidence_layers.push("rendered_evidence")
-              }
-              let parameter_delta_css_px = match
-                (parse_number(source_before), parse_number(source_after)) {
-                (Some(before_value), Some(after_value)) =>
-                  Some(after_value - before_value)
-                _ => None
-              }
-              let difference_id = "diff:entity:box:position"
-              {
-                schema_version: "0.1-prototype",
-                analysis_status: "complete",
-                profile,
-                atomic_differences: [
-                  {
-                    id: difference_id,
-                    subject_role: "entity",
-                    domain: "geometry.position",
-                    source_before,
-                    source_after,
-                    evidence_layers,
-                    computed_relation,
-                    parameter_delta_css_px,
-                    presence_magnitude: None,
-                  },
-                ],
-                events: [
-                  {
-                    id: "event:box",
-                    primary_subject_id: "box",
-                    atomic_difference_ids: [difference_id],
-                    rendered_outcome: computed_rendered_evidence(rendered),
-                  },
-                ],
-                diagnostics: [],
-              }
-            }
-            _ =>
-              {
-                schema_version: "0.1-prototype",
-                analysis_status: "complete",
-                profile,
-                atomic_differences: [],
-                events: [],
-                diagnostics: [],
-              }
-          }
-        }
       }
     }
     _ =>
       {
-        schema_version: "0.1-prototype",
+        schema_version: "0.3-prototype",
         analysis_status: "failed",
         profile,
+        changed_facts: [],
+        source_resolutions: [],
         atomic_differences: [],
         events: [],
         diagnostics: [],

@@ -63,6 +63,18 @@ The Comparison DPR is one positive finite value shared by both inputs and defaul
 
 The Comparison Color Space defaults SVG and CSS color interpretation to sRGB. Raster blending, comparison, RMSE, and related numeric measurements use linear-sRGB premultiplied RGBA, and the Structured Report records both the color interpretation and numeric representation. Core v1 does not silently map embedded ICC profiles, Display-P3, or other wide-gamut content into sRGB; affected computed or rendered conclusions are accompanied by unsupported-feature Diagnostics and reduced Analysis Coverage.
 
+### Declared Visual Fact
+
+A supported visual property at Source Semantics. It records the property, exact authored value, normalized declared value, declaration origin, and Source Span. Raw spelling and location provide provenance, while comparison uses the normalized value and origin so XML and CSS Formatting Variations do not become Atomic Differences.
+
+Presentation attributes and inline `style` declarations converge into this model after precedence is applied. Moving the same value between those origins remains a Source Semantics distinction because its cascade provenance changed, even when the Computed Relation is `equivalent` and Event Rendered Outcome is zero. Unsupported selectors, stylesheets, declarations, or value syntax reduce Analysis Coverage through Diagnostics rather than silently producing equality.
+
+### Resolved Visual Fact
+
+A supported visual property after local declaration precedence and inheritance have been applied to one Visual Subject. It records the resolved value together with the winning Declared Visual Fact, its owning Source Element, and inheritance depth. An initial value has no authored declaration or Source Span. This record supplies provenance for Computed Appearance without exposing parser-specific XML types.
+
+Changed Facts remain separate from Resolved Visual Facts. One changed ancestor declaration is stored once and may influence several descendant resolutions; each resulting Atomic Difference references the same Changed Fact instead of duplicating the candidate cause.
+
 ### Visual Subject
 
 Any reportable subject with visual semantics. A Visual Subject has one of two roles:

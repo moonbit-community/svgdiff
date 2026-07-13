@@ -59,7 +59,7 @@ fn rect_x_and_bounds(
   match scene.find_node("box") {
     Some(node) =>
       match node.shape {
-        @svg.Rect(x~, y~, width~, height~, rx=_, ry=_) => {
+        Rect(x~, y~, width~, height~, rx=_, ry=_) => {
           let local_bounds = @svg.BoundingBox::from_rect(x, y, width, height)
           Some((x, node.transform.apply_bbox(local_bounds)))
         }

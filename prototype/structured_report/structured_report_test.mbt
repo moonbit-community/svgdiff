@@ -251,7 +251,7 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "0.1-prototype",
+      "schema_version": "0.3-prototype",
       "analysis_status": "partial",
       "profile": { "viewport_width": 16, "viewport_height": 16, .. },
       "atomic_differences": [
