@@ -280,6 +280,7 @@ fn compare_rect_declared_facts(
         for difference in differences => difference.id
       ],
       rendered_outcome: computed_rendered_evidence(rendered),
+      difference_regions: [],
     })
   }
   {

@@ -31,6 +31,22 @@ pub(all) struct RenderedEvidence {
 } derive(ToJson)
 
 ///|
+pub(all) struct DifferenceRegion {
+  id : String
+  source : String
+  pixel_x : Int
+  pixel_y : Int
+  pixel_width : Int
+  pixel_height : Int
+  css_x : Double
+  css_y : Double
+  css_width : Double
+  css_height : Double
+  changed_pixels : Int
+  viewport_fraction : Double
+} derive(ToJson)
+
+///|
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int
   bounds_area_css_px2 : Double
@@ -122,6 +138,7 @@ pub(all) struct VisualEvent {
   primary_subject_id : String
   atomic_difference_ids : Array[String]
   rendered_outcome : RenderedEvidence
+  difference_regions : Array[DifferenceRegion]
 } derive(ToJson)
 
 ///|
@@ -582,6 +599,7 @@ fn deferred_font_report(
             rendered_outcome: not_computed_rendered_evidence(
               "font_analysis_deferred",
             ),
+            difference_regions: [],
           },
         ],
         diagnostics: [
@@ -651,6 +669,7 @@ fn presence_change_report(
             primary_subject_id: "box",
             atomic_difference_ids: [difference_id],
             rendered_outcome: computed_rendered_evidence(rendered),
+            difference_regions: [],
           },
         ],
         diagnostics: [],
@@ -727,6 +746,7 @@ fn gradient_change_report(
               primary_subject_id: "gradient",
               atomic_difference_ids: [resource_id],
               rendered_outcome: computed_rendered_evidence(rendered),
+              difference_regions: [],
             },
           ],
           diagnostics: [],
@@ -776,6 +796,7 @@ fn gradient_change_report(
               primary_subject_id: "box",
               atomic_difference_ids: [resource_id, entity_id],
               rendered_outcome: computed_rendered_evidence(rendered),
+              difference_regions: [],
             },
           ],
           diagnostics: [],
@@ -807,7 +828,9 @@ pub fn compare(
   let subject_alignments = subject_alignments_for_sources(before_svg, after_svg)
   match inherited_fill_report(before_svg, after_svg, profile) {
     Some(report) =>
-      return finish_report(report, preflight_diagnostics, subject_alignments)
+      return finish_report(
+        report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
+      )
     None => ()
   }
   match
@@ -819,21 +842,21 @@ pub fn compare(
         ) {
         Some(report) =>
           return finish_report(
-            report, preflight_diagnostics, subject_alignments,
+            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
           )
         None => ()
       }
       match deferred_font_report(before_svg, after_svg, profile) {
         Some(report) =>
           return finish_report(
-            report, preflight_diagnostics, subject_alignments,
+            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
           )
         None => ()
       }
       match presence_change_report(before_document, after_document, profile) {
         Some(report) =>
           return finish_report(
-            report, preflight_diagnostics, subject_alignments,
+            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
           )
         None => ()
       }
@@ -843,7 +866,7 @@ pub fn compare(
         ) {
         Some(report) =>
           return finish_report(
-            report, preflight_diagnostics, subject_alignments,
+            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
           )
         None => ()
       }
@@ -852,7 +875,9 @@ pub fn compare(
           before_svg, after_svg, before_document, after_document, profile,
         ) {
         Some(report) =>
-          finish_report(report, preflight_diagnostics, subject_alignments)
+          finish_report(
+            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
+          )
         None =>
           finish_report(
             {
@@ -877,6 +902,8 @@ pub fn compare(
             },
             preflight_diagnostics,
             subject_alignments,
+            before_svg,
+            after_svg,
           )
       }
     }

@@ -358,6 +358,7 @@ fn generic_basic_shape_report(
         primary_subject_id: alignment.id,
         atomic_difference_ids: alignment_difference_ids,
         rendered_outcome: computed_rendered_evidence(rendered),
+        difference_regions: [],
       })
     }
   }

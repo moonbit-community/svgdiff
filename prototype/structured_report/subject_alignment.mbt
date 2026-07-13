@@ -469,9 +469,16 @@ fn finish_report(
   report : StructuredReport,
   diagnostics : Array[Diagnostic],
   alignments : Array[SubjectAlignment],
+  before_svg : String,
+  after_svg : String,
 ) -> StructuredReport {
-  attach_subject_alignments(
-    apply_preflight_diagnostics(report, diagnostics),
+  attach_difference_regions(
+    attach_subject_alignments(
+      apply_preflight_diagnostics(report, diagnostics),
+      alignments,
+    ),
+    before_svg,
+    after_svg,
     alignments,
   )
 }

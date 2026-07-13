@@ -528,6 +528,7 @@ fn inherited_fill_report_from_hierarchies(
             reason_code: Some("inherited_fill_rendered_evidence_deferred"),
             magnitude: None,
           },
+          difference_regions: [],
         })
       }
       _ =>
