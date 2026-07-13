@@ -678,16 +678,21 @@ fn finish_report(
   before_svg : String,
   after_svg : String,
 ) -> StructuredReport {
+  let (report, extra_alignments) = attach_group_opacity_differences(
+    report, before_svg, after_svg,
+  )
+  let combined_alignments = alignments.copy()
+  combined_alignments.push_iter(extra_alignments.iter())
   attach_difference_magnitudes(
     attach_cause_envelopes(
       attach_difference_regions(
         attach_subject_alignments(
           apply_preflight_diagnostics(report, diagnostics),
-          alignments,
+          combined_alignments,
         ),
         before_svg,
         after_svg,
-        alignments,
+        combined_alignments,
       ),
     ),
   )

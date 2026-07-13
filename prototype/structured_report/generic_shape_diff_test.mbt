@@ -179,8 +179,30 @@ test "group opacity is compositing rather than inherited child opacity" {
     }),
   )
   assert_true(
-    report.atomic_differences.all(difference => {
-      difference.domain != "paint.opacity"
+    report.atomic_differences.any(difference => {
+      difference.domain == "compositing.opacity" &&
+      difference.computed_relation.status == "indeterminate"
+    }),
+  )
+}
+
+///|
+test "inline group opacity is diagnosed and reported at source level" {
+  let before = shape_svg(
+    "<g id='layer' style='opacity:1'><rect x='1' y='1' width='4' height='4'/></g>",
+  )
+  let after = shape_svg(
+    "<g id='layer' style='opacity:0.5'><rect x='1' y='1' width='4' height='4'/></g>",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "compositing.opacity"
     }),
   )
 }
@@ -199,6 +221,27 @@ test "unsupported local paint values reduce coverage" {
   assert_true(
     report.diagnostics.any(diagnostic => {
       diagnostic.code == "paint_value_semantics_unsupported"
+    }),
+  )
+}
+
+///|
+test "gradient references outside the proven slice reduce coverage" {
+  let before = shape_svg(
+    "<defs><linearGradient id='paint'><stop offset='0' stop-color='red'/></linearGradient></defs><circle id='dot' cx='8' cy='8' r='3' fill='url(#paint)'/>",
+  )
+  let after = shape_svg(
+    "<defs><linearGradient id='paint'><stop offset='0' stop-color='blue'/></linearGradient></defs><circle id='dot' cx='8' cy='8' r='3' fill='url(#paint)'/>",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "paint_server_analysis_unsupported"
     }),
   )
 }

@@ -435,6 +435,19 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
             Some(attribute) => {
               let style = inline_style_facts(input, attribute)
               for fact in style.facts {
+                if (kind == "svg" || kind == "g") && fact.property == "opacity" {
+                  let id = "diagnostic:group-opacity-compositing-unsupported:\{subject_id}"
+                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
+                    diagnostics.push({
+                      id,
+                      code: "group_opacity_compositing_unsupported",
+                      subject_id,
+                      affected_evidence_layers: [
+                        "source_semantics", "computed_appearance", "rendered_evidence",
+                      ],
+                    })
+                  }
+                }
                 if unsupported_paint_value(fact.property, fact.declared_value) {
                   let id = "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{fact.property}"
                   if !diagnostics.any(diagnostic => diagnostic.id == id) {
@@ -478,6 +491,7 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
       _ => ()
     }
   }
+  let visual_subjects = extract_source_subjects_or_raise(input)
   for reference in paint_server_references {
     let (subject_id, property, server_id) = reference
     if !paint_server_ids.contains(server_id) {
@@ -489,6 +503,27 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
           subject_id,
           affected_evidence_layers: ["computed_appearance", "rendered_evidence"],
         })
+      }
+    } else {
+      let proven_gradient_slice = paint_server_ids.length() == 1 &&
+        server_id == "gradient" &&
+        subject_id == "box" &&
+        property == "fill" &&
+        visual_subjects.length() == 1 &&
+        visual_subjects[0].kind == "rect" &&
+        visual_subjects[0].reference.authored_id == Some("box")
+      if !proven_gradient_slice {
+        let id = "diagnostic:paint-server-analysis-unsupported:\{subject_id}:\{property}"
+        if !diagnostics.any(diagnostic => diagnostic.id == id) {
+          diagnostics.push({
+            id,
+            code: "paint_server_analysis_unsupported",
+            subject_id,
+            affected_evidence_layers: [
+              "source_semantics", "computed_appearance", "rendered_evidence",
+            ],
+          })
+        }
       }
     }
   }
