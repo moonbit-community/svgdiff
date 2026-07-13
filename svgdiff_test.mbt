@@ -18,3 +18,35 @@ test "root package exposes the stable comparison seam" {
     _ => fail("root report did not serialize through the stable seam")
   }
 }
+
+///|
+test "HTML report is self contained and binds report regions" {
+  let before = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='red'/><script>alert('unsafe')</script></svg>"
+  let after = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='blue'/></svg>"
+  let report = @svgdiff.compare(
+    before,
+    after,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  let html = @svgdiff.render_html_report(before, after, report)
+  assert_true(html.find("<!doctype html>") is Some(_))
+  assert_true(html.find("sandbox=\"\"") is Some(_))
+  assert_true(html.find("default-src &#39;none&#39;") is Some(_))
+  assert_true(html.find("difference_regions") is Some(_))
+  assert_true(html.find("v1_domain_lexicographic") is Some(_))
+  assert_true(html.find("<script>alert('unsafe')</script>") is None)
+  assert_true(html.find("<details class=\"json-panel\">") is Some(_))
+}
+
+///|
+test "HTML report escapes textarea termination in source evidence" {
+  let source = "<svg width='16' height='16'><rect data-note='</textarea><script>bad()</script>'/></svg>"
+  let report = @svgdiff.compare(
+    source,
+    source,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  let html = @svgdiff.render_html_report(source, source, report)
+  assert_true(html.find("</textarea><script>bad()") is None)
+  assert_true(html.find("&lt;/textarea&gt;") is Some(_))
+}

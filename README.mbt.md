@@ -16,6 +16,10 @@ Set the common comparison viewport or write the report to a file:
 moon run --target native cmd/main -- before.svg after.svg --width 800 --height 600 --output report.json
 ```
 
+Add `--html report.html` to generate a self-contained interactive report with
+side-by-side sandboxed SVG previews, report-defined diff groups, region
+highlighting, and the complete JSON payload.
+
 The command exits with status `2` for invalid arguments or file I/O errors and status `1` when SVG analysis fails. A `partial` report is still emitted successfully because its Diagnostics describe exactly which evidence layers are unavailable.
 
 ## Library API

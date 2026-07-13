@@ -2,7 +2,7 @@
 test "CLI parses paths viewport and output" {
   let config = parse_cli([
     "svgdiff", "before.svg", "after.svg", "--width", "32", "--height", "24", "--output",
-    "report.json",
+    "report.json", "--html", "report.html",
   ])
   match config {
     Some(config) => {
@@ -11,6 +11,7 @@ test "CLI parses paths viewport and output" {
       assert_eq(config.width, 32)
       assert_eq(config.height, 24)
       assert_eq(config.output_path, Some("report.json"))
+      assert_eq(config.html_path, Some("report.html"))
     }
     None => fail("expected valid CLI configuration")
   }

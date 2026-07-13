@@ -10,8 +10,11 @@ cd "$root"
 moon run --target native cmd/main -- testdata/before.svg testdata/after.svg >"$tmp/report.json"
 jq -e '.schema_version == "1.0" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
 
-moon run --target native cmd/main -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json"
+moon run --target native cmd/main -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html"
 jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24' "$tmp/output.json" >/dev/null
+grep -q '<!doctype html>' "$tmp/report.html"
+grep -q 'sandbox=""' "$tmp/report.html"
+grep -q 'id="report-data"' "$tmp/report.html"
 jq empty schema/svgdiff-report.schema.json
 
 if moon run --target native cmd/main -- >/dev/null 2>&1; then

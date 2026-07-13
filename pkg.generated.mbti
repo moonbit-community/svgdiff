@@ -8,6 +8,8 @@ import {
 // Values
 pub fn compare(String, String, @structured_report.ComparisonProfile) -> @structured_report.StructuredReport
 
+pub fn render_html_report(String, String, @structured_report.StructuredReport) -> String
+
 // Errors
 
 // Types and methods

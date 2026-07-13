@@ -3,13 +3,14 @@ priv struct CliConfig {
   before_path : String
   after_path : String
   output_path : String?
+  html_path : String?
   width : Int
   height : Int
 }
 
 ///|
 fn usage() -> String {
-  "Usage: svgdiff <before.svg> <after.svg> [--width N] [--height N] [--output report.json]"
+  "Usage: svgdiff <before.svg> <after.svg> [--width N] [--height N] [--output report.json] [--html report.html]"
 }
 
 ///|
@@ -32,6 +33,7 @@ fn parse_cli(args : Array[String]) -> CliConfig? {
   let mut width = 16
   let mut height = 16
   let mut output_path : String? = None
+  let mut html_path : String? = None
   let mut index = 3
   while index < args.length() {
     if index + 1 >= args.length() {
@@ -51,6 +53,7 @@ fn parse_cli(args : Array[String]) -> CliConfig? {
           None => return None
         }
       "--output" => output_path = Some(value)
+      "--html" => html_path = Some(value)
       option => {
         println("Unknown option: \{option}")
         return None
@@ -58,7 +61,14 @@ fn parse_cli(args : Array[String]) -> CliConfig? {
     }
     index += 2
   }
-  Some({ before_path: args[1], after_path: args[2], output_path, width, height })
+  Some({
+    before_path: args[1],
+    after_path: args[2],
+    output_path,
+    html_path,
+    width,
+    height,
+  })
 }
 
 ///|
@@ -110,6 +120,18 @@ fn main {
         }
       }
     None => println(json)
+  }
+  match config.html_path {
+    Some(path) => {
+      let html = @svgdiff.render_html_report(before_svg, after_svg, report)
+      @fs.write_string_to_file(path, html, encoding="utf8") catch {
+        error => {
+          println("Failed to write \{path}: \{error}")
+          @sys.exit(2)
+        }
+      }
+    }
+    None => ()
   }
   if report.analysis_status == "failed" {
     @sys.exit(1)
