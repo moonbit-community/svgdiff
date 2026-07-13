@@ -312,8 +312,40 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
 }
 
 ///|
+fn unsupported_paint_value(property : String, value : String) -> Bool {
+  if property != "fill" && property != "stroke" {
+    return false
+  }
+  let normalized = value.trim().to_owned().to_lower()
+  normalized == "currentcolor" ||
+  normalized == "inherit" ||
+  normalized == "initial" ||
+  normalized == "revert" ||
+  normalized == "revert-layer" ||
+  normalized == "unset"
+}
+
+///|
+fn paint_server_reference(value : String) -> String? {
+  let normalized = value.trim().to_owned()
+  if normalized.has_prefix("url(#") &&
+    normalized.has_suffix(")") &&
+    normalized.length() > 6 {
+    Some(
+      normalized
+      .view(start_offset=5, end_offset=normalized.length() - 1)
+      .to_owned(),
+    )
+  } else {
+    None
+  }
+}
+
+///|
 fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
+  let paint_server_ids : Array[String] = []
+  let paint_server_references : Array[(String, String, String)] = []
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -333,8 +365,11 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
           }
         } else {
           let presentation_properties : Array[String] = []
+          let unsupported_paint_properties : Array[String] = []
+          let paint_references : Array[(String, String)] = []
           let mut style_attribute : @xml.NamespaceAttribute? = None
           let mut subject_id = kind
+          let mut has_group_opacity = false
           for attribute in element.attributes {
             let name = attribute.name.local_name
             if name == "id" && attribute.value.trim() != "" {
@@ -343,6 +378,17 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
               style_attribute = Some(attribute)
             } else if supported_rect_property(name) {
               presentation_properties.push(name)
+            }
+            if unsupported_paint_value(name, attribute.value) {
+              unsupported_paint_properties.push(name)
+            }
+            match paint_server_reference(attribute.value) {
+              Some(id) if name == "fill" || name == "stroke" =>
+                paint_references.push((name, id))
+              _ => ()
+            }
+            if (kind == "svg" || kind == "g") && name == "opacity" {
+              has_group_opacity = true
             }
             if !known_source_attribute(kind, name) {
               let id = "diagnostic:unsupported-visual-attribute:\{kind}:\{name}"
@@ -358,10 +404,58 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
               }
             }
           }
+          if kind == "linearGradient" && subject_id != kind {
+            paint_server_ids.push(subject_id)
+          }
+          for reference in paint_references {
+            let (property, id) = reference
+            paint_server_references.push((subject_id, property, id))
+          }
+          if has_group_opacity {
+            diagnostics.push({
+              id: "diagnostic:group-opacity-compositing-unsupported:\{subject_id}",
+              code: "group_opacity_compositing_unsupported",
+              subject_id,
+              affected_evidence_layers: [
+                "source_semantics", "computed_appearance", "rendered_evidence",
+              ],
+            })
+          }
+          for property in unsupported_paint_properties {
+            diagnostics.push({
+              id: "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}",
+              code: "paint_value_semantics_unsupported",
+              subject_id,
+              affected_evidence_layers: [
+                "computed_appearance", "rendered_evidence",
+              ],
+            })
+          }
           match style_attribute {
             Some(attribute) => {
               let style = inline_style_facts(input, attribute)
               for fact in style.facts {
+                if unsupported_paint_value(fact.property, fact.declared_value) {
+                  let id = "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{fact.property}"
+                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
+                    diagnostics.push({
+                      id,
+                      code: "paint_value_semantics_unsupported",
+                      subject_id,
+                      affected_evidence_layers: [
+                        "computed_appearance", "rendered_evidence",
+                      ],
+                    })
+                  }
+                }
+                match paint_server_reference(fact.declared_value) {
+                  Some(id) if fact.property == "fill" ||
+                    fact.property == "stroke" =>
+                    paint_server_references.push(
+                      (subject_id, fact.property, id),
+                    )
+                  _ => ()
+                }
                 if presentation_properties.contains(fact.property) {
                   let id = "diagnostic:renderer-style-precedence-unresolved:\{subject_id}:\{fact.property}"
                   if !diagnostics.any(diagnostic => diagnostic.id == id) {
@@ -382,6 +476,20 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
         }
       }
       _ => ()
+    }
+  }
+  for reference in paint_server_references {
+    let (subject_id, property, server_id) = reference
+    if !paint_server_ids.contains(server_id) {
+      let id = "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}"
+      if !diagnostics.any(diagnostic => diagnostic.id == id) {
+        diagnostics.push({
+          id,
+          code: "paint_value_semantics_unsupported",
+          subject_id,
+          affected_evidence_layers: ["computed_appearance", "rendered_evidence"],
+        })
+      }
     }
   }
   diagnostics

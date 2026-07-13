@@ -158,3 +158,47 @@ test "incomplete inline style cannot produce complete equality" {
     }),
   )
 }
+
+///|
+test "group opacity is compositing rather than inherited child opacity" {
+  let before = shape_svg(
+    "<g opacity='1'><rect id='a' x='1' y='1' width='4' height='4'/><rect id='b' x='3' y='3' width='4' height='4'/></g>",
+  )
+  let after = shape_svg(
+    "<g opacity='0.5'><rect id='a' x='1' y='1' width='4' height='4'/><rect id='b' x='3' y='3' width='4' height='4'/></g>",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "group_opacity_compositing_unsupported"
+    }),
+  )
+  assert_true(
+    report.atomic_differences.all(difference => {
+      difference.domain != "paint.opacity"
+    }),
+  )
+}
+
+///|
+test "unsupported local paint values reduce coverage" {
+  let source = shape_svg(
+    "<rect x='1' y='1' width='8' height='8' fill='url(#gradient)'/>",
+  )
+  let report = @structured_report.compare(
+    source,
+    source,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "paint_value_semantics_unsupported"
+    }),
+  )
+}

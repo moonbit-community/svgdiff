@@ -59,6 +59,11 @@ fn generated_subject_id(kind : String, index : Int) -> String {
 
 ///|
 fn inherited_visual_properties() -> Array[String] {
+  ["fill", "stroke", "stroke-width"]
+}
+
+///|
+fn resolved_visual_properties() -> Array[String] {
   ["fill", "stroke", "stroke-width", "opacity"]
 }
 
@@ -76,7 +81,7 @@ fn visual_declarations_from_element(
       push_unique(coverage_codes, "css_cascade_unsupported")
     } else if property == "style" {
       style_attribute = Some(attribute)
-    } else if inherited_visual_properties().contains(property) {
+    } else if resolved_visual_properties().contains(property) {
       upsert_declared_fact(
         declarations,
         presentation_fact(input, property, attribute),
@@ -87,7 +92,7 @@ fn visual_declarations_from_element(
     Some(attribute) => {
       let parsed = inline_style_facts(input, attribute)
       for fact in parsed.facts {
-        if inherited_visual_properties().contains(fact.property) {
+        if resolved_visual_properties().contains(fact.property) {
           upsert_declared_fact(declarations, fact)
         }
       }
@@ -216,10 +221,13 @@ fn resolved_visual_for_subject(
               declaration: Some(declaration),
               inheritance_depth: depth,
             })
-          None => {
-            current = element.parent_index
-            depth += 1
-          }
+          None =>
+            if property == "opacity" {
+              current = None
+            } else {
+              current = element.parent_index
+              depth += 1
+            }
         }
       }
       Some({
@@ -416,7 +424,7 @@ fn compare_changed_visual_facts(
   append_unique_subjects(subject_ids, source_element_ids(after))
   let changed : Array[ChangedFact] = []
   for subject_id in subject_ids {
-    for property in inherited_visual_properties() {
+    for property in resolved_visual_properties() {
       let before_fact = local_property_declaration(before, subject_id, property)
       let after_fact = local_property_declaration(after, subject_id, property)
       if declared_fact_changed(before_fact, after_fact) {
@@ -483,7 +491,7 @@ fn inherited_fill_report_from_hierarchies(
     ),
   )
   for subject_id in rect_ids {
-    for property in inherited_visual_properties() {
+    for property in resolved_visual_properties() {
       let before_resolution = resolved_visual_for_subject(
         before, subject_id, property,
       )
