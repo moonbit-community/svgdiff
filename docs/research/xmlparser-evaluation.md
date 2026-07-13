@@ -6,4 +6,4 @@ Status: rejected as the Source Semantics correctness boundary
 
 It was rejected as the project's Source Semantics dependency because its convenience parser accepted trailing input, mismatched root tags, and duplicate attributes. The lower-level parser could be wrapped to reject unconsumed trailing input, but mismatched-tag errors from the context parser were not available through public accessors, and duplicate attributes had already been collapsed into a `Map`. `XMLElement` and its attributes also carried no source spans. The README advertised `xml_from_string_with_ctx`, but that function was private in the published 0.2.5 interface.
 
-The project therefore owns a separate workspace module for strict parsing and source provenance rather than depending on XMLParser.
+The project therefore does not depend on XMLParser. `Milky2018/xml@0.4.0` subsequently satisfied the strict parsing and source-provenance requirements, so the project uses that package rather than owning XML grammar.

@@ -384,7 +384,7 @@ Rendered measurements occur only under `events[].rendered_outcome`; Atomic Diffe
 
 ## Deliberately hidden implementation
 
-The external interface does not expose separate parser, resolver, matcher, renderer, scorer, or event-aggregation interfaces. These are implementation stages of the comparison module. Source Semantics is implemented by the workspace-owned `source_semantics` module behind an internal seam that returns strict authored structure and Source Spans without renderer types. Rendering has a separate internal seam because a community MoonBit renderer is being evaluated against a possible future project-owned workspace module and an external conformance oracle; dependency-specific source, scene, and image types do not cross the external comparison interface.
+The external interface does not expose separate parser, resolver, matcher, renderer, scorer, or event-aggregation interfaces. These are implementation stages of the comparison module. Authored XML parsing and Source Spans are supplied by `Milky2018/xml@0.4.0` behind private Source Semantics helpers; SVG-aware declared facts and report evidence remain project responsibilities. Rendering has a separate internal seam because a community MoonBit renderer is being evaluated against a possible future project-owned workspace module and an external conformance oracle; dependency-specific source, scene, and image types do not cross the external comparison interface.
 
 ## Open decisions
 

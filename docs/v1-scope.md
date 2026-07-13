@@ -74,4 +74,4 @@ Core v1 first evaluates pure-MoonBit community dependencies behind an internal r
 
 ## Source Semantics ownership
 
-Core v1 owns strict authored parsing and Source Span provenance in the separate workspace-managed `source_semantics` module. The module rejects incomplete or malformed input rather than repairing it, preserves raw authored values independently of computed SVG normalization, and exposes no renderer-specific types. `moonbit-community/XMLParser@0.2.5` was rejected for this seam because it accepted required well-formedness failures and did not expose element or attribute Source Spans.
+Core v1 delegates XML well-formedness, namespace resolution, entity handling, and Source Span production to `Milky2018/xml@0.4.0`. The project owns only the SVG-aware Source Semantics adaptation: selecting visual declarations, recovering raw authored spelling through dependency-provided spans, and mapping source evidence into the Structured Report. The former workspace-managed `source_semantics` parser module is removed; dependency-specific XML types remain private implementation details.

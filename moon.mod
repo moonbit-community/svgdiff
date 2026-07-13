@@ -29,5 +29,5 @@ import {
   "moonbitlang/async@0.19.1",
   "mizchi/svg@0.2.1",
   "mizchi/pixelmatch@0.6.1",
-  "username/svgdiff_source_semantics@0.1.0",
+  "Milky2018/xml@0.4.0",
 }

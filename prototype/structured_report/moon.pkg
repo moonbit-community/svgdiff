@@ -1,9 +1,9 @@
 import {
+  "Milky2018/xml",
   "mizchi/pixelmatch",
   "mizchi/svg",
   "moonbitlang/core/json",
   "moonbitlang/core/string",
-  "username/svgdiff_source_semantics" @source,
 }
 
 supported_targets = "+native"

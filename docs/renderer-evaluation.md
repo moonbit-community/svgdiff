@@ -15,7 +15,7 @@ The renderer remains behind an internal seam. The external comparison interface 
 - `mizchi/svg@0.2.1`: SVG parsing, public scene graph, and CPU rendering;
 - `mizchi/pixelmatch@0.6.1`: baseline pixel Difference Regions and shift analysis;
 - `mizchi/canvas@0.9.0`: candidate higher-fidelity raster backend when supersampling or text/path rendering requires it;
-- `Milky2018/xml@0.2.0`: candidate Source Semantics and authored-provenance foundation.
+- `Milky2018/xml@0.4.0`: adopted Source Semantics parsing and authored-provenance foundation;
 - `moonbit-community/XMLParser@0.2.5`: evaluated structural DOM candidate; partially usable for trusted input but not accepted as the sole Source Semantics correctness boundary.
 
 ## Acceptance cases
@@ -56,7 +56,11 @@ The initial spike does not yet settle filters, masks, clips, blending, text, nes
 
 The [`XMLParser 0.2.5 evaluation`](research/xmlparser-evaluation.md) passed authored color spelling, SVG hierarchy, namespace-qualified attribute, single-quote, and entity-reference cases. It failed required well-formedness checks by accepting trailing input through `xml_from_string`, mismatched root tags, and duplicate attributes. Its public DOM also lacks element and attribute source spans, while the context-returning convenience API advertised in the README is not exported in 0.2.5.
 
-The project will not depend on this library. Strict parsing and provenance are owned by the workspace `source_semantics` module.
+The project will not depend on this library. The accepted replacement is `Milky2018/xml@0.4.0`.
+
+## Milky XML 0.4.0 source-layer evaluation
+
+The [`Milky XML 0.4.0 evaluation`](research/milky-xml-evaluation.md) passed strict document parsing, namespace-qualified elements, authored value recovery, explicit element boundaries, non-BMP offsets, contextual parse-error spans, bounded entity expansion, and disabled implicit external entity resolution. The project adopts the dependency and removes its custom XML parser module. Private Source Semantics helpers retain responsibility for selecting SVG visual declarations and mapping the dependency's events and spans into report evidence.
 
 ## Supersampled canvas spike
 

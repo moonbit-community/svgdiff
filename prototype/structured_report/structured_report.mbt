@@ -84,34 +84,88 @@ pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
 }
 
 ///|
+fn source_slice(input : String, span : @xml.SourceSpan) -> String {
+  let view = input.view(
+    start_offset=span.start.offset,
+    end_offset=span.end.offset,
+  )
+  "\{view}"
+}
+
+///|
+fn source_attribute_value_or_raise(
+  input : String,
+  element_name : String,
+  attribute_name : String,
+) -> String? raise {
+  let reader = @xml.NamespaceReader::from_string(input)
+  for event in reader.read_events_until_eof() {
+    match event.kind {
+      Start(element) | Empty(element) =>
+        if element.name.local_name == element_name {
+          for attribute in element.attributes {
+            if attribute.name.qualified_name == attribute_name ||
+              attribute.name.local_name == attribute_name {
+              return Some(source_slice(input, attribute.value_span))
+            }
+          }
+          return None
+        }
+      _ => ()
+    }
+  }
+  None
+}
+
+///|
 fn source_attribute_value(
   input : String,
   element_name : String,
   attribute_name : String,
 ) -> String? {
-  match @source.parse(input) {
-    Ok(document) =>
-      match document.elements_named(element_name).get(0) {
-        Some(element) =>
-          match element.attribute(attribute_name) {
-            Some(attribute) => Some(attribute.value)
-            None => None
-          }
-        None => None
-      }
-    Err(_) => None
+  try
+    source_attribute_value_or_raise(input, element_name, attribute_name)
+  catch {
+    _ => None
+  } noraise {
+    value => value
   }
 }
 
 ///|
+fn source_text_content_or_raise(input : String) -> String? raise {
+  let reader = @xml.NamespaceReader::from_string(input)
+  let mut in_text = false
+  let mut nested_depth = 0
+  let mut text = ""
+  for event in reader.read_events_until_eof() {
+    match event.kind {
+      Start(element) =>
+        if in_text {
+          nested_depth += 1
+        } else if element.name.local_name == "text" {
+          in_text = true
+        }
+      Empty(element) =>
+        if !in_text && element.name.local_name == "text" {
+          return Some("")
+        }
+      Text(_) if in_text && nested_depth == 0 =>
+        text += source_slice(input, event.span)
+      End(_) if in_text && nested_depth == 0 => return Some(text)
+      End(_) if in_text => nested_depth -= 1
+      _ => ()
+    }
+  }
+  None
+}
+
+///|
 fn source_text_content(input : String) -> String? {
-  match @source.parse(input) {
-    Ok(document) =>
-      match document.elements_named("text").get(0) {
-        Some(element) => Some(element.direct_text())
-        None => None
-      }
-    Err(_) => None
+  try source_text_content_or_raise(input) catch {
+    _ => None
+  } noraise {
+    value => value
   }
 }
 

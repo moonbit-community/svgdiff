@@ -71,9 +71,9 @@ The project spike found symmetric, monotonic premultiplied-RGBA responses for co
 
 Official source: [mizchi/canvas-mbt](https://github.com/mizchi/canvas-mbt).
 
-### `Milky2018/xml@0.2.0`
+### `Milky2018/xml@0.4.0`
 
-Provides a MoonBit XML event reader with elements, attributes, text, CDATA, comments, processing instructions, declarations, and structured errors. It is a candidate foundation for the raw Source Semantics and provenance layer that the normalized SVG scene graph cannot preserve by itself.
+Provides a document-buffered MoonBit XML pull reader with strict well-formedness, namespace-aware events, bounded entity expansion, disabled implicit external entity resolution, and authored Source Spans for events and attributes. It is the adopted foundation for the raw Source Semantics and provenance layer that the normalized SVG scene graph cannot preserve by itself.
 
 Official source: [moonbit-community/xml-mbt](https://github.com/moonbit-community/xml-mbt).
 
@@ -82,7 +82,7 @@ Official source: [moonbit-community/xml-mbt](https://github.com/moonbit-communit
 Validate this MoonBit-native stack first:
 
 ```text
-Source Semantics       Milky2018/xml or a focused source parser
+Source Semantics       Milky2018/xml plus private SVG-aware adaptation
 Computed Appearance   mizchi/svg scene graph
 Render Observation    mizchi/svg Image, with mizchi/canvas evaluated for sampling
 Difference Regions    project metrics plus optional mizchi/pixelmatch baseline

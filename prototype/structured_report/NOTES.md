@@ -6,7 +6,7 @@ Status: first scenario-driven vertical slice complete
 
 The layered report abstraction is feasible for the tested slice. MoonBit can preserve authored evidence through a separate source layer, compare resolved scene facts through `mizchi/svg`, obtain canonical raster response through `mizchi/svg` plus `mizchi/pixelmatch`, distinguish resource changes from entity outcomes, represent zero contribution numerically, preserve indeterminate analysis without coercing it to zero, and serialize the resulting report as JSON.
 
-The prototype is not production code. Authored values are now read through the workspace-owned `source_semantics` module rather than fixture-specific string splitting, while comparison and alignment logic remain fixture-specific.
+The prototype is not production code. Authored values are read from `Milky2018/xml@0.4.0` namespace-aware events and recovered through dependency-provided Source Spans rather than fixture-specific string splitting, while comparison and alignment logic remain fixture-specific.
 
 ## Acceptance scenarios
 
