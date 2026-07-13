@@ -101,6 +101,30 @@ test "similar subjects use deterministic minimum geometry distance" {
 }
 
 ///|
+test "changed subjects use global rather than greedy minimum cost" {
+  let before = alignment_svg(
+    "<rect x='4' y='0' width='2' height='2'/><rect x='0' y='0' width='2' height='2'/>",
+  )
+  let after = alignment_svg(
+    "<rect x='3' y='0' width='2' height='2'/><rect x='5' y='0' width='2' height='2'/>",
+  )
+  let report = @structured_report.compare(
+    before,
+    after,
+    @structured_report.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before.length() == 1 &&
+      alignment.before[0].source_index == 0 &&
+      alignment.after.length() == 1 &&
+      alignment.after[0].source_index == 1 &&
+      alignment.basis == "minimum_property_distance"
+    }),
+  )
+}
+
+///|
 test "a visual merge is represented set to set and serialized" {
   let before = alignment_svg(
     "<rect x='0' y='0' width='5' height='4' fill='red'/><rect x='5' y='0' width='5' height='4' fill='red'/>",

@@ -252,6 +252,115 @@ fn subject_distance(left : SourceSubject, right : SourceSubject) -> Double {
 }
 
 ///|
+fn sort_subject_indices(
+  indices : Array[Int],
+  subjects : Array[SourceSubject],
+) -> Unit {
+  indices.sort_by(fn(left, right) {
+    let signature_order = subjects[left].signature.compare(
+      subjects[right].signature,
+    )
+    if signature_order != 0 {
+      signature_order
+    } else {
+      left - right
+    }
+  })
+}
+
+///|
+fn minimum_cost_subject_pairs(
+  before_indices : Array[Int],
+  after_indices : Array[Int],
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> Array[(Int, Int)] {
+  if before_indices.is_empty() || after_indices.is_empty() {
+    return []
+  }
+  let transposed = before_indices.length() > after_indices.length()
+  let rows = if transposed { after_indices } else { before_indices }
+  let columns = if transposed { before_indices } else { after_indices }
+  let row_count = rows.length()
+  let column_count = columns.length()
+  let row_potential = Array::make(row_count + 1, 0.0)
+  let column_potential = Array::make(column_count + 1, 0.0)
+  let matching = Array::make(column_count + 1, 0)
+  let predecessor = Array::make(column_count + 1, 0)
+  for row in 1..<=row_count {
+    matching[0] = row
+    let minimum = Array::make(column_count + 1, 1.7976931348623157e308)
+    let used = Array::make(column_count + 1, false)
+    let mut column = 0
+    while true {
+      used[column] = true
+      let current_row = matching[column]
+      let mut delta = 1.7976931348623157e308
+      let mut next_column = 0
+      for candidate in 1..<=column_count {
+        if used[candidate] {
+          continue
+        }
+        let cost = if transposed {
+          subject_distance(
+            before[columns[candidate - 1]],
+            after[rows[current_row - 1]],
+          )
+        } else {
+          subject_distance(
+            before[rows[current_row - 1]],
+            after[columns[candidate - 1]],
+          )
+        }
+        let reduced = cost -
+          row_potential[current_row] -
+          column_potential[candidate]
+        if reduced < minimum[candidate] {
+          minimum[candidate] = reduced
+          predecessor[candidate] = column
+        }
+        if minimum[candidate] < delta {
+          delta = minimum[candidate]
+          next_column = candidate
+        }
+      }
+      for candidate in 0..<=column_count {
+        if used[candidate] {
+          row_potential[matching[candidate]] += delta
+          column_potential[candidate] -= delta
+        } else {
+          minimum[candidate] -= delta
+        }
+      }
+      column = next_column
+      if matching[column] == 0 {
+        break
+      }
+    }
+    while true {
+      let previous = predecessor[column]
+      matching[column] = matching[previous]
+      column = previous
+      if column == 0 {
+        break
+      }
+    }
+  }
+  let pairs : Array[(Int, Int)] = []
+  for column in 1..<=column_count {
+    if matching[column] == 0 {
+      continue
+    }
+    if transposed {
+      pairs.push((columns[column - 1], rows[matching[column] - 1]))
+    } else {
+      pairs.push((rows[matching[column] - 1], columns[column - 1]))
+    }
+  }
+  pairs
+}
+
+///|
 fn align_source_subjects(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
@@ -339,30 +448,46 @@ fn align_source_subjects(
       )
     }
   }
-  for before_index, before_subject in before {
-    if before_used[before_index] {
-      continue
+  let unmatched_kinds : Array[String] = []
+  for index, subject in before {
+    if !before_used[index] && !unmatched_kinds.contains(subject.kind) {
+      unmatched_kinds.push(subject.kind)
     }
-    let mut best_after = -1
-    let mut best_distance = 1.7976931348623157e308
-    for after_index, after_subject in after {
-      if !after_used[after_index] && before_subject.kind == after_subject.kind {
-        let distance = subject_distance(before_subject, after_subject)
-        if distance < best_distance {
-          best_distance = distance
-          best_after = after_index
-        }
+  }
+  for index, subject in after {
+    if !after_used[index] && !unmatched_kinds.contains(subject.kind) {
+      unmatched_kinds.push(subject.kind)
+    }
+  }
+  unmatched_kinds.sort()
+  for kind in unmatched_kinds {
+    let before_indices : Array[Int] = []
+    for index, subject in before {
+      if !before_used[index] && subject.kind == kind {
+        before_indices.push(index)
       }
     }
-    if best_after >= 0 {
+    let after_indices : Array[Int] = []
+    for index, subject in after {
+      if !after_used[index] && subject.kind == kind {
+        after_indices.push(index)
+      }
+    }
+    sort_subject_indices(before_indices, before)
+    sort_subject_indices(after_indices, after)
+    for
+      pair in minimum_cost_subject_pairs(
+        before_indices, after_indices, before, after,
+      ) {
+      let (before_index, after_index) = pair
       before_used[before_index] = true
-      after_used[best_after] = true
+      after_used[after_index] = true
       alignments.push(
         make_alignment(
           alignments.length(),
           "correspondence",
-          [before_subject],
-          [after[best_after]],
+          [before[before_index]],
+          [after[after_index]],
           "minimum_property_distance",
         ),
       )
