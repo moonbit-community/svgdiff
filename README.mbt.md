@@ -32,6 +32,8 @@ compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 
 The stable JSON contract is version `1.0`; its schema is in `schema/svgdiff-report.schema.json`. The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, and the pinned renderer identity. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
+The root package is the stable product seam. Its implementation lives in the formal `engine` package; only renderer and provenance experiments remain under `prototype`.
+
 ## Supported static subset
 
 - source spans, authored values, normalized declarations, inline-style provenance, and ordinary inherited fill;

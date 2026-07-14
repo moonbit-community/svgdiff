@@ -596,7 +596,7 @@ fn preflight_source(input : String) -> SourcePreflight {
 ///|
 fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
   {
-    schema_version: "0.3-prototype",
+    schema_version: "1.0",
     analysis_status: "failed",
     profile,
     subject_alignments: [],
@@ -899,7 +899,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "0.3-prototype",
+        schema_version: "1.0",
         analysis_status: "partial",
         profile,
         subject_alignments: [],
@@ -973,7 +973,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "0.3-prototype",
+        schema_version: "1.0",
         analysis_status: "complete",
         profile,
         subject_alignments: [],
@@ -1021,7 +1021,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "0.3-prototype",
+        schema_version: "1.0",
         analysis_status: "complete",
         profile,
         subject_alignments: [],
@@ -1123,7 +1123,7 @@ fn gradient_change_report(
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
         Some({
-          schema_version: "0.3-prototype",
+          schema_version: "1.0",
           analysis_status: "complete",
           profile,
           subject_alignments: [],
@@ -1143,7 +1143,7 @@ fn gradient_change_report(
         })
       } else {
         Some({
-          schema_version: "0.3-prototype",
+          schema_version: "1.0",
           analysis_status: "complete",
           profile,
           subject_alignments: [],
@@ -1293,7 +1293,7 @@ pub fn compare(
         None =>
           finish_report(
             {
-              schema_version: "0.3-prototype",
+              schema_version: "1.0",
               analysis_status: "partial",
               profile,
               subject_alignments: [],

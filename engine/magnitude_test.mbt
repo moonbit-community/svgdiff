@@ -2,10 +2,10 @@
 test "tiny geometry changes retain continuous magnitude independent of pixels" {
   let before = "<svg width='16' height='16'><rect id='box' x='1.0' y='2' width='8' height='8'/></svg>"
   let after = "<svg width='16' height='16'><rect id='box' x='0.99999' y='2' width='8' height='8'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   let difference = report.atomic_differences[0]
   match difference.magnitude.parameter_abs_user_units {
@@ -18,19 +18,19 @@ test "tiny geometry changes retain continuous magnitude independent of pixels" {
 
 ///|
 test "paint and presence expose domain appropriate numeric evidence" {
-  let paint = @structured_report.compare(
+  let paint = @engine.compare(
     "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' fill='red'/></svg>",
     "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' fill='blue'/></svg>",
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   match paint.atomic_differences[0].magnitude.raster_rgba8_rmse {
     Some(value) => assert_true(value > 0.0)
     None => fail("expected raster RMSE")
   }
-  let presence = @structured_report.compare(
+  let presence = @engine.compare(
     "<svg width='16' height='16'></svg>",
     "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' opacity='0'/></svg>",
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(
     presence.atomic_differences[0].magnitude.presence_painted_viewport_fraction,
@@ -42,10 +42,10 @@ test "paint and presence expose domain appropriate numeric evidence" {
 test "same-domain differences are ordered by descending magnitude" {
   let before = "<svg width='20' height='20'><rect x='1' y='1' width='2' height='2'/><rect x='10' y='10' width='2' height='2'/></svg>"
   let after = "<svg width='20' height='20'><rect x='2' y='1' width='2' height='2'/><rect x='16' y='10' width='2' height='2'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.atomic_differences.length(), 2)
   assert_eq(report.atomic_differences[0].domain, "geometry.position")
@@ -62,15 +62,15 @@ test "generic shape insertion and deletion expose numeric presence magnitude" {
   let with_circle = "<svg width='16' height='16'><rect id='anchor' x='0' y='0' width='1' height='1'/><circle id='dot' cx='8' cy='8' r='2' fill='red'/></svg>"
   for
     report in [
-      @structured_report.compare(
+      @engine.compare(
         base,
         with_circle,
-        @structured_report.ComparisonProfile::v1_default(),
+        @engine.ComparisonProfile::v1_default(),
       ),
-      @structured_report.compare(
+      @engine.compare(
         with_circle,
         base,
-        @structured_report.ComparisonProfile::v1_default(),
+        @engine.ComparisonProfile::v1_default(),
       ),
     ] {
     let presence_differences = [
@@ -96,10 +96,10 @@ test "generic shape insertion and deletion expose numeric presence magnitude" {
 test "presence painted coverage remains nonzero when final pixels are equal" {
   let one = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/></svg>"
   let duplicate = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='red'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     one,
     duplicate,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   let presence = [
       for difference in report.atomic_differences if difference.domain ==
@@ -116,10 +116,10 @@ test "presence painted coverage remains nonzero when final pixels are equal" {
 test "transparent presence does not inherit underlying scene coverage" {
   let base = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/></svg>"
   let with_transparent = "<svg width='16' height='16'><rect x='2' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='blue' opacity='0'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     base,
     with_transparent,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   let presence = [
       for difference in report.atomic_differences if difference.domain ==

@@ -586,7 +586,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "0.3-prototype",
+    schema_version: "1.0",
     analysis_status: "partial",
     profile,
     subject_alignments: [],

@@ -7,10 +7,10 @@ fn solid_rect_document(attributes : String) -> String {
 test "XML formatting variation does not create a difference" {
   let before = "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' fill='red'/></svg>"
   let after = "<svg height=\"16\" width=\"16\"><rect height=\"8\" fill=\"red\" width=\"8\" y=\"2\" x=\"2\" id=\"box\"></rect></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 0)
@@ -25,10 +25,10 @@ test "declaration whitespace and XML entity spelling normalize" {
   let after = solid_rect_document(
     "id='box' style=' opacity : 1 ; fill : r&#101;d ; height : 8 ; width : 8 ; y : 2 ; x : 2 '",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 0)
@@ -42,10 +42,10 @@ test "renderer style precedence conflict cannot produce complete equality" {
   let after = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' fill='blue' style='fill:red'",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_eq(report.atomic_differences.length(), 0)
@@ -66,10 +66,10 @@ test "moving fill to inline style is a provenance difference" {
   let after = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' style=' fill : red ; '",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.atomic_differences.length(), 1)
   let difference = report.atomic_differences[0]
@@ -98,10 +98,10 @@ test "all changed facts on one rect are enumerated" {
   let after = solid_rect_document(
     "id='box' x='3' y='2' width='8' height='8' fill='blue' opacity='0.5'",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.atomic_differences.length(), 3)
   assert_eq(
@@ -117,10 +117,10 @@ test "all changed facts on one rect are enumerated" {
 ///|
 test "unsupported CSS reduces coverage instead of proving equality" {
   let source = "<svg width='16' height='16'><style>.paint { fill: red; }</style><rect id='box' class='paint' x='2' y='2' width='8' height='8'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_eq(report.atomic_differences.length(), 0)
@@ -139,14 +139,14 @@ test "declared fact provenance is serialized into JSON" {
   let after = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' style='fill:red'",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "0.3-prototype",
+      "schema_version": "1.0",
       "atomic_differences": [
         {
           "source_fact_before": {

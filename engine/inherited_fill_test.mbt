@@ -10,10 +10,10 @@ fn inherited_fill_document(
 test "moving fill to an ancestor preserves resolved fill and changes provenance" {
   let before = inherited_fill_document("", "fill='red'")
   let after = inherited_fill_document("fill='red'", "")
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_eq(report.changed_facts.length(), 2)
@@ -44,10 +44,10 @@ test "moving fill to an ancestor preserves resolved fill and changes provenance"
 test "one ancestor changed fact identifies every affected rect" {
   let before = "<svg width='16' height='16'><g id='layer' fill='red'><rect id='a' x='0' y='0' width='4' height='4'/><rect id='b' x='8' y='8' width='4' height='4'/></g></svg>"
   let after = "<svg width='16' height='16'><g id='layer' fill='blue'><rect id='a' x='0' y='0' width='4' height='4'/><rect id='b' x='8' y='8' width='4' height='4'/></g></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.changed_facts.length(), 1)
   let changed = report.changed_facts[0]
@@ -63,10 +63,10 @@ test "one ancestor changed fact identifies every affected rect" {
 ///|
 test "stylesheet fill keeps inherited source analysis partial" {
   let source = "<svg width='16' height='16'><style>g { fill: red; }</style><g id='layer'><rect id='box' x='2' y='2' width='8' height='8'/></g></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -78,14 +78,14 @@ test "stylesheet fill keeps inherited source analysis partial" {
 
 ///|
 test "structured report JSON exposes inherited fill provenance" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     inherited_fill_document("", "fill='red'"),
     inherited_fill_document("style='fill: red'", ""),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "0.3-prototype",
+      "schema_version": "1.0",
       "source_resolutions": [
         {
           "subject_id": "box",

@@ -1,5 +1,5 @@
 import {
-  "username/svgdiff/prototype/structured_report" @engine,
+  "username/svgdiff/engine" @engine,
   "moonbitlang/core/json",
 }
 

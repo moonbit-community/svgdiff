@@ -11,10 +11,10 @@ test "all changed facts across aligned subjects are enumerated" {
   let after = shape_svg(
     "<rect x='2' y='1' width='4' height='4' fill='blue'/><rect x='10' y='1' width='5' height='4' opacity='0.5'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.atomic_differences.length(), 4)
   assert_eq(report.changed_facts.length(), 4)
@@ -29,10 +29,10 @@ test "all changed facts across aligned subjects are enumerated" {
 test "circle geometry uses the generic aligned-subject engine" {
   let before = shape_svg("<circle id='old' cx='8' cy='8' r='2' fill='red'/>")
   let after = shape_svg("<circle id='new' cx='9' cy='8' r='3' fill='red'/>")
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 2)
@@ -56,10 +56,10 @@ test "ordinary fill inheritance applies to non-rect subjects" {
   let after = shape_svg(
     "<g id='theme' fill='blue'><circle id='dot' cx='8' cy='8' r='2'/></g>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.changed_facts.length(), 1)
   assert_eq(report.atomic_differences.length(), 1)
@@ -71,10 +71,10 @@ test "ordinary fill inheritance applies to non-rect subjects" {
 ///|
 test "unsupported path semantics remain partial and diagnosed" {
   let source = shape_svg("<path d='M0 0 L10 10' stroke='black'/>")
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -92,10 +92,10 @@ test "ellipse line polyline and polygon share generic enumeration" {
   let after = shape_svg(
     "<ellipse cx='5' cy='4' rx='3' ry='1'/><line x1='0' y1='0' x2='3' y2='2'/><polyline points='0,0 2,2'/><polygon points='4,4 5,6 6,4'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 5)
@@ -106,10 +106,10 @@ test "unsupported visual attributes reduce subject coverage" {
   let source = shape_svg(
     "<circle cx='8' cy='8' r='2' transform='translate(1 0)'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -127,10 +127,10 @@ test "ordinary inherited stroke changes are reported" {
   let after = shape_svg(
     "<g stroke='blue'><line id='edge' x1='1' y1='1' x2='15' y2='15'/></g>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.atomic_differences.any(difference => {
@@ -146,10 +146,10 @@ test "incomplete inline style cannot produce complete equality" {
   let source = shape_svg(
     "<rect x='1' y='1' width='8' height='8' style='fill:red;unknown-paint:blue'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -167,10 +167,10 @@ test "group opacity is compositing rather than inherited child opacity" {
   let after = shape_svg(
     "<g opacity='0.5'><rect id='a' x='1' y='1' width='4' height='4'/><rect id='b' x='3' y='3' width='4' height='4'/></g>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -200,10 +200,10 @@ test "inline group opacity is diagnosed and reported at source level" {
   let after = shape_svg(
     "<g id='layer' style='opacity:0.5'><rect x='1' y='1' width='4' height='4'/></g>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -217,10 +217,10 @@ test "inline group opacity is diagnosed and reported at source level" {
 test "root svg opacity is preserved as a source difference" {
   let before = "<svg width='20' height='20' opacity='1'><rect x='1' y='1' width='4' height='4'/></svg>"
   let after = "<svg width='20' height='20' opacity='0.5'><rect x='1' y='1' width='4' height='4'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -237,10 +237,10 @@ test "unsupported local paint values reduce coverage" {
   let source = shape_svg(
     "<rect x='1' y='1' width='8' height='8' fill='url(#gradient)'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -258,10 +258,10 @@ test "gradient references outside the proven slice reduce coverage" {
   let after = shape_svg(
     "<defs><linearGradient id='paint'><stop offset='0' stop-color='blue'/></linearGradient></defs><circle id='dot' cx='8' cy='8' r='3' fill='url(#paint)'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(

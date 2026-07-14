@@ -35,10 +35,10 @@ fn unresolved_text_svg(content : String) -> String {
 
 ///|
 test "equivalent paint syntax remains a source-level difference" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     rect_svg("red"),
     rect_svg("#ff0000"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
@@ -61,10 +61,10 @@ test "equivalent paint syntax remains a source-level difference" {
 
 ///|
 test "tiny geometry changes retain continuous computed magnitude" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     positioned_rect_svg("1.0", "red"),
     positioned_rect_svg("0.99999", "red"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
@@ -92,10 +92,10 @@ test "tiny geometry changes retain continuous computed magnitude" {
 
 ///|
 test "salient paint changes retain source computed and rendered evidence" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     rect_svg("red"),
     rect_svg("blue"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
@@ -118,10 +118,10 @@ test "salient paint changes retain source computed and rendered evidence" {
 
 ///|
 test "resource changes and entity outcomes share one rendered event" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     gradient_rect_svg("red"),
     gradient_rect_svg("green"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 2)
@@ -162,10 +162,10 @@ test "gradient semantics beyond the first stop are coverage guarded" {
     old="stop-color=\"blue\"",
     new="stop-color=\"green\"",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -184,10 +184,10 @@ test "paired gradient stop semantics are coverage guarded" {
       before.replace_all(old="offset=\"1\"", new="offset=\"0.9\""),
       before.replace_all(old="stop-opacity=\"1\"", new="stop-opacity=\"0.5\""),
     ] {
-    let report = @structured_report.compare(
+    let report = @engine.compare(
       before,
       after,
-      @structured_report.ComparisonProfile::v1_default(),
+      @engine.ComparisonProfile::v1_default(),
     )
     assert_eq(report.analysis_status, "partial")
     assert_true(
@@ -200,10 +200,10 @@ test "paired gradient stop semantics are coverage guarded" {
 
 ///|
 test "zero-contribution insertion retains numeric presence footprint" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     empty_svg(),
     transparent_rect_svg(),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
@@ -232,10 +232,10 @@ test "zero-contribution insertion retains numeric presence footprint" {
 
 ///|
 test "unreferenced resource changes remain reportable without entity outcomes" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     unreferenced_gradient_svg("red"),
     unreferenced_gradient_svg("green"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
@@ -259,10 +259,10 @@ test "unreferenced resource changes remain reportable without entity outcomes" {
 
 ///|
 test "font-dependent text analysis is explicitly deferred" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     unresolved_text_svg("A"),
     unresolved_text_svg("B"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_eq(report.atomic_differences.length(), 1)
@@ -287,14 +287,14 @@ test "font-dependent text analysis is explicitly deferred" {
 
 ///|
 test "structured report serializes the complete layered result as JSON" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     unresolved_text_svg("A"),
     unresolved_text_svg("B"),
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "0.3-prototype",
+      "schema_version": "1.0",
       "analysis_status": "partial",
       "profile": { "viewport_width": 16, "viewport_height": 16, .. },
       "atomic_differences": [
@@ -319,10 +319,10 @@ test "structured report serializes the complete layered result as JSON" {
 ///|
 test "unsupported visual subjects cannot produce complete equality" {
   let source = "<svg width='16' height='16'><path d='M0 0 L8 8'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     source,
     source,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_eq(report.atomic_differences.length(), 0)
@@ -335,10 +335,10 @@ test "unsupported visual subjects cannot produce complete equality" {
 
 ///|
 test "parse failure is diagnosed" {
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     "<svg><rect></svg>",
     "<svg><rect/></svg>",
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "failed")
   assert_true(

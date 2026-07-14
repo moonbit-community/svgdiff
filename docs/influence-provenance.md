@@ -1,6 +1,6 @@
 # Influence Provenance and Causal Completeness
 
-Status: accepted design; implementation feasibility under prototype validation
+Status: accepted design; v1 implementation validated
 
 ## Objective
 
@@ -149,7 +149,7 @@ Candidate ranking may reorder or annotate the Cause Envelope but cannot remove c
 
 ## Validation obligations
 
-Before treating this design as feasible, a prototype must demonstrate:
+The original prototype gate required the following demonstrations, all of which informed the implemented conservative engine:
 
 1. token propagation through direct paint, grouped operations, local filter expansion, compositing dependencies, and unknown-operation fallback;
 2. union of before and after provenance for insertion, deletion, and movement;
@@ -157,4 +157,4 @@ Before treating this design as feasible, a prototype must demonstrate:
 4. unsupported operations revoke the guarantee rather than returning an incomplete envelope as complete;
 5. conservative rules remove at least some irrelevant Changed Facts compared with the `Delta` fallback.
 
-Production validation must later add mutation/property tests for every supported semantic and render operation. The safe default for a missing rule is always a larger Cause Envelope.
+Ongoing production validation should add mutation/property tests as supported semantics and render operations expand. The safe default for a missing rule remains a larger Cause Envelope.

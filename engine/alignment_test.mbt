@@ -11,10 +11,10 @@ test "reordered and renamed subjects align by visual facts" {
   let after = alignment_svg(
     "<circle id='renamed-dot' r='2' fill='blue' cy='8' cx='12'/><rect id='renamed-left' height='4' width='3' y='2' x='1' fill='red'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.subject_alignments.length(), 2)
   assert_eq(report.analysis_status, "complete")
@@ -37,10 +37,10 @@ test "insertions and deletions have an empty alignment side" {
   let after = alignment_svg(
     "<rect x='1' y='2' width='3' height='4'/><line x1='0' y1='0' x2='4' y2='4'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.subject_alignments.any(alignment => {
@@ -62,10 +62,10 @@ test "one rectangle can align with a visual split" {
   let after = alignment_svg(
     "<rect x='0' y='0' width='5' height='4' fill='red'/><rect x='5' y='0' width='5' height='4' fill='red'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.subject_alignments.any(alignment => {
@@ -84,10 +84,10 @@ test "similar subjects use deterministic minimum geometry distance" {
   let after = alignment_svg(
     "<rect x='11' y='0' width='2' height='2'/><rect x='1' y='0' width='2' height='2'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.subject_alignments.any(alignment => {
@@ -108,10 +108,10 @@ test "changed subjects use global rather than greedy minimum cost" {
   let after = alignment_svg(
     "<rect x='3' y='0' width='2' height='2'/><rect x='5' y='0' width='2' height='2'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.subject_alignments.any(alignment => {
@@ -132,10 +132,10 @@ test "inherited hierarchy context participates in exact alignment" {
   let after = alignment_svg(
     "<g fill='blue'><rect id='renamed-blue' x='2' y='2' width='4' height='4'/></g><g fill='red'><rect id='renamed-red' x='2' y='2' width='4' height='4'/></g>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.subject_alignments.any(alignment => {
@@ -156,10 +156,10 @@ test "a visual merge is represented set to set and serialized" {
   let after = alignment_svg(
     "<rect x='0' y='0' width='10' height='4' fill='red'/>",
   )
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_true(
     report.subject_alignments.any(alignment => {

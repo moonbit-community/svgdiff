@@ -1,4 +1,6 @@
-# Structured Report Prototype Verdict
+# Historical Structured Report Prototype Verdict
+
+This document records the early prototype findings. The validated implementation has since been promoted to the formal `engine` package; statements below describe the earlier experimental state and are retained as design history.
 
 Status: inherited-fill Source Semantics slice complete
 

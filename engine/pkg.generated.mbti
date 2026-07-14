@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "username/svgdiff/prototype/structured_report"
+package "username/svgdiff/engine"
 
 // Values
 pub fn compare(String, String, ComparisonProfile) -> StructuredReport
@@ -188,3 +188,4 @@ pub(all) struct VisualEvent {
 // Type aliases
 
 // Traits
+

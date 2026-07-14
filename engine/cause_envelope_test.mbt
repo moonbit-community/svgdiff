@@ -2,10 +2,10 @@
 test "every complete difference region contains its actual changed fact" {
   let before = "<svg width='16' height='16'><rect id='box' x='1' y='2' width='4' height='4' fill='red'/></svg>"
   let after = "<svg width='16' height='16'><rect id='box' x='5' y='2' width='4' height='4' fill='red'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
   assert_true(!report.changed_facts.is_empty())
@@ -33,10 +33,10 @@ test "every complete difference region contains its actual changed fact" {
 test "inherited paint envelopes retain the ancestor changed fact" {
   let before = "<svg width='16' height='16'><g id='theme' fill='red'><rect id='box' x='2' y='2' width='4' height='4'/></g></svg>"
   let after = "<svg width='16' height='16'><g id='theme' fill='blue'><rect id='box' x='2' y='2' width='4' height='4'/></g></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   let fact_id = report.changed_facts[0].id
   assert_true(
@@ -50,10 +50,10 @@ test "inherited paint envelopes retain the ancestor changed fact" {
 test "unsupported semantics revoke causal completeness" {
   let before = "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='red' transform='translate(1 0)'/></svg>"
   let after = "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='blue' transform='translate(1 0)'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
@@ -68,10 +68,10 @@ test "unsupported semantics revoke causal completeness" {
 test "disjoint event regions omit irrelevant changed facts" {
   let before = "<svg width='16' height='16'><rect x='1' y='1' width='3' height='3' fill='red'/><rect x='12' y='12' width='3' height='3' fill='red'/></svg>"
   let after = "<svg width='16' height='16'><rect x='1' y='1' width='3' height='3' fill='blue'/><rect x='12' y='12' width='3' height='3' fill='green'/></svg>"
-  let report = @structured_report.compare(
+  let report = @engine.compare(
     before,
     after,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.changed_facts.length(), 2)
   assert_true(
@@ -87,15 +87,15 @@ test "disjoint event regions omit irrelevant changed facts" {
 test "insertion and deletion regions retain their presence fact" {
   let empty = "<svg width='16' height='16'></svg>"
   let present = "<svg width='16' height='16'><rect id='box' x='2' y='2' width='4' height='4' fill='red'/></svg>"
-  let insertion = @structured_report.compare(
+  let insertion = @engine.compare(
     empty,
     present,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
-  let deletion = @structured_report.compare(
+  let deletion = @engine.compare(
     present,
     empty,
-    @structured_report.ComparisonProfile::v1_default(),
+    @engine.ComparisonProfile::v1_default(),
   )
   for report in [insertion, deletion] {
     assert_true(!report.changed_facts.is_empty())

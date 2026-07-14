@@ -2,58 +2,58 @@
 package "username/svgdiff"
 
 import {
-  "username/svgdiff/prototype/structured_report",
+  "username/svgdiff/engine",
 }
 
 // Values
-pub fn compare(String, String, @structured_report.ComparisonProfile) -> @structured_report.StructuredReport
+pub fn compare(String, String, @engine.ComparisonProfile) -> @engine.StructuredReport
 
-pub fn render_html_report(String, String, @structured_report.StructuredReport) -> String
+pub fn render_html_report(String, String, @engine.StructuredReport) -> String
 
 // Errors
 
 // Types and methods
 
 // Type aliases
-pub using @structured_report {type AtomicDifference}
+pub using @engine {type AtomicDifference}
 
-pub using @structured_report {type CauseEnvelope}
+pub using @engine {type CauseEnvelope}
 
-pub using @structured_report {type ChangedFact}
+pub using @engine {type ChangedFact}
 
-pub using @structured_report {type ComparisonProfile}
+pub using @engine {type ComparisonProfile}
 
-pub using @structured_report {type ComputedRelation}
+pub using @engine {type ComputedRelation}
 
-pub using @structured_report {type DeclaredVisualFact}
+pub using @engine {type DeclaredVisualFact}
 
-pub using @structured_report {type Diagnostic}
+pub using @engine {type Diagnostic}
 
-pub using @structured_report {type DifferenceMagnitude}
+pub using @engine {type DifferenceMagnitude}
 
-pub using @structured_report {type DifferenceRegion}
+pub using @engine {type DifferenceRegion}
 
-pub using @structured_report {type DomainOrdering}
+pub using @engine {type DomainOrdering}
 
-pub using @structured_report {type PresenceMagnitude}
+pub using @engine {type PresenceMagnitude}
 
-pub using @structured_report {type RenderedEvidence}
+pub using @engine {type RenderedEvidence}
 
-pub using @structured_report {type RenderedMagnitude}
+pub using @engine {type RenderedMagnitude}
 
-pub using @structured_report {type ReportSourceSpan}
+pub using @engine {type ReportSourceSpan}
 
-pub using @structured_report {type ResolvedVisualFact}
+pub using @engine {type ResolvedVisualFact}
 
-pub using @structured_report {type SourceResolutionPair}
+pub using @engine {type SourceResolutionPair}
 
-pub using @structured_report {type StructuredReport}
+pub using @engine {type StructuredReport}
 
-pub using @structured_report {type SubjectAlignment}
+pub using @engine {type SubjectAlignment}
 
-pub using @structured_report {type SubjectReference}
+pub using @engine {type SubjectReference}
 
-pub using @structured_report {type VisualEvent}
+pub using @engine {type VisualEvent}
 
 // Traits
 

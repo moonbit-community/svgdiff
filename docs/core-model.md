@@ -392,7 +392,7 @@ This is a structural sketch, not yet a field-complete schema:
 }
 ```
 
-Rendered measurements occur only under `events[].rendered_outcome`; Atomic Differences retain source and computed facts and magnitudes without copying the Event's raster values. A rendered outcome whose analysis is unavailable uses `status: "not_computed"`, `magnitude: null`, and referenced Diagnostics rather than zero-valued measurements. The structured-report prototype validated this status shape and JSON round trip for the first acceptance scenarios.
+Rendered measurements occur only under `events[].rendered_outcome`; Atomic Differences retain source and computed facts and magnitudes without copying the Event's raster values. A rendered outcome whose analysis is unavailable uses `status: "not_computed"`, `magnitude: null`, and referenced Diagnostics rather than zero-valued measurements. The formal engine preserves this status shape and JSON round trip across the supported v1 scenarios.
 
 ## Deliberately hidden implementation
 

@@ -370,7 +370,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "0.3-prototype",
+    schema_version: "1.0",
     analysis_status: "complete",
     profile,
     subject_alignments: alignments,
