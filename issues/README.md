@@ -64,6 +64,7 @@ graph TD
   ISS_045["ISS-045: Dispose every measured renderer divergence"]
   ISS_046["ISS-046: Version renderer conformance independently"]
   ISS_047["ISS-047: Define the renderer ownership escalation threshold"]
+  ISS_048["ISS-048: Add alternate-scale renderer QA"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -104,6 +105,7 @@ graph TD
   ISS_044 --> ISS_045
   ISS_045 --> ISS_046
   ISS_046 --> ISS_047
+  ISS_047 --> ISS_048
 ```
 
 ## Warnings

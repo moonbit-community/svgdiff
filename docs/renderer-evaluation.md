@@ -32,7 +32,7 @@ The initial MoonBit spike established that `mizchi/svg` can parse inspectable sc
 
 V1 therefore preserves exact computed parameter deltas separately from canonical rendered measurements. A zero pixel response never erases a supported computed difference.
 
-The `mizchi/canvas` supersampling experiment produced monotonic and directionally symmetric premultiplied-RGBA responses within the declared RGBA8 rounding allowance. Those alternate-scale measurements are renderer QA evidence only and do not enter Structured Report magnitude.
+The historical `mizchi/canvas` supersampling experiment produced monotonic and directionally symmetric premultiplied-RGBA responses within the declared RGBA8 rounding allowance. The current [alternate-scale QA baseline](../evaluation/alternate-scale/README.md) separately rerenders the pinned production renderer at scales 1, 2, 4, and 8 and makes its quantization and directional asymmetry reproducible. Both are renderer QA evidence only and do not enter Structured Report magnitude.
 
 ## Current blockers and guards
 
@@ -78,4 +78,5 @@ One minimized dependency-owned failure is enough for a focused upstream patch. O
 - [Current v1 support contract](v1-scope.md)
 - [Browser rendering oracle](../evaluation/browser-oracle/README.md)
 - [Pinned renderer conformance baseline](../evaluation/renderer-conformance/README.md)
+- [Alternate-scale renderer QA baseline](../evaluation/alternate-scale/README.md)
 - [Dependency, security, and upstream status](dependency-security.md)

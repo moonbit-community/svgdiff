@@ -14,7 +14,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0006](0006-use-render-observations-as-visible-change-evidence.md) | Accepted | Use render observations as visible-change evidence. |
 | [0007](0007-separate-magnitude-evidence-from-impact-policy.md) | Accepted | Separate magnitude evidence from impact policy. |
 | [0008](0008-use-domain-specific-ordering-tuples.md) | Accepted | Use domain-specific ordering tuples. |
-| [0013](0013-keep-diagnostic-rerendering-outside-the-report.md) | Accepted | Keep diagnostic rerendering outside the report. |
+| [0013](0013-keep-diagnostic-rerendering-outside-the-report.md) | Accepted, implemented | Keep diagnostic rerendering outside the report. |
 | [0014](0014-separate-difference-domain-from-computed-relation.md) | Accepted | Separate Difference Domain from Computed Relation. |
 | [0015](0015-measure-presence-by-footprint-not-a-boolean.md) | Accepted | Measure presence by footprint rather than a boolean. |
 | [0016](0016-visual-entities-may-have-zero-contribution.md) | Accepted | Permit visual subjects with zero rendered contribution. |

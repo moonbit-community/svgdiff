@@ -1,0 +1,47 @@
+{
+  "schema_version": "svgdiff-alternate-scale-input/1",
+  "renderer_id": "mizchi/svg@0.2.1",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/1",
+  "scales": [1, 2, 4, 8],
+  "pairs": [
+    {
+      "id": "equivalent-color",
+      "before": "evaluation/corpus/cases/equivalent-color-spelling/before.svg",
+      "after": "evaluation/corpus/cases/equivalent-color-spelling/after.svg",
+      "width": 16,
+      "height": 16,
+      "expectation": "exact_at_all_scales"
+    },
+    {
+      "id": "micro-negative",
+      "before": "evaluation/corpus/cases/subtle-geometry-shift/before.svg",
+      "after": "evaluation/corpus/cases/subtle-geometry-shift/after.svg",
+      "width": 16,
+      "height": 16,
+      "expectation": "observe"
+    },
+    {
+      "id": "micro-positive",
+      "before": "evaluation/alternate-scale/fixtures/micro-positive-before.svg",
+      "after": "evaluation/alternate-scale/fixtures/micro-positive-after.svg",
+      "width": 16,
+      "height": 16,
+      "expectation": "observe"
+    },
+    {
+      "id": "salient-fill",
+      "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
+      "after": "evaluation/corpus/cases/salient-fill-change/after.svg",
+      "width": 16,
+      "height": 16,
+      "expectation": "observe"
+    }
+  ],
+  "directional_checks": [
+    {
+      "id": "micro-movement-around-one",
+      "negative_pair": "micro-negative",
+      "positive_pair": "micro-positive"
+    }
+  ]
+}

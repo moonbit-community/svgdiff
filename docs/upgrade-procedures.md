@@ -47,6 +47,7 @@ Before replacing or owning a layer, apply the [Renderer Upstream and Ownership G
 - Run all current complete-eligible fixtures before and after the upgrade.
 - Compare geometry, paint, alpha, presence, connected regions, and linear-premultiplied raster metrics.
 - Re-run micro-delta cases in both directions around raster boundaries.
+- Reproduce `scripts/test-alternate-scale-qa.sh` and review every scale-curve or directional-classification change as QA evidence only.
 - Exercise every known preflight guard, especially inline-style precedence, paint servers, unsupported attributes, and group opacity.
 - Add a regression fixture for every upstream bug the new version claims to fix.
 - Use an external renderer only as a conformance oracle; do not substitute its output into the production profile without a separate decision.

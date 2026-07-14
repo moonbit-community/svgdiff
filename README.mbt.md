@@ -178,6 +178,7 @@ sh scripts/test-install.sh
 sh scripts/test-browser-oracle.sh
 sh scripts/test-renderer-conformance.sh
 sh scripts/test-renderer-dispositions.sh
+sh scripts/test-alternate-scale-qa.sh
 ```
 
-The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine.
+The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.

@@ -27,6 +27,7 @@ This directory separates the current product contract from future plans and hist
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
 | How are deterministic browser reference rasters captured? | [`browser-oracle/README.md`](../evaluation/browser-oracle/README.md) |
 | How is the pinned renderer compared with those rasters? | [`renderer-conformance/README.md`](../evaluation/renderer-conformance/README.md) |
+| How are alternate output scales used for renderer QA? | [`alternate-scale/README.md`](../evaluation/alternate-scale/README.md) |
 | When should a renderer gap go upstream or become an owned module? | [`renderer-ownership-gate.md`](renderer-ownership-gate.md) |
 | When does roadmap work become an `ISS-###` issue? | [`work-planning.md`](work-planning.md) |
 | How are milestone reviews and rejected capabilities recorded? | [`roadmap-governance.md`](roadmap-governance.md) |
