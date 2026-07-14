@@ -197,9 +197,10 @@ sh scripts/test-renderer-dispositions.sh
 sh scripts/test-alternate-scale-qa.sh
 sh scripts/test-adversarial.sh
 sh scripts/test-fuzz-smoke.sh
+sh scripts/test-html-security.sh
 sh scripts/test-compatibility.sh
 sh scripts/test-schema-examples.sh
 sh scripts/test-completions.sh
 ```
 
-The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.
+The browser oracle, renderer-conformance, and HTML-security validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.

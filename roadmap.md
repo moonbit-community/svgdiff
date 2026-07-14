@@ -241,7 +241,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [ ] **P0** Add resource limits for input bytes, element count, path complexity, recursion, references, raster dimensions, regions, and report size.
 - [ ] **P0** Detect reference cycles and adversarial expansion without hanging or exhausting memory.
 - [ ] **P0** Preserve actionable Diagnostics and Source Spans for malformed or limited inputs.
-- [ ] **P0** Keep generated HTML sandboxed and safe for hostile SVG source.
+- [x] **P0** Keep generated HTML sandboxed and safe for hostile SVG source.
 - [ ] **P1** Benchmark parse, alignment, rendering, region extraction, provenance, and serialization separately.
 - [ ] **P1** Establish performance and memory budgets for representative small, medium, and large SVGs.
 - [ ] **P1** Optimize only measured hot paths while preserving deterministic output.

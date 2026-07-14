@@ -92,6 +92,7 @@ graph TD
   ISS_073["ISS-073: Define Visual Event grouping cardinality"]
   ISS_074["ISS-074: Decide cross-subject Visual Event aggregation"]
   ISS_075["ISS-075: Fuzz production comparison boundaries"]
+  ISS_076["ISS-076: Validate hostile-source HTML isolation"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -225,6 +226,8 @@ graph TD
   ISS_043 --> ISS_075
   ISS_056 --> ISS_075
   ISS_058 --> ISS_075
+  ISS_012 --> ISS_076
+  ISS_075 --> ISS_076
 ```
 
 ## Warnings

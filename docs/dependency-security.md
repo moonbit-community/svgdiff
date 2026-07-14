@@ -39,6 +39,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 - Original SVG sources are placed in sandboxed iframe preview documents in the HTML report. The iframe has an empty `sandbox` token set, so embedded scripts cannot execute.
 - Preview `srcdoc` content and report JSON are HTML-escaped before embedding.
 - The preview document applies `default-src 'none'`; the top-level report allows only its own inline presentation script and styles.
+- The pinned Chromium [HTML security gate](../evaluation/html-security/README.md) verifies that hostile scripts and event handlers do not execute, the parent report is not mutated, and hostile external resource URLs produce no requests.
 - Semantic classification comes only from the Structured Report. Browser rendering in the report cannot promote unsupported input to complete analysis.
 
 ### CLI and data access
@@ -77,7 +78,7 @@ Refresh this ledger whenever a dependency version changes and at every release m
 2. verify each manifest license against the packaged LICENSE or upstream repository;
 3. review new transitive dependencies and native code;
 4. query every linked upstream PR and replace stale status text;
-5. rerun security boundary tests, CLI integration, and the HTML escaping tests;
+5. rerun security boundary tests, CLI integration, fuzz smoke, and the pinned Chromium HTML security gate;
 6. update [`renderer-evaluation.md`](renderer-evaluation.md), [`feature-coverage.md`](feature-coverage.md), and the upgrade procedure when behavior changes;
 7. leave resolved blocker history in issues or ADRs rather than deleting it from the record.
 
