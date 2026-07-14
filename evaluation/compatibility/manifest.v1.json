@@ -33,12 +33,12 @@
       "expected_reason": "accepted_legacy_optional_fields"
     },
     {
-      "id": "future-additive-top-level-field",
+      "id": "unknown-additive-top-level-field",
       "mutations": [
         {
           "op": "set",
           "path": ["future_optional_metadata"],
-          "value": { "producer_hint": "ignored-by-v1-consumer" }
+          "value": { "producer_hint": "ignored-by-tolerant-v1-consumer" }
         }
       ],
       "expected_decision": "accepted",

@@ -6,6 +6,8 @@ Last verified: 2026-07-14
 
 Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.0` comparison conditions.
 
+Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
+
 ## Public operations
 
 ```text
@@ -73,3 +75,4 @@ Do not edit `.mbti` files by hand. Public API changes must originate in MoonBit 
 - [Analysis status contract](analysis-status.md)
 - [Text-only agent report guide](agent-report-guide.md)
 - [JSON Schema](../schema/svgdiff-report.schema.json)
+- [Compatibility and versioning contract](versioning.md)

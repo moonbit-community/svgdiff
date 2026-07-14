@@ -31,7 +31,7 @@ svgdiff --help
 svgdiff --version
 ```
 
-Version output identifies the `svgdiff` module and engine, Structured Report schema, pinned renderer, renderer conformance profile, and domain-ordering policy. These identities must be reviewed together when their corresponding contracts change.
+Version output identifies the `svgdiff` module and engine, Structured Report schema, pinned renderer, renderer conformance profile, and domain-ordering policy. These identities must be reviewed together when their corresponding contracts change, but they advance independently under the [compatibility and versioning contract](docs/versioning.md).
 
 Run the native CLI from the repository root:
 

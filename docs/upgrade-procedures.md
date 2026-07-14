@@ -18,7 +18,7 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 | JSON Schema | `1.0` | every serialized field, enum, null/absence rule, and top-level invariant |
 | Same-domain ordering | `v1_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 
-The source of dependency versions is `moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json).
+The source of dependency versions is `moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json). The [compatibility and versioning contract](versioning.md) decides which identity each consumer-visible change must increment.
 
 ## General upgrade gate
 
@@ -142,7 +142,7 @@ Schema `1.0` is a versioned consumer contract. A change to required fields, fiel
 8. Update README examples, the core model, status contract, agent guide, and CLI version output when available.
 9. Verify that the HTML report consumes the new shape without becoming a second semantic implementation.
 
-Until formal compatibility rules are accepted, prefer a new version for any ambiguous consumer-visible change.
+Use the allocation rules in the [compatibility and versioning contract](versioning.md). Any ambiguous consumer-visible correction receives a new schema version rather than silently changing an existing identity.
 
 ## Domain Ordering policy upgrade
 
@@ -161,6 +161,8 @@ Until formal compatibility rules are accepted, prefer a new version for any ambi
 
 Cross-domain ranking requires its own accepted policy and must not be smuggled into a same-domain upgrade.
 
+The complete compatibility boundary, including the rule that every tuple-semantic change allocates a new opaque policy ID, is defined in the [compatibility and versioning contract](versioning.md#ranking-policy-compatibility).
+
 ## Common validation gate
 
 Run from the repository root:
@@ -169,6 +171,7 @@ Run from the repository root:
 moon check --target native --warn-list +73
 moon test --target native
 sh scripts/test-cli.sh
+sh scripts/test-versioning.sh
 moon fmt
 moon info
 jq empty schema/svgdiff-report.schema.json

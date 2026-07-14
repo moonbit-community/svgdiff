@@ -26,6 +26,7 @@ This directory separates the current product contract from future plans and hist
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
 | Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
+| Which compatibility change increments which version? | [`versioning.md`](versioning.md) |
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
 | How are deterministic browser reference rasters captured? | [`browser-oracle/README.md`](../evaluation/browser-oracle/README.md) |
@@ -65,6 +66,7 @@ These files must be updated whenever behavior changes:
 - [`agent-report-guide.md`](agent-report-guide.md): reading order and worked report interpretations for text-only agents;
 - [`agent-acceptance-spec.md`](agent-acceptance-spec.md): text-only evaluation boundary, answer contract, scoring dimensions, and safety gates;
 - [`library-api.md`](library-api.md): public MoonBit seam, exported types, and executable examples;
+- [`versioning.md`](versioning.md): module, Schema, Diagnostic, ordering-policy, and renderer-conformance compatibility rules;
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.

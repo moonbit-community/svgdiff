@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+tmp=${TMPDIR:-/tmp}/svgdiff-versioning-$$
+mkdir -p "$tmp"
+trap 'rm -rf "$tmp"' EXIT
+
+cd "$root"
+
+module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+test -n "$module_version"
+printf '%s\n' "$module_version" | grep -Eq '^(0|[1-9][0-9]*)\.[0-9]+\.[0-9]+$'
+
+moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
+grep -Fx "svgdiff $module_version" "$tmp/version.txt" >/dev/null
+grep -Fx "engine: $module_version" "$tmp/version.txt" >/dev/null
+
+schema_version=$(jq -r '.properties.schema_version.const' schema/svgdiff-report.schema.json)
+conformance_profile=$(jq -r '.properties.profile.properties.renderer_conformance_profile_id.const' schema/svgdiff-report.schema.json)
+ordering_policy=$(jq -r '.["$defs"].atomicDifference.properties.domain_ordering.properties.policy_id.const' schema/svgdiff-report.schema.json)
+
+printf '%s\n' "$schema_version" | grep -Eq '^[1-9][0-9]*\.[0-9]+$'
+grep -Fx "schema: $schema_version" "$tmp/version.txt" >/dev/null
+grep -Fx "renderer-conformance-profile: $conformance_profile" "$tmp/version.txt" >/dev/null
+grep -Fx "ordering-policy: $ordering_policy" "$tmp/version.txt" >/dev/null
+
+test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/baseline.v1.json)" = "$conformance_profile"
+test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/dispositions.v1.json)" = "$conformance_profile"
+jq -e --arg schema "$schema_version" --arg policy "$ordering_policy" '
+  (.consumer_policy.accepted_schema_versions | index($schema)) != null and
+  (.consumer_policy.accepted_ordering_policy_ids | index($policy)) != null
+' evaluation/compatibility/manifest.v1.json >/dev/null
+
+moon run --target native cmd/svgdiff -- \
+  testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
+jq -e --arg schema "$schema_version" \
+  --arg profile "$conformance_profile" --arg policy "$ordering_policy" '
+  .schema_version == $schema and
+  .profile.renderer_conformance_profile_id == $profile and
+  all(.atomic_differences[]; .domain_ordering.policy_id == $policy)
+' "$tmp/report.json" >/dev/null
+
+printf 'Version identities: module=%s schema=%s ordering=%s conformance=%s\n' \
+  "$module_version" "$schema_version" "$ordering_policy" "$conformance_profile"

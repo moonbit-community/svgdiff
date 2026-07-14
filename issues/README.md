@@ -69,6 +69,7 @@ graph TD
   ISS_050["ISS-050: Add adversarial comparison pairs"]
   ISS_051["ISS-051: Add schema and policy compatibility corpus"]
   ISS_052["ISS-052: Add maintainable shell completion installation"]
+  ISS_053["ISS-053: Define product compatibility versioning"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -114,6 +115,8 @@ graph TD
   ISS_049 --> ISS_050
   ISS_050 --> ISS_051
   ISS_038 --> ISS_052
+  ISS_039 --> ISS_053
+  ISS_051 --> ISS_053
 ```
 
 ## Warnings

@@ -57,5 +57,6 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0034](0034-version-renderer-conformance-separately.md) | Accepted, implemented | Version renderer conformance claims independently from schema and renderer identities. |
 | [0035](0035-gate-renderer-ownership-with-conformance-evidence.md) | Accepted | Gate renderer ownership with conformance evidence and upstream viability. |
 | [0036](0036-report-encountered-renderer-capability-gaps.md) | Accepted, implemented | Report encountered renderer capability gaps without claiming a global support manifest. |
+| [0037](0037-version-product-contracts-independently.md) | Accepted, implemented | Version module, report, Diagnostic, ordering, and conformance contracts independently. |
 
 Some accepted ADRs intentionally describe a target that is not yet fully implemented. The implementation status above is a navigation aid; [`v1-scope.md`](../v1-scope.md) remains authoritative for current support.
