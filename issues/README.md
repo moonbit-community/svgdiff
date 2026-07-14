@@ -45,6 +45,7 @@ graph TD
   ISS_026["ISS-026: Add deterministic mutation-generated SVG pairs"]
   ISS_027["ISS-027: Label the curated corpus main visual changes"]
   ISS_028["ISS-028: Add curated corpus region reference bounds"]
+  ISS_029["ISS-029: Add actual-cause reference labels"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -66,6 +67,7 @@ graph TD
   ISS_025 --> ISS_026
   ISS_025 --> ISS_027
   ISS_027 --> ISS_028
+  ISS_028 --> ISS_029
 ```
 
 ## Warnings

@@ -1,0 +1,104 @@
+{
+  "schema_version": "svgdiff-actual-cause-labels/1",
+  "corpus_version": "svgdiff-corpus/1",
+  "region_labels_version": "svgdiff-region-labels/1",
+  "cases": [
+    {
+      "case_id": "equivalent-color-spelling",
+      "evaluation_status": "not_applicable",
+      "reason": "The case has no rendered Difference Region, so it does not test the causes of changed pixels.",
+      "reference_region_ids": [],
+      "actual_causes": []
+    },
+    {
+      "case_id": "subtle-geometry-shift",
+      "evaluation_status": "eligible",
+      "reason": "A single controlled x-position edit produces the edge Difference Regions.",
+      "reference_region_ids": ["region-ref:subtle-geometry-shift:union"],
+      "actual_causes": [
+        {
+          "id": "actual:subtle-geometry-shift:x",
+          "fact_locator": {
+            "report_property": "geometry.position",
+            "source_property": "x",
+            "before_declared_value": "1.0",
+            "after_declared_value": "0.99999",
+            "affected_subject_ids": ["box"]
+          },
+          "rationale": "No other authored or environment input changes between the two documents."
+        }
+      ]
+    },
+    {
+      "case_id": "salient-fill-change",
+      "evaluation_status": "eligible",
+      "reason": "A single controlled fill edit recolors the complete panel region.",
+      "reference_region_ids": ["region-ref:salient-fill-change:panel"],
+      "actual_causes": [
+        {
+          "id": "actual:salient-fill-change:fill",
+          "fact_locator": {
+            "report_property": "paint.fill",
+            "source_property": "fill",
+            "before_declared_value": "red",
+            "after_declared_value": "blue",
+            "affected_subject_ids": ["panel"]
+          },
+          "rationale": "The rectangle's fill declaration is the only changed input to its painted color."
+        }
+      ]
+    },
+    {
+      "case_id": "structural-rect-insertion",
+      "evaluation_status": "eligible",
+      "reason": "The inserted subject's presence is the controlled cause of the new painted region.",
+      "reference_region_ids": ["region-ref:structural-rect-insertion:badge"],
+      "actual_causes": [
+        {
+          "id": "actual:structural-rect-insertion:presence",
+          "fact_locator": {
+            "report_property": "presence",
+            "source_property": null,
+            "before_declared_value": null,
+            "after_declared_value": null,
+            "affected_subject_ids": ["badge"]
+          },
+          "rationale": "The background is unchanged and the badge exists only in the after document."
+        }
+      ]
+    },
+    {
+      "case_id": "resource-gradient-stop-change",
+      "evaluation_status": "eligible",
+      "reason": "The first gradient stop is the sole authored edit that changes the referenced paint outcome.",
+      "reference_region_ids": ["region-ref:resource-gradient-stop-change:box"],
+      "actual_causes": [
+        {
+          "id": "actual:resource-gradient-stop-change:first-stop",
+          "fact_locator": {
+            "report_property": "resource.gradient.stop_color",
+            "source_property": "stop-color",
+            "before_declared_value": "red",
+            "after_declared_value": "green",
+            "affected_subject_ids": ["box"]
+          },
+          "rationale": "The rectangle's authored fill reference is unchanged; its downstream computed paint difference is a consequence and may remain a conservative envelope candidate, but the edited first-stop fact is the actual changed cause."
+        }
+      ]
+    },
+    {
+      "case_id": "zero-contribution-insertion",
+      "evaluation_status": "not_applicable",
+      "reason": "The inserted subject produces no rendered Difference Region, so there is no changed-pixel outcome for Cause Envelope recall.",
+      "reference_region_ids": [],
+      "actual_causes": []
+    },
+    {
+      "case_id": "unsupported-path-change",
+      "evaluation_status": "not_applicable",
+      "reason": "Path semantics are outside complete coverage, so the current report cannot claim a causally complete envelope for this outcome.",
+      "reference_region_ids": [],
+      "actual_causes": []
+    }
+  ]
+}

@@ -37,3 +37,13 @@ Validate them with:
 ```sh
 sh scripts/test-region-annotations.sh
 ```
+
+## Actual-cause labels
+
+`actual-causes.v1.json` admits only controlled cases with rendered outcomes and sufficient coverage for Cause Envelope recall evaluation. Actual causes use semantic fact locators instead of report-local IDs. The resource-mediated case intentionally identifies the edited gradient stop as the actual changed cause while allowing downstream computed paint facts to remain conservative false-positive candidates.
+
+Equivalent, zero-contribution, and unsupported cases are explicitly `not_applicable`. Validate corpus coverage and reference integrity with:
+
+```sh
+sh scripts/test-cause-annotations.sh
+```
