@@ -12,13 +12,13 @@
     {
       "case_id": "subtle-geometry-shift",
       "localization_status": "localizable",
-      "reason": "The changed outcome is confined to the union of the before and after rectangle footprints; exact raster edge pixels are profile-quantized.",
+      "reason": "The changed outcome is confined to the quantized raster bounds around the union of the before and after rectangle footprints.",
       "regions": [
         {
           "id": "region-ref:subtle-geometry-shift:union",
           "reference_kind": "conservative_css_bounds",
           "comparison_rule": "predicted_region_contained_by_reference",
-          "bounds": { "x": 0.99999, "y": 2.0, "width": 8.00001, "height": 8.0 }
+          "bounds": { "x": 0.0, "y": 2.0, "width": 9.0, "height": 8.0 }
         }
       ]
     },
@@ -51,13 +51,13 @@
     {
       "case_id": "resource-gradient-stop-change",
       "localization_status": "localizable",
-      "reason": "The referenced paint-resource change affects the complete filled rectangle.",
+      "reason": "The first-stop edit changes every raster column except the unchanged blue endpoint column.",
       "regions": [
         {
           "id": "region-ref:resource-gradient-stop-change:box",
           "reference_kind": "exact_painted_bounds",
           "comparison_rule": "intersection_over_union",
-          "bounds": { "x": 2.0, "y": 2.0, "width": 12.0, "height": 12.0 }
+          "bounds": { "x": 2.0, "y": 2.0, "width": 11.0, "height": 12.0 }
         }
       ]
     },

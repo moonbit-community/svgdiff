@@ -49,3 +49,5 @@ Equivalent, zero-contribution, and unsupported cases are explicitly `not_applica
 ```sh
 sh scripts/test-cause-annotations.sh
 ```
+
+`ranking-targets.v1.json` maps the manually labeled main changes to accepted top report events or Atomic Difference sets. Unsupported path semantics remain explicitly unscorable until the report exposes a path event.

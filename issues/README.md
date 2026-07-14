@@ -47,6 +47,7 @@ graph TD
   ISS_028["ISS-028: Add curated corpus region reference bounds"]
   ISS_029["ISS-029: Add actual-cause reference labels"]
   ISS_030["ISS-030: Build the text-only agent evaluation harness"]
+  ISS_031["ISS-031: Measure core report and agent evaluation metrics"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -70,6 +71,7 @@ graph TD
   ISS_027 --> ISS_028
   ISS_028 --> ISS_029
   ISS_029 --> ISS_030
+  ISS_030 --> ISS_031
 ```
 
 ## Warnings

@@ -37,6 +37,19 @@ For each case the adapter receives one task JSON object on stdin and must write 
 
 The schema is a transport and scoring contract. A structurally valid but semantically wrong answer remains possible and will be scored by later benchmark items.
 
+## Score answers
+
+```sh
+python3 evaluation/harness/score.py \
+  --tasks /tmp/svgdiff-tasks.jsonl \
+  --answers /tmp/svgdiff-answers.jsonl \
+  --output /tmp/svgdiff-metrics.json
+```
+
+Metrics version `svgdiff-evaluation-metrics/1` keeps report and agent layers separate. It records agent Atomic Difference recall and main-change reciprocal rank, report and agent region overlap, report Cause Envelope and agent possible-cause recall, conservative false-positive counts, and invalid evidence references. Exact reference bounds use bounding-box IoU; conservative reference bounds score how much of the predicted union is contained by the reference. Results include per-case values and macro aggregates, never a universal combined score.
+
+`evidence_test_agent.py` is a deterministic protocol and scoring fixture that copies report evidence without reading hidden labels. It is not an intelligent benchmark baseline.
+
 ## Verify
 
 ```sh
@@ -44,3 +57,5 @@ sh scripts/test-agent-harness.sh
 ```
 
 The integration test generates reports from the curated corpus as setup, prepares task JSONL, checks that task top-level fields contain no source or annotation path, runs a report-only test adapter, and validates one answer per case.
+
+Run `sh scripts/test-evaluation-metrics.sh` to compare the evidence-copying fixture with an intentionally empty semantic answer and verify that report-level metrics remain unchanged while agent-level metrics fall.

@@ -1,0 +1,52 @@
+{
+  "schema_version": "svgdiff-ranking-targets/1",
+  "corpus_version": "svgdiff-corpus/1",
+  "main_change_labels_version": "svgdiff-main-change-labels/1",
+  "cases": [
+    {
+      "case_id": "equivalent-color-spelling",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:box"],
+      "accepted_top_atomic_difference_id_sets": [["diff:entity:box:fill"]]
+    },
+    {
+      "case_id": "subtle-geometry-shift",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:box"],
+      "accepted_top_atomic_difference_id_sets": [["diff:entity:box:x"]]
+    },
+    {
+      "case_id": "salient-fill-change",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:panel"],
+      "accepted_top_atomic_difference_id_sets": [["diff:entity:panel:fill"]]
+    },
+    {
+      "case_id": "structural-rect-insertion",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:alignment:1"],
+      "accepted_top_atomic_difference_id_sets": [["diff:alignment:1:presence"]]
+    },
+    {
+      "case_id": "resource-gradient-stop-change",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:box"],
+      "accepted_top_atomic_difference_id_sets": [
+        ["diff:resource:gradient:stop:0", "diff:entity:box:fill"]
+      ]
+    },
+    {
+      "case_id": "zero-contribution-insertion",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:box"],
+      "accepted_top_atomic_difference_id_sets": [["diff:entity:box:presence"]]
+    },
+    {
+      "case_id": "unsupported-path-change",
+      "evaluation_status": "not_applicable",
+      "reason": "The current partial report has no path Atomic Difference or Visual Event to rank.",
+      "accepted_top_event_ids": [],
+      "accepted_top_atomic_difference_id_sets": []
+    }
+  ]
+}

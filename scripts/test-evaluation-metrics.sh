@@ -1,0 +1,66 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+manifest="$root/evaluation/corpus/manifest.json"
+tmp=${TMPDIR:-/tmp}/svgdiff-evaluation-metrics-$$
+reports="$tmp/reports"
+tasks="$tmp/tasks.jsonl"
+evidence_answers="$tmp/evidence-answers.jsonl"
+empty_answers="$tmp/empty-answers.jsonl"
+evidence_metrics="$tmp/evidence-metrics.json"
+empty_metrics="$tmp/empty-metrics.json"
+mkdir -p "$reports"
+trap 'rm -rf "$tmp"' EXIT
+
+cd "$root"
+jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
+  id=$(printf '%s' "$case_json" | jq -r '.id')
+  before=$(printf '%s' "$case_json" | jq -r '.before')
+  after=$(printf '%s' "$case_json" | jq -r '.after')
+  width=$(printf '%s' "$case_json" | jq -r '.viewport.width')
+  height=$(printf '%s' "$case_json" | jq -r '.viewport.height')
+  moon run --target native cmd/svgdiff -- \
+    "$root/evaluation/corpus/$before" \
+    "$root/evaluation/corpus/$after" \
+    --width "$width" --height "$height" >"$reports/$id.json"
+done
+
+python3 evaluation/harness/harness.py prepare --reports "$reports" --output "$tasks"
+python3 evaluation/harness/harness.py run \
+  --tasks "$tasks" \
+  --output "$evidence_answers" \
+  --agent "python3 evaluation/harness/evidence_test_agent.py"
+python3 evaluation/harness/harness.py run \
+  --tasks "$tasks" \
+  --output "$empty_answers" \
+  --agent "python3 evaluation/harness/report_only_test_agent.py"
+
+python3 evaluation/harness/score.py \
+  --tasks "$tasks" --answers "$evidence_answers" --output "$evidence_metrics"
+python3 evaluation/harness/score.py \
+  --tasks "$tasks" --answers "$empty_answers" --output "$empty_metrics"
+
+jq -e '
+  .metrics_version == "svgdiff-evaluation-metrics/1" and
+  .case_count == 7 and
+  .aggregate.agent_atomic_difference_recall_macro == 1 and
+  .aggregate.agent_main_difference_mrr == 1 and
+  .aggregate.report_region_overlap_macro == 0.8 and
+  .aggregate.agent_region_overlap_macro == 0.8 and
+  .aggregate.report_cause_envelope_recall_macro == 1 and
+  .aggregate.agent_possible_cause_recall_macro == 1 and
+  .aggregate.report_cause_false_positive_count == 1 and
+  .aggregate.agent_cause_false_positive_count == 1 and
+  .aggregate.invalid_evidence_reference_count == 0
+' "$evidence_metrics" >/dev/null
+
+jq -e '
+  .aggregate.agent_atomic_difference_recall_macro < 1 and
+  .aggregate.agent_main_difference_mrr == 0 and
+  .aggregate.agent_region_overlap_macro == 0 and
+  .aggregate.agent_possible_cause_recall_macro == 0 and
+  .aggregate.report_cause_envelope_recall_macro == 1
+' "$empty_metrics" >/dev/null
+
+printf 'Evaluation metrics: report and agent layers separated, evidence baseline: ok, empty baseline: lower\n'

@@ -54,7 +54,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Record region ground truth or conservative reference bounds for localizable cases.
 - [x] **P0** Record actual-cause ground truth for cases used to test Cause Envelope recall.
 - [x] **P0** Build a text-only agent evaluation harness that consumes only Structured Report JSON.
-- [ ] **P0** Measure Atomic Difference recall, main-difference ranking quality, region overlap, Cause Envelope recall, and false-positive volume.
+- [x] **P0** Measure Atomic Difference recall, main-difference ranking quality, region overlap, Cause Envelope recall, and false-positive volume.
 - [ ] **P0** Establish regression thresholds and publish a reproducible benchmark command.
 - [ ] **P0** Separate renderer-conformance failures from report-model and agent-interpretation failures in benchmark results.
 - [ ] **P1** Add adversarial pairs designed to trigger false `complete`, false equality, wrong alignment, attribution leakage, and magnitude-ordering failures.
