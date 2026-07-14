@@ -14,29 +14,78 @@ if sh scripts/package-release.sh --output "$tmp/rejected" >"$tmp/rejected.out" 2
   exit 1
 fi
 grep -F 'Refusing to package a release from a dirty worktree' "$tmp/rejected.err" >/dev/null
-sh scripts/package-release.sh --allow-dirty --output "$tmp/dist" >"$tmp/package.out"
+sh scripts/package-release.sh --allow-dirty --archive --output "$tmp/dist" >"$tmp/package.out"
 bundle=$(find "$tmp/dist" -mindepth 1 -maxdepth 1 -type d)
 test -n "$bundle"
-test -x "$bundle/svgdiff"
 test -f "$bundle/LICENSE"
 test -f "$bundle/THIRD_PARTY_NOTICES.md"
 test -f "$bundle/provenance.json"
 test -f "$bundle/SHA256SUMS"
+executable_name=$(jq -r '.subject.name' "$bundle/provenance.json")
+test -f "$bundle/$executable_name"
+case "${RUNNER_OS-}" in
+  Linux) expected_os=linux ;;
+  Windows) expected_os=windows ;;
+  macOS) expected_os=macos ;;
+  "")
+    case "$(uname -s)" in
+      Linux) expected_os=linux ;;
+      Darwin) expected_os=macos ;;
+      *) exit 1 ;;
+    esac
+    ;;
+  *) exit 1 ;;
+esac
+raw_arch=${RUNNER_ARCH-}
+if [ -z "$raw_arch" ]; then
+  raw_arch=$(uname -m)
+fi
+case "$raw_arch" in
+  X64 | x86_64 | amd64) expected_arch=x64 ;;
+  ARM64 | arm64 | aarch64) expected_arch=arm64 ;;
+  *) exit 1 ;;
+esac
+test "$(jq -r '.build.target_os' "$bundle/provenance.json")" = "$expected_os"
+test "$(jq -r '.build.target_architecture' "$bundle/provenance.json")" = "$expected_arch"
+expected_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+expected_bundle="svgdiff-$expected_version-$expected_os-$expected_arch"
+test "$(basename "$bundle")" = "$expected_bundle"
+if [ "$expected_os" = windows ]; then
+  test "$executable_name" = svgdiff.exe
+else
+  test "$executable_name" = svgdiff
+  test -x "$bundle/$executable_name"
+fi
 cmp LICENSE "$bundle/LICENSE"
 (
   cd "$bundle"
-  shasum -a 256 -c SHA256SUMS >/dev/null
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 -c SHA256SUMS >/dev/null
+  else
+    sha256sum -c SHA256SUMS >/dev/null
+  fi
 )
 
-artifact_sha256=$(shasum -a 256 "$bundle/svgdiff" | awk '{ print $1 }')
+archive="$bundle.tar.gz"
+test -f "$archive"
+mkdir -p "$tmp/extracted"
+tar -xzf "$archive" -C "$tmp/extracted"
+diff -r "$bundle" "$tmp/extracted/$(basename "$bundle")" >/dev/null
+
+if command -v shasum >/dev/null 2>&1; then
+  artifact_sha256=$(shasum -a 256 "$bundle/$executable_name" | awk '{ print $1 }')
+else
+  artifact_sha256=$(sha256sum "$bundle/$executable_name" | awk '{ print $1 }')
+fi
 source_revision=$(git rev-parse HEAD)
 module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
 jq -e \
   --arg sha "$artifact_sha256" \
   --arg revision "$source_revision" \
-  --arg version "$module_version" '
+  --arg version "$module_version" \
+  --arg executable_name "$executable_name" '
   .schema_version == "svgdiff-release-provenance/1" and
-  .subject == {"name": "svgdiff", "sha256": $sha} and
+  .subject == {"name": $executable_name, "sha256": $sha} and
   .source.revision == $revision and
   .source.dirty == true and
   .build.command == "moon build --target native --release cmd/svgdiff" and
@@ -58,6 +107,12 @@ jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
     grep -F "\`$dependency\`" "$bundle/THIRD_PARTY_NOTICES.md" >/dev/null
   done
 
-"$bundle/svgdiff" --version | grep -Fx "svgdiff $module_version" >/dev/null
+"$bundle/$executable_name" --version | grep -Fx "svgdiff $module_version" >/dev/null
+sh scripts/check-release-tag.sh "v$module_version" >/dev/null
+if sh scripts/check-release-tag.sh "$module_version" >"$tmp/tag.out" 2>"$tmp/tag.err"; then
+  printf 'Release tag without v prefix unexpectedly succeeded\n' >&2
+  exit 1
+fi
+grep -F "expected v$module_version" "$tmp/tag.err" >/dev/null
 grep -F 'Created ' "$tmp/package.out" >/dev/null
-printf 'Release bundle: checksums, provenance, license, and notices: ok\n'
+printf 'Release bundle: archive, checksums, provenance, license, notices, and tag gate: ok\n'

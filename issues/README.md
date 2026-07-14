@@ -102,6 +102,7 @@ graph TD
   ISS_083["ISS-083: Optimize a measured production hot path"]
   ISS_084["ISS-084: Add controlled comparison interruption"]
   ISS_085["ISS-085: Gate cross-platform report determinism"]
+  ISS_086["ISS-086: Publish supported native release binaries"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -278,6 +279,9 @@ graph TD
   ISS_083 --> ISS_084
   ISS_058 --> ISS_085
   ISS_077 --> ISS_085
+  ISS_034 --> ISS_086
+  ISS_054 --> ISS_086
+  ISS_085 --> ISS_086
 ```
 
 ## Warnings

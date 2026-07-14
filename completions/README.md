@@ -23,4 +23,4 @@ The definitions complete both SVG operands, the explicit stdin marker, output pa
 
 ## Package-manager boundary
 
-No Homebrew, Scoop, or similar package definition is published yet. A maintainable formula requires the still-unpublished native release artifact, stable version and URL, checksum, provenance metadata, license bundle, and supported platform matrix. Package-manager installation should be added only after the release-binary roadmap item supplies those inputs; an unversioned source-build formula would duplicate `scripts/install.sh` without providing a stable distribution contract.
+No Homebrew, Scoop, or similar package definition is published yet. The release workflow now supplies versioned archives, checksums, provenance metadata, licenses, and a supported platform matrix. A package definition still requires a stable repository URL and observed published-release history; it should be added only when those external coordinates exist. An unversioned source-build formula would duplicate `scripts/install.sh` without providing a stable distribution contract.

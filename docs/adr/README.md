@@ -27,6 +27,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0042](0042-qualify-diagnostic-spans-by-input-role.md) | Accepted | Qualify Diagnostic Source Spans by before/after input role and preserve multiple locations under one stable Diagnostic. |
 | [0043](0043-treat-comparison-interruption-as-control-flow.md) | Accepted | Treat cooperative cancellation and elapsed-time expiry as typed control flow rather than incomplete report evidence. |
 | [0044](0044-compare-canonical-report-bundles-across-a-fixed-platform-matrix.md) | Accepted, implemented | Compare canonical report bundles across an explicit three-platform, two-architecture CI matrix. |
+| [0045](0045-publish-only-version-matched-cross-platform-release-assets.md) | Accepted, implemented | Publish native archives only from a version-matched tag after cross-platform candidate gates pass. |
 
 ## Correctness boundary and provenance
 

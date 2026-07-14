@@ -12,7 +12,7 @@ The suite includes negative controls for a duplicate ID, a dangling reference, a
 
 CI additionally builds the same revision in native release mode on the supported determinism matrix: Ubuntu 24.04 x64, Windows Server 2025 x64, and macOS 15 arm64. Each runner writes a platform-neutral `svgdiff-determinism-bundle/1` containing the exact default and compact bytes for all eight cases. The aggregation job requires all three named bundles and compares the manifest, complete inventory, digests, and file bytes. Platform identity and toolchain observations remain outside the compared bundle.
 
-This gate establishes byte identity for the versioned corpus across the declared matrix. It is not exhaustive proof over arbitrary SVG input, a cross-version guarantee, or a substitute for separately planned release-binary publication and provenance.
+This gate establishes byte identity for the versioned corpus across the declared matrix. It is not exhaustive proof over arbitrary SVG input or a cross-version guarantee. The release workflow reuses the same bundle protocol as a publication gate; release packaging and provenance remain separate evidence rather than being inferred from report identity.
 
 Run:
 

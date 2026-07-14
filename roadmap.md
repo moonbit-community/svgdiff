@@ -63,7 +63,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 ## Phase 1: Installable CLI and stable distribution
 
 - [x] **P0** Provide an installation workflow that makes `svgdiff before.svg after.svg` available on `PATH`.
-- [ ] **P0** Publish release-mode native binaries for supported operating systems and architectures.
+- [x] **P0** Publish release-mode native binaries for supported operating systems and architectures.
 - [x] **P0** Add `--help` and `--version` output with schema, engine, renderer, and policy versions.
 - [x] **P0** Document stdin/stdout behavior and decide whether `-` denotes an SVG stream.
 - [x] **P0** Stabilize exit-code semantics for complete, partial, failed, invalid-argument, and I/O outcomes.
@@ -275,7 +275,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 - [x] `svgdiff before.svg after.svg` works after a documented installation step.
 - [x] The schema, exit codes, profile identity, and compact agent projection are versioned.
-- [ ] CI publishes tested native binaries and checksums.
+- [x] CI publishes tested native binaries and checksums.
 
 ### M2: Credible essential static SVG coverage
 

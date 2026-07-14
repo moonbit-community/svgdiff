@@ -18,11 +18,11 @@ The installer prints whether its destination is already on `PATH`. Choose anothe
 sh scripts/install.sh --bindir "$HOME/bin"
 ```
 
-`SVGDIFF_INSTALL_DIR` provides the same destination override. This source installation builds for the current operating system and architecture. Published cross-platform binaries and package-manager installation remain roadmap work.
+`SVGDIFF_INSTALL_DIR` provides the same destination override. This source installation builds for the current operating system and architecture. For a prebuilt CLI, download the `linux-x64`, `windows-x64`, or `macos-arm64` archive and the archive-level `SHA256SUMS` from the matching versioned GitHub Release; verification and internal bundle layout are documented in [`release/README.md`](release/README.md). Package-manager installation remains separate work.
 
 Install Bash, Zsh, or Fish completion separately with `sh scripts/install-completions.sh <shell>`. Shell-specific locations, Zsh activation, and the package-manager release prerequisite are documented in [`completions/README.md`](completions/README.md).
 
-Generate a current-host native release bundle with `sh scripts/package-release.sh`. The bundle includes checksums, transparent build provenance, the project license, and versioned third-party notices; its exact guarantees and non-guarantees are documented in [`release/README.md`](release/README.md). Binary publication remains separate roadmap work.
+Generate a current-host native release bundle with `sh scripts/package-release.sh`; add `--archive` for the distributable `.tar.gz`. Version-matched tags publish tested `linux-x64`, `windows-x64`, and `macos-arm64` archives plus archive checksums through GitHub Releases. Every archive includes internal checksums, transparent build provenance, the project license, and versioned third-party notices; its exact guarantees and non-guarantees are documented in [`release/README.md`](release/README.md).
 
 ## Command line
 

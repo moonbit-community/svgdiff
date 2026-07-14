@@ -4,9 +4,10 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 output_root="$root/dist"
 allow_dirty=false
+archive=false
 
 usage() {
-  printf 'Usage: %s [--output DIR] [--allow-dirty]\n' "$0"
+  printf 'Usage: %s [--output DIR] [--allow-dirty] [--archive]\n' "$0"
 }
 
 while [ "$#" -gt 0 ]; do
@@ -23,6 +24,10 @@ while [ "$#" -gt 0 ]; do
       allow_dirty=true
       shift
       ;;
+    --archive)
+      archive=true
+      shift
+      ;;
     --help)
       usage
       exit 0
@@ -34,12 +39,28 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-for command in git jq moon shasum; do
+for command in git jq moon; do
   if ! command -v "$command" >/dev/null 2>&1; then
     printf '%s is required to package a release bundle\n' "$command" >&2
     exit 1
   fi
 done
+if command -v shasum >/dev/null 2>&1; then
+  sha256_files() {
+    shasum -a 256 "$@"
+  }
+elif command -v sha256sum >/dev/null 2>&1; then
+  sha256_files() {
+    sha256sum "$@"
+  }
+else
+  printf 'shasum or sha256sum is required to package a release bundle\n' >&2
+  exit 1
+fi
+if [ "$archive" = true ] && ! command -v tar >/dev/null 2>&1; then
+  printf 'tar is required to archive a release bundle\n' >&2
+  exit 1
+fi
 
 cd "$root"
 source_dirty=false
@@ -67,20 +88,66 @@ test "$tree_dependency_count" = "$(jq '.dependencies | length' "$dependency_mani
 test "$(jq '[.dependencies[] | select(.license != "Apache-2.0")] | length' "$dependency_manifest")" = 0
 
 module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
-target_os=$(uname -s | tr '[:upper:]' '[:lower:]')
-target_arch=$(uname -m)
+case "${RUNNER_OS-}" in
+  Linux)
+    target_os=linux
+    ;;
+  Windows)
+    target_os=windows
+    ;;
+  macOS)
+    target_os=macos
+    ;;
+  "")
+    case "$(uname -s)" in
+      Linux) target_os=linux ;;
+      Darwin) target_os=macos ;;
+      *)
+        printf 'Unsupported release operating system: %s\n' "$(uname -s)" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+  *)
+    printf 'Unsupported GitHub runner operating system: %s\n' "$RUNNER_OS" >&2
+    exit 1
+    ;;
+esac
+
+raw_arch=${RUNNER_ARCH-}
+if [ -z "$raw_arch" ]; then
+  raw_arch=$(uname -m)
+fi
+case "$raw_arch" in
+  X64 | x86_64 | amd64) target_arch=x64 ;;
+  ARM64 | arm64 | aarch64) target_arch=arm64 ;;
+  *)
+    printf 'Unsupported release architecture: %s\n' "$raw_arch" >&2
+    exit 1
+    ;;
+esac
+
+executable_name=svgdiff
+if [ "$target_os" = windows ]; then
+  executable_name=svgdiff.exe
+fi
 bundle="$output_root/svgdiff-$module_version-$target_os-$target_arch"
 
 moon build --target native --release cmd/svgdiff >/dev/null
 binary="$root/_build/native/release/build/cmd/svgdiff/svgdiff.exe"
-if [ ! -x "$binary" ]; then
+if [ ! -f "$binary" ]; then
   printf 'Release binary was not produced at %s\n' "$binary" >&2
+  exit 1
+fi
+if [ "$target_os" != windows ] && [ ! -x "$binary" ]; then
+  printf 'Release binary is not executable: %s\n' "$binary" >&2
   exit 1
 fi
 
 rm -rf "$bundle"
+rm -f "$bundle.tar.gz"
 mkdir -p "$bundle"
-install -m 0755 "$binary" "$bundle/svgdiff"
+install -m 0755 "$binary" "$bundle/$executable_name"
 install -m 0644 "$root/LICENSE" "$bundle/LICENSE"
 
 {
@@ -90,10 +157,10 @@ install -m 0644 "$root/LICENSE" "$bundle/LICENSE"
   jq -r '.dependencies[] | "- `\(.name)@\(.version)` (\(.relationship)): [upstream](\(.repository)); `\(.license)` declared by the resolved package manifest; package-local license file: \(if .packaged_license_file then "present" else "absent" end)."' "$dependency_manifest"
 } >"$bundle/THIRD_PARTY_NOTICES.md"
 
-artifact_sha256=$(shasum -a 256 "$bundle/svgdiff" | awk '{ print $1 }')
+artifact_sha256=$(sha256_files "$bundle/$executable_name" | awk '{ print $1 }')
 source_revision=$(git rev-parse HEAD)
 moon_version=$(moon version | sed -n '1p')
-version_output=$($bundle/svgdiff --version)
+version_output=$("$bundle/$executable_name" --version)
 schema_version=$(printf '%s\n' "$version_output" | sed -n 's/^schema: //p')
 renderer_id=$(printf '%s\n' "$version_output" | sed -n 's/^renderer: //p')
 conformance_profile=$(printf '%s\n' "$version_output" | sed -n 's/^renderer-conformance-profile: //p')
@@ -101,6 +168,7 @@ ordering_policy=$(printf '%s\n' "$version_output" | sed -n 's/^ordering-policy: 
 
 jq -n \
   --arg artifact_sha256 "$artifact_sha256" \
+  --arg executable_name "$executable_name" \
   --arg module_version "$module_version" \
   --arg source_revision "$source_revision" \
   --argjson source_dirty "$source_dirty" \
@@ -114,7 +182,7 @@ jq -n \
   --slurpfile dependency_data "$dependency_manifest" \
   '{
     schema_version: "svgdiff-release-provenance/1",
-    subject: { name: "svgdiff", sha256: $artifact_sha256 },
+    subject: { name: $executable_name, sha256: $artifact_sha256 },
     source: { revision: $source_revision, dirty: $source_dirty },
     build: {
       toolchain: $moon_version,
@@ -134,8 +202,13 @@ jq -n \
 
 (
   cd "$bundle"
-  shasum -a 256 LICENSE THIRD_PARTY_NOTICES.md provenance.json svgdiff >SHA256SUMS
+  sha256_files LICENSE THIRD_PARTY_NOTICES.md provenance.json "$executable_name" >SHA256SUMS
 )
 
 printf 'Created %s\n' "$bundle"
-printf 'Verify with: (cd %s && shasum -a 256 -c SHA256SUMS)\n' "$bundle"
+printf 'Verify the internal checksums from inside the bundle with shasum or sha256sum.\n'
+if [ "$archive" = true ]; then
+  archive_path="$bundle.tar.gz"
+  tar -czf "$archive_path" -C "$output_root" "$(basename "$bundle")"
+  printf 'Created %s\n' "$archive_path"
+fi
