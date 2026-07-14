@@ -150,6 +150,28 @@ fn push_shape_value(
 }
 
 ///|
+fn resolved_shape_value(
+  resolution : BasicShapeGeometryResolution,
+  property : String,
+) -> String {
+  for entry in resolution.values {
+    let (name, value) = entry
+    if name == property {
+      return value
+    }
+  }
+  ""
+}
+
+///|
+fn resolved_shape_number_value(
+  resolution : BasicShapeGeometryResolution,
+  property : String,
+) -> Double {
+  parse_shape_number(resolved_shape_value(resolution, property)).unwrap_or(0.0)
+}
+
+///|
 fn parse_shape_points(source : String) -> (Array[Double], Bool, Bool) {
   let parser : TransformListParser = { data: source, position: 0 }
   let values : Array[Double] = []

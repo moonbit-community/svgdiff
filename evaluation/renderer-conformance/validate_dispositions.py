@@ -14,6 +14,10 @@ NEW_CONFORMANCE_CODES = {
     "renderer_transform_raster_unproven",
     "renderer_curved_shape_raster_unproven",
     "renderer_point_shape_raster_unproven",
+    "renderer_stroke_outline_raster_unproven",
+    "renderer_stroke_join_raster_unproven",
+    "renderer_stroke_dash_raster_unproven",
+    "renderer_non_scaling_stroke_unproven",
 }
 
 
@@ -59,7 +63,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/5"
+    expected_profile = "svgdiff-renderer-conformance-profile/6"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:

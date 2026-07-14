@@ -10,6 +10,13 @@ priv struct SourceSubject {
   geometry_complete : Bool
   fillable_interior : Bool
   renders_geometry : Bool
+  stroke_invalid_facts : Array[DeclaredVisualFact]
+  stroke_complete : Bool
+  stroke_paint_present : Bool
+  stroke_path_present : Bool
+  stroke_active : Bool
+  stroke_conservative_expansion : Double
+  stroke_non_scaling : Bool
   path_segments : Array[PathSegmentEvidence]
   path_data_complete : Bool
   transform_chain : Array[SourceTransformSite]
@@ -30,7 +37,9 @@ fn visual_subject_kind(kind : String) -> Bool {
 fn alignment_property_order() -> Array[String] {
   [
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2",
-    "points", "fill", "stroke", "stroke-width", "opacity",
+    "points", "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin",
+    "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
+    "opacity",
   ]
 }
 
@@ -94,12 +103,14 @@ fn subject_from_element(
     None => ()
   }
   let geometry = resolve_basic_shape_geometry(element.name.local_name, facts)
+  let stroke = resolve_stroke_geometry(facts)
   let values : Array[(String, String)] = []
   for fact in facts {
     if fact.property == "transform" {
       continue
     }
-    if !basic_shape_geometry_property(element.name.local_name, fact.property) {
+    if !basic_shape_geometry_property(element.name.local_name, fact.property) &&
+      !stroke_geometry_property(fact.property) {
       values.push(
         (
           fact.property,
@@ -115,6 +126,17 @@ fn subject_from_element(
   for value in geometry.values {
     values.push(value)
   }
+  for value in stroke.values {
+    values.push(value)
+  }
+  let stroke_paint_present = resolved_stroke_paint_present(facts)
+  let stroke_path_present = resolved_stroke_path_present(
+    element.name.local_name,
+    geometry,
+    path_segments,
+    stroke,
+  )
+  let stroke_width = stroke_geometry_number(stroke, "stroke-width")
   let (cumulative_transform, transform_complete, has_transform) = cumulative_transform(
     transform_chain,
   )
@@ -143,6 +165,20 @@ fn subject_from_element(
     geometry_complete: geometry.complete,
     fillable_interior: geometry.fillable_interior,
     renders_geometry: geometry.renders_geometry,
+    stroke_invalid_facts: stroke.invalid_facts,
+    stroke_complete: stroke.complete,
+    stroke_paint_present,
+    stroke_path_present,
+    stroke_active: stroke_paint_present &&
+    stroke_path_present &&
+    stroke_width > 0.0,
+    stroke_conservative_expansion: resolved_stroke_expansion(
+      element.name.local_name,
+      geometry,
+      stroke,
+    ),
+    stroke_non_scaling: resolved_stroke_value(stroke, "vector-effect") ==
+    "non-scaling-stroke",
     path_segments,
     path_data_complete,
     transform_chain,

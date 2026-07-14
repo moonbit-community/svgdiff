@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/5",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/6",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -73,6 +73,78 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_point_shape_raster_unproven",
       "reason": "The pinned renderer and Chromium disagree on 84 pixels for the implicitly closed polyline fill."
+    },
+    {
+      "id": "stroke-cap-butt",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 4 pixels for a butt-capped stroke outline."
+    },
+    {
+      "id": "stroke-cap-round",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 21 pixels for a round-capped stroke outline."
+    },
+    {
+      "id": "stroke-cap-square",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 4 pixels for a square-capped stroke outline."
+    },
+    {
+      "id": "stroke-join-miter",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_join_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 44 pixels for a miter join."
+    },
+    {
+      "id": "stroke-join-round",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_join_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 42 pixels for a round join."
+    },
+    {
+      "id": "stroke-join-bevel",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_join_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 43 pixels for a bevel join."
+    },
+    {
+      "id": "stroke-miterlimit",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_join_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 43 pixels for a miter-limit-controlled join."
+    },
+    {
+      "id": "stroke-dasharray",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_dash_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 9 pixels for a dashed stroke."
+    },
+    {
+      "id": "stroke-dashoffset",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_dash_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 13 pixels for a dash-offset stroke."
+    },
+    {
+      "id": "stroke-join-miter-clip",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_join_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 44 pixels for a miter-clip join."
+    },
+    {
+      "id": "stroke-join-arcs",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_join_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 44 pixels for an arcs join."
+    },
+    {
+      "id": "stroke-non-scaling",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_non_scaling_stroke_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 64 pixels for a transformed non-scaling stroke."
     }
   ]
 }

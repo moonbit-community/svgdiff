@@ -30,6 +30,22 @@ test "current renderer diagnostics expose stable capability gaps" {
       "raster.point_shapes", "guarded",
     ),
     (
+      "<svg width='16' height='16'><line id='edge' x1='1' y1='8' x2='15' y2='8' stroke='black' stroke-dasharray='2 2'/></svg>",
+      "raster.stroke_dash", "guarded",
+    ),
+    (
+      "<svg width='16' height='16'><line id='edge' x1='1' y1='8' x2='15' y2='8' stroke='black' stroke-width='2'/></svg>",
+      "raster.stroke_outline", "guarded",
+    ),
+    (
+      "<svg width='16' height='16'><polyline id='edge' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/></svg>",
+      "raster.stroke_join", "guarded",
+    ),
+    (
+      "<svg width='16' height='16'><line id='edge' x1='1' y1='8' x2='7' y2='8' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='non-scaling-stroke'/></svg>",
+      "raster.non_scaling_stroke", "guarded",
+    ),
+    (
       "<svg width='16' height='16'><defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#gradient)'/></svg>",
       "raster.referenced_gradient", "guarded",
     ),
@@ -63,8 +79,12 @@ test "one capability merges all establishing diagnostics" {
     source,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.renderer_capability_gaps.length(), 1)
-  let gap = report.renderer_capability_gaps[0]
+  let css_gaps = [
+    for gap in report.renderer_capability_gaps if gap.capability_id ==
+    "css.inline_style_precedence" => gap
+  ]
+  assert_eq(css_gaps.length(), 1)
+  let gap = css_gaps[0]
   assert_eq(gap.capability_id, "css.inline_style_precedence")
   assert_eq(gap.support_status, "guarded")
   assert_eq(gap.diagnostic_ids, [

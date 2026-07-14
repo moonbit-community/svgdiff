@@ -32,6 +32,19 @@
     { "id": "basic-shape-circle", "source": "evaluation/renderer-conformance/fixtures/basic-shape-circle.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
     { "id": "basic-shape-ellipse", "source": "evaluation/renderer-conformance/fixtures/basic-shape-ellipse.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
     { "id": "basic-shape-line-fill-only", "source": "evaluation/renderer-conformance/fixtures/basic-shape-line-fill-only.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
-    { "id": "basic-shape-polyline-fill", "source": "evaluation/renderer-conformance/fixtures/basic-shape-polyline-fill.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
+    { "id": "basic-shape-polyline-fill", "source": "evaluation/renderer-conformance/fixtures/basic-shape-polyline-fill.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-cap-butt", "source": "evaluation/renderer-conformance/fixtures/stroke-cap-butt.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-cap-round", "source": "evaluation/renderer-conformance/fixtures/stroke-cap-round.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-cap-square", "source": "evaluation/renderer-conformance/fixtures/stroke-cap-square.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-join-miter", "source": "evaluation/renderer-conformance/fixtures/stroke-join-miter.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-join-round", "source": "evaluation/renderer-conformance/fixtures/stroke-join-round.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-join-bevel", "source": "evaluation/renderer-conformance/fixtures/stroke-join-bevel.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-miterlimit", "source": "evaluation/renderer-conformance/fixtures/stroke-miterlimit.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-dasharray", "source": "evaluation/renderer-conformance/fixtures/stroke-dasharray.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-dashoffset", "source": "evaluation/renderer-conformance/fixtures/stroke-dashoffset.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-zero-width", "source": "evaluation/renderer-conformance/fixtures/stroke-zero-width.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "stroke-join-miter-clip", "source": "evaluation/renderer-conformance/fixtures/stroke-join-miter-clip.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-join-arcs", "source": "evaluation/renderer-conformance/fixtures/stroke-join-arcs.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "stroke-non-scaling", "source": "evaluation/renderer-conformance/fixtures/stroke-non-scaling.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
   ]
 }

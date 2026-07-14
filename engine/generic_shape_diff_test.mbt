@@ -459,3 +459,213 @@ test "gradient references outside the proven slice reduce coverage" {
     }),
   )
 }
+
+///|
+test "equivalent stroke dash spellings retain source differences" {
+  let before = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='black' stroke-width='2' stroke-dasharray='5,3,2' stroke-dashoffset='-1'/>",
+  )
+  let after = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='black' stroke-width='2' stroke-dasharray='5 3 2 5 3 2' stroke-dashoffset='19'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.atomic_differences.length(), 2)
+  assert_true(
+    report.atomic_differences.all(difference => {
+      difference.computed_relation.status == "equivalent"
+    }),
+  )
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_stroke_dash_raster_unproven"
+    }),
+  )
+  assert_true(
+    report.events.all(event => {
+      event.rendered_outcome.magnitude.unwrap().changed_pixels == 0
+    }),
+  )
+}
+
+///|
+test "inactive stroke geometry remains source visible and computed neutral" {
+  let before = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='none' stroke-linecap='butt'/>",
+  )
+  let after = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='none' stroke-linecap='round'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].domain, "geometry.stroke_cap")
+  assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+}
+
+///|
+test "closed solid shapes ignore cap changes but retain stroke provenance" {
+  let before = shape_svg(
+    "<rect id='box' x='2' y='2' width='12' height='12' fill='none' stroke='black' stroke-width=' 2 ' stroke-linecap='butt'/>",
+  )
+  let after = shape_svg(
+    "<rect id='box' x='2' y='2' width='12' height='12' fill='none' stroke='black' stroke-width='4' stroke-linecap='round'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let cap = [
+      for difference in report.atomic_differences if difference.domain ==
+      "geometry.stroke_cap" => difference
+    ][0]
+  assert_eq(cap.computed_relation.status, "equivalent")
+  let width = [
+      for difference in report.atomic_differences if difference.domain ==
+      "geometry.stroke_width" => difference
+    ][0]
+  let before_fact = width.source_fact_before.unwrap()
+  assert_eq(before_fact.authored_value, " 2 ")
+  assert_eq(before_fact.declared_value, "2")
+  assert_eq(before_fact.origin, "presentation_attribute")
+  assert_true(
+    before_fact.source_span.end_offset > before_fact.source_span.start_offset,
+  )
+  assert_eq(width.computed_relation.status, "different")
+}
+
+///|
+test "zero width keeps paint changes source visible and computed neutral" {
+  let before = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='red' stroke-width='0'/>",
+  )
+  let after = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='blue' stroke-width='0'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].domain, "paint.stroke")
+  assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+}
+
+///|
+test "invalid stroke geometry cannot produce complete equality" {
+  let source = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='black' stroke-width='-1'/>",
+  )
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  let diagnostics = [
+    for diagnostic in report.diagnostics if diagnostic.code ==
+    "stroke_geometry_unsupported" => diagnostic
+  ]
+  assert_eq(diagnostics.length(), 1)
+  assert_eq(
+    diagnostics[0].source_locations.map(location => location.source_role),
+    ["before", "after"],
+  )
+}
+
+///|
+test "non-scaling stroke is a distinct computed transform effect" {
+  let before = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='8' y2='10' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='none'/>",
+  )
+  let after = shape_svg(
+    "<line id='edge' x1='2' y1='10' x2='8' y2='10' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='non-scaling-stroke'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "geometry.stroke_vector_effect" &&
+      difference.computed_relation.status == "different"
+    }),
+  )
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_non_scaling_stroke_unproven"
+    }),
+  )
+}
+
+///|
+test "stroke width reports parameter and transform-aware boundary magnitude" {
+  let cases = [
+    ("", Some(1.0)),
+    (" transform='scale(2)'", Some(2.0)),
+    (" transform='scale(2)' vector-effect='non-scaling-stroke'", Some(1.0)),
+  ]
+  for case in cases {
+    let (attributes, expected_displacement) = case
+    let before = shape_svg(
+      "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='black' stroke-width='2'\{attributes}/>",
+    )
+    let after = shape_svg(
+      "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='black' stroke-width='4'\{attributes}/>",
+    )
+    let report = @engine.compare(
+      before,
+      after,
+      @engine.ComparisonProfile::v1_default(),
+    )
+    let differences = [
+      for difference in report.atomic_differences if difference.domain ==
+      "geometry.stroke_width" => difference
+    ]
+    assert_eq(differences.length(), 1)
+    assert_eq(differences[0].magnitude.parameter_signed_user_units, Some(2.0))
+    assert_eq(differences[0].magnitude.parameter_abs_user_units, Some(2.0))
+    assert_eq(
+      differences[0].magnitude.geometry_displacement_css_px,
+      expected_displacement,
+    )
+  }
+}
+
+///|
+test "stroke scalar controls do not masquerade as spatial displacement" {
+  let before = shape_svg(
+    "<polyline id='edge' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-dasharray='2 2' stroke-dashoffset='0'/>",
+  )
+  let after = shape_svg(
+    "<polyline id='edge' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-dasharray='2 2' stroke-dashoffset='1'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let difference = report.atomic_differences[0]
+  assert_eq(difference.domain, "geometry.stroke_dash_offset")
+  assert_eq(difference.magnitude.parameter_abs_user_units, Some(1.0))
+  assert_true(difference.magnitude.geometry_displacement_css_px is None)
+}

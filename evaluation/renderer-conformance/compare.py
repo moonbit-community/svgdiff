@@ -232,7 +232,7 @@ def main() -> None:
     ]
     report = {
         "schema_version": "svgdiff-renderer-conformance/1",
-        "conformance_profile_id": "svgdiff-renderer-conformance-profile/5",
+        "conformance_profile_id": "svgdiff-renderer-conformance-profile/6",
         "renderer_id": "mizchi/svg@0.2.1",
         "raster_representation": "premultiplied_rgba8",
         "browser_environment": {

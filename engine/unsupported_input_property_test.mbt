@@ -52,7 +52,7 @@ test "unsupported element families never produce complete equality" {
 test "unsupported attribute families never produce complete equality" {
   let attributes = [
     "class='painted'", "clip-path='url(#clip)'", "mask='url(#mask)'", "filter='url(#filter)'",
-    "mix-blend-mode='multiply'", "vector-effect='non-scaling-stroke'", "paint-order='stroke fill'",
+    "mix-blend-mode='multiply'", "paint-order='stroke fill'",
   ]
   let shape_starts = [
     "<rect width='8' height='8'", "<circle cx='4' cy='4' r='3'", "<ellipse cx='4' cy='4' rx='3' ry='2'",
@@ -101,6 +101,23 @@ test "unsupported basic shape geometry never proves equality" {
       "<polyline id='route' points='0,0 4,invalid'/>", "<polygon id='area' points='0,0 4,0 4,4 99'/>",
     ] {
     assert_unsupported_never_proves_equality(unsupported_document(content))
+  }
+}
+
+///|
+test "unsupported stroke geometry never proves equality" {
+  for
+    attributes in [
+      "stroke='black' stroke-width='-1'", "stroke='black' stroke-width='2px'", "stroke='black' stroke-linecap='triangle'",
+      "stroke='black' stroke-linejoin='sharp'", "stroke='black' stroke-miterlimit='-1'",
+      "stroke='black' stroke-dasharray='4 -1'", "stroke='black' stroke-dasharray='4,,2'",
+      "stroke='black' stroke-dashoffset='2px'", "stroke='black' vector-effect='non-rotation'",
+    ] {
+    assert_unsupported_never_proves_equality(
+      unsupported_document(
+        "<line id='edge' x1='1' y1='1' x2='14' y2='14' \{attributes}/>",
+      ),
+    )
   }
 }
 

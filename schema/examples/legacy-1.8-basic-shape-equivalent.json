@@ -1,0 +1,373 @@
+{
+  "schema_version": "1.8",
+  "analysis_status": "partial",
+  "coverage_matrix": [
+    {
+      "feature_id": "property.x",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "property.y",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "property.rx",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "property.ry",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.rect",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "property.width",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "property.height",
+      "subject_id": "round",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    },
+    {
+      "feature_id": "domain.geometry.size",
+      "subject_id": "alignment:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "guard.renderer_curved_shape_raster_unproven",
+      "subject_id": "round",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [
+    {
+      "capability_id": "raster.curved_shapes",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:round"
+      ]
+    }
+  ],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/5"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "round"
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "round"
+        }
+      ],
+      "basis": "exact_visual_signature",
+      "evidence": {
+        "score_kind": "exact_visual_signature",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:alignment:0:rx",
+      "subject_id": "alignment:0",
+      "property": "rx",
+      "before": {
+        "property": "rx",
+        "authored_value": "8",
+        "declared_value": "8",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 121,
+          "end_offset": 122
+        }
+      },
+      "after": {
+        "property": "rx",
+        "authored_value": "5",
+        "declared_value": "5",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 121,
+          "end_offset": 122
+        }
+      },
+      "affected_subject_ids": [
+        "round"
+      ]
+    },
+    {
+      "id": "fact:alignment:0:ry",
+      "subject_id": "alignment:0",
+      "property": "ry",
+      "before": null,
+      "after": {
+        "property": "ry",
+        "authored_value": "3",
+        "declared_value": "3",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 128,
+          "end_offset": 129
+        }
+      },
+      "affected_subject_ids": [
+        "round"
+      ]
+    }
+  ],
+  "source_resolutions": [],
+  "atomic_differences": [
+    {
+      "id": "diff:alignment:0:rx",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "geometry.size",
+      "source_before": "8",
+      "source_after": "5",
+      "source_fact_before": {
+        "property": "rx",
+        "authored_value": "8",
+        "declared_value": "8",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 121,
+          "end_offset": 122
+        }
+      },
+      "source_fact_after": {
+        "property": "rx",
+        "authored_value": "5",
+        "declared_value": "5",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 121,
+          "end_offset": 122
+        }
+      },
+      "changed_fact_ids": [
+        "fact:alignment:0:rx"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "equivalent",
+        "reason_code": "same_resolved_fact",
+        "diagnostic_ids": []
+      },
+      "parameter_delta_css_px": 0,
+      "magnitude": {
+        "parameter_abs_user_units": 0,
+        "parameter_signed_user_units": 0,
+        "symmetric_relative": 0.46153846153846156,
+        "geometry_displacement_css_px": 0,
+        "geometry_viewport_fraction": 0,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0,
+        "raster_rgba8_rmse": 0,
+        "raster_linear_premultiplied_rgba_rmse": 0
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "diff:alignment:0:ry",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "geometry.size",
+      "source_before": "",
+      "source_after": "3",
+      "source_fact_after": {
+        "property": "ry",
+        "authored_value": "3",
+        "declared_value": "3",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 128,
+          "end_offset": 129
+        }
+      },
+      "changed_fact_ids": [
+        "fact:alignment:0:ry"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "equivalent",
+        "reason_code": "same_resolved_fact",
+        "diagnostic_ids": []
+      },
+      "parameter_delta_css_px": 0,
+      "magnitude": {
+        "parameter_abs_user_units": 0,
+        "parameter_signed_user_units": 0,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": 0,
+        "geometry_viewport_fraction": 0,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0,
+        "raster_rgba8_rmse": 0,
+        "raster_linear_premultiplied_rgba_rmse": 0
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:alignment:0",
+      "primary_subject_id": "alignment:0",
+      "atomic_difference_ids": [
+        "diff:alignment:0:rx",
+        "diff:alignment:0:ry"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 0,
+          "changed_pixel_fraction": 0,
+          "rgba8_rmse": 0,
+          "linear_premultiplied_rgba_rmse": 0
+        }
+      },
+      "difference_regions": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic:renderer-curved-shape-raster-unproven:round",
+      "code": "renderer_curved_shape_raster_unproven",
+      "subject_id": "round",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 121,
+            "end_offset": 122
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 121,
+            "end_offset": 122
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 128,
+            "end_offset": 129
+          }
+        }
+      ]
+    }
+  ]
+}

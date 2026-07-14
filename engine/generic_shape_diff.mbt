@@ -21,7 +21,13 @@ fn generic_property_domain(property : String) -> String {
     "width" | "height" | "rx" | "ry" | "r" => "geometry.size"
     "fill" => "paint.fill"
     "stroke" => "paint.stroke"
-    "stroke-width" => "paint.stroke_width"
+    "stroke-width" => "geometry.stroke_width"
+    "stroke-linecap" => "geometry.stroke_cap"
+    "stroke-linejoin" => "geometry.stroke_join"
+    "stroke-miterlimit" => "geometry.stroke_miter_limit"
+    "stroke-dasharray" => "geometry.stroke_dash_pattern"
+    "stroke-dashoffset" => "geometry.stroke_dash_offset"
+    "vector-effect" => "geometry.stroke_vector_effect"
     "opacity" => "paint.opacity"
     _ => "document.unsupported"
   }
@@ -46,6 +52,12 @@ fn generic_default_value(property : String) -> String? {
     "fill" => Some("black")
     "stroke" => Some("none")
     "stroke-width" | "opacity" => Some("1")
+    "stroke-linecap" => Some("butt")
+    "stroke-linejoin" => Some("miter")
+    "stroke-miterlimit" => Some("4")
+    "stroke-dasharray" => Some("none")
+    "stroke-dashoffset" => Some("0")
+    "vector-effect" => Some("none")
     _ => None
   }
 }
@@ -78,10 +90,79 @@ fn generic_subject_computed_value(
   if basic_shape_geometry_property(subject.kind, property) {
     return subject_value(subject, property)
   }
+  if property == "stroke" &&
+    (!subject.stroke_path_present || stroke_subject_width(subject) <= 0.0) {
+    return Some("none")
+  }
+  if stroke_geometry_property(property) {
+    if !stroke_subject_property_active(subject, property) {
+      return Some("inactive")
+    }
+    return subject_value(subject, property)
+  }
   if property == "fill" && !subject.fillable_interior {
     return Some("none")
   }
   generic_computed_value(property, fact)
+}
+
+///|
+fn stroke_subject_width(subject : SourceSubject) -> Double {
+  parse_shape_number(subject_value(subject, "stroke-width").unwrap_or("1")).unwrap_or(
+    0.0,
+  )
+}
+
+///|
+fn stroke_subject_has_join(subject : SourceSubject) -> Bool {
+  match subject.kind {
+    "rect" | "polygon" => subject.renders_geometry
+    "polyline" =>
+      match parse_shape_points(subject_value(subject, "points").unwrap_or("")) {
+        (points, true, false) => points.length() >= 6
+        _ => false
+      }
+    "path" => subject.path_segments.length() >= 2
+    _ => false
+  }
+}
+
+///|
+fn stroke_subject_has_linear_effect(subject : SourceSubject) -> Bool {
+  let matrix = subject.cumulative_transform
+  matrix.a != 1.0 || matrix.b != 0.0 || matrix.c != 0.0 || matrix.d != 1.0
+}
+
+///|
+fn stroke_subject_property_active(
+  subject : SourceSubject,
+  property : String,
+) -> Bool {
+  if property == "stroke-width" {
+    return subject.stroke_paint_present && subject.stroke_path_present
+  }
+  if !subject.stroke_active {
+    return false
+  }
+  match property {
+    "stroke-linecap" =>
+      subject_value(subject, "stroke-dasharray") != Some("none") ||
+      subject.kind == "line" ||
+      subject.kind == "polyline" ||
+      subject.kind == "path"
+    "stroke-linejoin" => stroke_subject_has_join(subject)
+    "stroke-miterlimit" => {
+      let join_uses_limit = match subject_value(subject, "stroke-linejoin") {
+        Some("miter") | Some("miter-clip") | Some("arcs") => true
+        _ => false
+      }
+      stroke_subject_has_join(subject) && join_uses_limit
+    }
+    "stroke-dashoffset" =>
+      subject_value(subject, "stroke-dasharray") != Some("none")
+    "vector-effect" => stroke_subject_has_linear_effect(subject)
+    _ => true
+  }
 }
 
 ///|
@@ -106,6 +187,27 @@ fn shape_geometry_diagnostic_ids(
 }
 
 ///|
+fn stroke_geometry_diagnostic_ids(
+  before : SourceSubject,
+  after : SourceSubject,
+) -> Array[String] {
+  let ids : Array[String] = []
+  if !before.stroke_complete {
+    ids.push(
+      "diagnostic:stroke-geometry-unsupported:\{source_subject_id(before)}",
+    )
+  }
+  if !after.stroke_complete {
+    let id = "diagnostic:stroke-geometry-unsupported:\{source_subject_id(after)}"
+    if !ids.contains(id) {
+      ids.push(id)
+    }
+  }
+  ids.sort()
+  ids
+}
+
+///|
 fn generic_relation(
   property : String,
   before_subject : SourceSubject,
@@ -120,6 +222,17 @@ fn generic_relation(
       reason_code: "basic_shape_geometry_unsupported",
       missing_side: None,
       diagnostic_ids: shape_geometry_diagnostic_ids(
+        before_subject, after_subject,
+      ),
+    }
+  }
+  if stroke_geometry_property(property) &&
+    (!before_subject.stroke_complete || !after_subject.stroke_complete) {
+    return {
+      status: "indeterminate",
+      reason_code: "stroke_geometry_unsupported",
+      missing_side: None,
+      diagnostic_ids: stroke_geometry_diagnostic_ids(
         before_subject, after_subject,
       ),
     }
@@ -208,6 +321,41 @@ fn generic_parameter_delta(
 }
 
 ///|
+fn generic_initial_magnitude(
+  property : String,
+  relation : ComputedRelation,
+  before_subject : SourceSubject,
+  after_subject : SourceSubject,
+  parameter_delta : Double?,
+) -> DifferenceMagnitude {
+  let magnitude = empty_difference_magnitude()
+  if property != "stroke-width" || relation.status != "different" {
+    return magnitude
+  }
+  match parameter_delta {
+    Some(delta) => {
+      let before_scale = if before_subject.stroke_non_scaling {
+        1.0
+      } else {
+        before_subject.cumulative_transform.max_linear_scale()
+      }
+      let after_scale = if after_subject.stroke_non_scaling {
+        1.0
+      } else {
+        after_subject.cumulative_transform.max_linear_scale()
+      }
+      {
+        ..magnitude,
+        geometry_displacement_css_px: Some(
+          delta.abs() / 2.0 * before_scale.max(after_scale),
+        ),
+      }
+    }
+    None => magnitude
+  }
+}
+
+///|
 fn alignment_subject_ids(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
@@ -261,24 +409,29 @@ fn generic_basic_shape_report(
   let after = extract_source_subjects_with_profile_or_raise(after_svg, profile) catch {
     _ => return None
   }
-  let single_rect_radius_change = match (before, after) {
+  let single_rect_special_change = match (before, after) {
     ([before_subject], [after_subject]) if before_subject.kind == "rect" &&
-      after_subject.kind == "rect" =>
-      declared_fact_changed(
-        source_subject_fact(before_subject, "rx"),
-        source_subject_fact(after_subject, "rx"),
-      ) ||
-      declared_fact_changed(
-        source_subject_fact(before_subject, "ry"),
-        source_subject_fact(after_subject, "ry"),
-      )
+      after_subject.kind == "rect" => {
+      let properties = ["rx", "ry", "stroke"]
+      for property in alignment_property_order() {
+        if stroke_geometry_property(property) {
+          properties.push(property)
+        }
+      }
+      properties.any(property => {
+        declared_fact_changed(
+          source_subject_fact(before_subject, property),
+          source_subject_fact(after_subject, property),
+        )
+      })
+    }
     _ => false
   }
   let needs_generic = before.length() > 1 ||
     after.length() > 1 ||
     before.any(subject => subject.kind != "rect") ||
     after.any(subject => subject.kind != "rect") ||
-    single_rect_radius_change
+    single_rect_special_change
   if !needs_generic {
     return None
   }
@@ -327,6 +480,9 @@ fn generic_basic_shape_report(
           if rendered.changed_pixels > 0 {
             evidence_layers.push("rendered_evidence")
           }
+          let parameter_delta = generic_parameter_delta(
+            property, before_subject, after_subject, before_fact, after_fact,
+          )
           differences.push({
             id: difference_id,
             subject_role: "entity",
@@ -339,11 +495,11 @@ fn generic_basic_shape_report(
             changed_fact_ids: [fact_id],
             evidence_layers,
             computed_relation: relation,
-            parameter_delta_css_px: generic_parameter_delta(
-              property, before_subject, after_subject, before_fact, after_fact,
-            ),
+            parameter_delta_css_px: parameter_delta,
             presence_magnitude: None,
-            magnitude: empty_difference_magnitude(),
+            magnitude: generic_initial_magnitude(
+              property, relation, before_subject, after_subject, parameter_delta,
+            ),
             domain_ordering: empty_domain_ordering(),
           })
           alignment_difference_ids.push(difference_id)
@@ -455,7 +611,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.8",
+    schema_version: "1.9",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

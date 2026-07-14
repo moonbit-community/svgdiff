@@ -37,6 +37,12 @@ fn supported_rect_property(property : String) -> Bool {
     | "fill"
     | "stroke"
     | "stroke-width"
+    | "stroke-linecap"
+    | "stroke-linejoin"
+    | "stroke-miterlimit"
+    | "stroke-dasharray"
+    | "stroke-dashoffset"
+    | "vector-effect"
     | "opacity" => true
     _ => false
   }

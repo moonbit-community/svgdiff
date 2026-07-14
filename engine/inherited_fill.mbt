@@ -59,12 +59,18 @@ fn generated_subject_id(kind : String, index : Int) -> String {
 
 ///|
 fn inherited_visual_properties() -> Array[String] {
-  ["fill", "stroke", "stroke-width"]
+  [
+    "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
+    "stroke-dasharray", "stroke-dashoffset",
+  ]
 }
 
 ///|
 fn resolved_visual_properties() -> Array[String] {
-  ["fill", "stroke", "stroke-width", "opacity"]
+  [
+    "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
+    "stroke-dasharray", "stroke-dashoffset", "vector-effect", "opacity",
+  ]
 }
 
 ///|
@@ -182,6 +188,12 @@ fn initial_visual_value(property : String) -> String {
     "fill" => "black"
     "stroke" => "none"
     "stroke-width" | "opacity" => "1"
+    "stroke-linecap" => "butt"
+    "stroke-linejoin" => "miter"
+    "stroke-miterlimit" => "4"
+    "stroke-dasharray" => "none"
+    "stroke-dashoffset" => "0"
+    "vector-effect" => "none"
     _ => ""
   }
 }
@@ -222,7 +234,7 @@ fn resolved_visual_for_subject(
               inheritance_depth: depth,
             })
           None =>
-            if property == "opacity" {
+            if property == "opacity" || property == "vector-effect" {
               current = None
             } else {
               current = element.parent_index
@@ -586,7 +598,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.8",
+    schema_version: "1.9",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],

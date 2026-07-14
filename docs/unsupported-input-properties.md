@@ -24,7 +24,8 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 - group/root compositing and effect inputs.
 - malformed transform lists and guarded gradient/pattern resource transforms;
 - invalid and unsupported basic-shape geometry, including negative radii, malformed or odd point lists, and non-unitless lengths;
-- renderer-conformance guards for fractional geometry, rounded rectangles, polygons, fractional leaf opacity, general affine transforms outside the integer axis slice, and the narrow referenced-gradient slice.
+- invalid or unsupported stroke geometry, including negative widths or miter limits, invalid cap/join keywords, negative or malformed dash lists, non-unitless lengths, and unsupported vector effects;
+- renderer-conformance guards for fractional geometry, rounded rectangles, polygons, active stroke outlines/joins/dashes/non-scaling-stroke, fractional leaf opacity, general affine transforms outside the integer axis slice, and the narrow referenced-gradient slice.
 
 Every generated case also asserts that the report contains Diagnostics and at least one limited or failed coverage cell. The generator is intentionally small and reviewable; adding a supported feature requires removing or narrowing its old unsupported generator only in the same change that adds complete-path mutation coverage.
 

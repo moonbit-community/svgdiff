@@ -325,15 +325,145 @@
       "id": "basic-shape-polyline-fill",
       "max_channel_delta": 255,
       "premultiplied_rgba8_rmse": 0.361117256994
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.015625,
+      "changed_pixels": 4,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-cap-butt",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.0625
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.08203125,
+      "changed_pixels": 21,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-cap-round",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.10030455713
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.015625,
+      "changed_pixels": 4,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-cap-square",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.0625
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.171875,
+      "changed_pixels": 44,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-join-miter",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.146220958729
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.1640625,
+      "changed_pixels": 42,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-join-round",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.142424739159
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.16796875,
+      "changed_pixels": 43,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-join-bevel",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.148490933264
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.16796875,
+      "changed_pixels": 43,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-miterlimit",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.148490933264
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.03515625,
+      "changed_pixels": 9,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-dasharray",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.09375
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.05078125,
+      "changed_pixels": 13,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-dashoffset",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.112673477358
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "stroke-zero-width",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.171875,
+      "changed_pixels": 44,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-join-miter-clip",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.146220958729
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.171875,
+      "changed_pixels": 44,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-join-arcs",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.146220958729
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.25,
+      "changed_pixels": 64,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "stroke-non-scaling",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.25
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/5",
-  "fixture_source_set_sha256": "6d56131c407539d3d0abeb7c2b5e8fbe87cfeb03510ffbeb603fde2e24a0c4af",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/6",
+  "fixture_source_set_sha256": "1d3d0f0a42342e304879879f78581c6577f1f0197300b7a1dac3e66471d9e53b",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 32,
+    "cases": 45,
     "categories": {
       "alpha": {
         "cases": 3,
@@ -351,9 +481,9 @@
         "exact": 0
       },
       "geometry": {
-        "cases": 21,
-        "divergent": 8,
-        "exact": 13
+        "cases": 34,
+        "divergent": 20,
+        "exact": 14
       },
       "paint": {
         "cases": 6,
@@ -361,10 +491,10 @@
         "exact": 4
       }
     },
-    "divergent": 12,
-    "exact": 20,
+    "divergent": 24,
+    "exact": 21,
     "exploratory": 2,
-    "guarded": 11,
-    "supported": 19
+    "guarded": 23,
+    "supported": 20
   }
 }

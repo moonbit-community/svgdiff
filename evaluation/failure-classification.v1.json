@@ -7,7 +7,15 @@
         "renderer_fractional_geometry_unproven",
         "renderer_fractional_opacity_unproven",
         "renderer_gradient_raster_unproven",
-        "renderer_style_precedence_unresolved"
+        "renderer_style_precedence_unresolved",
+        "renderer_transform_raster_unproven",
+        "renderer_viewport_raster_unproven",
+        "renderer_curved_shape_raster_unproven",
+        "renderer_point_shape_raster_unproven",
+        "renderer_stroke_outline_raster_unproven",
+        "renderer_stroke_join_raster_unproven",
+        "renderer_stroke_dash_raster_unproven",
+        "renderer_non_scaling_stroke_unproven"
       ],
       "prefix": []
     },

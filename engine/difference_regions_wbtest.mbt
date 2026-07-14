@@ -38,3 +38,21 @@ test "polygon bounds use the canonical point sequence" {
   assert_eq(bounds.width, 7.0)
   assert_eq(bounds.height, 5.0)
 }
+
+///|
+test "stroke bounds distinguish ordinary and non-scaling expansion" {
+  let ordinary = extract_source_subjects_or_raise(
+      "<svg width='40' height='40'><line x1='10' y1='10' x2='20' y2='10' stroke='black' stroke-width='4' stroke-linecap='round' transform='scale(2)'/></svg>",
+    )[0]
+  let non_scaling = extract_source_subjects_or_raise(
+      "<svg width='40' height='40'><line x1='10' y1='10' x2='20' y2='10' stroke='black' stroke-width='4' stroke-linecap='round' transform='scale(2)' vector-effect='non-scaling-stroke'/></svg>",
+    )[0]
+  assert_true(
+    source_subject_bounds(ordinary)
+    is Some({ x: 16.0, y: 16.0, width: 28.0, height: 8.0 }),
+  )
+  assert_true(
+    source_subject_bounds(non_scaling)
+    is Some({ x: 18.0, y: 18.0, width: 24.0, height: 4.0 }),
+  )
+}

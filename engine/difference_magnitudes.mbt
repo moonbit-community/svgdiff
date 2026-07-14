@@ -66,6 +66,8 @@ fn difference_magnitude(
   }
   let geometry = difference.domain.find("geometry.") == Some(0)
   let path_geometry = difference.domain.find("geometry.path.") == Some(0)
+  let positional_geometry = difference.domain == "geometry.position" ||
+    difference.domain == "geometry.size"
   let transform_translation = transform_translation_displacement(
     difference.magnitude.transform_effect,
   )
@@ -82,7 +84,9 @@ fn difference_magnitude(
       transform_translation
     } else if path_geometry {
       difference.magnitude.geometry_displacement_css_px
-    } else if geometry {
+    } else if difference.magnitude.geometry_displacement_css_px is Some(_) {
+      difference.magnitude.geometry_displacement_css_px
+    } else if positional_geometry {
       parameter_abs
     } else {
       None
@@ -92,8 +96,12 @@ fn difference_magnitude(
         transform_translation
       } else if path_geometry {
         difference.magnitude.geometry_displacement_css_px
-      } else {
+      } else if difference.magnitude.geometry_displacement_css_px is Some(_) {
+        difference.magnitude.geometry_displacement_css_px
+      } else if positional_geometry {
         parameter_abs
+      } else {
+        None
       }
       match displacement {
         Some(value) => Some(value / viewport_diagonal)

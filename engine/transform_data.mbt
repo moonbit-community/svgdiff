@@ -65,6 +65,18 @@ fn AffineTransform::is_identity(self : AffineTransform) -> Bool {
 }
 
 ///|
+fn AffineTransform::max_linear_scale(self : AffineTransform) -> Double {
+  let squared_sum = self.a * self.a +
+    self.b * self.b +
+    self.c * self.c +
+    self.d * self.d
+  let determinant = self.a * self.d - self.b * self.c
+  let discriminant = (squared_sum * squared_sum -
+  4.0 * determinant * determinant).max(0.0)
+  ((squared_sum + discriminant.sqrt()) / 2.0).sqrt()
+}
+
+///|
 fn AffineTransform::translate(tx : Double, ty : Double) -> AffineTransform {
   { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: tx, f: ty }
 }

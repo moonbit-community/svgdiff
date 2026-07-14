@@ -53,6 +53,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0026](0026-adopt-milky-xml-for-authored-parsing.md) | Accepted, implemented | Adopt `Milky2018/xml` for authored parsing. |
 | [0046](0046-normalize-style-precedence-at-the-renderer-boundary.md) | Accepted, implemented | Normalize complete supported style conflicts only in private renderer-input copies. |
 | [0049](0049-separate-authored-and-used-basic-shape-geometry.md) | Accepted, implemented | Preserve authored geometry while resolving canonical used basic-shape geometry. |
+| [0050](0050-resolve-stroke-used-geometry-before-raster-conformance.md) | Accepted, implemented for the unitless static slice | Resolve canonical stroke used geometry independently from renderer conformance. |
 
 ## CLI and distribution decisions
 

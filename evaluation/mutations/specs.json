@@ -5,7 +5,9 @@
     "source_properties": [
       "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
       "x1", "y1", "x2", "y2", "points", "fill", "stroke",
-      "stroke-width", "opacity", "transform", "viewBox"
+      "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
+      "stroke-dasharray", "stroke-dashoffset", "vector-effect",
+      "opacity", "transform", "viewBox"
     ]
   },
   "cases": [
@@ -132,7 +134,7 @@
       "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
       "after_value": "<line id='edge' x1='3' y1='1' x2='14' y2='14' stroke='black'/>",
       "expected_changed_fact": { "subject_kind": "line", "source_property": "x1", "report_property": "x1", "before_declared_value": "1", "after_declared_value": "3", "affected_subject_ids": ["edge"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-line-y1",
@@ -140,7 +142,7 @@
       "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
       "after_value": "<line id='edge' x1='1' y1='3' x2='14' y2='14' stroke='black'/>",
       "expected_changed_fact": { "subject_kind": "line", "source_property": "y1", "report_property": "y1", "before_declared_value": "1", "after_declared_value": "3", "affected_subject_ids": ["edge"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-line-x2",
@@ -148,7 +150,7 @@
       "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
       "after_value": "<line id='edge' x1='1' y1='1' x2='12' y2='14' stroke='black'/>",
       "expected_changed_fact": { "subject_kind": "line", "source_property": "x2", "report_property": "x2", "before_declared_value": "14", "after_declared_value": "12", "affected_subject_ids": ["edge"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-line-y2",
@@ -156,7 +158,55 @@
       "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
       "after_value": "<line id='edge' x1='1' y1='1' x2='14' y2='12' stroke='black'/>",
       "expected_changed_fact": { "subject_kind": "line", "source_property": "y2", "report_property": "y2", "before_declared_value": "14", "after_declared_value": "12", "affected_subject_ids": ["edge"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-stroke-linecap",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-linecap='butt'/>",
+      "after_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-linecap='round'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "stroke-linecap", "report_property": "stroke-linecap", "before_declared_value": "butt", "after_declared_value": "round", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-polyline-stroke-linejoin",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<polyline id='route' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-width='2' stroke-linejoin='miter'/>",
+      "after_value": "<polyline id='route' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/>",
+      "expected_changed_fact": { "subject_kind": "polyline", "source_property": "stroke-linejoin", "report_property": "stroke-linejoin", "before_declared_value": "miter", "after_declared_value": "round", "affected_subject_ids": ["route"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-polyline-stroke-miterlimit",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<polyline id='route' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-width='2' stroke-linejoin='miter' stroke-miterlimit='2'/>",
+      "after_value": "<polyline id='route' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-width='2' stroke-linejoin='miter' stroke-miterlimit='6'/>",
+      "expected_changed_fact": { "subject_kind": "polyline", "source_property": "stroke-miterlimit", "report_property": "stroke-miterlimit", "before_declared_value": "2", "after_declared_value": "6", "affected_subject_ids": ["route"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-stroke-dasharray",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-dasharray='2 2'/>",
+      "after_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-dasharray='4 2'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "stroke-dasharray", "report_property": "stroke-dasharray", "before_declared_value": "2 2", "after_declared_value": "4 2", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-stroke-dashoffset",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-dasharray='2 2' stroke-dashoffset='0'/>",
+      "after_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-dasharray='2 2' stroke-dashoffset='1'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "stroke-dashoffset", "report_property": "stroke-dashoffset", "before_declared_value": "0", "after_declared_value": "1", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-vector-effect",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='2' y1='4' x2='7' y2='4' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='none'/>",
+      "after_value": "<line id='edge' x1='2' y1='4' x2='7' y2='4' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='non-scaling-stroke'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "vector-effect", "report_property": "vector-effect", "before_declared_value": "none", "after_declared_value": "non-scaling-stroke", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-polyline-points",

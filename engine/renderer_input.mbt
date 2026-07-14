@@ -207,6 +207,63 @@ fn normalize_renderer_shape_geometry(input : String) -> String {
 }
 
 ///|
+fn renderer_stroke_geometry_edits(
+  input : String,
+  element : @xml.NamespaceElement,
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  let facts = rect_declared_facts_from_element(input, element).facts
+  let resolution = resolve_stroke_geometry(facts)
+  if !resolution.complete {
+    return
+  }
+  let has_local_dasharray = shape_fact(facts, "stroke-dasharray") is Some(_)
+  for entry in resolution.values {
+    let (property, value) = entry
+    if property == "stroke-dashoffset" && !has_local_dasharray {
+      continue
+    }
+    match shape_fact(facts, property) {
+      Some(fact) if fact.origin == "inline_style" =>
+        edits.push({
+          start_offset: fact.source_span.start_offset,
+          end_offset: fact.source_span.end_offset,
+          replacement: value,
+        })
+      _ => ()
+    }
+    match renderer_attribute(element, property) {
+      Some(attribute) =>
+        edits.push({
+          start_offset: attribute.value_span.start.offset,
+          end_offset: attribute.value_span.end.offset,
+          replacement: value,
+        })
+      None => ()
+    }
+  }
+}
+
+///|
+fn normalize_renderer_stroke_geometry(input : String) -> String {
+  let reader = @xml.NamespaceReader::from_string(input)
+  let events = reader.read_events_until_eof() catch { _ => return input }
+  let edits : Array[RendererValueEdit] = []
+  for event in events {
+    match event.kind {
+      Start(element) | Empty(element) =>
+        renderer_stroke_geometry_edits(input, element, edits)
+      _ => ()
+    }
+  }
+  apply_renderer_value_edits(input, edits)
+}
+
+///|
 fn normalize_renderer_input(input : String) -> String {
-  normalize_renderer_shape_geometry(normalize_renderer_style_precedence(input))
+  normalize_renderer_shape_geometry(
+    normalize_renderer_stroke_geometry(
+      normalize_renderer_style_precedence(input),
+    ),
+  )
 }

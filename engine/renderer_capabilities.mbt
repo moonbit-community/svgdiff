@@ -17,6 +17,14 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
       Some(("raster.curved_shapes", "guarded"))
     "renderer_point_shape_raster_unproven" =>
       Some(("raster.point_shapes", "guarded"))
+    "renderer_stroke_outline_raster_unproven" =>
+      Some(("raster.stroke_outline", "guarded"))
+    "renderer_stroke_join_raster_unproven" =>
+      Some(("raster.stroke_join", "guarded"))
+    "renderer_stroke_dash_raster_unproven" =>
+      Some(("raster.stroke_dash", "guarded"))
+    "renderer_non_scaling_stroke_unproven" =>
+      Some(("raster.non_scaling_stroke", "guarded"))
     "group_opacity_compositing_unsupported" =>
       Some(("compositing.group_opacity", "unavailable"))
     _ => None

@@ -62,9 +62,48 @@ fn points_bounds(subject : SourceSubject) -> CssBounds? {
 }
 
 ///|
-fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
+fn inflate_bounds(bounds : CssBounds, expansion : Double) -> CssBounds {
+  {
+    x: bounds.x - expansion,
+    y: bounds.y - expansion,
+    width: bounds.width + expansion * 2.0,
+    height: bounds.height + expansion * 2.0,
+  }
+}
+
+///|
+fn transform_bounds(
+  bounds : CssBounds,
+  transform : AffineTransform,
+) -> CssBounds {
+  let points = [
+    (bounds.x, bounds.y),
+    (bounds.x + bounds.width, bounds.y),
+    (bounds.x, bounds.y + bounds.height),
+    (bounds.x + bounds.width, bounds.y + bounds.height),
+  ]
+  let mut min_x = 1.7976931348623157e308
+  let mut min_y = 1.7976931348623157e308
+  let mut max_x = -1.7976931348623157e308
+  let mut max_y = -1.7976931348623157e308
+  for point in points {
+    let (x, y) = point
+    let transformed_x = transform.a * x + transform.c * y + transform.e
+    let transformed_y = transform.b * x + transform.d * y + transform.f
+    min_x = min_x.min(transformed_x)
+    min_y = min_y.min(transformed_y)
+    max_x = max_x.max(transformed_x)
+    max_y = max_y.max(transformed_y)
+  }
+  { x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y }
+}
+
+///|
+fn source_subject_geometry_bounds(subject : SourceSubject) -> CssBounds? {
   if !subject.renders_geometry {
-    return None
+    if !subject.stroke_active {
+      return None
+    }
   }
   match subject.kind {
     "rect" =>
@@ -116,6 +155,32 @@ fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
     }
     "polyline" | "polygon" => points_bounds(subject)
     _ => None
+  }
+}
+
+///|
+fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
+  let bounds = match source_subject_geometry_bounds(subject) {
+    Some(bounds) => bounds
+    None => return None
+  }
+  if !subject.stroke_active {
+    return Some(bounds)
+  }
+  if subject.stroke_non_scaling {
+    Some(
+      inflate_bounds(
+        transform_bounds(bounds, subject.cumulative_transform),
+        subject.stroke_conservative_expansion,
+      ),
+    )
+  } else {
+    Some(
+      transform_bounds(
+        inflate_bounds(bounds, subject.stroke_conservative_expansion),
+        subject.cumulative_transform,
+      ),
+    )
   }
 }
 

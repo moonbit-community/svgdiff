@@ -107,7 +107,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.8",
+      "schema_version": "1.9",
       "source_resolutions": [
         {
           "subject_id": "box",
@@ -131,5 +131,38 @@ test "structured report JSON exposes inherited fill provenance" {
       ..
     } => ()
     _ => fail("serialized report did not retain inherited fill provenance")
+  }
+}
+
+///|
+test "inherited stroke geometry retains declaration ownership" {
+  let before = "<svg width='16' height='16'><g id='layer' stroke='black' stroke-linecap='butt'><line id='edge' x1='1' y1='8' x2='15' y2='8'/></g></svg>"
+  let after = "<svg width='16' height='16'><g id='layer' stroke='black' stroke-linecap='round'><line id='edge' x1='1' y1='8' x2='15' y2='8'/></g></svg>"
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let pairs = [
+    for pair in report.source_resolutions if pair.subject_id == "edge" &&
+    pair.property == "stroke-linecap" => pair
+  ]
+  assert_eq(pairs.length(), 1)
+  match (pairs[0].before, pairs[0].after) {
+    (Some(before), Some(after)) => {
+      assert_eq(before.resolution, "inherited")
+      assert_eq(after.resolution, "inherited")
+      assert_eq(before.declaration_owner_id, Some("layer"))
+      assert_eq(after.declaration_owner_id, Some("layer"))
+      assert_true(
+        before.declaration.unwrap().source_span.end_offset >
+        before.declaration.unwrap().source_span.start_offset,
+      )
+      assert_true(
+        after.declaration.unwrap().source_span.end_offset >
+        after.declaration.unwrap().source_span.start_offset,
+      )
+    }
+    _ => fail("expected inherited stroke cap resolutions")
   }
 }

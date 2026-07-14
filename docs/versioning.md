@@ -10,11 +10,11 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.4.2` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.8` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.8` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.4.3` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.9` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.9` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/5` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/6` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -49,6 +49,8 @@ Module `0.4.0` decomposes each side's cumulative affine matrix into canonical tr
 Module `0.4.1` resolves root and nested SVG viewport mappings under the one explicit Comparison Viewport. Viewport declarations produce `document.viewport` facts and their leaf consequences flow through cumulative matrices and typed transform effects. Invalid viewport semantics and unproven fractional rasterization allocate distinct Diagnostics, while four exact browser fixtures advance renderer conformance to `/4`. These behavior and Diagnostic additions advance Structured Report schema to `1.7`; public report shape and v2 ordering tuples remain unchanged.
 
 Module `0.4.2` resolves canonical used geometry for `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`, retaining authored declarations and Source Spans. It adds source-located invalid-geometry and pinned-renderer boundary Diagnostics, advances the production renderer identity with a basic-shape used-geometry normalizer, and adds three browser fixtures. These behavior and Diagnostic additions advance Structured Report schema to `1.8` and renderer conformance to `/5`; public report shape and v2 ordering tuples remain unchanged.
+
+Module `0.4.3` resolves canonical unitless stroke width, caps, joins, miter limits, dash arrays, dash offsets, and `vector-effect` while retaining authored provenance. It adds source-located invalid-stroke Diagnostics, transform-aware width magnitudes and conservative bounds, plus separate active outline, join, dash, and non-scaling-stroke renderer guards. Thirteen Chromium fixtures advance renderer conformance to `/6`, and the private stroke used-geometry normalizer advances the production renderer identity. The new stable Diagnostic conditions advance Structured Report schema to `1.9`; public report fields and v2 tuple policy remain unchanged.
 
 ## Structured Report schema versions
 

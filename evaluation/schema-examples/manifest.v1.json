@@ -102,7 +102,11 @@
         "analysis_status": "partial",
         "domains": ["geometry.path.parameter", "geometry.path.parameter"],
         "computed_relations": ["different", "different"],
-        "diagnostic_codes": ["unsupported_visual_subject"],
+        "diagnostic_codes": [
+          "unsupported_visual_subject",
+          "renderer_stroke_outline_raster_unproven",
+          "renderer_stroke_join_raster_unproven"
+        ],
         "magnitude_checks": [
           { "domain": "geometry.path.parameter", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 12 },
           { "domain": "geometry.path.parameter", "field": "magnitude.geometry_displacement_css_px", "op": "gt", "value": 0 }
@@ -162,6 +166,25 @@
         "diagnostic_codes": ["renderer_curved_shape_raster_unproven"],
         "magnitude_checks": [
           { "domain": "geometry.size", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "stroke-equivalent",
+      "before": "evaluation/schema-examples/cases/stroke-equivalent/before.svg",
+      "after": "evaluation/schema-examples/cases/stroke-equivalent/after.svg",
+      "output": "schema/examples/stroke-equivalent.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["geometry.stroke_dash_pattern", "geometry.stroke_dash_offset"],
+        "computed_relations": ["equivalent", "equivalent"],
+        "diagnostic_codes": [
+          "renderer_stroke_outline_raster_unproven",
+          "renderer_stroke_dash_raster_unproven"
+        ],
+        "magnitude_checks": [
+          { "domain": "geometry.stroke_dash_pattern", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 },
+          { "domain": "geometry.stroke_dash_offset", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
         ]
       }
     },

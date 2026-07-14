@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.8",
+  "schema_version": "1.9",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -9,7 +9,9 @@
       "computed_appearance": "limited",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path"
+        "diagnostic:unsupported-visual-subject:path",
+        "diagnostic:renderer-stroke-join-raster-unproven:mark",
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
       ]
     },
     {
@@ -27,7 +29,9 @@
       "computed_appearance": "limited",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path"
+        "diagnostic:unsupported-visual-subject:path",
+        "diagnostic:renderer-stroke-join-raster-unproven:mark",
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
       ]
     },
     {
@@ -37,7 +41,9 @@
       "computed_appearance": "limited",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path"
+        "diagnostic:unsupported-visual-subject:path",
+        "diagnostic:renderer-stroke-join-raster-unproven:mark",
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
       ]
     },
     {
@@ -47,7 +53,9 @@
       "computed_appearance": "limited",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path"
+        "diagnostic:unsupported-visual-subject:path",
+        "diagnostic:renderer-stroke-join-raster-unproven:mark",
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
       ]
     },
     {
@@ -57,7 +65,9 @@
       "computed_appearance": "limited",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path"
+        "diagnostic:unsupported-visual-subject:path",
+        "diagnostic:renderer-stroke-join-raster-unproven:mark",
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
       ]
     },
     {
@@ -77,17 +87,52 @@
       "diagnostic_ids": [
         "diagnostic:unsupported-visual-subject:path"
       ]
+    },
+    {
+      "feature_id": "guard.renderer_stroke_join_raster_unproven",
+      "subject_id": "mark",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-join-raster-unproven:mark"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_stroke_outline_raster_unproven",
+      "subject_id": "mark",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
+      ]
     }
   ],
-  "renderer_capability_gaps": [],
+  "renderer_capability_gaps": [
+    {
+      "capability_id": "raster.stroke_join",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-join-raster-unproven:mark"
+      ]
+    },
+    {
+      "capability_id": "raster.stroke_outline",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
+      ]
+    }
+  ],
   "profile": {
     "viewport_width": 16,
     "viewport_height": 16,
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/5"
+    "renderer_id": "svgdiff/style-precedence-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/6"
   },
   "subject_alignments": [
     {
@@ -342,7 +387,9 @@
               "fact:alignment:0:d:segment:1:parameter:y"
             ],
             "diagnostic_ids": [
-              "diagnostic:unsupported-visual-subject:path"
+              "diagnostic:unsupported-visual-subject:path",
+              "diagnostic:renderer-stroke-outline-raster-unproven:mark",
+              "diagnostic:renderer-stroke-join-raster-unproven:mark"
             ]
           }
         },
@@ -368,7 +415,9 @@
               "fact:alignment:0:d:segment:1:parameter:y"
             ],
             "diagnostic_ids": [
-              "diagnostic:unsupported-visual-subject:path"
+              "diagnostic:unsupported-visual-subject:path",
+              "diagnostic:renderer-stroke-outline-raster-unproven:mark",
+              "diagnostic:renderer-stroke-join-raster-unproven:mark"
             ]
           }
         },
@@ -394,7 +443,9 @@
               "fact:alignment:0:d:segment:1:parameter:y"
             ],
             "diagnostic_ids": [
-              "diagnostic:unsupported-visual-subject:path"
+              "diagnostic:unsupported-visual-subject:path",
+              "diagnostic:renderer-stroke-outline-raster-unproven:mark",
+              "diagnostic:renderer-stroke-join-raster-unproven:mark"
             ]
           }
         },
@@ -420,7 +471,9 @@
               "fact:alignment:0:d:segment:1:parameter:y"
             ],
             "diagnostic_ids": [
-              "diagnostic:unsupported-visual-subject:path"
+              "diagnostic:unsupported-visual-subject:path",
+              "diagnostic:renderer-stroke-outline-raster-unproven:mark",
+              "diagnostic:renderer-stroke-join-raster-unproven:mark"
             ]
           }
         }
@@ -452,6 +505,53 @@
           }
         }
       ]
+    },
+    {
+      "id": "diagnostic:renderer-stroke-outline-raster-unproven:mark",
+      "code": "renderer_stroke_outline_raster_unproven",
+      "subject_id": "mark",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 138,
+            "end_offset": 143
+          }
+        },
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 159,
+            "end_offset": 160
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 138,
+            "end_offset": 143
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 159,
+            "end_offset": 160
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:renderer-stroke-join-raster-unproven:mark",
+      "code": "renderer_stroke_join_raster_unproven",
+      "subject_id": "mark",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": []
     }
   ]
 }

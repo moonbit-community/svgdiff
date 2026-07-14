@@ -1,6 +1,6 @@
 # Analysis Status Contract
 
-Status: current schema `1.8` caller contract
+Status: current schema `1.9` caller contract
 
 Last verified: 2026-07-14
 
@@ -31,7 +31,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.8`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.9`'s implemented support contract under the recorded Comparison Profile.
 
 It does not support any of these stronger statements:
 

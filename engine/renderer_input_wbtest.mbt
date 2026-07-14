@@ -106,3 +106,21 @@ test "renderer input leaves invalid shape geometry for diagnostics" {
   let source = "<svg><circle cx='4' cy='4' r='-1'/></svg>"
   assert_eq(normalize_renderer_input(source), source)
 }
+
+///|
+test "renderer input canonicalizes used dash geometry" {
+  let source = "<svg><line stroke='black' stroke-dasharray='5,3,2' stroke-dashoffset='-1'/></svg>"
+  let normalized = normalize_renderer_input(source)
+  assert_true(normalized.find("stroke-dasharray='5 3 2 5 3 2'") is Some(_))
+  assert_true(normalized.find("stroke-dashoffset='19'") is Some(_))
+  let solid = "<svg><line stroke='black' style='stroke-dasharray:0,0,0;stroke-dashoffset:7'/></svg>"
+  let normalized_solid = normalize_renderer_input(solid)
+  assert_true(normalized_solid.find("stroke-dasharray:none") is Some(_))
+  assert_true(normalized_solid.find("stroke-dashoffset:0") is Some(_))
+}
+
+///|
+test "renderer input leaves invalid stroke geometry for diagnostics" {
+  let source = "<svg><line stroke='black' stroke-dasharray='4,-1'/></svg>"
+  assert_eq(normalize_renderer_input(source), source)
+}
