@@ -26,6 +26,7 @@ This directory separates the current product contract from future plans and hist
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
 | How are deterministic browser reference rasters captured? | [`browser-oracle/README.md`](../evaluation/browser-oracle/README.md) |
+| How is the pinned renderer compared with those rasters? | [`renderer-conformance/README.md`](../evaluation/renderer-conformance/README.md) |
 | When does roadmap work become an `ISS-###` issue? | [`work-planning.md`](work-planning.md) |
 | How are milestone reviews and rejected capabilities recorded? | [`roadmap-governance.md`](roadmap-governance.md) |
 | What do the report concepts and invariants mean? | [`core-model.md`](core-model.md) |

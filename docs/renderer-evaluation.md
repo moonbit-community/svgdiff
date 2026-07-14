@@ -50,7 +50,9 @@ Paths, transforms, general CSS, complete gradients, filters, masks, clipping, bl
 
 ### Browser oracle
 
-The [browser rendering oracle](../evaluation/browser-oracle/README.md) captures the complete-analysis corpus fixtures twice under Chromium, DPR `1`, explicit viewports, an offline context, and a transparent background. It records browser identity plus source and PNG hashes and validates reproducible RGB/RGBA output. This establishes an independent raster source; renderer-versus-browser metrics and acceptance thresholds remain the following roadmap item.
+The [browser rendering oracle](../evaluation/browser-oracle/README.md) captures the complete-analysis corpus fixtures and focused conformance fixtures under Chromium, DPR `1`, explicit viewports, an offline context, and a transparent background. It records browser identity plus source and PNG hashes and validates reproducible RGB/RGBA output.
+
+The independent [renderer conformance comparison](../evaluation/renderer-conformance/README.md) normalizes browser and `mizchi/svg@0.2.1` pixels to premultiplied RGBA8. Its initial 15-case baseline records 10 exact cases and 5 divergences across geometry, paint, alpha, and compositing; the exploratory clipping case is exact. These are measurements, not acceptance decisions, and do not change Structured Report evidence or coverage.
 
 ## Escalation rule
 
@@ -71,4 +73,5 @@ For each missing capability:
 - [Historical Influence Provenance prototype verdict](research/influence-provenance-prototype.md)
 - [Current v1 support contract](v1-scope.md)
 - [Browser rendering oracle](../evaluation/browser-oracle/README.md)
+- [Pinned renderer conformance baseline](../evaluation/renderer-conformance/README.md)
 - [Dependency, security, and upstream status](dependency-security.md)

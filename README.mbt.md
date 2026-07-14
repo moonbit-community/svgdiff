@@ -174,6 +174,7 @@ moon test --target native
 sh scripts/test-cli.sh
 sh scripts/test-install.sh
 sh scripts/test-browser-oracle.sh
+sh scripts/test-renderer-conformance.sh
 ```
 
-The browser oracle validation additionally requires Node.js/npm (`npx`) and launches pinned headless Chromium outside the production engine.
+The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine.

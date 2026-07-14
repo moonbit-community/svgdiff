@@ -1,0 +1,198 @@
+{
+  "browser_environment": {
+    "browser_engine": "chromium",
+    "browser_version": "150.0.0.0",
+    "device_pixel_ratio": 1,
+    "playwright_cli_version": "0.1.17"
+  },
+  "cases": [
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "equivalent-color-before",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "equivalent-color-after",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "subtle-geometry-before",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0625,
+      "changed_pixels": 16,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "subtle-geometry-after",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.176776695297
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "salient-fill-before",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "salient-fill-after",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "structural-insertion-before",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "structural-insertion-after",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "gradient-stop-before",
+      "max_channel_delta": 11,
+      "premultiplied_rgba8_rmse": 0.013811660528
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "gradient-stop-after",
+      "max_channel_delta": 11,
+      "premultiplied_rgba8_rmse": 0.010902042336
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "zero-contribution-before",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "zero-contribution-after",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "leaf-alpha",
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.002079725827
+    },
+    {
+      "category": "clipping",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "exploratory",
+      "id": "clip-path",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.640625,
+      "changed_pixels": 164,
+      "comparison": "divergent",
+      "coverage_claim": "exploratory",
+      "id": "group-opacity",
+      "max_channel_delta": 127,
+      "premultiplied_rgba8_rmse": 0.281871056996
+    }
+  ],
+  "fixture_source_set_sha256": "98443e05ffc17014c59d048a1481ba902d0496fbae720b5fbb7da00d65e0bef0",
+  "raster_representation": "premultiplied_rgba8",
+  "renderer_id": "mizchi/svg@0.2.1",
+  "schema_version": "svgdiff-renderer-conformance/1",
+  "summary": {
+    "cases": 15,
+    "categories": {
+      "alpha": {
+        "cases": 3,
+        "divergent": 1,
+        "exact": 2
+      },
+      "clipping": {
+        "cases": 1,
+        "divergent": 0,
+        "exact": 1
+      },
+      "compositing": {
+        "cases": 1,
+        "divergent": 1,
+        "exact": 0
+      },
+      "geometry": {
+        "cases": 4,
+        "divergent": 1,
+        "exact": 3
+      },
+      "paint": {
+        "cases": 6,
+        "divergent": 2,
+        "exact": 4
+      }
+    },
+    "divergent": 5,
+    "exact": 10,
+    "exploratory": 2,
+    "supported": 13
+  }
+}
