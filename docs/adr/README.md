@@ -11,7 +11,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0003](0003-base-diff-identity-on-visual-correspondence.md) | Superseded by 0005 | Base identity on visual correspondence. |
 | [0004](0004-record-differences-at-three-evidence-layers.md) | Accepted | Preserve source, computed, and rendered evidence layers. |
 | [0005](0005-use-set-to-set-entity-alignments.md) | Superseded by 0017 | Use set-to-set entity alignments. |
-| [0006](0006-use-render-observations-as-visible-change-evidence.md) | Accepted | Use render observations as visible-change evidence. |
+| [0006](0006-use-render-observations-as-visible-change-evidence.md) | Render-observation decision accepted; exact Contribution Index clause superseded by 0038 | Use render observations as visible-change evidence. |
 | [0007](0007-separate-magnitude-evidence-from-impact-policy.md) | Accepted | Separate magnitude evidence from impact policy. |
 | [0008](0008-use-domain-specific-ordering-tuples.md) | Accepted | Use domain-specific ordering tuples. |
 | [0013](0013-keep-diagnostic-rerendering-outside-the-report.md) | Accepted, implemented | Keep diagnostic rerendering outside the report. |
@@ -58,5 +58,6 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0035](0035-gate-renderer-ownership-with-conformance-evidence.md) | Accepted | Gate renderer ownership with conformance evidence and upstream viability. |
 | [0036](0036-report-encountered-renderer-capability-gaps.md) | Accepted, implemented | Report encountered renderer capability gaps without claiming a global support manifest. |
 | [0037](0037-version-product-contracts-independently.md) | Accepted, implemented | Version module, report, Diagnostic, ordering, and conformance contracts independently. |
+| [0038](0038-defer-exact-contribution-index-until-task-failure.md) | Accepted | Defer exact Contribution Index until a concrete Agent task or precision threshold fails. |
 
 Some accepted ADRs intentionally describe a target that is not yet fully implemented. The implementation status above is a navigation aid; [`v1-scope.md`](../v1-scope.md) remains authoritative for current support.

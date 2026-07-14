@@ -10,6 +10,8 @@ This is the current causal-completeness contract for the supported v1 slice. Fea
 
 For every rendered Difference Region, report a Cause Envelope that is guaranteed to contain every actual changed cause within the supported Deterministic Static SVG scope. False-positive candidates are acceptable. Exact contribution weights, unique causes, and minimal causal subsets are not required.
 
+[ADR 0038](adr/0038-defer-exact-contribution-index-until-task-failure.md) records why exact Contribution Index work is deferred and the concrete Agent-task, precision, product, or dependency evidence required to reopen it.
+
 ## Fact universe
 
 Let `Delta` be the complete set of Changed Facts between the two comparison artifacts. A Changed Fact may describe:
