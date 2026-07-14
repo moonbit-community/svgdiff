@@ -1,0 +1,62 @@
+{
+  "schema_version": "svgdiff-determinism-corpus/1",
+  "repetitions": 3,
+  "cases": [
+    {
+      "id": "equivalent-color-spelling",
+      "categories": ["equivalent"],
+      "before": "evaluation/corpus/cases/equivalent-color-spelling/before.svg",
+      "after": "evaluation/corpus/cases/equivalent-color-spelling/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "tiny-numeric-geometry",
+      "categories": ["changed"],
+      "before": "evaluation/corpus/cases/subtle-geometry-shift/before.svg",
+      "after": "evaluation/corpus/cases/subtle-geometry-shift/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "salient-fill-non-default-viewport",
+      "categories": ["changed", "non-default-viewport"],
+      "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
+      "after": "evaluation/corpus/cases/salient-fill-change/after.svg",
+      "viewport": { "width": 32, "height": 24 }
+    },
+    {
+      "id": "subject-insertion",
+      "categories": ["inserted"],
+      "before": "evaluation/corpus/cases/structural-rect-insertion/before.svg",
+      "after": "evaluation/corpus/cases/structural-rect-insertion/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "subject-deletion",
+      "categories": ["deleted"],
+      "before": "evaluation/corpus/cases/structural-rect-insertion/after.svg",
+      "after": "evaluation/corpus/cases/structural-rect-insertion/before.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "resource-gradient-change",
+      "categories": ["resource-mediated"],
+      "before": "evaluation/corpus/cases/resource-gradient-stop-change/before.svg",
+      "after": "evaluation/corpus/cases/resource-gradient-stop-change/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "unsupported-partial-coverage",
+      "categories": ["unsupported"],
+      "before": "evaluation/corpus/cases/unsupported-path-change/before.svg",
+      "after": "evaluation/corpus/cases/unsupported-path-change/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "multi-event-ordering",
+      "categories": ["multi-event"],
+      "before": "evaluation/adversarial/cases/attribution-leakage-disjoint-paint/before.svg",
+      "after": "evaluation/adversarial/cases/attribution-leakage-disjoint-paint/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    }
+  ]
+}

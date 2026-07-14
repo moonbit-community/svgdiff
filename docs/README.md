@@ -28,6 +28,7 @@ This directory separates the current product contract from future plans and hist
 | Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
 | Which Structured Report Schema versions are released? | [`schema/registry.v1.json`](../schema/registry.v1.json) |
 | Which canonical reports demonstrate core agent interpretation cases? | [`schema/examples/README.md`](../schema/examples/README.md) |
+| What ordering and report-local ID repeatability is guaranteed? | [`report-determinism.md`](report-determinism.md) |
 | How are same-domain differences ordered? | [`domain-ordering.md`](domain-ordering.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
 | Which compatibility change increments which version? | [`versioning.md`](versioning.md) |
@@ -69,6 +70,7 @@ These files must be updated whenever behavior changes:
 - [`analysis-status.md`](analysis-status.md): exact caller guarantees for every analysis status;
 - [`agent-report-guide.md`](agent-report-guide.md): reading order and worked report interpretations for text-only agents;
 - [`agent-acceptance-spec.md`](agent-acceptance-spec.md): text-only evaluation boundary, answer contract, scoring dimensions, and safety gates;
+- [`report-determinism.md`](report-determinism.md): repeatability, report-local ID uniqueness, reference closure, and source-subject identity boundary;
 - [`library-api.md`](library-api.md): public MoonBit seam, exported types, and executable examples;
 - [`versioning.md`](versioning.md): module, Schema, Diagnostic, ordering-policy, and renderer-conformance compatibility rules;
 - [`core-model.md`](core-model.md): current report model and invariants;

@@ -187,7 +187,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P0** Add explicit coverage summaries by subject, feature, and evidence layer.
 - [ ] **P0** Add explicit confidence and ambiguity fields where the engine makes an uncertain alignment or interpretation.
 - [ ] **P0** Provide stable links from summary events to Atomic Differences, Changed Facts, regions, Cause Envelopes, and Diagnostics.
-- [ ] **P0** Guarantee deterministic ordering and report-local identifiers for identical inputs and profiles.
+- [x] **P0** Guarantee deterministic ordering and report-local identifiers for identical inputs and profiles.
 - [ ] **P0** Validate that a text-only agent can answer what changed, how much, where, and why from JSON alone.
 - [ ] **P1** Add compact report projections for limited-context agents without deleting canonical evidence.
 - [x] **P1** Add schema examples for equivalent spelling, tiny numeric deltas, salient changes, insertion/deletion, resources, and partial coverage.

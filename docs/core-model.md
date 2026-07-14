@@ -194,6 +194,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 9. A Cause Envelope claiming `sound_overapproximation` may contain false positives but must contain every actual changed cause within the supported coverage boundary.
 10. Dependency-specific XML, SVG scene, image, and renderer types do not cross the public report seam.
 11. HTML is a presentation of the Structured Report and must not recompute semantic differences.
+12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 
 ## Not implemented in schema 1.0
 

@@ -163,6 +163,8 @@ The [compatibility corpus](evaluation/compatibility/README.md) generates current
 
 The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, and partial coverage. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
 
+The [determinism evaluation](evaluation/determinism/README.md) repeats equivalent, changed, structural, resource, unsupported, multi-event, and non-default-viewport comparisons in separate CLI processes. Run `sh scripts/test-report-determinism.sh` to verify byte-stable output, globally unique report-local IDs, closed references, and identical evidence in default and compact JSON.
+
 ## Documentation
 
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;
@@ -171,6 +173,7 @@ The [canonical Structured Report examples](schema/examples/README.md) are byte-f
 - [Analysis status contract](docs/analysis-status.md): exact guarantees for complete, partial, and failed reports;
 - [Text-only agent guide](docs/agent-report-guide.md): report reading procedure and worked examples;
 - [Structured Report examples](schema/examples/README.md): complete machine-readable examples for core agent interpretation cases;
+- [Report determinism](docs/report-determinism.md): repeated-output, report-local ID, reference-closure, and source-subject identity guarantees;
 - [MoonBit library API](docs/library-api.md): public operations, report types, and generated documentation commands;
 - [Upgrade procedures](docs/upgrade-procedures.md): renderer, parser, metric, schema, and ordering-policy gates;
 - [Dependency and security status](docs/dependency-security.md): licenses, security gaps, and live upstream blockers;

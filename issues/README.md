@@ -74,6 +74,7 @@ graph TD
   ISS_055["ISS-055: Specify and test domain ordering tuples"]
   ISS_056["ISS-056: Add canonical Structured Report examples"]
   ISS_057["ISS-057: Validate every released Schema migration"]
+  ISS_058["ISS-058: Guarantee deterministic reports and local references"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -133,6 +134,11 @@ graph TD
   ISS_051 --> ISS_057
   ISS_053 --> ISS_057
   ISS_056 --> ISS_057
+  ISS_035 --> ISS_058
+  ISS_038 --> ISS_058
+  ISS_051 --> ISS_058
+  ISS_055 --> ISS_058
+  ISS_056 --> ISS_058
 ```
 
 ## Warnings
