@@ -134,6 +134,8 @@ Unavailable components are `null`, not numeric zero. Insertion and deletion addi
 
 `DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v1 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
+The raw magnitude fields remain authoritative when no Impact Assessment exists or when a future policy-derived assessment is unavailable. The current absence and the constraints on future severity or cross-domain policy are defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
+
 ### Difference Region
 
 A `DifferenceRegion` localizes an event using either a connected pixel-mask component or conservative computed bounds. It records pixel-space and CSS-space bounds, changed-pixel count, viewport fraction, and a Cause Envelope.

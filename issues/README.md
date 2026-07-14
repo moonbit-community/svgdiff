@@ -76,6 +76,7 @@ graph TD
   ISS_057["ISS-057: Validate every released Schema migration"]
   ISS_058["ISS-058: Guarantee deterministic reports and local references"]
   ISS_059["ISS-059: Reconcile explicit coverage summaries"]
+  ISS_060["ISS-060: Keep raw magnitude evidence authoritative"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -144,6 +145,10 @@ graph TD
   ISS_040 --> ISS_059
   ISS_056 --> ISS_059
   ISS_058 --> ISS_059
+  ISS_010 --> ISS_060
+  ISS_027 --> ISS_060
+  ISS_055 --> ISS_060
+  ISS_056 --> ISS_060
 ```
 
 ## Warnings

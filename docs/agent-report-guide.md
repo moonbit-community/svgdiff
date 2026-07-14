@@ -60,6 +60,8 @@ Magnitude fields are evidence, not severity labels:
 
 Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.0` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
+The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
+
 ## Regions and possible causes
 
 `difference_regions` localize the event outcome:

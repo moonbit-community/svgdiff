@@ -139,6 +139,68 @@ def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> Non
         )
 
 
+def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any]) -> None:
+    magnitude_fields = (
+        "parameter_abs_user_units",
+        "parameter_signed_user_units",
+        "symmetric_relative",
+        "geometry_displacement_css_px",
+        "geometry_viewport_fraction",
+        "presence_painted_viewport_fraction",
+        "raster_changed_pixel_fraction",
+        "raster_rgba8_rmse",
+        "raster_linear_premultiplied_rgba_rmse",
+    )
+    for difference in report["atomic_differences"]:
+        magnitude = difference.get("magnitude")
+        if not isinstance(magnitude, dict) or set(magnitude) != set(magnitude_fields):
+            raise ValueError(
+                f"{case['id']}: {difference['id']} lost the raw magnitude vector"
+            )
+        if any(
+            value is not None and type(value) not in {int, float}
+            for value in magnitude.values()
+        ):
+            raise ValueError(
+                f"{case['id']}: {difference['id']} has a nonnumeric raw magnitude"
+            )
+        domain = difference["domain"]
+        if domain.startswith("geometry."):
+            source_fields = (
+                "geometry_displacement_css_px",
+                "geometry_viewport_fraction",
+                "raster_changed_pixel_fraction",
+            )
+        elif domain.startswith("paint."):
+            source_fields = (
+                "raster_linear_premultiplied_rgba_rmse",
+                "raster_rgba8_rmse",
+                "raster_changed_pixel_fraction",
+            )
+        elif domain.startswith("presence.") or domain == "presence":
+            source_fields = (
+                "presence_painted_viewport_fraction",
+                "raster_changed_pixel_fraction",
+            )
+        else:
+            source_fields = (
+                "raster_changed_pixel_fraction",
+                "raster_linear_premultiplied_rgba_rmse",
+                "raster_rgba8_rmse",
+            )
+        expected_components = [
+            magnitude[field] for field in source_fields if magnitude[field] is not None
+        ]
+        ordering = difference["domain_ordering"]
+        if ordering["policy_id"] != "v1_domain_lexicographic":
+            raise ValueError(f"{case['id']}: unknown ordering policy")
+        if ordering["components"] != expected_components:
+            raise ValueError(
+                f"{case['id']}: {difference['id']} ordering is not derived "
+                "from retained raw magnitudes"
+            )
+
+
 def checked_path(relative_path: str) -> Path:
     path = (ROOT / relative_path).resolve()
     if ROOT not in path.parents:
@@ -192,6 +254,7 @@ def main() -> None:
         validate_instance(report, schema, schema)
         assert_semantics(case, report)
         assert_coverage_summary(case, report)
+        assert_raw_magnitude_authority(case, report)
         output = checked_path(case["output"])
         if args.update:
             output.parent.mkdir(parents=True, exist_ok=True)

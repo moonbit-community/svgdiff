@@ -157,7 +157,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P0** Preserve canvas, event-region, p95, maximum, and area-above-threshold perceptual statistics separately.
 - [ ] **P0** Define a versioned Impact Assessment policy for identifying the main visual differences across domains.
 - [ ] **P0** Calibrate impact thresholds and ordering rules on the human-labeled corpus before assigning labels such as subtle or major.
-- [ ] **P0** Keep the raw score vector authoritative when an Impact Assessment is unavailable or policy-dependent.
+- [x] **P0** Keep the raw score vector authoritative when an Impact Assessment is unavailable or policy-dependent.
 - [ ] **P1** Add DeltaEOK or CIEDE2000 under an explicitly declared perceptual background.
 - [ ] **P1** Evaluate SSIM/MS-SSIM only as secondary structural diagnostics.
 - [ ] **P2** Evaluate LPIPS as an optional experiment, never as an equality oracle.
