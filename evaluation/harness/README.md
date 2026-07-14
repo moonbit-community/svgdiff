@@ -58,9 +58,11 @@ Run the checked repository baseline with:
 sh scripts/run-agent-benchmark.sh --output /tmp/svgdiff-benchmark
 ```
 
-Pass a real adapter with `--agent "command --arguments"`. The output directory must be empty and receives `reports/`, `tasks.jsonl`, `answers.jsonl`, `metrics.json`, and `gate.json`. The default `evaluation/benchmark-thresholds.v1.json` uses independent minimum and maximum checks; it does not compute a combined score. Use `--thresholds FILE` only for an explicitly versioned alternate policy.
+Pass a real adapter with `--agent "command --arguments"`. The output directory must be empty and receives `reports/`, `tasks.jsonl`, `answers.jsonl`, `metrics.json`, `gate.json`, and `failures.json`. The default `evaluation/benchmark-thresholds.v1.json` uses independent minimum and maximum checks; it does not compute a combined score. Use `--thresholds FILE` only for an explicitly versioned alternate policy.
 
 The current strict thresholds are calibrated to the seven-case corpus and deterministic evidence adapter. They are regression gates, not evidence that an external language model has been evaluated. Any corpus or metric version change requires an explicit threshold review.
+
+[`failure-attribution.md`](../failure-attribution.md) defines how `failures.json` separates renderer conformance, planned feature coverage, input failure, report-model regression, and agent-interpretation regression. The artifact is written even when the threshold gate fails.
 
 ## Verify
 

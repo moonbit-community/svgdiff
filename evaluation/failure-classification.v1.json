@@ -1,0 +1,53 @@
+{
+  "schema_version": "svgdiff-failure-classification/1",
+  "diagnostic_domains": {
+    "renderer_conformance": {
+      "exact": ["renderer_style_precedence_unresolved"],
+      "prefix": []
+    },
+    "input_failure": {
+      "exact": ["svg_parse_failed"],
+      "prefix": []
+    },
+    "feature_coverage": {
+      "exact": [
+        "analysis_coverage_unproven",
+        "computed_rect_fact_unavailable",
+        "css_cascade_unsupported",
+        "duplicate_source_subject_id",
+        "font_analysis_deferred",
+        "gradient_semantics_unsupported",
+        "group_opacity_compositing_unsupported",
+        "inherited_fill_rendered_evidence_deferred",
+        "inherited_visual_analysis_coverage_incomplete",
+        "paint_server_analysis_unsupported",
+        "paint_value_semantics_unsupported",
+        "rect_analysis_coverage_incomplete",
+        "single_rect_alignment_unsupported",
+        "source_subject_alignment_unsupported",
+        "unsupported_visual_attribute",
+        "unsupported_visual_subject"
+      ],
+      "prefix": ["computed_"]
+    }
+  },
+  "metric_domains": {
+    "report_model": [
+      "report_region_overlap_macro",
+      "report_cause_envelope_recall_macro",
+      "report_cause_false_positive_count"
+    ],
+    "agent_interpretation": [
+      "agent_coverage_status_accuracy_macro",
+      "agent_equality_conclusion_accuracy_macro",
+      "agent_required_diagnostic_recall_macro",
+      "agent_hard_safety_failure_count",
+      "agent_atomic_difference_recall_macro",
+      "agent_main_difference_mrr",
+      "agent_region_overlap_macro",
+      "agent_possible_cause_recall_macro",
+      "agent_cause_false_positive_count",
+      "invalid_evidence_reference_count"
+    ]
+  }
+}

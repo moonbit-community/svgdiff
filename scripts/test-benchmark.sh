@@ -12,6 +12,15 @@ jq -e '
   .passed == true and
   all(.checks[]; .passed == true)
 ' "$tmp/evidence/gate.json" >/dev/null
+jq -e '
+  .classification_version == "svgdiff-failure-classification/1" and
+  .gate_passed == true and
+  .summary.diagnostic_observations_by_domain.feature_coverage == 2 and
+  .summary.diagnostic_observations_by_domain.renderer_conformance == 0 and
+  .summary.threshold_failures_by_domain.report_model == 0 and
+  .summary.threshold_failures_by_domain.agent_interpretation == 0 and
+  .summary.has_unclassified == false
+' "$tmp/evidence/failures.json" >/dev/null
 
 if sh scripts/run-agent-benchmark.sh \
   --output "$tmp/empty" \
@@ -24,5 +33,13 @@ jq -e '
   .passed == false and
   any(.checks[]; .passed == false)
 ' "$tmp/empty/gate.json" >/dev/null
+jq -e '
+  .gate_passed == false and
+  .summary.threshold_failures_by_domain.agent_interpretation > 0 and
+  .summary.threshold_failures_by_domain.report_model == 0 and
+  .summary.has_unclassified == false
+' "$tmp/empty/failures.json" >/dev/null
+
+python3 evaluation/harness/test_failure_classification.py >/dev/null
 
 printf 'Benchmark command: reproducible artifacts: ok, thresholds: pass/fail verified\n'

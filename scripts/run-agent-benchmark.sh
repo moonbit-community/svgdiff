@@ -59,6 +59,7 @@ tasks="$output/tasks.jsonl"
 answers="$output/answers.jsonl"
 metrics="$output/metrics.json"
 gate="$output/gate.json"
+failures="$output/failures.json"
 mkdir -p "$reports"
 
 cd "$root"
@@ -79,8 +80,15 @@ python3 evaluation/harness/harness.py run \
   --tasks "$tasks" --output "$answers" --agent "$agent"
 python3 evaluation/harness/score.py \
   --tasks "$tasks" --answers "$answers" --output "$metrics"
+gate_status=0
 python3 evaluation/harness/check_thresholds.py \
-  --metrics "$metrics" --thresholds "$thresholds" --output "$gate"
+  --metrics "$metrics" --thresholds "$thresholds" --output "$gate" || gate_status=$?
+python3 evaluation/harness/classify_failures.py \
+  --tasks "$tasks" --gate "$gate" --output "$failures"
+
+if [ "$gate_status" -ne 0 ]; then
+  exit "$gate_status"
+fi
 
 jq '{metrics_version, case_count, aggregate}' "$metrics"
 printf 'Benchmark thresholds: passed (%s)\n' "$gate"
