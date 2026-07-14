@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.4` API accepts caller-provided viewport dimensions and
+/// The root schema `1.5` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.4` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.5` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -25,7 +25,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
     renderer_id: "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/2",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/3",
   }
 }
 
@@ -540,7 +540,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.4` result of one SVG comparison.
+/// Complete schema `1.5` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -559,13 +559,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.4` JSON.
+/// Serialize this report as indented schema `1.5` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.4` JSON.
+/// Serialize this report as whitespace-free schema `1.5` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -609,6 +609,7 @@ fn known_source_element(kind : String) -> Bool {
 fn known_source_attribute(kind : String, name : String) -> Bool {
   if name == "id" ||
     name == "style" ||
+    name == "transform" ||
     name == "fill" ||
     name == "stroke" ||
     name == "stroke-width" ||
@@ -806,6 +807,74 @@ fn identity_view_box(value : String, profile : ComparisonProfile) -> Bool {
 }
 
 ///|
+fn preflight_element_subject_id(element : @xml.NamespaceElement) -> String {
+  authored_subject_id(element).unwrap_or(element.name.local_name)
+}
+
+///|
+fn append_transform_preflight_diagnostics(
+  diagnostics : Array[Diagnostic],
+  element : @xml.NamespaceElement,
+  source_role : String,
+) -> Unit {
+  let subject_id = preflight_element_subject_id(element)
+  for attribute in element.attributes {
+    let name = attribute.name.local_name
+    if name != "transform" &&
+      name != "gradientTransform" &&
+      name != "patternTransform" {
+      continue
+    }
+    match parse_transform_list(attribute.value) {
+      InvalidTransformList => {
+        let id = "diagnostic:transform-syntax-unsupported:\{subject_id}:\{name}"
+        merge_diagnostic_into(
+          diagnostics,
+          located_diagnostic(
+            id,
+            "transform_syntax_unsupported",
+            subject_id,
+            ["source_semantics", "computed_appearance", "rendered_evidence"],
+            source_role,
+            attribute.span,
+          ),
+        )
+      }
+      ValidTransformList(transform) if name == "transform" &&
+        !transform.matrix.has_proven_renderer_conformance() => {
+        let id = "diagnostic:renderer-transform-raster-unproven:\{subject_id}"
+        merge_diagnostic_into(
+          diagnostics,
+          located_diagnostic(
+            id,
+            "renderer_transform_raster_unproven",
+            subject_id,
+            ["rendered_evidence"],
+            source_role,
+            attribute.span,
+          ),
+        )
+      }
+      _ => ()
+    }
+    if name == "gradientTransform" || name == "patternTransform" {
+      let id = "diagnostic:resource-transform-semantics-unsupported:\{subject_id}:\{name}"
+      merge_diagnostic_into(
+        diagnostics,
+        located_diagnostic(
+          id,
+          "resource_transform_semantics_unsupported",
+          subject_id,
+          ["computed_appearance", "rendered_evidence"],
+          source_role,
+          attribute.span,
+        ),
+      )
+    }
+  }
+}
+
+///|
 fn preflight_source_or_raise(
   input : String,
   profile : ComparisonProfile,
@@ -821,6 +890,9 @@ fn preflight_source_or_raise(
     match event.kind {
       Start(element) | Empty(element) => {
         let kind = element.name.local_name
+        append_transform_preflight_diagnostics(
+          diagnostics, element, source_role,
+        )
         if !known_source_element(kind) {
           let id = "diagnostic:unsupported-visual-subject:\{kind}"
           merge_diagnostic_into(
@@ -1165,7 +1237,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.4",
+    schema_version: "1.5",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1470,7 +1542,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.4",
+        schema_version: "1.5",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1550,7 +1622,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.4",
+        schema_version: "1.5",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1600,7 +1672,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.4",
+        schema_version: "1.5",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1704,7 +1776,7 @@ fn gradient_change_report(
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
         Some({
-          schema_version: "1.4",
+          schema_version: "1.5",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1726,7 +1798,7 @@ fn gradient_change_report(
         })
       } else {
         Some({
-          schema_version: "1.4",
+          schema_version: "1.5",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1917,7 +1989,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.4",
+              schema_version: "1.5",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

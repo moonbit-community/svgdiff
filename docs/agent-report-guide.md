@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.4` interpretation guide
+Status: current schema `1.5` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -70,6 +70,8 @@ The following outcomes are deliberately different:
 - computed `indeterminate`: the engine cannot soundly decide because a Diagnostic constrains coverage;
 - computed `not_applicable`: one side has no comparable fact, as in insertion or deletion.
 
+For transforms, keep `geometry.transform.list` and `geometry.transform.cumulative_matrix` distinct. The first identifies the authored transform declaration and may be computed-equivalent to another list; the second identifies the resulting root-to-subject affine mapping. Do not interpret raw matrix coefficient changes as translation, rotation, scale, skew, or severity: schema `1.5` deliberately leaves those decomposition fields for the next contract item. Transform events currently use the complete scene pixel mask because ordinary subject bounds are not transform-aware; this is a conservative localization, not a claim that every returned region belongs only to that subject.
+
 ## Magnitude and importance
 
 Magnitude fields are evidence, not severity labels:
@@ -79,7 +81,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.4` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.5` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

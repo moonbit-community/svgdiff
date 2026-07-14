@@ -335,6 +335,12 @@ fn alignment_for_event(
   event : VisualEvent,
   alignments : Array[SubjectAlignment],
 ) -> SubjectAlignment? {
+  if event.id.find(":transform") is Some(_) {
+    // Transform-aware bounds are a later localization item. Until then the
+    // complete scene mask is conservative; clipping to untransformed bounds
+    // would silently discard vacated or newly occupied pixels.
+    return None
+  }
   for alignment in alignments {
     if event.primary_subject_id == alignment.id {
       return Some(alignment)

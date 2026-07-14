@@ -120,9 +120,7 @@ test "ellipse line polyline and polygon share generic enumeration" {
 
 ///|
 test "unsupported visual attributes reduce subject coverage" {
-  let source = shape_svg(
-    "<circle cx='8' cy='8' r='2' transform='translate(1 0)'/>",
-  )
+  let source = shape_svg("<circle cx='8' cy='8' r='2' class='unresolved'/>")
   let report = @engine.compare(
     source,
     source,

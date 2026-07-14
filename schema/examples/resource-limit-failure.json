@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "analysis_status": "failed",
   "coverage_matrix": [
     {
@@ -21,7 +21,7 @@
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
     "renderer_id": "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/2"
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/3"
   },
   "subject_alignments": [],
   "changed_facts": [],

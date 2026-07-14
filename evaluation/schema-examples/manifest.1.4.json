@@ -1,0 +1,9 @@
+{
+  "schema_version": "svgdiff-schema-examples/1",
+  "cases": [
+    {
+      "id": "legacy-1.4-unsupported-partial-coverage",
+      "output": "schema/examples/legacy-1.4-unsupported-partial-coverage.json"
+    }
+  ]
+}

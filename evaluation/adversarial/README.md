@@ -16,7 +16,7 @@ The suite is separate from the [human-labeled curated corpus](../corpus/README.m
 
 | Failure mode | Counterexample | Required invariant |
 | --- | --- | --- |
-| False complete | Self-comparison containing an unsupported transform | Status remains `partial` with the transform Diagnostic. |
+| False complete | Self-comparison containing a malformed transform list | Status remains `partial` with `transform_syntax_unsupported`; identical invalid syntax does not invent a diff. |
 | False equality | Changed guarded path geometry | Status remains `partial`; exact parameter findings do not establish complete path equality. |
 | Wrong alignment | Two unlabelled rectangles swap source order only | Correspondences cross source indices and the report remains complete with no differences. |
 | Attribution leakage | Two separated rectangles change paint independently | Each region's Cause Envelope contains only its event's Changed Fact. |

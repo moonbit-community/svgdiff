@@ -8,6 +8,9 @@ priv struct SourceSubject {
   facts : Array[DeclaredVisualFact]
   path_segments : Array[PathSegmentEvidence]
   path_data_complete : Bool
+  transform_chain : Array[SourceTransformSite]
+  cumulative_transform : AffineTransform
+  transform_complete : Bool
 }
 
 ///|
@@ -44,6 +47,7 @@ fn subject_from_element(
   element : @xml.NamespaceElement,
   source_index : Int,
   hierarchy_signature : String,
+  transform_chain : Array[SourceTransformSite],
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let path_segments : Array[PathSegmentEvidence] = []
@@ -59,6 +63,8 @@ fn subject_from_element(
       }
     } else if name == "style" {
       style_attribute = Some(attribute)
+    } else if name == "transform" {
+      upsert_declared_fact(facts, presentation_fact(input, name, attribute))
     } else if element.name.local_name == "path" && name == "d" {
       upsert_declared_fact(facts, presentation_fact(input, name, attribute))
       let authored = source_slice(input, attribute.value_span)
@@ -85,6 +91,9 @@ fn subject_from_element(
   }
   let values : Array[(String, String)] = []
   for fact in facts {
+    if fact.property == "transform" {
+      continue
+    }
     values.push(
       (
         fact.property,
@@ -96,11 +105,17 @@ fn subject_from_element(
       ),
     )
   }
+  let (cumulative_transform, transform_complete, has_transform) = cumulative_transform(
+    transform_chain,
+  )
+  if transform_complete && has_transform {
+    values.push(("transform", cumulative_transform.signature()))
+  }
   values.sort_by(fn(left, right) { left.0.compare(right.0) })
   let mut signature = "\{element.name.local_name}|hierarchy=\{hierarchy_signature}"
   for item in values {
     let (name, value) = item
-    if name != "d" {
+    if name != "d" && name != "transform" {
       signature = "\{signature}|\{name}=\{value}"
     }
   }
@@ -116,6 +131,9 @@ fn subject_from_element(
     facts,
     path_segments,
     path_data_complete,
+    transform_chain,
+    cumulative_transform,
+    transform_complete,
   }
 }
 
@@ -172,25 +190,35 @@ fn extract_source_subjects_or_raise(
 ) -> Array[SourceSubject] raise {
   let subjects : Array[SourceSubject] = []
   let hierarchy : Array[String] = []
+  let transforms : Array[SourceTransformSite] = []
+  let mut node_index = 0
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
       Start(element) => {
         let kind = element.name.local_name
+        let transform = source_transform_site(input, element, node_index)
+        node_index += 1
+        transforms.push(transform)
         if kind == "svg" || kind == "g" {
           hierarchy.push(hierarchy_element_signature(input, element))
-        } else if visual_subject_kind(kind) {
+        }
+        if visual_subject_kind(kind) {
           subjects.push(
             subject_from_element(
               input,
               element,
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
+              transforms.copy(),
             ),
           )
         }
       }
-      Empty(element) =>
+      Empty(element) => {
+        let transform_chain = transforms.copy()
+        transform_chain.push(source_transform_site(input, element, node_index))
+        node_index += 1
         if visual_subject_kind(element.name.local_name) {
           subjects.push(
             subject_from_element(
@@ -198,13 +226,17 @@ fn extract_source_subjects_or_raise(
               element,
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
+              transform_chain,
             ),
           )
         }
-      End(name) =>
+      }
+      End(name) => {
+        ignore(transforms.pop())
         if name.local_name == "svg" || name.local_name == "g" {
           ignore(hierarchy.pop())
         }
+      }
       _ => ()
     }
   }
@@ -842,6 +874,14 @@ fn finish_report(
   let report = apply_preflight_diagnostics(report, diagnostics)
   comparison_guard.checkpoint()
   let report = attach_subject_alignments(report, combined_alignments)
+  comparison_guard.checkpoint()
+  let report = attach_transform_differences(
+    report, before_svg, after_svg, combined_alignments,
+  )
+  comparison_guard.checkpoint()
+  let report = attach_resource_transform_differences(
+    report, before_svg, after_svg,
+  )
   comparison_guard.checkpoint()
   let report = match
     attach_difference_regions(

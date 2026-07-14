@@ -9,6 +9,8 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
       Some(("raster.referenced_gradient", "guarded"))
     "renderer_fractional_opacity_unproven" =>
       Some(("raster.fractional_opacity", "guarded"))
+    "renderer_transform_raster_unproven" =>
+      Some(("raster.affine_transform", "guarded"))
     "group_opacity_compositing_unsupported" =>
       Some(("compositing.group_opacity", "unavailable"))
     _ => None

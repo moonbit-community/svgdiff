@@ -10,11 +10,11 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.3.6` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.4` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.4` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.3.7` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.5` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.5` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v1_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/2` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/3` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -41,6 +41,8 @@ Module `0.3.4` fixes inline-style precedence at the private renderer-input bound
 Module `0.3.5` adds a strict renderer-independent path-data parser and absolute segment IR with authored UTF-16 provenance. Path geometry comparison remains guarded, so Structured Report schema `1.4`, renderer identities, Diagnostics, and ordering semantics do not change.
 
 Module `0.3.6` adds guarded path correspondence, exact normalized segment parameter and topology differences, and an isolated alpha-boundary maximum-distance observation. It also uses eight-neighbor connectivity for raster Difference Regions. Paths remain partial under the existing `unsupported_visual_subject` Diagnostic, and no serialized field, unit, Diagnostic meaning, ordering tuple, renderer identity, or conformance claim changes; Structured Report schema `1.4` and the other compatibility identities therefore remain current.
+
+Module `0.3.7` adds strict SVG transform-list parsing, source-located transform facts, cumulative affine matrices, entity and guarded resource-transform differences, and conservative whole-scene transform regions. Valid transform attributes retire the prior `unsupported_visual_attribute` condition; malformed lists, unresolved resource transforms, and unproven general-affine rasterization allocate new Diagnostics, so Structured Report schema advances additively to `1.5`. Six browser fixtures establish exact integer axis-transform behavior and guard skew divergence, advancing the renderer conformance profile to `/3`. The report shape, production renderer identity, and ordering policy remain unchanged.
 
 ## Structured Report schema versions
 

@@ -22,7 +22,8 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 - unsupported CSS declarations and stylesheets;
 - unresolved paint values and paint servers;
 - group/root compositing and effect inputs.
-- renderer-conformance guards for fractional geometry, fractional leaf opacity, and the narrow referenced-gradient slice.
+- malformed transform lists and guarded gradient/pattern resource transforms;
+- renderer-conformance guards for fractional geometry, fractional leaf opacity, general affine transforms outside the integer axis slice, and the narrow referenced-gradient slice.
 
 Every generated case also asserts that the report contains Diagnostics and at least one limited or failed coverage cell. The generator is intentionally small and reviewable; adding a supported feature requires removing or narrowing its old unsupported generator only in the same change that adds complete-path mutation coverage.
 

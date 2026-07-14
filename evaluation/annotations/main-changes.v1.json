@@ -136,6 +136,25 @@
           ]
         }
       ]
+    },
+    {
+      "case_id": "group-transform-change",
+      "reference_summary": "The red square moves four pixels to the right because its parent group translation changes.",
+      "main_visual_changes": [
+        {
+          "id": "main:group-transform-change:translation",
+          "description": "The red rectangle moves four CSS pixels to the right when the parent group's translation changes from 1 to 5.",
+          "relative_importance": {
+            "rank": 1,
+            "tier": "medium",
+            "rationale": "The same opaque object moves across a visible portion of the small viewport."
+          },
+          "acceptable_alternative_descriptions": [
+            "The parent group shifts the red square four pixels right.",
+            "The rectangle's cumulative transform changes from a one-pixel to a five-pixel horizontal translation."
+          ]
+        }
+      ]
     }
   ]
 }

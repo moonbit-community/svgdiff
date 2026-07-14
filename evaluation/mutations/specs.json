@@ -5,7 +5,7 @@
     "source_properties": [
       "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
       "x1", "y1", "x2", "y2", "points", "fill", "stroke",
-      "stroke-width", "opacity"
+      "stroke-width", "opacity", "transform"
     ]
   },
   "cases": [
@@ -55,6 +55,14 @@
       "after_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' opacity='0.5'/>",
       "expected_changed_fact": { "subject_kind": "rect", "source_property": "opacity", "report_property": "paint.opacity", "before_declared_value": "1", "after_declared_value": "0.5", "affected_subject_ids": ["box"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-rect-transform",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='6' height='6' fill='red' transform='translate(1 0)'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='6' height='6' fill='red' transform='translate(3 0)'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "transform", "report_property": "transform", "before_declared_value": "translate(1 0)", "after_declared_value": "translate(3 0)", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     },
     {
       "id": "mutate-circle-cx",

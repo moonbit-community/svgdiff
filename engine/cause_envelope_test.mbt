@@ -48,8 +48,8 @@ test "inherited paint envelopes retain the ancestor changed fact" {
 
 ///|
 test "unsupported semantics revoke causal completeness" {
-  let before = "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='red' transform='translate(1 0)'/></svg>"
-  let after = "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='blue' transform='translate(1 0)'/></svg>"
+  let before = "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='red' class='unresolved'/></svg>"
+  let after = "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='blue' class='unresolved'/></svg>"
   let report = @engine.compare(
     before,
     after,
@@ -66,8 +66,8 @@ test "unsupported semantics revoke causal completeness" {
 
 ///|
 test "partial envelopes widen every region to the comparison fact universe" {
-  let before = "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='red' transform='translate(1 0)'/><circle id='right' cx='12' cy='12' r='2' fill='red' transform='translate(1 0)'/></svg>"
-  let after = "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='blue' transform='translate(1 0)'/><circle id='right' cx='12' cy='12' r='2' fill='green' transform='translate(1 0)'/></svg>"
+  let before = "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='red' class='unresolved'/><circle id='right' cx='12' cy='12' r='2' fill='red' class='unresolved'/></svg>"
+  let after = "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='blue' class='unresolved'/><circle id='right' cx='12' cy='12' r='2' fill='green' class='unresolved'/></svg>"
   let report = @engine.compare(
     before,
     after,

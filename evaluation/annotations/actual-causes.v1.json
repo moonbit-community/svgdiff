@@ -75,6 +75,25 @@
       "reason": "Path semantics are outside complete coverage, so the current report cannot claim a causally complete envelope for this outcome.",
       "reference_region_ids": [],
       "actual_causes": []
+    },
+    {
+      "case_id": "group-transform-change",
+      "evaluation_status": "eligible",
+      "reason": "The parent transform declaration is the controlled cause of the child's translated painted region.",
+      "reference_region_ids": ["region-ref:group-transform-change:swept-square"],
+      "actual_causes": [
+        {
+          "id": "actual:group-transform-change:transform",
+          "fact_locator": {
+            "report_property": "transform",
+            "source_property": "transform",
+            "before_declared_value": "translate(1 0)",
+            "after_declared_value": "translate(5 0)",
+            "affected_subject_ids": ["box"]
+          },
+          "rationale": "No leaf geometry or paint declaration changes; the parent transform moves the aligned rectangle."
+        }
+      ]
     }
   ]
 }

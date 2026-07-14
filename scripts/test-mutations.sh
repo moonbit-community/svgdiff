@@ -19,9 +19,9 @@ test "$first_hashes" = "$second_hashes"
 manifest="$first/generated-manifest.json"
 jq -e '
   .schema_version == "svgdiff-generated-mutations/1" and
-  (.cases | length == 20) and
+  (.cases | length == 21) and
   (.coverage_contract.subject_kinds | sort) == ["circle", "ellipse", "line", "polygon", "polyline", "rect"] and
-  (.coverage_contract.source_properties | sort) == ["cx", "cy", "fill", "height", "opacity", "points", "r", "rx", "ry", "stroke", "stroke-width", "width", "x", "x1", "x2", "y", "y1", "y2"] and
+  (.coverage_contract.source_properties | sort) == ["cx", "cy", "fill", "height", "opacity", "points", "r", "rx", "ry", "stroke", "stroke-width", "transform", "width", "x", "x1", "x2", "y", "y1", "y2"] and
   ([.cases[].expected_changed_fact.subject_kind] | unique | sort) == (.coverage_contract.subject_kinds | sort) and
   ([.cases[].expected_changed_fact.source_property] | unique | sort) == (.coverage_contract.source_properties | sort) and
   ([.cases[].id] | length == (unique | length))
@@ -66,4 +66,4 @@ python3 evaluation/mutations/validate_causality.py \
   --manifest "$manifest" \
   --reports "$tmp"
 
-printf 'Mutation cases: %s, subject kinds: 6, source properties: 18, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"
+printf 'Mutation cases: %s, subject kinds: 6, source properties: 19, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"

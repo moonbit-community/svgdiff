@@ -9,7 +9,7 @@ The current MoonBit `moon test` command has no coverage-guided fuzz mode. This s
 Each seed produces four interleaved case families:
 
 - supported basic-shape pairs that must reach parsing, semantic adaptation, rendering, report assembly, JSON serialization, and HTML generation with complete coverage;
-- limited path or transform pairs that must retain a valid partial report;
+- limited path or guarded skew-transform pairs that must retain a valid partial report;
 - malformed XML that must produce a Schema-valid failed report rather than crash or corrupt output;
 - well-formed SVG containing hostile `textarea`, `iframe`, and `script` boundary text inside comments, which must remain escaped inside two sandboxed previews and one JSON textarea.
 

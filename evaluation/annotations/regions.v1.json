@@ -72,6 +72,19 @@
           "bounds": { "x": 1.0, "y": 1.0, "width": 14.0, "height": 14.0 }
         }
       ]
+    },
+    {
+      "case_id": "group-transform-change",
+      "localization_status": "localizable",
+      "reason": "The reference bounds cover the occupied-before and occupied-after portions of the translated square.",
+      "regions": [
+        {
+          "id": "region-ref:group-transform-change:swept-square",
+          "reference_kind": "exact_painted_bounds",
+          "comparison_rule": "intersection_over_union",
+          "bounds": { "x": 3.0, "y": 4.0, "width": 9.0, "height": 5.0 }
+        }
+      ]
     }
   ]
 }

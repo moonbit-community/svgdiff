@@ -77,6 +77,17 @@
       "expected_analysis_status": "partial",
       "minimum_atomic_differences": 2,
       "required_diagnostics": ["unsupported_visual_subject"]
+    },
+    {
+      "id": "group-transform-change",
+      "title": "Group translation moves one child rectangle",
+      "categories": ["transform", "geometry"],
+      "before": "cases/group-transform-change/before.svg",
+      "after": "cases/group-transform-change/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 2,
+      "required_diagnostics": []
     }
   ]
 }

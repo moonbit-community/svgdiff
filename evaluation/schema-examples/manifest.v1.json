@@ -110,6 +110,21 @@
       }
     },
     {
+      "id": "group-transform-change",
+      "before": "evaluation/corpus/cases/group-transform-change/before.svg",
+      "after": "evaluation/corpus/cases/group-transform-change/after.svg",
+      "output": "schema/examples/group-transform-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["geometry.transform.list", "geometry.transform.cumulative_matrix"],
+        "computed_relations": ["different", "different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "geometry.transform.cumulative_matrix", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

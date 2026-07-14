@@ -35,7 +35,7 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.4` profile.
+/// Compare two deterministic static SVG sources under one schema `1.5` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width` and `profile.viewport_height` and pins
@@ -57,7 +57,7 @@ pub fn compare(
     viewport_height: profile.viewport_height,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.4" }
+  { ..report, schema_version: "1.5" }
 }
 
 ///|
@@ -86,6 +86,6 @@ pub fn compare_with_control(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.4" }
+    report => { ..report, schema_version: "1.5" }
   }
 }

@@ -14,6 +14,10 @@ test "current renderer diagnostics expose stable capability gaps" {
       "raster.fractional_opacity", "guarded",
     ),
     (
+      "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='red' transform='skewX(20)'/></svg>",
+      "raster.affine_transform", "guarded",
+    ),
+    (
       "<svg width='16' height='16'><defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#gradient)'/></svg>",
       "raster.referenced_gradient", "guarded",
     ),

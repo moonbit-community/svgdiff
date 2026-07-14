@@ -117,7 +117,7 @@ def main() -> None:
                 complete_comparisons += 1
                 complete_regions += region_count
 
-    if complete_comparisons != 36 or complete_regions == 0:
+    if complete_comparisons != 38 or complete_regions == 0:
         raise ValueError(
             "causal property did not cover the complete mutation surface: "
             f"comparisons={complete_comparisons}, regions={complete_regions}"

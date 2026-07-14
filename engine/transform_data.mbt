@@ -1,0 +1,553 @@
+///|
+priv struct AffineTransform {
+  a : Double
+  b : Double
+  c : Double
+  d : Double
+  e : Double
+  f : Double
+} derive(Eq)
+
+///|
+priv struct NormalizedTransformList {
+  matrix : AffineTransform
+  signature : String
+}
+
+///|
+priv enum TransformListParse {
+  ValidTransformList(NormalizedTransformList)
+  InvalidTransformList
+}
+
+///|
+priv struct TransformListParser {
+  data : String
+  mut position : Int
+}
+
+///|
+priv struct SourceTransformSite {
+  node_index : Int
+  subject_id : String
+  authored_id : String?
+  kind : String
+  fact : DeclaredVisualFact?
+  normalized_signature : String
+  matrix : AffineTransform
+  complete : Bool
+}
+
+///|
+priv struct ResourceTransformSubject {
+  node_index : Int
+  kind : String
+  subject_id : String
+  authored_id : String?
+  property : String
+  fact : DeclaredVisualFact?
+  normalized_signature : String
+  matrix : AffineTransform
+  complete : Bool
+}
+
+///|
+fn AffineTransform::identity() -> AffineTransform {
+  { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: 0.0, f: 0.0 }
+}
+
+///|
+fn AffineTransform::is_identity(self : AffineTransform) -> Bool {
+  self == AffineTransform::identity()
+}
+
+///|
+fn AffineTransform::translate(tx : Double, ty : Double) -> AffineTransform {
+  { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: tx, f: ty }
+}
+
+///|
+fn AffineTransform::scale(sx : Double, sy : Double) -> AffineTransform {
+  { a: sx, b: 0.0, c: 0.0, d: sy, e: 0.0, f: 0.0 }
+}
+
+///|
+fn exact_rotation_components(degrees : Double) -> (Double, Double) {
+  let turns = (degrees / 360.0).floor()
+  let normalized = degrees - turns * 360.0
+  if normalized == 0.0 || normalized == 360.0 {
+    (1.0, 0.0)
+  } else if normalized == 90.0 {
+    (0.0, 1.0)
+  } else if normalized == 180.0 {
+    (-1.0, 0.0)
+  } else if normalized == 270.0 {
+    (0.0, -1.0)
+  } else {
+    let radians = degrees * 3.141592653589793 / 180.0
+    (@math.cos(radians), @math.sin(radians))
+  }
+}
+
+///|
+fn AffineTransform::rotate(degrees : Double) -> AffineTransform {
+  let (cosine, sine) = exact_rotation_components(degrees)
+  { a: cosine, b: sine, c: -sine, d: cosine, e: 0.0, f: 0.0 }
+}
+
+///|
+fn AffineTransform::skew_x(degrees : Double) -> AffineTransform {
+  { a: 1.0, b: 0.0, c: exact_skew_tangent(degrees), d: 1.0, e: 0.0, f: 0.0 }
+}
+
+///|
+fn AffineTransform::skew_y(degrees : Double) -> AffineTransform {
+  { a: 1.0, b: exact_skew_tangent(degrees), c: 0.0, d: 1.0, e: 0.0, f: 0.0 }
+}
+
+///|
+fn exact_skew_tangent(degrees : Double) -> Double {
+  let turns = (degrees / 180.0).floor()
+  let normalized = degrees - turns * 180.0
+  if normalized == 0.0 || normalized == 180.0 {
+    0.0
+  } else {
+    let radians = degrees * 3.141592653589793 / 180.0
+    @math.tan(radians)
+  }
+}
+
+///|
+fn normalized_transform_component(value : Double) -> Double {
+  if value == 0.0 {
+    0.0
+  } else {
+    value
+  }
+}
+
+///|
+fn AffineTransform::multiply(
+  self : AffineTransform,
+  other : AffineTransform,
+) -> AffineTransform {
+  {
+    a: normalized_transform_component(self.a * other.a + self.c * other.b),
+    b: normalized_transform_component(self.b * other.a + self.d * other.b),
+    c: normalized_transform_component(self.a * other.c + self.c * other.d),
+    d: normalized_transform_component(self.b * other.c + self.d * other.d),
+    e: normalized_transform_component(
+      self.a * other.e + self.c * other.f + self.e,
+    ),
+    f: normalized_transform_component(
+      self.b * other.e + self.d * other.f + self.f,
+    ),
+  }
+}
+
+///|
+fn AffineTransform::signature(self : AffineTransform) -> String {
+  "matrix(\{self.a},\{self.b},\{self.c},\{self.d},\{self.e},\{self.f})"
+}
+
+///|
+fn transform_component_is_integer(value : Double) -> Bool {
+  value == value.floor()
+}
+
+///|
+fn AffineTransform::has_proven_renderer_conformance(
+  self : AffineTransform,
+) -> Bool {
+  let axis_aligned = (self.b == 0.0 && self.c == 0.0) ||
+    (self.a == 0.0 && self.d == 0.0)
+  axis_aligned &&
+  transform_component_is_integer(self.a) &&
+  transform_component_is_integer(self.b) &&
+  transform_component_is_integer(self.c) &&
+  transform_component_is_integer(self.d) &&
+  transform_component_is_integer(self.e) &&
+  transform_component_is_integer(self.f)
+}
+
+///|
+fn transform_is_whitespace(unit : UInt16) -> Bool {
+  unit == ' ' || unit == '\t' || unit == '\n' || unit == '\r'
+}
+
+///|
+fn transform_is_digit(unit : UInt16) -> Bool {
+  unit >= '0' && unit <= '9'
+}
+
+///|
+fn TransformListParser::skip_whitespace(self : TransformListParser) -> Bool {
+  let start = self.position
+  while self.position < self.data.length() &&
+        transform_is_whitespace(self.data[self.position]) {
+    self.position += 1
+  }
+  self.position > start
+}
+
+///|
+fn TransformListParser::parse_number(self : TransformListParser) -> Double? {
+  let start = self.position
+  if self.position < self.data.length() &&
+    (self.data[self.position] == '+' || self.data[self.position] == '-') {
+    self.position += 1
+  }
+  let mut digits = 0
+  while self.position < self.data.length() &&
+        transform_is_digit(self.data[self.position]) {
+    self.position += 1
+    digits += 1
+  }
+  if self.position < self.data.length() && self.data[self.position] == '.' {
+    self.position += 1
+    while self.position < self.data.length() &&
+          transform_is_digit(self.data[self.position]) {
+      self.position += 1
+      digits += 1
+    }
+  }
+  if digits == 0 {
+    self.position = start
+    return None
+  }
+  if self.position < self.data.length() &&
+    (self.data[self.position] == 'e' || self.data[self.position] == 'E') {
+    self.position += 1
+    if self.position < self.data.length() &&
+      (self.data[self.position] == '+' || self.data[self.position] == '-') {
+      self.position += 1
+    }
+    let exponent_start = self.position
+    while self.position < self.data.length() &&
+          transform_is_digit(self.data[self.position]) {
+      self.position += 1
+    }
+    if self.position == exponent_start {
+      self.position = start
+      return None
+    }
+  }
+  let value = try
+    @string.parse_double(
+      self.data.view(start_offset=start, end_offset=self.position),
+    )
+  catch {
+    _ => {
+      self.position = start
+      return None
+    }
+  } noraise {
+    value => value
+  }
+  if value.is_inf() || value.is_nan() {
+    self.position = start
+    None
+  } else {
+    Some(value)
+  }
+}
+
+///|
+fn TransformListParser::parse_name(self : TransformListParser) -> String? {
+  let start = self.position
+  while self.position < self.data.length() {
+    let unit = self.data[self.position]
+    if (unit >= 'a' && unit <= 'z') || (unit >= 'A' && unit <= 'Z') {
+      self.position += 1
+    } else {
+      break
+    }
+  }
+  if self.position == start {
+    None
+  } else {
+    Some(
+      self.data.view(start_offset=start, end_offset=self.position).to_owned(),
+    )
+  }
+}
+
+///|
+fn TransformListParser::parse_arguments(
+  self : TransformListParser,
+) -> Array[Double]? {
+  let arguments : Array[Double] = []
+  ignore(self.skip_whitespace())
+  if self.position < self.data.length() && self.data[self.position] == ')' {
+    self.position += 1
+    return Some(arguments)
+  }
+  while self.position < self.data.length() {
+    guard self.parse_number() is Some(value) else { return None }
+    arguments.push(value)
+    let had_whitespace = self.skip_whitespace()
+    if self.position >= self.data.length() {
+      return None
+    }
+    if self.data[self.position] == ')' {
+      self.position += 1
+      return Some(arguments)
+    }
+    if self.data[self.position] == ',' {
+      self.position += 1
+      ignore(self.skip_whitespace())
+      if self.position >= self.data.length() ||
+        self.data[self.position] == ',' ||
+        self.data[self.position] == ')' {
+        return None
+      }
+    } else if !had_whitespace &&
+      self.data[self.position] != '+' &&
+      self.data[self.position] != '-' {
+      return None
+    }
+  }
+  None
+}
+
+///|
+fn normalized_argument_signature(arguments : Array[Double]) -> String {
+  let result = StringBuilder::new()
+  for index, argument in arguments {
+    if index > 0 {
+      result.write_char(',')
+    }
+    result.write_string(argument.to_string())
+  }
+  result.to_string()
+}
+
+///|
+fn transform_function_matrix(
+  name : String,
+  arguments : Array[Double],
+) -> AffineTransform? {
+  match (name, arguments) {
+    ("matrix", [a, b, c, d, e, f]) => Some({ a, b, c, d, e, f })
+    ("translate", [tx]) => Some(AffineTransform::translate(tx, 0.0))
+    ("translate", [tx, ty]) => Some(AffineTransform::translate(tx, ty))
+    ("scale", [scale]) => Some(AffineTransform::scale(scale, scale))
+    ("scale", [sx, sy]) => Some(AffineTransform::scale(sx, sy))
+    ("rotate", [degrees]) => Some(AffineTransform::rotate(degrees))
+    ("rotate", [degrees, cx, cy]) =>
+      Some(
+        AffineTransform::translate(cx, cy)
+        .multiply(AffineTransform::rotate(degrees))
+        .multiply(AffineTransform::translate(-cx, -cy)),
+      )
+    ("skewX", [degrees]) => Some(AffineTransform::skew_x(degrees))
+    ("skewY", [degrees]) => Some(AffineTransform::skew_y(degrees))
+    _ => None
+  }
+}
+
+///|
+fn parse_transform_list(value : String) -> TransformListParse {
+  let parser = { data: value, position: 0 }
+  let mut matrix = AffineTransform::identity()
+  let signature = StringBuilder::new()
+  let mut function_count = 0
+  ignore(parser.skip_whitespace())
+  while parser.position < value.length() {
+    guard parser.parse_name() is Some(name) else { return InvalidTransformList }
+    ignore(parser.skip_whitespace())
+    guard parser.position < value.length() && value[parser.position] == '(' else {
+      return InvalidTransformList
+    }
+    parser.position += 1
+    guard parser.parse_arguments() is Some(arguments) else {
+      return InvalidTransformList
+    }
+    guard transform_function_matrix(name, arguments) is Some(function_matrix) else {
+      return InvalidTransformList
+    }
+    if function_count > 0 {
+      signature.write_char(' ')
+    }
+    signature.write_string(name)
+    signature.write_char('(')
+    signature.write_string(normalized_argument_signature(arguments))
+    signature.write_char(')')
+    matrix = matrix.multiply(function_matrix)
+    function_count += 1
+    let had_whitespace = parser.skip_whitespace()
+    if parser.position >= value.length() {
+      break
+    }
+    if value[parser.position] == ',' {
+      parser.position += 1
+      ignore(parser.skip_whitespace())
+      if parser.position >= value.length() {
+        return InvalidTransformList
+      }
+    } else if !had_whitespace {
+      return InvalidTransformList
+    }
+  }
+  ValidTransformList({ matrix, signature: signature.to_string() })
+}
+
+///|
+fn source_transform_site(
+  input : String,
+  element : @xml.NamespaceElement,
+  node_index : Int,
+) -> SourceTransformSite {
+  let subject_id = authored_subject_id(element).unwrap_or(
+    generated_subject_id(element.name.local_name, node_index),
+  )
+  for attribute in element.attributes {
+    if attribute.name.local_name == "transform" {
+      let fact = presentation_fact(input, "transform", attribute)
+      return match parse_transform_list(attribute.value) {
+        ValidTransformList(normalized) =>
+          {
+            node_index,
+            subject_id,
+            authored_id: authored_subject_id(element),
+            kind: element.name.local_name,
+            fact: Some(fact),
+            normalized_signature: normalized.signature,
+            matrix: normalized.matrix,
+            complete: true,
+          }
+        InvalidTransformList =>
+          {
+            node_index,
+            subject_id,
+            authored_id: authored_subject_id(element),
+            kind: element.name.local_name,
+            fact: Some(fact),
+            normalized_signature: "",
+            matrix: AffineTransform::identity(),
+            complete: false,
+          }
+      }
+    }
+  }
+  {
+    node_index,
+    subject_id,
+    authored_id: authored_subject_id(element),
+    kind: element.name.local_name,
+    fact: None,
+    normalized_signature: "",
+    matrix: AffineTransform::identity(),
+    complete: true,
+  }
+}
+
+///|
+fn cumulative_transform(
+  chain : Array[SourceTransformSite],
+) -> (AffineTransform, Bool, Bool) {
+  let mut matrix = AffineTransform::identity()
+  let mut complete = true
+  let mut has_transform = false
+  for site in chain {
+    if site.fact is Some(_) {
+      has_transform = true
+    }
+    if !site.complete {
+      complete = false
+    }
+    matrix = matrix.multiply(site.matrix)
+  }
+  (matrix, complete, has_transform)
+}
+
+///|
+fn resource_transform_property(kind : String) -> String? {
+  match kind {
+    "linearGradient" | "radialGradient" => Some("gradientTransform")
+    "pattern" => Some("patternTransform")
+    _ => None
+  }
+}
+
+///|
+fn resource_transform_subject(
+  input : String,
+  element : @xml.NamespaceElement,
+  node_index : Int,
+) -> ResourceTransformSubject? {
+  let property = match resource_transform_property(element.name.local_name) {
+    Some(property) => property
+    None => return None
+  }
+  let authored_id = authored_subject_id(element)
+  let subject_id = authored_id.unwrap_or(
+    generated_subject_id(element.name.local_name, node_index),
+  )
+  for attribute in element.attributes {
+    if attribute.name.local_name == property {
+      let fact = presentation_fact(input, property, attribute)
+      return Some(
+        match parse_transform_list(attribute.value) {
+          ValidTransformList(normalized) =>
+            {
+              node_index,
+              kind: element.name.local_name,
+              subject_id,
+              authored_id,
+              property,
+              fact: Some(fact),
+              normalized_signature: normalized.signature,
+              matrix: normalized.matrix,
+              complete: true,
+            }
+          InvalidTransformList =>
+            {
+              node_index,
+              kind: element.name.local_name,
+              subject_id,
+              authored_id,
+              property,
+              fact: Some(fact),
+              normalized_signature: "",
+              matrix: AffineTransform::identity(),
+              complete: false,
+            }
+        },
+      )
+    }
+  }
+  Some({
+    node_index,
+    kind: element.name.local_name,
+    subject_id,
+    authored_id,
+    property,
+    fact: None,
+    normalized_signature: "",
+    matrix: AffineTransform::identity(),
+    complete: true,
+  })
+}
+
+///|
+fn extract_resource_transforms_or_raise(
+  input : String,
+) -> Array[ResourceTransformSubject] raise {
+  let resources : Array[ResourceTransformSubject] = []
+  let mut node_index = 0
+  let reader = @xml.NamespaceReader::from_string(input)
+  for event in reader.read_events_until_eof() {
+    match event.kind {
+      Start(element) | Empty(element) => {
+        match resource_transform_subject(input, element, node_index) {
+          Some(resource) => resources.push(resource)
+          None => ()
+        }
+        node_index += 1
+      }
+      _ => ()
+    }
+  }
+  resources
+}

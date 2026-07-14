@@ -65,7 +65,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.4":
+    if report.get("schema_version") != "1.5":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -97,9 +97,9 @@ def validate_false_complete(case: dict, report: dict) -> None:
     if before.read_bytes() != after.read_bytes():
         raise ValueError("false-complete case must be an exact self-comparison")
     if report["analysis_status"] != "partial":
-        raise ValueError("unchanged unsupported transform produced complete analysis")
-    if "unsupported_visual_attribute" not in diagnostic_codes(report):
-        raise ValueError("false-complete case lost its transform Diagnostic")
+        raise ValueError("unchanged malformed transform produced complete analysis")
+    if "transform_syntax_unsupported" not in diagnostic_codes(report):
+        raise ValueError("false-complete case lost its transform-syntax Diagnostic")
 
 
 def validate_false_equality(case: dict, report: dict) -> None:

@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/2",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/3",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -31,6 +31,18 @@
       "disposition": "diagnostic",
       "diagnostic_code": "group_opacity_compositing_unsupported",
       "reason": "The pinned renderer leaves group children opaque while Chromium composites the group at alpha 128."
+    },
+    {
+      "id": "transform-skew-x",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_transform_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 26 antialiased pixels for skewX(20)."
+    },
+    {
+      "id": "transform-skew-y",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_transform_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 26 antialiased pixels for skewY(20)."
     }
   ]
 }

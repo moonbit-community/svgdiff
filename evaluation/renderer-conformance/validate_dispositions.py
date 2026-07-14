@@ -11,6 +11,7 @@ NEW_CONFORMANCE_CODES = {
     "renderer_fractional_geometry_unproven",
     "renderer_gradient_raster_unproven",
     "renderer_fractional_opacity_unproven",
+    "renderer_transform_raster_unproven",
 }
 
 
@@ -56,7 +57,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/2"
+    expected_profile = "svgdiff-renderer-conformance-profile/3"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:

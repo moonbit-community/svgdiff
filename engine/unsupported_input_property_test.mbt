@@ -51,9 +51,8 @@ test "unsupported element families never produce complete equality" {
 ///|
 test "unsupported attribute families never produce complete equality" {
   let attributes = [
-    "transform='translate(1 0)'", "class='painted'", "clip-path='url(#clip)'", "mask='url(#mask)'",
-    "filter='url(#filter)'", "mix-blend-mode='multiply'", "vector-effect='non-scaling-stroke'",
-    "paint-order='stroke fill'",
+    "class='painted'", "clip-path='url(#clip)'", "mask='url(#mask)'", "filter='url(#filter)'",
+    "mix-blend-mode='multiply'", "vector-effect='non-scaling-stroke'", "paint-order='stroke fill'",
   ]
   let shape_starts = [
     "<rect width='8' height='8'", "<circle cx='4' cy='4' r='3'", "<ellipse cx='4' cy='4' rx='3' ry='2'",
@@ -113,6 +112,18 @@ test "unproven renderer conformance families never prove equality" {
     content in [
       "<rect id='box' x='0.99999' y='2' width='8' height='8'/>", "<rect id='box' x='2' y='2' width='8' height='8' opacity='0.5'/>",
       "<defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#gradient)'/>",
+      "<rect id='box' x='2' y='2' width='8' height='8' transform='skewX(20)'/>",
+    ] {
+    assert_unsupported_never_proves_equality(unsupported_document(content))
+  }
+}
+
+///|
+test "unsupported transform boundaries never prove equality" {
+  for
+    content in [
+      "<rect id='box' width='8' height='8' transform='translate(1,)'/>", "<defs><linearGradient id='gradient' gradientTransform='translate(1)'/></defs>",
+      "<defs><pattern id='tile' patternTransform='scale(2)'/></defs>",
     ] {
     assert_unsupported_never_proves_equality(unsupported_document(content))
   }

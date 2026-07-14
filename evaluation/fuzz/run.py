@@ -89,11 +89,11 @@ def limited_case(rng: random.Random, index: int) -> tuple[str, str, list[str]]:
     else:
         before = document(
             f"<rect id='box-{index}' x='2' y='2' width='6' height='6' "
-            "fill='red' transform='translate(1 0)'/>"
+            "fill='red' transform='skewX(20)'/>"
         )
         after = document(
             f"<rect id='box-{index}' x='2' y='2' width='6' height='6' "
-            "fill='blue' transform='translate(2 0)'/>"
+            "fill='blue' transform='skewX(21)'/>"
         )
     return before, after, []
 

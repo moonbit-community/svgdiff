@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-13
 
-This note surveys available metrics and target design. Only fields documented in [`../core-model.md`](../core-model.md) are implemented in schema `1.4`; additional metrics remain roadmap work.
+This note surveys available metrics and target design. Only fields documented in [`../core-model.md`](../core-model.md) are implemented in schema `1.5`; additional metrics remain roadmap work.
 
 ## Conclusion
 
