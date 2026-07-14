@@ -153,6 +153,8 @@ The hand-authored [evaluation corpus](evaluation/corpus/README.md) contains stab
 
 The complementary [mutation suite](evaluation/mutations/README.md) generates deterministic pairs with independently declared Changed Facts and affected subjects. Run `sh scripts/test-mutations.sh` to verify generation and report retention.
 
+The [adversarial suite](evaluation/adversarial/README.md) checks false-complete, false-equality, source-order alignment, attribution-leakage, and magnitude-ordering counterexamples through the production CLI. Run `sh scripts/test-adversarial.sh` to execute each safety invariant twice and verify deterministic results.
+
 ## Documentation
 
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;
@@ -181,6 +183,7 @@ sh scripts/test-browser-oracle.sh
 sh scripts/test-renderer-conformance.sh
 sh scripts/test-renderer-dispositions.sh
 sh scripts/test-alternate-scale-qa.sh
+sh scripts/test-adversarial.sh
 ```
 
 The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.

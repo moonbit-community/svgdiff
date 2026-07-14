@@ -57,7 +57,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Measure Atomic Difference recall, main-difference ranking quality, region overlap, Cause Envelope recall, and false-positive volume.
 - [x] **P0** Establish regression thresholds and publish a reproducible benchmark command.
 - [x] **P0** Separate renderer-conformance failures from report-model and agent-interpretation failures in benchmark results.
-- [ ] **P1** Add adversarial pairs designed to trigger false `complete`, false equality, wrong alignment, attribution leakage, and magnitude-ordering failures.
+- [x] **P1** Add adversarial pairs designed to trigger false `complete`, false equality, wrong alignment, attribution leakage, and magnitude-ordering failures.
 - [ ] **P1** Add a compatibility corpus for schema and policy-version migrations.
 
 ## Phase 1: Installable CLI and stable distribution

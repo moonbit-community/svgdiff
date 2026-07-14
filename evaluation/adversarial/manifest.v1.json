@@ -1,0 +1,40 @@
+{
+  "schema_version": "svgdiff-adversarial-corpus/1",
+  "cases": [
+    {
+      "id": "false-complete-unchanged-transform",
+      "failure_mode": "false_complete",
+      "before": "evaluation/adversarial/cases/false-complete-unchanged-transform/before.svg",
+      "after": "evaluation/adversarial/cases/false-complete-unchanged-transform/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "false-equality-path-change",
+      "failure_mode": "false_equality",
+      "before": "evaluation/adversarial/cases/false-equality-path-change/before.svg",
+      "after": "evaluation/adversarial/cases/false-equality-path-change/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "wrong-alignment-source-reorder",
+      "failure_mode": "wrong_alignment",
+      "before": "evaluation/adversarial/cases/wrong-alignment-source-reorder/before.svg",
+      "after": "evaluation/adversarial/cases/wrong-alignment-source-reorder/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "attribution-leakage-disjoint-paint",
+      "failure_mode": "attribution_leakage",
+      "before": "evaluation/adversarial/cases/attribution-leakage-disjoint-paint/before.svg",
+      "after": "evaluation/adversarial/cases/attribution-leakage-disjoint-paint/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "magnitude-ordering-two-movements",
+      "failure_mode": "magnitude_ordering",
+      "before": "evaluation/adversarial/cases/magnitude-ordering-two-movements/before.svg",
+      "after": "evaluation/adversarial/cases/magnitude-ordering-two-movements/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    }
+  ]
+}

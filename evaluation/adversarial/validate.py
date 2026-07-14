@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+
+import argparse
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[2]
+EXPECTED_MODES = {
+    "false_complete",
+    "false_equality",
+    "wrong_alignment",
+    "attribution_leakage",
+    "magnitude_ordering",
+}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Validate adversarial SVG pairs through the production CLI."
+    )
+    parser.add_argument("--cli", required=True, type=Path)
+    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=ROOT / "evaluation/adversarial/manifest.v1.json",
+    )
+    return parser.parse_args()
+
+
+def checked_source(relative_path: str) -> Path:
+    source = (ROOT / relative_path).resolve()
+    if ROOT not in source.parents or not source.is_file():
+        raise ValueError(f"unsafe or missing adversarial source: {relative_path}")
+    return source
+
+
+def run_case(cli: Path, case: dict) -> tuple[dict, str]:
+    before = checked_source(case["before"])
+    after = checked_source(case["after"])
+    result = subprocess.run(
+        [
+            str(cli),
+            str(before),
+            str(after),
+            "--width",
+            str(case["viewport"]["width"]),
+            "--height",
+            str(case["viewport"]["height"]),
+            "--agent-json",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0 or result.stderr:
+        raise ValueError(
+            f"CLI failed for {case['id']}: "
+            f"status={result.returncode}, stderr={result.stderr!r}"
+        )
+    report = json.loads(result.stdout)
+    if report.get("schema_version") != "1.0":
+        raise ValueError(f"unexpected report schema for {case['id']}")
+    return report, hashlib.sha256(result.stdout.encode()).hexdigest()
+
+
+def diagnostic_codes(report: dict) -> set[str]:
+    return {diagnostic["code"] for diagnostic in report["diagnostics"]}
+
+
+def source_set_hash(cases: list[dict]) -> str:
+    sources = []
+    for case in cases:
+        for side in ("before", "after"):
+            source = checked_source(case[side])
+            sources.append(
+                {
+                    "case": case["id"],
+                    "side": side,
+                    "path": case[side],
+                    "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                }
+            )
+    encoded = json.dumps(sources, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def validate_false_complete(case: dict, report: dict) -> None:
+    before = checked_source(case["before"])
+    after = checked_source(case["after"])
+    if before.read_bytes() != after.read_bytes():
+        raise ValueError("false-complete case must be an exact self-comparison")
+    if report["analysis_status"] != "partial":
+        raise ValueError("unchanged unsupported transform produced complete analysis")
+    if "unsupported_visual_attribute" not in diagnostic_codes(report):
+        raise ValueError("false-complete case lost its transform Diagnostic")
+
+
+def validate_false_equality(case: dict, report: dict) -> None:
+    before = checked_source(case["before"])
+    after = checked_source(case["after"])
+    if before.read_bytes() == after.read_bytes():
+        raise ValueError("false-equality case inputs must differ")
+    if report["analysis_status"] != "partial":
+        raise ValueError("unsupported path change produced complete equality")
+    if report["atomic_differences"]:
+        raise ValueError("false-equality trap unexpectedly became a supported diff")
+    if "unsupported_visual_subject" not in diagnostic_codes(report):
+        raise ValueError("false-equality case lost its path Diagnostic")
+
+
+def validate_wrong_alignment(report: dict) -> None:
+    if report["analysis_status"] != "complete" or report["atomic_differences"]:
+        raise ValueError("source reorder changed the visual comparison")
+    pairs = {
+        (alignment["before"][0]["source_index"], alignment["after"][0]["source_index"])
+        for alignment in report["subject_alignments"]
+        if alignment["relation"] == "correspondence"
+        and len(alignment["before"]) == 1
+        and len(alignment["after"]) == 1
+    }
+    if pairs != {(0, 1), (1, 0)}:
+        raise ValueError(f"unlabelled subjects aligned by source order: {sorted(pairs)}")
+
+
+def validate_attribution_leakage(report: dict) -> None:
+    if report["analysis_status"] != "complete":
+        raise ValueError("controlled disjoint paint case is not complete")
+    differences = {difference["id"]: difference for difference in report["atomic_differences"]}
+    if len(differences) != 2 or len(report["events"]) != 2:
+        raise ValueError("disjoint paint case did not produce two outcomes")
+    seen_facts: set[str] = set()
+    for event in report["events"]:
+        event_facts = {
+            fact_id
+            for difference_id in event["atomic_difference_ids"]
+            for fact_id in differences[difference_id]["changed_fact_ids"]
+        }
+        if not event_facts or not event["difference_regions"]:
+            raise ValueError(f"event lacks facts or regions: {event['id']}")
+        if seen_facts & event_facts:
+            raise ValueError("disjoint events share a Changed Fact")
+        seen_facts |= event_facts
+        for region in event["difference_regions"]:
+            candidates = set(region["cause_envelope"]["candidate_changed_fact_ids"])
+            if candidates != event_facts:
+                raise ValueError(
+                    f"attribution leakage in {region['id']}: "
+                    f"expected={sorted(event_facts)}, actual={sorted(candidates)}"
+                )
+
+
+def validate_magnitude_ordering(report: dict) -> None:
+    if report["analysis_status"] != "complete":
+        raise ValueError("controlled magnitude-ordering case is not complete")
+    differences = [
+        difference
+        for difference in report["atomic_differences"]
+        if difference["domain"] == "geometry.position"
+    ]
+    magnitudes = [
+        difference["magnitude"]["parameter_abs_user_units"]
+        for difference in differences
+    ]
+    if magnitudes != [4, 1]:
+        raise ValueError(f"geometry magnitudes are not descending: {magnitudes}")
+    if any(
+        difference["domain_ordering"]["policy_id"] != "v1_domain_lexicographic"
+        for difference in differences
+    ):
+        raise ValueError("magnitude ordering lost its policy identity")
+
+
+def main() -> None:
+    args = parse_args()
+    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != "svgdiff-adversarial-corpus/1":
+        raise ValueError("unsupported adversarial manifest schema")
+    cases = manifest.get("cases")
+    if not isinstance(cases, list) or len(cases) != len(EXPECTED_MODES):
+        raise ValueError("adversarial manifest must contain one case per failure mode")
+    ids = [case.get("id") for case in cases]
+    if len(ids) != len(set(ids)):
+        raise ValueError("adversarial case IDs must be unique")
+    modes = [case.get("failure_mode") for case in cases]
+    if set(modes) != EXPECTED_MODES or len(modes) != len(set(modes)):
+        raise ValueError("adversarial failure modes must be unique and complete")
+    paths = [case.get(side) for case in cases for side in ("before", "after")]
+    if len(paths) != len(set(paths)):
+        raise ValueError("adversarial source paths must be unique")
+    if any(
+        not isinstance(case.get("viewport", {}).get(dimension), int)
+        or case["viewport"][dimension] <= 0
+        for case in cases
+        for dimension in ("width", "height")
+    ):
+        raise ValueError("adversarial viewports must be positive integers")
+
+    results = []
+    validators = {
+        "false_complete": lambda case, report: validate_false_complete(case, report),
+        "false_equality": lambda case, report: validate_false_equality(case, report),
+        "wrong_alignment": lambda _case, report: validate_wrong_alignment(report),
+        "attribution_leakage": lambda _case, report: validate_attribution_leakage(report),
+        "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),
+    }
+    for case in cases:
+        report, report_sha256 = run_case(args.cli, case)
+        validators[case["failure_mode"]](case, report)
+        results.append(
+            {
+                "id": case["id"],
+                "failure_mode": case["failure_mode"],
+                "status": "passed",
+                "report_sha256": report_sha256,
+            }
+        )
+
+    output = {
+        "schema_version": "svgdiff-adversarial-results/1",
+        "input_schema_version": manifest["schema_version"],
+        "fixture_source_set_sha256": source_set_hash(cases),
+        "cases": results,
+    }
+    args.output.write_text(
+        json.dumps(output, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(f"Adversarial corpus: {len(results)} failure modes passed")
+
+
+if __name__ == "__main__":
+    main()

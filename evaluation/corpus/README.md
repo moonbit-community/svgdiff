@@ -32,4 +32,6 @@ This corpus item does not provide mutation-generated cases, main-change labels, 
 
 Deterministic generated cases with independently declared Changed Facts and affected subjects live in the sibling [mutation suite](../mutations/README.md).
 
+Focused false-complete, false-equality, alignment, attribution, and ordering counterexamples live in the sibling [adversarial suite](../adversarial/README.md). They enforce engine invariants and remain outside human-label aggregates unless separately annotated.
+
 Hidden human reference labels for the curated cases live in [`../annotations`](../annotations/README.md). They must never be exposed to the evaluated agent.
