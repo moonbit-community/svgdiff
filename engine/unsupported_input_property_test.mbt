@@ -1,0 +1,108 @@
+///|
+fn unsupported_document(content : String) -> String {
+  "<svg width='16' height='16' xmlns='http://www.w3.org/2000/svg'>\{content}</svg>"
+}
+
+///|
+fn assert_unsupported_never_proves_equality(source : String) -> Unit raise {
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_false(
+    report.analysis_status == "complete" && report.atomic_differences.is_empty(),
+  )
+  assert_true(
+    report.analysis_status == "partial" || report.analysis_status == "failed",
+  )
+  assert_false(report.diagnostics.is_empty())
+  assert_true(
+    report.coverage_matrix.any(row => {
+      row.source_semantics == "limited" ||
+      row.computed_appearance == "limited" ||
+      row.rendered_evidence == "limited" ||
+      row.source_semantics == "failed" ||
+      row.computed_appearance == "failed" ||
+      row.rendered_evidence == "failed"
+    }),
+  )
+}
+
+///|
+test "unsupported element families never produce complete equality" {
+  let elements = [
+    "<path d='M0 0 L8 8'/>", "<image href='data:image/png;base64,'/>", "<use href='#shape'/>",
+    "<symbol id='shape'><rect width='4' height='4'/></symbol>", "<radialGradient id='paint'/>",
+    "<pattern id='paint'/>", "<marker id='mark'/>", "<clipPath id='clip'><rect width='4' height='4'/></clipPath>",
+    "<mask id='mask'><rect width='4' height='4'/></mask>", "<filter id='filter'/>",
+    "<foreignObject width='4' height='4'/>", "<animate attributeName='x' values='0;1'/>",
+    "<set attributeName='fill' to='red'/>", "<animateTransform attributeName='transform'/>",
+    "<script>void 0</script>",
+  ]
+  for element in elements {
+    assert_unsupported_never_proves_equality(unsupported_document(element))
+    assert_unsupported_never_proves_equality(
+      unsupported_document("<g>\{element}</g>"),
+    )
+  }
+}
+
+///|
+test "unsupported attribute families never produce complete equality" {
+  let attributes = [
+    "transform='translate(1 0)'", "class='painted'", "clip-path='url(#clip)'", "mask='url(#mask)'",
+    "filter='url(#filter)'", "mix-blend-mode='multiply'", "vector-effect='non-scaling-stroke'",
+    "paint-order='stroke fill'",
+  ]
+  let shape_starts = [
+    "<rect width='8' height='8'", "<circle cx='4' cy='4' r='3'", "<ellipse cx='4' cy='4' rx='3' ry='2'",
+    "<line x1='0' y1='0' x2='8' y2='8'", "<polyline points='0,0 4,4 8,0'", "<polygon points='0,0 4,4 8,0'",
+  ]
+  for attribute in attributes {
+    for shape in shape_starts {
+      assert_unsupported_never_proves_equality(
+        unsupported_document("\{shape} \{attribute}/>"),
+      )
+    }
+  }
+  for
+    viewport_attribute in [
+      "viewBox='0 0 8 8'", "viewBox='0 0 8 8' preserveAspectRatio='none'",
+    ] {
+    assert_unsupported_never_proves_equality(
+      "<svg width='16' height='16' \{viewport_attribute}><rect width='8' height='8'/></svg>",
+    )
+  }
+}
+
+///|
+test "identity viewBox spellings remain a covered no-op" {
+  for
+    viewport_attribute in [
+      "viewBox='0 0 16 16'", "viewBox='0,0,16,16'", "viewBox=' 0  0  16  16 '", "viewBox='0 0 16 16' preserveAspectRatio='none'",
+    ] {
+    let source = "<svg width='16' height='16' \{viewport_attribute}><rect width='8' height='8'/></svg>"
+    let report = @engine.compare(
+      source,
+      source,
+      @engine.ComparisonProfile::v1_default(),
+    )
+    assert_eq(report.analysis_status, "complete")
+  }
+}
+
+///|
+test "unsupported CSS paint resource and compositing families never prove equality" {
+  let cases = [
+    "<rect width='8' height='8' fill='currentColor'/>", "<rect width='8' height='8' fill='inherit'/>",
+    "<rect width='8' height='8' fill='initial'/>", "<rect width='8' height='8' fill='unset'/>",
+    "<rect width='8' height='8' fill='revert'/>", "<rect width='8' height='8' fill='url(#missing)'/>",
+    "<rect width='8' height='8' style='unknown-paint:red'/>", "<style>rect { fill: red; }</style><rect width='8' height='8'/>",
+    "<g opacity='0.5'><rect width='8' height='8'/></g>", "<svg opacity='0.5'><rect width='8' height='8'/></svg>",
+    "<defs><linearGradient id='other'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#other)'/>",
+  ]
+  for content in cases {
+    assert_unsupported_never_proves_equality(unsupported_document(content))
+  }
+}

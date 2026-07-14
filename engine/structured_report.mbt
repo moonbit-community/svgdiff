@@ -460,7 +460,35 @@ fn gradient_unsupported_signature_or_raise(input : String) -> String raise {
 }
 
 ///|
-fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
+fn identity_view_box(value : String, profile : ComparisonProfile) -> Bool {
+  let normalized = value
+    .replace_all(old=",", new=" ")
+    .replace_all(old="\t", new=" ")
+    .replace_all(old="\n", new=" ")
+    .replace_all(old="\r", new=" ")
+  let numbers : Array[Double] = []
+  for token in normalized.split(" ") {
+    let token = token.trim()
+    if token == "" {
+      continue
+    }
+    match parse_alignment_number(Some(token.to_owned())) {
+      Some(number) => numbers.push(number)
+      None => return false
+    }
+  }
+  numbers.length() == 4 &&
+  numbers[0] == 0.0 &&
+  numbers[1] == 0.0 &&
+  numbers[2] == profile.viewport_width.to_double() &&
+  numbers[3] == profile.viewport_height.to_double()
+}
+
+///|
+fn preflight_source_or_raise(
+  input : String,
+  profile : ComparisonProfile,
+) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
   let paint_server_ids : Array[String] = []
   let paint_server_references : Array[(String, String, String)] = []
@@ -488,6 +516,7 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
           let mut style_attribute : @xml.NamespaceAttribute? = None
           let mut subject_id = kind
           let mut has_group_opacity = false
+          let mut view_box_value : String? = None
           for attribute in element.attributes {
             let name = attribute.name.local_name
             if name == "id" && attribute.value.trim() != "" {
@@ -508,6 +537,9 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
             if (kind == "svg" || kind == "g") && name == "opacity" {
               has_group_opacity = true
             }
+            if kind == "svg" && name == "viewBox" {
+              view_box_value = Some(attribute.value)
+            }
             if !known_source_attribute(kind, name) {
               let id = "diagnostic:unsupported-visual-attribute:\{kind}:\{name}"
               if !diagnostics.any(diagnostic => diagnostic.id == id) {
@@ -521,6 +553,20 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
                 })
               }
             }
+          }
+          match view_box_value {
+            Some(value) if !identity_view_box(value, profile) => {
+              let id = "diagnostic:viewport-semantics-unsupported:viewBox"
+              diagnostics.push({
+                id,
+                code: "viewport_semantics_unsupported",
+                subject_id: "svg",
+                affected_evidence_layers: [
+                  "source_semantics", "computed_appearance", "rendered_evidence",
+                ],
+              })
+            }
+            _ => ()
           }
           if kind == "linearGradient" && subject_id != kind {
             paint_server_ids.push(subject_id)
@@ -649,8 +695,11 @@ fn preflight_source_or_raise(input : String) -> Array[Diagnostic] raise {
 }
 
 ///|
-fn preflight_source(input : String) -> SourcePreflight {
-  try preflight_source_or_raise(input) catch {
+fn preflight_source(
+  input : String,
+  profile : ComparisonProfile,
+) -> SourcePreflight {
+  try preflight_source_or_raise(input, profile) catch {
     _ => SourceFailed
   } noraise {
     diagnostics =>
@@ -1292,7 +1341,11 @@ pub fn compare(
   profile : ComparisonProfile,
 ) -> StructuredReport {
   let preflight_diagnostics : Array[Diagnostic] = []
-  match (preflight_source(before_svg), preflight_source(after_svg)) {
+  match
+    (
+      preflight_source(before_svg, profile),
+      preflight_source(after_svg, profile),
+    ) {
     (SourceFailed, _) | (_, SourceFailed) =>
       return enforce_coverage_proof(
         failed_source_report(profile),

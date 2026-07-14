@@ -57,7 +57,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Referenced linear gradient | Narrow validated first-stop/single-rect cases may be analyzed | Other stops, attributes, references, and placements are diagnosed rather than generalized. |
 | Conflicting presentation attribute and inline style | Normalized Source Semantics | The pinned renderer does not yet guarantee correct precedence independent of XML attribute order; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Stylesheets, selectors, or unsupported CSS syntax | Any independently supported source facts | The full cascade and selector model are not implemented. |
-| Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. |
+| Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 
 These guards are part of v1 correctness. They are not temporary permission to interpret absent rendered evidence as zero.
 

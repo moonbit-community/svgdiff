@@ -77,7 +77,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 - [x] **P0** Replace coarse `complete`/`partial` reasoning with an explicit per-feature and per-evidence-layer coverage matrix.
 - [x] **P0** Define proof obligations that every analyzer must satisfy before it may contribute to a `complete` report.
-- [ ] **P0** Add property tests that unsupported inputs can never produce complete equality.
+- [x] **P0** Add property tests that unsupported inputs can never produce complete equality.
 - [ ] **P0** Add mutation tests for every currently supported property and subject kind.
 - [ ] **P0** Resolve [ISS-002](issues/ISS-002.md), upgrading the renderer or privately normalizing inline-style precedence.
 - [ ] **P0** Build a browser-based rendering oracle for supported deterministic fixtures.

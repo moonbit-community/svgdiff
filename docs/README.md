@@ -18,6 +18,7 @@ This directory separates the current product contract from future plans and hist
 | What can v1 analyze completely today? | [`v1-scope.md`](v1-scope.md) |
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
 | What must an analyzer prove before returning complete? | [`coverage-proof-obligations.md`](coverage-proof-obligations.md) |
+| How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
