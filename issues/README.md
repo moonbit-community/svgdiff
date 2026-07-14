@@ -62,6 +62,7 @@ graph TD
   ISS_043["ISS-043: Build the deterministic browser rendering oracle"]
   ISS_044["ISS-044: Compare the pinned renderer with the browser oracle"]
   ISS_045["ISS-045: Dispose every measured renderer divergence"]
+  ISS_046["ISS-046: Version renderer conformance independently"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -100,6 +101,7 @@ graph TD
   ISS_042 --> ISS_043
   ISS_043 --> ISS_044
   ISS_044 --> ISS_045
+  ISS_045 --> ISS_046
 ```
 
 ## Warnings

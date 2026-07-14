@@ -56,6 +56,15 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    expected_profile = "svgdiff-renderer-conformance-profile/1"
+    baseline_profile = baseline.get("conformance_profile_id")
+    disposition_profile = dispositions.get("conformance_profile_id")
+    if baseline_profile != expected_profile:
+        raise ValueError("unsupported renderer conformance profile")
+    if disposition_profile != baseline_profile:
+        raise ValueError(
+            "baseline and dispositions use different renderer conformance profiles"
+        )
     fixtures = {fixture["id"]: fixture for fixture in manifest["fixtures"]}
     divergent = {
         case["id"] for case in baseline["cases"] if case["comparison"] == "divergent"

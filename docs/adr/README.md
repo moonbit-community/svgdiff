@@ -54,5 +54,6 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0031](0031-report-feature-layer-coverage.md) | Accepted, implemented | Report coverage independently per encountered feature and evidence layer. |
 | [0032](0032-gate-complete-on-coverage-proof.md) | Accepted, implemented | Require centralized coverage proof obligations before a report may remain complete. |
 | [0033](0033-keep-browser-oracle-outside-engine.md) | Accepted, implemented | Keep deterministic Chromium captures as external conformance evidence, not a production engine dependency. |
+| [0034](0034-version-renderer-conformance-separately.md) | Accepted, implemented | Version renderer conformance claims independently from schema and renderer identities. |
 
 Some accepted ADRs intentionally describe a target that is not yet fully implemented. The implementation status above is a navigation aid; [`v1-scope.md`](../v1-scope.md) remains authoritative for current support.

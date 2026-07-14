@@ -12,7 +12,7 @@ Read the report in this order:
 
 1. `schema_version`: stop or use a compatible parser if the version is unknown.
 2. `analysis_status`: decide whether equality is even a permitted conclusion.
-3. `profile`: state the viewport and pinned rendering conditions that bound the result.
+3. `profile`: state the viewport, renderer identity, and renderer conformance profile that bound the result.
 4. `coverage_matrix`: identify the exact feature and evidence-layer cells that are covered, limited, not applicable, or failed.
 5. `diagnostics`: explain every limited or failed coverage row.
 6. `events`: use these as the primary navigation and localization units.

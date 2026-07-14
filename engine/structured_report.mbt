@@ -10,6 +10,7 @@ pub(all) struct ComparisonProfile {
   color_interpretation : String
   raster_representation : String
   renderer_id : String
+  renderer_conformance_profile_id : String
 } derive(ToJson)
 
 ///|
@@ -24,6 +25,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
     renderer_id: "mizchi/svg@0.2.1",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/1",
   }
 }
 

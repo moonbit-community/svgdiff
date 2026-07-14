@@ -157,6 +157,7 @@
       "premultiplied_rgba8_rmse": 0.281871056996
     }
   ],
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/1",
   "fixture_source_set_sha256": "98443e05ffc17014c59d048a1481ba902d0496fbae720b5fbb7da00d65e0bef0",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",

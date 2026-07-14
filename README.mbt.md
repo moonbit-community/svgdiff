@@ -29,7 +29,7 @@ svgdiff --help
 svgdiff --version
 ```
 
-Version output identifies the `svgdiff` module and engine, Structured Report schema, pinned renderer, and domain-ordering policy. These identities must be reviewed together when their corresponding contracts change.
+Version output identifies the `svgdiff` module and engine, Structured Report schema, pinned renderer, renderer conformance profile, and domain-ordering policy. These identities must be reviewed together when their corresponding contracts change.
 
 Run the native CLI from the repository root:
 
@@ -57,7 +57,7 @@ The root package exposes one comparison operation:
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 ```
 
-The stable JSON contract is version `1.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, and the pinned renderer identity. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The stable JSON contract is version `1.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 

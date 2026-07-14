@@ -28,9 +28,10 @@ pub using @engine {
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width` and `profile.viewport_height` and pins
-/// DPR, color interpretation, raster representation, and renderer identity to
-/// the v1 defaults. Unsupported semantics produce Diagnostics and reduce
-/// `analysis_status` instead of being treated as equality.
+/// DPR, color interpretation, raster representation, renderer identity, and
+/// renderer conformance profile to the v1 defaults. Unsupported semantics
+/// produce Diagnostics and reduce `analysis_status` instead of being treated
+/// as equality.
 ///
 /// Inspect `analysis_status` before using an empty `atomic_differences` array as
 /// a profile-scoped equality conclusion.

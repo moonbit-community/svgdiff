@@ -44,7 +44,9 @@ Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as t
 5. interpret events and Atomic Differences;
 6. serialize JSON or build HTML if needed.
 
-The root API canonicalizes all profile fields other than viewport width and height. Setting a different DPR, color interpretation, raster representation, or renderer ID in the input record does not select another backend in schema `1.0`.
+The root API canonicalizes all profile fields other than viewport width and height. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.0`.
+
+The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/1"`. This ID versions accepted renderer claims and guards independently from both report schema `1.0` and `mizchi/svg@0.2.1`.
 
 ## Generated documentation
 

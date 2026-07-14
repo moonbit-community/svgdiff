@@ -23,11 +23,12 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
 | Renderer identity | Pinned as `mizchi/svg@0.2.1`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/1`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Fonts | No deterministic font environment or font-dependent completeness claim. |
 
-The root library seam canonicalizes DPR, color interpretation, raster representation, and renderer identity. It currently uses only the caller-supplied viewport dimensions from `ComparisonProfile`.
+The root library seam canonicalizes DPR, color interpretation, raster representation, renderer identity, and renderer conformance profile. It currently uses only the caller-supplied viewport dimensions from `ComparisonProfile`.
 
 ## Implemented complete-analysis slice
 

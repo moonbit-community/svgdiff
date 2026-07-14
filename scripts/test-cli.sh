@@ -22,23 +22,28 @@ assert_status() {
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
-jq -e '.schema_version == "1.0" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
+jq -e '.schema_version == "1.0" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
 test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.0" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
+jq -e '.schema_version == "1.0" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
 test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
 test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html" >"$tmp/output.stdout" 2>"$tmp/output.err"
 test ! -s "$tmp/output.stdout"
 test ! -s "$tmp/output.err"
-jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24 and .profile.comparison_dpr == 1 and .profile.color_interpretation == "srgb" and .profile.raster_representation == "linear_srgb_premultiplied_rgba_f64" and (.events[0].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse > 0)' "$tmp/output.json" >/dev/null
+jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24 and .profile.comparison_dpr == 1 and .profile.color_interpretation == "srgb" and .profile.raster_representation == "linear_srgb_premultiplied_rgba_f64" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and (.events[0].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse > 0)' "$tmp/output.json" >/dev/null
 grep -q '<!doctype html>' "$tmp/report.html"
 grep -q 'sandbox=""' "$tmp/report.html"
 grep -q 'id="report-data"' "$tmp/report.html"
 jq empty schema/svgdiff-report.schema.json
+jq -e '
+  .properties.profile.properties.renderer_conformance_profile_id.const ==
+    "svgdiff-renderer-conformance-profile/1" and
+  (.properties.profile.required | index("renderer_conformance_profile_id") == null)
+' schema/svgdiff-report.schema.json >/dev/null
 
 cat testdata/before.svg | moon run --target native cmd/svgdiff -- - testdata/after.svg >"$tmp/stdin-before.json" 2>"$tmp/stdin-before.err"
 test ! -s "$tmp/stdin-before.err"
@@ -65,6 +70,7 @@ grep -q '^svgdiff 0.1.0$' "$tmp/version.txt"
 grep -q '^engine: 0.1.0$' "$tmp/version.txt"
 grep -q '^schema: 1.0$' "$tmp/version.txt"
 grep -q '^renderer: mizchi/svg@0.2.1$' "$tmp/version.txt"
+grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/1$' "$tmp/version.txt"
 grep -q '^ordering-policy: v1_domain_lexicographic$' "$tmp/version.txt"
 
 assert_status 2 moon run --target native cmd/svgdiff -- >"$tmp/missing-args.out" 2>"$tmp/missing-args.err"
