@@ -101,6 +101,7 @@ graph TD
   ISS_082["ISS-082: Set representative end-to-end performance budgets"]
   ISS_083["ISS-083: Optimize a measured production hot path"]
   ISS_084["ISS-084: Add controlled comparison interruption"]
+  ISS_085["ISS-085: Gate cross-platform report determinism"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -275,6 +276,8 @@ graph TD
   ISS_080 --> ISS_084
   ISS_082 --> ISS_084
   ISS_083 --> ISS_084
+  ISS_058 --> ISS_085
+  ISS_077 --> ISS_085
 ```
 
 ## Warnings

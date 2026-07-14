@@ -51,6 +51,9 @@ jobs:
           sh scripts/test-schema-examples.sh
           sh scripts/test-compatibility.sh
 
+      - name: Validate determinism bundle aggregation
+        run: sh scripts/test-cross-platform-determinism.sh
+
       - name: Run fixed-seed fuzz smoke
         run: sh scripts/test-fuzz-smoke.sh
 
@@ -62,3 +65,95 @@ jobs:
 
       - name: Enforce representative performance budgets
         run: sh scripts/test-performance-budgets.sh
+
+  determinism-bundle:
+    name: Determinism bundle (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x64
+            runner: ubuntu-24.04
+            expected_arch: X64
+          - platform: windows-x64
+            runner: windows-2025
+            expected_arch: X64
+          - platform: macos-arm64
+            runner: macos-15
+            expected_arch: ARM64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up MoonBit on Linux or macOS
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Set up MoonBit on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+          irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "$HOME\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Verify runner identity
+        env:
+          EXPECTED_ARCH: ${{ matrix.expected_arch }}
+        run: python -c "import os; actual = os.environ['RUNNER_ARCH']; expected = os.environ['EXPECTED_ARCH']; assert actual == expected, f'expected {expected}, got {actual}'"
+
+      - name: Record toolchain
+        run: moon version --all
+
+      - name: Capture canonical report bundle
+        run: |
+          moon build --target native --release cmd/svgdiff
+          python evaluation/determinism/validate.py --cli _build/native/release/build/cmd/svgdiff/svgdiff.exe --output _artifacts/determinism-results.json --bundle _artifacts/bundle
+
+      - name: Upload canonical report bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: svgdiff-determinism-${{ matrix.platform }}
+          path: _artifacts/bundle
+          if-no-files-found: error
+          retention-days: 1
+
+  cross-platform-determinism:
+    name: Compare cross-platform determinism bundles
+    needs: determinism-bundle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Download platform bundles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: svgdiff-determinism-*
+          path: _artifacts/platforms
+
+      - name: Compare canonical report bytes
+        run: |
+          python evaluation/determinism/compare_platforms.py \
+            --platform linux-x64=_artifacts/platforms/svgdiff-determinism-linux-x64 \
+            --platform windows-x64=_artifacts/platforms/svgdiff-determinism-windows-x64 \
+            --platform macos-arm64=_artifacts/platforms/svgdiff-determinism-macos-arm64 \
+            --output _artifacts/cross-platform-determinism.json

@@ -246,7 +246,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **P1** Establish performance and memory budgets for representative small, medium, and large SVGs.
 - [x] **P1** Optimize only measured hot paths while preserving deterministic output.
 - [x] **P1** Add cancellation and time-budget handling for embedding agents.
-- [ ] **P1** Test deterministic output across supported operating systems and architectures.
+- [x] **P1** Test deterministic output across supported operating systems and architectures.
 - [x] **P1** Add CI for formatting, warning checks, interfaces, tests, CLI integration, schema validation, fuzz smoke tests, and benchmark sanity.
 - [ ] **P2** Investigate incremental or cached comparisons only after correctness and profile identity are stable.
 

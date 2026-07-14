@@ -4,6 +4,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cli", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--manifest", type=Path, default=MANIFEST_PATH)
+    parser.add_argument(
+        "--bundle",
+        type=Path,
+        help="write platform-neutral canonical report bytes for later comparison",
+    )
     return parser.parse_args()
 
 
@@ -279,6 +285,8 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[list[dict[str, Any]], i
         raise ValueError("determinism case IDs must be nonempty strings")
     if len(ids) != len(set(ids)):
         raise ValueError("determinism case IDs must be unique")
+    if any(not re.fullmatch(r"[a-z0-9][a-z0-9-]*", identifier) for identifier in ids):
+        raise ValueError("determinism case IDs must be safe lowercase file stems")
     categories = {
         category
         for case in cases
@@ -309,9 +317,15 @@ def main() -> None:
     cli = args.cli.resolve()
     if not cli.is_file():
         raise ValueError(f"missing CLI: {cli}")
+    bundle = args.bundle.resolve() if args.bundle is not None else None
+    if bundle is not None:
+        bundle.mkdir(parents=True, exist_ok=True)
+        if any(bundle.iterdir()):
+            raise ValueError(f"determinism bundle directory is not empty: {bundle}")
 
     reports: dict[str, dict[str, Any]] = {}
     results = []
+    bundled_reports = []
     for case in cases:
         pretty_runs = [run_report(cli, case, False) for _ in range(repetitions)]
         compact_runs = [run_report(cli, case, True) for _ in range(repetitions)]
@@ -329,6 +343,20 @@ def main() -> None:
             raise ValueError(f"{case['id']}: report lost viewport height")
         reports[case["id"]] = pretty_report
         validate_causal_fallback(pretty_report)
+        if bundle is not None:
+            reports_dir = bundle / "reports"
+            reports_dir.mkdir(exist_ok=True)
+            for mode, encoded in (("pretty", pretty_runs[0]), ("compact", compact_runs[0])):
+                relative_path = f"reports/{case['id']}.{mode}.json"
+                (bundle / relative_path).write_bytes(encoded)
+                bundled_reports.append(
+                    {
+                        "case_id": case["id"],
+                        "mode": mode,
+                        "path": relative_path,
+                        "sha256": hashlib.sha256(encoded).hexdigest(),
+                    }
+                )
         results.append(
             {
                 "id": case["id"],
@@ -391,6 +419,16 @@ def main() -> None:
     args.output.write_text(
         json.dumps(output, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    if bundle is not None:
+        bundle_manifest = {
+            "schema_version": "svgdiff-determinism-bundle/1",
+            "corpus_version": manifest["schema_version"],
+            "reports": bundled_reports,
+        }
+        (bundle / "bundle.v1.json").write_text(
+            json.dumps(bundle_manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
 
 if __name__ == "__main__":

@@ -8,10 +8,15 @@ This suite verifies the [Structured Report determinism contract](../../docs/repo
 
 For each case, the validator runs default JSON and compact Agent JSON three times. Bytes must match within each output mode, both modes must decode to the same evidence, every report-local object ID must be globally unique, every declared report-local reference must resolve to exactly one object of the required kind, and every Atomic Difference must belong to exactly one Visual Event.
 
-The suite includes negative controls for a duplicate ID, a dangling reference, a duplicate reference, a revoked Cause Envelope that omits one Changed Fact from its comparison fallback, and a complete event-region envelope contaminated by another event's valid fact. It does not claim cross-version or cross-platform byte identity, and it does not treat source-subject identity fields as report-local foreign keys.
+The suite includes negative controls for a duplicate ID, a dangling reference, a duplicate reference, a revoked Cause Envelope that omits one Changed Fact from its comparison fallback, and a complete event-region envelope contaminated by another event's valid fact. It does not treat source-subject identity fields as report-local foreign keys.
+
+CI additionally builds the same revision in native release mode on the supported determinism matrix: Ubuntu 24.04 x64, Windows Server 2025 x64, and macOS 15 arm64. Each runner writes a platform-neutral `svgdiff-determinism-bundle/1` containing the exact default and compact bytes for all eight cases. The aggregation job requires all three named bundles and compares the manifest, complete inventory, digests, and file bytes. Platform identity and toolchain observations remain outside the compared bundle.
+
+This gate establishes byte identity for the versioned corpus across the declared matrix. It is not exhaustive proof over arbitrary SVG input, a cross-version guarantee, or a substitute for separately planned release-binary publication and provenance.
 
 Run:
 
 ```sh
 sh scripts/test-report-determinism.sh
+sh scripts/test-cross-platform-determinism.sh
 ```

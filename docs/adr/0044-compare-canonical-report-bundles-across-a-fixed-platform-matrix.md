@@ -1,0 +1,3 @@
+# Compare canonical report bundles across a fixed platform matrix
+
+Cross-platform determinism is tested by building one revision in native release mode on Ubuntu 24.04 x64, Windows Server 2025 x64, and macOS 15 arm64, then comparing platform-neutral bundles containing exact default and compact Structured Report bytes for the versioned determinism corpus. Runner identity, toolchain observations, paths, and timestamps stay outside the compared bundle. A separate aggregation job requires all three named platforms and rejects any manifest, inventory, digest, or byte difference. This is executable evidence for the declared matrix and corpus, not a claim of cross-version identity, exhaustive proof over every SVG input, or publication of native binaries.
