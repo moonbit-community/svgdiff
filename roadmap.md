@@ -176,7 +176,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Fall back to all Changed Facts or revoke the guarantee whenever a propagation rule is unavailable.
 - [x] **P0** Add property tests asserting that actual causes are always contained in every complete Cause Envelope.
 - [x] **P0** Measure false-positive candidate volume so conservative completeness remains useful to agents.
-- [ ] **P1** Use tile- or region-level provenance to remove irrelevant facts without weakening soundness.
+- [x] **P1** Use tile- or region-level provenance to remove irrelevant facts without weakening soundness.
 - [x] **Decision** Decide whether exact Contribution Index propagation is worth its complexity beyond the accepted sound over-approximation guarantee.
 - [ ] **Deferred** Implement exact contribution weights only if a concrete agent task cannot be solved with conservative candidate sets and ranking.
 

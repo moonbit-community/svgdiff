@@ -194,6 +194,13 @@ def validate_causal_fallback(report: dict[str, Any]) -> None:
     fact_ids = {fact["id"] for fact in report["changed_facts"]}
     diagnostic_ids = {diagnostic["id"] for diagnostic in report["diagnostics"]}
     for event in report["events"]:
+        event_fact_ids = {
+            fact_id
+            for difference_id in event["atomic_difference_ids"]
+            for difference in report["atomic_differences"]
+            if difference["id"] == difference_id
+            for fact_id in difference["changed_fact_ids"]
+        }
         for region in event["difference_regions"]:
             envelope = region["cause_envelope"]
             candidates = set(envelope["candidate_changed_fact_ids"])
@@ -205,6 +212,21 @@ def validate_causal_fallback(report: dict[str, Any]) -> None:
                     )
                 if envelope["coverage"] != "complete":
                     raise ValueError(f"{region['id']}: sound envelope is not complete")
+                if envelope["fallback_scope"] == "event_region":
+                    if not event_fact_ids or candidates != event_fact_ids:
+                        raise ValueError(
+                            f"{region['id']}: event-region candidates are contaminated"
+                        )
+                elif envelope["fallback_scope"] == "comparison":
+                    if candidates != fact_ids:
+                        raise ValueError(
+                            f"{region['id']}: comparison fallback omitted facts"
+                        )
+                else:
+                    raise ValueError(
+                        f"{region['id']}: unknown fallback scope "
+                        f"{envelope['fallback_scope']!r}"
+                    )
             elif envelope["guarantee"] == "not_established":
                 if envelope["coverage"] != "partial":
                     raise ValueError(f"{region['id']}: revoked envelope is not partial")
@@ -335,6 +357,22 @@ def main() -> None:
     expect_causal_rejection(
         incomplete_fallback, "revoked envelope omitted a Changed Fact"
     )
+    contaminated_region = copy.deepcopy(reports["multi-event-ordering"])
+    first_event = contaminated_region["events"][0]
+    second_event = contaminated_region["events"][1]
+    second_difference_id = second_event["atomic_difference_ids"][0]
+    unrelated_fact_id = next(
+        fact_id
+        for difference in contaminated_region["atomic_differences"]
+        if difference["id"] == second_difference_id
+        for fact_id in difference["changed_fact_ids"]
+    )
+    first_event["difference_regions"][0]["cause_envelope"][
+        "candidate_changed_fact_ids"
+    ].append(unrelated_fact_id)
+    expect_causal_rejection(
+        contaminated_region, "event-region envelope contains a cross-event fact"
+    )
 
     output = {
         "schema_version": "svgdiff-determinism-results/1",
@@ -346,6 +384,7 @@ def main() -> None:
             "dangling_report_local_reference",
             "duplicate_report_local_reference",
             "incomplete_revoked_cause_envelope",
+            "cross_event_cause_contamination",
         ],
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
