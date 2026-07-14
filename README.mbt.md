@@ -167,7 +167,7 @@ The [canonical Structured Report examples](schema/examples/README.md) are byte-f
 
 The [determinism evaluation](evaluation/determinism/README.md) repeats equivalent, changed, structural, resource, unsupported, multi-event, and non-default-viewport comparisons in separate CLI processes. Run `sh scripts/test-report-determinism.sh` to verify byte-stable output, globally unique report-local IDs, closed references, and identical evidence in default and compact JSON.
 
-The [pipeline stage performance suite](evaluation/performance/README.md) independently times parse/admission, alignment, rendering, region extraction, provenance, and serialization through native release microbenchmarks. Run `sh scripts/run-stage-benchmarks.sh --output /tmp/svgdiff-stage-benchmarks.json` for a validated machine-readable artifact. This suite is distinct from the Agent-quality benchmark and does not yet impose performance budgets.
+The [performance suites](evaluation/performance/README.md) independently time parse/admission, alignment, rendering, region extraction, provenance, and serialization through native release microbenchmarks, then enforce representative small, medium, and large end-to-end native CLI wall-time and peak-RSS ceilings. Run `sh scripts/run-stage-benchmarks.sh --output /tmp/svgdiff-stage-benchmarks.json` for stage diagnostics and `sh scripts/run-performance-budgets.sh --output /tmp/svgdiff-performance-budgets.json` for the regression gate. Both are distinct from the Agent-quality benchmark.
 
 ## Documentation
 
@@ -202,6 +202,7 @@ sh scripts/test-alternate-scale-qa.sh
 sh scripts/test-adversarial.sh
 sh scripts/test-fuzz-smoke.sh
 sh scripts/test-stage-benchmarks.sh
+sh scripts/test-performance-budgets.sh
 sh scripts/test-html-security.sh
 sh scripts/test-compatibility.sh
 sh scripts/test-schema-examples.sh

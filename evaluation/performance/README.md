@@ -1,12 +1,12 @@
-# Pipeline Stage Performance Benchmarks
+# Performance Benchmarks and Budgets
 
-Status: active native release microbenchmark suite
+Status: active native release stage and end-to-end suites
 
-Suite version: `svgdiff-stage-benchmark-suite/1`
+Suite versions: `svgdiff-stage-benchmark-suite/1` and `svgdiff-performance-budgets/1`
 
 Last verified: 2026-07-14
 
-This suite measures six production pipeline stages independently: parse and admission, subject alignment, raster rendering, pixel-region extraction, Cause Envelope provenance, and Structured Report serialization. It is a performance diagnostic suite. The separate `scripts/run-agent-benchmark.sh` command evaluates report and text-only Agent correctness; its scores are not timing measurements.
+The stage suite measures six production pipeline stages independently: parse and admission, subject alignment, raster rendering, pixel-region extraction, Cause Envelope provenance, and Structured Report serialization. It is a performance diagnostic suite. The end-to-end suite separately enforces wall-time and peak-resident-memory budgets on representative small, medium, and large native release CLI comparisons. The `scripts/run-agent-benchmark.sh` command evaluates report and text-only Agent correctness; its scores are not timing measurements.
 
 Run the standard MoonBit benchmark table with:
 
@@ -24,9 +24,9 @@ The output uses `svgdiff-stage-benchmark-results/1`, records microseconds, nativ
 
 ## Fixed diagnostic workload
 
-The current suite compares two `128 x 128` SVGs containing the same 64 ID-aligned rectangles on a spaced grid. Every rectangle changes from red to blue. The workload creates nontrivial alignment, 64 disconnected pixel regions, per-region provenance, and a report large enough to exercise both JSON serializers.
+The stage suite compares two `128 x 128` SVGs containing the same 64 ID-aligned rectangles on a spaced grid. Every rectangle changes from red to blue. The workload creates nontrivial alignment, 64 disconnected pixel regions, per-region provenance, and a report large enough to exercise both JSON serializers.
 
-This one workload exists to prove that stage boundaries are measurable. It is not a representative size taxonomy and establishes no latency or memory budget. Small, medium, and large workloads belong to the next roadmap item.
+This one workload exists to prove that stage boundaries are measurable. It is not the representative size taxonomy and establishes no latency or memory budget.
 
 ## Stage boundaries
 
@@ -43,6 +43,28 @@ The authoritative machine-readable descriptions live in [`suite.v1.json`](suite.
 
 The measurements overlap by design. For example, `parse_admission` includes parsing needed by production admission, while alignment setup also parses subjects outside its timer. Likewise, the completed report used by provenance and serialization already passed through earlier stages. Do not add the six means or medians and label the result end-to-end latency.
 
-## Interpretation boundary
+## Representative end-to-end budgets
 
-Timing varies with CPU, operating system, load, compiler, and MoonBit toolchain. The validator requires finite, positive, internally consistent statistics but has no machine-specific pass/fail threshold. Performance and memory budgets require named representative workloads and an explicit baseline environment; they remain unchecked roadmap work.
+Run the budget gate with:
+
+```sh
+sh scripts/run-performance-budgets.sh --output /tmp/svgdiff-performance-budgets.json
+```
+
+The versioned [`budgets.v1.json`](budgets.v1.json) manifest generates deterministic pairs containing supported, ID-aligned rectangles whose fill changes from red to blue. Generation happens before measurement. Every sample launches the production native release CLI with compact Agent JSON in a fresh child of a fresh Python probe, requires `analysis_status: complete`, and verifies the exact expected Atomic Difference count.
+
+| Size | Subjects | Viewport | Median wall-time ceiling | Peak RSS ceiling |
+| --- | ---: | ---: | ---: | ---: |
+| Small | 8 | `32 x 16` | 500 ms | 64 MiB |
+| Medium | 64 | `128 x 128` | 2,000 ms | 128 MiB |
+| Large | 256 | `256 x 256` | 10,000 ms | 256 MiB |
+
+Each workload runs three isolated samples. The gate uses median wall time to reduce isolated scheduling noise and the maximum observed peak RSS to retain the strongest memory observation. Wall time includes CLI startup, input reads, comparison, compact JSON serialization, and captured stdout. It excludes workload generation and harness setup. Peak RSS comes from `getrusage(RUSAGE_CHILDREN).ru_maxrss` and is normalized from bytes on macOS or KiB on Linux to MiB. The harness therefore supports macOS and Linux; it does not claim portable RSS semantics on other operating systems.
+
+Run `sh scripts/test-performance-budgets.sh` for the positive gate plus synthetic independent time-failure, memory-failure, and malformed-sample controls. The JSON artifact records raw samples, aggregation, each metric decision, operating system, architecture, Python version, and product version.
+
+These values are deliberately generous portability and regression ceilings for the named workloads. They are not optimization targets, latency guarantees for arbitrary SVG, hard per-request enforcement, or evidence that hostile inputs are safe. Change a ceiling only with a recorded workload or environment reason and reviewed measurement evidence.
+
+## Interpretation boundaries
+
+Timing varies with CPU, operating system, load, compiler, and MoonBit toolchain. Stage results require finite, positive, internally consistent statistics but intentionally have no machine-specific pass/fail threshold. Their measurements overlap and must not be added. End-to-end results have explicit ceilings for named workloads and record the executing environment so regressions can be interpreted without mistaking them for universal product guarantees. Agent-quality scores remain a third independent evaluation axis.

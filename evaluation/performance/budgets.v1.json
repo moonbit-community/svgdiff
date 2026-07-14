@@ -1,0 +1,45 @@
+{
+  "schema_version": "svgdiff-performance-budgets/1",
+  "result_schema_version": "svgdiff-performance-results/1",
+  "target": "native",
+  "build_profile": "release",
+  "samples_per_workload": 3,
+  "workloads": [
+    {
+      "id": "small-grid-8",
+      "size": "small",
+      "subjects_per_input": 8,
+      "columns": 4,
+      "cell_size": 8,
+      "rect_size": 4,
+      "viewport_width": 32,
+      "viewport_height": 16,
+      "median_wall_time_ms_max": 500,
+      "peak_rss_mib_max": 64
+    },
+    {
+      "id": "medium-grid-64",
+      "size": "medium",
+      "subjects_per_input": 64,
+      "columns": 8,
+      "cell_size": 16,
+      "rect_size": 8,
+      "viewport_width": 128,
+      "viewport_height": 128,
+      "median_wall_time_ms_max": 2000,
+      "peak_rss_mib_max": 128
+    },
+    {
+      "id": "large-grid-256",
+      "size": "large",
+      "subjects_per_input": 256,
+      "columns": 16,
+      "cell_size": 16,
+      "rect_size": 8,
+      "viewport_width": 256,
+      "viewport_height": 256,
+      "median_wall_time_ms_max": 10000,
+      "peak_rss_mib_max": 256
+    }
+  ]
+}

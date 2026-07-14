@@ -59,3 +59,6 @@ jobs:
 
       - name: Run pipeline stage benchmark sanity
         run: sh scripts/test-stage-benchmarks.sh
+
+      - name: Enforce representative performance budgets
+        run: sh scripts/test-performance-budgets.sh

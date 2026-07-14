@@ -98,6 +98,7 @@ graph TD
   ISS_079["ISS-079: Bound comparison resource growth"]
   ISS_080["ISS-080: Reject cyclic and explosive local reference graphs"]
   ISS_081["ISS-081: Benchmark production pipeline stages independently"]
+  ISS_082["ISS-082: Set representative end-to-end performance budgets"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -262,6 +263,9 @@ graph TD
   ISS_033 --> ISS_081
   ISS_077 --> ISS_081
   ISS_080 --> ISS_081
+  ISS_079 --> ISS_082
+  ISS_080 --> ISS_082
+  ISS_081 --> ISS_082
 ```
 
 ## Warnings
