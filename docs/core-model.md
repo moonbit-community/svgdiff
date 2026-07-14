@@ -168,7 +168,7 @@ The schema `1.0` top-level object contains exactly these conceptual sections:
 }
 ```
 
-`analysis_status` describes coverage of the attempted comparison, not the severity of the visual change. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its Diagnostics.
+`analysis_status` describes coverage of the attempted comparison, not the severity of the visual change. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its Diagnostics. The exact caller obligations are defined in the [Analysis Status Contract](analysis-status.md).
 
 ## Current invariants
 

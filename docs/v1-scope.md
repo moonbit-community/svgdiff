@@ -92,7 +92,7 @@ For unsupported or unresolved content, the engine must:
 5. avoid a `complete` claim when the gap could affect the conclusion;
 6. mark a Cause Envelope `not_established` when causal completeness cannot be guaranteed.
 
-`complete`, `partial`, and `failed` describe analysis coverage. They do not classify whether the observed difference is visually important.
+`complete`, `partial`, and `failed` describe analysis coverage. They do not classify whether the observed difference is visually important. Their exact guarantees and caller decision procedure are defined in the [Analysis Status Contract](analysis-status.md).
 
 ## Ownership boundaries
 

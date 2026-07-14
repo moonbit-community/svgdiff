@@ -58,6 +58,7 @@ The complete implementation boundary, including guarded partial cases, is in the
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;
 - [Current v1 support](docs/v1-scope.md): implemented, partial, unsupported, and deferred capabilities;
 - [Feature coverage matrix](docs/feature-coverage.md): links support claims to Diagnostics and tests;
+- [Analysis status contract](docs/analysis-status.md): exact guarantees for complete, partial, and failed reports;
 - [Core comparison model](docs/core-model.md): report concepts and invariants;
 - [Post-v1 roadmap](roadmap.md): all known unfinished product work;
 - [ADR index](docs/adr/README.md): architectural decisions and supersession status;

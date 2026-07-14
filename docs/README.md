@@ -14,6 +14,7 @@ This directory separates the current product contract from future plans and hist
 | What JSON is emitted? | [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) and the public MoonBit report types |
 | What can v1 analyze completely today? | [`v1-scope.md`](v1-scope.md) |
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
+| What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | What do the report concepts and invariants mean? | [`core-model.md`](core-model.md) |
 | How is causal completeness defined? | [`influence-provenance.md`](influence-provenance.md) |
 | What remains to be built? | [`roadmap.md`](../roadmap.md) |
@@ -41,6 +42,7 @@ These files must be updated whenever behavior changes:
 - [`README.mbt.md`](../README.mbt.md): user-facing usage and support summary;
 - [`v1-scope.md`](v1-scope.md): implemented support and coverage boundary;
 - [`feature-coverage.md`](feature-coverage.md): feature-to-Diagnostic-to-test traceability;
+- [`analysis-status.md`](analysis-status.md): exact caller guarantees for every analysis status;
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.
