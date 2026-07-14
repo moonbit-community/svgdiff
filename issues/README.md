@@ -84,6 +84,7 @@ graph TD
   ISS_065["ISS-065: Decide exact Contribution Index scope"]
   ISS_066["ISS-066: Decide cross-domain scalar policy"]
   ISS_067["ISS-067: Enforce event-region provenance pruning"]
+  ISS_068["ISS-068: Prevent subject-region pixel contamination"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -182,6 +183,9 @@ graph TD
   ISS_061 --> ISS_067
   ISS_062 --> ISS_067
   ISS_063 --> ISS_067
+  ISS_008 --> ISS_068
+  ISS_050 --> ISS_068
+  ISS_067 --> ISS_068
 ```
 
 ## Warnings

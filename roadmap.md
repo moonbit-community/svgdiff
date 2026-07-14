@@ -169,7 +169,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 - [ ] **P0** Localize transformed geometry, strokes, markers, clips, masks, filters, shadows, and composited groups.
 - [ ] **P0** Preserve separate before/after effect bounds for insertions, deletions, and movement.
-- [ ] **P0** Attach source subjects and rendered regions without allowing scene-wide pixels to contaminate subject-specific evidence.
+- [x] **P0** Attach source subjects and rendered regions without allowing scene-wide pixels to contaminate subject-specific evidence.
 - [ ] **P0** Propagate may-influence tokens through every supported geometry, paint, resource, transform, and structural input.
 - [ ] **P0** Propagate provenance through group surfaces, clips, masks, filters, blending, and compositing.
 - [x] **P0** Union before and after provenance for every Difference Region.

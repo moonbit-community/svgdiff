@@ -126,13 +126,21 @@ def validate_wrong_alignment(report: dict) -> None:
         raise ValueError(f"unlabelled subjects aligned by source order: {sorted(pairs)}")
 
 
-def validate_attribution_leakage(report: dict) -> None:
+def validate_attribution_leakage(case: dict, report: dict) -> None:
     if report["analysis_status"] != "complete":
         raise ValueError("controlled disjoint paint case is not complete")
     differences = {difference["id"]: difference for difference in report["atomic_differences"]}
     if len(differences) != 2 or len(report["events"]) != 2:
         raise ValueError("disjoint paint case did not produce two outcomes")
+    expected_regions = {
+        expected["authored_id"]: expected
+        for expected in case["expected_subject_regions"]
+    }
+    if set(expected_regions) != {"left", "right"}:
+        raise ValueError("disjoint paint region oracle is incomplete")
+    alignments = {alignment["id"]: alignment for alignment in report["subject_alignments"]}
     seen_facts: set[str] = set()
+    actual_bounds = []
     for event in report["events"]:
         event_facts = {
             fact_id
@@ -144,6 +152,38 @@ def validate_attribution_leakage(report: dict) -> None:
         if seen_facts & event_facts:
             raise ValueError("disjoint events share a Changed Fact")
         seen_facts |= event_facts
+        alignment = alignments.get(event["primary_subject_id"])
+        if alignment is None:
+            raise ValueError(f"event does not resolve to an alignment: {event['id']}")
+        subject_ids = {
+            reference["authored_id"]
+            for reference in alignment["before"] + alignment["after"]
+        }
+        if len(subject_ids) != 1 or None in subject_ids:
+            raise ValueError(f"event has ambiguous authored subject: {event['id']}")
+        subject_id = next(iter(subject_ids))
+        expected = expected_regions.get(subject_id)
+        if expected is None or len(event["difference_regions"]) != 1:
+            raise ValueError(f"unexpected subject region structure: {event['id']}")
+        region = event["difference_regions"][0]
+        actual = {
+            "x": region["css_x"],
+            "y": region["css_y"],
+            "width": region["css_width"],
+            "height": region["css_height"],
+        }
+        if actual != expected["css_bounds"]:
+            raise ValueError(
+                f"{subject_id}: expected bounds {expected['css_bounds']}, got {actual}"
+            )
+        if region["changed_pixels"] != expected["changed_pixels"]:
+            raise ValueError(f"{subject_id}: region absorbed scene-wide pixels")
+        if region["viewport_fraction"] != expected["viewport_fraction"]:
+            raise ValueError(f"{subject_id}: region viewport fraction changed")
+        rendered = event["rendered_outcome"]["magnitude"]
+        if rendered["changed_pixels"] != expected["changed_pixels"]:
+            raise ValueError(f"{subject_id}: event absorbed scene-wide pixels")
+        actual_bounds.append(actual)
         for region in event["difference_regions"]:
             candidates = set(region["cause_envelope"]["candidate_changed_fact_ids"])
             if candidates != event_facts:
@@ -151,6 +191,11 @@ def validate_attribution_leakage(report: dict) -> None:
                     f"attribution leakage in {region['id']}: "
                     f"expected={sorted(event_facts)}, actual={sorted(candidates)}"
                 )
+    left, right = sorted(actual_bounds, key=lambda bounds: bounds["x"])
+    if left["x"] + left["width"] > right["x"]:
+        raise ValueError("controlled subject regions overlap")
+    if sum(expected["changed_pixels"] for expected in expected_regions.values()) != 50:
+        raise ValueError("disjoint paint scene oracle lost changed pixels")
 
 
 def validate_magnitude_ordering(report: dict) -> None:
@@ -204,7 +249,7 @@ def main() -> None:
         "false_complete": lambda case, report: validate_false_complete(case, report),
         "false_equality": lambda case, report: validate_false_equality(case, report),
         "wrong_alignment": lambda _case, report: validate_wrong_alignment(report),
-        "attribution_leakage": lambda _case, report: validate_attribution_leakage(report),
+        "attribution_leakage": validate_attribution_leakage,
         "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),
     }
     for case in cases:
