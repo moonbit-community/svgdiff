@@ -89,8 +89,8 @@ test "renderer input materializes ordinary inherited stroke geometry" {
   let inherited = "<svg width='16' height='16'><g stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='1'><path id='edge' d='M1 8 L15 8'/></g></svg>"
   let local_source = "<svg width='16' height='16'><g><path id='edge' d='M1 8 L15 8' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='1'/></g></svg>"
   let normalized = normalize_renderer_input(inherited)
-  assert_true(normalized.find("stroke-linecap=\"round\"") is Some(_))
-  assert_true(normalized.find("stroke-linejoin=\"bevel\"") is Some(_))
+  assert_true(normalized.find("stroke-linecap:round") is Some(_))
+  assert_true(normalized.find("stroke-linejoin:bevel") is Some(_))
   guard @svg.parse_svg_document(normalized) is Some(left_document) else {
     fail("normalized inherited stroke must parse")
   }
@@ -127,9 +127,28 @@ test "renderer inheritance normalizer does not materialize opacity or vector eff
 }
 
 ///|
-test "renderer inheritance normalizer leaves CSS-wide keywords guarded" {
+test "renderer inheritance normalizer materializes CSS-wide keywords" {
   let source = "<svg><g stroke-linecap='inherit'><line id='edge' x1='0' y1='2' x2='4' y2='2'/></g></svg>"
-  assert_eq(normalize_renderer_ordinary_inheritance(source), source)
+  assert_true(
+    normalize_renderer_ordinary_inheritance(source).find("stroke-linecap:butt")
+    is Some(_),
+  )
+}
+
+///|
+test "renderer input materializes currentColor and custom-property consumers" {
+  let source = "<svg width='16' height='16' style='--paint:currentColor;color:red;--left:2'><rect id='box' x='var(--left)' y='2' width='4' height='4' fill='var(--paint)'/></svg>"
+  let normalized = normalize_renderer_input(source)
+  assert_true(normalized.find("fill:red") is Some(_))
+  assert_true(normalized.find("x:2") is Some(_))
+  assert_false(normalized.find("fill:var(") is Some(_))
+  guard @svg.parse_svg_document(normalized) is Some(document) else {
+    fail("normalized computed values must parse")
+  }
+  let image = @svg.render_svg_document_to_image(document, 16, 16)
+  assert_true(
+    image.pixels.any(pixel => pixel.r == 255 && pixel.g == 0 && pixel.b == 0),
+  )
 }
 
 ///|

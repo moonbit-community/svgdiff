@@ -62,9 +62,15 @@ test "ordinary inheritance uses the rendered pixel mask" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.events.length(), 1)
-  assert_eq(report.events[0].difference_regions.length(), 1)
-  let region = report.events[0].difference_regions[0]
+  assert_eq(report.events.length(), 2)
+  let fill_events = [
+    for event in report.events if event.atomic_difference_ids.any(id => {
+      id.has_suffix(":fill")
+    }) => event
+  ]
+  assert_eq(fill_events.length(), 1)
+  assert_eq(fill_events[0].difference_regions.length(), 1)
+  let region = fill_events[0].difference_regions[0]
   assert_eq(region.source, "pixel_mask")
   assert_eq(region.css_x, 2.0)
   assert_eq(region.css_y, 3.0)

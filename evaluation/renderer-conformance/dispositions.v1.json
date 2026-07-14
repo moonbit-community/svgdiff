@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/11",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/12",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -250,6 +250,20 @@
       "normalizer_id": "svgdiff/ordinary-inheritance-normalizer@1",
       "canonical_case_id": "inheritance-stylesheet-fill-canonical",
       "reason": "Chromium renders a matched stylesheet fill inherited from a group identically to the canonical leaf-local fill, and the production cascade plus ordinary-inheritance normalizers prove that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "css-wide-fill",
+      "disposition": "normalizer",
+      "normalizer_id": "svgdiff/css-computed-value-normalizer@1",
+      "canonical_case_id": "css-wide-fill-canonical",
+      "reason": "Chromium renders explicit inherit identically to the canonical inherited paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "custom-currentcolor-fill",
+      "disposition": "normalizer",
+      "normalizer_id": "svgdiff/css-computed-value-normalizer@1",
+      "canonical_case_id": "custom-currentcolor-fill-canonical",
+      "reason": "Chromium renders an inherited custom property containing currentColor identically to the canonical paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
     }
   ]
 }

@@ -705,15 +705,55 @@
       "id": "inheritance-stylesheet-fill-canonical",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 1.0,
+      "changed_pixels": 256,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "css-wide-fill",
+      "max_channel_delta": 204,
+      "premultiplied_rgba8_rmse": 0.458257569496
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "css-wide-fill-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 1.0,
+      "changed_pixels": 256,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "custom-currentcolor-fill",
+      "max_channel_delta": 204,
+      "premultiplied_rgba8_rmse": 0.458257569496
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "custom-currentcolor-fill-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/11",
-  "fixture_source_set_sha256": "b48d8ecbc79b592fe38cc7c05f057a9c15507c7379f333f9e95803775ec1557e",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/12",
+  "fixture_source_set_sha256": "8b7ac58f90eacd64be8b132cb13d52029ed2ef9bfd58c3ac9f3437558196d954",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 70,
+    "cases": 74,
     "categories": {
       "alpha": {
         "cases": 3,
@@ -736,15 +776,15 @@
         "exact": 18
       },
       "paint": {
-        "cases": 16,
-        "divergent": 7,
-        "exact": 9
+        "cases": 20,
+        "divergent": 9,
+        "exact": 11
       }
     },
-    "divergent": 40,
-    "exact": 30,
+    "divergent": 42,
+    "exact": 32,
     "exploratory": 2,
     "guarded": 30,
-    "supported": 38
+    "supported": 42
   }
 }

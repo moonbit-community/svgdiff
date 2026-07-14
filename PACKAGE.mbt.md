@@ -5,7 +5,7 @@
 ## Install
 
 ```sh
-moon add Milky2018/svgdiff@0.4.8
+moon add Milky2018/svgdiff@0.4.9
 ```
 
 The module currently supports the native backend only.
@@ -22,7 +22,7 @@ test "compare SVG source strings through the public package" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.14")
+  assert_eq(report.schema_version, "1.15")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() > 0)
   assert_true(report.events.length() > 0)
@@ -41,6 +41,6 @@ The root package exposes:
 - typed report, difference, magnitude, region, provenance, coverage, and Diagnostic records;
 - canonical formatted and compact JSON serialization through `StructuredReport` methods.
 
-Module version `0.4.8` emits Structured Report Schema `1.14`. The current engine resolves presentation, inline, and matched static stylesheet declarations through one cascade model, including duplicates, specificity, source order, and `!important`; applies ordinary inheritance to supported fill, stroke, stroke-geometry, and marker properties without losing declaration ownership; and preserves exact authored length facts while resolving admitted shape, stroke, viewport, and marker units. The static selector scope covers type, universal, ID, class, attribute presence/equality, compound, list, and four structural combinators. CSS-wide keywords, `currentColor`, custom properties, unsupported selector grammar, active-stroke and marker rasterization, filters, masks, fonts, images, scripting, animation, and `foreignObject` remain guarded rather than implying equality.
+Module version `0.4.9` emits Structured Report Schema `1.15`. The current engine resolves presentation, inline, and matched static stylesheet declarations through one cascade model, including duplicates, specificity, source order, and `!important`; applies ordinary inheritance and CSS-wide defaulting without losing declaration ownership; resolves bounded custom-property substitution and `currentColor` dependencies for supported SVG values; and preserves exact authored length facts while resolving admitted shape, stroke, viewport, and marker units. The static selector scope covers type, universal, ID, class, attribute presence/equality, compound, list, and four structural combinators. Cascade layers, complete CSS tokenization, unsupported selector grammar, active-stroke and marker rasterization, filters, masks, fonts, images, scripting, animation, and `foreignObject` remain guarded rather than implying equality.
 
 The module is licensed under Apache-2.0.

@@ -8,7 +8,7 @@
       "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
       "stroke-dasharray", "stroke-dashoffset", "vector-effect",
       "marker-end", "markerUnits", "markerWidth", "refX", "orient",
-      "opacity", "transform", "viewBox"
+      "opacity", "transform", "viewBox", "color", "--paint"
     ]
   },
   "cases": [
@@ -340,6 +340,27 @@
       "before_value": "red", "after_value": "green",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "fill", "report_property": "fill", "before_declared_value": "red", "after_declared_value": "green", "affected_subject_ids": ["dot"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-custom-property-fill",
+      "template": "templates/custom-property-fill.svg.tmpl",
+      "before_value": "red", "after_value": "blue",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "--paint", "report_property": "--paint", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-current-color-fill",
+      "template": "templates/current-color-fill.svg.tmpl",
+      "before_value": "red", "after_value": "blue",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "color", "report_property": "color", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-css-wide-fill",
+      "template": "templates/css-wide-fill.svg.tmpl",
+      "before_value": "inherit", "after_value": "red",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "fill", "before_declared_value": "inherit", "after_declared_value": "red", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     }
   ]
 }

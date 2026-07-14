@@ -73,7 +73,7 @@ test "undeclared fill resolves to the SVG initial value" {
 
 ///|
 test "every admitted ordinary inherited property uses the nearest ancestor" {
-  let source = "<svg id='root' fill='red' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
+  let source = "<svg id='root' color='green' fill='red' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) =>
       for property in inherited_visual_properties() {
@@ -97,6 +97,134 @@ test "every admitted ordinary inherited property uses the nearest ancestor" {
       }
     _ => fail("expected the source hierarchy")
   }
+}
+
+///|
+test "CSS-wide keywords cover every supported computed property" {
+  let samples = [
+    ("x", "3"),
+    ("y", "3"),
+    ("width", "3"),
+    ("height", "3"),
+    ("rx", "3"),
+    ("ry", "3"),
+    ("cx", "3"),
+    ("cy", "3"),
+    ("r", "3"),
+    ("x1", "3"),
+    ("y1", "3"),
+    ("x2", "3"),
+    ("y2", "3"),
+    ("points", "1 1 2 2"),
+    ("color", "red"),
+    ("fill", "red"),
+    ("stroke", "red"),
+    ("stroke-width", "3"),
+    ("stroke-linecap", "round"),
+    ("stroke-linejoin", "bevel"),
+    ("stroke-miterlimit", "5"),
+    ("stroke-dasharray", "2 1"),
+    ("stroke-dashoffset", "3"),
+    ("vector-effect", "non-scaling-stroke"),
+    ("opacity", "0.5"),
+    ("marker", "url(#m)"),
+    ("marker-start", "url(#m)"),
+    ("marker-mid", "url(#m)"),
+    ("marker-end", "url(#m)"),
+  ]
+  for entry in samples {
+    let (property, parent_value) = entry
+    for keyword in ["inherit", "initial", "unset", "revert"] {
+      let source = "<svg id='root' style='\{property}:\{parent_value}'><rect id='box' style='\{property}:\{keyword}'/></svg>"
+      guard extract_fill_hierarchy(source) is ParsedFillHierarchy(hierarchy) else {
+        fail("expected hierarchy for \{property}:\{keyword}")
+      }
+      let resolution = resolved_visual_for_subject(hierarchy, "box", property).unwrap()
+      let inherited = inherited_visual_properties().contains(property)
+      let expected = if keyword == "inherit" ||
+        ((keyword == "unset" || keyword == "revert") && inherited) {
+        parent_value
+      } else {
+        initial_visual_value(property)
+      }
+      assert_eq(resolution.resolved_value, expected)
+      assert_eq(
+        resolution.resolution,
+        if keyword == "inherit" ||
+          ((keyword == "unset" || keyword == "revert") && inherited) {
+          "explicit_\{keyword}_inherit"
+        } else {
+          "explicit_\{keyword}_initial"
+        },
+      )
+      assert_eq(resolution.declaration_owner_id, Some("box"))
+      assert_eq(resolution.declaration.unwrap().declared_value, keyword)
+    }
+    let root_source = "<svg id='root' style='\{property}:inherit'/>"
+    guard extract_fill_hierarchy(root_source) is ParsedFillHierarchy(root) else {
+      fail("expected root hierarchy for \{property}:inherit")
+    }
+    let root_resolution = resolved_visual_for_subject(root, "root", property).unwrap()
+    assert_eq(root_resolution.resolved_value, initial_visual_value(property))
+    assert_eq(root_resolution.resolution, "explicit_inherit_initial")
+    assert_eq(root_resolution.declaration_owner_id, Some("root"))
+  }
+}
+
+///|
+test "custom properties feed every supported computed property" {
+  let samples = [
+    ("x", "3"),
+    ("y", "3"),
+    ("width", "3"),
+    ("height", "3"),
+    ("rx", "3"),
+    ("ry", "3"),
+    ("cx", "3"),
+    ("cy", "3"),
+    ("r", "3"),
+    ("x1", "3"),
+    ("y1", "3"),
+    ("x2", "3"),
+    ("y2", "3"),
+    ("points", "1 1 2 2"),
+    ("color", "red"),
+    ("fill", "red"),
+    ("stroke", "red"),
+    ("stroke-width", "3"),
+    ("stroke-linecap", "round"),
+    ("stroke-linejoin", "bevel"),
+    ("stroke-miterlimit", "5"),
+    ("stroke-dasharray", "2 1"),
+    ("stroke-dashoffset", "3"),
+    ("vector-effect", "non-scaling-stroke"),
+    ("opacity", "0.5"),
+    ("marker", "url(#m)"),
+    ("marker-start", "url(#m)"),
+    ("marker-mid", "url(#m)"),
+    ("marker-end", "url(#m)"),
+  ]
+  for entry in samples {
+    let (property, value) = entry
+    let source = "<svg style='--value:\{value}'><rect id='box' style='\{property}:var(--value)'/></svg>"
+    guard extract_fill_hierarchy(source) is ParsedFillHierarchy(hierarchy) else {
+      fail("expected hierarchy for \{property}:var(--value)")
+    }
+    let resolution = resolved_visual_for_subject(hierarchy, "box", property).unwrap()
+    assert_eq(resolution.resolved_value, value)
+    assert_eq(resolution.declaration.unwrap().declared_value, "var(--value)")
+  }
+}
+
+///|
+test "currentColor resolves supported stroke paint" {
+  let source = "<svg color='red'><rect id='box' stroke='currentColor'/></svg>"
+  guard extract_fill_hierarchy(source) is ParsedFillHierarchy(hierarchy) else {
+    fail("expected currentColor hierarchy")
+  }
+  let stroke = resolved_visual_for_subject(hierarchy, "box", "stroke").unwrap()
+  assert_eq(stroke.resolved_value, "red")
+  assert_eq(stroke.declaration.unwrap().declared_value, "currentColor")
 }
 
 ///|

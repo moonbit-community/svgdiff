@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.14",
-  "title": "SVG Diff Structured Report 1.14",
+  "$id": "https://example.invalid/svgdiff/schema/1.15",
+  "title": "SVG Diff Structured Report 1.15",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.14" },
+    "schema_version": { "const": "1.15" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",

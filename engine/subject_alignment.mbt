@@ -67,7 +67,7 @@ fn subject_from_element(
   source_index : Int,
   hierarchy_signature : String,
   transform_chain : Array[SourceTransformSite],
-  inherited_visual_facts : Array[DeclaredVisualFact],
+  computed_visual_facts : Array[DeclaredVisualFact],
   inherited_marker_facts : Array[DeclaredVisualFact],
   viewport : ViewportContext,
   profile : ComparisonProfile,
@@ -128,22 +128,24 @@ fn subject_from_element(
   for fact in cascade_visual_declarations(candidates) {
     upsert_declared_fact(facts, fact)
   }
-  for fact in inherited_visual_facts {
-    if ordinary_subject_inherited_properties().contains(fact.property) &&
-      declared_fact_in_array(facts, fact.property) is None {
-      upsert_declared_fact(facts, fact)
-    }
+  let computed_facts = facts.copy()
+  for fact in computed_visual_facts {
+    upsert_declared_fact(computed_facts, fact)
   }
   let geometry = resolve_basic_shape_geometry_with_context(
     element.name.local_name,
-    facts,
+    computed_facts,
     viewport,
     profile,
   )
-  let stroke = resolve_stroke_geometry_with_context(facts, viewport, profile)
-  let marker = resolve_marker_attachments(facts, inherited_marker_facts)
+  let stroke = resolve_stroke_geometry_with_context(
+    computed_facts, viewport, profile,
+  )
+  let marker = resolve_marker_attachments(
+    computed_facts, inherited_marker_facts,
+  )
   let values : Array[(String, String)] = []
-  for fact in facts {
+  for fact in computed_facts {
     if fact.property == "transform" {
       continue
     }
@@ -171,7 +173,7 @@ fn subject_from_element(
   for value in marker.values {
     values.push(value)
   }
-  let stroke_paint_present = resolved_stroke_paint_present(facts)
+  let stroke_paint_present = resolved_stroke_paint_present(computed_facts)
   let stroke_path_present = resolved_stroke_path_present(
     element.name.local_name,
     geometry,
@@ -322,6 +324,7 @@ fn extract_source_subjects_with_profile_or_raise(
   profile : ComparisonProfile,
 ) -> Array[SourceSubject] raise {
   let css_document = parse_static_css_document_or_raise(input)
+  let computed_hierarchy = extract_fill_hierarchy_or_raise(input)
   let subjects : Array[SourceSubject] = []
   let hierarchy : Array[String] = []
   let transforms : Array[SourceTransformSite] = []
@@ -377,6 +380,12 @@ fn extract_source_subjects_with_profile_or_raise(
           }
         }
         if visual_subject_kind(kind) && marker_depth == 0 {
+          let computed_visual_facts = match
+            computed_hierarchy.rect_subject_ids.get(subjects.length()) {
+            Some(subject_id) =>
+              computed_visual_facts_for_subject(computed_hierarchy, subject_id)
+            None => []
+          }
           subjects.push(
             subject_from_element(
               input,
@@ -388,7 +397,7 @@ fn extract_source_subjects_with_profile_or_raise(
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transforms.copy(),
-              inherited_visuals.last().unwrap_or([]),
+              computed_visual_facts,
               inherited_markers.last().unwrap_or([]),
               viewport_contexts
               .last()
@@ -413,6 +422,12 @@ fn extract_source_subjects_with_profile_or_raise(
         transform_chain.push(transform)
         node_index += 1
         if visual_subject_kind(element.name.local_name) && marker_depth == 0 {
+          let computed_visual_facts = match
+            computed_hierarchy.rect_subject_ids.get(subjects.length()) {
+            Some(subject_id) =>
+              computed_visual_facts_for_subject(computed_hierarchy, subject_id)
+            None => []
+          }
           subjects.push(
             subject_from_element(
               input,
@@ -424,7 +439,7 @@ fn extract_source_subjects_with_profile_or_raise(
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transform_chain,
-              inherited_visuals.last().unwrap_or([]),
+              computed_visual_facts,
               inherited_markers.last().unwrap_or([]),
               viewport_contexts
               .last()

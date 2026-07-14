@@ -222,34 +222,45 @@ fn renderer_inherited_value_edits_for_element(
   subject_id : String,
   edits : Array[RendererValueEdit],
 ) -> Unit {
-  let mut inserted = ""
-  for property in inherited_visual_properties() {
-    match resolved_visual_for_subject(hierarchy, subject_id, property) {
-      Some({ resolution: "inherited", .. } as resolution) =>
-        match renderer_attribute(element, property) {
-          Some(attribute) =>
-            edits.push({
-              start_offset: attribute.value_span.start.offset,
-              end_offset: attribute.value_span.end.offset,
-              replacement: escape_renderer_attribute_value(
-                resolution.resolved_value,
-              ),
-            })
-          None =>
-            inserted += " \{property}=\"" +
-              escape_renderer_attribute_value(resolution.resolved_value) +
-              "\""
-        }
-      _ => ()
-    }
+  let overrides = renderer_computed_override_facts_for_subject(
+    hierarchy, subject_id,
+  )
+  if overrides.is_empty() {
+    return
   }
-  if inserted != "" {
-    let offset = renderer_element_insert_offset(input, span)
-    edits.push({
-      start_offset: offset,
-      end_offset: offset,
-      replacement: inserted,
-    })
+  let facts : Array[DeclaredVisualFact] = []
+  match renderer_attribute(element, "style") {
+    Some(attribute) => {
+      let style = inline_style_facts(input, attribute)
+      if !style.complete {
+        return
+      }
+      facts.push_iter(style.facts.iter())
+    }
+    None => ()
+  }
+  for fact in overrides {
+    upsert_declared_fact(facts, fact)
+  }
+  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
+  let replacement = escape_renderer_attribute_value(
+    canonical_renderer_inline_style(facts),
+  )
+  match renderer_attribute(element, "style") {
+    Some(attribute) =>
+      edits.push({
+        start_offset: attribute.value_span.start.offset,
+        end_offset: attribute.value_span.end.offset,
+        replacement,
+      })
+    None => {
+      let offset = renderer_element_insert_offset(input, span)
+      edits.push({
+        start_offset: offset,
+        end_offset: offset,
+        replacement: " style=\"\{replacement}\"",
+      })
+    }
   }
 }
 
@@ -258,13 +269,18 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
   guard extract_fill_hierarchy(input) is ParsedFillHierarchy(hierarchy) else {
     return input
   }
-  if !hierarchy.coverage_codes.is_empty() {
+  if hierarchy.coverage_codes.any(code => {
+      code == "css_cascade_unsupported" ||
+      code == "css_revert_layer_unsupported" ||
+      code == "css_variable_syntax_unsupported" ||
+      code == "css_variable_expansion_limit"
+    }) {
     return input
   }
   let reader = @xml.NamespaceReader::from_string(input)
   let events = reader.read_events_until_eof() catch { _ => return input }
   let edits : Array[RendererValueEdit] = []
-  let mut subject_index = 0
+  let mut hierarchy_index = 0
   let mut marker_depth = 0
   for event in events {
     match event.kind {
@@ -273,38 +289,40 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
         if kind == "marker" {
           marker_depth += 1
         }
-        if marker_depth == 0 && visual_subject_kind(kind) {
-          match hierarchy.rect_subject_ids.get(subject_index) {
-            Some(subject_id) =>
+        if marker_depth == 0 && fill_hierarchy_kind(kind) {
+          match hierarchy.elements.get(hierarchy_index) {
+            Some(source_element) if visual_subject_kind(kind) || kind == "stop" =>
               renderer_inherited_value_edits_for_element(
                 input,
                 element,
                 event.span,
                 hierarchy,
-                subject_id,
+                source_element.subject_id,
                 edits,
               )
-            None => ()
+            _ => ()
           }
-          subject_index += 1
+          hierarchy_index += 1
         }
       }
-      Empty(element) =>
-        if marker_depth == 0 && visual_subject_kind(element.name.local_name) {
-          match hierarchy.rect_subject_ids.get(subject_index) {
-            Some(subject_id) =>
+      Empty(element) => {
+        let kind = element.name.local_name
+        if marker_depth == 0 && fill_hierarchy_kind(kind) {
+          match hierarchy.elements.get(hierarchy_index) {
+            Some(source_element) if visual_subject_kind(kind) || kind == "stop" =>
               renderer_inherited_value_edits_for_element(
                 input,
                 element,
                 event.span,
                 hierarchy,
-                subject_id,
+                source_element.subject_id,
                 edits,
               )
-            None => ()
+            _ => ()
           }
-          subject_index += 1
+          hierarchy_index += 1
         }
+      }
       End(name) if name.local_name == "marker" => marker_depth -= 1
       _ => ()
     }

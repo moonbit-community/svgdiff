@@ -27,7 +27,7 @@ class FailureClassificationTest(unittest.TestCase):
             "feature_coverage",
         )
         self.assertEqual(
-            diagnostic_domain("css_wide_keyword_unsupported", POLICY),
+            diagnostic_domain("css_variable_syntax_unsupported", POLICY),
             "feature_coverage",
         )
 

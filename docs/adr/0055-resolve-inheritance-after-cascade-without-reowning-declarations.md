@@ -1,6 +1,6 @@
 # ADR 0055: Resolve Ordinary Inheritance After Cascade Without Reowning Declarations
 
-Status: accepted and implemented for supported visual properties
+Status: accepted and implemented for supported visual properties; computed-value boundary refined by ADR 0056
 
 ## Context
 
@@ -16,9 +16,9 @@ Keep declaration ownership and leaf computation separate. The source hierarchy r
 
 The leaf subject analyzer receives effective inherited fill, stroke, stroke width, line cap, line join, miter limit, dash array, and dash offset before resolving used stroke geometry. Marker longhands continue through the existing marker inheritance model. These effective facts are private computational inputs: they retain their original declaration provenance and never become leaf-owned Changed Facts.
 
-`opacity`, `vector-effect`, and geometry properties remain non-inherited. Missing inherited declarations use their documented initial values. CSS-wide keywords, `currentColor`, custom properties, paint servers, and non-author cascade origins remain guarded and belong to later roadmap items.
+`opacity`, `vector-effect`, and geometry properties remain non-inherited. Missing inherited declarations use their documented initial values. [ADR 0056](0056-resolve-css-computed-values-as-dependencies.md) subsequently admits CSS-wide keywords, `currentColor`, and custom properties without changing this declaration-ownership boundary. Paint servers beyond the narrow admitted resource-color slice and non-author cascade origins remain guarded.
 
-At the renderer boundary, a private `ordinary-inheritance-normalizer@1` materializes only complete admitted inherited winners on supported scene leaves after style-precedence normalization and before length and stroke used-value normalization. It changes only renderer-input copies. Original SVG text remains authoritative for provenance and presentation. Unsupported inheritance syntax is not rewritten.
+At the renderer boundary, a private `ordinary-inheritance-normalizer@1` materializes only complete admitted inherited winners on supported scene leaves after style-precedence normalization and before computed and used-value normalization. It changes only renderer-input copies. Original SVG text remains authoritative for provenance and presentation. ADR 0056 adds the subsequent computed-value materialization seam.
 
 Marker resource children are excluded from scene-leaf inheritance enumeration; marker content paint remains independently guarded. Existing stroke and marker renderer-conformance guards remain in force even when source and computed inheritance are complete.
 

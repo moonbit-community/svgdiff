@@ -701,7 +701,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.14",
+    schema_version: "1.15",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

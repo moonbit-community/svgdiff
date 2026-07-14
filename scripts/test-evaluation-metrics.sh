@@ -54,10 +54,10 @@ jq -e '
   .aggregate.agent_region_overlap_macro == 1 and
   .aggregate.report_cause_envelope_recall_macro == 1 and
   .aggregate.agent_possible_cause_recall_macro == 1 and
-  .aggregate.report_cause_candidate_count_total == 8 and
-  .aggregate.report_cause_candidate_occurrence_count_total == 16 and
+  .aggregate.report_cause_candidate_count_total == 7 and
+  .aggregate.report_cause_candidate_occurrence_count_total == 15 and
   .aggregate.report_cause_region_count_total == 11 and
-  .aggregate.report_cause_candidates_per_region_macro == 1.3333333333333333 and
+  .aggregate.report_cause_candidates_per_region_macro == 1.1666666666666667 and
   .aggregate.report_cause_false_positive_count == 0 and
   .aggregate.report_cause_false_positive_fraction_macro == 0 and
   .aggregate.agent_cause_false_positive_count == 0 and
@@ -71,8 +71,8 @@ jq -e '
   .aggregate.agent_region_overlap_macro == 0 and
   .aggregate.agent_possible_cause_recall_macro == 0 and
   .aggregate.report_cause_envelope_recall_macro == 1 and
-  .aggregate.report_cause_candidate_count_total == 8 and
-  .aggregate.report_cause_candidate_occurrence_count_total == 16 and
+  .aggregate.report_cause_candidate_count_total == 7 and
+  .aggregate.report_cause_candidate_occurrence_count_total == 15 and
   .aggregate.report_cause_region_count_total == 11 and
   .aggregate.report_cause_false_positive_fraction_macro == 0
 ' "$empty_metrics" >/dev/null

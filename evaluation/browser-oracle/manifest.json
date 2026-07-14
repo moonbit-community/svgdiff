@@ -70,6 +70,10 @@
     { "id": "cascade-stylesheet-source-order", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-source-order.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "cascade-stylesheet-source-order-canonical" },
     { "id": "cascade-stylesheet-source-order-canonical", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-source-order-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
     { "id": "inheritance-stylesheet-fill", "source": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "inheritance-stylesheet-fill-canonical" },
-    { "id": "inheritance-stylesheet-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
+    { "id": "inheritance-stylesheet-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "css-wide-fill", "source": "evaluation/renderer-conformance/fixtures/css-wide-fill.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "css-wide-fill-canonical" },
+    { "id": "css-wide-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/css-wide-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "custom-currentcolor-fill", "source": "evaluation/renderer-conformance/fixtures/custom-currentcolor-fill.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "custom-currentcolor-fill-canonical" },
+    { "id": "custom-currentcolor-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/custom-currentcolor-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
   ]
 }

@@ -35,6 +35,7 @@ fn supported_rect_property(property : String) -> Bool {
     | "x2"
     | "y2"
     | "points"
+    | "color"
     | "fill"
     | "stroke"
     | "stroke-width"
@@ -51,6 +52,32 @@ fn supported_rect_property(property : String) -> Bool {
     | "opacity" => true
     _ => false
   }
+}
+
+///|
+fn css_custom_property_name(property : String) -> Bool {
+  if !property.has_prefix("--") || property.length() <= 2 {
+    return false
+  }
+  for index in 2..<property.length() {
+    let code = property[index]
+    if !((code >= 'a' && code <= 'z') ||
+      (code >= 'A' && code <= 'Z') ||
+      (code >= '0' && code <= '9') ||
+      code == '-' ||
+      code == '_') {
+      return false
+    }
+  }
+  true
+}
+
+///|
+fn supported_css_declaration_property(property : String) -> Bool {
+  supported_rect_property(property.to_lower()) ||
+  property.to_lower() == "stop-color" ||
+  property.to_lower() == "stop-opacity" ||
+  css_custom_property_name(property)
 }
 
 ///|
@@ -161,8 +188,12 @@ fn parse_css_declaration_segment(
     return false
   }
   let raw_name = source_range_slice(raw_style, name_start, name_end)
-  let property = raw_name.to_lower()
-  if !supported_rect_property(property) {
+  let property = if raw_name.has_prefix("--") {
+    raw_name
+  } else {
+    raw_name.to_lower()
+  }
+  if !supported_css_declaration_property(property) {
     return false
   }
   let raw_value = source_range_slice(raw_style, value_start, value_end)
@@ -180,9 +211,6 @@ fn parse_css_declaration_segment(
     return false
   }
   let authored_value = source_range_slice(raw_style, value_start, value_end)
-  if authored_value.to_lower().find("var(") is Some(_) {
-    return false
-  }
   let declared_value = try @xml.unescape(authored_value) catch {
     _ => return false
   } noraise {
