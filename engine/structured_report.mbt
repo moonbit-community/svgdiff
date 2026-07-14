@@ -1,4 +1,8 @@
 ///|
+/// Rendering and normalization conditions recorded for one comparison.
+///
+/// The root schema `1.0` API accepts caller-provided viewport dimensions and
+/// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
   viewport_height : Int
@@ -9,6 +13,9 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
+/// Return the fixed schema `1.0` profile with a `16 x 16` viewport.
+///
+/// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
   {
     viewport_width: 16,
@@ -21,6 +28,10 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
 }
 
 ///|
+/// Relationship between the supported before and after computed facts.
+///
+/// `status` is `equivalent`, `different`, `indeterminate`, or
+/// `not_applicable`; `reason_code` and Diagnostic references explain why.
 pub(all) struct ComputedRelation {
   status : String
   reason_code : String
@@ -29,6 +40,7 @@ pub(all) struct ComputedRelation {
 } derive(ToJson)
 
 ///|
+/// Continuous canonical raster measurements for one rendered outcome.
 pub(all) struct RenderedMagnitude {
   changed_pixels : Int
   changed_pixel_fraction : Double
@@ -37,6 +49,9 @@ pub(all) struct RenderedMagnitude {
 } derive(ToJson)
 
 ///|
+/// Availability and optional magnitude of canonical rendered evidence.
+///
+/// A computed zero magnitude is distinct from `not_computed`.
 pub(all) struct RenderedEvidence {
   status : String
   reason_code : String?
@@ -44,6 +59,10 @@ pub(all) struct RenderedEvidence {
 } derive(ToJson)
 
 ///|
+/// Conservative Changed Fact candidates for one Difference Region.
+///
+/// A `sound_overapproximation` contains every actual changed cause within
+/// complete analysis coverage, but may contain false positives.
 pub(all) struct CauseEnvelope {
   guarantee : String
   coverage : String
@@ -53,6 +72,7 @@ pub(all) struct CauseEnvelope {
 } derive(ToJson)
 
 ///|
+/// Pixel-space and CSS-space localization of one visual outcome component.
 pub(all) struct DifferenceRegion {
   id : String
   source : String
@@ -70,6 +90,7 @@ pub(all) struct DifferenceRegion {
 } derive(ToJson)
 
 ///|
+/// Numeric footprint of inserted or deleted visual subjects.
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int
   bounds_area_css_px2 : Double
@@ -79,6 +100,9 @@ pub(all) struct PresenceMagnitude {
 } derive(ToJson)
 
 ///|
+/// Domain-appropriate magnitude vector for one Atomic Difference.
+///
+/// Optional components that were not computed remain absent rather than zero.
 pub(all) struct DifferenceMagnitude {
   parameter_abs_user_units : Double?
   parameter_signed_user_units : Double?
@@ -92,6 +116,7 @@ pub(all) struct DifferenceMagnitude {
 } derive(ToJson)
 
 ///|
+/// Versioned lexicographic components for ordering differences in one domain.
 pub(all) struct DomainOrdering {
   policy_id : String
   components : Array[Double]
@@ -118,12 +143,14 @@ fn empty_domain_ordering() -> DomainOrdering {
 }
 
 ///|
+/// Half-open UTF-16 offsets into the original SVG source.
 pub(all) struct ReportSourceSpan {
   start_offset : Int
   end_offset : Int
 } derive(ToJson)
 
 ///|
+/// One supported authored visual declaration with exact source provenance.
 pub(all) struct DeclaredVisualFact {
   property : String
   authored_value : String
@@ -133,6 +160,7 @@ pub(all) struct DeclaredVisualFact {
 } derive(ToJson)
 
 ///|
+/// One supported visual fact after declaration precedence and inheritance.
 pub(all) struct ResolvedVisualFact {
   subject_id : String
   property : String
@@ -144,6 +172,7 @@ pub(all) struct ResolvedVisualFact {
 } derive(ToJson)
 
 ///|
+/// Before and after resolved facts for one subject property.
 pub(all) struct SourceResolutionPair {
   subject_id : String
   property : String
@@ -152,6 +181,7 @@ pub(all) struct SourceResolutionPair {
 } derive(ToJson)
 
 ///|
+/// Report-local reference to one visual subject in an input SVG.
 pub(all) struct SubjectReference {
   source_index : Int
   kind : String
@@ -159,6 +189,7 @@ pub(all) struct SubjectReference {
 } derive(ToJson)
 
 ///|
+/// Set-to-set relationship between before and after visual subjects.
 pub(all) struct SubjectAlignment {
   id : String
   relation : String
@@ -168,6 +199,7 @@ pub(all) struct SubjectAlignment {
 } derive(ToJson)
 
 ///|
+/// One changed supported authored fact and the subjects it may affect.
 pub(all) struct ChangedFact {
   id : String
   subject_id : String
@@ -178,6 +210,10 @@ pub(all) struct ChangedFact {
 } derive(ToJson)
 
 ///|
+/// Smallest independently reportable visual-semantic change.
+///
+/// Domain, evidence layers, computed relation, magnitude, and ordering remain
+/// independent so representation and measured visual impact are not conflated.
 pub(all) struct AtomicDifference {
   id : String
   subject_role : String
@@ -197,6 +233,7 @@ pub(all) struct AtomicDifference {
 } derive(ToJson)
 
 ///|
+/// Agent-facing grouping of Atomic Differences around one subject outcome.
 pub(all) struct VisualEvent {
   id : String
   primary_subject_id : String
@@ -206,6 +243,7 @@ pub(all) struct VisualEvent {
 } derive(ToJson)
 
 ///|
+/// Structured coverage limitation or analysis failure.
 pub(all) struct Diagnostic {
   id : String
   code : String
@@ -214,6 +252,10 @@ pub(all) struct Diagnostic {
 } derive(ToJson)
 
 ///|
+/// Complete schema `1.0` result of one SVG comparison.
+///
+/// Read `analysis_status` and `diagnostics` before interpreting an empty
+/// `atomic_differences` array as profile-scoped equality.
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
@@ -227,6 +269,7 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
+/// Serialize this report as indented schema `1.0` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }

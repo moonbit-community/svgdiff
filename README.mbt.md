@@ -34,6 +34,67 @@ The stable JSON contract is version `1.0`; its contract is described by the [JSO
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; only renderer and provenance experiments remain under `prototype`.
 
+### Compare SVG sources
+
+This example is compiled and run as part of `moon check` and `moon test`:
+
+```mbt check
+///|
+test "compare two SVG strings" {
+  let before = "<svg width='32' height='24'><rect id='box' x='2' y='2' width='8' height='8' fill='red'/></svg>"
+  let after = "<svg width='32' height='24'><rect id='box' x='3' y='2' width='8' height='8' fill='blue'/></svg>"
+  let profile = {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    viewport_width: 32,
+    viewport_height: 24,
+  }
+  let report = @svgdiff.compare(before, after, profile)
+  assert_eq(report.schema_version, "1.0")
+  assert_eq(report.analysis_status, "complete")
+  assert_true(report.atomic_differences.length() >= 2)
+  assert_true(report.events.length() > 0)
+}
+```
+
+Always inspect `analysis_status` and `diagnostics` before treating an empty difference list as equality:
+
+```mbt check
+///|
+test "partial analysis does not imply equality" {
+  let unsupported = "<svg width='16' height='16'><path d='M0 0 L8 8'/></svg>"
+  let report = @svgdiff.compare(
+    unsupported,
+    unsupported,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.atomic_differences.length(), 0)
+  assert_true(report.diagnostics.length() > 0)
+}
+```
+
+### Serialize or render the result
+
+```mbt check
+///|
+test "serialize JSON and build the HTML presentation" {
+  let before = "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>"
+  let after = "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>"
+  let report = @svgdiff.compare(
+    before,
+    after,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  let json = report.to_json_string()
+  let html = @svgdiff.render_html_report(before, after, report)
+  assert_true(json.find("\"schema_version\": \"1.0\"") is Some(_))
+  assert_true(html.find("<!doctype html>") is Some(_))
+  assert_true(html.find("sandbox=\"\"") is Some(_))
+}
+```
+
+The [public API guide](docs/library-api.md) groups all exported report types and documents how to inspect generated MoonBit API documentation.
+
 ## Supported static subset
 
 - source spans, authored values, normalized declarations, inline-style provenance, and ordinary inherited fill;
@@ -60,6 +121,7 @@ The complete implementation boundary, including guarded partial cases, is in the
 - [Feature coverage matrix](docs/feature-coverage.md): links support claims to Diagnostics and tests;
 - [Analysis status contract](docs/analysis-status.md): exact guarantees for complete, partial, and failed reports;
 - [Text-only agent guide](docs/agent-report-guide.md): report reading procedure and worked examples;
+- [MoonBit library API](docs/library-api.md): public operations, report types, and generated documentation commands;
 - [Core comparison model](docs/core-model.md): report concepts and invariants;
 - [Post-v1 roadmap](roadmap.md): all known unfinished product work;
 - [ADR index](docs/adr/README.md): architectural decisions and supersession status;

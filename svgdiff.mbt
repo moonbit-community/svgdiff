@@ -23,8 +23,16 @@ pub using @engine {
 }
 
 ///|
-/// Compare two deterministic static SVG sources under one declared profile.
-/// Unsupported semantics reduce `analysis_status` and produce diagnostics.
+/// Compare two deterministic static SVG sources under one schema `1.0` profile.
+///
+/// The two SVG strings are analyzed under a shared viewport. The root API
+/// preserves `profile.viewport_width` and `profile.viewport_height` and pins
+/// DPR, color interpretation, raster representation, and renderer identity to
+/// the v1 defaults. Unsupported semantics produce Diagnostics and reduce
+/// `analysis_status` instead of being treated as equality.
+///
+/// Inspect `analysis_status` before using an empty `atomic_differences` array as
+/// a profile-scoped equality conclusion.
 pub fn compare(
   before_svg : String,
   after_svg : String,

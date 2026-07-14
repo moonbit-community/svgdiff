@@ -16,8 +16,12 @@ fn sandbox_document(source : String) -> String {
 }
 
 ///|
-/// Render a self-contained interactive report. The structured report remains
-/// the sole source of diff classification, ordering, magnitude, and regions.
+/// Render a self-contained interactive HTML presentation of a report.
+///
+/// The original SVG sources are embedded as sandboxed preview documents. The
+/// supplied Structured Report remains the sole source of classification,
+/// ordering, magnitude, Difference Regions, and Diagnostics; this function
+/// does not run comparison again.
 pub fn render_html_report(
   before_svg : String,
   after_svg : String,
