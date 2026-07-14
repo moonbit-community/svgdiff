@@ -65,7 +65,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Provide an installation workflow that makes `svgdiff before.svg after.svg` available on `PATH`.
 - [ ] **P0** Publish release-mode native binaries for supported operating systems and architectures.
 - [x] **P0** Add `--help` and `--version` output with schema, engine, renderer, and policy versions.
-- [ ] **P0** Document stdin/stdout behavior and decide whether `-` denotes an SVG stream.
+- [x] **P0** Document stdin/stdout behavior and decide whether `-` denotes an SVG stream.
 - [ ] **P0** Stabilize exit-code semantics for complete, partial, failed, invalid-argument, and I/O outcomes.
 - [ ] **P0** Add a compact agent-oriented JSON mode without removing canonical evidence.
 - [ ] **P1** Add shell completion and package-manager installation where maintainable.

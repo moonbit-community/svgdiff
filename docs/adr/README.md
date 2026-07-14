@@ -44,4 +44,10 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0025](0025-own-source-semantics-as-a-workspace-module.md) | Superseded by 0026 | Originally own Source Semantics as a workspace module. |
 | [0026](0026-adopt-milky-xml-for-authored-parsing.md) | Accepted, implemented | Adopt `Milky2018/xml` for authored parsing. |
 
+## CLI and distribution decisions
+
+| ADR | Status | Decision |
+| --- | --- | --- |
+| [0028](0028-use-one-explicit-stdin-stream.md) | Accepted, implemented | Use `-` for exactly one explicit stdin SVG and keep errors off stdout. |
+
 Some accepted ADRs intentionally describe a target that is not yet fully implemented. The implementation status above is a navigation aid; [`v1-scope.md`](../v1-scope.md) remains authoritative for current support.

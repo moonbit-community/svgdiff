@@ -5,7 +5,7 @@ test "CLI parses paths viewport and output" {
     "report.json", "--html", "report.html",
   ])
   match config {
-    Some(config) => {
+    Config(config) => {
       assert_eq(config.before_path, "before.svg")
       assert_eq(config.after_path, "after.svg")
       assert_eq(config.width, 32)
@@ -13,17 +13,38 @@ test "CLI parses paths viewport and output" {
       assert_eq(config.output_path, Some("report.json"))
       assert_eq(config.html_path, Some("report.html"))
     }
-    None => fail("expected valid CLI configuration")
+    Invalid(message) => fail("expected valid CLI configuration: \{message}")
   }
 }
 
 ///|
 test "CLI rejects missing and invalid arguments" {
-  assert_true(parse_cli(["svgdiff"]) is None)
-  assert_true(parse_cli(["svgdiff", "a.svg", "b.svg", "--width", "0"]) is None)
+  assert_true(parse_cli(["svgdiff"]) is Invalid(_))
   assert_true(
-    parse_cli(["svgdiff", "a.svg", "b.svg", "--unknown", "x"]) is None,
+    parse_cli(["svgdiff", "a.svg", "b.svg", "--width", "0"]) is Invalid(_),
   )
+  assert_true(
+    parse_cli(["svgdiff", "a.svg", "b.svg", "--unknown", "x"]) is Invalid(_),
+  )
+  assert_true(parse_cli(["svgdiff", "-", "-"]) is Invalid(_))
+}
+
+///|
+test "CLI accepts one explicit stdin operand" {
+  match parse_cli(["svgdiff", "-", "after.svg"]) {
+    Config(config) => {
+      assert_eq(config.before_path, "-")
+      assert_eq(config.after_path, "after.svg")
+    }
+    Invalid(message) => fail("expected before stdin: \{message}")
+  }
+  match parse_cli(["svgdiff", "before.svg", "-"]) {
+    Config(config) => {
+      assert_eq(config.before_path, "before.svg")
+      assert_eq(config.after_path, "-")
+    }
+    Invalid(message) => fail("expected after stdin: \{message}")
+  }
 }
 
 ///|
@@ -36,6 +57,7 @@ test "CLI help documents options and exit statuses" {
   assert_true(help.contains("--html FILE"))
   assert_true(help.contains("--help"))
   assert_true(help.contains("--version"))
+  assert_true(help.contains("Use - for exactly one input"))
   assert_true(help.contains("2  Invalid arguments or file I/O failure"))
 }
 

@@ -15,7 +15,8 @@ first_hash=$(shasum -a 256 "$bindir/svgdiff" | awk '{print $1}')
 cd "$tmp/work"
 PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/before.svg" \
-  "$root/testdata/after.svg" >report.json
+  "$root/testdata/after.svg" >report.json 2>report.err
+test ! -s report.err
 jq -e '
   .schema_version == "1.0" and
   .analysis_status == "complete" and
@@ -27,6 +28,24 @@ grep -q '^Usage: svgdiff ' help.txt
 grep -q '^svgdiff 0.1.0$' version.txt
 grep -q '^schema: 1.0$' version.txt
 grep -q '^renderer: mizchi/svg@0.2.1$' version.txt
+
+cat "$root/testdata/before.svg" | PATH="$bindir:$PATH" svgdiff \
+  - "$root/testdata/after.svg" >stdin-report.json 2>stdin-report.err
+test ! -s stdin-report.err
+jq -e '.schema_version == "1.0" and .analysis_status == "complete"' stdin-report.json >/dev/null
+
+cat "$root/testdata/after.svg" | PATH="$bindir:$PATH" svgdiff \
+  "$root/testdata/before.svg" - >stdin-after-report.json 2>stdin-after-report.err
+test ! -s stdin-after-report.err
+jq -e '.schema_version == "1.0" and .analysis_status == "complete"' stdin-after-report.json >/dev/null
+
+if printf '%s\n' '<svg/>' | PATH="$bindir:$PATH" svgdiff \
+  - - >double-stdin.out 2>double-stdin.err; then
+  echo "Installed CLI unexpectedly accepted two stdin operands" >&2
+  exit 1
+fi
+test ! -s double-stdin.out
+grep -q '^Only one SVG input may use stdin (-)$' double-stdin.err
 
 cd "$root"
 second_output=$(sh scripts/install.sh --bindir "$bindir")

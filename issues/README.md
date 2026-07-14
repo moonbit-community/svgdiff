@@ -52,6 +52,7 @@ graph TD
   ISS_033["ISS-033: Attribute benchmark failures by pipeline layer"]
   ISS_034["ISS-034: Add the local PATH installation workflow"]
   ISS_035["ISS-035: Add CLI help and version identity"]
+  ISS_036["ISS-036: Define and implement the CLI stream contract"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -80,6 +81,7 @@ graph TD
   ISS_032 --> ISS_033
   ISS_033 --> ISS_034
   ISS_034 --> ISS_035
+  ISS_035 --> ISS_036
 ```
 
 ## Warnings

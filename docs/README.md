@@ -11,6 +11,7 @@ This directory separates the current product contract from future plans and hist
 | Question | Authoritative source |
 | --- | --- |
 | What does the command do? | [`README.mbt.md`](../README.mbt.md) and the executable in `cmd/svgdiff` |
+| How do stdin, stdout, stderr, and `-` behave? | [`cli-io.md`](cli-io.md) |
 | What JSON is emitted? | [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) and the public MoonBit report types |
 | What can v1 analyze completely today? | [`v1-scope.md`](v1-scope.md) |
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
