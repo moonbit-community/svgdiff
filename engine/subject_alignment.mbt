@@ -660,6 +660,7 @@ fn attach_subject_alignments(
   {
     schema_version: report.schema_version,
     analysis_status: report.analysis_status,
+    coverage_matrix: report.coverage_matrix,
     profile: report.profile,
     subject_alignments: alignments,
     changed_facts: report.changed_facts,
@@ -683,17 +684,21 @@ fn finish_report(
   )
   let combined_alignments = alignments.copy()
   combined_alignments.push_iter(extra_alignments.iter())
-  attach_difference_magnitudes(
-    attach_cause_envelopes(
-      attach_difference_regions(
-        attach_subject_alignments(
-          apply_preflight_diagnostics(report, diagnostics),
+  attach_feature_coverage(
+    attach_difference_magnitudes(
+      attach_cause_envelopes(
+        attach_difference_regions(
+          attach_subject_alignments(
+            apply_preflight_diagnostics(report, diagnostics),
+            combined_alignments,
+          ),
+          before_svg,
+          after_svg,
           combined_alignments,
         ),
-        before_svg,
-        after_svg,
-        combined_alignments,
       ),
     ),
+    before_svg,
+    after_svg,
   )
 }

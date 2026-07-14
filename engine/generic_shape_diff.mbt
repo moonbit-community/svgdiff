@@ -372,6 +372,7 @@ fn generic_basic_shape_report(
   Some({
     schema_version: "1.0",
     analysis_status: "complete",
+    coverage_matrix: [],
     profile,
     subject_alignments: alignments,
     changed_facts,

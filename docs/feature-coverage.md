@@ -15,7 +15,30 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
 | Deferred | The feature is intentionally outside schema `1.0`; current inputs are diagnosed through a partial guard. |
 
-Coverage is evaluated for the whole comparison. One partial feature makes the report partial even when every other row is complete-eligible.
+Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
+
+## Runtime matrix contract
+
+Every current report emits `coverage_matrix`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations.
+
+| Cell status | Source Semantics | Computed Appearance | Rendered Evidence |
+| --- | --- | --- | --- |
+| `covered` | The encountered authored feature is within the analyzer's source claim. | The analyzer can establish the supported resolved relation. | The analyzer can establish canonical rendered evidence, including measured zero. |
+| `limited` | Source enumeration or provenance is incomplete. | The resolved relation is incomplete or indeterminate. | Rendering, magnitude, or raster localization is unavailable or unproven. |
+| `not_applicable` | This row makes no Source Semantics claim. | This row makes no Computed Appearance claim. | This row makes no Rendered Evidence claim. |
+| `failed` | The layer could not be established because the comparison failed. | Same. | Same. |
+
+Feature IDs use four current namespaces:
+
+| Feature ID form | Meaning |
+| --- | --- |
+| `document.xml` | XML parse and document construction. |
+| `subject.<kind>` | One encountered supported visual subject kind. |
+| `property.<name>` | One encountered supported authored property. |
+| `domain.<difference-domain>` | One emitted Atomic Difference domain. |
+| `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
+
+Rows are deterministically ordered by feature ID and subject ID. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Current schema `1.0` adds `coverage_matrix` as an optional JSON-Schema property for backward compatibility with previously emitted reports; the current engine always emits it.
 
 ## Complete-eligible capabilities
 

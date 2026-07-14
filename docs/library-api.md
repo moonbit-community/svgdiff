@@ -24,7 +24,7 @@ Both JSON methods serialize schema `1.0`. `to_json_string` uses indentation for 
 
 | Area | Types |
 | --- | --- |
-| Profile and result | `ComparisonProfile`, `StructuredReport`, `Diagnostic` |
+| Profile and result | `ComparisonProfile`, `StructuredReport`, `FeatureCoverage`, `Diagnostic` |
 | Subjects and alignment | `SubjectReference`, `SubjectAlignment` |
 | Source and computed facts | `ReportSourceSpan`, `DeclaredVisualFact`, `ResolvedVisualFact`, `SourceResolutionPair`, `ChangedFact`, `ComputedRelation` |
 | Differences and grouping | `AtomicDifference`, `VisualEvent` |

@@ -4,7 +4,7 @@ Status: current schema `1.0` caller contract
 
 Last verified: 2026-07-14
 
-`analysis_status` describes how completely the engine could analyze the two inputs under the recorded Comparison Profile. It does not describe whether the SVGs are equal, how many differences exist, or how visually important a difference is.
+`analysis_status` summarizes the report's per-feature, per-evidence-layer `coverage_matrix` under the recorded Comparison Profile. It does not describe whether the SVGs are equal, how many differences exist, or how visually important a difference is.
 
 ## Status summary
 
@@ -75,8 +75,8 @@ failed > partial > complete
 ```
 
 - A parse failure makes the comparison `failed`.
-- Otherwise, any Diagnostic that identifies a coverage gap makes the comparison `partial`.
-- Only a comparison with no coverage-reducing condition may be `complete`.
+- Otherwise, any `limited` coverage cell makes the comparison `partial` and references one or more Diagnostics.
+- Only a matrix with no `limited` or `failed` cell may summarize to `complete`.
 
 The number or magnitude of Atomic Differences never changes this ordering. A large fully analyzed change can be `complete`; an apparently identical document pair containing one unsupported element is `partial`.
 

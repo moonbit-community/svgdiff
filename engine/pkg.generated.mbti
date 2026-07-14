@@ -107,6 +107,15 @@ pub(all) struct DomainOrdering {
   components : Array[Double]
 } derive(ToJson)
 
+pub(all) struct FeatureCoverage {
+  feature_id : String
+  subject_id : String
+  source_semantics : String
+  computed_appearance : String
+  rendered_evidence : String
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int
   bounds_area_css_px2 : Double
@@ -153,6 +162,7 @@ pub(all) struct SourceResolutionPair {
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
+  coverage_matrix : Array[FeatureCoverage]
   profile : ComparisonProfile
   subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]

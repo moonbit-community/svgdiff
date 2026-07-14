@@ -158,6 +158,7 @@ The schema `1.0` top-level object contains exactly these conceptual sections:
 {
   "schema_version": "1.0",
   "analysis_status": "complete | partial | failed",
+  "coverage_matrix": [],
   "profile": {},
   "subject_alignments": [],
   "changed_facts": [],
@@ -168,7 +169,7 @@ The schema `1.0` top-level object contains exactly these conceptual sections:
 }
 ```
 
-`analysis_status` describes coverage of the attempted comparison, not the severity of the visual change. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its Diagnostics. The exact caller obligations are defined in the [Analysis Status Contract](analysis-status.md).
+Each `coverage_matrix` row names one encountered feature and subject, records `covered`, `limited`, `not_applicable`, or `failed` independently for Source Semantics, Computed Appearance, and Rendered Evidence, and references the Diagnostics that justify limitations. `analysis_status` is the summary of those rows, not a separate severity judgment. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its matrix and Diagnostics. The exact caller obligations are defined in the [Analysis Status Contract](analysis-status.md).
 
 ## Current invariants
 

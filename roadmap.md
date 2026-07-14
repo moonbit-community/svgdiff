@@ -75,7 +75,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ## Phase 2: Coverage contract and renderer conformance
 
-- [ ] **P0** Replace coarse `complete`/`partial` reasoning with an explicit per-feature and per-evidence-layer coverage matrix.
+- [x] **P0** Replace coarse `complete`/`partial` reasoning with an explicit per-feature and per-evidence-layer coverage matrix.
 - [ ] **P0** Define proof obligations that every analyzer must satisfy before it may contribute to a `complete` report.
 - [ ] **P0** Add property tests that unsupported inputs can never produce complete equality.
 - [ ] **P0** Add mutation tests for every currently supported property and subject kind.

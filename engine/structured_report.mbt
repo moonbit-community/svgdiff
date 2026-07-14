@@ -252,6 +252,20 @@ pub(all) struct Diagnostic {
 } derive(ToJson)
 
 ///|
+/// Coverage of one encountered feature at each canonical evidence layer.
+///
+/// Layer status is `covered`, `limited`, `not_applicable`, or `failed`.
+/// Diagnostics explain every limited or failed row.
+pub(all) struct FeatureCoverage {
+  feature_id : String
+  subject_id : String
+  source_semantics : String
+  computed_appearance : String
+  rendered_evidence : String
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
+///|
 /// Complete schema `1.0` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
@@ -259,6 +273,7 @@ pub(all) struct Diagnostic {
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
+  coverage_matrix : Array[FeatureCoverage]
   profile : ComparisonProfile
   subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]
@@ -649,9 +664,20 @@ fn preflight_source(input : String) -> SourcePreflight {
 
 ///|
 fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
+  let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
     schema_version: "1.0",
     analysis_status: "failed",
+    coverage_matrix: [
+      {
+        feature_id: "document.xml",
+        subject_id: "document",
+        source_semantics: "failed",
+        computed_appearance: "failed",
+        rendered_evidence: "failed",
+        diagnostic_ids: [diagnostic_id],
+      },
+    ],
     profile,
     subject_alignments: [],
     changed_facts: [],
@@ -660,7 +686,7 @@ fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
     events: [],
     diagnostics: [
       {
-        id: "diagnostic:svg-parse-failed:document",
+        id: diagnostic_id,
         code: "svg_parse_failed",
         subject_id: "document",
         affected_evidence_layers: [
@@ -692,6 +718,7 @@ fn apply_preflight_diagnostics(
     } else {
       "partial"
     },
+    coverage_matrix: report.coverage_matrix,
     profile: report.profile,
     subject_alignments: report.subject_alignments,
     changed_facts: report.changed_facts,
@@ -955,6 +982,7 @@ fn deferred_font_report(
       Some({
         schema_version: "1.0",
         analysis_status: "partial",
+        coverage_matrix: [],
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -1029,6 +1057,7 @@ fn presence_change_report(
       Some({
         schema_version: "1.0",
         analysis_status: "complete",
+        coverage_matrix: [],
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -1077,6 +1106,7 @@ fn presence_change_report(
       Some({
         schema_version: "1.0",
         analysis_status: "complete",
+        coverage_matrix: [],
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -1179,6 +1209,7 @@ fn gradient_change_report(
         Some({
           schema_version: "1.0",
           analysis_status: "complete",
+          coverage_matrix: [],
           profile,
           subject_alignments: [],
           changed_facts: [],
@@ -1199,6 +1230,7 @@ fn gradient_change_report(
         Some({
           schema_version: "1.0",
           analysis_status: "complete",
+          coverage_matrix: [],
           profile,
           subject_alignments: [],
           changed_facts: [],
@@ -1349,6 +1381,7 @@ pub fn compare(
             {
               schema_version: "1.0",
               analysis_status: "partial",
+              coverage_matrix: [],
               profile,
               subject_alignments: [],
               changed_facts: [],

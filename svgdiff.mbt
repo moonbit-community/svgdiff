@@ -10,6 +10,7 @@ pub using @engine {
   type DifferenceMagnitude,
   type DifferenceRegion,
   type DomainOrdering,
+  type FeatureCoverage,
   type PresenceMagnitude,
   type RenderedEvidence,
   type RenderedMagnitude,

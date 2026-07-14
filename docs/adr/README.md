@@ -51,5 +51,6 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0028](0028-use-one-explicit-stdin-stream.md) | Accepted, implemented | Use `-` for exactly one explicit stdin SVG and keep errors off stdout. |
 | [0029](0029-use-three-cli-exit-status-classes.md) | Accepted, implemented | Use three stable exit-status classes for reports, failed analysis, and invocation or I/O failures. |
 | [0030](0030-compact-canonical-json-for-agent-mode.md) | Accepted, implemented | Compact the canonical report for agent transport without creating a lossy projection. |
+| [0031](0031-report-feature-layer-coverage.md) | Accepted, implemented | Report coverage independently per encountered feature and evidence layer. |
 
 Some accepted ADRs intentionally describe a target that is not yet fully implemented. The implementation status above is a navigation aid; [`v1-scope.md`](../v1-scope.md) remains authoritative for current support.

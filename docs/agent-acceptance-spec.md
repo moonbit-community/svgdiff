@@ -31,7 +31,7 @@ Reports must validate against their declared JSON Schema before evaluation. A sc
 ```text
 Read the SVG Diff Structured Report and return an evidence-grounded comparison.
 
-First state whether the report establishes a complete comparison, a partial comparison, or a failed analysis. Then identify every reported visual-semantic difference, including differences with zero rendered magnitude. For each difference, report its kind, subject, measured magnitude with units, location when available, and possible changed causes. Distinguish a sound over-approximation from unproven causation. Identify the main visual changes using only the report evidence, and state any Diagnostics that prevent equality, magnitude, location, or causal conclusions. Cite the report IDs supporting each claim. Never treat missing or indeterminate evidence as zero.
+First state whether the report establishes a complete comparison, a partial comparison, or a failed analysis. Use coverage_matrix to name every limited or failed feature-layer cell and its Diagnostics. Then identify every reported visual-semantic difference, including differences with zero rendered magnitude. For each difference, report its kind, subject, measured magnitude with units, location when available, and possible changed causes. Distinguish a sound over-approximation from unproven causation. Identify the main visual changes using only the report evidence, and state any Diagnostics that prevent equality, magnitude, location, or causal conclusions. Cite the report IDs supporting each claim. Never treat missing or indeterminate evidence as zero.
 ```
 
 The harness may request JSON or natural language, but it must preserve every required answer component below. Machine scoring should use the answer record; natural-language quality is not part of this contract.
@@ -42,7 +42,7 @@ The normalized answer record contains:
 
 | Component | Required content | Report evidence |
 | --- | --- | --- |
-| Coverage | `complete`, `partial`, or `failed`; whether profile-scoped equality is established, disproved, or not established; all conclusion-limiting Diagnostics | `analysis_status`, `diagnostics`, `profile` |
+| Coverage | `complete`, `partial`, or `failed`; whether profile-scoped equality is established, disproved, or not established; every limited or failed feature-layer cell; all conclusion-limiting Diagnostics | `analysis_status`, `coverage_matrix`, `diagnostics`, `profile` |
 | Differences | One entry for every reported Atomic Difference, including source-only and zero-rendered differences | `atomic_differences`, referenced `changed_facts` |
 | Kind | Domain, change description, and before/after semantic values when available | Atomic Difference domain, source/computed fields, evidence layers |
 | Subject | The affected aligned subject or explicit unattributed status | `subject_alignment_id`, `subject_alignments`, event references |

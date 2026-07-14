@@ -146,6 +146,7 @@ fn rect_coverage_report(
   {
     schema_version: "1.0",
     analysis_status: "partial",
+    coverage_matrix: [],
     profile,
     subject_alignments: [],
     changed_facts: [],
@@ -292,6 +293,7 @@ fn compare_rect_declared_facts(
     } else {
       "partial"
     },
+    coverage_matrix: [],
     profile,
     subject_alignments: [],
     changed_facts: [],

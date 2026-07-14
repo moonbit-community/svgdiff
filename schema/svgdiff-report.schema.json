@@ -17,6 +17,10 @@
   "properties": {
     "schema_version": { "const": "1.0" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
+    "coverage_matrix": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/featureCoverage" }
+    },
     "profile": {
       "type": "object",
       "required": [
@@ -61,6 +65,34 @@
     }
   },
   "$defs": {
+    "featureCoverage": {
+      "type": "object",
+      "required": [
+        "feature_id",
+        "subject_id",
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence",
+        "diagnostic_ids"
+      ],
+      "properties": {
+        "feature_id": { "type": "string" },
+        "subject_id": { "type": "string" },
+        "source_semantics": {
+          "enum": ["covered", "limited", "not_applicable", "failed"]
+        },
+        "computed_appearance": {
+          "enum": ["covered", "limited", "not_applicable", "failed"]
+        },
+        "rendered_evidence": {
+          "enum": ["covered", "limited", "not_applicable", "failed"]
+        },
+        "diagnostic_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
     "nullableString": { "type": ["string", "null"] },
     "nullableNumber": { "type": ["number", "null"] },
     "sourceSpan": {

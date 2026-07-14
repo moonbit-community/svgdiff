@@ -13,13 +13,14 @@ Read the report in this order:
 1. `schema_version`: stop or use a compatible parser if the version is unknown.
 2. `analysis_status`: decide whether equality is even a permitted conclusion.
 3. `profile`: state the viewport and pinned rendering conditions that bound the result.
-4. `diagnostics`: identify evidence layers that are unavailable or indeterminate.
-5. `events`: use these as the primary navigation and localization units.
-6. `atomic_differences`: explain exactly what changed and at which evidence layers.
-7. `magnitude` and `domain_ordering`: quantify and order differences without inventing a universal score.
-8. `difference_regions`: describe where the outcome occurs.
-9. `cause_envelope`: list possible Changed Fact causes with the correct guarantee.
-10. `changed_facts` and source spans: recover authored provenance when needed.
+4. `coverage_matrix`: identify the exact feature and evidence-layer cells that are covered, limited, not applicable, or failed.
+5. `diagnostics`: explain every limited or failed coverage row.
+6. `events`: use these as the primary navigation and localization units.
+7. `atomic_differences`: explain exactly what changed and at which evidence layers.
+8. `magnitude` and `domain_ordering`: quantify and order differences without inventing a universal score.
+9. `difference_regions`: describe where the outcome occurs.
+10. `cause_envelope`: list possible Changed Fact causes with the correct guarantee.
+11. `changed_facts` and source spans: recover authored provenance when needed.
 
 Never start by counting `atomic_differences`. A partial report with zero differences is not equality, while a complete report may contain a source distinction with zero visual effect.
 

@@ -90,7 +90,25 @@ json.dump(
         "differences": differences,
         "main_changes": main_changes,
         "limitations": [
-            item.get("message", item["code"]) for item in report["diagnostics"]
+            f"{row['feature_id']} ({row['subject_id']}): "
+            + ", ".join(
+                layer
+                for layer in (
+                    "source_semantics",
+                    "computed_appearance",
+                    "rendered_evidence",
+                )
+                if row[layer] in {"limited", "failed"}
+            )
+            for row in report.get("coverage_matrix", [])
+            if any(
+                row[layer] in {"limited", "failed"}
+                for layer in (
+                    "source_semantics",
+                    "computed_appearance",
+                    "rendered_evidence",
+                )
+            )
         ],
     },
     sys.stdout,
