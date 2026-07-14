@@ -19,7 +19,7 @@ Coverage is evaluated for the whole comparison. One limited feature-layer cell m
 
 ## Runtime matrix contract
 
-Every current report emits `coverage_matrix`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations.
+Every current report emits `coverage_matrix`. It is the sole canonical coverage summary; consumers must not derive coverage from difference counts or maintain a competing aggregate. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations.
 
 | Cell status | Source Semantics | Computed Appearance | Rendered Evidence |
 | --- | --- | --- | --- |
@@ -38,7 +38,9 @@ Feature IDs use four current namespaces:
 | `domain.<difference-domain>` | One emitted Atomic Difference domain. |
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 
-Rows are deterministically ordered by feature ID and subject ID. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Current schema `1.0` adds `coverage_matrix` as an optional JSON-Schema property for backward compatibility with previously emitted reports; the current engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Current schema `1.0` adds `coverage_matrix` as an optional JSON-Schema property for backward compatibility with previously emitted reports; the current engine always emits it.
+
+The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
 The matrix is validated by the [Coverage Proof Obligations](coverage-proof-obligations.md) before a report may remain complete. Missing rows, unjustified cells, dangling Diagnostics, and inconsistent status summaries emit `coverage_proof_incomplete` and reduce coverage.
 

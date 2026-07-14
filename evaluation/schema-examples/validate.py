@@ -72,6 +72,73 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             )
 
 
+def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
+    rows = report.get("coverage_matrix")
+    if not isinstance(rows, list) or not rows:
+        raise ValueError(f"{case['id']}: report has no explicit coverage summary")
+    diagnostics = {
+        diagnostic["id"]: diagnostic for diagnostic in report["diagnostics"]
+    }
+    keys = []
+    strongest = "complete"
+    valid_states = {"covered", "limited", "not_applicable", "failed"}
+    layers = ("source_semantics", "computed_appearance", "rendered_evidence")
+    for index, row in enumerate(rows):
+        feature_id = row.get("feature_id")
+        subject_id = row.get("subject_id")
+        if not isinstance(feature_id, str) or not feature_id:
+            raise ValueError(f"{case['id']}: coverage row {index} lacks feature ID")
+        if not isinstance(subject_id, str) or not subject_id:
+            raise ValueError(f"{case['id']}: coverage row {index} lacks subject ID")
+        keys.append((feature_id, subject_id))
+        row_diagnostics = row.get("diagnostic_ids")
+        if not isinstance(row_diagnostics, list) or len(row_diagnostics) != len(
+            set(row_diagnostics)
+        ):
+            raise ValueError(
+                f"{case['id']}: coverage row {feature_id}/{subject_id} "
+                "has invalid Diagnostic references"
+            )
+        for layer in layers:
+            state = row.get(layer)
+            if state not in valid_states:
+                raise ValueError(
+                    f"{case['id']}: coverage row {feature_id}/{subject_id} "
+                    f"has invalid {layer} state {state!r}"
+                )
+            if state in {"limited", "failed"}:
+                establishing = [
+                    identifier
+                    for identifier in row_diagnostics
+                    if identifier in diagnostics
+                    and layer in diagnostics[identifier]["affected_evidence_layers"]
+                ]
+                if not establishing:
+                    raise ValueError(
+                        f"{case['id']}: {feature_id}/{subject_id}/{layer} "
+                        "has no establishing Diagnostic"
+                    )
+            if state == "failed":
+                strongest = "failed"
+            elif state == "limited" and strongest != "failed":
+                strongest = "partial"
+    if len(keys) != len(set(keys)):
+        raise ValueError(f"{case['id']}: duplicate coverage feature/subject row")
+    def shortlex(value: str) -> tuple[int, tuple[int, ...]]:
+        return len(value), tuple(ord(character) for character in value)
+
+    expected_keys = sorted(
+        keys, key=lambda key: (shortlex(key[0]), shortlex(key[1]))
+    )
+    if keys != expected_keys:
+        raise ValueError(f"{case['id']}: coverage rows are not deterministic")
+    if report["analysis_status"] != strongest:
+        raise ValueError(
+            f"{case['id']}: coverage summary implies {strongest}, "
+            f"report says {report['analysis_status']}"
+        )
+
+
 def checked_path(relative_path: str) -> Path:
     path = (ROOT / relative_path).resolve()
     if ROOT not in path.parents:
@@ -124,6 +191,7 @@ def main() -> None:
         reports[case["id"]] = report
         validate_instance(report, schema, schema)
         assert_semantics(case, report)
+        assert_coverage_summary(case, report)
         output = checked_path(case["output"])
         if args.update:
             output.parent.mkdir(parents=True, exist_ok=True)

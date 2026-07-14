@@ -184,7 +184,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 - [ ] **P0** Add a machine-readable summary of the highest-impact Visual Events while retaining the full difference inventory.
 - [ ] **P0** Make formatting-only, computed-equivalent, rendered-zero, subtle, salient, partial, and failed outcomes easy to distinguish without external heuristics.
-- [ ] **P0** Add explicit coverage summaries by subject, feature, and evidence layer.
+- [x] **P0** Add explicit coverage summaries by subject, feature, and evidence layer.
 - [ ] **P0** Add explicit confidence and ambiguity fields where the engine makes an uncertain alignment or interpretation.
 - [ ] **P0** Provide stable links from summary events to Atomic Differences, Changed Facts, regions, Cause Envelopes, and Diagnostics.
 - [x] **P0** Guarantee deterministic ordering and report-local identifiers for identical inputs and profiles.

@@ -25,6 +25,8 @@ Read the report in this order:
 
 Never start by counting `atomic_differences`. A partial report with zero differences is not equality, while a complete report may contain a source distinction with zero visual effect.
 
+Treat `coverage_matrix` itself as the complete coverage summary. Group or filter its rows by `subject_id`, `feature_id`, or evidence-layer state when answering a question; do not infer a second summary from events, differences, or Diagnostic code names.
+
 ## Interpreting one Atomic Difference
 
 Use the independent dimensions rather than collapsing them into one label:

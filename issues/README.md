@@ -75,6 +75,7 @@ graph TD
   ISS_056["ISS-056: Add canonical Structured Report examples"]
   ISS_057["ISS-057: Validate every released Schema migration"]
   ISS_058["ISS-058: Guarantee deterministic reports and local references"]
+  ISS_059["ISS-059: Reconcile explicit coverage summaries"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -139,6 +140,10 @@ graph TD
   ISS_051 --> ISS_058
   ISS_055 --> ISS_058
   ISS_056 --> ISS_058
+  ISS_039 --> ISS_059
+  ISS_040 --> ISS_059
+  ISS_056 --> ISS_059
+  ISS_058 --> ISS_059
 ```
 
 ## Warnings
