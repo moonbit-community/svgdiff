@@ -47,7 +47,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ## Phase 0: Evaluation foundation
 
-- [ ] **P0** Define an agent-facing acceptance specification for identifying difference kind, magnitude, location, and possible cause.
+- [x] **P0** Define an agent-facing acceptance specification for identifying difference kind, magnitude, location, and possible cause.
 - [ ] **P0** Build a curated corpus of real SVG pairs covering equivalent, subtle, salient, structural, resource-mediated, zero-contribution, and unsupported cases.
 - [ ] **P0** Add mutation-generated pairs with known changed facts and known affected subjects.
 - [ ] **P0** Record human labels for the main visual changes, their relative importance, and acceptable alternative descriptions.

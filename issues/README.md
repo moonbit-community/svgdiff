@@ -40,6 +40,7 @@ graph TD
   ISS_021["ISS-021: Rename the module owner to Milky2018"]
   ISS_022["ISS-022: Rename the CLI package to cmd/svgdiff"]
   ISS_023["ISS-023: Record the complete post-v1 roadmap"]
+  ISS_024["ISS-024: Define the text-only agent acceptance contract"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008

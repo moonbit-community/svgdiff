@@ -16,6 +16,7 @@ This directory separates the current product contract from future plans and hist
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
+| How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
@@ -50,6 +51,7 @@ These files must be updated whenever behavior changes:
 - [`feature-coverage.md`](feature-coverage.md): feature-to-Diagnostic-to-test traceability;
 - [`analysis-status.md`](analysis-status.md): exact caller guarantees for every analysis status;
 - [`agent-report-guide.md`](agent-report-guide.md): reading order and worked report interpretations for text-only agents;
+- [`agent-acceptance-spec.md`](agent-acceptance-spec.md): text-only evaluation boundary, answer contract, scoring dimensions, and safety gates;
 - [`library-api.md`](library-api.md): public MoonBit seam, exported types, and executable examples;
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
