@@ -71,7 +71,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P1** Add shell completion and package-manager installation where maintainable.
 - [ ] **P1** Publish `Milky2018/svgdiff` as a consumable MoonBit library module.
 - [x] **P1** Define semantic-versioning rules for the MoonBit interface, JSON Schema, diagnostics, and ranking policies.
-- [ ] **P1** Produce checksums, provenance metadata, licenses, and dependency notices for releases.
+- [x] **P1** Produce checksums, provenance metadata, licenses, and dependency notices for releases.
 
 ## Phase 2: Coverage contract and renderer conformance
 

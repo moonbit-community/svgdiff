@@ -78,4 +78,4 @@ Tuples with different policy IDs are incomparable. Consumers must reject or expl
 | Ordering tuple semantics change | Breaking module release if it becomes the default | Same unless shape changed | Same | New ID | Same |
 | Renderer fixture, disposition, guard, tolerance, or accepted claim changes | Compatible or breaking according to behavior | Same unless report meaning changed | Review | Same unless magnitude ordering changed | New profile ID |
 
-“Review” means determine the result from the domain rules; it does not mean increment automatically. Before release, run `sh scripts/test-versioning.sh`, the compatibility corpus, `moon info`, and the full validation gate in the upgrade procedures.
+“Review” means determine the result from the domain rules; it does not mean increment automatically. Before release, run `sh scripts/test-versioning.sh`, `sh scripts/test-release-bundle.sh`, the compatibility corpus, `moon info`, and the full validation gate in the upgrade procedures.

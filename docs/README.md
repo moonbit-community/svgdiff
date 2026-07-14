@@ -13,6 +13,7 @@ This directory separates the current product contract from future plans and hist
 | What does the command do? | [`README.mbt.md`](../README.mbt.md) and the executable in `cmd/svgdiff` |
 | How do stdin, stdout, stderr, and `-` behave? | [`cli-io.md`](cli-io.md) |
 | How are Bash, Zsh, and Fish completions installed? | [`completions/README.md`](../completions/README.md) |
+| What integrity and attribution files belong in a native release bundle? | [`release/README.md`](../release/README.md) |
 | What do CLI exit statuses mean? | [`cli-exit-codes.md`](cli-exit-codes.md) |
 | How does compact agent JSON differ from default JSON? | [`agent-json.md`](agent-json.md) |
 | What JSON is emitted? | [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) and the public MoonBit report types |

@@ -20,7 +20,7 @@ This ledger records the licenses shipped with the currently resolved packages, t
 
 Evidence comes from the resolved `.mooncakes` manifests and packaged LICENSE files on 2026-07-14. The root project declares Apache-2.0 and includes its own [`LICENSE`](../LICENSE).
 
-All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. Before distributing native binaries, the release process must verify the upstream license texts, assemble third-party notices, and preserve required attribution. That release work remains separate from this ledger and is still tracked in the roadmap.
+All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all seven resolved packages. This is transparent packaging evidence, not a legal opinion.
 
 `mizchi/canvas@0.9.0` and its `mizchi/image@0.4.2` dependency were used only in an experiment. They are not part of the production dependency graph above.
 
@@ -54,7 +54,7 @@ Schema `1.0` does not yet provide production-grade hostile-input resource contro
 - no configurable limit for input bytes, element count, nesting depth, path complexity, references, raster dimensions, region count, or report size;
 - no cancellation or comparison time budget;
 - no fuzzing harness for the SVG adapter, renderer input, JSON serialization, or HTML escaping;
-- no automated dependency advisory, license, SBOM, or provenance check in CI;
+- no automated dependency advisory or SBOM check, and no CI enforcement or signing of the locally generated license and provenance evidence;
 - no cross-platform determinism gate for released binaries.
 
 These gaps do not permit false complete analysis, but they can permit excessive CPU, memory, or output growth. Do not expose the CLI as an unauthenticated service for hostile SVG uploads until the Phase 11 resource-limit and fuzzing items are complete.

@@ -22,6 +22,8 @@ sh scripts/install.sh --bindir "$HOME/bin"
 
 Install Bash, Zsh, or Fish completion separately with `sh scripts/install-completions.sh <shell>`. Shell-specific locations, Zsh activation, and the package-manager release prerequisite are documented in [`completions/README.md`](completions/README.md).
 
+Generate a current-host native release bundle with `sh scripts/package-release.sh`. The bundle includes checksums, transparent build provenance, the project license, and versioned third-party notices; its exact guarantees and non-guarantees are documented in [`release/README.md`](release/README.md). Binary publication remains separate roadmap work.
+
 ## Command line
 
 Inspect the installed command and every version that affects report interpretation:

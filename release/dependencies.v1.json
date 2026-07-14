@@ -1,0 +1,62 @@
+{
+  "schema_version": "svgdiff-release-dependencies/1",
+  "last_verified": "2026-07-14",
+  "dependencies": [
+    {
+      "name": "Milky2018/xml",
+      "version": "0.4.0",
+      "relationship": "direct",
+      "repository": "https://github.com/moonbit-community/xml-mbt",
+      "license": "Apache-2.0",
+      "packaged_license_file": true
+    },
+    {
+      "name": "mizchi/svg",
+      "version": "0.2.1",
+      "relationship": "direct",
+      "repository": "https://github.com/mizchi/svg",
+      "license": "Apache-2.0",
+      "packaged_license_file": false
+    },
+    {
+      "name": "mizchi/pixelmatch",
+      "version": "0.6.1",
+      "relationship": "direct",
+      "repository": "https://github.com/mizchi/pixelmatch",
+      "license": "Apache-2.0",
+      "packaged_license_file": true
+    },
+    {
+      "name": "moonbitlang/async",
+      "version": "0.19.1",
+      "relationship": "direct and transitive",
+      "repository": "https://github.com/moonbitlang/async",
+      "license": "Apache-2.0",
+      "packaged_license_file": true
+    },
+    {
+      "name": "moonbitlang/x",
+      "version": "0.4.40",
+      "relationship": "direct and transitive",
+      "repository": "https://github.com/moonbitlang/x",
+      "license": "Apache-2.0",
+      "packaged_license_file": false
+    },
+    {
+      "name": "mizchi/image",
+      "version": "0.1.2",
+      "relationship": "transitive through mizchi/pixelmatch",
+      "repository": "https://github.com/mizchi/image-mbt",
+      "license": "Apache-2.0",
+      "packaged_license_file": false
+    },
+    {
+      "name": "mizchi/zlib",
+      "version": "0.4.0",
+      "relationship": "transitive through mizchi/image",
+      "repository": "https://github.com/mizchi/zlib.mbt",
+      "license": "Apache-2.0",
+      "packaged_license_file": true
+    }
+  ]
+}
