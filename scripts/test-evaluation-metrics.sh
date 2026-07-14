@@ -54,7 +54,12 @@ jq -e '
   .aggregate.agent_region_overlap_macro == 0.75 and
   .aggregate.report_cause_envelope_recall_macro == 1 and
   .aggregate.agent_possible_cause_recall_macro == 1 and
+  .aggregate.report_cause_candidate_count_total == 5 and
+  .aggregate.report_cause_candidate_occurrence_count_total == 6 and
+  .aggregate.report_cause_region_count_total == 5 and
+  .aggregate.report_cause_candidates_per_region_macro == 1.25 and
   .aggregate.report_cause_false_positive_count == 0 and
+  .aggregate.report_cause_false_positive_fraction_macro == 0 and
   .aggregate.agent_cause_false_positive_count == 0 and
   .aggregate.invalid_evidence_reference_count == 0
 ' "$evidence_metrics" >/dev/null
@@ -65,7 +70,11 @@ jq -e '
   .aggregate.agent_main_difference_mrr == 0 and
   .aggregate.agent_region_overlap_macro == 0 and
   .aggregate.agent_possible_cause_recall_macro == 0 and
-  .aggregate.report_cause_envelope_recall_macro == 1
+  .aggregate.report_cause_envelope_recall_macro == 1 and
+  .aggregate.report_cause_candidate_count_total == 5 and
+  .aggregate.report_cause_candidate_occurrence_count_total == 6 and
+  .aggregate.report_cause_region_count_total == 5 and
+  .aggregate.report_cause_false_positive_fraction_macro == 0
 ' "$empty_metrics" >/dev/null
 
 printf 'Evaluation metrics: report and agent layers separated, evidence baseline: ok, empty baseline: lower\n'

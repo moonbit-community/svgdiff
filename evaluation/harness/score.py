@@ -81,6 +81,22 @@ def report_envelope_candidates(report):
     }
 
 
+def report_envelope_volume(report):
+    candidate_sets = [
+        set(region["cause_envelope"]["candidate_changed_fact_ids"])
+        for event in report["events"]
+        for region in event["difference_regions"]
+    ]
+    occurrences = sum(len(candidates) for candidates in candidate_sets)
+    return {
+        "region_count": len(candidate_sets),
+        "candidate_occurrence_count": occurrences,
+        "candidates_per_region": (
+            occurrences / len(candidate_sets) if candidate_sets else None
+        ),
+    }
+
+
 def actual_fact_ids(report, cause_label):
     matched = set()
     for actual in cause_label["actual_causes"]:
@@ -215,6 +231,7 @@ def score_case(task, answer, ranking, region_label, cause_label):
         agent_region_overlap = None
 
     report_candidates = report_envelope_candidates(report)
+    report_volume = report_envelope_volume(report)
     agent_candidates = {
         fact_id
         for difference in answer["differences"]
@@ -228,12 +245,18 @@ def score_case(task, answer, ranking, region_label, cause_label):
         agent_cause_recall = len(actual_ids & agent_candidates) / len(actual_ids)
         report_false_positives = len(report_candidates - actual_ids)
         agent_false_positives = len(agent_candidates - actual_ids)
+        report_false_positive_fraction = (
+            report_false_positives / len(report_candidates)
+            if report_candidates
+            else None
+        )
     else:
         actual_ids = set()
         report_cause_recall = None
         agent_cause_recall = None
         report_false_positives = None
         agent_false_positives = None
+        report_false_positive_fraction = None
 
     return {
         "case_id": case_id,
@@ -247,7 +270,16 @@ def score_case(task, answer, ranking, region_label, cause_label):
         "agent_region_overlap": agent_region_overlap,
         "report_cause_envelope_recall": report_cause_recall,
         "agent_possible_cause_recall": agent_cause_recall,
+        "report_cause_candidate_count": len(report_candidates),
+        "report_cause_candidate_occurrence_count": report_volume[
+            "candidate_occurrence_count"
+        ],
+        "report_cause_region_count": report_volume["region_count"],
+        "report_cause_candidates_per_region": report_volume[
+            "candidates_per_region"
+        ],
         "report_cause_false_positive_count": report_false_positives,
+        "report_cause_false_positive_fraction": report_false_positive_fraction,
         "agent_cause_false_positive_count": agent_false_positives,
         "invalid_atomic_difference_ids": sorted(
             agent_difference_ids - expected_difference_ids
@@ -337,8 +369,23 @@ def main():
                 "agent_possible_cause_recall_macro": mean(
                     values("agent_possible_cause_recall")
                 ),
+                "report_cause_candidate_count_total": sum(
+                    values("report_cause_candidate_count")
+                ),
+                "report_cause_candidate_occurrence_count_total": sum(
+                    values("report_cause_candidate_occurrence_count")
+                ),
+                "report_cause_region_count_total": sum(
+                    values("report_cause_region_count")
+                ),
+                "report_cause_candidates_per_region_macro": mean(
+                    values("report_cause_candidates_per_region")
+                ),
                 "report_cause_false_positive_count": sum(
                     values("report_cause_false_positive_count")
+                ),
+                "report_cause_false_positive_fraction_macro": mean(
+                    values("report_cause_false_positive_fraction")
                 ),
                 "agent_cause_false_positive_count": sum(
                     values("agent_cause_false_positive_count")

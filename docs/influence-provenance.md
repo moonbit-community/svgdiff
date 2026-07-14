@@ -151,3 +151,5 @@ The original prototype gate required the following demonstrations, all of which 
 5. conservative rules remove at least some irrelevant Changed Facts compared with the `Delta` fallback.
 
 Ongoing production validation should add mutation/property tests as supported semantics and render operations expand. The safe default for a missing rule remains a larger Cause Envelope.
+
+The text-only benchmark measures conservative imprecision separately from recall. Every case records unique candidate count, candidate occurrences across all regions, region count, and candidates per region. Cases with eligible actual-cause labels additionally record false-positive count and fraction. Partial comparison-wide fallbacks still contribute to raw volume because they affect Agent context size, but they do not receive a precision score when unsupported semantics make an actual-cause reference unsound.

@@ -78,6 +78,7 @@ graph TD
   ISS_059["ISS-059: Reconcile explicit coverage summaries"]
   ISS_060["ISS-060: Keep raw magnitude evidence authoritative"]
   ISS_061["ISS-061: Enforce conservative causal fallback"]
+  ISS_062["ISS-062: Measure Cause Envelope candidate volume"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -154,6 +155,10 @@ graph TD
   ISS_040 --> ISS_061
   ISS_056 --> ISS_061
   ISS_058 --> ISS_061
+  ISS_029 --> ISS_062
+  ISS_031 --> ISS_062
+  ISS_032 --> ISS_062
+  ISS_061 --> ISS_062
 ```
 
 ## Warnings
