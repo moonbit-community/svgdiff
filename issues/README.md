@@ -79,6 +79,7 @@ graph TD
   ISS_060["ISS-060: Keep raw magnitude evidence authoritative"]
   ISS_061["ISS-061: Enforce conservative causal fallback"]
   ISS_062["ISS-062: Measure Cause Envelope candidate volume"]
+  ISS_063["ISS-063: Property-test complete Cause Envelope containment"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -159,6 +160,10 @@ graph TD
   ISS_031 --> ISS_062
   ISS_032 --> ISS_062
   ISS_061 --> ISS_062
+  ISS_009 --> ISS_063
+  ISS_026 --> ISS_063
+  ISS_042 --> ISS_063
+  ISS_061 --> ISS_063
 ```
 
 ## Warnings

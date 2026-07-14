@@ -59,4 +59,8 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   fi
 done
 
+python3 evaluation/mutations/validate_causality.py \
+  --manifest "$manifest" \
+  --reports "$tmp"
+
 printf 'Mutation cases: %s, subject kinds: 6, source properties: 18, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"
