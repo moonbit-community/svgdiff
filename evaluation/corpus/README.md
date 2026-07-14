@@ -31,3 +31,5 @@ The check verifies manifest shape and required category coverage, rejects unsafe
 This corpus item does not provide mutation-generated cases, main-change labels, alternative descriptions, region ground truth, actual-cause ground truth, an agent harness, metrics, or release thresholds. Those remain separate Phase 0 checklist items so input artifacts do not silently become an underspecified answer key.
 
 Deterministic generated cases with independently declared Changed Facts and affected subjects live in the sibling [mutation suite](../mutations/README.md).
+
+Hidden human reference labels for the curated cases live in [`../annotations`](../annotations/README.md). They must never be exposed to the evaluated agent.
