@@ -1,0 +1,16 @@
+#compdef svgdiff
+
+_svgdiff() {
+  _arguments \
+    '1:before SVG:_files -g "*.svg"' \
+    '2:after SVG:_files -g "*.svg"' \
+    '--width[comparison viewport width in CSS pixels]:positive integer:' \
+    '--height[comparison viewport height in CSS pixels]:positive integer:' \
+    '--output[write Structured Report JSON to a file]:JSON file:_files' \
+    '--html[write the self-contained HTML report]:HTML file:_files' \
+    '--agent-json[emit whitespace-free canonical JSON]' \
+    '--help[show command help]' \
+    '--version[show component versions]'
+}
+
+_svgdiff "$@"

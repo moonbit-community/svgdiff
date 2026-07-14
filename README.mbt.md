@@ -20,6 +20,8 @@ sh scripts/install.sh --bindir "$HOME/bin"
 
 `SVGDIFF_INSTALL_DIR` provides the same destination override. This source installation builds for the current operating system and architecture. Published cross-platform binaries and package-manager installation remain roadmap work.
 
+Install Bash, Zsh, or Fish completion separately with `sh scripts/install-completions.sh <shell>`. Shell-specific locations, Zsh activation, and the package-manager release prerequisite are documented in [`completions/README.md`](completions/README.md).
+
 ## Command line
 
 Inspect the installed command and every version that affects report interpretation:
@@ -187,6 +189,7 @@ sh scripts/test-renderer-dispositions.sh
 sh scripts/test-alternate-scale-qa.sh
 sh scripts/test-adversarial.sh
 sh scripts/test-compatibility.sh
+sh scripts/test-completions.sh
 ```
 
 The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.

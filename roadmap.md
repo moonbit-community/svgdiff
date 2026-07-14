@@ -68,7 +68,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Document stdin/stdout behavior and decide whether `-` denotes an SVG stream.
 - [x] **P0** Stabilize exit-code semantics for complete, partial, failed, invalid-argument, and I/O outcomes.
 - [x] **P0** Add a compact agent-oriented JSON mode without removing canonical evidence.
-- [ ] **P1** Add shell completion and package-manager installation where maintainable.
+- [x] **P1** Add shell completion and package-manager installation where maintainable.
 - [ ] **P1** Publish `Milky2018/svgdiff` as a consumable MoonBit library module.
 - [ ] **P1** Define semantic-versioning rules for the MoonBit interface, JSON Schema, diagnostics, and ranking policies.
 - [ ] **P1** Produce checksums, provenance metadata, licenses, and dependency notices for releases.
