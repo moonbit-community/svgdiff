@@ -97,6 +97,7 @@ graph TD
   ISS_078["ISS-078: Preserve Diagnostic source locations"]
   ISS_079["ISS-079: Bound comparison resource growth"]
   ISS_080["ISS-080: Reject cyclic and explosive local reference graphs"]
+  ISS_081["ISS-081: Benchmark production pipeline stages independently"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -257,6 +258,10 @@ graph TD
   ISS_075 --> ISS_080
   ISS_078 --> ISS_080
   ISS_079 --> ISS_080
+  ISS_032 --> ISS_081
+  ISS_033 --> ISS_081
+  ISS_077 --> ISS_081
+  ISS_080 --> ISS_081
 ```
 
 ## Warnings

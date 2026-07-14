@@ -1,0 +1,45 @@
+{
+  "schema_version": "svgdiff-stage-benchmark-suite/1",
+  "target": "native",
+  "build_profile": "release",
+  "time_unit": "microseconds",
+  "aggregation": "non_additive_overlapping_microbenchmarks",
+  "workload": {
+    "id": "grid-64-paint-change",
+    "subjects_per_input": 64,
+    "viewport_width": 128,
+    "viewport_height": 128
+  },
+  "stages": [
+    {
+      "id": "parse_admission",
+      "measures": "fixed source admission, analyzer preflight, and pinned SVG document parsing for both inputs",
+      "setup_excluded": "source construction, profile construction, and limit construction"
+    },
+    {
+      "id": "alignment",
+      "measures": "production subject matching from two pre-extracted subject inventories",
+      "setup_excluded": "XML parsing and subject extraction"
+    },
+    {
+      "id": "rendering",
+      "measures": "pinned renderer image production for two pre-parsed documents",
+      "setup_excluded": "SVG parsing"
+    },
+    {
+      "id": "region_extraction",
+      "measures": "production connected pixel-difference region extraction",
+      "setup_excluded": "SVG parsing and raster rendering"
+    },
+    {
+      "id": "provenance",
+      "measures": "production Cause Envelope attachment to a completed report",
+      "setup_excluded": "comparison, rendering, region extraction, and report assembly"
+    },
+    {
+      "id": "serialization",
+      "measures": "both production compact and indented Structured Report JSON serializations",
+      "setup_excluded": "comparison and report assembly"
+    }
+  ]
+}

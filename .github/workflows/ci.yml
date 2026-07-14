@@ -56,3 +56,6 @@ jobs:
 
       - name: Run benchmark sanity gate
         run: sh scripts/test-benchmark.sh
+
+      - name: Run pipeline stage benchmark sanity
+        run: sh scripts/test-stage-benchmarks.sh
