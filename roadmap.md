@@ -173,7 +173,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P0** Propagate may-influence tokens through every supported geometry, paint, resource, transform, and structural input.
 - [ ] **P0** Propagate provenance through group surfaces, clips, masks, filters, blending, and compositing.
 - [ ] **P0** Union before and after provenance for every Difference Region.
-- [ ] **P0** Fall back to all Changed Facts or revoke the guarantee whenever a propagation rule is unavailable.
+- [x] **P0** Fall back to all Changed Facts or revoke the guarantee whenever a propagation rule is unavailable.
 - [ ] **P0** Add property tests asserting that actual causes are always contained in every complete Cause Envelope.
 - [ ] **P0** Measure false-positive candidate volume so conservative completeness remains useful to agents.
 - [ ] **P1** Use tile- or region-level provenance to remove irrelevant facts without weakening soundness.

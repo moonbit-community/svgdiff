@@ -108,29 +108,17 @@ Causal Completeness is conditional, not a proof that the renderer implementation
 - no unsupported feature can affect the region;
 - pruning uses only established independence rules.
 
-If any condition fails, the report uses `not-established` rather than claiming completeness.
+If any condition fails, the report uses `not_established` rather than claiming completeness. The current implementation also widens every available partial-report region to the complete Changed Fact universe, sets `fallback_scope` to `comparison`, and retains the establishing Diagnostics.
 
 ## Structured Report shape
 
 ```json
 {
   "cause_envelope": {
-    "guarantee": "sound-overapproximation",
+    "guarantee": "sound_overapproximation",
     "coverage": "complete",
-    "granularity": "tile",
-    "fallback_scope": "group-layer",
-    "candidate_atomic_difference_ids": ["diff:12", "diff:19"],
-    "influence_paths": [
-      {
-        "candidate_id": "diff:12",
-        "nodes": [
-          "source:filter-radius",
-          "computed:filter-graph",
-          "render:group-layer",
-          "region:4"
-        ]
-      }
-    ],
+    "fallback_scope": "event_region",
+    "candidate_changed_fact_ids": ["fact:12", "fact:19"],
     "diagnostic_ids": []
   }
 }
@@ -141,9 +129,10 @@ A partial result uses:
 ```json
 {
   "cause_envelope": {
-    "guarantee": "not-established",
+    "guarantee": "not_established",
     "coverage": "partial",
-    "candidate_atomic_difference_ids": ["diff:12"],
+    "fallback_scope": "comparison",
+    "candidate_changed_fact_ids": ["fact:12", "fact:19"],
     "diagnostic_ids": ["diagnostic:unsupported-operation"]
   }
 }

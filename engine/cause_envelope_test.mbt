@@ -65,6 +65,35 @@ test "unsupported semantics revoke causal completeness" {
 }
 
 ///|
+test "partial envelopes widen every region to the comparison fact universe" {
+  let before = "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='red' transform='translate(1 0)'/><circle id='right' cx='12' cy='12' r='2' fill='red' transform='translate(1 0)'/></svg>"
+  let after = "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='blue' transform='translate(1 0)'/><circle id='right' cx='12' cy='12' r='2' fill='green' transform='translate(1 0)'/></svg>"
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.changed_facts.length(), 2)
+  assert_true(report.events.any(event => !event.difference_regions.is_empty()))
+  let all_fact_ids = [ for fact in report.changed_facts => fact.id ]
+  all_fact_ids.sort()
+  assert_true(
+    report.events.all(event => {
+      event.difference_regions.all(region => {
+        let candidates = region.cause_envelope.candidate_changed_fact_ids.copy()
+        candidates.sort()
+        region.cause_envelope.guarantee == "not_established" &&
+        region.cause_envelope.coverage == "partial" &&
+        region.cause_envelope.fallback_scope == "comparison" &&
+        !region.cause_envelope.diagnostic_ids.is_empty() &&
+        candidates == all_fact_ids
+      })
+    }),
+  )
+}
+
+///|
 test "disjoint event regions omit irrelevant changed facts" {
   let before = "<svg width='16' height='16'><rect x='1' y='1' width='3' height='3' fill='red'/><rect x='12' y='12' width='3' height='3' fill='red'/></svg>"
   let after = "<svg width='16' height='16'><rect x='1' y='1' width='3' height='3' fill='blue'/><rect x='12' y='12' width='3' height='3' fill='green'/></svg>"

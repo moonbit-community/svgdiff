@@ -190,12 +190,57 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
     }
 
 
+def validate_causal_fallback(report: dict[str, Any]) -> None:
+    fact_ids = {fact["id"] for fact in report["changed_facts"]}
+    diagnostic_ids = {diagnostic["id"] for diagnostic in report["diagnostics"]}
+    for event in report["events"]:
+        for region in event["difference_regions"]:
+            envelope = region["cause_envelope"]
+            candidates = set(envelope["candidate_changed_fact_ids"])
+            referenced_diagnostics = set(envelope["diagnostic_ids"])
+            if envelope["guarantee"] == "sound_overapproximation":
+                if report["analysis_status"] != "complete":
+                    raise ValueError(
+                        f"{region['id']}: partial report retained causal guarantee"
+                    )
+                if envelope["coverage"] != "complete":
+                    raise ValueError(f"{region['id']}: sound envelope is not complete")
+            elif envelope["guarantee"] == "not_established":
+                if envelope["coverage"] != "partial":
+                    raise ValueError(f"{region['id']}: revoked envelope is not partial")
+                if envelope["fallback_scope"] != "comparison":
+                    raise ValueError(
+                        f"{region['id']}: revoked envelope did not widen scope"
+                    )
+                if candidates != fact_ids:
+                    raise ValueError(
+                        f"{region['id']}: revoked envelope omitted Changed Facts"
+                    )
+                if not referenced_diagnostics or not referenced_diagnostics <= diagnostic_ids:
+                    raise ValueError(
+                        f"{region['id']}: revoked envelope lacks valid Diagnostics"
+                    )
+            else:
+                raise ValueError(
+                    f"{region['id']}: unknown causal guarantee "
+                    f"{envelope['guarantee']!r}"
+                )
+
+
 def expect_integrity_rejection(report: dict[str, Any], label: str) -> None:
     try:
         validate_report_local_ids(report)
     except ValueError:
         return
     raise ValueError(f"integrity negative control unexpectedly accepted: {label}")
+
+
+def expect_causal_rejection(report: dict[str, Any], label: str) -> None:
+    try:
+        validate_causal_fallback(report)
+    except ValueError:
+        return
+    raise ValueError(f"causal negative control unexpectedly accepted: {label}")
 
 
 def validate_manifest(manifest: dict[str, Any]) -> tuple[list[dict[str, Any]], int]:
@@ -261,6 +306,7 @@ def main() -> None:
         if pretty_report["profile"]["viewport_height"] != case["viewport"]["height"]:
             raise ValueError(f"{case['id']}: report lost viewport height")
         reports[case["id"]] = pretty_report
+        validate_causal_fallback(pretty_report)
         results.append(
             {
                 "id": case["id"],
@@ -282,6 +328,13 @@ def main() -> None:
     first_reference = duplicate_reference["events"][0]["atomic_difference_ids"][0]
     duplicate_reference["events"][0]["atomic_difference_ids"].append(first_reference)
     expect_integrity_rejection(duplicate_reference, "duplicate report-local reference")
+    incomplete_fallback = copy.deepcopy(reports["resource-gradient-change"])
+    del incomplete_fallback["events"][0]["difference_regions"][0][
+        "cause_envelope"
+    ]["candidate_changed_fact_ids"][0]
+    expect_causal_rejection(
+        incomplete_fallback, "revoked envelope omitted a Changed Fact"
+    )
 
     output = {
         "schema_version": "svgdiff-determinism-results/1",
@@ -292,6 +345,7 @@ def main() -> None:
             "duplicate_report_local_id",
             "dangling_report_local_reference",
             "duplicate_report_local_reference",
+            "incomplete_revoked_cause_envelope",
         ],
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

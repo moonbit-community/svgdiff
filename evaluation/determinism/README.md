@@ -8,7 +8,7 @@ This suite verifies the [Structured Report determinism contract](../../docs/repo
 
 For each case, the validator runs default JSON and compact Agent JSON three times. Bytes must match within each output mode, both modes must decode to the same evidence, every report-local object ID must be globally unique, every declared report-local reference must resolve to exactly one object of the required kind, and every Atomic Difference must belong to exactly one Visual Event.
 
-The suite includes negative controls for a duplicate ID, a dangling reference, and a duplicate reference. It does not claim cross-version or cross-platform byte identity, and it does not treat source-subject identity fields as report-local foreign keys.
+The suite includes negative controls for a duplicate ID, a dangling reference, a duplicate reference, and a revoked Cause Envelope that omits one Changed Fact from its comparison fallback. It does not claim cross-version or cross-platform byte identity, and it does not treat source-subject identity fields as report-local foreign keys.
 
 Run:
 

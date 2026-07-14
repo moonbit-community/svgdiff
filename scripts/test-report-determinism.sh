@@ -17,7 +17,7 @@ jq -e '
   .repetitions_per_mode == 3 and
   (.cases | length) == 8 and
   all(.cases[]; .status == "passed") and
-  (.negative_controls | length) == 3
+  (.negative_controls | length) == 4
 ' "$tmp/first.json" >/dev/null
 
 printf 'Structured Report determinism and local references: ok\n'
