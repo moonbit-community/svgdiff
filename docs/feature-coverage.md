@@ -95,3 +95,5 @@ The matrix is validated by the [Coverage Proof Obligations](coverage-proof-oblig
 ## Maintenance rule
 
 Every new complete-eligible feature must add a positive complete-status test and a mutation test for its supported facts. Every unsupported boundary must have a stable Diagnostic and a generated negative case proving it cannot produce complete equality. When a partial row becomes complete-eligible, update this matrix, [`unsupported-input-properties.md`](unsupported-input-properties.md), [`v1-scope.md`](v1-scope.md), the relevant tests, and the roadmap in the same item commit.
+
+The [deterministic mutation suite](../evaluation/mutations/README.md) declares and enforces the current six-kind, eighteen-property coverage set independently of report output. Adding a kind or authored property to `alignment_property_order` requires updating that contract in the same change.

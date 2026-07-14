@@ -19,7 +19,11 @@ test "$first_hashes" = "$second_hashes"
 manifest="$first/generated-manifest.json"
 jq -e '
   .schema_version == "svgdiff-generated-mutations/1" and
-  (.cases | length == 3) and
+  (.cases | length == 20) and
+  (.coverage_contract.subject_kinds | sort) == ["circle", "ellipse", "line", "polygon", "polyline", "rect"] and
+  (.coverage_contract.source_properties | sort) == ["cx", "cy", "fill", "height", "opacity", "points", "r", "rx", "ry", "stroke", "stroke-width", "width", "x", "x1", "x2", "y", "y1", "y2"] and
+  ([.cases[].expected_changed_fact.subject_kind] | unique | sort) == (.coverage_contract.subject_kinds | sort) and
+  ([.cases[].expected_changed_fact.source_property] | unique | sort) == (.coverage_contract.source_properties | sort) and
   ([.cases[].id] | length == (unique | length))
 ' "$manifest" >/dev/null
 
@@ -37,6 +41,9 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   if ! printf '%s' "$case_json" | jq -e --slurpfile report "$tmp/$id-report.json" '
       ($report[0].analysis_status == .expected_analysis_status) and
       (.expected_changed_fact as $expected |
+        any($report[0].subject_alignments[];
+          any((.before + .after)[]; .kind == $expected.subject_kind)
+        ) and
         any($report[0].changed_facts[];
           .property == $expected.report_property and
           .before.property == $expected.source_property and
@@ -52,4 +59,4 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   fi
 done
 
-printf 'Mutation cases: %s, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"
+printf 'Mutation cases: %s, subject kinds: 6, source properties: 18, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"

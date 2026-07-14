@@ -1,50 +1,170 @@
 {
   "schema_version": "svgdiff-mutations/1",
+  "coverage_contract": {
+    "subject_kinds": ["rect", "circle", "ellipse", "line", "polyline", "polygon"],
+    "source_properties": [
+      "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
+      "x1", "y1", "x2", "y2", "points", "fill", "stroke",
+      "stroke-width", "opacity"
+    ]
+  },
   "cases": [
+    {
+      "id": "mutate-rect-x",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red'/>",
+      "after_value": "<rect id='box' x='4' y='2' width='8' height='8' fill='red'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "x", "report_property": "geometry.position", "before_declared_value": "2", "after_declared_value": "4", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-rect-y",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red'/>",
+      "after_value": "<rect id='box' x='2' y='4' width='8' height='8' fill='red'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "y", "report_property": "geometry.position", "before_declared_value": "2", "after_declared_value": "4", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-rect-width",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='10' height='8' fill='red'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "width", "report_property": "geometry.size", "before_declared_value": "8", "after_declared_value": "10", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-rect-height",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='8' height='10' fill='red'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "height", "report_property": "geometry.size", "before_declared_value": "8", "after_declared_value": "10", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
     {
       "id": "mutate-rect-fill",
       "template": "templates/rect-fill.svg.tmpl",
-      "before_value": "red",
-      "after_value": "blue",
-      "expected_changed_fact": {
-        "source_property": "fill",
-        "report_property": "paint.fill",
-        "before_declared_value": "red",
-        "after_declared_value": "blue",
-        "affected_subject_ids": ["box"]
-      },
-      "viewport": { "width": 16, "height": 16 },
-      "expected_analysis_status": "complete"
+      "before_value": "red", "after_value": "blue",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "paint.fill", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     },
     {
-      "id": "mutate-circle-position",
+      "id": "mutate-rect-opacity",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' opacity='1'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' opacity='0.5'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "opacity", "report_property": "paint.opacity", "before_declared_value": "1", "after_declared_value": "0.5", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-cx",
       "template": "templates/circle-position.svg.tmpl",
-      "before_value": "6",
-      "after_value": "10",
-      "expected_changed_fact": {
-        "source_property": "cx",
-        "report_property": "cx",
-        "before_declared_value": "6",
-        "after_declared_value": "10",
-        "affected_subject_ids": ["dot"]
-      },
-      "viewport": { "width": 16, "height": 16 },
-      "expected_analysis_status": "complete"
+      "before_value": "6", "after_value": "10",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "cx", "report_property": "cx", "before_declared_value": "6", "after_declared_value": "10", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-cy",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<circle id='dot' cx='8' cy='6' r='3' fill='blue'/>",
+      "after_value": "<circle id='dot' cx='8' cy='10' r='3' fill='blue'/>",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "cy", "report_property": "cy", "before_declared_value": "6", "after_declared_value": "10", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-r",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<circle id='dot' cx='8' cy='8' r='3' fill='blue'/>",
+      "after_value": "<circle id='dot' cx='8' cy='8' r='5' fill='blue'/>",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "r", "report_property": "r", "before_declared_value": "3", "after_declared_value": "5", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-stroke",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='red'/>",
+      "after_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='blue'/>",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "stroke", "report_property": "stroke", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-stroke-width",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='black' stroke-width='1'/>",
+      "after_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='black' stroke-width='2'/>",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "stroke-width", "report_property": "stroke-width", "before_declared_value": "1", "after_declared_value": "2", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-ellipse-rx",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<ellipse id='oval' cx='8' cy='8' rx='3' ry='2' fill='blue'/>",
+      "after_value": "<ellipse id='oval' cx='8' cy='8' rx='5' ry='2' fill='blue'/>",
+      "expected_changed_fact": { "subject_kind": "ellipse", "source_property": "rx", "report_property": "rx", "before_declared_value": "3", "after_declared_value": "5", "affected_subject_ids": ["oval"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-ellipse-ry",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<ellipse id='oval' cx='8' cy='8' rx='3' ry='2' fill='blue'/>",
+      "after_value": "<ellipse id='oval' cx='8' cy='8' rx='3' ry='4' fill='blue'/>",
+      "expected_changed_fact": { "subject_kind": "ellipse", "source_property": "ry", "report_property": "ry", "before_declared_value": "2", "after_declared_value": "4", "affected_subject_ids": ["oval"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-line-x1",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
+      "after_value": "<line id='edge' x1='3' y1='1' x2='14' y2='14' stroke='black'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "x1", "report_property": "x1", "before_declared_value": "1", "after_declared_value": "3", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-line-y1",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
+      "after_value": "<line id='edge' x1='1' y1='3' x2='14' y2='14' stroke='black'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "y1", "report_property": "y1", "before_declared_value": "1", "after_declared_value": "3", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-line-x2",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
+      "after_value": "<line id='edge' x1='1' y1='1' x2='12' y2='14' stroke='black'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "x2", "report_property": "x2", "before_declared_value": "14", "after_declared_value": "12", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-line-y2",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='1' y1='1' x2='14' y2='14' stroke='black'/>",
+      "after_value": "<line id='edge' x1='1' y1='1' x2='14' y2='12' stroke='black'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "y2", "report_property": "y2", "before_declared_value": "14", "after_declared_value": "12", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-polyline-points",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<polyline id='route' points='1,1 8,8 14,1' fill='none' stroke='black'/>",
+      "after_value": "<polyline id='route' points='1,1 8,12 14,1' fill='none' stroke='black'/>",
+      "expected_changed_fact": { "subject_kind": "polyline", "source_property": "points", "report_property": "points", "before_declared_value": "1,1 8,8 14,1", "after_declared_value": "1,1 8,12 14,1", "affected_subject_ids": ["route"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-polygon-points",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<polygon id='area' points='1,1 8,8 14,1' fill='blue'/>",
+      "after_value": "<polygon id='area' points='1,1 8,12 14,1' fill='blue'/>",
+      "expected_changed_fact": { "subject_kind": "polygon", "source_property": "points", "report_property": "points", "before_declared_value": "1,1 8,8 14,1", "after_declared_value": "1,1 8,12 14,1", "affected_subject_ids": ["area"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     },
     {
       "id": "mutate-inherited-fill",
       "template": "templates/inherited-fill.svg.tmpl",
-      "before_value": "red",
-      "after_value": "green",
-      "expected_changed_fact": {
-        "source_property": "fill",
-        "report_property": "fill",
-        "before_declared_value": "red",
-        "after_declared_value": "green",
-        "affected_subject_ids": ["dot"]
-      },
-      "viewport": { "width": 16, "height": 16 },
-      "expected_analysis_status": "partial"
+      "before_value": "red", "after_value": "green",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "fill", "report_property": "fill", "before_declared_value": "red", "after_declared_value": "green", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     }
   ]
 }

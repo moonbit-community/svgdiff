@@ -13,11 +13,12 @@ This suite generates SVG pairs from one-value templates. Each mutation spec decl
 Each template contains exactly one `{{VALUE}}` placeholder. A case supplies the before and after replacement values plus:
 
 - the mutated source property and its expected report property;
+- the supported visual subject kind expected in Subject Alignment;
 - the expected normalized before and after values;
 - the visual subject IDs expected in `ChangedFact.affected_subject_ids`;
 - the comparison viewport and expected analysis status.
 
-The initial cases cover a direct rectangle fill, a circle position parameter, and an inherited group fill that affects a child circle.
+The coverage contract names all six current basic subject kinds and all eighteen current authored properties. Nineteen complete cases cover the minimum applicable property/subject combinations; one additional inherited-fill case verifies retained source evidence on a partial path.
 
 ## Generate
 
@@ -33,6 +34,6 @@ The output contains `cases/<id>/before.svg`, `cases/<id>/after.svg`, and `genera
 sh scripts/test-mutations.sh
 ```
 
-The check generates into a temporary directory, reruns generation to compare hashes, executes every pair through the production CLI, and verifies that the independently declared report property, declared values, and affected subjects occur in the report's Changed Facts. The inherited case expects `partial` because its source fact is retained while computed color and rendered evidence remain explicitly deferred.
+The check generates into a temporary directory, reruns generation to compare hashes, proves that cases cover the exact declared subject-kind and source-property sets, executes every pair through the production CLI, and verifies Subject Alignment plus the independently declared report property, declared values, and affected subjects. The inherited case expects `partial` because its source fact is retained while computed color and rendered evidence remain explicitly deferred.
 
 Mutation-generated pairs complement the hand-authored [curated corpus](../corpus/README.md). They do not provide human importance labels, region bounds, actual-cause annotations, or agent answers.

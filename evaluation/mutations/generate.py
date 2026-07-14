@@ -51,6 +51,13 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     generated_cases = []
     seen_ids = set()
+    coverage_contract = spec.get("coverage_contract", {})
+    required_subject_kinds = set(coverage_contract.get("subject_kinds", []))
+    required_source_properties = set(
+        coverage_contract.get("source_properties", [])
+    )
+    if not required_subject_kinds or not required_source_properties:
+        raise ValueError("mutation specification requires a coverage contract")
 
     for case in spec.get("cases", []):
         case_id = case["id"]
@@ -85,12 +92,24 @@ def main() -> None:
             }
         )
 
+    covered_subject_kinds = {
+        case["expected_changed_fact"]["subject_kind"] for case in generated_cases
+    }
+    covered_source_properties = {
+        case["expected_changed_fact"]["source_property"] for case in generated_cases
+    }
+    if covered_subject_kinds != required_subject_kinds:
+        raise ValueError("mutation cases do not cover every required subject kind")
+    if covered_source_properties != required_source_properties:
+        raise ValueError("mutation cases do not cover every required source property")
+
     if not generated_cases:
         raise ValueError("mutation specification contains no cases")
 
     manifest = {
         "schema_version": "svgdiff-generated-mutations/1",
         "source_spec": spec_path.name,
+        "coverage_contract": coverage_contract,
         "cases": generated_cases,
     }
     (output / "generated-manifest.json").write_text(
