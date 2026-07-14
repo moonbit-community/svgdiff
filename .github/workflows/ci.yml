@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: svgdiff-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain
+        run: moon version --all
+
+      - name: Verify generated interfaces and formatting
+        run: |
+          moon info
+          moon fmt
+          git diff --exit-code
+
+      - name: Check native warnings
+        run: moon check --target native --warn-list +73
+
+      - name: Run MoonBit tests
+        run: moon test --target native
+
+      - name: Validate CLI and version identity
+        run: |
+          sh scripts/test-cli.sh
+          sh scripts/test-versioning.sh
+
+      - name: Validate Schema and compatibility
+        run: |
+          sh scripts/test-schema-examples.sh
+          sh scripts/test-compatibility.sh
+
+      - name: Run fixed-seed fuzz smoke
+        run: sh scripts/test-fuzz-smoke.sh
+
+      - name: Run benchmark sanity gate
+        run: sh scripts/test-benchmark.sh

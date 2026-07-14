@@ -93,6 +93,7 @@ graph TD
   ISS_074["ISS-074: Decide cross-subject Visual Event aggregation"]
   ISS_075["ISS-075: Fuzz production comparison boundaries"]
   ISS_076["ISS-076: Validate hostile-source HTML isolation"]
+  ISS_077["ISS-077: Add the continuous validation workflow"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -228,6 +229,12 @@ graph TD
   ISS_058 --> ISS_075
   ISS_012 --> ISS_076
   ISS_075 --> ISS_076
+  ISS_032 --> ISS_077
+  ISS_036 --> ISS_077
+  ISS_051 --> ISS_077
+  ISS_053 --> ISS_077
+  ISS_057 --> ISS_077
+  ISS_075 --> ISS_077
 ```
 
 ## Warnings
