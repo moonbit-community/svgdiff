@@ -58,13 +58,15 @@ Every divergence now has an executable disposition. A browser-invisible `1.0` to
 
 ## Escalation rule
 
-For each missing capability:
+The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:
 
 1. reproduce the gap with a project acceptance fixture;
 2. determine the smallest failing layer;
 3. prefer a released dependency update or focused upstream extension;
 4. add a conservative Diagnostic while the gap remains;
 5. create a workspace-owned module only if the required behavior cannot be maintained economically upstream.
+
+One minimized dependency-owned failure is enough for a focused upstream patch. Ownership requires an active-milestone blocker, a named smallest layer, evidence that a released upstream solution is not viable, an explicit maintenance plan, and at least three independent cases satisfying the breadth or project-specific-control trigger. A global conformance percentage and pixel magnitude are not ownership criteria.
 
 ## Evidence trail
 

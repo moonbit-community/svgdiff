@@ -27,6 +27,7 @@ This directory separates the current product contract from future plans and hist
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
 | How are deterministic browser reference rasters captured? | [`browser-oracle/README.md`](../evaluation/browser-oracle/README.md) |
 | How is the pinned renderer compared with those rasters? | [`renderer-conformance/README.md`](../evaluation/renderer-conformance/README.md) |
+| When should a renderer gap go upstream or become an owned module? | [`renderer-ownership-gate.md`](renderer-ownership-gate.md) |
 | When does roadmap work become an `ISS-###` issue? | [`work-planning.md`](work-planning.md) |
 | How are milestone reviews and rejected capabilities recorded? | [`roadmap-governance.md`](roadmap-governance.md) |
 | What do the report concepts and invariants mean? | [`core-model.md`](core-model.md) |
@@ -63,6 +64,7 @@ These files must be updated whenever behavior changes:
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.
+- [`renderer-ownership-gate.md`](renderer-ownership-gate.md): evidence thresholds for guards, focused upstream patches, and project-owned layers.
 - [`upgrade-procedures.md`](upgrade-procedures.md): renderer, parser, metric, schema, and policy upgrade gates.
 - [`dependency-security.md`](dependency-security.md): resolved licenses, input/output security boundary, and live blockers.
 

@@ -40,6 +40,8 @@ A successful build is necessary but never sufficient. An upgrade is accepted onl
 
 Use this procedure for `mizchi/svg`, a replacement renderer, or a project-owned rendering layer.
 
+Before replacing or owning a layer, apply the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). An upgrade that preserves dependency ownership does not need to pass the project-ownership admission threshold.
+
 ### Required evidence
 
 - Run all current complete-eligible fixtures before and after the upgrade.
