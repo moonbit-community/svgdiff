@@ -273,7 +273,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 ### M1: Installable evidence-first CLI
 
-- [ ] `svgdiff before.svg after.svg` works after a documented installation step.
+- [x] `svgdiff before.svg after.svg` works after a documented installation step.
 - [ ] The schema, exit codes, profile identity, and compact agent projection are versioned.
 - [ ] CI publishes tested native binaries and checksums.
 

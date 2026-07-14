@@ -87,6 +87,7 @@ graph TD
   ISS_068["ISS-068: Prevent subject-region pixel contamination"]
   ISS_069["ISS-069: Define stable alignment tie-breaking"]
   ISS_070["ISS-070: Report alignment evidence and uncertainty"]
+  ISS_071["ISS-071: Validate the M1 installed CLI gate"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -194,6 +195,10 @@ graph TD
   ISS_056 --> ISS_070
   ISS_057 --> ISS_070
   ISS_069 --> ISS_070
+  ISS_034 --> ISS_071
+  ISS_035 --> ISS_071
+  ISS_036 --> ISS_071
+  ISS_070 --> ISS_071
 ```
 
 ## Warnings
