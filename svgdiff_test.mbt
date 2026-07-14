@@ -62,6 +62,136 @@ test "comparison normalizes fixed v1 rendering conditions" {
 }
 
 ///|
+fn controlled_comparison_sources() -> (String, String) {
+  (
+    "<svg width='32' height='32'><rect x='2' y='2' width='8' height='8' fill='red'/><rect x='18' y='18' width='8' height='8' fill='red'/></svg>",
+    "<svg width='32' height='32'><rect x='2' y='2' width='8' height='8' fill='blue'/><rect x='18' y='18' width='8' height='8' fill='blue'/></svg>",
+  )
+}
+
+///|
+test "controlled comparison cancels immediately without a report" {
+  let (before, after) = controlled_comparison_sources()
+  let should_cancel : () -> Bool = () => true
+  let control : @svgdiff.ComparisonControl = {
+    should_cancel,
+    max_elapsed_milliseconds: None,
+  }
+  try
+    @svgdiff.compare_with_control(
+      before,
+      after,
+      @svgdiff.ComparisonProfile::v1_default(),
+      control,
+    )
+  catch {
+    Cancelled => ()
+    _ => fail("expected cancellation")
+  } noraise {
+    _ => fail("cancelled comparison returned a report")
+  }
+}
+
+///|
+test "controlled comparison observes cancellation at a later checkpoint" {
+  let (before, after) = controlled_comparison_sources()
+  let mut checkpoints = 0
+  let should_cancel : () -> Bool = () => {
+    checkpoints += 1
+    checkpoints >= 24
+  }
+  let control : @svgdiff.ComparisonControl = {
+    should_cancel,
+    max_elapsed_milliseconds: None,
+  }
+  try
+    @svgdiff.compare_with_control(
+      before,
+      after,
+      @svgdiff.ComparisonProfile::v1_default(),
+      control,
+    )
+  catch {
+    Cancelled => ()
+    _ => fail("expected later cancellation")
+  } noraise {
+    _ => fail("later cancellation returned a report")
+  }
+  assert_eq(checkpoints, 24)
+}
+
+///|
+test "zero elapsed-time budget expires before comparison" {
+  let (before, after) = controlled_comparison_sources()
+  let should_cancel : () -> Bool = () => false
+  let control : @svgdiff.ComparisonControl = {
+    should_cancel,
+    max_elapsed_milliseconds: Some(0),
+  }
+  try
+    @svgdiff.compare_with_control(
+      before,
+      after,
+      @svgdiff.ComparisonProfile::v1_default(),
+      control,
+    )
+  catch {
+    TimeBudgetExceeded(max_elapsed_milliseconds=0) => ()
+    _ => fail("expected zero-budget expiry")
+  } noraise {
+    _ => fail("expired comparison returned a report")
+  }
+}
+
+///|
+test "cancellation precedes expiry at the same checkpoint" {
+  let (before, after) = controlled_comparison_sources()
+  let should_cancel : () -> Bool = () => true
+  let control : @svgdiff.ComparisonControl = {
+    should_cancel,
+    max_elapsed_milliseconds: Some(0),
+  }
+  try
+    @svgdiff.compare_with_control(
+      before,
+      after,
+      @svgdiff.ComparisonProfile::v1_default(),
+      control,
+    )
+  catch {
+    Cancelled => ()
+    _ => fail("expected cancellation to win")
+  } noraise {
+    _ => fail("cancelled and expired comparison returned a report")
+  }
+}
+
+///|
+test "sufficiently budgeted comparison is byte-identical" {
+  let (before, after) = controlled_comparison_sources()
+  let profile = @svgdiff.ComparisonProfile::v1_default()
+  let expected = @svgdiff.compare(before, after, profile)
+  let unlimited = @svgdiff.compare_with_control(
+    before,
+    after,
+    profile,
+    @svgdiff.ComparisonControl::unlimited(),
+  )
+  let should_cancel : () -> Bool = () => false
+  let actual = @svgdiff.compare_with_control(before, after, profile, {
+    should_cancel,
+    max_elapsed_milliseconds: Some(10_000),
+  })
+  assert_eq(unlimited.to_json_string(), expected.to_json_string())
+  assert_eq(
+    unlimited.to_compact_json_string(),
+    expected.to_compact_json_string(),
+  )
+  assert_eq(actual.to_json_string(), expected.to_json_string())
+  assert_eq(actual.to_compact_json_string(), expected.to_compact_json_string())
+}
+
+///|
 test "HTML report is self contained and binds report regions" {
   let before = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='red'/><script>alert('unsafe')</script></svg>"
   let after = "<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='blue'/></svg>"

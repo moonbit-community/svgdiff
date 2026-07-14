@@ -15,7 +15,7 @@ Last verified: 2026-07-14
 | `cat after.svg \| svgdiff before.svg -` | Read the after SVG from stdin. |
 | `svgdiff - -` | Invalid: one stdin stream cannot supply two independently bounded documents. |
 
-Missing positional operands never imply stdin. The command reads the complete stream before comparison, then the engine applies the fixed per-source UTF-8 budget before XML parsing. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and cancellation remain future work.
+Missing positional operands never imply stdin. The command reads the complete stream before comparison, then the engine applies the fixed per-source UTF-8 budget before XML parsing. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and CLI cancellation remain future work. Cooperative controls are available only to callers of the MoonBit library.
 
 ## Outputs
 

@@ -10,7 +10,7 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.3.2` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.3.3` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.4` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Diagnostics | Schema `1.4` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v1_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
@@ -33,6 +33,8 @@ At and after `1.0.0`:
 - PATCH changes fix defects without invalidating conforming callers.
 
 Adding a function is compatible. Removing or renaming a public declaration, changing parameters or results, adding a required field to a publicly constructible record, or changing documented behavior incompatibly is breaking. The generated root `pkg.generated.mbti` is the review artifact. The CLI executable and `engine:` line use the module version; they are not separately released products today.
+
+Module `0.3.3` adds `ComparisonControl`, `ComparisonInterrupted`, and `compare_with_control` without changing `compare` or CLI behavior. Interruption returns no report, so Structured Report Schema `1.4`, Diagnostics, ordering policy, and renderer conformance identities remain unchanged.
 
 ## Structured Report schema versions
 

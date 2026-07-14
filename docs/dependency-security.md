@@ -55,13 +55,13 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 Schema `1.4` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
-- no cancellation or comparison time budget;
+- the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;
 - no coverage-guided or sanitizer-guided fuzzing; the fixed-seed generative [fuzz smoke](../evaluation/fuzz/README.md) covers parser, adapter, renderer, JSON, and HTML boundaries but does not measure code coverage;
 - no automated dependency advisory or SBOM check, and no CI enforcement or signing of the locally generated license and provenance evidence;
 - no cross-platform determinism gate for released binaries.
 
-These gaps do not permit false complete analysis, and fixed limits plus local-reference admission bound the major deterministic growth dimensions. The [performance budget suite](../evaluation/performance/README.md) measures complete-process peak RSS for named representative workloads, including final serialization, but does not enforce memory or time for arbitrary inputs. Crafted inputs can still consume excessive time or transient memory within fixed admission bounds. Do not expose the CLI as an unauthenticated hostile-upload service until cancellation and hard per-request time and memory enforcement are complete.
+These gaps do not permit false complete analysis, and fixed limits plus local-reference admission bound the major deterministic growth dimensions. Embedding callers can use [`compare_with_control`](library-api.md) to stop at cooperative engine checkpoints, but this is not process isolation or a hard deadline. The [performance budget suite](../evaluation/performance/README.md) measures complete-process peak RSS for named representative workloads, including final serialization, but does not enforce memory or time for arbitrary inputs. Crafted inputs can still consume excessive time or transient memory within fixed admission bounds. Do not expose the CLI as an unauthenticated hostile-upload service until process-level hard time and memory enforcement are complete.
 
 ## Current upstream blockers
 

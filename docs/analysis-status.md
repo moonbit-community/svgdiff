@@ -16,6 +16,8 @@ Last verified: 2026-07-14
 
 Invalid CLI arguments and file I/O failures are not analysis results and exit with status `2` without producing a valid Structured Report. The stable process-level mapping is defined in the [CLI Exit-Code Contract](cli-exit-codes.md).
 
+Likewise, the embedding-only [`compare_with_control`](library-api.md) operation raises the `Cancelled` or `TimeBudgetExceeded` case of `ComparisonInterrupted` and returns no report. Interruption is request control flow, not `analysis_status = "failed"`, because no complete evidence inventory was established. The ordinary comparison and CLI status table are unchanged.
+
 ## `complete`
 
 A `complete` report guarantees all of the following:

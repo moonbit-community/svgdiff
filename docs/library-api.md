@@ -1,6 +1,6 @@
 # MoonBit Library API
 
-Status: current public interface for module version `0.3.2`
+Status: current public interface for module version `0.3.3`
 
 Last verified: 2026-07-14
 
@@ -12,23 +12,28 @@ Public source and behavior compatibility follows the [module SemVer rules](versi
 
 ```text
 compare(String, String, ComparisonProfile) -> StructuredReport
+compare_with_control(String, String, ComparisonProfile, ComparisonControl) -> StructuredReport raises ComparisonInterrupted
 render_html_report(String, String, StructuredReport) -> String
 ComparisonProfile::v1_default() -> ComparisonProfile
 StructuredReport::to_json_string() -> String
 StructuredReport::to_compact_json_string() -> String
 ```
 
-`compare` is the only semantic comparison operation. `render_html_report` is a presentation over an existing report and never recomputes differences.
+`compare` is the unlimited semantic comparison operation. `compare_with_control` runs the same operation with cooperative cancellation and an optional elapsed-time budget. `render_html_report` is a presentation over an existing report and never recomputes differences.
 
 Both JSON methods serialize schema `1.4`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
 
-Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.3.2`.
+Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.3.3`.
+
+`ComparisonControl` contains `should_cancel: () -> Bool` and `max_elapsed_milliseconds: Int?`; `ComparisonControl::unlimited()` disables both controls. A true predicate raises `Cancelled`. A nonpositive time budget expires at the first checkpoint, and a positive budget raises `TimeBudgetExceeded(max_elapsed_milliseconds=...)` once elapsed time reaches it. Cancellation is checked first when both conditions hold.
+
+An interruption returns no Structured Report: callers must handle `ComparisonInterrupted` as request control flow rather than infer evidence from missing arrays. Checks occur before and after admission, alignment work, per-event region work, report-finishing stages, and built-in serialization enforcement. Third-party XML parsing and SVG rendering are synchronous and cannot be preempted, so elapsed-time expiry is observed at the next checkpoint and is not a hard real-time deadline. The ordinary `compare`, CLI, report Schema `1.4`, and Diagnostic catalog remain unchanged.
 
 ## Public report types
 
 | Area | Types |
 | --- | --- |
-| Profile and result | `ComparisonProfile`, `StructuredReport`, `FeatureCoverage`, `RendererCapabilityGap`, `Diagnostic`, `DiagnosticSourceLocation` |
+| Profile, control, and result | `ComparisonProfile`, `ComparisonControl`, `ComparisonInterrupted`, `StructuredReport`, `FeatureCoverage`, `RendererCapabilityGap`, `Diagnostic`, `DiagnosticSourceLocation` |
 | Subjects and alignment | `SubjectReference`, `AlignmentEvidence`, `SubjectAlignment` |
 | Source and computed facts | `ReportSourceSpan`, `DeclaredVisualFact`, `ResolvedVisualFact`, `SourceResolutionPair`, `ChangedFact`, `ComputedRelation` |
 | Differences and grouping | `AtomicDifference`, `VisualEvent` |

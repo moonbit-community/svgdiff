@@ -2,6 +2,7 @@ import {
   "Milky2018/xml",
   "mizchi/pixelmatch",
   "mizchi/svg",
+  "moonbitlang/async",
   "moonbitlang/core/json",
   "moonbitlang/core/bench",
   "moonbitlang/core/math",

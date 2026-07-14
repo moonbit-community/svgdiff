@@ -26,6 +26,24 @@ fn pipeline_benchmark_profile() -> ComparisonProfile {
 }
 
 ///|
+fn benchmark_align_source_subjects(
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> Array[SubjectAlignment] {
+  try
+    align_source_subjects_with_guard(
+      before,
+      after,
+      ComparisonGuard::new(ComparisonControl::unlimited()),
+    )
+  catch {
+    _ => abort("unlimited benchmark comparison was interrupted")
+  } noraise {
+    alignments => alignments
+  }
+}
+
+///|
 fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
   let before = pipeline_benchmark_svg("red")
   let after = pipeline_benchmark_svg("blue")
@@ -59,7 +77,9 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
     )
   })
   benchmark.bench(name="alignment", () => {
-    benchmark.keep(align_source_subjects(before_subjects, after_subjects))
+    benchmark.keep(
+      benchmark_align_source_subjects(before_subjects, after_subjects),
+    )
   })
   benchmark.bench(name="rendering", () => {
     let rendered_before = @svg.render_svg_document_to_image(

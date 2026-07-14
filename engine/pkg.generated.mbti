@@ -1,10 +1,20 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Milky2018/svgdiff/engine"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn compare(String, String, ComparisonProfile) -> StructuredReport
 
+pub fn compare_with_control(String, String, ComparisonProfile, ComparisonControl) -> StructuredReport raise ComparisonInterrupted
+
 // Errors
+pub(all) suberror ComparisonInterrupted {
+  Cancelled
+  TimeBudgetExceeded(max_elapsed_milliseconds~ : Int)
+} derive(Eq, @debug.Debug)
 
 // Types and methods
 pub(all) struct AlignmentEvidence {
@@ -54,6 +64,12 @@ pub(all) struct ChangedFact {
   affected_subject_ids : Array[String]
 }
 pub impl ToJson for ChangedFact
+
+pub(all) struct ComparisonControl {
+  should_cancel : () -> Bool
+  max_elapsed_milliseconds : Int?
+}
+pub fn ComparisonControl::unlimited() -> Self
 
 pub(all) struct ComparisonProfile {
   viewport_width : Int

@@ -3,14 +3,21 @@ package "Milky2018/svgdiff"
 
 import {
   "Milky2018/svgdiff/engine",
+  "moonbitlang/core/debug",
 }
 
 // Values
 pub fn compare(String, String, @engine.ComparisonProfile) -> @engine.StructuredReport
 
+pub fn compare_with_control(String, String, @engine.ComparisonProfile, @engine.ComparisonControl) -> @engine.StructuredReport raise ComparisonInterrupted
+
 pub fn render_html_report(String, String, @engine.StructuredReport) -> String
 
 // Errors
+pub(all) suberror ComparisonInterrupted {
+  Cancelled
+  TimeBudgetExceeded(max_elapsed_milliseconds~ : Int)
+} derive(Eq, @debug.Debug)
 
 // Types and methods
 
@@ -22,6 +29,8 @@ pub using @engine {type AtomicDifference}
 pub using @engine {type CauseEnvelope}
 
 pub using @engine {type ChangedFact}
+
+pub using @engine {type ComparisonControl}
 
 pub using @engine {type ComparisonProfile}
 

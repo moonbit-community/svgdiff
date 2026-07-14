@@ -55,15 +55,18 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-The root package exposes one comparison operation:
+The root package exposes unlimited and cooperatively controlled comparison operations:
 
 ```text
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
+compare_with_control(before_svg, after_svg, comparison_profile, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
 The current JSON contract is version `1.4`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
+
+Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional elapsed-time budget. `compare_with_control` raises typed `Cancelled` or `TimeBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. Checks are cooperative, so a synchronous dependency parse or render call may finish before expiry is observed. The ordinary `compare` and CLI remain unlimited.
 
 ### Compare SVG sources
 

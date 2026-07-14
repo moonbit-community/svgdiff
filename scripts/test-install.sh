@@ -28,7 +28,7 @@ jq -e '
 PATH="$bindir:$PATH" svgdiff --help >help.txt
 PATH="$bindir:$PATH" svgdiff --version >version.txt
 grep -q '^Usage: svgdiff ' help.txt
-grep -q '^svgdiff 0.3.2$' version.txt
+grep -q '^svgdiff 0.3.3$' version.txt
 grep -q '^schema: 1.4$' version.txt
 grep -q '^renderer: mizchi/svg@0.2.1$' version.txt
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/1$' version.txt

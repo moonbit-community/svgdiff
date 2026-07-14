@@ -39,6 +39,7 @@ This directory separates the current product contract from future plans and hist
 | How are same-domain differences ordered? | [`domain-ordering.md`](domain-ordering.md) |
 | Which measurements remain authoritative without an Impact Assessment? | [`impact-assessment.md`](impact-assessment.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
+| How do embedding agents cooperatively cancel or budget comparison time? | [`library-api.md`](library-api.md) and [ADR 0043](adr/0043-treat-comparison-interruption-as-control-flow.md) |
 | Which compatibility change increments which version? | [`versioning.md`](versioning.md) |
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
@@ -67,6 +68,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Fixed resource budgets fail safely instead of returning a truncated difference inventory.
 - Cyclic or explosively expanding accepted local-reference graphs fail before renderer parsing.
 - Representative native release CLI workloads have measured wall-time and peak-RSS regression ceilings.
+- Embedding callers can cooperatively cancel or set an elapsed-time budget without creating a truncated report.
 - Font-dependent analysis and the broader SVG feature set are future work recorded in the roadmap.
 
 ## Document classes

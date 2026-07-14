@@ -5,6 +5,7 @@ pub using @engine {
   type CauseEnvelope,
   type ChangedFact,
   type ComparisonProfile,
+  type ComparisonControl,
   type ComputedRelation,
   type DeclaredVisualFact,
   type Diagnostic,
@@ -25,6 +26,13 @@ pub using @engine {
   type SubjectReference,
   type VisualEvent,
 }
+
+///|
+/// The controlled comparison stopped before a report was established.
+pub(all) suberror ComparisonInterrupted {
+  Cancelled
+  TimeBudgetExceeded(max_elapsed_milliseconds~ : Int)
+} derive(Debug, Eq)
 
 ///|
 /// Compare two deterministic static SVG sources under one schema `1.4` profile.
@@ -50,4 +58,34 @@ pub fn compare(
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
   { ..report, schema_version: "1.4" }
+}
+
+///|
+/// Compare with cooperative cancellation and an optional elapsed-time budget.
+///
+/// Interruption raises `ComparisonInterrupted` and returns no report. Checks
+/// occur at deterministic engine checkpoints; one dependency parse or render
+/// call cannot be preempted and may complete before expiry is observed.
+pub fn compare_with_control(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  control : ComparisonControl,
+) -> StructuredReport raise ComparisonInterrupted {
+  let canonical_profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: profile.viewport_width,
+    viewport_height: profile.viewport_height,
+  }
+  try
+    @engine.compare_with_control(
+      before_svg, after_svg, canonical_profile, control,
+    )
+  catch {
+    Cancelled => raise Cancelled
+    TimeBudgetExceeded(max_elapsed_milliseconds~) =>
+      raise TimeBudgetExceeded(max_elapsed_milliseconds~)
+  } noraise {
+    report => { ..report, schema_version: "1.4" }
+  }
 }

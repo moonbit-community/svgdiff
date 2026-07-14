@@ -319,30 +319,60 @@ fn enforce_output_resource_limits(
 }
 
 ///|
+fn compare_with_resource_limits_controlled(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  limits : ResourceLimits,
+  comparison_guard : ComparisonGuard,
+) -> StructuredReport raise ComparisonInterrupted {
+  comparison_guard.checkpoint()
+  match raster_limit(profile, limits) {
+    Some(diagnostic) => return failed_resource_report(profile, [diagnostic])
+    None => ()
+  }
+  comparison_guard.checkpoint()
+  let diagnostics : Array[Diagnostic] = []
+  match source_limit(before_svg, "before", limits) {
+    Some(diagnostic) => diagnostics.push(diagnostic)
+    None => ()
+  }
+  comparison_guard.checkpoint()
+  match source_limit(after_svg, "after", limits) {
+    Some(diagnostic) => diagnostics.push(diagnostic)
+    None => ()
+  }
+  comparison_guard.checkpoint()
+  if !diagnostics.is_empty() {
+    return failed_resource_report(profile, diagnostics)
+  }
+  let report = compare_without_resource_limits(
+    before_svg, after_svg, profile, limits, comparison_guard,
+  )
+  comparison_guard.checkpoint()
+  let report = enforce_output_resource_limits(report, limits)
+  comparison_guard.checkpoint()
+  report
+}
+
+///|
 fn compare_with_resource_limits(
   before_svg : String,
   after_svg : String,
   profile : ComparisonProfile,
   limits : ResourceLimits,
 ) -> StructuredReport {
-  match raster_limit(profile, limits) {
-    Some(diagnostic) => return failed_resource_report(profile, [diagnostic])
-    None => ()
+  try
+    compare_with_resource_limits_controlled(
+      before_svg,
+      after_svg,
+      profile,
+      limits,
+      ComparisonGuard::new(ComparisonControl::unlimited()),
+    )
+  catch {
+    _ => abort("unlimited comparison was interrupted")
+  } noraise {
+    report => report
   }
-  let diagnostics : Array[Diagnostic] = []
-  match source_limit(before_svg, "before", limits) {
-    Some(diagnostic) => diagnostics.push(diagnostic)
-    None => ()
-  }
-  match source_limit(after_svg, "after", limits) {
-    Some(diagnostic) => diagnostics.push(diagnostic)
-    None => ()
-  }
-  if !diagnostics.is_empty() {
-    return failed_resource_report(profile, diagnostics)
-  }
-  enforce_output_resource_limits(
-    compare_without_resource_limits(before_svg, after_svg, profile, limits),
-    limits,
-  )
 }

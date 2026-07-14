@@ -1,6 +1,6 @@
 # Local Reference Safety
 
-Status: current module `0.3.2` and schema `1.4` admission contract
+Status: current module `0.3.3` and schema `1.4` admission contract
 
 Last verified: 2026-07-14
 
@@ -41,6 +41,6 @@ All additions are saturating comparisons against the inclusive production maximu
 
 Cycle and expansion rejection produces `analysis_status = "failed"`, failed coverage rows, stable Diagnostics, and empty alignments, facts, differences, and events. Empty inventories are not partial evidence and cannot establish equality. The CLI exits with status `1`.
 
-`Milky2018/xml` separately owns XML entity recursion and expansion limits. Fixed source, structure, raster, region, and serialization budgets remain defined in the [resource-limit contract](resource-limits.md). Cancellation, wall-clock deadlines, streaming file admission, and measured peak-memory budgets remain future security work.
+`Milky2018/xml` separately owns XML entity recursion and expansion limits. Fixed source, structure, raster, region, and serialization budgets remain defined in the [resource-limit contract](resource-limits.md). Embedding callers may cooperatively cancel or set an elapsed-time budget through the [controlled library API](library-api.md); dependency calls remain non-preemptible, and streaming file admission plus hard peak-memory enforcement remain future security work.
 
 Executable boundaries live in [`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt), while the production-CLI counterexample lives in the [adversarial corpus](../evaluation/adversarial/README.md).

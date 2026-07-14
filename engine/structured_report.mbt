@@ -1790,7 +1790,9 @@ fn compare_without_resource_limits(
   after_svg : String,
   profile : ComparisonProfile,
   limits : ResourceLimits,
-) -> StructuredReport {
+  comparison_guard : ComparisonGuard,
+) -> StructuredReport raise ComparisonInterrupted {
+  comparison_guard.checkpoint()
   let preflight_diagnostics : Array[Diagnostic] = []
   match
     (
@@ -1820,6 +1822,7 @@ fn compare_without_resource_limits(
       preflight_diagnostics.push_iter(diagnostics.iter())
     _ => ()
   }
+  comparison_guard.checkpoint()
   let before_gradient_signature = gradient_unsupported_signature_or_raise(
     before_svg,
   ) catch {
@@ -1830,6 +1833,7 @@ fn compare_without_resource_limits(
   ) catch {
     _ => ""
   }
+  comparison_guard.checkpoint()
   if before_gradient_signature != after_gradient_signature {
     merge_diagnostic_into(preflight_diagnostics, {
       id: "diagnostic:gradient-semantics-unsupported:document",
@@ -1844,17 +1848,24 @@ fn compare_without_resource_limits(
       element_diagnostic_locations(after_svg, "after", "linearGradient"),
     })
   }
-  let subject_alignments = subject_alignments_for_sources(before_svg, after_svg)
+  let subject_alignments = subject_alignments_for_sources_with_guard(
+    before_svg, after_svg, comparison_guard,
+  )
+  comparison_guard.checkpoint()
   match inherited_fill_report(before_svg, after_svg, profile) {
     Some(report) =>
       return finish_report(
         report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-        limits,
+        limits, comparison_guard,
       )
     None => ()
   }
-  match
-    (@svg.parse_svg_document(before_svg), @svg.parse_svg_document(after_svg)) {
+  let documents = (
+    @svg.parse_svg_document(before_svg),
+    @svg.parse_svg_document(after_svg),
+  )
+  comparison_guard.checkpoint()
+  match documents {
     (Some(before_document), Some(after_document)) => {
       match
         generic_basic_shape_report(
@@ -1863,7 +1874,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits,
+            limits, comparison_guard,
           )
         None => ()
       }
@@ -1871,7 +1882,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits,
+            limits, comparison_guard,
           )
         None => ()
       }
@@ -1879,7 +1890,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits,
+            limits, comparison_guard,
           )
         None => ()
       }
@@ -1890,7 +1901,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits,
+            limits, comparison_guard,
           )
         None => ()
       }
@@ -1901,7 +1912,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits,
+            limits, comparison_guard,
           )
         None =>
           finish_report(
@@ -1933,6 +1944,7 @@ fn compare_without_resource_limits(
             before_svg,
             after_svg,
             limits,
+            comparison_guard,
           )
       }
     }
@@ -1959,5 +1971,22 @@ pub fn compare(
     after_svg,
     profile,
     default_resource_limits(),
+  )
+}
+
+///|
+/// Compare with cooperative cancellation and elapsed-time interruption.
+pub fn compare_with_control(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  control : ComparisonControl,
+) -> StructuredReport raise ComparisonInterrupted {
+  compare_with_resource_limits_controlled(
+    before_svg,
+    after_svg,
+    profile,
+    default_resource_limits(),
+    ComparisonGuard::new(control),
   )
 }

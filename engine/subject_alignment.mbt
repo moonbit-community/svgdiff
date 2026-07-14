@@ -371,12 +371,13 @@ fn sort_subject_indices(
 }
 
 ///|
-fn minimum_cost_subject_pairs(
+fn minimum_cost_subject_pairs_with_guard(
   before_indices : Array[Int],
   after_indices : Array[Int],
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-) -> Array[(Int, Int)] {
+  comparison_guard : ComparisonGuard,
+) -> Array[(Int, Int)] raise ComparisonInterrupted {
   if before_indices.is_empty() || after_indices.is_empty() {
     return []
   }
@@ -390,6 +391,7 @@ fn minimum_cost_subject_pairs(
   let matching = Array::make(column_count + 1, 0)
   let predecessor = Array::make(column_count + 1, 0)
   for row in 1..<=row_count {
+    comparison_guard.checkpoint()
     matching[0] = row
     let minimum = Array::make(column_count + 1, 1.7976931348623157e308)
     let used = Array::make(column_count + 1, false)
@@ -463,14 +465,16 @@ fn minimum_cost_subject_pairs(
 }
 
 ///|
-fn align_source_subjects(
+fn align_source_subjects_with_guard(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-) -> Array[SubjectAlignment] {
+  comparison_guard : ComparisonGuard,
+) -> Array[SubjectAlignment] raise ComparisonInterrupted {
   let alignments : Array[SubjectAlignment] = []
   let before_used = Array::make(before.length(), false)
   let after_used = Array::make(after.length(), false)
   for before_index, before_subject in before {
+    comparison_guard.checkpoint()
     if before_used[before_index] {
       continue
     }
@@ -523,6 +527,7 @@ fn align_source_subjects(
     }
   }
   for before_index, before_subject in before {
+    comparison_guard.checkpoint()
     if before_used[before_index] || before_subject.kind != "rect" {
       continue
     }
@@ -554,6 +559,7 @@ fn align_source_subjects(
     }
   }
   for after_index, after_subject in after {
+    comparison_guard.checkpoint()
     if after_used[after_index] || after_subject.kind != "rect" {
       continue
     }
@@ -612,8 +618,8 @@ fn align_source_subjects(
     sort_subject_indices(before_indices, before)
     sort_subject_indices(after_indices, after)
     for
-      pair in minimum_cost_subject_pairs(
-        before_indices, after_indices, before, after,
+      pair in minimum_cost_subject_pairs_with_guard(
+        before_indices, after_indices, before, after, comparison_guard,
       ) {
       let (before_index, after_index) = pair
       before_used[before_index] = true
@@ -699,19 +705,27 @@ fn align_source_subjects(
 }
 
 ///|
-fn subject_alignments_for_sources(
+fn subject_alignments_for_sources_with_guard(
   before_svg : String,
   after_svg : String,
-) -> Array[SubjectAlignment] {
-  try
-    (
-      extract_source_subjects_or_raise(before_svg),
-      extract_source_subjects_or_raise(after_svg),
+  comparison_guard : ComparisonGuard,
+) -> Array[SubjectAlignment] raise ComparisonInterrupted {
+  let subjects = try
+    Some(
+      (
+        extract_source_subjects_or_raise(before_svg),
+        extract_source_subjects_or_raise(after_svg),
+      ),
     )
   catch {
-    _ => []
+    _ => None
   } noraise {
-    (before, after) => align_source_subjects(before, after)
+    value => value
+  }
+  match subjects {
+    Some((before, after)) =>
+      align_source_subjects_with_guard(before, after, comparison_guard)
+    None => []
   }
 }
 
@@ -775,22 +789,27 @@ fn finish_report(
   before_svg : String,
   after_svg : String,
   limits : ResourceLimits,
-) -> StructuredReport {
+  comparison_guard : ComparisonGuard,
+) -> StructuredReport raise ComparisonInterrupted {
+  comparison_guard.checkpoint()
   let (report, extra_alignments) = attach_group_opacity_differences(
     report, before_svg, after_svg,
   )
   let combined_alignments = alignments.copy()
   combined_alignments.push_iter(extra_alignments.iter())
+  comparison_guard.checkpoint()
+  let report = apply_preflight_diagnostics(report, diagnostics)
+  comparison_guard.checkpoint()
+  let report = attach_subject_alignments(report, combined_alignments)
+  comparison_guard.checkpoint()
   let report = match
     attach_difference_regions(
-      attach_subject_alignments(
-        apply_preflight_diagnostics(report, diagnostics),
-        combined_alignments,
-      ),
+      report,
       before_svg,
       after_svg,
       combined_alignments,
       limits.max_regions,
+      comparison_guard,
     ) {
     RegionsAttached(report) => report
     AttachmentRegionLimitExceeded =>
@@ -798,14 +817,18 @@ fn finish_report(
         resource_limit_diagnostic("regions", None, None),
       ])
   }
-  let report = attach_feature_coverage(
-    attach_difference_magnitudes(attach_cause_envelopes(report)),
-    before_svg,
-    after_svg,
-  )
-  attach_diagnostic_fact_locations(
-    attach_renderer_capability_gaps(
-      enforce_coverage_proof(report, before_svg, after_svg),
-    ),
-  )
+  comparison_guard.checkpoint()
+  let report = attach_cause_envelopes(report)
+  comparison_guard.checkpoint()
+  let report = attach_difference_magnitudes(report)
+  comparison_guard.checkpoint()
+  let report = attach_feature_coverage(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
+  let report = enforce_coverage_proof(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
+  let report = attach_renderer_capability_gaps(report)
+  comparison_guard.checkpoint()
+  let report = attach_diagnostic_fact_locations(report)
+  comparison_guard.checkpoint()
+  report
 }

@@ -460,7 +460,9 @@ fn attach_difference_regions(
   after_svg : String,
   alignments : Array[SubjectAlignment],
   max_regions : Int,
-) -> DifferenceRegionAttachment {
+  comparison_guard : ComparisonGuard,
+) -> DifferenceRegionAttachment raise ComparisonInterrupted {
+  comparison_guard.checkpoint()
   let before = extract_source_subjects_or_raise(before_svg) catch { _ => [] }
   let after = extract_source_subjects_or_raise(after_svg) catch { _ => [] }
   let rendered_images = match
@@ -493,6 +495,7 @@ fn attach_difference_regions(
   let events : Array[VisualEvent] = []
   let mut attached_region_count = 0
   for event in report.events {
+    comparison_guard.checkpoint()
     let bounds = match alignment_for_event(event, alignments) {
       Some(alignment) => alignment_bounds(alignment, before, after)
       None => None
@@ -552,6 +555,7 @@ fn attach_difference_regions(
   }
   let differences : Array[AtomicDifference] = []
   for difference in report.atomic_differences {
+    comparison_guard.checkpoint()
     differences.push({
       ..difference,
       presence_magnitude: generic_presence_magnitude_for_difference(
@@ -563,5 +567,6 @@ fn attach_difference_regions(
       ),
     })
   }
+  comparison_guard.checkpoint()
   RegionsAttached({ ..report, atomic_differences: differences, events })
 }

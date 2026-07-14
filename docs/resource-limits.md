@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.3.2` and schema `1.4` contract
+Status: current module `0.3.3` and schema `1.4` contract
 
 Last verified: 2026-07-14
 
@@ -44,7 +44,7 @@ Malformed XML remains `svg_parse_failed`, not a resource failure, unless an earl
 
 The region budget stops region extraction and event attachment at the first excess, so it bounds retained region work. The report-byte budget checks completed built-in serializations; it bounds emitted JSON but does not claim to cap the transient memory needed to construct that serialization. The CLI currently reads each selected file or stdin stream into a String before the engine counts it, so the input budget protects parsing and later stages rather than initial file-read allocation.
 
-Cancellation, wall-clock budgets, streaming input admission, peak-memory accounting, and publicly configurable embedding policies remain explicit roadmap items. The generated HTML includes both bounded input sources in addition to report JSON and therefore has no separate report-byte identity.
+The public [`compare_with_control`](library-api.md) operation adds cooperative cancellation and an elapsed-time budget around these fixed resource limits. Interruption returns no report and does not replace a resource-limit Diagnostic. It cannot preempt one synchronous dependency parse or render call, and the CLI does not expose it. Streaming input admission, peak-memory enforcement, hard preemptive deadlines, and configurable resource-limit policies remain future work. The generated HTML includes both bounded input sources in addition to report JSON and therefore has no separate report-byte identity.
 
 ## Executable evidence
 
