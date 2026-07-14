@@ -24,6 +24,13 @@ moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >
 test ! -s "$tmp/report.err"
 jq -e '.schema_version == "1.0" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
 
+moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
+test ! -s "$tmp/agent.err"
+test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
+jq -e '.schema_version == "1.0" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
+test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
+test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
+
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html" >"$tmp/output.stdout" 2>"$tmp/output.err"
 test ! -s "$tmp/output.stdout"
 test ! -s "$tmp/output.err"

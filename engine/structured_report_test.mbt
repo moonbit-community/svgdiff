@@ -317,6 +317,36 @@ test "structured report serializes the complete layered result as JSON" {
 }
 
 ///|
+test "compact JSON preserves the complete structured report" {
+  let report = @engine.compare(
+    unresolved_text_svg("A"),
+    unresolved_text_svg("B"),
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let indented = report.to_json_string()
+  let compact = report.to_compact_json_string()
+  assert_true(compact.length() < indented.length())
+  assert_true(compact.find("\n") is None)
+  match @json.parse(compact) {
+    {
+      "schema_version": "1.0",
+      "analysis_status": "partial",
+      "profile": { "viewport_width": 16, "viewport_height": 16, .. },
+      "subject_alignments": _,
+      "changed_facts": _,
+      "source_resolutions": _,
+      "atomic_differences": [
+        { "domain": "text.content", "subject_role": "entity", .. },
+      ],
+      "events": [_],
+      "diagnostics": [_],
+      ..
+    } => ()
+    _ => fail("compact JSON did not preserve every report section")
+  }
+}
+
+///|
 test "unsupported visual subjects cannot produce complete equality" {
   let source = "<svg width='16' height='16'><path d='M0 0 L8 8'/></svg>"
   let report = @engine.compare(

@@ -275,6 +275,17 @@ pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
 }
 
 ///|
+/// Serialize this report as whitespace-free schema `1.0` JSON.
+///
+/// This serialization contains the same fields and evidence as
+/// `to_json_string`; it only removes presentation whitespace.
+pub fn StructuredReport::to_compact_json_string(
+  self : StructuredReport,
+) -> String {
+  ToJson::to_json(self).stringify()
+}
+
+///|
 priv enum SourcePreflight {
   SourceCovered
   SourcePartial(Array[Diagnostic])

@@ -4,6 +4,7 @@ priv struct CliConfig {
   after_path : String
   output_path : String?
   html_path : String?
+  agent_json : Bool
   width : Int
   height : Int
 }
@@ -28,7 +29,7 @@ fn usage() -> String {
 ///|
 fn help_text() -> String {
   usage() +
-  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
+  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
 }
 
 ///|
@@ -60,8 +61,14 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
   let mut height = 16
   let mut output_path : String? = None
   let mut html_path : String? = None
+  let mut agent_json = false
   let mut index = 3
   while index < args.length() {
+    if args[index] == "--agent-json" {
+      agent_json = true
+      index += 1
+      continue
+    }
     if index + 1 >= args.length() {
       return Invalid("Missing value for \{args[index]}")
     }
@@ -88,6 +95,7 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
     after_path: args[2],
     output_path,
     html_path,
+    agent_json,
     width,
     height,
   })
@@ -153,7 +161,11 @@ async fn main {
     viewport_width: config.width,
     viewport_height: config.height,
   })
-  let json = report.to_json_string()
+  let json = if config.agent_json {
+    report.to_compact_json_string()
+  } else {
+    report.to_json_string()
+  }
   match config.output_path {
     Some(path) =>
       @fs.write_string_to_file(path, json, encoding="utf8") catch {

@@ -29,6 +29,13 @@ grep -q '^svgdiff 0.1.0$' version.txt
 grep -q '^schema: 1.0$' version.txt
 grep -q '^renderer: mizchi/svg@0.2.1$' version.txt
 
+PATH="$bindir:$PATH" svgdiff \
+  "$root/testdata/before.svg" \
+  "$root/testdata/after.svg" --agent-json >agent.json 2>agent.err
+test ! -s agent.err
+test "$(wc -l <agent.json | tr -d ' ')" -eq 1
+jq -e '.schema_version == "1.0" and (.atomic_differences | length) == 1' agent.json >/dev/null
+
 cat "$root/testdata/before.svg" | PATH="$bindir:$PATH" svgdiff \
   - "$root/testdata/after.svg" >stdin-report.json 2>stdin-report.err
 test ! -s stdin-report.err

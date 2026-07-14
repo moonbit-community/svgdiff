@@ -13,9 +13,12 @@ compare(String, String, ComparisonProfile) -> StructuredReport
 render_html_report(String, String, StructuredReport) -> String
 ComparisonProfile::v1_default() -> ComparisonProfile
 StructuredReport::to_json_string() -> String
+StructuredReport::to_compact_json_string() -> String
 ```
 
 `compare` is the only semantic comparison operation. `render_html_report` is a presentation over an existing report and never recomputes differences.
+
+Both JSON methods serialize schema `1.0`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
 
 ## Public report types
 

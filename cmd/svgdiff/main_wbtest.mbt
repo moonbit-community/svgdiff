@@ -2,7 +2,7 @@
 test "CLI parses paths viewport and output" {
   let config = parse_cli([
     "svgdiff", "before.svg", "after.svg", "--width", "32", "--height", "24", "--output",
-    "report.json", "--html", "report.html",
+    "report.json", "--html", "report.html", "--agent-json",
   ])
   match config {
     Config(config) => {
@@ -12,8 +12,17 @@ test "CLI parses paths viewport and output" {
       assert_eq(config.height, 24)
       assert_eq(config.output_path, Some("report.json"))
       assert_eq(config.html_path, Some("report.html"))
+      assert_true(config.agent_json)
     }
     Invalid(message) => fail("expected valid CLI configuration: \{message}")
+  }
+}
+
+///|
+test "CLI keeps canonical JSON as the default" {
+  match parse_cli(["svgdiff", "before.svg", "after.svg"]) {
+    Config(config) => assert_false(config.agent_json)
+    Invalid(message) => fail("expected default configuration: \{message}")
   }
 }
 
@@ -55,6 +64,7 @@ test "CLI help documents options and exit statuses" {
   assert_true(help.contains("--height N"))
   assert_true(help.contains("--output FILE"))
   assert_true(help.contains("--html FILE"))
+  assert_true(help.contains("--agent-json"))
   assert_true(help.contains("--help"))
   assert_true(help.contains("--version"))
   assert_true(help.contains("Use - for exactly one input"))

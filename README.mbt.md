@@ -113,14 +113,18 @@ test "serialize JSON and build the HTML presentation" {
     @svgdiff.ComparisonProfile::v1_default(),
   )
   let json = report.to_json_string()
+  let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
   assert_true(json.find("\"schema_version\": \"1.0\"") is Some(_))
+  assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
 }
 ```
 
 The [public API guide](docs/library-api.md) groups all exported report types and documents how to inspect generated MoonBit API documentation.
+
+The CLI option `--agent-json` emits the same schema and evidence without formatting whitespace. It can be combined with `--output`; default output remains the indented canonical representation.
 
 ## Supported static subset
 

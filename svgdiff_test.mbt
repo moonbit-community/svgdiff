@@ -17,6 +17,10 @@ test "root package exposes the stable comparison seam" {
     { "schema_version": "1.0", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
+  match @json.parse(report.to_compact_json_string()) {
+    { "schema_version": "1.0", "events": [_], .. } => ()
+    _ => fail("root report did not expose compact serialization")
+  }
 }
 
 ///|
