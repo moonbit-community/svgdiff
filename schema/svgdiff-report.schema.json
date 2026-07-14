@@ -21,6 +21,10 @@
       "type": "array",
       "items": { "$ref": "#/$defs/featureCoverage" }
     },
+    "renderer_capability_gaps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rendererCapabilityGap" }
+    },
     "profile": {
       "type": "object",
       "required": [
@@ -92,6 +96,19 @@
         },
         "diagnostic_ids": {
           "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "rendererCapabilityGap": {
+      "type": "object",
+      "required": ["capability_id", "support_status", "diagnostic_ids"],
+      "properties": {
+        "capability_id": { "type": "string", "minLength": 1 },
+        "support_status": { "enum": ["guarded", "unavailable"] },
+        "diagnostic_ids": {
+          "type": "array",
+          "minItems": 1,
           "items": { "type": "string" }
         }
       }

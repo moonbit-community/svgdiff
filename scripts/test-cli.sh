@@ -22,7 +22,7 @@ assert_status() {
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
-jq -e '.schema_version == "1.0" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
+jq -e '.schema_version == "1.0" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
@@ -44,6 +44,27 @@ jq -e '
     "svgdiff-renderer-conformance-profile/1" and
   (.properties.profile.required | index("renderer_conformance_profile_id") == null)
 ' schema/svgdiff-report.schema.json >/dev/null
+jq -e '
+  (.properties.renderer_capability_gaps.items."$ref" ==
+    "#/$defs/rendererCapabilityGap") and
+  (.required | index("renderer_capability_gaps") == null)
+' schema/svgdiff-report.schema.json >/dev/null
+
+printf '%s\n' "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='red' stroke='red' style='fill:blue;stroke:blue'/></svg>" >"$tmp/renderer-gap.svg"
+moon run --target native cmd/svgdiff -- \
+  "$tmp/renderer-gap.svg" "$tmp/renderer-gap.svg" --agent-json \
+  >"$tmp/renderer-gap.json"
+jq -e '
+  .analysis_status == "partial" and
+  .renderer_capability_gaps == [{
+    "capability_id": "css.inline_style_precedence",
+    "support_status": "guarded",
+    "diagnostic_ids": [
+      "diagnostic:renderer-style-precedence-unresolved:box:fill",
+      "diagnostic:renderer-style-precedence-unresolved:box:stroke"
+    ]
+  }]
+' "$tmp/renderer-gap.json" >/dev/null
 
 cat testdata/before.svg | moon run --target native cmd/svgdiff -- - testdata/after.svg >"$tmp/stdin-before.json" 2>"$tmp/stdin-before.err"
 test ! -s "$tmp/stdin-before.err"
@@ -58,6 +79,7 @@ assert_status 0 moon run --target native cmd/svgdiff -- \
   evaluation/corpus/cases/unsupported-path-change/after.svg \
   --output "$tmp/partial.json"
 jq -e '.analysis_status == "partial" and (.diagnostics | length) > 0' "$tmp/partial.json" >/dev/null
+jq -e '.renderer_capability_gaps == []' "$tmp/partial.json" >/dev/null
 jq -e 'any(.coverage_matrix[]; .computed_appearance == "limited" or .rendered_evidence == "limited")' "$tmp/partial.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
@@ -93,4 +115,5 @@ printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
 assert_status 1 moon run --target native cmd/svgdiff -- "$tmp/malformed.svg" testdata/after.svg >"$tmp/failed.json" 2>"$tmp/failed.err"
 test ! -s "$tmp/failed.err"
 jq -e '.analysis_status == "failed" and (.diagnostics | length) > 0' "$tmp/failed.json" >/dev/null
+jq -e '.renderer_capability_gaps == []' "$tmp/failed.json" >/dev/null
 jq -e 'all(.coverage_matrix[]; .source_semantics == "failed" and .computed_appearance == "failed" and .rendered_evidence == "failed")' "$tmp/failed.json" >/dev/null

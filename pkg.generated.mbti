@@ -43,6 +43,8 @@ pub using @engine {type RenderedEvidence}
 
 pub using @engine {type RenderedMagnitude}
 
+pub using @engine {type RendererCapabilityGap}
+
 pub using @engine {type ReportSourceSpan}
 
 pub using @engine {type ResolvedVisualFact}

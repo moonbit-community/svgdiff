@@ -22,6 +22,7 @@ jq -e '
   .profile.renderer_conformance_profile_id ==
     "svgdiff-renderer-conformance-profile/1" and
   .analysis_status == "complete" and
+  .renderer_capability_gaps == [] and
   (.atomic_differences | length) == 1
 ' report.json >/dev/null
 PATH="$bindir:$PATH" svgdiff --help >help.txt

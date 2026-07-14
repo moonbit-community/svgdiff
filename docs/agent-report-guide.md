@@ -15,12 +15,13 @@ Read the report in this order:
 3. `profile`: state the viewport, renderer identity, and renderer conformance profile that bound the result.
 4. `coverage_matrix`: identify the exact feature and evidence-layer cells that are covered, limited, not applicable, or failed.
 5. `diagnostics`: explain every limited or failed coverage row.
-6. `events`: use these as the primary navigation and localization units.
-7. `atomic_differences`: explain exactly what changed and at which evidence layers.
-8. `magnitude` and `domain_ordering`: quantify and order differences without inventing a universal score.
-9. `difference_regions`: describe where the outcome occurs.
-10. `cause_envelope`: list possible Changed Fact causes with the correct guarantee.
-11. `changed_facts` and source spans: recover authored provenance when needed.
+6. `renderer_capability_gaps`: identify encountered renderer-specific limits without inferring them from Diagnostic code names.
+7. `events`: use these as the primary navigation and localization units.
+8. `atomic_differences`: explain exactly what changed and at which evidence layers.
+9. `magnitude` and `domain_ordering`: quantify and order differences without inventing a universal score.
+10. `difference_regions`: describe where the outcome occurs.
+11. `cause_envelope`: list possible Changed Fact causes with the correct guarantee.
+12. `changed_facts` and source spans: recover authored provenance when needed.
 
 Never start by counting `atomic_differences`. A partial report with zero differences is not equality, while a complete report may contain a source distinction with zero visual effect.
 
@@ -112,6 +113,10 @@ Input change: rectangle `x="1.0"` to `x="0.99999"` in a `16 x 16` profile.
 {
   "analysis_status": "partial",
   "diagnostic": "renderer_fractional_geometry_unproven",
+  "renderer_capability_gaps": [{
+    "capability_id": "raster.fractional_geometry",
+    "support_status": "guarded"
+  }],
   "domain": "geometry.position",
   "computed_relation": { "status": "different" },
   "magnitude": {
@@ -130,6 +135,8 @@ Correct interpretation:
 > The rectangle moved left by approximately `0.00001` CSS pixels. This is an extremely small and exact computed geometry change. The pinned renderer reports 16 edge pixels, but Rendered Evidence is limited because Chromium produces zero changed canonical pixels for this pair. Do not claim a visible outcome from the pinned count.
 
 The pinned renderer's two edge regions remain numeric observations, but their Cause Envelopes are `not_established` and they are not browser-conformant visual regions. Retain the exact parameter magnitude, report the conformance Diagnostic, and do not use the quantized raster artifact to rank this edit as visually important.
+
+An empty `renderer_capability_gaps` array never means that every SVG renderer feature is supported. It only means the current inputs did not encounter one of the versioned renderer-specific gaps; consult the coverage matrix for analyzer and feature limitations.
 
 ## Worked example 3: salient paint change
 

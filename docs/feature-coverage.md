@@ -63,6 +63,8 @@ The matrix is validated by the [Coverage Proof Obligations](coverage-proof-oblig
 
 ## Guarded, partial, and failed capabilities
 
+Renderer-specific rows also produce one encountered `renderer_capability_gaps` record with stable capability ID, support status, and all establishing Diagnostic IDs. Analyzer-owned limitations such as unsupported `path` remain visible here and in Diagnostics but do not become renderer capability gaps. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../engine/renderer_capabilities_test.mbt).
+
 | Feature or condition | Report status | Diagnostic code | Constrained evidence | Executable coverage |
 | --- | --- | --- | --- | --- |
 | Malformed XML | Failed | `svg_parse_failed` | All layers | [`structured_report_test.mbt`](../engine/structured_report_test.mbt): `parse failure is diagnosed`; [`source_adapter_wbtest.mbt`](../engine/source_adapter_wbtest.mbt): `source adapter rejects malformed XML` |

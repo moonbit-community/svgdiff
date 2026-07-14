@@ -268,6 +268,17 @@ pub(all) struct FeatureCoverage {
 } derive(ToJson)
 
 ///|
+/// One renderer capability gap encountered by the current comparison.
+///
+/// `support_status` is `guarded` or `unavailable`. Diagnostic references remain
+/// the authority for affected subjects and evidence layers.
+pub(all) struct RendererCapabilityGap {
+  capability_id : String
+  support_status : String
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
+///|
 /// Complete schema `1.0` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
@@ -276,6 +287,7 @@ pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
   coverage_matrix : Array[FeatureCoverage]
+  renderer_capability_gaps : Array[RendererCapabilityGap]
   profile : ComparisonProfile
   subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]
@@ -839,6 +851,7 @@ fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
         diagnostic_ids: [diagnostic_id],
       },
     ],
+    renderer_capability_gaps: [],
     profile,
     subject_alignments: [],
     changed_facts: [],
@@ -880,6 +893,7 @@ fn apply_preflight_diagnostics(
       "partial"
     },
     coverage_matrix: report.coverage_matrix,
+    renderer_capability_gaps: report.renderer_capability_gaps,
     profile: report.profile,
     subject_alignments: report.subject_alignments,
     changed_facts: report.changed_facts,
@@ -1144,6 +1158,7 @@ fn deferred_font_report(
         schema_version: "1.0",
         analysis_status: "partial",
         coverage_matrix: [],
+        renderer_capability_gaps: [],
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -1219,6 +1234,7 @@ fn presence_change_report(
         schema_version: "1.0",
         analysis_status: "complete",
         coverage_matrix: [],
+        renderer_capability_gaps: [],
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -1268,6 +1284,7 @@ fn presence_change_report(
         schema_version: "1.0",
         analysis_status: "complete",
         coverage_matrix: [],
+        renderer_capability_gaps: [],
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -1371,6 +1388,7 @@ fn gradient_change_report(
           schema_version: "1.0",
           analysis_status: "complete",
           coverage_matrix: [],
+          renderer_capability_gaps: [],
           profile,
           subject_alignments: [],
           changed_facts: [],
@@ -1392,6 +1410,7 @@ fn gradient_change_report(
           schema_version: "1.0",
           analysis_status: "complete",
           coverage_matrix: [],
+          renderer_capability_gaps: [],
           profile,
           subject_alignments: [],
           changed_facts: [],
@@ -1551,6 +1570,7 @@ pub fn compare(
               schema_version: "1.0",
               analysis_status: "partial",
               coverage_matrix: [],
+              renderer_capability_gaps: [],
               profile,
               subject_alignments: [],
               changed_facts: [],

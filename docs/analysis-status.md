@@ -87,10 +87,11 @@ The number or magnitude of Atomic Differences never changes this ordering. A lar
 1. Verify `schema_version` before interpreting fields.
 2. Verify `profile.renderer_conformance_profile_id` before treating rendered evidence as a known conformance claim; older schema `1.0` reports may omit it and require an explicit legacy policy.
 3. Read `analysis_status` before inspecting difference counts or magnitudes.
-4. If `failed`, report Diagnostics and stop.
-5. If `partial`, retain supported findings but state the coverage limitation and do not claim equality.
-6. If `complete`, interpret all Atomic Differences; claim profile-scoped equality only when the list is empty.
-7. Use magnitude and Domain Ordering for prioritization, never `analysis_status`.
+4. Read `renderer_capability_gaps` as an encountered-only projection of renderer Diagnostics; do not treat an empty array as global support.
+5. If `failed`, report Diagnostics and stop.
+6. If `partial`, retain supported findings but state the coverage limitation and do not claim equality.
+7. If `complete`, interpret all Atomic Differences; claim profile-scoped equality only when the list is empty.
+8. Use magnitude and Domain Ordering for prioritization, never `analysis_status`.
 
 ## Executable enforcement
 

@@ -661,6 +661,7 @@ fn attach_subject_alignments(
     schema_version: report.schema_version,
     analysis_status: report.analysis_status,
     coverage_matrix: report.coverage_matrix,
+    renderer_capability_gaps: report.renderer_capability_gaps,
     profile: report.profile,
     subject_alignments: alignments,
     changed_facts: report.changed_facts,
@@ -701,5 +702,7 @@ fn finish_report(
     before_svg,
     after_svg,
   )
-  enforce_coverage_proof(report, before_svg, after_svg)
+  attach_renderer_capability_gaps(
+    enforce_coverage_proof(report, before_svg, after_svg),
+  )
 }

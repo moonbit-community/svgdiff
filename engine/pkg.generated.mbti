@@ -138,6 +138,12 @@ pub(all) struct RenderedMagnitude {
   linear_premultiplied_rgba_rmse : Double
 } derive(ToJson)
 
+pub(all) struct RendererCapabilityGap {
+  capability_id : String
+  support_status : String
+  diagnostic_ids : Array[String]
+} derive(ToJson)
+
 pub(all) struct ReportSourceSpan {
   start_offset : Int
   end_offset : Int
@@ -164,6 +170,7 @@ pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
   coverage_matrix : Array[FeatureCoverage]
+  renderer_capability_gaps : Array[RendererCapabilityGap]
   profile : ComparisonProfile
   subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]

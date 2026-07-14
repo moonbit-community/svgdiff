@@ -56,6 +56,8 @@ The independent [renderer conformance comparison](../evaluation/renderer-conform
 
 Every divergence now has an executable disposition. A browser-invisible `1.0` to `0.99999` position change becomes 16 full-channel changed pixels in the pinned renderer, so fractional geometry emits `renderer_fractional_geometry_unproven`. Gradient sampling differs by up to 11 premultiplied RGBA8 levels, so referenced gradients emit `renderer_gradient_raster_unproven`. Leaf opacity `0.5` becomes alpha `127` instead of Chromium's `128`, so it emits `renderer_fractional_opacity_unproven`. Group opacity remains guarded by `group_opacity_compositing_unsupported`. These guards limit only the evidence layers they name and retain numeric source/computed evidence plus the renderer observation where available.
 
+Current reports project those encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The structured records expose stable capability IDs and `guarded` or `unavailable` status without pretending to be a global renderer support inventory.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:

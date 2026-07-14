@@ -88,6 +88,12 @@ Rendered Evidence describes the canonical raster response under the recorded pro
 
 ## Report records
 
+### Renderer Capability Gap
+
+`renderer_capability_gaps` is an encountered-input projection of renderer-specific Diagnostics. Each `RendererCapabilityGap` records a stable capability ID, a `guarded` or `unavailable` support status, and every Diagnostic ID that establishes the gap for this comparison. `guarded` means a renderer observation may remain numeric but cannot support a complete conformance claim; `unavailable` means the required renderer behavior cannot currently supply accepted evidence.
+
+The array does not enumerate capabilities unused by the inputs. An empty array therefore means only that no known renderer gap was encountered; it is not a global renderer support claim. Analysis status, per-feature coverage, and Diagnostics remain authoritative, and non-renderer analyzer gaps do not appear in this projection.
+
 ### Subject Reference and Subject Alignment
 
 A `SubjectReference` identifies a report subject by source index, SVG kind, and optional authored ID. Authored IDs and source order are evidence, not authoritative cross-document identity.
@@ -162,6 +168,7 @@ The schema `1.0` top-level object contains exactly these conceptual sections:
   "schema_version": "1.0",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
+  "renderer_capability_gaps": [],
   "profile": {},
   "subject_alignments": [],
   "changed_facts": [],

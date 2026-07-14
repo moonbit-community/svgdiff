@@ -64,6 +64,8 @@ The following capabilities can participate in a `complete` report when no unsupp
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
+Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, referenced-gradient rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
+
 ## Unsupported or deferred
 
 V1 does not completely analyze:

@@ -338,6 +338,7 @@ test "structured report serializes the complete layered result as JSON" {
       "schema_version": "1.0",
       "analysis_status": "partial",
       "coverage_matrix": _,
+      "renderer_capability_gaps": [],
       "profile": { "viewport_width": 16, "viewport_height": 16, .. },
       "atomic_differences": [
         { "domain": "text.content", "subject_role": "entity", .. },
@@ -374,6 +375,7 @@ test "compact JSON preserves the complete structured report" {
       "schema_version": "1.0",
       "analysis_status": "partial",
       "coverage_matrix": _,
+      "renderer_capability_gaps": [],
       "profile": { "viewport_width": 16, "viewport_height": 16, .. },
       "subject_alignments": _,
       "changed_facts": _,

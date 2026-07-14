@@ -138,6 +138,8 @@ Scripts, animation, event state, `foreignObject`, general CSS selectors, transfo
 
 Fractional geometry, fractional leaf opacity, and referenced-gradient raster measurements currently remain numeric pinned-renderer observations, but their Rendered Evidence coverage is limited by stable conformance Diagnostics. Exact source and computed differences remain available; consumers must not treat those raster values as browser-conformant.
 
+Current reports project renderer-specific limitations encountered by the inputs into `renderer_capability_gaps`. Each record provides a stable capability ID, `guarded` or `unavailable` support status, and establishing Diagnostic IDs. An empty array does not claim that the renderer supports all SVG features; the coverage matrix remains authoritative.
+
 The current renderer dependency does not yet guarantee that inline `style`
 overrides a conflicting presentation attribute independently of XML attribute
 order. Such overlap emits `renderer_style_precedence_unresolved` and reduces

@@ -61,6 +61,7 @@ Before replacing or owning a layer, apply the [Renderer Upstream and Ownership G
 - Update the Schema constant for `profile.renderer_id`.
 - Update the Schema constant for `profile.renderer_conformance_profile_id`, the conformance baseline, CLI version output, and disposition validator together.
 - Reassess Diagnostics whose only purpose was to guard an old renderer defect. Remove a guard only after its negative test is replaced by a positive conformance test.
+- Update the encountered renderer-capability mapping and its tests whenever a renderer Diagnostic is added, removed, or changes support status.
 - Update [`renderer-evaluation.md`](renderer-evaluation.md), [`feature-coverage.md`](feature-coverage.md), and [`v1-scope.md`](v1-scope.md).
 - Review Difference Region and magnitude output for intentional numeric drift.
 

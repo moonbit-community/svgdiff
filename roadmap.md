@@ -86,7 +86,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P1** Version the renderer conformance profile separately from the JSON Schema.
 - [x] **P1** Define the minimum conformance threshold that triggers a focused upstream patch versus a project-owned rendering module.
 - [x] **P1** Add alternate-scale rerendering as renderer QA only, without allowing it to redefine canonical report evidence.
-- [ ] **P1** Make missing renderer capabilities observable through structured capability metadata.
+- [x] **P1** Make missing renderer capabilities observable through structured capability metadata.
 
 ## Phase 3: Source Semantics and Computed Appearance coverage
 

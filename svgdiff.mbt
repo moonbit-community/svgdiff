@@ -14,6 +14,7 @@ pub using @engine {
   type PresenceMagnitude,
   type RenderedEvidence,
   type RenderedMagnitude,
+  type RendererCapabilityGap,
   type ReportSourceSpan,
   type ResolvedVisualFact,
   type SourceResolutionPair,
