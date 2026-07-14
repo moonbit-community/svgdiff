@@ -10,11 +10,11 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.4.7` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.13` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.13` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.4.8` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.14` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.14` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/10` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/11` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -59,6 +59,8 @@ Module `0.4.5` preserves authored SVG length spellings while resolving unitless,
 Module `0.4.6` introduces a project-owned author cascade over applicable declaration candidates. Presentation attributes, inline declarations, parsed stylesheet declarations, importance, selector specificity, and source order share one winner-selection module; inline `!important` and duplicate declarations become complete while stylesheet applicability remains guarded until selector matching is implemented. The renderer adapter canonicalizes the winning inline declarations, advancing `style-precedence-normalizer` to `@2`; six Chromium fixtures advance conformance to `/9`. Retiring the old inline-important limitation advances Structured Report schema to `1.12`, while public report fields and v2 tuple policy remain unchanged.
 
 Module `0.4.7` adds a right-to-left static selector matcher over an indexed XML tree. Type, universal, ID, class, attribute presence/equality, compound, list, descendant, child, adjacent-sibling, and general-sibling selectors now supply applicable rules to the existing cascade while unsupported grammar retains `css_cascade_unsupported`. The renderer adapter materializes matched winners, advancing `style-precedence-normalizer` to `@3`; two canonical stylesheet companions expand the Chromium baseline to 68 fixtures and conformance profile `/10`. Admitting supported stylesheet applicability advances Structured Report schema to `1.13`, while public fields and v2 tuple policy remain unchanged.
+
+Module `0.4.8` resolves ordinary inheritance after cascade for supported fill, stroke, stroke-geometry, and marker properties while retaining ancestor declaration ownership, exact provenance, inheritance depth, and leaf fan-out. Inheritance reports now reuse leaf used-value relations, numeric deltas, and rendered measurements instead of emitting the retired deferred conditions. The private renderer identity adds `ordinary-inheritance-normalizer@1`; an inherited-stylesheet canonical pair expands the Chromium baseline to 70 fixtures and conformance profile `/11`. The expanded supported behavior, retired Diagnostics, and new `css_wide_keyword_unsupported` boundary advance Structured Report schema to `1.14`, while public fields and v2 tuple policy remain unchanged.
 
 ## Structured Report schema versions
 

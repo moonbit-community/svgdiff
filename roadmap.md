@@ -106,7 +106,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 - [x] **P0** Implement the SVG/CSS cascade with presentation attributes, inline style, stylesheet rules, specificity, source order, and `!important`.
 - [x] **P0** Implement selector matching for the supported static scope.
-- [ ] **P0** Implement ordinary inheritance for every supported visual property.
+- [x] **P0** Implement ordinary inheritance for every supported visual property.
 - [ ] **P0** Implement `inherit`, `initial`, `unset`, `revert`, `currentColor`, and CSS custom properties where they affect supported SVG values.
 - [ ] **P0** Preserve declaration origin and Source Span provenance through cascade resolution.
 - [ ] **P1** Implement complete solid-color syntax and opacity semantics.

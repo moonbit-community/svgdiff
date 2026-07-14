@@ -15,7 +15,7 @@ test "moving fill to an ancestor preserves resolved fill and changes provenance"
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_eq(report.changed_facts.length(), 2)
   assert_eq(report.atomic_differences.length(), 1)
   let difference = report.atomic_differences[0]
@@ -36,8 +36,11 @@ test "moving fill to an ancestor preserves resolved fill and changes provenance"
     _ => fail("expected aligned fill resolutions")
   }
   assert_eq(report.events.length(), 1)
-  assert_eq(report.events[0].rendered_outcome.status, "not_computed")
-  assert_true(report.events[0].rendered_outcome.magnitude is None)
+  assert_eq(report.events[0].rendered_outcome.status, "computed")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
 }
 
 ///|
@@ -57,6 +60,7 @@ test "one ancestor changed fact identifies every affected rect" {
   assert_eq(report.atomic_differences.length(), 2)
   for difference in report.atomic_differences {
     assert_eq(difference.changed_fact_ids, [changed.id])
+    assert_eq(difference.computed_relation.status, "different")
     let mut owner_count = 0
     for event in report.events {
       if event.atomic_difference_ids.contains(difference.id) {
@@ -73,11 +77,14 @@ test "one ancestor changed fact identifies every affected rect" {
   subjects.sort()
   assert_eq(subjects, ["a", "b"])
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "computed_fill_value_semantics_deferred" &&
-      diagnostic.source_locations.length() == 2 &&
-      diagnostic.source_locations[0].source_role == "before" &&
-      diagnostic.source_locations[1].source_role == "after"
+    report.events.all(event => {
+      event.rendered_outcome.status == "computed" &&
+      event.rendered_outcome.magnitude.unwrap().changed_pixels > 0
+    }),
+  )
+  assert_true(
+    !report.diagnostics.any(diagnostic => {
+      diagnostic.code == "computed_fill_value_semantics_deferred"
     }),
   )
 }
@@ -90,11 +97,72 @@ test "stylesheet selector participates in inherited fill without a CSS guard" {
     source,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_true(
     !report.diagnostics.any(diagnostic => {
       diagnostic.code == "css_cascade_unsupported"
     }),
+  )
+}
+
+///|
+test "matched stylesheet declarations retain inherited used values and provenance" {
+  let before = "<svg width='16' height='16'><style>g.layer { stroke: black; stroke-width: 2; }</style><g class='layer' id='owner'><line id='edge' x1='1' y1='8' x2='15' y2='8'/></g></svg>"
+  let after = "<svg width='16' height='16'><style>g.layer { stroke: black; stroke-width: 4; }</style><g class='layer' id='owner'><line id='edge' x1='1' y1='8' x2='15' y2='8'/></g></svg>"
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let differences = [
+    for difference in report.atomic_differences if difference.domain ==
+    "geometry.stroke_width" => difference
+  ]
+  assert_eq(differences.length(), 1)
+  assert_eq(differences[0].computed_relation.status, "different")
+  assert_eq(differences[0].parameter_delta_css_px, Some(2.0))
+  let pairs = [
+    for pair in report.source_resolutions if pair.subject_id == "edge" &&
+    pair.property == "stroke-width" => pair
+  ]
+  assert_eq(pairs.length(), 1)
+  match (pairs[0].before, pairs[0].after) {
+    (Some(before_value), Some(after_value)) => {
+      assert_eq(before_value.declaration_owner_id, Some("owner"))
+      assert_eq(after_value.declaration_owner_id, Some("owner"))
+      assert_eq(before_value.declaration.unwrap().origin, "stylesheet_rule")
+      assert_eq(after_value.declaration.unwrap().origin, "stylesheet_rule")
+      assert_eq(before_value.declaration.unwrap().declared_value, "2")
+      assert_eq(after_value.declaration.unwrap().declared_value, "4")
+    }
+    _ => fail("expected stylesheet inheritance resolutions")
+  }
+}
+
+///|
+test "removing an ancestor declaration falls back to the initial value" {
+  let before = inherited_fill_document("fill='red'", "")
+  let after = inherited_fill_document("", "")
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].computed_relation.status, "different")
+  match
+    (report.source_resolutions[0].before, report.source_resolutions[0].after) {
+    (Some(before_value), Some(after_value)) => {
+      assert_eq(before_value.resolution, "inherited")
+      assert_eq(after_value.resolution, "initial")
+      assert_eq(after_value.resolved_value, "black")
+      assert_true(after_value.declaration is None)
+    }
+    _ => fail("expected inherited-to-initial resolutions")
+  }
+  assert_true(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels > 0,
   )
 }
 
@@ -107,7 +175,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.13",
+      "schema_version": "1.14",
       "source_resolutions": [
         {
           "subject_id": "box",
@@ -148,6 +216,13 @@ test "inherited stroke geometry retains declaration ownership" {
     pair.property == "stroke-linecap" => pair
   ]
   assert_eq(pairs.length(), 1)
+  let differences = [
+    for difference in report.atomic_differences if difference.domain ==
+    "geometry.stroke_cap" => difference
+  ]
+  assert_eq(differences.length(), 1)
+  let difference = differences[0]
+  assert_eq(difference.computed_relation.status, "different")
   match (pairs[0].before, pairs[0].after) {
     (Some(before), Some(after)) => {
       assert_eq(before.resolution, "inherited")

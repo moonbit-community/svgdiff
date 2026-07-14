@@ -114,6 +114,7 @@ graph TD
   ISS_096["ISS-096: Resolve authored SVG length units"]
   ISS_097["ISS-097: Implement the SVG CSS cascade"]
   ISS_098["ISS-098: Match supported static CSS selectors"]
+  ISS_099["ISS-099: Complete ordinary inheritance for supported visual properties"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -306,7 +307,9 @@ graph TD
   ISS_095 --> ISS_096
   ISS_096 --> ISS_097
   ISS_097 --> ISS_098
+  ISS_098 --> ISS_099
 ```
+
 ## Warnings
 
 None.

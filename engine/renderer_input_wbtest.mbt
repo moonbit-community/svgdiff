@@ -85,6 +85,54 @@ test "renderer input resolves stylesheet important against inline style" {
 }
 
 ///|
+test "renderer input materializes ordinary inherited stroke geometry" {
+  let inherited = "<svg width='16' height='16'><g stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='1'><path id='edge' d='M1 8 L15 8'/></g></svg>"
+  let local_source = "<svg width='16' height='16'><g><path id='edge' d='M1 8 L15 8' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='1'/></g></svg>"
+  let normalized = normalize_renderer_input(inherited)
+  assert_true(normalized.find("stroke-linecap=\"round\"") is Some(_))
+  assert_true(normalized.find("stroke-linejoin=\"bevel\"") is Some(_))
+  guard @svg.parse_svg_document(normalized) is Some(left_document) else {
+    fail("normalized inherited stroke must parse")
+  }
+  guard @svg.parse_svg_document(normalize_renderer_input(local_source))
+    is Some(right_document) else {
+    fail("normalized local stroke must parse")
+  }
+  let left = @svg.render_svg_document_to_image(left_document, 16, 16)
+  let right = @svg.render_svg_document_to_image(right_document, 16, 16)
+  for index in 0..<left.pixels.length() {
+    let left_pixel = left.pixels[index]
+    let right_pixel = right.pixels[index]
+    assert_true(
+      left_pixel.r == right_pixel.r &&
+      left_pixel.g == right_pixel.g &&
+      left_pixel.b == right_pixel.b &&
+      left_pixel.a == right_pixel.a,
+    )
+  }
+}
+
+///|
+test "renderer inheritance normalizer does not materialize opacity or vector effect" {
+  let source = "<svg><g opacity='0.5' vector-effect='non-scaling-stroke'><rect id='box' width='4' height='4'/></g></svg>"
+  let normalized = normalize_renderer_ordinary_inheritance(source)
+  let box = normalized
+    .view(
+      start_offset=normalized.find("<rect").unwrap(),
+      end_offset=normalized.find("/>").unwrap() + 2,
+    )
+    .to_owned()
+  assert_true(box.find("opacity") is None)
+  assert_true(box.find("vector-effect") is None)
+}
+
+///|
+test "renderer inheritance normalizer leaves CSS-wide keywords guarded" {
+  let source = "<svg><g stroke-linecap='inherit'><line id='edge' x1='0' y1='2' x2='4' y2='2'/></g></svg>"
+  assert_eq(normalize_renderer_ordinary_inheritance(source), source)
+}
+
+///|
 test "renderer input resolves and clamps rounded shape radii" {
   let implicit = "<svg width='10' height='6'><rect width='10' height='6' rx='8'/></svg>"
   let explicit = "<svg width='10' height='6'><rect width='10' height='6' rx='5' ry='3'/></svg>"

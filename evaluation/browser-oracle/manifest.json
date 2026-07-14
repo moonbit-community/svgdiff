@@ -68,6 +68,8 @@
     { "id": "cascade-stylesheet-specificity", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-specificity.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "cascade-stylesheet-specificity-canonical" },
     { "id": "cascade-stylesheet-specificity-canonical", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-specificity-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
     { "id": "cascade-stylesheet-source-order", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-source-order.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "cascade-stylesheet-source-order-canonical" },
-    { "id": "cascade-stylesheet-source-order-canonical", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-source-order-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
+    { "id": "cascade-stylesheet-source-order-canonical", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-source-order-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "inheritance-stylesheet-fill", "source": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "inheritance-stylesheet-fill-canonical" },
+    { "id": "inheritance-stylesheet-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
   ]
 }

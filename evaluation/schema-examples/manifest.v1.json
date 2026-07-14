@@ -255,6 +255,21 @@
       }
     },
     {
+      "id": "inheritance-stylesheet-equivalent",
+      "before": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill.svg",
+      "after": "evaluation/renderer-conformance/fixtures/inheritance-stylesheet-fill-canonical.svg",
+      "output": "schema/examples/inheritance-stylesheet-equivalent.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["paint.fill"],
+        "computed_relations": ["equivalent"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "paint.fill", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

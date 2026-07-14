@@ -685,15 +685,35 @@
       "id": "cascade-stylesheet-source-order-canonical",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 1.0,
+      "changed_pixels": 256,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "inheritance-stylesheet-fill",
+      "max_channel_delta": 204,
+      "premultiplied_rgba8_rmse": 0.4472135955
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "inheritance-stylesheet-fill-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/10",
-  "fixture_source_set_sha256": "cb0c209c45fb4d85c9b17e457b93d2a1d402170c165375d37747de865fb33be0",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/11",
+  "fixture_source_set_sha256": "b48d8ecbc79b592fe38cc7c05f057a9c15507c7379f333f9e95803775ec1557e",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 68,
+    "cases": 70,
     "categories": {
       "alpha": {
         "cases": 3,
@@ -716,15 +736,15 @@
         "exact": 18
       },
       "paint": {
-        "cases": 14,
-        "divergent": 6,
-        "exact": 8
+        "cases": 16,
+        "divergent": 7,
+        "exact": 9
       }
     },
-    "divergent": 39,
-    "exact": 29,
+    "divergent": 40,
+    "exact": 30,
     "exploratory": 2,
     "guarded": 30,
-    "supported": 36
+    "supported": 38
   }
 }

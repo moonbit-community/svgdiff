@@ -54,7 +54,7 @@ test "each event raster magnitude is local to its region union" {
 }
 
 ///|
-test "source-only inheritance uses conservative computed bounds" {
+test "ordinary inheritance uses the rendered pixel mask" {
   let before = "<svg width='16' height='16'><g fill='red'><rect id='box' x='2' y='3' width='5' height='4'/></g></svg>"
   let after = "<svg width='16' height='16'><g fill='blue'><rect id='box' x='4' y='3' width='5' height='4'/></g></svg>"
   let report = @engine.compare(
@@ -65,7 +65,7 @@ test "source-only inheritance uses conservative computed bounds" {
   assert_eq(report.events.length(), 1)
   assert_eq(report.events[0].difference_regions.length(), 1)
   let region = report.events[0].difference_regions[0]
-  assert_eq(region.source, "computed_bounds")
+  assert_eq(region.source, "pixel_mask")
   assert_eq(region.css_x, 2.0)
   assert_eq(region.css_y, 3.0)
   assert_eq(region.css_width, 7.0)

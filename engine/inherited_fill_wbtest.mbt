@@ -70,3 +70,59 @@ test "undeclared fill resolves to the SVG initial value" {
     _ => fail("expected the source hierarchy")
   }
 }
+
+///|
+test "every admitted ordinary inherited property uses the nearest ancestor" {
+  let source = "<svg id='root' fill='red' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
+  match extract_fill_hierarchy(source) {
+    ParsedFillHierarchy(hierarchy) =>
+      for property in inherited_visual_properties() {
+        let resolution = resolved_visual_for_subject(
+          hierarchy, "edge", property,
+        ).unwrap()
+        assert_eq(resolution.resolution, "inherited")
+        assert_eq(
+          resolution.declaration_owner_id,
+          Some(if property == "stroke-width" { "near" } else { "root" }),
+        )
+        assert_eq(
+          resolution.inheritance_depth,
+          if property == "stroke-width" {
+            1
+          } else {
+            2
+          },
+        )
+        assert_true(resolution.declaration is Some(_))
+      }
+    _ => fail("expected the source hierarchy")
+  }
+}
+
+///|
+test "marker resource children are not scene inheritance subjects" {
+  let source = "<svg><defs><marker id='tip'><path id='resource-path' d='M0 0 L1 1'/></marker></defs><g fill='red'><path id='host' d='M0 0 L8 8'/></g></svg>"
+  match extract_fill_hierarchy(source) {
+    ParsedFillHierarchy(hierarchy) =>
+      assert_eq(hierarchy.rect_subject_ids, ["host"])
+    _ => fail("expected the source hierarchy")
+  }
+}
+
+///|
+test "ordinary inheritance keeps non-inherited properties local" {
+  let source = "<svg opacity='0.25' vector-effect='non-scaling-stroke'><g opacity='0.5' vector-effect='non-scaling-stroke'><rect id='box'/></g></svg>"
+  match extract_fill_hierarchy(source) {
+    ParsedFillHierarchy(hierarchy) => {
+      assert_eq(
+        resolved_visual_for_subject(hierarchy, "box", "opacity").unwrap().resolved_value,
+        "1",
+      )
+      assert_eq(
+        resolved_visual_for_subject(hierarchy, "box", "vector-effect").unwrap().resolved_value,
+        "none",
+      )
+    }
+    _ => fail("expected the source hierarchy")
+  }
+}

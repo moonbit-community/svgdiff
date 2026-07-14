@@ -67,12 +67,28 @@ fn inherited_visual_properties() -> Array[String] {
 }
 
 ///|
+fn ordinary_subject_inherited_properties() -> Array[String] {
+  [
+    "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
+    "stroke-dasharray", "stroke-dashoffset",
+  ]
+}
+
+///|
 fn resolved_visual_properties() -> Array[String] {
   [
     "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
     "stroke-dasharray", "stroke-dashoffset", "vector-effect", "opacity", "marker",
     "marker-start", "marker-mid", "marker-end",
   ]
+}
+
+///|
+fn css_wide_keyword(value : String) -> Bool {
+  match value.trim().to_owned().to_lower() {
+    "inherit" | "initial" | "unset" | "revert" | "revert-layer" => true
+    _ => false
+  }
 }
 
 ///|
@@ -119,15 +135,11 @@ fn visual_declarations_from_element(
   }
   let declarations = cascade_visual_declarations(candidates)
   for fact in declarations {
-    if fact.property == "fill" || fact.property == "stroke" {
-      let value = fact.declared_value.to_lower()
-      if value == "currentcolor" ||
-        value == "inherit" ||
-        value == "initial" ||
-        value == "revert" ||
-        value == "revert-layer" ||
-        value == "unset" ||
-        value.find("url(") is Some(_) {
+    let value = fact.declared_value.to_lower()
+    if css_wide_keyword(value) {
+      push_unique(coverage_codes, "css_wide_keyword_unsupported")
+    } else if fact.property == "fill" || fact.property == "stroke" {
+      if value == "currentcolor" || value.find("url(") is Some(_) {
         push_unique(
           coverage_codes,
           "\{fact.property}_value_semantics_unsupported",
@@ -289,11 +301,15 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   let mut svg_count = 0
   let mut group_count = 0
   let mut rect_count = 0
+  let mut marker_depth = 0
   for event in reader.read_events_until_eof() {
     match event.kind {
       Start(element) => {
         let kind = element.name.local_name
-        if fill_hierarchy_kind(kind) {
+        if kind == "marker" {
+          marker_depth += 1
+        }
+        if marker_depth == 0 && fill_hierarchy_kind(kind) {
           let parent_index = stack.last()
           let index = add_fill_source_element(
             input,
@@ -320,7 +336,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
       }
       Empty(element) => {
         let kind = element.name.local_name
-        if fill_hierarchy_kind(kind) {
+        if marker_depth == 0 && fill_hierarchy_kind(kind) {
           ignore(
             add_fill_source_element(
               input,
@@ -345,10 +361,14 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
           }
         }
       }
-      End(name) =>
-        if fill_hierarchy_kind(name.local_name) {
+      End(name) => {
+        if marker_depth == 0 && fill_hierarchy_kind(name.local_name) {
           ignore(stack.pop())
         }
+        if name.local_name == "marker" {
+          marker_depth -= 1
+        }
+      }
       _ => ()
     }
   }
@@ -491,21 +511,49 @@ fn compare_changed_visual_facts(
 }
 
 ///|
-fn source_resolution_diagnostic_ids(
-  diagnostics : Array[Diagnostic],
-) -> Array[String] {
-  [
-    for diagnostic in diagnostics if diagnostic.code !=
-    "inherited_fill_rendered_evidence_deferred" => diagnostic.id
-  ]
+fn source_subject_for_id(
+  subjects : Array[SourceSubject],
+  subject_id : String,
+) -> SourceSubject? {
+  for subject in subjects {
+    if source_subject_id(subject) == subject_id {
+      return Some(subject)
+    }
+  }
+  None
 }
 
 ///|
 fn inherited_fill_report_from_hierarchies(
   before : FillHierarchy,
   after : FillHierarchy,
+  before_svg : String,
+  after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport {
+  let before_subjects = extract_source_subjects_with_profile_or_raise(
+    before_svg, profile,
+  ) catch {
+    _ => []
+  }
+  let after_subjects = extract_source_subjects_with_profile_or_raise(
+    after_svg, profile,
+  ) catch {
+    _ => []
+  }
+  let rendered = match
+    (
+      @svg.parse_svg_document(
+        normalize_renderer_input_with_profile(before_svg, profile),
+      ),
+      @svg.parse_svg_document(
+        normalize_renderer_input_with_profile(after_svg, profile),
+      ),
+    ) {
+    (Some(before_document), Some(after_document)) =>
+      Some(rendered_difference(before_document, after_document, profile))
+    _ => None
+  }
   let changed_facts = compare_changed_visual_facts(before, after)
   let rect_ids : Array[String] = []
   append_unique_subjects(rect_ids, before.rect_subject_ids)
@@ -528,14 +576,16 @@ fn inherited_fill_report_from_hierarchies(
       ]),
     )
   }
-  ignore(
-    add_diagnostic(
-      diagnostics,
-      "inherited_fill_rendered_evidence_deferred",
-      "document",
-      ["rendered_evidence"],
-    ),
-  )
+  if rendered is None {
+    ignore(
+      add_diagnostic(
+        diagnostics,
+        "ordinary_inheritance_renderer_unavailable",
+        "document",
+        ["rendered_evidence"],
+      ),
+    )
+  }
   for subject_id in rect_ids {
     for property in resolved_visual_properties() {
       let before_resolution = resolved_visual_for_subject(
@@ -559,35 +609,70 @@ fn inherited_fill_report_from_hierarchies(
             for fact in changed_facts if fact.property == property &&
             fact.affected_subject_ids.contains(subject_id) => fact.id
           ]
+          let before_subject = source_subject_for_id(
+            before_subjects, subject_id,
+          )
+          let after_subject = source_subject_for_id(after_subjects, subject_id)
           let relation = if !before.coverage_codes.is_empty() ||
             !after.coverage_codes.is_empty() {
             {
               status: "indeterminate",
               reason_code: "inherited_visual_analysis_coverage_incomplete",
               missing_side: None,
-              diagnostic_ids: source_resolution_diagnostic_ids(diagnostics),
-            }
-          } else if before_value.resolved_value == after_value.resolved_value {
-            {
-              status: "equivalent",
-              reason_code: "same_resolved_\{property}",
-              missing_side: None,
-              diagnostic_ids: [],
+              diagnostic_ids: diagnostic_ids(diagnostics),
             }
           } else {
-            let reason = "computed_\{property}_value_semantics_deferred"
-            let diagnostic_id = add_diagnostic(
-              diagnostics,
-              reason,
-              subject_id,
-              ["computed_appearance"],
-            )
-            {
-              status: "indeterminate",
-              reason_code: reason,
-              missing_side: None,
-              diagnostic_ids: [diagnostic_id],
+            match (before_subject, after_subject) {
+              (Some(before_subject), Some(after_subject)) =>
+                generic_relation(
+                  property,
+                  before_subject,
+                  after_subject,
+                  before_value.declaration,
+                  after_value.declaration,
+                )
+              _ => {
+                let diagnostic_id = add_diagnostic(
+                  diagnostics,
+                  "source_subject_alignment_unsupported",
+                  subject_id,
+                  ["computed_appearance", "rendered_evidence"],
+                )
+                {
+                  status: "indeterminate",
+                  reason_code: "source_subject_alignment_unsupported",
+                  missing_side: None,
+                  diagnostic_ids: [diagnostic_id],
+                }
+              }
             }
+          }
+          let parameter_delta = match (before_subject, after_subject) {
+            (Some(before_subject), Some(after_subject)) =>
+              generic_parameter_delta(
+                property,
+                before_subject,
+                after_subject,
+                before_value.declaration,
+                after_value.declaration,
+              )
+            _ => None
+          }
+          let magnitude = match (before_subject, after_subject) {
+            (Some(before_subject), Some(after_subject)) =>
+              generic_initial_magnitude(
+                property, relation, before_subject, after_subject, parameter_delta,
+              )
+            _ => empty_difference_magnitude()
+          }
+          let evidence_layers : Array[String] = ["source_semantics"]
+          if relation.status == "different" {
+            evidence_layers.push("computed_appearance")
+          }
+          match rendered {
+            Some(rendered) if rendered.changed_pixels > 0 =>
+              evidence_layers.push("rendered_evidence")
+            _ => ()
           }
           let difference_id = "diff:entity:\{subject_id}:\{property}"
           differences.push({
@@ -600,21 +685,23 @@ fn inherited_fill_report_from_hierarchies(
             source_fact_before: before_value.declaration,
             source_fact_after: after_value.declaration,
             changed_fact_ids,
-            evidence_layers: ["source_semantics"],
+            evidence_layers,
             computed_relation: relation,
-            parameter_delta_css_px: None,
+            parameter_delta_css_px: parameter_delta,
             presence_magnitude: None,
-            magnitude: empty_difference_magnitude(),
+            magnitude,
             domain_ordering: empty_domain_ordering(),
           })
           events.push({
             id: "event:\{subject_id}:\{property}",
             primary_subject_id: subject_id,
             atomic_difference_ids: [difference_id],
-            rendered_outcome: {
-              status: "not_computed",
-              reason_code: Some("inherited_fill_rendered_evidence_deferred"),
-              magnitude: None,
+            rendered_outcome: match rendered {
+              Some(rendered) => computed_rendered_evidence(rendered)
+              None =>
+                not_computed_rendered_evidence(
+                  "ordinary_inheritance_renderer_unavailable",
+                )
             },
             difference_regions: [],
           })
@@ -632,8 +719,12 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.13",
-    analysis_status: "partial",
+    schema_version: "1.14",
+    analysis_status: if diagnostics.is_empty() {
+      "complete"
+    } else {
+      "partial"
+    },
     coverage_matrix: [],
     renderer_capability_gaps: [],
     profile,
@@ -660,7 +751,11 @@ fn inherited_fill_report(
         before.coverage_codes.contains("css_cascade_unsupported") ||
         after.coverage_codes.contains("css_cascade_unsupported")
       if handles_source_slice {
-        Some(inherited_fill_report_from_hierarchies(before, after, profile))
+        Some(
+          inherited_fill_report_from_hierarchies(
+            before, after, before_svg, after_svg, profile,
+          ),
+        )
       } else {
         None
       }

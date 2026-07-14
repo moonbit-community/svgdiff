@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/10",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/11",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -243,6 +243,13 @@
       "normalizer_id": "svgdiff/style-precedence-normalizer@3",
       "canonical_case_id": "cascade-stylesheet-source-order-canonical",
       "reason": "Chromium renders the later equal-specificity rule identically to the canonical paint, and the production static-selector plus cascade normalizer proves that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "inheritance-stylesheet-fill",
+      "disposition": "normalizer",
+      "normalizer_id": "svgdiff/ordinary-inheritance-normalizer@1",
+      "canonical_case_id": "inheritance-stylesheet-fill-canonical",
+      "reason": "Chromium renders a matched stylesheet fill inherited from a group identically to the canonical leaf-local fill, and the production cascade plus ordinary-inheritance normalizers prove that equivalence before invoking the pinned renderer."
     }
   ]
 }

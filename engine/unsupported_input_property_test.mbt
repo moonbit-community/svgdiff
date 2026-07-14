@@ -144,13 +144,31 @@ test "unsupported CSS paint resource and compositing families never prove equali
     "<rect width='8' height='8' fill='currentColor'/>", "<rect width='8' height='8' fill='inherit'/>",
     "<rect width='8' height='8' fill='initial'/>", "<rect width='8' height='8' fill='unset'/>",
     "<rect width='8' height='8' fill='revert'/>", "<rect width='8' height='8' fill='url(#missing)'/>",
-    "<rect width='8' height='8' style='unknown-paint:red'/>", "<style>rect:hover { fill: red; }</style><rect width='8' height='8'/>",
-    "<g opacity='0.5'><rect width='8' height='8'/></g>", "<svg opacity='0.5'><rect width='8' height='8'/></svg>",
-    "<defs><linearGradient id='other'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#other)'/>",
+    "<g stroke-linecap='inherit'><line x1='0' y1='4' x2='8' y2='4'/></g>", "<rect width='8' height='8' style='unknown-paint:red'/>",
+    "<style>rect:hover { fill: red; }</style><rect width='8' height='8'/>", "<g opacity='0.5'><rect width='8' height='8'/></g>",
+    "<svg opacity='0.5'><rect width='8' height='8'/></svg>", "<defs><linearGradient id='other'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#other)'/>",
   ]
   for content in cases {
     assert_unsupported_never_proves_equality(unsupported_document(content))
   }
+}
+
+///|
+test "CSS-wide keywords in ordinary inheritance have a stable guard" {
+  let source = unsupported_document(
+    "<g stroke-linecap='inherit'><line id='edge' x1='0' y1='4' x2='8' y2='4'/></g>",
+  )
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "css_wide_keyword_unsupported"
+    }),
+  )
 }
 
 ///|

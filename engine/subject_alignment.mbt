@@ -67,6 +67,7 @@ fn subject_from_element(
   source_index : Int,
   hierarchy_signature : String,
   transform_chain : Array[SourceTransformSite],
+  inherited_visual_facts : Array[DeclaredVisualFact],
   inherited_marker_facts : Array[DeclaredVisualFact],
   viewport : ViewportContext,
   profile : ComparisonProfile,
@@ -126,6 +127,12 @@ fn subject_from_element(
   }
   for fact in cascade_visual_declarations(candidates) {
     upsert_declared_fact(facts, fact)
+  }
+  for fact in inherited_visual_facts {
+    if ordinary_subject_inherited_properties().contains(fact.property) &&
+      declared_fact_in_array(facts, fact.property) is None {
+      upsert_declared_fact(facts, fact)
+    }
   }
   let geometry = resolve_basic_shape_geometry_with_context(
     element.name.local_name,
@@ -233,6 +240,21 @@ fn hierarchy_element_signature(
   element : @xml.NamespaceElement,
   stylesheet_match : CssStylesheetMatch,
 ) -> String {
+  let facts = hierarchy_visual_declarations(input, element, stylesheet_match)
+  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
+  let mut signature = element.name.local_name
+  for fact in facts {
+    signature = "\{signature}|\{fact.property}=\{fact.declared_value.to_lower()}"
+  }
+  signature
+}
+
+///|
+fn hierarchy_visual_declarations(
+  input : String,
+  element : @xml.NamespaceElement,
+  stylesheet_match : CssStylesheetMatch,
+) -> Array[DeclaredVisualFact] {
   let candidates : Array[CssCascadeCandidate] = []
   let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
@@ -266,13 +288,19 @@ fn hierarchy_element_signature(
       candidates.push(candidate)
     }
   }
-  let facts = cascade_visual_declarations(candidates)
-  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
-  let mut signature = element.name.local_name
-  for fact in facts {
-    signature = "\{signature}|\{fact.property}=\{fact.declared_value.to_lower()}"
+  cascade_visual_declarations(candidates)
+}
+
+///|
+fn effective_hierarchy_visual_facts(
+  parent : Array[DeclaredVisualFact],
+  local_facts : Array[DeclaredVisualFact],
+) -> Array[DeclaredVisualFact] {
+  let effective = parent.copy()
+  for fact in local_facts {
+    upsert_declared_fact(effective, fact)
   }
-  signature
+  effective
 }
 
 ///|
@@ -298,6 +326,7 @@ fn extract_source_subjects_with_profile_or_raise(
   let hierarchy : Array[String] = []
   let transforms : Array[SourceTransformSite] = []
   let viewport_contexts : Array[ViewportContext] = []
+  let inherited_visuals : Array[Array[DeclaredVisualFact]] = []
   let inherited_markers : Array[Array[DeclaredVisualFact]] = []
   let mut node_index = 0
   let mut marker_depth = 0
@@ -320,8 +349,17 @@ fn extract_source_subjects_with_profile_or_raise(
             css_document,
             event.span.start.offset,
           )
+          let local_visuals = hierarchy_visual_declarations(
+            input, element, stylesheet_match,
+          )
           hierarchy.push(
             hierarchy_element_signature(input, element, stylesheet_match),
+          )
+          inherited_visuals.push(
+            effective_hierarchy_visual_facts(
+              inherited_visuals.last().unwrap_or([]),
+              local_visuals,
+            ),
           )
           inherited_markers.push(
             marker_inherited_facts_for_element(
@@ -350,6 +388,7 @@ fn extract_source_subjects_with_profile_or_raise(
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transforms.copy(),
+              inherited_visuals.last().unwrap_or([]),
               inherited_markers.last().unwrap_or([]),
               viewport_contexts
               .last()
@@ -385,6 +424,7 @@ fn extract_source_subjects_with_profile_or_raise(
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transform_chain,
+              inherited_visuals.last().unwrap_or([]),
               inherited_markers.last().unwrap_or([]),
               viewport_contexts
               .last()
@@ -404,6 +444,7 @@ fn extract_source_subjects_with_profile_or_raise(
         }
         if name.local_name == "svg" || name.local_name == "g" {
           ignore(hierarchy.pop())
+          ignore(inherited_visuals.pop())
           ignore(inherited_markers.pop())
         }
         if name.local_name == "svg" {

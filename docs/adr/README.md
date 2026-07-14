@@ -58,6 +58,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0052](0052-resolve-svg-lengths-with-explicit-context.md) | Accepted, implemented for deterministic absolute and viewport-relative units | Preserve authored length spelling while resolving one explicit used-value context. |
 | [0053](0053-separate-cascade-selection-from-selector-matching.md) | Accepted, implemented for author declaration ordering | Select cascade winners independently from stylesheet selector applicability. |
 | [0054](0054-bound-static-selector-matching-to-xml-state.md) | Accepted, implemented for the deterministic static profile | Match a bounded selector grammar only from indexed XML ancestry and siblings. |
+| [0055](0055-resolve-inheritance-after-cascade-without-reowning-declarations.md) | Accepted, implemented for supported visual properties | Resolve ordinary inheritance after cascade while retaining ancestor ownership and leaf consequences. |
 
 ## CLI and distribution decisions
 
