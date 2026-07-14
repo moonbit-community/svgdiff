@@ -80,7 +80,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Add property tests that unsupported inputs can never produce complete equality.
 - [x] **P0** Add mutation tests for every currently supported property and subject kind.
 - [ ] **P0** Resolve [ISS-002](issues/ISS-002.md), upgrading the renderer or privately normalizing inline-style precedence.
-- [ ] **P0** Build a browser-based rendering oracle for supported deterministic fixtures.
+- [x] **P0** Build a browser-based rendering oracle for supported deterministic fixtures.
 - [ ] **P0** Compare the pinned renderer against the oracle for geometry, paint, alpha, clipping, and compositing cases as coverage expands.
 - [ ] **P0** Convert every accepted renderer divergence into either an adapter fix, a narrower completeness claim, or a stable Diagnostic.
 - [ ] **P1** Version the renderer conformance profile separately from the JSON Schema.

@@ -173,4 +173,7 @@ Run the MoonBit suite and CLI integration test:
 moon test --target native
 sh scripts/test-cli.sh
 sh scripts/test-install.sh
+sh scripts/test-browser-oracle.sh
 ```
+
+The browser oracle validation additionally requires Node.js/npm (`npx`) and launches pinned headless Chromium outside the production engine.

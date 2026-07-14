@@ -24,6 +24,7 @@ Dependency-specific XML, scene, image, and raster types must not appear in the p
 | Higher-fidelity supersampled raster candidate | `mizchi/canvas@0.9.0` | Evaluated successfully for the sampling question, but not used by the production engine. |
 | Structural XML alternative | `moonbit-community/XMLParser@0.2.5` | Rejected as the Source Semantics correctness boundary. |
 | External reference renderer | `resvg` | Optional conformance oracle only; not a production dependency. |
+| Browser rendering oracle | Chromium through pinned `@playwright/cli@0.1.17` | Implemented for offline deterministic fixture capture; not a production dependency. |
 
 ## Accepted evidence
 
@@ -47,6 +48,10 @@ The evaluated `mizchi/canvas@0.9.0` path was blocked under the tested toolchain 
 
 Paths, transforms, general CSS, complete gradients, filters, masks, clipping, blending, text layout, nested viewports, and external resources are not accepted as complete merely because the dependency exposes related types or rendering functions. Each capability needs project-level conformance cases and explicit coverage behavior before the v1 scope expands.
 
+### Browser oracle
+
+The [browser rendering oracle](../evaluation/browser-oracle/README.md) captures the complete-analysis corpus fixtures twice under Chromium, DPR `1`, explicit viewports, an offline context, and a transparent background. It records browser identity plus source and PNG hashes and validates reproducible RGB/RGBA output. This establishes an independent raster source; renderer-versus-browser metrics and acceptance thresholds remain the following roadmap item.
+
 ## Escalation rule
 
 For each missing capability:
@@ -65,4 +70,5 @@ For each missing capability:
 - [XMLParser 0.2.5 evaluation](research/xmlparser-evaluation.md)
 - [Historical Influence Provenance prototype verdict](research/influence-provenance-prototype.md)
 - [Current v1 support contract](v1-scope.md)
+- [Browser rendering oracle](../evaluation/browser-oracle/README.md)
 - [Dependency, security, and upstream status](dependency-security.md)

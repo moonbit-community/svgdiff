@@ -59,6 +59,7 @@ graph TD
   ISS_040["ISS-040: Enforce analyzer coverage proof obligations"]
   ISS_041["ISS-041: Property-test unsupported-input equality safety"]
   ISS_042["ISS-042: Cover every supported property and subject kind with mutations"]
+  ISS_043["ISS-043: Build the deterministic browser rendering oracle"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -94,6 +95,7 @@ graph TD
   ISS_039 --> ISS_040
   ISS_040 --> ISS_041
   ISS_041 --> ISS_042
+  ISS_042 --> ISS_043
 ```
 
 ## Warnings

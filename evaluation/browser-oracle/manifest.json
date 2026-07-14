@@ -1,0 +1,17 @@
+{
+  "schema_version": "svgdiff-browser-oracle-input/1",
+  "fixtures": [
+    { "id": "equivalent-color-before", "source": "evaluation/corpus/cases/equivalent-color-spelling/before.svg", "width": 16, "height": 16 },
+    { "id": "equivalent-color-after", "source": "evaluation/corpus/cases/equivalent-color-spelling/after.svg", "width": 16, "height": 16 },
+    { "id": "subtle-geometry-before", "source": "evaluation/corpus/cases/subtle-geometry-shift/before.svg", "width": 16, "height": 16 },
+    { "id": "subtle-geometry-after", "source": "evaluation/corpus/cases/subtle-geometry-shift/after.svg", "width": 16, "height": 16 },
+    { "id": "salient-fill-before", "source": "evaluation/corpus/cases/salient-fill-change/before.svg", "width": 16, "height": 16 },
+    { "id": "salient-fill-after", "source": "evaluation/corpus/cases/salient-fill-change/after.svg", "width": 16, "height": 16 },
+    { "id": "structural-insertion-before", "source": "evaluation/corpus/cases/structural-rect-insertion/before.svg", "width": 16, "height": 16 },
+    { "id": "structural-insertion-after", "source": "evaluation/corpus/cases/structural-rect-insertion/after.svg", "width": 16, "height": 16 },
+    { "id": "gradient-stop-before", "source": "evaluation/corpus/cases/resource-gradient-stop-change/before.svg", "width": 16, "height": 16 },
+    { "id": "gradient-stop-after", "source": "evaluation/corpus/cases/resource-gradient-stop-change/after.svg", "width": 16, "height": 16 },
+    { "id": "zero-contribution-before", "source": "evaluation/corpus/cases/zero-contribution-insertion/before.svg", "width": 16, "height": 16 },
+    { "id": "zero-contribution-after", "source": "evaluation/corpus/cases/zero-contribution-insertion/after.svg", "width": 16, "height": 16 }
+  ]
+}

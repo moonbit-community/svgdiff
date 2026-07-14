@@ -4,5 +4,6 @@ target/
 target
 .mooncakes/
 .moonagent/
+.playwright-cli/
 __pycache__/
 *.py[cod]
