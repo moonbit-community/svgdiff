@@ -2,6 +2,24 @@
 
 `svgdiff` compares two deterministic static SVG sources and emits a layered, machine-readable visual difference report. It distinguishes authored source changes, computed visual relations, canonical raster response, spatial Difference Regions, and conservative Cause Envelopes. The report is designed for agents that cannot inspect images directly.
 
+## Install locally
+
+With MoonBit installed, build and install the native release executable into the default user bin directory:
+
+```sh
+sh scripts/install.sh
+export PATH="$HOME/.local/bin:$PATH"
+svgdiff before.svg after.svg
+```
+
+The installer prints whether its destination is already on `PATH`. Choose another directory, including an existing user-writable PATH directory, with:
+
+```sh
+sh scripts/install.sh --bindir "$HOME/bin"
+```
+
+`SVGDIFF_INSTALL_DIR` provides the same destination override. This source installation builds for the current operating system and architecture. Published cross-platform binaries and package-manager installation remain roadmap work.
+
 ## Command line
 
 Run the native CLI from the repository root:
@@ -141,4 +159,5 @@ Run the MoonBit suite and CLI integration test:
 ```sh
 moon test --target native
 sh scripts/test-cli.sh
+sh scripts/test-install.sh
 ```

@@ -50,6 +50,7 @@ graph TD
   ISS_031["ISS-031: Measure core report and agent evaluation metrics"]
   ISS_032["ISS-032: Establish reproducible benchmark thresholds"]
   ISS_033["ISS-033: Attribute benchmark failures by pipeline layer"]
+  ISS_034["ISS-034: Add the local PATH installation workflow"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -76,6 +77,7 @@ graph TD
   ISS_030 --> ISS_031
   ISS_031 --> ISS_032
   ISS_032 --> ISS_033
+  ISS_033 --> ISS_034
 ```
 
 ## Warnings

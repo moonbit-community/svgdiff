@@ -62,7 +62,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ## Phase 1: Installable CLI and stable distribution
 
-- [ ] **P0** Provide an installation workflow that makes `svgdiff before.svg after.svg` available on `PATH`.
+- [x] **P0** Provide an installation workflow that makes `svgdiff before.svg after.svg` available on `PATH`.
 - [ ] **P0** Publish release-mode native binaries for supported operating systems and architectures.
 - [ ] **P0** Add `--help` and `--version` output with schema, engine, renderer, and policy versions.
 - [ ] **P0** Document stdin/stdout behavior and decide whether `-` denotes an SVG stream.
