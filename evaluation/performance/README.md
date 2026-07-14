@@ -43,6 +43,8 @@ The authoritative machine-readable descriptions live in [`suite.v1.json`](suite.
 
 The measurements overlap by design. For example, `parse_admission` includes parsing needed by production admission, while alignment setup also parses subjects outside its timer. Likewise, the completed report used by provenance and serialization already passed through earlier stages. Do not add the six means or medians and label the result end-to-end latency.
 
+`region_extraction` measures connected-component extraction once. It does not include the later per-event region attachment and local rendered-magnitude calculation in `finish_report`; use end-to-end scaling to detect regressions in that report-assembly work.
+
 ## Representative end-to-end budgets
 
 Run the budget gate with:
@@ -64,6 +66,20 @@ Each workload runs three isolated samples. The gate uses median wall time to red
 Run `sh scripts/test-performance-budgets.sh` for the positive gate plus synthetic independent time-failure, memory-failure, and malformed-sample controls. The JSON artifact records raw samples, aggregation, each metric decision, operating system, architecture, Python version, and product version.
 
 These values are deliberately generous portability and regression ceilings for the named workloads. They are not optimization targets, latency guarantees for arbitrary SVG, hard per-request enforcement, or evidence that hostile inputs are safe. Change a ceiling only with a recorded workload or environment reason and reviewed measurement evidence.
+
+## Measured optimization record
+
+ISS-083 identified per-event local rendered-magnitude calculation as the scaling hot path for the grid workloads. Each event commonly owns one pixel region, but the earlier implementation scanned the complete viewport once per event. The optimized path scans only that region's rectangular bounds when exactly one region is attached. It retains the full-image union scan for zero or multiple regions and retains the same changed-pixel test and error formulas in all cases.
+
+The following native release results were collected on 2026-07-14 on the same Darwin arm64 host and toolchain. Both the committed `b83dd7a` baseline and optimized tree ran the budget harness three times, with three isolated samples per workload per run. Each table value is the mean of the three run medians.
+
+| Workload | Baseline | Optimized | Change |
+| --- | ---: | ---: | ---: |
+| Small | 6.259 ms | 6.245 ms | within noise |
+| Medium | 35.261 ms | 27.722 ms | 21.4% lower |
+| Large | 276.076 ms | 148.545 ms | 46.2% lower |
+
+The optimization does not change a budget, matching policy, report order, or metric definition. The single-region ring regression keeps an equal pixel inside the rectangular bounds to prove the restricted scan still excludes unchanged pixels; the deterministic report and canonical example gates protect serialized output.
 
 ## Interpretation boundaries
 

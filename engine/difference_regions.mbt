@@ -230,17 +230,43 @@ fn rendered_magnitude_for_regions(
   let mut changed_pixels = 0
   let mut squared_error = 0.0
   let mut linear_squared_error = 0.0
-  for index in 0..<before.pixels.length() {
-    let x = index % before.width
-    let y = index / before.width
-    if !pixel_in_regions(x, y, regions) || !pixels_differ(before, after, index) {
-      continue
+  // The full-image membership test accepts exactly this rectangle when there
+  // is one region, so restricting iteration preserves the selected pixels.
+  let single_region = match regions {
+    [region] => Some(region)
+    _ => None
+  }
+  let start_x = match single_region {
+    Some(region) => region.pixel_x.max(0)
+    None => 0
+  }
+  let start_y = match single_region {
+    Some(region) => region.pixel_y.max(0)
+    None => 0
+  }
+  let end_x = match single_region {
+    Some(region) => (region.pixel_x + region.pixel_width).min(before.width)
+    None => before.width
+  }
+  let end_y = match single_region {
+    Some(region) => (region.pixel_y + region.pixel_height).min(before.height)
+    None => before.height
+  }
+  for y in start_y..<end_y {
+    for x in start_x..<end_x {
+      let index = y * before.width + x
+      if (single_region is None && !pixel_in_regions(x, y, regions)) ||
+        !pixels_differ(before, after, index) {
+        continue
+      }
+      changed_pixels += 1
+      let left = before.pixels[index]
+      let right = after.pixels[index]
+      squared_error += raw_rgba8_squared_error(left, right)
+      linear_squared_error += linear_premultiplied_rgba_squared_error(
+        left, right,
+      )
     }
-    changed_pixels += 1
-    let left = before.pixels[index]
-    let right = after.pixels[index]
-    squared_error += raw_rgba8_squared_error(left, right)
-    linear_squared_error += linear_premultiplied_rgba_squared_error(left, right)
   }
   let total_pixels = before.pixels.length()
   {

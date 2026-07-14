@@ -99,6 +99,7 @@ graph TD
   ISS_080["ISS-080: Reject cyclic and explosive local reference graphs"]
   ISS_081["ISS-081: Benchmark production pipeline stages independently"]
   ISS_082["ISS-082: Set representative end-to-end performance budgets"]
+  ISS_083["ISS-083: Optimize a measured production hot path"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -266,6 +267,9 @@ graph TD
   ISS_079 --> ISS_082
   ISS_080 --> ISS_082
   ISS_081 --> ISS_082
+  ISS_069 --> ISS_083
+  ISS_081 --> ISS_083
+  ISS_082 --> ISS_083
 ```
 
 ## Warnings

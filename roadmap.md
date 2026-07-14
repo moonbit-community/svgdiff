@@ -244,7 +244,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **P0** Keep generated HTML sandboxed and safe for hostile SVG source.
 - [x] **P1** Benchmark parse, alignment, rendering, region extraction, provenance, and serialization separately.
 - [x] **P1** Establish performance and memory budgets for representative small, medium, and large SVGs.
-- [ ] **P1** Optimize only measured hot paths while preserving deterministic output.
+- [x] **P1** Optimize only measured hot paths while preserving deterministic output.
 - [ ] **P1** Add cancellation and time-budget handling for embedding agents.
 - [ ] **P1** Test deterministic output across supported operating systems and architectures.
 - [x] **P1** Add CI for formatting, warning checks, interfaces, tests, CLI integration, schema validation, fuzz smoke tests, and benchmark sanity.
