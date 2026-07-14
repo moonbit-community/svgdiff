@@ -159,7 +159,7 @@ The complementary [mutation suite](evaluation/mutations/README.md) generates det
 
 The [adversarial suite](evaluation/adversarial/README.md) checks false-complete, false-equality, source-order alignment, attribution-leakage, and magnitude-ordering counterexamples through the production CLI. Run `sh scripts/test-adversarial.sh` to execute each safety invariant twice and verify deterministic results.
 
-The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, and unknown-ordering-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch before semantic interpretation.
+The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, and unknown-ordering-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch and validation against every entry in the [released Schema registry](schema/registry.v1.json) before semantic interpretation.
 
 The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, and partial coverage. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
 

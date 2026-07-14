@@ -5,10 +5,17 @@ import copy
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from evaluation.schema_validation import audit_schema, schema_accepts
+
+
+REGISTRY_PATH = ROOT / "schema/registry.v1.json"
 REQUIRED_TOP_LEVEL = {
     "schema_version",
     "analysis_status",
@@ -144,6 +151,60 @@ def classify(report: dict, policy: dict) -> tuple[str, str]:
     return "accepted", "accepted_current"
 
 
+def load_released_schemas(
+    policy: dict, case_ids: set[str]
+) -> tuple[dict, dict[str, dict]]:
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    if registry.get("schema_version") != "svgdiff-schema-registry/1":
+        raise ValueError("unsupported released-schema registry")
+    entries = registry.get("released_schemas")
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("released-schema registry is empty")
+    versions = [entry.get("report_schema_version") for entry in entries]
+    if len(versions) != len(set(versions)):
+        raise ValueError("released report Schema versions must be unique")
+    if set(versions) != set(policy["accepted_schema_versions"]):
+        raise ValueError(
+            "consumer accepted Schema versions and released registry differ"
+        )
+
+    schemas = {}
+    for entry in entries:
+        version = entry["report_schema_version"]
+        schema_path = checked_source(entry["schema"])
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        audit_schema(schema)
+        if schema.get("properties", {}).get("schema_version", {}).get("const") != version:
+            raise ValueError(f"Schema file does not declare registry version {version}")
+        if not set(entry["accepted_ordering_policy_ids"]) <= set(
+            policy["accepted_ordering_policy_ids"]
+        ):
+            raise ValueError(f"Schema {version} registers an unaccepted ordering policy")
+        registered_cases = entry.get("compatibility_case_ids")
+        if not isinstance(registered_cases, list) or not registered_cases:
+            raise ValueError(f"Schema {version} has no compatibility cases")
+        if not set(registered_cases) <= case_ids:
+            raise ValueError(f"Schema {version} references an unknown compatibility case")
+        example_manifest = json.loads(
+            checked_source(entry["canonical_examples"]).read_text(encoding="utf-8")
+        )
+        examples = example_manifest.get("cases")
+        if not isinstance(examples, list) or not examples:
+            raise ValueError(f"Schema {version} has no canonical examples")
+        for example in examples:
+            report = json.loads(
+                checked_source(example["output"]).read_text(encoding="utf-8")
+            )
+            if report.get("schema_version") != version or not schema_accepts(
+                report, schema
+            ):
+                raise ValueError(
+                    f"canonical example {example['id']} is invalid for Schema {version}"
+                )
+        schemas[version] = schema
+    return registry, schemas
+
+
 def main() -> None:
     args = parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
@@ -158,6 +219,7 @@ def main() -> None:
     ids = [case.get("id") for case in cases]
     if len(ids) != len(set(ids)):
         raise ValueError("compatibility case IDs must be unique")
+    registry, schemas = load_released_schemas(policy, set(ids))
     base_report = generate_base_report(args.cli, manifest["base_report"])
 
     results = []
@@ -175,12 +237,27 @@ def main() -> None:
                 f"expected={(case['expected_decision'], case['expected_reason'])}, "
                 f"actual={(decision, reason)}"
             )
+        declared_version = report.get("schema_version")
+        if declared_version in schemas:
+            schema_valid = schema_accepts(report, schemas[declared_version])
+        else:
+            schema_valid = any(
+                schema_accepts(report, schema) for schema in schemas.values()
+            )
+        schema_validation = "valid" if schema_valid else "invalid"
+        if schema_validation != case["expected_schema_validation"]:
+            raise ValueError(
+                f"Schema validation mismatch for {case['id']}: "
+                f"expected={case['expected_schema_validation']}, "
+                f"actual={schema_validation}"
+            )
         encoded = json.dumps(report, sort_keys=True, separators=(",", ":")).encode()
         results.append(
             {
                 "id": case["id"],
                 "decision": decision,
                 "reason": reason,
+                "schema_validation": schema_validation,
                 "report_sha256": hashlib.sha256(encoded).hexdigest(),
             }
         )
@@ -189,6 +266,7 @@ def main() -> None:
         "schema_version": "svgdiff-compatibility-results/1",
         "corpus_version": manifest["schema_version"],
         "consumer_policy_id": policy["policy_id"],
+        "schema_registry_version": registry["schema_version"],
         "cases": results,
     }
     args.output.write_text(

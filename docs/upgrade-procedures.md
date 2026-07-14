@@ -137,10 +137,11 @@ Schema `1.0` is a versioned consumer contract. A change to required fields, fiel
 3. If interpretation can change or parsing can fail, allocate a new `schema_version`; do not mutate the meaning of `1.0`.
 4. Update public MoonBit types and serialization first, then regenerate `.mbti` with `moon info`.
 5. Update `schema/svgdiff-report.schema.json` and its `$id`, title, constants, required fields, definitions, and enums.
-6. Add validation fixtures for every supported schema version and an explicit migration or rejection test.
-7. Update the [compatibility corpus](../evaluation/compatibility/README.md) with current, legacy, additive, and unknown-version decisions.
-8. Update README examples, the core model, status contract, agent guide, and CLI version output when available.
-9. Verify that the HTML report consumes the new shape without becoming a second semantic implementation.
+6. Add the new version to the [released Schema registry](../schema/registry.v1.json) with its Schema file, ordering policies, canonical examples, and compatibility cases.
+7. Add validation fixtures for every supported schema version and an explicit migration or rejection test.
+8. Update the [compatibility corpus](../evaluation/compatibility/README.md) with current, legacy, additive, and unknown-version consumer and Schema-validation decisions.
+9. Update README examples, the core model, status contract, agent guide, and CLI version output when available.
+10. Verify that the HTML report consumes the new shape without becoming a second semantic implementation.
 
 Use the allocation rules in the [compatibility and versioning contract](versioning.md). Any ambiguous consumer-visible correction receives a new schema version rather than silently changing an existing identity.
 

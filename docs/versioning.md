@@ -44,7 +44,7 @@ Adding a function is compatible. Removing or renaming a public declaration, chan
 
 The optional fields historically added while schema `1.0` was being established remain part of `1.0`; this rule applies to changes after this contract was accepted. Consumers must reject unknown schema identities before semantic interpretation unless an explicit compatibility policy and migration test accepts them. “Additive” describes migration risk, not permission to silently retain an old producer identity.
 
-Every released schema identity keeps a checked-in Schema, compatibility fixtures, and an explicit accept, migrate, or reject decision. Module and schema versions move independently: a new library helper need not change the report schema, while a schema change requires the appropriate module release but does not copy the module version number.
+Every released schema identity has one entry in the [released Schema registry](../schema/registry.v1.json), a checked-in Schema, canonical examples, compatibility fixtures, and an explicit accept, migrate, or reject decision. Module and schema versions move independently: a new library helper need not change the report schema, while a schema change requires the appropriate module release but does not copy the module version number.
 
 ## Diagnostic compatibility
 

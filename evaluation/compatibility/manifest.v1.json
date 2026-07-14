@@ -20,7 +20,8 @@
       "id": "current-schema-and-policy",
       "mutations": [],
       "expected_decision": "accepted",
-      "expected_reason": "accepted_current"
+      "expected_reason": "accepted_current",
+      "expected_schema_validation": "valid"
     },
     {
       "id": "legacy-optional-fields-absent",
@@ -30,7 +31,8 @@
         { "op": "remove", "path": ["renderer_capability_gaps"] }
       ],
       "expected_decision": "accepted",
-      "expected_reason": "accepted_legacy_optional_fields"
+      "expected_reason": "accepted_legacy_optional_fields",
+      "expected_schema_validation": "valid"
     },
     {
       "id": "unknown-additive-top-level-field",
@@ -42,7 +44,8 @@
         }
       ],
       "expected_decision": "accepted",
-      "expected_reason": "accepted_additive_fields"
+      "expected_reason": "accepted_additive_fields",
+      "expected_schema_validation": "valid"
     },
     {
       "id": "unknown-schema-version",
@@ -50,7 +53,8 @@
         { "op": "set", "path": ["schema_version"], "value": "2.0" }
       ],
       "expected_decision": "rejected",
-      "expected_reason": "unknown_schema_version"
+      "expected_reason": "unknown_schema_version",
+      "expected_schema_validation": "invalid"
     },
     {
       "id": "unknown-ordering-policy",
@@ -62,7 +66,8 @@
         }
       ],
       "expected_decision": "rejected",
-      "expected_reason": "unknown_ordering_policy"
+      "expected_reason": "unknown_ordering_policy",
+      "expected_schema_validation": "invalid"
     }
   ]
 }

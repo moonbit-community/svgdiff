@@ -24,4 +24,4 @@ python3 evaluation/schema-examples/validate.py \
   --update
 ```
 
-The project validator is not advertised as a general JSON Schema implementation. It audits the checked-in Schema and fails if a future Schema uses an unsupported assertion keyword, so new vocabulary cannot silently bypass example validation.
+The shared [project validator](../../evaluation/schema_validation.py) is not advertised as a general JSON Schema implementation. It audits the checked-in Schema and fails if a future Schema uses an unsupported assertion keyword, so new vocabulary cannot silently bypass example or compatibility validation.

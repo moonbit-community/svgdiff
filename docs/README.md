@@ -26,6 +26,7 @@ This directory separates the current product contract from future plans and hist
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
 | Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
+| Which Structured Report Schema versions are released? | [`schema/registry.v1.json`](../schema/registry.v1.json) |
 | Which canonical reports demonstrate core agent interpretation cases? | [`schema/examples/README.md`](../schema/examples/README.md) |
 | How are same-domain differences ordered? | [`domain-ordering.md`](domain-ordering.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |

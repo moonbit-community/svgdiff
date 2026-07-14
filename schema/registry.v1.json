@@ -1,0 +1,17 @@
+{
+  "schema_version": "svgdiff-schema-registry/1",
+  "released_schemas": [
+    {
+      "report_schema_version": "1.0",
+      "status": "current",
+      "schema": "schema/svgdiff-report.schema.json",
+      "accepted_ordering_policy_ids": ["v1_domain_lexicographic"],
+      "canonical_examples": "evaluation/schema-examples/manifest.v1.json",
+      "compatibility_case_ids": [
+        "current-schema-and-policy",
+        "legacy-optional-fields-absent",
+        "unknown-additive-top-level-field"
+      ]
+    }
+  ]
+}
