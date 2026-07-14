@@ -55,6 +55,7 @@ fn difference_magnitude(
     None => None
   }
   let geometry = difference.domain.find("geometry.") == Some(0)
+  let path_geometry = difference.domain.find("geometry.path.") == Some(0)
   let viewport_diagonal = (report.profile.viewport_width.to_double() *
   report.profile.viewport_width.to_double() +
   report.profile.viewport_height.to_double() *
@@ -64,13 +65,20 @@ fn difference_magnitude(
     parameter_abs_user_units: parameter_abs,
     parameter_signed_user_units: parameter_delta,
     symmetric_relative,
-    geometry_displacement_css_px: if geometry {
+    geometry_displacement_css_px: if path_geometry {
+      difference.magnitude.geometry_displacement_css_px
+    } else if geometry {
       parameter_abs
     } else {
       None
     },
     geometry_viewport_fraction: if geometry {
-      match parameter_abs {
+      let displacement = if path_geometry {
+        difference.magnitude.geometry_displacement_css_px
+      } else {
+        parameter_abs
+      }
+      match displacement {
         Some(value) => Some(value / viewport_diagonal)
         None => None
       }

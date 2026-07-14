@@ -69,13 +69,13 @@
     },
     {
       "id": "unsupported-path-change",
-      "title": "Unsupported path geometry change",
+      "title": "Guarded path geometry change",
       "categories": ["unsupported"],
       "before": "cases/unsupported-path-change/before.svg",
       "after": "cases/unsupported-path-change/after.svg",
       "viewport": { "width": 16, "height": 16 },
       "expected_analysis_status": "partial",
-      "minimum_atomic_differences": 0,
+      "minimum_atomic_differences": 2,
       "required_diagnostics": ["unsupported_visual_subject"]
     }
   ]

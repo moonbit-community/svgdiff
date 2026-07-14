@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.3.5` and schema `1.4` contract
+Status: current module `0.3.6` and schema `1.4` contract
 
 Last verified: 2026-07-14
 
@@ -21,13 +21,25 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | Difference Regions | Whole report | 65,536 | Connected pixel regions and event-attached computed or pixel regions |
 | Report bytes | Each built-in JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
 
-Path-data units deliberately form a conservative lexical work budget, not a segment count or a geometry metric. Complete path parsing and segment-level evidence remain separate roadmap work. Reference counting bounds reference-bearing source size; the separate [local-reference safety contract](reference-safety.md) rejects cycles and bounds transitive `<use>` expansion.
+Path-data units deliberately form a conservative lexical work budget, not a segment count or a geometry metric. Exact normalized segment comparison occurs only after this admission bound succeeds. Reference counting bounds reference-bearing source size; the separate [local-reference safety contract](reference-safety.md) rejects cycles and bounds transitive `<use>` expansion.
+
+Guarded path boundary observations use a separate best-effort work budget:
+
+| Dimension | Scope | Inclusive maximum |
+| --- | --- | ---: |
+| Aligned path comparisons | Whole report | 64 |
+| Isolated raster pixels | Each before or after path image | 1,048,576 |
+| Isolated raster work pixels | Whole report, counting both sides | 4,194,304 |
+
+This budget controls only the optional isolated alpha-boundary maximum-distance observation. Exhaustion leaves `geometry_displacement_css_px` null for later path differences but does not truncate normalized path command, parameter, or topology differences. Both empty isolated boundaries produce measured zero; exactly one empty boundary makes the distance unavailable. Path coverage is already partial under `unsupported_visual_subject`, so exhausting this observation budget is not a failed comparison and does not create a resource-limit Diagnostic.
+
+Normalized segment sequence alignment uses at most 65,536 dynamic-programming cells. Larger before/after segment products use deterministic positional alignment instead. That fallback still enumerates every compared, inserted, or deleted position and cannot turn a changed segment inventory into equality, but it may conservatively report more parameter or topology differences than an unbounded minimum-edit alignment would.
 
 ## Failure semantics
 
 The engine checks raster dimensions before rendering, input bytes before parsing, XML structure and local-reference expansion while consuming bounded event streams, regions while extracting and attaching them, and report bytes at the serialization boundary. The exact inclusive boundary is accepted; the first unit beyond it is rejected.
 
-An exceeded ordinary budget, including the materialized reference-graph edge budget, returns a small schema-valid report with:
+An exceeded ordinary budget in the production table, including the materialized reference-graph edge budget, returns a small schema-valid report with:
 
 - `analysis_status = "failed"`;
 - one or more `resource_limit_exceeded` Diagnostics;

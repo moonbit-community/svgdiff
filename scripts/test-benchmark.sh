@@ -15,7 +15,7 @@ jq -e '
 jq -e '
   .classification_version == "svgdiff-failure-classification/1" and
   .gate_passed == true and
-  .summary.diagnostic_observations_by_domain.feature_coverage == 2 and
+  .summary.diagnostic_observations_by_domain.feature_coverage == 1 and
   .summary.diagnostic_observations_by_domain.renderer_conformance == 2 and
   .summary.threshold_failures_by_domain.report_model == 0 and
   .summary.threshold_failures_by_domain.agent_interpretation == 0 and

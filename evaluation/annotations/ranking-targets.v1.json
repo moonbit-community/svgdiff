@@ -43,10 +43,12 @@
     },
     {
       "case_id": "unsupported-path-change",
-      "evaluation_status": "not_applicable",
-      "reason": "The current partial report has no path Atomic Difference or Visual Event to rank.",
-      "accepted_top_event_ids": [],
-      "accepted_top_atomic_difference_id_sets": []
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:alignment:0"],
+      "accepted_top_atomic_difference_id_sets": [[
+        "diff:alignment:0:d:segment:0:parameter:y",
+        "diff:alignment:0:d:segment:1:parameter:y"
+      ]]
     }
   ]
 }

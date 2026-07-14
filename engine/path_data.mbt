@@ -18,6 +18,13 @@ priv struct PathSegmentEvidence {
 }
 
 ///|
+priv struct NormalizedPathParameter {
+  name : String
+  value : String
+  numeric_value : Double?
+}
+
+///|
 priv enum PathDataParse {
   Valid(Array[PathSegmentEvidence])
   Invalid
@@ -555,6 +562,111 @@ fn normalized_path_segment_signature(segment : NormalizedPathSegment) -> String 
       "A \{rx} \{ry} \{rotation} \{large} \{sweep} \{x} \{y}"
     ClosePath => "Z"
   }
+}
+
+///|
+fn normalized_path_segment_kind(segment : NormalizedPathSegment) -> String {
+  match segment {
+    MoveTo(_, _) => "move"
+    LineTo(_, _) => "line"
+    CubicTo(_, _, _, _, _, _) => "cubic"
+    QuadraticTo(_, _, _, _) => "quadratic"
+    ArcTo(_, _, _, _, _, _, _) => "arc"
+    ClosePath => "close"
+  }
+}
+
+///|
+fn numeric_path_parameter(
+  name : String,
+  value : Double,
+) -> NormalizedPathParameter {
+  { name, value: value.to_string(), numeric_value: Some(value) }
+}
+
+///|
+fn flag_path_parameter(name : String, value : Bool) -> NormalizedPathParameter {
+  { name, value: value.to_string(), numeric_value: None }
+}
+
+///|
+fn normalized_path_segment_parameters(
+  segment : NormalizedPathSegment,
+) -> Array[NormalizedPathParameter] {
+  match segment {
+    MoveTo(x, y) | LineTo(x, y) =>
+      [numeric_path_parameter("x", x), numeric_path_parameter("y", y)]
+    CubicTo(x1, y1, x2, y2, x, y) =>
+      [
+        numeric_path_parameter("x1", x1),
+        numeric_path_parameter("y1", y1),
+        numeric_path_parameter("x2", x2),
+        numeric_path_parameter("y2", y2),
+        numeric_path_parameter("x", x),
+        numeric_path_parameter("y", y),
+      ]
+    QuadraticTo(x1, y1, x, y) =>
+      [
+        numeric_path_parameter("x1", x1),
+        numeric_path_parameter("y1", y1),
+        numeric_path_parameter("x", x),
+        numeric_path_parameter("y", y),
+      ]
+    ArcTo(rx, ry, rotation, large, sweep, x, y) =>
+      [
+        numeric_path_parameter("rx", rx),
+        numeric_path_parameter("ry", ry),
+        numeric_path_parameter("rotation", rotation),
+        flag_path_parameter("large_arc", large),
+        flag_path_parameter("sweep", sweep),
+        numeric_path_parameter("x", x),
+        numeric_path_parameter("y", y),
+      ]
+    ClosePath => []
+  }
+}
+
+///|
+fn normalized_path_segment_distance(
+  before : NormalizedPathSegment,
+  after : NormalizedPathSegment,
+) -> Double {
+  if normalized_path_segment_kind(before) != normalized_path_segment_kind(after) {
+    return 1000000.0
+  }
+  let before_parameters = normalized_path_segment_parameters(before)
+  let after_parameters = normalized_path_segment_parameters(after)
+  let mut distance = 0.0
+  for index in 0..<before_parameters.length() {
+    match
+      (
+        before_parameters[index].numeric_value,
+        after_parameters[index].numeric_value,
+      ) {
+      (Some(left), Some(right)) => distance += (left - right).abs()
+      _ if before_parameters[index].value != after_parameters[index].value =>
+        distance += 1.0
+      _ => ()
+    }
+  }
+  distance
+}
+
+///|
+fn normalized_path_distance(
+  before : Array[PathSegmentEvidence],
+  after : Array[PathSegmentEvidence],
+) -> Double {
+  let shared = before.length().min(after.length())
+  let mut distance = (before.length() - after.length()).abs().to_double() *
+    1000000.0
+  for index in 0..<shared {
+    distance += normalized_path_segment_distance(
+      before[index].normalized,
+      after[index].normalized,
+    )
+  }
+  distance
 }
 
 ///|

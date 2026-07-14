@@ -210,13 +210,20 @@ fn generic_basic_shape_report(
   let changed_facts : Array[ChangedFact] = []
   let differences : Array[AtomicDifference] = []
   let events : Array[VisualEvent] = []
+  let path_boundary_budget = PathBoundaryBudget::new()
   let rendered = rendered_difference(before_document, after_document, profile)
   for alignment in alignments {
     let before_subjects = subjects_for_references(before, alignment.before)
     let after_subjects = subjects_for_references(after, alignment.after)
     let alignment_difference_ids : Array[String] = []
     match (before_subjects, after_subjects) {
-      ([before_subject], [after_subject]) =>
+      ([before_subject], [after_subject]) => {
+        if before_subject.kind == "path" && after_subject.kind == "path" {
+          append_path_geometry_differences(
+            alignment, before_subject, after_subject, profile, path_boundary_budget,
+            changed_facts, differences, alignment_difference_ids,
+          )
+        }
         for property in alignment_property_order() {
           let before_fact = source_subject_fact(before_subject, property)
           let after_fact = source_subject_fact(after_subject, property)
@@ -264,6 +271,7 @@ fn generic_basic_shape_report(
           })
           alignment_difference_ids.push(difference_id)
         }
+      }
       ([], [_]) | ([_], []) => {
         let property = "presence"
         let fact_id = "fact:\{alignment.id}:presence"

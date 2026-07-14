@@ -119,6 +119,7 @@ Human labels may allow multiple faithful descriptions, but cannot authorize clai
 | `1.0` to `0.99999`, partial, tiny computed displacement, guarded nonzero pinned-raster response | Preserve the tiny CSS-unit displacement, surface `renderer_fractional_geometry_unproven`, and avoid claiming visible change from the guarded pixel count | Use changed-pixel count as the displacement, omit the Diagnostic, or call the edit major without a policy |
 | Opaque red to blue rectangle with a localized region | Report paint kind, resolved color change, magnitude, region, and possible changed fill fact | Mention a color change without its subject, location, or evidence IDs |
 | Inserted zero-opacity shape | Report insertion and geometric footprint separately from zero painted and raster contribution | Drop the insertion because it is not visible |
+| Guarded path parameter or topology differences | Report every exact normalized path finding and its parameter delta; describe an available boundary distance as a pinned isolated observation and retain `unsupported_visual_subject` | Discard the findings because the report is partial, or claim complete path/browser semantics from the boundary scalar |
 | Empty difference list with unsupported path Diagnostic | State that equality is not established | "No visual differences" |
 | Partial Cause Envelope | Report candidates with `not_established` and limiting Diagnostics | Claim all actual causes are necessarily included |
 

@@ -63,7 +63,7 @@
     {
       "case_id": "unsupported-path-change",
       "localization_status": "localizable",
-      "reason": "The reference covers both diagonals plus the one-pixel half-stroke expansion; the current engine remains partial for path semantics.",
+      "reason": "The reference covers both diagonals plus the one-pixel half-stroke expansion; guarded path findings now expose contained pixel-mask regions while complete path semantics remain partial.",
       "regions": [
         {
           "id": "region-ref:unsupported-path-change:stroke-union",

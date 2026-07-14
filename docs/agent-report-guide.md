@@ -272,9 +272,11 @@ Both inputs contain the same unsupported `path`. The report contains no Atomic D
 
 Correct interpretation:
 
-> No difference was established in the supported analyzer, but path semantics were not analyzed. The report cannot establish visual equality.
+> No difference was established by the guarded path comparison, but complete path semantics were not analyzed. The report cannot establish visual equality.
 
 This is the critical counterexample to treating an empty difference list as equality.
+
+When normalized path geometry does change, the same partial report may contain `geometry.path.parameter`, `geometry.path.command`, or `geometry.path.structure` Atomic Differences. Treat exact parameter deltas as reliable normalized source-geometry evidence. Treat `geometry_displacement_css_px`, when present, as the bounded isolated alpha-boundary maximum distance under the pinned renderer, not as continuous geometric Hausdorff distance or browser-conformant visibility. Continue to surface `unsupported_visual_subject`: the findings identify established differences but do not make the path analysis complete.
 
 ## Recommended agent response shape
 

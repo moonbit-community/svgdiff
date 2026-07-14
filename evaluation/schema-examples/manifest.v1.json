@@ -100,10 +100,13 @@
       "output": "schema/examples/unsupported-partial-coverage.json",
       "expected": {
         "analysis_status": "partial",
-        "domains": [],
-        "computed_relations": [],
+        "domains": ["geometry.path.parameter", "geometry.path.parameter"],
+        "computed_relations": ["different", "different"],
         "diagnostic_codes": ["unsupported_visual_subject"],
-        "magnitude_checks": []
+        "magnitude_checks": [
+          { "domain": "geometry.path.parameter", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 12 },
+          { "domain": "geometry.path.parameter", "field": "magnitude.geometry_displacement_css_px", "op": "gt", "value": 0 }
+        ]
       }
     },
     {

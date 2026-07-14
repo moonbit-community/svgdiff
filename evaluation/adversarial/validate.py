@@ -109,8 +109,21 @@ def validate_false_equality(case: dict, report: dict) -> None:
         raise ValueError("false-equality case inputs must differ")
     if report["analysis_status"] != "partial":
         raise ValueError("unsupported path change produced complete equality")
-    if report["atomic_differences"]:
-        raise ValueError("false-equality trap unexpectedly became a supported diff")
+    differences = report["atomic_differences"]
+    expected_ids = {
+        "diff:alignment:0:d:segment:0:parameter:y",
+        "diff:alignment:0:d:segment:1:parameter:y",
+    }
+    if {difference["id"] for difference in differences} != expected_ids:
+        raise ValueError("false-equality path findings are incomplete or unstable")
+    if any(
+        difference["domain"] != "geometry.path.parameter"
+        or difference["computed_relation"]["status"] != "different"
+        or difference["magnitude"]["parameter_abs_user_units"] != 14
+        or difference["magnitude"]["geometry_displacement_css_px"] <= 0
+        for difference in differences
+    ):
+        raise ValueError("false-equality path findings lost exact or boundary evidence")
     if "unsupported_visual_subject" not in diagnostic_codes(report):
         raise ValueError("false-equality case lost its path Diagnostic")
 

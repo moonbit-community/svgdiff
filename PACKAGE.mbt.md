@@ -5,7 +5,7 @@
 ## Install
 
 ```sh
-moon add Milky2018/svgdiff@0.3.5
+moon add Milky2018/svgdiff@0.3.6
 ```
 
 The module currently supports the native backend only.
@@ -41,6 +41,6 @@ The root package exposes:
 - typed report, difference, magnitude, region, provenance, coverage, and Diagnostic records;
 - canonical formatted and compact JSON serialization through `StructuredReport` methods.
 
-Module version `0.3.5` emits Structured Report Schema `1.4`. The current engine is intentionally limited to a documented deterministic static subset; paths, transforms, general CSS, filters, masks, fonts, images, scripting, animation, and `foreignObject` are not fully evaluated. Their presence must constrain report coverage rather than imply equality.
+Module version `0.3.6` emits Structured Report Schema `1.4`. The current engine is intentionally limited to a documented deterministic static subset; paths have guarded exact segment differences and isolated boundary measurements, while transforms, general CSS, filters, masks, fonts, images, scripting, animation, and `foreignObject` are not fully evaluated. Their presence must constrain report coverage rather than imply equality.
 
 The module is licensed under Apache-2.0.

@@ -10,7 +10,7 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.3.5` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.3.6` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.4` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Diagnostics | Schema `1.4` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v1_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
@@ -39,6 +39,8 @@ Module `0.3.3` adds `ComparisonControl`, `ComparisonInterrupted`, and `compare_w
 Module `0.3.4` fixes inline-style precedence at the private renderer-input boundary. It advances the production renderer identity to `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1` and conformance profile to `/2` without changing Structured Report field meanings, so schema `1.4` remains current. The Schema validates renderer identities structurally; the compatibility policy accepts known identities and rejects unknown identities before interpreting rendered evidence.
 
 Module `0.3.5` adds a strict renderer-independent path-data parser and absolute segment IR with authored UTF-16 provenance. Path geometry comparison remains guarded, so Structured Report schema `1.4`, renderer identities, Diagnostics, and ordering semantics do not change.
+
+Module `0.3.6` adds guarded path correspondence, exact normalized segment parameter and topology differences, and an isolated alpha-boundary maximum-distance observation. It also uses eight-neighbor connectivity for raster Difference Regions. Paths remain partial under the existing `unsupported_visual_subject` Diagnostic, and no serialized field, unit, Diagnostic meaning, ordering tuple, renderer identity, or conformance claim changes; Structured Report schema `1.4` and the other compatibility identities therefore remain current.
 
 ## Structured Report schema versions
 

@@ -55,7 +55,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.3.5` with `moon add Milky2018/svgdiff@0.3.5` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.3.6` with `moon add Milky2018/svgdiff@0.3.6` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -138,14 +138,14 @@ The CLI option `--agent-json` emits the same schema and evidence without formatt
 ## Supported static subset
 
 - source spans, authored values, normalized declarations, inline-style provenance, and ordinary inherited fill;
-- set-to-set alignment for rect, circle, ellipse, line, polyline, and polygon subjects without treating IDs or source order as identity;
-- geometry, fill, stroke, stroke width, opacity, insertion, deletion, and basic structure differences;
+- set-to-set alignment for rect, circle, ellipse, line, polyline, polygon, and guarded path subjects without treating IDs or source order as identity;
+- geometry, exact normalized path parameter and topology, fill, stroke, stroke width, opacity, insertion, deletion, and basic structure differences;
 - exact continuous parameter magnitudes, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
 
 Current Diagnostics also emit `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span, and source-anchored limitations merge all applicable locations under one stable Diagnostic ID. An empty array is reserved for comparison-global or derived conditions; legacy reports may omit the optional JSON field.
 
-Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, path geometry, filters, masks, and deterministic font shaping are not currently evaluated. Path data is strictly parsed into normalized absolute segments with authored spans, but that source-only inventory does not yet establish path correspondence or computed/rendered completeness. Unsupported content is never silently treated as equal.
+Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, complete path semantics, filters, masks, and deterministic font shaping are not currently evaluated. Path data is strictly parsed into normalized absolute segments with authored spans. One-to-one path alignment now emits every normalized command, parameter, and topology difference, preserves exact parameter deltas, and records a bounded isolated alpha-boundary maximum-distance observation when available. These findings remain guarded partial evidence because transforms, complete stroke and paint semantics, and accepted path renderer conformance are not established. Unsupported content is never silently treated as equal.
 
 Fractional geometry, fractional leaf opacity, and referenced-gradient raster measurements currently remain numeric pinned-renderer observations, but their Rendered Evidence coverage is limited by stable conformance Diagnostics. Exact source and computed differences remain available; consumers must not treat those raster values as browser-conformant.
 

@@ -36,7 +36,7 @@ The root library seam canonicalizes DPR, color interpretation, raster representa
 The following capabilities can participate in a `complete` report when no unsupported semantics are encountered:
 
 - strict XML well-formedness and namespace-aware authored Source Spans through `Milky2018/xml@0.4.0`;
-- strict source-only path-data parsing, absolute segment normalization, and segment-level authored spans, while path geometry remains guarded;
+- strict path-data parsing, absolute segment normalization, segment-level authored spans, geometry-aware one-to-one path alignment, and guarded exact segment-parameter and topology differences;
 - formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
 - supported presentation attributes and supported inline-style declarations, including complete supported presentation/inline overlaps normalized at the private renderer boundary;
 - basic shape subjects: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`;
@@ -62,7 +62,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Referenced linear gradient | Narrow first-stop/single-rect source and computed analysis plus a pinned-renderer measurement | Browser interpolation differs from the pinned raster; `renderer_gradient_raster_unproven` limits Rendered Evidence even for the narrow slice, while other gradient semantics retain their broader guards. |
 | Conflicting presentation attribute and inline style with incomplete or unsupported inline syntax | Independently supported Source Semantics | The private adapter cannot prove a safe renderer rewrite; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Stylesheets, selectors, or unsupported CSS syntax | Any independently supported source facts | The full cascade and selector model are not implemented. |
-| Path geometry | Strict normalized segment inventory with authored Source Spans | Correspondence, exact geometric comparison, boundary measurements, and accepted renderer conformance are not implemented; `unsupported_visual_subject` continues to limit computed/rendered claims. |
+| Path geometry | Strict normalized segment inventory with authored Source Spans, geometry-aware one-to-one correspondence, exact normalized command/parameter/topology differences, continuous parameter deltas, and a bounded isolated alpha-boundary maximum-distance observation | Transforms, continuous-curve boundary distance, complete stroke and paint semantics, and accepted renderer conformance are not implemented; `unsupported_visual_subject` continues to limit computed/rendered claims. |
 | Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
@@ -76,7 +76,7 @@ V1 does not completely analyze:
 - scripts, event-driven state, or animation timelines;
 - static `foreignObject` through an HTML/CSS layout engine;
 - implicit network resources or caller-supplied resource bundles;
-- paths and general path comparison;
+- complete path semantics, including transformed geometry, continuous-curve boundary distance, and browser-conformant stroke and paint evaluation;
 - transforms and cumulative coordinate systems;
 - `viewBox`, `preserveAspectRatio`, nested SVG viewports, or intrinsic viewport derivation;
 - the general CSS cascade, selectors, custom properties, or `!important`;

@@ -17,9 +17,9 @@ Benchmark results distinguish observations from regressions and preserve the pip
 | `agent_interpretation` | The report evidence was available, but the text-only answer missed safety, recall, ranking, localization, causal, or evidence-reference gates. | Failed `agent_*` or invalid-reference threshold check. |
 | `unclassified` | A new Diagnostic or threshold metric lacks an explicit policy entry. | Classifier fallback that requires policy review. |
 
-A Diagnostic is an observation, not automatically a regression. The curated unsupported-path case intentionally yields `feature_coverage`; its presence explains absent path conclusions without blaming the renderer or agent. A threshold failure is a regression under the selected threshold policy.
+A Diagnostic is an observation, not automatically a regression. The curated guarded-path case intentionally yields `feature_coverage`; it permits exact partial findings while preventing those findings from being mistaken for complete path support or renderer conformance. A threshold failure is a regression under the selected threshold policy.
 
-The region-overlap baseline is `0.75`: three of four browser-valid localizable cases currently pass, while unsupported path localization remains the one planned report-model gap. The earlier `0.8` value counted a pinned-renderer micro-geometry artifact as a fifth reference region; the browser oracle proved that outcome has zero changed canonical pixels, so the annotation and denominator were corrected together.
+The region-overlap baseline is `1.0`: all four browser-valid localizable cases now pass, including guarded path geometry whose 8-neighbor pixel components remain inside the conservative reference bound. The earlier `0.8` value counted a pinned-renderer micro-geometry artifact as a fifth reference region; the browser oracle proved that outcome has zero changed canonical pixels, so the annotation and denominator were corrected together.
 
 `scripts/run-agent-benchmark.sh` writes `failures.json` before returning the threshold gate status. Therefore a failing adapter still leaves enough evidence to attribute the failure. The classifier never infers renderer blame from a generic partial report: only an explicit renderer-conformance Diagnostic may enter that domain.
 

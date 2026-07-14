@@ -47,7 +47,7 @@ fn subject_from_element(
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let path_segments : Array[PathSegmentEvidence] = []
-  let mut path_data_complete = element.name.local_name != "path"
+  let mut path_data_complete = true
   let mut authored_id : String? = None
   let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
@@ -60,6 +60,7 @@ fn subject_from_element(
     } else if name == "style" {
       style_attribute = Some(attribute)
     } else if element.name.local_name == "path" && name == "d" {
+      upsert_declared_fact(facts, presentation_fact(input, name, attribute))
       let authored = source_slice(input, attribute.value_span)
       match
         parse_path_attribute_data(authored, attribute.value_span.start.offset) {
@@ -84,13 +85,24 @@ fn subject_from_element(
   }
   let values : Array[(String, String)] = []
   for fact in facts {
-    values.push((fact.property, fact.declared_value.to_lower()))
+    values.push(
+      (
+        fact.property,
+        if fact.property == "d" {
+          fact.declared_value
+        } else {
+          fact.declared_value.to_lower()
+        },
+      ),
+    )
   }
   values.sort_by(fn(left, right) { left.0.compare(right.0) })
   let mut signature = "\{element.name.local_name}|hierarchy=\{hierarchy_signature}"
   for item in values {
     let (name, value) = item
-    signature = "\{signature}|\{name}=\{value}"
+    if name != "d" {
+      signature = "\{signature}|\{name}=\{value}"
+    }
   }
   if element.name.local_name == "path" {
     signature = "\{signature}|path=\{path_segments_signature(path_segments)}|path-complete=\{path_data_complete}"
@@ -374,9 +386,10 @@ fn subject_distance(left : SourceSubject, right : SourceSubject) -> Double {
     if left.path_data_complete != right.path_data_complete {
       distance += 1000000.0
     }
-    distance += (left.path_segments.length() - right.path_segments.length())
-      .abs()
-      .to_double()
+    distance += normalized_path_distance(
+      left.path_segments,
+      right.path_segments,
+    )
   }
   distance
 }

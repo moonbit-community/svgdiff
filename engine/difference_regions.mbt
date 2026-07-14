@@ -171,6 +171,18 @@ fn pixel_difference_regions(
       if y + 1 < height {
         neighbors.push(current + width)
       }
+      if x > 0 && y > 0 {
+        neighbors.push(current - width - 1)
+      }
+      if x + 1 < width && y > 0 {
+        neighbors.push(current - width + 1)
+      }
+      if x > 0 && y + 1 < height {
+        neighbors.push(current + width - 1)
+      }
+      if x + 1 < width && y + 1 < height {
+        neighbors.push(current + width + 1)
+      }
       for neighbor in neighbors {
         if !visited[neighbor] && pixels_differ(before, after, neighbor) {
           visited[neighbor] = true
@@ -351,10 +363,10 @@ fn escape_xml_attribute(value : String) -> String {
 }
 
 ///|
-fn isolated_presence_painted_pixels(
+fn isolated_subjects_image(
   subjects : Array[SourceSubject],
   profile : ComparisonProfile,
-) -> Int? {
+) -> @svg.Image? {
   if subjects.is_empty() {
     return None
   }
@@ -373,11 +385,24 @@ fn isolated_presence_painted_pixels(
     Some(document) => document
     None => return None
   }
-  let image = @svg.render_svg_document_to_image(
-    document,
-    profile.viewport_width,
-    profile.viewport_height,
+  Some(
+    @svg.render_svg_document_to_image(
+      document,
+      profile.viewport_width,
+      profile.viewport_height,
+    ),
   )
+}
+
+///|
+fn isolated_presence_painted_pixels(
+  subjects : Array[SourceSubject],
+  profile : ComparisonProfile,
+) -> Int? {
+  let image = match isolated_subjects_image(subjects, profile) {
+    Some(image) => image
+    None => return None
+  }
   let mut painted_pixels = 0
   for pixel in image.pixels {
     if pixel.a > 0 {
@@ -385,6 +410,180 @@ fn isolated_presence_painted_pixels(
     }
   }
   Some(painted_pixels)
+}
+
+///|
+fn painted_boundary_pixel(image : @svg.Image, x : Int, y : Int) -> Bool {
+  let index = y * image.width + x
+  if image.pixels[index].a == 0 {
+    return false
+  }
+  x == 0 ||
+  y == 0 ||
+  x + 1 == image.width ||
+  y + 1 == image.height ||
+  image.pixels[index - 1].a == 0 ||
+  image.pixels[index + 1].a == 0 ||
+  image.pixels[index - image.width].a == 0 ||
+  image.pixels[index + image.width].a == 0
+}
+
+///|
+fn painted_boundary_count(image : @svg.Image) -> Int {
+  let mut count = 0
+  for y in 0..<image.height {
+    for x in 0..<image.width {
+      if painted_boundary_pixel(image, x, y) {
+        count += 1
+      }
+    }
+  }
+  count
+}
+
+///|
+fn squared_distance_transform_1d(
+  values : Array[Double],
+  unreachable_distance : Double,
+) -> Array[Double] {
+  let length = values.length()
+  let result = Array::make(length, unreachable_distance)
+  let mut has_feature = false
+  for value in values {
+    if value < unreachable_distance {
+      has_feature = true
+      break
+    }
+  }
+  if !has_feature {
+    return result
+  }
+  let sites = Array::make(length, 0)
+  let boundaries = Array::make(length + 1, 0.0)
+  let mut envelope = 0
+  sites[0] = 0
+  boundaries[0] = -1.7976931348623157e308
+  boundaries[1] = 1.7976931348623157e308
+  for candidate in 1..<length {
+    let mut site = sites[envelope]
+    let mut intersection = (
+        values[candidate] +
+        candidate.to_double() * candidate.to_double() -
+        values[site] -
+        site.to_double() * site.to_double()
+      ) /
+      (2.0 * (candidate - site).to_double())
+    while envelope > 0 && intersection <= boundaries[envelope] {
+      envelope -= 1
+      site = sites[envelope]
+      intersection = (
+          values[candidate] +
+          candidate.to_double() * candidate.to_double() -
+          values[site] -
+          site.to_double() * site.to_double()
+        ) /
+        (2.0 * (candidate - site).to_double())
+    }
+    envelope += 1
+    sites[envelope] = candidate
+    boundaries[envelope] = intersection
+    boundaries[envelope + 1] = 1.7976931348623157e308
+  }
+  envelope = 0
+  for position in 0..<length {
+    while boundaries[envelope + 1] < position.to_double() {
+      envelope += 1
+    }
+    let delta = position - sites[envelope]
+    result[position] = delta.to_double() * delta.to_double() +
+      values[sites[envelope]]
+  }
+  result
+}
+
+///|
+fn boundary_squared_distance_transform(image : @svg.Image) -> Array[Double] {
+  let unreachable_distance = image.width.to_double() * image.width.to_double() +
+    image.height.to_double() * image.height.to_double() +
+    1.0
+  let distances = Array::make(image.width * image.height, unreachable_distance)
+  for y in 0..<image.height {
+    let row = Array::make(image.width, unreachable_distance)
+    for x in 0..<image.width {
+      if painted_boundary_pixel(image, x, y) {
+        row[x] = 0.0
+      }
+    }
+    let transformed = squared_distance_transform_1d(row, unreachable_distance)
+    for x in 0..<image.width {
+      distances[y * image.width + x] = transformed[x]
+    }
+  }
+  for x in 0..<image.width {
+    let column = Array::make(image.height, unreachable_distance)
+    for y in 0..<image.height {
+      column[y] = distances[y * image.width + x]
+    }
+    let transformed = squared_distance_transform_1d(
+      column, unreachable_distance,
+    )
+    for y in 0..<image.height {
+      distances[y * image.width + x] = transformed[y]
+    }
+  }
+  distances
+}
+
+///|
+fn directional_boundary_maximum(
+  source : @svg.Image,
+  target : @svg.Image,
+) -> Double {
+  let distances = boundary_squared_distance_transform(target)
+  let mut maximum = 0.0
+  for y in 0..<source.height {
+    for x in 0..<source.width {
+      if painted_boundary_pixel(source, x, y) {
+        maximum = maximum.max(distances[y * source.width + x].sqrt())
+      }
+    }
+  }
+  maximum
+}
+
+///|
+fn isolated_painted_boundary_displacement(
+  before : SourceSubject,
+  after : SourceSubject,
+  profile : ComparisonProfile,
+) -> Double? {
+  let images = match
+    (
+      isolated_subjects_image([before], profile),
+      isolated_subjects_image([after], profile),
+    ) {
+    (Some(before_image), Some(after_image)) => (before_image, after_image)
+    _ => return None
+  }
+  let (before_image, after_image) = images
+  if before_image.width != after_image.width ||
+    before_image.height != after_image.height {
+    return None
+  }
+  let before_count = painted_boundary_count(before_image)
+  let after_count = painted_boundary_count(after_image)
+  if before_count == 0 && after_count == 0 {
+    return Some(0.0)
+  }
+  if before_count == 0 || after_count == 0 {
+    return None
+  }
+  Some(
+    directional_boundary_maximum(before_image, after_image).max(
+      directional_boundary_maximum(after_image, before_image),
+    ) /
+    profile.comparison_dpr,
+  )
 }
 
 ///|

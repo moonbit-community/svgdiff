@@ -50,4 +50,4 @@ Equivalent, zero-contribution, renderer-guarded, and unsupported cases are expli
 sh scripts/test-cause-annotations.sh
 ```
 
-`ranking-targets.v1.json` maps the manually labeled main changes to accepted top report events or Atomic Difference sets. Unsupported path semantics remain explicitly unscorable until the report exposes a path event.
+`ranking-targets.v1.json` maps the manually labeled main changes to accepted top report events or Atomic Difference sets. The guarded path case is scorable because the report now exposes exact parameter differences and one path Visual Event even though its causal guarantee remains partial.

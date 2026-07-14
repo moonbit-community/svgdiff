@@ -17,7 +17,7 @@ Every component is nonnegative and compared in descending lexicographic order. C
 | `presence`, `presence.*` | `presence_painted_viewport_fraction`, `raster_changed_pixel_fraction` |
 | Current fallback: `compositing.*`, `resource.*`, `text.*`, `document.*`, and any other domain | `raster_changed_pixel_fraction`, `raster_linear_premultiplied_rgba_rmse`, `raster_rgba8_rmse` |
 
-The table defines tuple construction, not cross-family comparability. `geometry.position` and `geometry.size` use the same construction family but remain different domains and are not numerically ranked against one another.
+The table defines tuple construction, not cross-family comparability. `geometry.position` and `geometry.size` use the same construction family but remain different domains and are not numerically ranked against one another. For guarded `geometry.path.*` differences, `geometry_displacement_css_px` is the optional isolated alpha-boundary maximum distance shared by that aligned path comparison; the exact normalized parameter delta remains separately available in `parameter_abs` and `parameter_symmetric_relative`.
 
 ## Missing values and ties
 
