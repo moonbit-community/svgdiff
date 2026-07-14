@@ -56,6 +56,7 @@ graph TD
   ISS_037["ISS-037: Stabilize CLI exit-code semantics"]
   ISS_038["ISS-038: Add compact agent-oriented JSON"]
   ISS_039["ISS-039: Add per-feature evidence-layer coverage"]
+  ISS_040["ISS-040: Enforce analyzer coverage proof obligations"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -88,6 +89,7 @@ graph TD
   ISS_036 --> ISS_037
   ISS_037 --> ISS_038
   ISS_038 --> ISS_039
+  ISS_039 --> ISS_040
 ```
 
 ## Warnings

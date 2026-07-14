@@ -40,6 +40,8 @@ Feature IDs use four current namespaces:
 
 Rows are deterministically ordered by feature ID and subject ID. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Current schema `1.0` adds `coverage_matrix` as an optional JSON-Schema property for backward compatibility with previously emitted reports; the current engine always emits it.
 
+The matrix is validated by the [Coverage Proof Obligations](coverage-proof-obligations.md) before a report may remain complete. Missing rows, unjustified cells, dangling Diagnostics, and inconsistent status summaries emit `coverage_proof_incomplete` and reduce coverage.
+
 ## Complete-eligible capabilities
 
 | Feature slice | Evidence layers | Diagnostic on the supported path | Executable coverage |
@@ -78,6 +80,7 @@ Rows are deterministically ordered by feature ID and subject ID. `analysis_statu
 | Ambiguous or unsupported source-subject alignment in the inheritance analyzer | Partial | `source_subject_alignment_unsupported` | Source, computed, rendered | Covered indirectly by the inheritance analyzer fallback; add a direct regression test before treating this code as a stable public diagnostic |
 | Duplicate authored IDs that prevent sound source subject identity | Partial | `duplicate_source_subject_id` | Source, computed | [`inherited_fill_wbtest.mbt`](../engine/inherited_fill_wbtest.mbt) exercises hierarchy construction; a direct report-level regression test remains required |
 | No specialized analyzer can prove coverage | Partial | `analysis_coverage_unproven` | Source, computed, rendered | [`structured_report_test.mbt`](../engine/structured_report_test.mbt): unsupported-subject equality guard |
+| Final analyzer output does not satisfy the coverage proof obligations | Partial | `coverage_proof_incomplete` | Source, computed, rendered | [`coverage_proof_wbtest.mbt`](../engine/coverage_proof_wbtest.mbt): missing domain and property row downgrade tests |
 
 ## Diagnostic implementation sources
 
@@ -86,6 +89,7 @@ Rows are deterministically ordered by feature ID and subject ID. `analysis_statu
 - Inheritance-specific coverage: [`inherited_fill.mbt`](../engine/inherited_fill.mbt)
 - Solid-rect fallback coverage: [`solid_rect_report.mbt`](../engine/solid_rect_report.mbt)
 - Cause Envelope guarantee downgrade: [`cause_envelopes.mbt`](../engine/cause_envelopes.mbt)
+- Final complete-status proof gate: [`coverage_proof.mbt`](../engine/coverage_proof.mbt)
 
 ## Maintenance rule
 

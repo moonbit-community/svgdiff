@@ -684,7 +684,7 @@ fn finish_report(
   )
   let combined_alignments = alignments.copy()
   combined_alignments.push_iter(extra_alignments.iter())
-  attach_feature_coverage(
+  let report = attach_feature_coverage(
     attach_difference_magnitudes(
       attach_cause_envelopes(
         attach_difference_regions(
@@ -701,4 +701,5 @@ fn finish_report(
     before_svg,
     after_svg,
   )
+  enforce_coverage_proof(report, before_svg, after_svg)
 }

@@ -1294,7 +1294,11 @@ pub fn compare(
   let preflight_diagnostics : Array[Diagnostic] = []
   match (preflight_source(before_svg), preflight_source(after_svg)) {
     (SourceFailed, _) | (_, SourceFailed) =>
-      return failed_source_report(profile)
+      return enforce_coverage_proof(
+        failed_source_report(profile),
+        before_svg,
+        after_svg,
+      )
     (SourcePartial(before), SourcePartial(after)) => {
       preflight_diagnostics.push_iter(before.iter())
       preflight_diagnostics.push_iter(after.iter())

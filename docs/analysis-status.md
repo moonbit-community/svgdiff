@@ -78,6 +78,8 @@ failed > partial > complete
 - Otherwise, any `limited` coverage cell makes the comparison `partial` and references one or more Diagnostics.
 - Only a matrix with no `limited` or `failed` cell may summarize to `complete`.
 
+Before the summary is accepted, the engine enforces the [Coverage Proof Obligations](coverage-proof-obligations.md). An analyzer with missing feature rows or inconsistent Diagnostic references is downgraded through `coverage_proof_incomplete` rather than trusted.
+
 The number or magnitude of Atomic Differences never changes this ordering. A large fully analyzed change can be `complete`; an apparently identical document pair containing one unsupported element is `partial`.
 
 ## Caller decision procedure
