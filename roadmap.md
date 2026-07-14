@@ -237,7 +237,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 ## Phase 11: Robustness, security, and performance
 
-- [ ] **P0** Fuzz XML parsing, SVG semantic adaptation, renderer inputs, JSON serialization, and HTML escaping.
+- [x] **P0** Fuzz XML parsing, SVG semantic adaptation, renderer inputs, JSON serialization, and HTML escaping.
 - [ ] **P0** Add resource limits for input bytes, element count, path complexity, recursion, references, raster dimensions, regions, and report size.
 - [ ] **P0** Detect reference cycles and adversarial expansion without hanging or exhausting memory.
 - [ ] **P0** Preserve actionable Diagnostics and Source Spans for malformed or limited inputs.

@@ -53,11 +53,11 @@ Schema `1.1` does not yet provide production-grade hostile-input resource contro
 
 - no configurable limit for input bytes, element count, nesting depth, path complexity, references, raster dimensions, region count, or report size;
 - no cancellation or comparison time budget;
-- no fuzzing harness for the SVG adapter, renderer input, JSON serialization, or HTML escaping;
+- no coverage-guided or sanitizer-guided fuzzing; the fixed-seed generative [fuzz smoke](../evaluation/fuzz/README.md) covers parser, adapter, renderer, JSON, and HTML boundaries but does not measure code coverage;
 - no automated dependency advisory or SBOM check, and no CI enforcement or signing of the locally generated license and provenance evidence;
 - no cross-platform determinism gate for released binaries.
 
-These gaps do not permit false complete analysis, but they can permit excessive CPU, memory, or output growth. Do not expose the CLI as an unauthenticated service for hostile SVG uploads until the Phase 11 resource-limit and fuzzing items are complete.
+These gaps do not permit false complete analysis, but they can permit excessive CPU, memory, or output growth. Do not expose the CLI as an unauthenticated service for hostile SVG uploads until the Phase 11 resource-limit work is complete.
 
 ## Current upstream blockers
 

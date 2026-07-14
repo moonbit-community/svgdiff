@@ -91,6 +91,7 @@ graph TD
   ISS_072["ISS-072: Validate the M1 versioned-contract gate"]
   ISS_073["ISS-073: Define Visual Event grouping cardinality"]
   ISS_074["ISS-074: Decide cross-subject Visual Event aggregation"]
+  ISS_075["ISS-075: Fuzz production comparison boundaries"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -218,6 +219,12 @@ graph TD
   ISS_030 --> ISS_074
   ISS_058 --> ISS_074
   ISS_073 --> ISS_074
+  ISS_011 --> ISS_075
+  ISS_012 --> ISS_075
+  ISS_041 --> ISS_075
+  ISS_043 --> ISS_075
+  ISS_056 --> ISS_075
+  ISS_058 --> ISS_075
 ```
 
 ## Warnings

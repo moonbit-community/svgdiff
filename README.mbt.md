@@ -196,6 +196,7 @@ sh scripts/test-renderer-conformance.sh
 sh scripts/test-renderer-dispositions.sh
 sh scripts/test-alternate-scale-qa.sh
 sh scripts/test-adversarial.sh
+sh scripts/test-fuzz-smoke.sh
 sh scripts/test-compatibility.sh
 sh scripts/test-schema-examples.sh
 sh scripts/test-completions.sh

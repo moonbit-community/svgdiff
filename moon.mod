@@ -31,4 +31,5 @@ import {
   "mizchi/pixelmatch@0.6.1",
   "Milky2018/xml@0.4.0",
   "moonbitlang/x@0.4.40",
+  "moonbitlang/quickcheck@0.14.0",
 }

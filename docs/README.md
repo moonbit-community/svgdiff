@@ -25,6 +25,7 @@ This directory separates the current product contract from future plans and hist
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
+| How are parser, renderer, serialization, and HTML boundaries fuzzed reproducibly? | [`fuzz/README.md`](../evaluation/fuzz/README.md) |
 | Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
 | Which Structured Report Schema versions are released? | [`schema/registry.v1.json`](../schema/registry.v1.json) |
 | Which canonical reports demonstrate core agent interpretation cases? | [`schema/examples/README.md`](../schema/examples/README.md) |
@@ -54,7 +55,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.0`.
+- The stable report schema is `1.1`.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
 - The CLI lives in `cmd/svgdiff` and can emit JSON plus an optional self-contained HTML presentation.
 - The implemented analyzer covers a deliberately narrow deterministic static-SVG subset.
