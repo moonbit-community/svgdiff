@@ -4,7 +4,7 @@ Status: current dependency decision
 
 Last verified: 2026-07-14
 
-This file records the current production decision and unresolved renderer blockers. Detailed experiment output is retained in [research](research/README.md) and the archived [influence-provenance prototype](../prototype/influence_provenance/README.md).
+This file records the current production decision and unresolved renderer blockers. Detailed experiment output is retained in [research](research/README.md), including the archived [Influence Provenance prototype verdict](research/influence-provenance-prototype.md).
 
 Any dependency change must follow the synchronized [upgrade procedures](upgrade-procedures.md).
 
@@ -63,6 +63,6 @@ For each missing capability:
 - [SVG difference detection feasibility](research/detection-feasibility.md)
 - [Milky XML 0.4.0 evaluation](research/milky-xml-evaluation.md)
 - [XMLParser 0.2.5 evaluation](research/xmlparser-evaluation.md)
-- [Historical influence-provenance prototype](../prototype/influence_provenance/README.md)
+- [Historical Influence Provenance prototype verdict](research/influence-provenance-prototype.md)
 - [Current v1 support contract](v1-scope.md)
 - [Dependency, security, and upstream status](dependency-security.md)

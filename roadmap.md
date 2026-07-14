@@ -258,7 +258,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **P1** Document renderer, XML parser, metric, schema, and policy upgrade procedures.
 - [x] **P1** Keep dependency licenses, security posture, and upstream blockers current.
 - [x] **P1** Convert roadmap items into `ISS-###` issues only when they are accepted for implementation; do not duplicate unscheduled work prematurely.
-- [ ] **P1** Remove or archive `prototype/influence_provenance` after all validated logic is absorbed and no experiment still depends on it.
+- [x] **P1** Remove or archive `prototype/influence_provenance` after all validated logic is absorbed and no experiment still depends on it.
 - [ ] **P1** Review this roadmap at every milestone and record intentionally rejected capabilities rather than silently deleting them.
 
 ## Milestone gates

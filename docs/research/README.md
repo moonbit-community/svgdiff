@@ -9,6 +9,7 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [Visual difference metrics](visual-difference-metrics.md) | 2026-07-13 | Explains why magnitude is a vector and surveys possible future metrics. |
 | [XMLParser 0.2.5 evaluation](xmlparser-evaluation.md) | 2026-07-13 | Rejected dependency evaluation retained for rationale. |
 | [Milky XML 0.4.0 evaluation](milky-xml-evaluation.md) | 2026-07-13 | Accepted dependency evidence for authored parsing and spans. |
+| [Influence Provenance prototype verdict](influence-provenance-prototype.md) | 2026-07-10 to 2026-07-13 | Archives the removed prototype's causal propagation and renderer experiments. |
 | [Historical structured-report prototype verdict](structured-report-prototype.md) | 2026-07-13 to 2026-07-14 | Records the prototype findings later promoted into `engine`. |
 
 Research should be amended only to correct factual errors or to add an explicitly dated follow-up. Changes to current product policy belong in an ADR and the current contract documents.

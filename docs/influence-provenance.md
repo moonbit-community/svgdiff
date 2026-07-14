@@ -4,7 +4,7 @@ Status: accepted design; v1 implementation validated
 
 Last verified: 2026-07-14
 
-This is the current causal-completeness contract for the supported v1 slice. Feature coverage remains defined by [`v1-scope.md`](v1-scope.md); historical prototype evidence lives under `prototype/influence_provenance`.
+This is the current causal-completeness contract for the supported v1 slice. Feature coverage remains defined by [`v1-scope.md`](v1-scope.md); historical prototype evidence is archived in [`research/influence-provenance-prototype.md`](research/influence-provenance-prototype.md).
 
 ## Objective
 
