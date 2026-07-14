@@ -1,0 +1,110 @@
+{
+  "schema_version": "svgdiff-schema-examples/1",
+  "cases": [
+    {
+      "id": "equivalent-color-spelling",
+      "before": "evaluation/corpus/cases/equivalent-color-spelling/before.svg",
+      "after": "evaluation/corpus/cases/equivalent-color-spelling/after.svg",
+      "output": "schema/examples/equivalent-color-spelling.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["paint.fill"],
+        "computed_relations": ["equivalent"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "paint.fill", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "tiny-numeric-geometry",
+      "before": "evaluation/corpus/cases/subtle-geometry-shift/before.svg",
+      "after": "evaluation/corpus/cases/subtle-geometry-shift/after.svg",
+      "output": "schema/examples/tiny-numeric-geometry.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["geometry.position"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": ["renderer_fractional_geometry_unproven"],
+        "magnitude_checks": [
+          { "domain": "geometry.position", "field": "magnitude.parameter_abs_user_units", "op": "gt", "value": 0 },
+          { "domain": "geometry.position", "field": "magnitude.parameter_abs_user_units", "op": "lt", "value": 0.0001 }
+        ]
+      }
+    },
+    {
+      "id": "salient-fill-change",
+      "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
+      "after": "evaluation/corpus/cases/salient-fill-change/after.svg",
+      "output": "schema/examples/salient-fill-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["paint.fill"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "paint.fill", "field": "magnitude.raster_linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 },
+          { "domain": "paint.fill", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "subject-insertion",
+      "before": "evaluation/corpus/cases/structural-rect-insertion/before.svg",
+      "after": "evaluation/corpus/cases/structural-rect-insertion/after.svg",
+      "output": "schema/examples/subject-insertion.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["presence.insertion"],
+        "computed_relations": ["not_applicable"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "presence.insertion", "field": "magnitude.presence_painted_viewport_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "subject-deletion",
+      "before": "evaluation/corpus/cases/structural-rect-insertion/after.svg",
+      "after": "evaluation/corpus/cases/structural-rect-insertion/before.svg",
+      "output": "schema/examples/subject-deletion.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["presence.deletion"],
+        "computed_relations": ["not_applicable"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "presence.deletion", "field": "magnitude.presence_painted_viewport_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "resource-gradient-change",
+      "before": "evaluation/corpus/cases/resource-gradient-stop-change/before.svg",
+      "after": "evaluation/corpus/cases/resource-gradient-stop-change/after.svg",
+      "output": "schema/examples/resource-gradient-change.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["resource.gradient.stop_color", "paint.fill"],
+        "computed_relations": ["different", "different"],
+        "diagnostic_codes": ["renderer_gradient_raster_unproven"],
+        "magnitude_checks": [
+          { "domain": "resource.gradient.stop_color", "field": "magnitude.raster_linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "unsupported-partial-coverage",
+      "before": "evaluation/corpus/cases/unsupported-path-change/before.svg",
+      "after": "evaluation/corpus/cases/unsupported-path-change/after.svg",
+      "output": "schema/examples/unsupported-partial-coverage.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": [],
+        "computed_relations": [],
+        "diagnostic_codes": ["analysis_coverage_unproven", "unsupported_visual_subject"],
+        "magnitude_checks": []
+      }
+    }
+  ]
+}

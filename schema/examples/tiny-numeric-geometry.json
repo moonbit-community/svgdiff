@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0",
+  "analysis_status": "partial",
+  "coverage_matrix": [
+    {
+      "feature_id": "property.x",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "property.y",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.rect",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "property.width",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "property.height",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "domain.geometry.position",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_fractional_geometry_unproven",
+      "subject_id": "box",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [
+    {
+      "capability_id": "raster.fractional_geometry",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-fractional-geometry-unproven:box:x"
+      ]
+    }
+  ],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/1"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "box"
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "box"
+        }
+      ],
+      "basis": "minimum_property_distance"
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:auto:diff:entity:box:x",
+      "subject_id": "alignment:0",
+      "property": "geometry.position",
+      "before": {
+        "property": "x",
+        "authored_value": "1.0",
+        "declared_value": "1.0",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 104,
+          "end_offset": 107
+        }
+      },
+      "after": {
+        "property": "x",
+        "authored_value": "0.99999",
+        "declared_value": "0.99999",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 104,
+          "end_offset": 111
+        }
+      },
+      "affected_subject_ids": [
+        "box"
+      ]
+    }
+  ],
+  "source_resolutions": [],
+  "atomic_differences": [
+    {
+      "id": "diff:entity:box:x",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "geometry.position",
+      "source_before": "1.0",
+      "source_after": "0.99999",
+      "source_fact_before": {
+        "property": "x",
+        "authored_value": "1.0",
+        "declared_value": "1.0",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 104,
+          "end_offset": 107
+        }
+      },
+      "source_fact_after": {
+        "property": "x",
+        "authored_value": "0.99999",
+        "declared_value": "0.99999",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 104,
+          "end_offset": 111
+        }
+      },
+      "changed_fact_ids": [
+        "fact:auto:diff:entity:box:x"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_positions_differ",
+        "diagnostic_ids": []
+      },
+      "parameter_delta_css_px": -0.00000999999999995449,
+      "magnitude": {
+        "parameter_abs_user_units": 0.00000999999999995449,
+        "parameter_signed_user_units": -0.00000999999999995449,
+        "symmetric_relative": 0.000010000050000204492,
+        "geometry_displacement_css_px": 0.00000999999999995449,
+        "geometry_viewport_fraction": 4.419417382395809e-7,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.0625,
+        "raster_rgba8_rmse": 0.1767766952966369,
+        "raster_linear_premultiplied_rgba_rmse": 0.1767766952966369
+      },
+      "domain_ordering": {
+        "policy_id": "v1_domain_lexicographic",
+        "components": [
+          0.00000999999999995449,
+          4.419417382395809e-7,
+          0.0625
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:box",
+      "primary_subject_id": "box",
+      "atomic_difference_ids": [
+        "diff:entity:box:x"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 16,
+          "changed_pixel_fraction": 0.0625,
+          "rgba8_rmse": 0.1767766952966369,
+          "linear_premultiplied_rgba_rmse": 0.1767766952966369
+        }
+      },
+      "difference_regions": [
+        {
+          "id": "region:pixel:0",
+          "source": "pixel_mask",
+          "pixel_x": 0,
+          "pixel_y": 2,
+          "pixel_width": 1,
+          "pixel_height": 8,
+          "css_x": 0,
+          "css_y": 2,
+          "css_width": 1,
+          "css_height": 8,
+          "changed_pixels": 8,
+          "viewport_fraction": 0.03125,
+          "cause_envelope": {
+            "guarantee": "not_established",
+            "coverage": "partial",
+            "fallback_scope": "comparison",
+            "candidate_changed_fact_ids": [
+              "fact:auto:diff:entity:box:x"
+            ],
+            "diagnostic_ids": [
+              "diagnostic:renderer-fractional-geometry-unproven:box:x"
+            ]
+          }
+        },
+        {
+          "id": "region:pixel:1",
+          "source": "pixel_mask",
+          "pixel_x": 8,
+          "pixel_y": 2,
+          "pixel_width": 1,
+          "pixel_height": 8,
+          "css_x": 8,
+          "css_y": 2,
+          "css_width": 1,
+          "css_height": 8,
+          "changed_pixels": 8,
+          "viewport_fraction": 0.03125,
+          "cause_envelope": {
+            "guarantee": "not_established",
+            "coverage": "partial",
+            "fallback_scope": "comparison",
+            "candidate_changed_fact_ids": [
+              "fact:auto:diff:entity:box:x"
+            ],
+            "diagnostic_ids": [
+              "diagnostic:renderer-fractional-geometry-unproven:box:x"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic:renderer-fractional-geometry-unproven:box:x",
+      "code": "renderer_fractional_geometry_unproven",
+      "subject_id": "box",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ]
+    }
+  ]
+}

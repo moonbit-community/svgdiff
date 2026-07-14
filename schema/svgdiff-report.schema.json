@@ -133,6 +133,12 @@
         "source_span": { "$ref": "#/$defs/sourceSpan" }
       }
     },
+    "nullableDeclaredFact": {
+      "anyOf": [
+        { "$ref": "#/$defs/declaredFact" },
+        { "type": "null" }
+      ]
+    },
     "subjectReference": {
       "type": "object",
       "required": ["source_index", "kind", "authored_id"],
@@ -160,8 +166,8 @@
         "id": { "type": "string" },
         "subject_id": { "type": "string" },
         "property": { "type": "string" },
-        "before": { "$ref": "#/$defs/declaredFact" },
-        "after": { "$ref": "#/$defs/declaredFact" },
+        "before": { "$ref": "#/$defs/nullableDeclaredFact" },
+        "after": { "$ref": "#/$defs/nullableDeclaredFact" },
         "affected_subject_ids": { "type": "array", "items": { "type": "string" } }
       }
     },

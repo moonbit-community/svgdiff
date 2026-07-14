@@ -104,7 +104,7 @@ pub(all) struct PresenceMagnitude {
 ///|
 /// Domain-appropriate magnitude vector for one Atomic Difference.
 ///
-/// Optional components that were not computed remain absent rather than zero.
+/// Optional components that were not computed serialize as null rather than zero.
 pub(all) struct DifferenceMagnitude {
   parameter_abs_user_units : Double?
   parameter_signed_user_units : Double?
@@ -115,7 +115,44 @@ pub(all) struct DifferenceMagnitude {
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
   raster_linear_premultiplied_rgba_rmse : Double?
-} derive(ToJson)
+}
+
+///|
+fn[T : ToJson] nullable_report_value(value : T?) -> Json {
+  match value {
+    Some(value) => value.to_json()
+    None => Json::null()
+  }
+}
+
+///|
+pub impl ToJson for DifferenceMagnitude with fn to_json(self) {
+  {
+    "parameter_abs_user_units": nullable_report_value(
+      self.parameter_abs_user_units,
+    ),
+    "parameter_signed_user_units": nullable_report_value(
+      self.parameter_signed_user_units,
+    ),
+    "symmetric_relative": nullable_report_value(self.symmetric_relative),
+    "geometry_displacement_css_px": nullable_report_value(
+      self.geometry_displacement_css_px,
+    ),
+    "geometry_viewport_fraction": nullable_report_value(
+      self.geometry_viewport_fraction,
+    ),
+    "presence_painted_viewport_fraction": nullable_report_value(
+      self.presence_painted_viewport_fraction,
+    ),
+    "raster_changed_pixel_fraction": nullable_report_value(
+      self.raster_changed_pixel_fraction,
+    ),
+    "raster_rgba8_rmse": nullable_report_value(self.raster_rgba8_rmse),
+    "raster_linear_premultiplied_rgba_rmse": nullable_report_value(
+      self.raster_linear_premultiplied_rgba_rmse,
+    ),
+  }
+}
 
 ///|
 /// Versioned lexicographic components for ordering differences in one domain.
@@ -188,7 +225,16 @@ pub(all) struct SubjectReference {
   source_index : Int
   kind : String
   authored_id : String?
-} derive(ToJson)
+}
+
+///|
+pub impl ToJson for SubjectReference with fn to_json(self) {
+  {
+    "source_index": self.source_index,
+    "kind": self.kind,
+    "authored_id": nullable_report_value(self.authored_id),
+  }
+}
 
 ///|
 /// Set-to-set relationship between before and after visual subjects.
@@ -209,7 +255,19 @@ pub(all) struct ChangedFact {
   before : DeclaredVisualFact?
   after : DeclaredVisualFact?
   affected_subject_ids : Array[String]
-} derive(ToJson)
+}
+
+///|
+pub impl ToJson for ChangedFact with fn to_json(self) {
+  {
+    "id": self.id,
+    "subject_id": self.subject_id,
+    "property": self.property,
+    "before": nullable_report_value(self.before),
+    "after": nullable_report_value(self.after),
+    "affected_subject_ids": self.affected_subject_ids,
+  }
+}
 
 ///|
 /// Smallest independently reportable visual-semantic change.
@@ -232,7 +290,42 @@ pub(all) struct AtomicDifference {
   presence_magnitude : PresenceMagnitude?
   magnitude : DifferenceMagnitude
   domain_ordering : DomainOrdering
-} derive(ToJson)
+}
+
+///|
+pub impl ToJson for AtomicDifference with fn to_json(self) {
+  let fields : Map[String, Json] = Map([])
+  fields["id"] = self.id.to_json()
+  fields["subject_role"] = self.subject_role.to_json()
+  fields["subject_alignment_id"] = nullable_report_value(
+    self.subject_alignment_id,
+  )
+  fields["domain"] = self.domain.to_json()
+  fields["source_before"] = self.source_before.to_json()
+  fields["source_after"] = self.source_after.to_json()
+  match self.source_fact_before {
+    Some(value) => fields["source_fact_before"] = value.to_json()
+    None => ()
+  }
+  match self.source_fact_after {
+    Some(value) => fields["source_fact_after"] = value.to_json()
+    None => ()
+  }
+  fields["changed_fact_ids"] = self.changed_fact_ids.to_json()
+  fields["evidence_layers"] = self.evidence_layers.to_json()
+  fields["computed_relation"] = self.computed_relation.to_json()
+  match self.parameter_delta_css_px {
+    Some(value) => fields["parameter_delta_css_px"] = value.to_json()
+    None => ()
+  }
+  match self.presence_magnitude {
+    Some(value) => fields["presence_magnitude"] = value.to_json()
+    None => ()
+  }
+  fields["magnitude"] = self.magnitude.to_json()
+  fields["domain_ordering"] = self.domain_ordering.to_json()
+  Json::object(fields)
+}
 
 ///|
 /// Agent-facing grouping of Atomic Differences around one subject outcome.

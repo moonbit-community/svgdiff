@@ -360,6 +360,53 @@ test "structured report serializes the complete layered result as JSON" {
 }
 
 ///|
+test "required unavailable report fields serialize as JSON null" {
+  let magnitude_report = @engine.compare(
+    rect_svg("red"),
+    rect_svg("#ff0000"),
+    @engine.ComparisonProfile::v1_default(),
+  )
+  match @json.parse(magnitude_report.to_json_string()) {
+    {
+      "atomic_differences": [
+        {
+          "magnitude": {
+            "parameter_abs_user_units": Null,
+            "parameter_signed_user_units": Null,
+            "symmetric_relative": Null,
+            "geometry_displacement_css_px": Null,
+            "geometry_viewport_fraction": Null,
+            "presence_painted_viewport_fraction": Null,
+            ..
+          },
+          ..
+        },
+      ],
+      ..
+    } => ()
+    _ => fail("unavailable magnitude components must serialize as null")
+  }
+  let presence_report = @engine.compare(
+    empty_svg(),
+    rect_svg("red"),
+    @engine.ComparisonProfile::v1_default(),
+  )
+  match @json.parse(presence_report.to_json_string()) {
+    { "changed_facts": [{ "before": Null, "after": Null, .. }], .. } => ()
+    _ => fail("absent changed facts must serialize as null")
+  }
+  let resource_report = @engine.compare(
+    unreferenced_gradient_svg("red"),
+    unreferenced_gradient_svg("green"),
+    @engine.ComparisonProfile::v1_default(),
+  )
+  match @json.parse(resource_report.to_json_string()) {
+    { "atomic_differences": [{ "subject_alignment_id": Null, .. }], .. } => ()
+    _ => fail("an unaligned difference must serialize its subject as null")
+  }
+}
+
+///|
 test "compact JSON preserves the complete structured report" {
   let report = @engine.compare(
     unresolved_text_svg("A"),

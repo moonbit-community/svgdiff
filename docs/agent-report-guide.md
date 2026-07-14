@@ -273,4 +273,6 @@ Keep every claim traceable to report IDs. If summarization omits lower-priority 
 
 ## Validation sources
 
+Machine-readable, production-generated versions of the core worked-example categories live in the [Structured Report examples](../schema/examples/README.md). They are regenerated from curated SVG inputs and checked against the current Schema and semantic manifest; use them when testing a consumer instead of copying abbreviated snippets from this guide.
+
 The numeric extracts above come from the current CLI and are asserted by [`structured_report_test.mbt`](../engine/structured_report_test.mbt), [`magnitude_test.mbt`](../engine/magnitude_test.mbt), and [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt). The salient paint fixture is checked in as [`testdata/before.svg`](../testdata/before.svg) and [`testdata/after.svg`](../testdata/after.svg).

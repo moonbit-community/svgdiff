@@ -23,7 +23,8 @@ pub(all) struct AtomicDifference {
   presence_magnitude : PresenceMagnitude?
   magnitude : DifferenceMagnitude
   domain_ordering : DomainOrdering
-} derive(ToJson)
+}
+pub impl ToJson for AtomicDifference
 
 pub(all) struct CauseEnvelope {
   guarantee : String
@@ -40,7 +41,8 @@ pub(all) struct ChangedFact {
   before : DeclaredVisualFact?
   after : DeclaredVisualFact?
   affected_subject_ids : Array[String]
-} derive(ToJson)
+}
+pub impl ToJson for ChangedFact
 
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -85,7 +87,8 @@ pub(all) struct DifferenceMagnitude {
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
   raster_linear_premultiplied_rgba_rmse : Double?
-} derive(ToJson)
+}
+pub impl ToJson for DifferenceMagnitude
 
 pub(all) struct DifferenceRegion {
   id : String
@@ -194,7 +197,8 @@ pub(all) struct SubjectReference {
   source_index : Int
   kind : String
   authored_id : String?
-} derive(ToJson)
+}
+pub impl ToJson for SubjectReference
 
 pub(all) struct VisualEvent {
   id : String

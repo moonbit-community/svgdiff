@@ -161,6 +161,8 @@ The [adversarial suite](evaluation/adversarial/README.md) checks false-complete,
 
 The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, and unknown-ordering-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch before semantic interpretation.
 
+The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, and partial coverage. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
+
 ## Documentation
 
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;
@@ -168,6 +170,7 @@ The [compatibility corpus](evaluation/compatibility/README.md) generates current
 - [Feature coverage matrix](docs/feature-coverage.md): links support claims to Diagnostics and tests;
 - [Analysis status contract](docs/analysis-status.md): exact guarantees for complete, partial, and failed reports;
 - [Text-only agent guide](docs/agent-report-guide.md): report reading procedure and worked examples;
+- [Structured Report examples](schema/examples/README.md): complete machine-readable examples for core agent interpretation cases;
 - [MoonBit library API](docs/library-api.md): public operations, report types, and generated documentation commands;
 - [Upgrade procedures](docs/upgrade-procedures.md): renderer, parser, metric, schema, and ordering-policy gates;
 - [Dependency and security status](docs/dependency-security.md): licenses, security gaps, and live upstream blockers;
@@ -191,6 +194,7 @@ sh scripts/test-renderer-dispositions.sh
 sh scripts/test-alternate-scale-qa.sh
 sh scripts/test-adversarial.sh
 sh scripts/test-compatibility.sh
+sh scripts/test-schema-examples.sh
 sh scripts/test-completions.sh
 ```
 

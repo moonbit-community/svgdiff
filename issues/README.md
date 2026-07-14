@@ -72,6 +72,7 @@ graph TD
   ISS_053["ISS-053: Define product compatibility versioning"]
   ISS_054["ISS-054: Generate release integrity and attribution artifacts"]
   ISS_055["ISS-055: Specify and test domain ordering tuples"]
+  ISS_056["ISS-056: Add canonical Structured Report examples"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -124,6 +125,10 @@ graph TD
   ISS_010 --> ISS_055
   ISS_051 --> ISS_055
   ISS_053 --> ISS_055
+  ISS_024 --> ISS_056
+  ISS_025 --> ISS_056
+  ISS_035 --> ISS_056
+  ISS_051 --> ISS_056
 ```
 
 ## Warnings
