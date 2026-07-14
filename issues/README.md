@@ -53,6 +53,7 @@ graph TD
   ISS_034["ISS-034: Add the local PATH installation workflow"]
   ISS_035["ISS-035: Add CLI help and version identity"]
   ISS_036["ISS-036: Define and implement the CLI stream contract"]
+  ISS_037["ISS-037: Stabilize CLI exit-code semantics"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -82,6 +83,7 @@ graph TD
   ISS_033 --> ISS_034
   ISS_034 --> ISS_035
   ISS_035 --> ISS_036
+  ISS_036 --> ISS_037
 ```
 
 ## Warnings

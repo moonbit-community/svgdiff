@@ -14,7 +14,7 @@ Last verified: 2026-07-14
 | `partial` | Yes, with constrained claims | No | `0` |
 | `failed` | No usable semantic comparison | No | `1` |
 
-Invalid CLI arguments and file I/O failures are not analysis results and exit with status `2` without producing a valid Structured Report.
+Invalid CLI arguments and file I/O failures are not analysis results and exit with status `2` without producing a valid Structured Report. The stable process-level mapping is defined in the [CLI Exit-Code Contract](cli-exit-codes.md).
 
 ## `complete`
 

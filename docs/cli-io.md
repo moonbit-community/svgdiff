@@ -28,7 +28,7 @@ Missing positional operands never imply stdin. The command reads the complete st
 | Invalid argument or I/O failure | Empty | Human-readable error |
 | Analysis status `failed` | A parseable failed Structured Report unless `--output` is used | Empty unless a separate I/O error occurs |
 
-The exit statuses associated with these outcomes are summarized in [`analysis-status.md`](analysis-status.md). A later exit-code stabilization item may version their consumer policy, but it must preserve the stdout/stderr separation above.
+The stable exit statuses associated with these outcomes are defined in [`cli-exit-codes.md`](cli-exit-codes.md). They preserve the stdout/stderr separation above.
 
 ## Rationale
 

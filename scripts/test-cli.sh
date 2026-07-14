@@ -6,6 +6,19 @@ tmp=${TMPDIR:-/tmp}/svgdiff-cli-$$
 mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
+assert_status() {
+  expected=$1
+  shift
+  set +e
+  "$@"
+  actual=$?
+  set -e
+  if [ "$actual" -ne "$expected" ]; then
+    echo "Expected exit status $expected, got $actual: $*" >&2
+    exit 1
+  fi
+}
+
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
@@ -28,6 +41,12 @@ cat testdata/after.svg | moon run --target native cmd/svgdiff -- testdata/before
 test ! -s "$tmp/stdin-after.err"
 jq -e '.schema_version == "1.0" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
 
+assert_status 0 moon run --target native cmd/svgdiff -- \
+  evaluation/corpus/cases/unsupported-path-change/before.svg \
+  evaluation/corpus/cases/unsupported-path-change/after.svg \
+  --output "$tmp/partial.json"
+jq -e '.analysis_status == "partial" and (.diagnostics | length) > 0' "$tmp/partial.json" >/dev/null
+
 moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
 grep -q '^Usage: svgdiff ' "$tmp/help.txt"
 grep -q -- '--version' "$tmp/help.txt"
@@ -40,31 +59,23 @@ grep -q '^schema: 1.0$' "$tmp/version.txt"
 grep -q '^renderer: mizchi/svg@0.2.1$' "$tmp/version.txt"
 grep -q '^ordering-policy: v1_domain_lexicographic$' "$tmp/version.txt"
 
-if moon run --target native cmd/svgdiff -- >"$tmp/missing-args.out" 2>"$tmp/missing-args.err"; then
-  echo "CLI unexpectedly accepted missing arguments" >&2
-  exit 1
-fi
+assert_status 2 moon run --target native cmd/svgdiff -- >"$tmp/missing-args.out" 2>"$tmp/missing-args.err"
 test ! -s "$tmp/missing-args.out"
 grep -q '^Usage: svgdiff ' "$tmp/missing-args.err"
 
-if moon run --target native cmd/svgdiff -- "$tmp/missing.svg" testdata/after.svg >"$tmp/missing-file.out" 2>"$tmp/missing-file.err"; then
-  echo "CLI unexpectedly accepted an unreadable input" >&2
-  exit 1
-fi
+assert_status 2 moon run --target native cmd/svgdiff -- "$tmp/missing.svg" testdata/after.svg >"$tmp/missing-file.out" 2>"$tmp/missing-file.err"
 test ! -s "$tmp/missing-file.out"
 grep -q '^Failed to read ' "$tmp/missing-file.err"
 
-if printf '%s\n' '<svg/>' | moon run --target native cmd/svgdiff -- - - >"$tmp/double-stdin.out" 2>"$tmp/double-stdin.err"; then
-  echo "CLI unexpectedly accepted two stdin operands" >&2
-  exit 1
-fi
+assert_status 2 moon run --target native cmd/svgdiff -- - - <testdata/before.svg >"$tmp/double-stdin.out" 2>"$tmp/double-stdin.err"
 test ! -s "$tmp/double-stdin.out"
 grep -q '^Only one SVG input may use stdin (-)$' "$tmp/double-stdin.err"
 
+assert_status 2 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --output "$tmp" >"$tmp/output-failure.out" 2>"$tmp/output-failure.err"
+test ! -s "$tmp/output-failure.out"
+grep -q '^Failed to write ' "$tmp/output-failure.err"
+
 printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
-if moon run --target native cmd/svgdiff -- "$tmp/malformed.svg" testdata/after.svg >"$tmp/failed.json" 2>"$tmp/failed.err"; then
-  echo "CLI unexpectedly returned success for failed analysis" >&2
-  exit 1
-fi
+assert_status 1 moon run --target native cmd/svgdiff -- "$tmp/malformed.svg" testdata/after.svg >"$tmp/failed.json" 2>"$tmp/failed.err"
 test ! -s "$tmp/failed.err"
 jq -e '.analysis_status == "failed" and (.diagnostics | length) > 0' "$tmp/failed.json" >/dev/null
