@@ -4,6 +4,10 @@ This document records the early prototype findings. The validated implementation
 
 Status: inherited-fill Source Semantics slice complete
 
+Evidence period: 2026-07-13 to 2026-07-14
+
+For the current schema and report model, see [`../core-model.md`](../core-model.md).
+
 ## Verdict
 
 The layered report abstraction is feasible for the tested slice. MoonBit can preserve authored evidence through a separate source layer, compare resolved scene facts through `mizchi/svg`, obtain canonical raster response through `mizchi/svg` plus `mizchi/pixelmatch`, distinguish resource changes from entity outcomes, represent zero contribution numerically, preserve indeterminate analysis without coercing it to zero, and serialize the resulting report as JSON.

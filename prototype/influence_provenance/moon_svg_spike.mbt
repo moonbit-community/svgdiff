@@ -18,9 +18,7 @@ struct MoonSvgSpikeResult {
 fn to_pixelmatch_image(image : @svg.Image) -> @pixelmatch.Image {
   let pixels : Array[@pixelmatch.Color] = []
   for pixel in image.pixels {
-    pixels.push(
-      @pixelmatch.Color::rgba(pixel.r, pixel.g, pixel.b, pixel.a),
-    )
+    pixels.push(@pixelmatch.Color::rgba(pixel.r, pixel.g, pixel.b, pixel.a))
   }
   @pixelmatch.Image::from_pixels(image.width, image.height, pixels)
 }
@@ -28,12 +26,7 @@ fn to_pixelmatch_image(image : @svg.Image) -> @pixelmatch.Image {
 ///|
 fn exact_pixel_options() -> @pixelmatch.Options {
   let defaults = @pixelmatch.Options::default()
-  {
-    ..defaults,
-    threshold: 0.0,
-    include_aa: true,
-    detect_shift: false,
-  }
+  { ..defaults, threshold: 0.0, include_aa: true, detect_shift: false }
 }
 
 ///|
@@ -143,16 +136,15 @@ fn run_moon_svg_spike() -> MoonSvgSpikeResult {
     rect_svg(1.0, "red"),
     rect_svg(1.0 + tiny_delta, "red"),
   )
-  match (
-    @svg.parse_svg_document(before_source),
-    @svg.parse_svg_document(after_source),
-  ) {
+  match
+    (
+      @svg.parse_svg_document(before_source),
+      @svg.parse_svg_document(after_source),
+    ) {
     (Some(before_document), Some(after_document)) => {
       let report = compare_documents(before_document, after_document)
-      match (
-        rect_x_and_bounds(before_document),
-        rect_x_and_bounds(after_document),
-      ) {
+      match
+        (rect_x_and_bounds(before_document), rect_x_and_bounds(after_document)) {
         (Some((before_x, before_bounds)), Some((after_x, after_bounds))) => {
           let envelope = candidate_facts_for_regions(
             report.regions,
@@ -179,36 +171,38 @@ fn run_moon_svg_spike() -> MoonSvgSpikeResult {
             },
           }
         }
-        _ => {
-          normal_parsed: true,
-          before_x: 0.0,
-          after_x: 0.0,
-          normal_diff_pixels: report.diff_count,
-          normal_regions: report.regions,
-          cause_envelope: [],
-          missing_causes: ["box.x", "box.fill"],
-          tiny_parameter_delta: tiny_delta,
-          equivalent_color_diff_pixels: equivalent_color_diff,
-          tiny_negative_diff_pixels: tiny_negative_diff,
-          tiny_positive_diff_pixels: tiny_positive_diff,
-          verdict: "FAIL — parsed rect was not recoverable from the scene graph",
-        }
+        _ =>
+          {
+            normal_parsed: true,
+            before_x: 0.0,
+            after_x: 0.0,
+            normal_diff_pixels: report.diff_count,
+            normal_regions: report.regions,
+            cause_envelope: [],
+            missing_causes: ["box.x", "box.fill"],
+            tiny_parameter_delta: tiny_delta,
+            equivalent_color_diff_pixels: equivalent_color_diff,
+            tiny_negative_diff_pixels: tiny_negative_diff,
+            tiny_positive_diff_pixels: tiny_positive_diff,
+            verdict: "FAIL — parsed rect was not recoverable from the scene graph",
+          }
       }
     }
-    _ => {
-      normal_parsed: false,
-      before_x: 0.0,
-      after_x: 0.0,
-      normal_diff_pixels: -1,
-      normal_regions: [],
-      cause_envelope: [],
-      missing_causes: ["box.x", "box.fill"],
-      tiny_parameter_delta: tiny_delta,
-      equivalent_color_diff_pixels: equivalent_color_diff,
-      tiny_negative_diff_pixels: tiny_negative_diff,
-      tiny_positive_diff_pixels: tiny_positive_diff,
-      verdict: "FAIL — SVG parsing failed",
-    }
+    _ =>
+      {
+        normal_parsed: false,
+        before_x: 0.0,
+        after_x: 0.0,
+        normal_diff_pixels: -1,
+        normal_regions: [],
+        cause_envelope: [],
+        missing_causes: ["box.x", "box.fill"],
+        tiny_parameter_delta: tiny_delta,
+        equivalent_color_diff_pixels: equivalent_color_diff,
+        tiny_negative_diff_pixels: tiny_negative_diff,
+        tiny_positive_diff_pixels: tiny_positive_diff,
+        verdict: "FAIL — SVG parsing failed",
+      }
   }
 }
 

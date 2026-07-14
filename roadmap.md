@@ -2,11 +2,25 @@
 
 Status: living post-v1 roadmap
 
+Last reviewed: 2026-07-14
+
 This roadmap records remaining work between the current deterministic static-SVG implementation and the terminal product goal:
 
 > Enable an agent without multimodal perception to identify the important visual-semantic differences between two SVG artifacts, measure their magnitude, locate their effects, and inspect a causally sound set of possible reasons using only a machine-readable report.
 
-The completed v1 foundation is tracked in [`issues/`](issues/). This file intentionally contains only unfinished work. An unchecked item may be planned, deferred, or awaiting a design decision; tags make that state explicit.
+The completed v1 foundation is tracked in [`issues/`](issues/). This file is the detailed post-v1 capability backlog, not the current support contract. An unchecked item may be planned, deferred, or awaiting a design decision; tags make that state explicit. See [`docs/v1-scope.md`](docs/v1-scope.md) for implemented behavior.
+
+## Milestone view
+
+| Milestone | Outcome | Main phases |
+| --- | --- | --- |
+| M1 | Installable, benchmarked, evidence-first CLI | 0-2, 7, 11 |
+| M2 | Credible essential static-SVG coverage | 2-6 |
+| M3 | Agent-grade main-difference reporting | 0, 4-7 |
+| M4 | Deterministic text and packaged resources | 3, 8 |
+| M5 | Optional advanced comparison profiles | 9-10 |
+
+The phase checklists below are intentionally exhaustive. Use the milestone gates near the end for release decisions and the phase lists for issue creation. Items should move into the issue tracker when scheduled; completion evidence belongs in the issue rather than being duplicated here.
 
 ## Tags
 
@@ -18,16 +32,16 @@ The completed v1 foundation is tracked in [`issues/`](issues/). This file intent
 
 ## Non-negotiable correctness rules
 
-- [ ] Keep Source Semantics, Computed Appearance, and Rendered Evidence independently reportable.
-- [ ] Preserve continuous measurements; never replace them with only a visibility boolean, label, or universal score.
-- [ ] Report formatting-only, computed-equivalent, low-impact, and salient changes as distinct outcomes.
-- [ ] Enumerate every supported Atomic Difference, group by domain, and order only with an explicit versioned policy.
-- [ ] Treat measured zero, not-computed, indeterminate, unsupported, and failed as different states.
-- [ ] Never claim `complete` when an unsupported semantic, missing resource, renderer gap, or failed measurement could affect the result.
-- [ ] Guarantee that every `complete` Cause Envelope contains every actual changed cause; allow false positives but not false negatives.
-- [ ] Keep report-local identity separate from authored SVG IDs and source order.
-- [ ] Record every comparison environment input that can affect results.
-- [ ] Keep HTML and other presentation layers outside the core comparison contract.
+- Keep Source Semantics, Computed Appearance, and Rendered Evidence independently reportable.
+- Preserve continuous measurements; never replace them with only a visibility boolean, label, or universal score.
+- Report formatting-only, computed-equivalent, low-impact, and salient changes as distinct outcomes.
+- Enumerate every supported Atomic Difference, group by domain, and order only with an explicit versioned policy.
+- Treat measured zero, not-computed, indeterminate, unsupported, and failed as different states.
+- Never claim `complete` when an unsupported semantic, missing resource, renderer gap, or failed measurement could affect the result.
+- Guarantee that every `complete` Cause Envelope contains every actual changed cause; allow false positives but not false negatives.
+- Keep report-local identity separate from authored SVG IDs and source order.
+- Record every comparison environment input that can affect results.
+- Keep HTML and other presentation layers outside the core comparison contract.
 
 ## Phase 0: Evaluation foundation
 
@@ -236,7 +250,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 ## Phase 12: Documentation and maintenance
 
-- [ ] **P0** Replace stale design open decisions with accepted ADRs or explicit unresolved entries.
+- [x] **P0** Replace stale design open decisions with accepted ADRs or explicit unresolved entries.
 - [ ] **P0** Maintain a feature-to-coverage matrix linked to Diagnostics and tests.
 - [ ] **P0** Document exactly what `complete`, `partial`, and `failed` guarantee to callers.
 - [ ] **P0** Document report interpretation for text-only agents with worked examples.

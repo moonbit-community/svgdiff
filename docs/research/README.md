@@ -1,0 +1,14 @@
+# Research Index
+
+Research notes preserve dated evidence and rejected alternatives. They are not current product contracts. Consult the [documentation guide](../README.md), [current v1 scope](../v1-scope.md), and [renderer decision](../renderer-evaluation.md) before turning a research conclusion into an implementation assumption.
+
+| Note | Evidence snapshot | Role |
+| --- | --- | --- |
+| [SVG difference detection feasibility](detection-feasibility.md) | 2026-07-13; `resvg`/`usvg` 0.47.0 | Establishes that scene, geometry, raster, and text evidence are technically obtainable, and records attribution limits. |
+| [MoonBit SVG ecosystem survey](moonbit-svg-ecosystem.md) | Registry snapshot 2026-07-10; refreshed 2026-07-13 | Selects the MoonBit-native stack for the initial implementation. |
+| [Visual difference metrics](visual-difference-metrics.md) | 2026-07-13 | Explains why magnitude is a vector and surveys possible future metrics. |
+| [XMLParser 0.2.5 evaluation](xmlparser-evaluation.md) | 2026-07-13 | Rejected dependency evaluation retained for rationale. |
+| [Milky XML 0.4.0 evaluation](milky-xml-evaluation.md) | 2026-07-13 | Accepted dependency evidence for authored parsing and spans. |
+| [Historical structured-report prototype verdict](structured-report-prototype.md) | 2026-07-13 to 2026-07-14 | Records the prototype findings later promoted into `engine`. |
+
+Research should be amended only to correct factual errors or to add an explicitly dated follow-up. Changes to current product policy belong in an ADR and the current contract documents.

@@ -1,77 +1,103 @@
-# Core V1 Scope
+# Current V1 Support Contract
 
-Status: accepted in part; unresolved deferred items are marked explicitly
+Status: implementation-aligned contract
 
-This document records both the initial correctness claim and capabilities deliberately left for later versions. Presentation and HTML interaction are outside this core scope document.
+Last verified: 2026-07-14
+
+This document states what schema `1.0` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 ## Correctness claim
 
-Core v1 compares Deterministic Static SVG under a fully declared Comparison Profile. A complete result means the engine analyzed all supported source semantics, computed appearance, and rendered evidence under those conditions; it does not mean the inputs are equivalent under other environments or future interactive states.
+V1 compares two well-formed deterministic static SVG source strings under one explicit common viewport and a pinned rendering profile. A `complete` report means every encountered visual semantic is covered by the implemented analyzer slice. It does not claim browser equivalence, cross-renderer equivalence, or equivalence under another viewport or environment.
 
-## In scope
+When an input leaves the supported slice, the engine emits Diagnostics and changes `analysis_status` to `partial` or `failed`. Supported source-level differences may still be reported even when computed or rendered evidence is unavailable.
 
-- two well-formed static SVG artifacts;
-- normalized Source Semantics while preserving authored representation distinctions;
-- Computed Appearance and visually meaningful Visual Subjects under a fixed viewport, including entities and resources whose Visual Contribution is zero;
-- caller-supplied or embedded non-font resources;
-- deterministic Render Observations under the Comparison Profile;
-- one common Comparison Viewport, supplied explicitly or derived from identical valid intrinsic viewport declarations;
-- one common Comparison DPR, defaulting to `1.0` and recorded in the Structured Report;
-- transparent-canvas linear premultiplied-RGBA evidence independent of an optional explicitly declared Perceptual Background;
-- sRGB SVG and CSS color interpretation with linear-sRGB premultiplied-RGBA raster arithmetic;
-- set-to-set Subject Alignments;
-- multidimensional Atomic Differences and Visual Events anchored to one Primary Subject Alignment;
-- continuous Difference Magnitude measurements and Domain Ordering;
-- conservative Influence Provenance and causally complete Cause Envelopes for fully covered regions;
-- a complete Structured Report with Diagnostics and declared Analysis Coverage.
+## Implemented profile
 
-## Explicit v1 non-goals
+| Condition | Current behavior |
+| --- | --- |
+| Viewport | One explicit width and height shared by both inputs. CLI default: `16 x 16`. |
+| DPR | Fixed to `1.0`. |
+| Color interpretation | sRGB for the supported color slice. |
+| Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
+| Renderer identity | Pinned as `mizchi/svg@0.2.1`. |
+| Background | Transparent canvas only; no perceptual background option. |
+| Resources | No caller-supplied resource bundle and no implicit network fetching. |
+| Fonts | No deterministic font environment or font-dependent completeness claim. |
 
-- executing scripts;
-- evaluating event-driven or user-interaction state;
-- evaluating SMIL, CSS, or script-driven animation timelines;
-- rendering static `foreignObject` content through an HTML/CSS layout engine; its Source Semantics remain reportable while Computed Appearance and Rendered Evidence are indeterminate;
-- implicitly fetching network resources during comparison;
-- relying on unspecified system fonts, locale, background, viewport, color space, or renderer version;
-- claiming equality across browsers or across rendering engines;
-- treating unsupported features, missing resources, or failed measurements as equality;
-- making HTML presentation behavior part of the core comparison contract.
-- treating changes to pure Nonvisual Metadata, such as accessibility descriptions or custom data attributes, as visual Atomic Differences.
-- inferring or merging Visual Events across different Primary Subject Alignments through spatial clustering, shared resources, hierarchy, theme detection, or other outcome-coherence heuristics.
-- producing directly comparable Rendered Evidence from independently chosen per-input viewports.
-- silently assuming a white or other Perceptual Background for display-dependent perceptual metrics.
-- silently converting embedded ICC profiles, Display-P3, or other wide-gamut content into the v1 sRGB Comparison Color Space.
-- claiming complete font resolution, text shaping, font-dependent layout, or glyph raster evidence.
+The root library seam canonicalizes DPR, color interpretation, raster representation, and renderer identity. It currently uses only the caller-supplied viewport dimensions from `ComparisonProfile`.
 
-## Required behavior for out-of-scope content
+## Implemented complete-analysis slice
 
-The engine must not silently discard out-of-scope content. It records:
+The following capabilities can participate in a `complete` report when no unsupported semantics are encountered:
 
-- a Diagnostic identifying the unsupported or unresolved feature;
-- the affected Source Elements or regions when known;
-- the evidence layers that could and could not be analyzed;
-- reduced Analysis Coverage;
-- `partial` or `failed` analysis status when the gap can affect conclusions.
+- strict XML well-formedness and namespace-aware authored Source Spans through `Milky2018/xml@0.4.0`;
+- formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
+- supported presentation attributes and supported inline-style declarations, except conflicting presentation/inline declarations described below;
+- basic shape subjects: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`;
+- basic subject correspondence, insertion, deletion, split, and merge relationships for the supported shape inventory;
+- supported geometry facts for those shapes, plus fill, stroke, stroke width, and opacity facts where implemented by the analyzer;
+- ordinary inherited fill provenance in the validated inheritance slice;
+- source, computed, and rendered distinction for equivalent paint spellings such as `red` and `#ff0000`;
+- exact continuous parameter deltas independent of raster quantization;
+- presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
+- deterministic same-domain ordering under `v1_domain_lexicographic`;
+- connected pixel-mask Difference Regions and conservative computed-bounds fallback regions;
+- conservative Cause Envelopes with a sound-overapproximation guarantee for complete covered regions;
+- self-contained HTML presentation generated from the report without recomputing comparison semantics.
 
-An unsupported feature may still have source-level differences. Those differences remain reportable even when computed or rendered measurements are indeterminate.
+## Partial and guarded slices
 
-## Deferred decisions
+| Feature | Evidence retained | Why the result is partial |
+| --- | --- | --- |
+| Text content | Source-level `text.content` difference | Font loading, shaping, layout, and glyph raster evidence are deferred. |
+| Group or root opacity | Supported source-level compositing difference | Isolated group compositing semantics are not fully modeled. |
+| Referenced linear gradient | Narrow validated first-stop/single-rect cases may be analyzed | Other stops, attributes, references, and placements are diagnosed rather than generalized. |
+| Conflicting presentation attribute and inline style | Normalized Source Semantics | The pinned renderer does not yet guarantee correct precedence independent of XML attribute order; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
+| Stylesheets, selectors, or unsupported CSS syntax | Any independently supported source facts | The full cascade and selector model are not implemented. |
+| Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. |
 
-The following capabilities require separate decisions before they may be classified as v1 work or explicit non-goals:
+These guards are part of v1 correctness. They are not temporary permission to interpret absent rendered evidence as zero.
 
-- exact Contribution Index propagation through filters, masks, transparency, and blending;
-- deterministic font loading, fallback selection, shaping, and font fingerprinting;
-- platform-native font rendering modes;
-- multiple-renderer or cross-browser comparison profiles;
-- resource bundles beyond embedded and explicitly supplied assets.
-- post-v1 cross-subject Visual Event aggregation and its exact outcome-coherence criteria.
+## Unsupported or deferred
 
-Each deferred capability must eventually be moved into either **In scope** or **Explicit v1 non-goals**. It must not remain implicit during implementation.
+V1 does not completely analyze:
 
-## Renderer ownership
+- scripts, event-driven state, or animation timelines;
+- static `foreignObject` through an HTML/CSS layout engine;
+- implicit network resources or caller-supplied resource bundles;
+- paths and general path comparison;
+- transforms and cumulative coordinate systems;
+- `viewBox`, `preserveAspectRatio`, nested SVG viewports, or intrinsic viewport derivation;
+- the general CSS cascade, selectors, custom properties, or `!important`;
+- full gradients, radial gradients, patterns, markers, images, symbols, or `<use>` instances;
+- clipping, masking, filters, blending, isolation, and complete group compositing;
+- deterministic fonts, shaping, text layout, and glyph rasterization;
+- perceptual backgrounds, FLIP, SSIM, learned perceptual metrics, and advanced color profiles;
+- exact contribution weights, minimal root causes, or cross-subject event synthesis;
+- browser-to-browser or renderer-to-renderer equality claims.
 
-Core v1 first evaluates pure-MoonBit community dependencies behind an internal rendering seam. A project-owned renderer is created as a separate workspace-managed MoonBit module only when a concrete acceptance case proves that required correctness or provenance cannot be achieved through the dependency or a focused upstream extension.
+Pure nonvisual metadata such as accessibility descriptions and custom data attributes is outside visual Atomic Difference enumeration, although it remains present in the input source.
 
-## Source Semantics ownership
+## Coverage behavior
 
-Core v1 delegates XML well-formedness, namespace resolution, entity handling, and Source Span production to `Milky2018/xml@0.4.0`. The project owns only the SVG-aware Source Semantics adaptation: selecting visual declarations, recovering raw authored spelling through dependency-provided spans, and mapping source evidence into the Structured Report. The former workspace-managed `source_semantics` parser module is removed; dependency-specific XML types remain private implementation details.
+For unsupported or unresolved content, the engine must:
+
+1. emit a Diagnostic with a stable code;
+2. identify the affected subject when known;
+3. list the constrained evidence layers;
+4. retain any independently supported source difference;
+5. avoid a `complete` claim when the gap could affect the conclusion;
+6. mark a Cause Envelope `not_established` when causal completeness cannot be guaranteed.
+
+`complete`, `partial`, and `failed` describe analysis coverage. They do not classify whether the observed difference is visually important.
+
+## Ownership boundaries
+
+- `Milky2018/xml@0.4.0` owns XML well-formedness, namespaces, entities, and source locations.
+- Private project code owns SVG-aware Source Semantics and mapping into report facts.
+- `mizchi/svg@0.2.1` supplies the pinned scene and raster implementation behind the engine seam.
+- The project owns comparison, coverage guards, alignment, magnitudes, regions, conservative Cause Envelopes, report serialization, and HTML projection.
+- Dependency-specific types remain private.
+
+Future expansion is tracked in the [post-v1 roadmap](../roadmap.md). Accepted but unimplemented directions remain discoverable through the [ADR index](adr/README.md) without being presented as current support.

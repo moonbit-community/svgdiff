@@ -2,6 +2,10 @@
 
 Status: research note
 
+Evidence snapshot: 2026-07-13
+
+This note surveys available metrics and target design. Only fields documented in [`../core-model.md`](../core-model.md) are implemented in schema `1.0`; additional metrics remain roadmap work.
+
 ## Conclusion
 
 There are mature mechanisms for measuring particular kinds of visual difference, but there is no accepted universal scalar that means "how different are these two SVGs?" Geometry displacement, changed painted area, pixel error, color perception, and perceptual image error answer different questions. SVG Diff should preserve them as a score vector and derive any `0..1` ranking score from an explicit, versioned policy.

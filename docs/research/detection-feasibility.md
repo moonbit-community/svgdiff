@@ -2,6 +2,10 @@
 
 Status: research note
 
+Evidence snapshot: 2026-07-13
+
+Historical evidence only. Current production choices are summarized in [`../renderer-evaluation.md`](../renderer-evaluation.md), and current feature support is defined by [`../v1-scope.md`](../v1-scope.md).
+
 Evaluated against `resvg`/`usvg` 0.47.0 and their current official documentation and source. This note evaluates detection infrastructure, not the choice of scoring thresholds.
 
 ## Conclusion

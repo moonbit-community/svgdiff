@@ -1,6 +1,10 @@
-# Prototype Verdict
+# Historical Prototype Verdict
 
-Status: toy walkthrough and first real MoonBit integration spike complete
+Status: archived evidence; validated conclusions are implemented in `engine`
+
+Evidence period: 2026-07-10 to 2026-07-13
+
+This file preserves experiment output. It does not define the current report schema, support boundary, or renderer decision.
 
 ## Question
 
@@ -57,6 +61,6 @@ The alternate-scale values in this experiment are renderer QA data only. The can
 
 The experiment required a temporary one-line `Debug` derive in downloaded `mizchi/image@0.4.2` because the published dependency does not compile under the active toolchain. That cache modification is not part of the project. A focused upstream compatibility fix is preferred over a workspace-owned raster module at this point.
 
-## User verdict
+## Final disposition
 
-To be filled before the prototype is deleted or its validated logic is absorbed into the production design.
+The conservative widening and before/after union discipline were absorbed into the production engine. The prototype remains only as historical executable evidence; current work is tracked in [`roadmap.md`](../../roadmap.md).

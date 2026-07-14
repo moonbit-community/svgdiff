@@ -30,7 +30,7 @@ The root package exposes one comparison operation:
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 ```
 
-The stable JSON contract is version `1.0`; its schema is in `schema/svgdiff-report.schema.json`. The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, and the pinned renderer identity. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The stable JSON contract is version `1.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, and the pinned renderer identity. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; only renderer and provenance experiments remain under `prototype`.
 
@@ -50,6 +50,18 @@ order. Such overlap emits `renderer_style_precedence_unresolved` and reduces
 the report to `partial`; Source Semantics remains normalized, while Computed
 Appearance and Rendered Evidence must be treated as unavailable until the
 upstream fix is released.
+
+The complete implementation boundary, including guarded partial cases, is in the [current v1 support contract](docs/v1-scope.md).
+
+## Documentation
+
+- [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;
+- [Current v1 support](docs/v1-scope.md): implemented, partial, unsupported, and deferred capabilities;
+- [Core comparison model](docs/core-model.md): report concepts and invariants;
+- [Post-v1 roadmap](roadmap.md): all known unfinished product work;
+- [ADR index](docs/adr/README.md): architectural decisions and supersession status;
+- [Research index](docs/research/README.md): dated experiments and rejected alternatives;
+- [Issue index](issues/README.md): generated execution history.
 
 ## Validation
 

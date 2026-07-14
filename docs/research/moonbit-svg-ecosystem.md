@@ -4,6 +4,10 @@ Status: research note
 
 Registry snapshot: 2026-07-10
 
+Last evidence refresh: 2026-07-13
+
+Historical ecosystem evidence only. See [`../renderer-evaluation.md`](../renderer-evaluation.md) for the current production decision.
+
 ## Conclusion
 
 A Rust renderer adapter is not a prerequisite for SVG Diff. Mooncakes currently provides a pure-MoonBit SVG parser, public scene graph, and CPU renderer in `mizchi/svg@0.2.1`, plus complementary raster and image-difference packages. The initial feasibility spike should therefore be MoonBit-native; resvg remains useful as an external conformance oracle or fallback only if measured gaps cannot be closed economically.

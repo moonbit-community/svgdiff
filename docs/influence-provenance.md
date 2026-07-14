@@ -2,6 +2,10 @@
 
 Status: accepted design; v1 implementation validated
 
+Last verified: 2026-07-14
+
+This is the current causal-completeness contract for the supported v1 slice. Feature coverage remains defined by [`v1-scope.md`](v1-scope.md); historical prototype evidence lives under `prototype/influence_provenance`.
+
 ## Objective
 
 For every rendered Difference Region, report a Cause Envelope that is guaranteed to contain every actual changed cause within the supported Deterministic Static SVG scope. False-positive candidates are acceptable. Exact contribution weights, unique causes, and minimal causal subsets are not required.

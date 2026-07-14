@@ -17,3 +17,5 @@ compare(before_svg, after_svg, comparison_profile) -> structured_report
 ```
 
 Callers should normally import `Milky2018/svgdiff`; the root package pins v1 comparison conditions and exposes the stable report interface. The engine package owns source, computed, and rendered analysis, subject alignment, magnitudes, regions, cause envelopes, and conservative diagnostics.
+
+The [current support contract](../docs/v1-scope.md) defines when this engine may return complete analysis. The [core comparison model](../docs/core-model.md) defines the report concepts, and the checked-in [JSON Schema](../schema/svgdiff-report.schema.json) defines the serialized contract.

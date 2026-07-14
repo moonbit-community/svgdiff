@@ -1,406 +1,200 @@
 # Core Comparison Model
 
-Status: proposed
+Status: current model for Structured Report schema `1.0`
 
-This document defines the core abstraction for SVG difference analysis. Presentation formats, including HTML, are outside its scope.
+Last verified: 2026-07-14
+
+This document defines the concepts and invariants implemented by the current comparison engine. The checked-in [JSON Schema](../schema/svgdiff-report.schema.json) and public MoonBit report types are authoritative for serialized field names. The [current v1 scope](v1-scope.md) defines which SVG features may receive complete analysis; the [roadmap](../roadmap.md) contains future extensions.
 
 ## External seam
 
-The comparison engine is one deep module with one conceptual operation:
+The root package exposes one conceptual operation:
 
 ```text
 compare(before_svg, after_svg, comparison_profile) -> structured_report
 ```
 
-Callers provide two SVG artifacts and a comparison profile. They do not orchestrate parsing, style resolution, visual correspondence, difference extraction, rendering, scoring, or aggregation.
+Callers provide two SVG source strings and a Comparison Profile. Parsing, supported source normalization, subject alignment, difference extraction, rendering, magnitude calculation, region extraction, conservative causal attribution, and report assembly remain internal.
 
-## Core scope
-
-The initial correctness claim covers Deterministic Static SVG under declared rendering conditions and pinned resources. Unsupported dynamic behavior or unresolved environmental state reduces Analysis Coverage through Diagnostics; it is never silently interpreted as equality. The detailed inclusion and deferral list lives in [`v1-scope.md`](v1-scope.md).
-
-Font resolution, shaping, font-dependent layout, and glyph raster evidence are explicit core v1 TODOs. Text Source Semantics remain reportable, but font-dependent Computed Appearance and Rendered Evidence reduce Analysis Coverage through Diagnostics until that capability is implemented.
-
-## Model overview
+## Current pipeline
 
 ```text
-SVG artifacts
-    │
-    ├── Source Semantics ───────────────────────────────┐
-    │                                                   │
-    └── Computed Appearance ── Visual Subjects          │
-                              │                         │
-                              └── Subject Alignments    │
-                                      │                 │
-                                      └── Atomic Differences
-                                              │
-Render Observations ── Rendered Evidence       │
-        │                    │                 │
-        └── Contribution Index                │
-                             └── Visual Impact ┤
-                                              │
-                                              └── Visual Events
-                                                      │
-                                                      └── Structured Report
+SVG source
+  -> authored visual facts and source spans
+  -> supported computed facts and visual subjects
+  -> before/after subject alignments
+  -> changed facts and atomic differences
+  -> canonical raster observation and difference regions
+  -> conservative cause envelopes
+  -> visual events
+  -> Structured Report 1.0
 ```
 
-The engine maintains source, computed, and rendered facts separately. No single layer is allowed to stand in for the other two.
+Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
-## Core records
+## Comparison Profile
 
-### SVG Artifact
+Schema `1.0` records:
 
-One comparison input. It carries the original content, a content hash, and input metadata required to identify the analyzed artifact.
+- `viewport_width` and `viewport_height`;
+- `comparison_dpr`, fixed to `1.0` by the root v1 seam;
+- `color_interpretation`, fixed to `srgb`;
+- `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
+- `renderer_id`, currently fixed to `mizchi/svg@0.2.1`.
 
-### Comparison Profile
+The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
-The explicit assumptions under which comparison occurs. It defines normalization policy, feature support, and one declared rendering environment including the Comparison Viewport, Comparison DPR, optional Perceptual Background, Comparison Color Space, fonts, resources, and renderer identity. Diagnostic rerendering at alternate scales is an internal validation technique and is not part of the canonical Comparison Profile or Structured Report.
+Intrinsic viewport derivation, resource bundles, fonts, perceptual backgrounds, alternate DPRs, wide-gamut profiles, and cross-renderer profiles are not part of the implemented v1 profile. Accepted target decisions for some of these capabilities remain recorded in ADRs and the roadmap.
 
-The Comparison Viewport is resolved before Rendered Evidence is produced. An explicitly supplied viewport is used for both inputs. When it is omitted, the engine may derive it only when both SVGs declare the same valid intrinsic viewport; differing, missing, or invalid declarations require an explicit viewport. The engine never renders the two inputs under independent viewports and presents the resulting pixels as directly comparable. Changes to the SVGs' own viewport declarations remain reportable as `document.viewport` Atomic Differences even when rendering uses an explicit common viewport.
+## Evidence layers
 
-Raw raster evidence is always measured as linear premultiplied RGBA on a transparent canvas. A Perceptual Background, when explicitly declared, is used to composite both raw renderings before calculating display-dependent perceptual metrics such as FLIP. The core engine never silently assumes white or another background. When no Perceptual Background is declared, those metrics are marked `not_computed` with reason `perceptual_background_absent`; geometry, coverage, alpha, and raw premultiplied-RGBA measurements remain available and Analysis Coverage is not reduced merely because an optional interpretation was not requested.
+### Source Semantics
 
-The Comparison DPR is one positive finite value shared by both inputs and defaults to `1.0` when omitted. Its effective value is recorded in the Structured Report. It determines only the canonical raster dimensions and response under the Comparison Profile; exact Computed Appearance measurements preserve subpixel distinctions independently of DPR, and alternate-scale or supersampled rerendering remains renderer QA rather than canonical evidence.
+Source Semantics describes supported authored visual declarations after formatting normalization while retaining provenance. A `DeclaredVisualFact` records:
 
-The Comparison Color Space defaults SVG and CSS color interpretation to sRGB. Raster blending, comparison, RMSE, and related numeric measurements use linear-sRGB premultiplied RGBA, and the Structured Report records both the color interpretation and numeric representation. Core v1 does not silently map embedded ICC profiles, Display-P3, or other wide-gamut content into sRGB; affected computed or rendered conclusions are accompanied by unsupported-feature Diagnostics and reduced Analysis Coverage.
+- property name;
+- exact authored value;
+- normalized declared value;
+- declaration origin;
+- half-open source offsets.
 
-### Declared Visual Fact
+Attribute order, quote style, tag-closing style, entity spelling, and declaration whitespace alone do not create Atomic Differences. A change in normalized visual declaration or declaration origin may create a source-level difference even when computed and rendered results remain equal.
 
-A supported visual property at Source Semantics. It records the property, exact authored value, normalized declared value, declaration origin, and Source Span. Raw spelling and location provide provenance, while comparison uses the normalized value and origin so XML and CSS Formatting Variations do not become Atomic Differences.
+### Computed Appearance
 
-Presentation attributes and inline `style` declarations converge into this model after precedence is applied. Moving the same value between those origins remains a Source Semantics distinction because its cascade provenance changed, even when the Computed Relation is `equivalent` and Event Rendered Outcome is zero. Unsupported selectors, stylesheets, declarations, or value syntax reduce Analysis Coverage through Diagnostics rather than silently producing equality.
+Computed Appearance records the supported resolved fact for a subject. `ResolvedVisualFact` includes the resolved value, resolution mode, optional declaration owner, winning declaration, and inheritance depth.
 
-### Resolved Visual Fact
+`ComputedRelation` describes the relationship between the before and after facts:
 
-A supported visual property after local declaration precedence and inheritance have been applied to one Visual Subject. It records the resolved value together with the winning Declared Visual Fact, its owning Source Element, and inheritance depth. An initial value has no authored declaration or Source Span. This record supplies provenance for Computed Appearance without exposing parser-specific XML types.
+- `equivalent`: supported facts resolve to the same visual value;
+- `different`: supported resolved facts differ;
+- `indeterminate`: Diagnostics prevent a sound conclusion;
+- `not_applicable`: one side has no comparable fact, as with insertion or deletion.
 
-Changed Facts remain separate from Resolved Visual Facts. One changed ancestor declaration is stored once and may influence several descendant resolutions; each resulting Atomic Difference references the same Changed Fact instead of duplicating the candidate cause.
+The relation includes a stable reason code and may reference Diagnostics. It is not a visibility test: a computed difference may have zero rendered magnitude under the current profile.
 
-### Visual Subject
+### Rendered Evidence
 
-Any reportable subject with visual semantics. A Visual Subject has one of two roles:
+Rendered Evidence describes the canonical raster response under the recorded profile. `RenderedMagnitude` currently records:
 
-- Visual Entity: placed, geometric, or instantiated scene content;
-- Visual Resource: a definitional or supplied resource such as a gradient, filter, clip path, mask, symbol, image asset, or font.
+- changed pixel count and viewport fraction;
+- renderer-native RGBA8 RMSE;
+- canonical linear-sRGB premultiplied-RGBA RMSE.
 
-Both roles have report-local identity, source provenance, Computed Appearance facts when available, and a Visual Contribution that may be zero. A resource may contribute indirectly through dependent entities; an unreferenced resource remains reportable at Source Semantics with zero contribution.
+`RenderedEvidence.status` distinguishes an available observation from an unavailable or indeterminate one. A measured zero is valid evidence and must not be replaced by `not_computed` or used to erase a source or computed difference.
 
-### Visual Entity
+## Report records
 
-A Visual Subject with scene placement, geometry, or an instantiated visual role. It has resolved visual properties, spatial extent when available, and compositing relationships. Membership does not require non-zero pixels: opacity, display, clipping, masking, or compositing may reduce its Visual Contribution under the Comparison Profile to zero.
+### Subject Reference and Subject Alignment
 
-### Visual Resource
+A `SubjectReference` identifies a report subject by source index, SVG kind, and optional authored ID. Authored IDs and source order are evidence, not authoritative cross-document identity.
 
-A Visual Subject that supplies or defines appearance without itself being a placed entity. Changes to referenced resources remain separate Atomic Differences from the resulting entity paint or compositing changes; unreferenced resource changes remain source-level resource Differences with zero Visual Contribution.
+A `SubjectAlignment` relates sets of before and after subjects. Its relation may express correspondence, insertion, deletion, split, or merge. The current analyzer implements basic set-to-set alignment for its supported shape subset; broader many-to-many and ambiguity handling remain roadmap work.
 
-Pure Nonvisual Metadata such as accessibility descriptions and custom data attributes may remain available as input provenance but does not become a Visual Subject or Atomic Difference. The comparison contract is exhaustive over visual semantics, not every XML or metadata mutation.
+### Changed Fact
 
-### Visual Contribution
-
-The continuous direct or mediated coverage, color, raster, and perceptual contribution of a Visual Subject under the Comparison Profile. A zero contribution is a measured result, not a reason to discard the subject or convert its differences into equality.
-
-### Render Observation
-
-A rendering-derived observation under the Comparison Profile. It contains final color, coverage, perceptual measurements, and a Contribution Index that relates sampled regions back to the Visual Subjects that contributed directly or through dependency paths; it is richer than a screenshot and does not replace Computed Appearance.
-
-### Subject Alignment
-
-A set-to-set relationship between Visual Subjects from the two inputs. Empty and non-empty sides represent insertion and deletion; non-empty sides represent one-to-one correspondence, splitting, merging, or many-to-many reorganization. Each accepted Subject Alignment records its subject role, supporting evidence, and confidence, while ambiguous alternatives remain candidates rather than accepted facts.
+A `ChangedFact` stores one supported authored change and the subject IDs it may affect. Atomic Differences refer to Changed Fact IDs so a shared inherited declaration or resource change does not need to be duplicated for each outcome.
 
 ### Atomic Difference
 
-The smallest independently reportable semantic change. It identifies what changed, the affected Subject Alignment, its before and after facts, the evidence layers at which it exists, its visual impact, and the confidence of the conclusion.
+An `AtomicDifference` is the smallest independently reportable supported change. It records:
 
-### Visual Event
+- subject role and optional Subject Alignment;
+- Difference Domain;
+- before and after source values and optional declared facts;
+- referenced Changed Facts;
+- evidence layers;
+- Computed Relation;
+- domain-appropriate Difference Magnitude;
+- a versioned Domain Ordering tuple.
 
-A coherent, layered change explanation that groups related Atomic Differences around one visual outcome. Event boundaries follow outcome coherence rather than shared cause alone: one resource change may participate in multiple Events when it produces independent outcomes, while each Atomic Difference remains stored once and may be referenced by multiple Events. A Visual Event is the primary unit for an agent to read; its Atomic Differences remain the complete source and computed evidence, while the final rendered measurements are computed once over the union of the Event's Difference Regions. Group membership does not establish an exact causal edge: causal candidates remain expressed through conservative Influence Provenance and Cause Envelopes.
+Current emitted domains include `presence.insertion`, `presence.deletion`, `geometry.*`, `paint.*`, `compositing.opacity`, `resource.gradient.stop_color`, `text.content`, and `document.structure` where the supported analyzers apply. The exact emitted subdomain is part of the report contract; the broader future taxonomy remains roadmap work.
 
-Core v1 uses a deliberately narrower construction rule: every Visual Event has exactly one Primary Subject Alignment, and it groups the Atomic Differences attached to that alignment. Related resource Differences may be referenced as context, but v1 does not merge Events whose primary alignments differ. An Event Rendered Outcome may contain multiple disconnected regions; no spatial-connectivity or cross-subject coherence inference is required.
+### Difference Magnitude
 
-### Event Rendered Outcome
+Magnitude is a vector, not a universal similarity scalar. The current vector can contain:
 
-The union of rendered Difference Regions associated with one Visual Event under the Comparison Profile. It is measured once as continuous coverage, raster, color, and perceptual evidence regardless of the number of related Atomic Differences. It may be empty or have zero-valued measurements when the Event exists only at Source Semantics or Computed Appearance.
+- absolute and signed parameter delta in user units;
+- symmetric relative delta;
+- geometry displacement in CSS pixels and viewport fraction;
+- presence painted viewport fraction;
+- raster changed-pixel fraction;
+- RGBA8 and linear-premultiplied-RGBA RMSE.
 
-### Diagnostic
+Unavailable components are `null`, not numeric zero. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists.
 
-A first-class statement that some part of the comparison is unsupported, ambiguous, missing an external resource, or otherwise indeterminate. Diagnostics constrain the claims that may safely be made from the report.
+`DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within a domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit.
 
-### Influence Provenance
+### Difference Region
 
-A conservative may-depend graph that propagates Changed Fact tokens through computed and rendered operations. It exists to preserve Causal Completeness and deliberately does not claim exact contribution weights.
+A `DifferenceRegion` localizes an event using either a connected pixel-mask component or conservative computed bounds. It records pixel-space and CSS-space bounds, changed-pixel count, viewport fraction, and a Cause Envelope.
+
+Pixel-mask regions describe observed final differences. Computed-bounds regions are conservative localization when rendered evidence is unavailable. Neither form alone proves an exact causal contribution.
 
 ### Cause Envelope
 
-The Changed Facts that may cause one Difference Region according to Influence Provenance from both inputs. A complete Cause Envelope contains every actual changed cause and may contain false positives; unknown operations widen the envelope rather than pruning candidates.
+A `CauseEnvelope` is a conservative set of Changed Fact IDs that may have caused one Difference Region. Its guarantee is either:
+
+- `sound_overapproximation`: within complete analysis coverage, every actual changed cause is included, although false positives may remain;
+- `not_established`: unsupported or unresolved semantics prevent the completeness guarantee.
+
+The engine may safely widen an envelope to all Changed Facts when it lacks a sound independence rule. It must not prune candidates speculatively. The detailed contract and proof discipline live in [Influence Provenance and Causal Completeness](influence-provenance.md).
+
+### Visual Event
+
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.0` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+
+Current v1 events are anchored to one primary subject alignment. Cross-subject outcome grouping, shared-resource event synthesis, and semantic theme detection are future work. Atomic Differences remain independently recoverable even when grouped.
+
+### Diagnostic
+
+A `Diagnostic` identifies an unsupported, unresolved, or failed analysis condition, the affected subject, and the evidence layers whose claims are constrained. Diagnostics are part of the result, not debug logging.
 
 ### Structured Report
 
-The complete result returned by the comparison module. It contains inputs, the comparison profile, analysis status, summary, Visual Subjects, Subject Alignments, Visual Events, Atomic Differences, and diagnostics.
-
-## Orthogonal difference dimensions
-
-Every Atomic Difference is classified along independent dimensions. These dimensions must not be collapsed into one `type` or one score.
-
-### Difference Domain: what changed
-
-Every Atomic Difference has one Domain and may use a more specific subdomain. The top-level taxonomy is:
-
-- presence: insertion or deletion;
-- geometry: position, size, shape, or transform;
-- paint: fill, stroke, opacity, or color;
-- text: content, font properties, shaping, or layout;
-- compositing: order, clipping, masking, filtering, or blending;
-- resource: an image, font, paint server, symbol, or other referenced content;
-- document: viewport or other whole-document visual semantics.
-
-Representation and visibility are not Domains. Authored representation is expressed through Source Semantics plus Computed Relation; rendered contribution is expressed through continuous Rendered Evidence. The exact subdomain taxonomy remains provisional and must be tested against concrete SVG cases.
-
-### Computed Relation: whether resolved facts agree
-
-Every Atomic Difference records one relation between its before and after Computed Appearance facts:
-
-- equivalent: the authored distinction resolves to the same computed visual fact;
-- different: the resolved visual facts differ;
-- indeterminate: coverage or ambiguity prevents a sound conclusion;
-- not_applicable: one side has no computed fact to compare, as in insertion or deletion.
-
-Computed Relation is a structured explanation rather than a bare enum. Every relation includes a stable `reason_code`; `not_applicable` also identifies the missing side, while `indeterminate` references the Diagnostics that prevented a conclusion. An Atomic Difference with relation `different` may legitimately have zero Rendered Evidence under the Comparison Profile.
-
-For example, an insertion has a Subject Alignment with `before=[]` and a non-empty `after` side. The inserted subject may have a valid Computed Appearance after the change, but no before fact exists, so comparing two computed facts is undefined rather than failed:
+The schema `1.0` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "domain": "presence.insertion",
-  "computed_relation": {
-    "status": "not_applicable",
-    "reason_code": "before_fact_absent",
-    "missing_side": "before",
-    "explanation": "The entity exists only after the change, so no before computed fact exists."
-  },
-  "magnitude": {
-    "presence": {
-      "basis_side": "after",
-      "affected_entity_count": 1
-    },
-    "geometry": {
-      "bounds_area_css_px2": 2400.0,
-      "bounds_viewport_fraction": 0.005
-    },
-    "coverage": {
-      "painted_area_css_px2": 0.0,
-      "painted_viewport_fraction": 0.0
-    },
-    "raster": {
-      "changed_pixel_fraction": 0.0,
-      "linear_premultiplied_rgba_rmse": 0.0
-    }
-  }
-}
-```
-
-A deletion uses `after_fact_absent` and `missing_side: "after"`. Unsupported features, missing resources, and ambiguous analysis use `indeterminate`, not `not_applicable`, because comparable facts should exist but could not be established soundly.
-
-### Evidence layer: where the distinction exists
-
-- Source Semantics;
-- Computed Appearance;
-- Rendered Evidence.
-
-An authored paint distinction such as `red` versus `#ff0000` exists in Source Semantics while its Computed Relation is `equivalent`. A small geometry change may have Computed Relation `different` while producing zero-valued Rendered Evidence under the Comparison Profile.
-
-### Difference Magnitude: what can be measured
-
-Difference Magnitude is a vector of domain-appropriate evidence. It may include:
-
-- exact parameter and device-space displacement;
-- contour displacement and changed coverage;
-- linear premultiplied-RGBA and perceptual color error;
-- event-local FLIP statistics and error-map extent.
-
-The vector is the reportable fact. It does not imply that unrelated measurements can be added meaningfully.
-
-### Visual Event Magnitude: preserve layers without addition
-
-A Visual Event presents magnitude as layered evidence rather than a sum of its Atomic Differences. Source Semantics and Computed Appearance measurements remain attached to their respective Atomic Differences. The Event Rendered Outcome records the union of the Event's Difference Regions and computes its coverage, raster, color, and perceptual measurements once over that union.
-
-No value is obtained by adding source, computed, and rendered measurements, or by summing child Atomic Difference magnitudes. Relationships between an Event Rendered Outcome and possible Changed Facts are represented by Influence Provenance and Cause Envelopes; they do not become exact causal edges unless a future analysis can prove that stronger claim.
-
-### Presence Magnitude: how much content was inserted or deleted
-
-Presence is categorical as a Domain but numeric as a Magnitude. An insertion or deletion does not receive a boolean magnitude or a fixed score of `1`. It records measurements from the side on which the content exists:
-
-- `basis_side`: `after` for insertion and `before` for deletion;
-- affected entity count;
-- geometric bounds area in CSS square pixels and as a viewport fraction;
-- painted coverage area and its viewport fraction;
-- the ordinary continuous raster, color, and perceptual measurements from Rendered Evidence.
-
-Geometric extent and painted coverage remain separate. A large inserted entity with zero opacity may have a large bounds area while its painted coverage, premultiplied-RGBA error, and perceptual error are all zero. The Difference remains reportable without being assigned an invented visual score.
-
-### Impact Assessment: how measurements may be interpreted
-
-Impact Assessment is an optional, explainable, profile-dependent interpretation. When present, it needs at least:
-
-- a normalized rank value or human-facing label used only for ordering or presentation;
-- the measurements and thresholds that justify the interpretation;
-- the policy identifier and metric versions;
-- affected spatial extent when one exists.
-
-It never replaces Difference Magnitude or converts Rendered Evidence into a visible/not-visible gate. The Render Observation returns continuous measurements, including legitimate zero values.
-
-Differences within one Domain are ordered by a versioned lexicographic Domain Ordering composed from measurements meaningful to that Domain. Cross-Domain ordering, if later required for a summary, is a separate optional policy rather than an intrinsic comparison of magnitudes.
-
-### Confidence: how certain the engine is
-
-Confidence applies independently to Subject Alignment, difference extraction, and visual-impact assessment. A highly salient apparent change can still have low confidence when fonts are missing or subject matching is ambiguous.
-
-## Report invariants
-
-1. Formatting Variations never become Atomic Differences.
-2. Every Visual Subject participates in exactly one accepted Subject Alignment, and each Subject Alignment has at least one subject across its two sides.
-3. Every Atomic Difference references one Subject Alignment.
-4. Every Visual Event references at least one Atomic Difference.
-5. Every Atomic Difference remains recoverable even when grouped into a Visual Event.
-6. Difference Domain, Computed Relation, Difference Magnitude, Impact Assessment, and confidence are independent fields.
-7. A distinction with no visual impact remains reportable when Source Semantics changed.
-8. An indeterminate result is never coerced to `equal`, `none`, or zero magnitude.
-9. Unsupported features and incomplete resources reduce declared coverage through Diagnostics.
-10. The report declares whether analysis is complete, partial, or failed.
-11. Report-local identifiers are stable within one report and are never presented as intrinsic identities of SVG content.
-12. Visible differences in Render Observations remain reportable even when semantic attribution fails.
-13. No visibility boolean or impact label substitutes for continuous Difference Magnitude measurements.
-14. Domain Ordering preserves the units of its measurements and never implies that unrelated Difference Domains share one magnitude scale.
-15. Coverage gaps are explicit and never become evidence of equality.
-16. A causally complete Cause Envelope contains every actual changed cause; ranking never removes its candidates.
-17. Unknown influence widens the Cause Envelope up to all Changed Facts or revokes the guarantee.
-18. The canonical Structured Report contains Rendered Evidence only for its Comparison Profile; alternate-scale diagnostic rerenders never become Atomic Differences, magnitude fields, or ranking inputs.
-19. `equivalent` and `different` Computed Relations reference comparable before and after facts.
-20. `not_applicable` is used only when a comparable fact is structurally absent and must identify the missing side and reason.
-21. `indeterminate` must include a reason and reference at least one Diagnostic explaining why the relation could not be established.
-22. Presence Magnitude uses measurements from the side on which the content exists and never substitutes a boolean or fixed insertion/deletion score for continuous evidence.
-23. Geometric extent and painted coverage remain separate, including when one is non-zero and the other is zero.
-24. Visual Subject membership does not depend on non-zero Visual Contribution under the Comparison Profile.
-25. Visual Contribution is represented by continuous measurements and never by a membership or visibility boolean.
-26. Nonvisual Metadata does not create Visual Subjects or Atomic Differences.
-27. Visual Resources and Visual Entities remain distinct subject roles even when their Atomic Differences are grouped into one Visual Event.
-28. A Visual Event preserves layer-specific evidence and never computes magnitude by adding across evidence layers or child Atomic Differences.
-29. Each Event Rendered Outcome is measured once over the union of its Difference Regions.
-30. Visual Event grouping never strengthens a conservative `may-depend` relationship into a proven causal edge.
-31. Shared cause alone never requires independent visual outcomes to be grouped into one Visual Event.
-32. An Atomic Difference is stored once in the Structured Report and may be referenced by multiple Visual Events.
-33. Every core v1 Visual Event has exactly one Primary Subject Alignment.
-34. Core v1 does not merge Visual Events across different Primary Subject Alignments.
-35. Difference Regions in one Event Rendered Outcome are not required to be spatially connected.
-36. Both inputs use exactly one resolved Comparison Viewport for directly comparable Rendered Evidence.
-37. An omitted Comparison Viewport is derived only from identical valid intrinsic viewport declarations.
-38. Using an explicit Comparison Viewport never suppresses a Difference between the inputs' own viewport declarations.
-39. Raw raster evidence is measured in linear premultiplied RGBA on a transparent canvas independently of the Perceptual Background.
-40. Display-dependent perceptual metrics are computed only after compositing both inputs over the same explicitly declared Perceptual Background.
-41. An absent Perceptual Background never causes the core engine to assume a display color or to discard non-perceptual Rendered Evidence.
-42. Both inputs use the same positive finite Comparison DPR, whose effective value is recorded in the Structured Report.
-43. An omitted Comparison DPR resolves to `1.0`.
-44. Comparison DPR never determines whether a Computed Appearance Difference exists.
-45. Core v1 defaults SVG and CSS color interpretation to sRGB and records that interpretation in the Structured Report.
-46. Raster arithmetic and numeric error measurements use linear-sRGB premultiplied RGBA rather than gamma-encoded channel arithmetic.
-47. Unsupported color profiles and wide-gamut content produce Diagnostics and Coverage gaps rather than silent sRGB conversion.
-
-## Proposed JSON shape
-
-This is a structural sketch, not yet a field-complete schema:
-
-```json
-{
-  "schema_version": "0.1",
-  "analysis": {
-    "status": "complete",
-    "profile": {
-      "id": "profile:1",
-      "viewport": {
-        "width_css_px": 800.0,
-        "height_css_px": 600.0,
-        "source": "shared_intrinsic"
-      },
-      "device_pixel_ratio": 1.0,
-      "perceptual_background": null,
-      "color_space": {
-        "interpretation": "srgb",
-        "raster_representation": "linear_srgb_premultiplied_rgba"
-      },
-      "fonts": {},
-      "resources": {},
-      "renderer": {}
-    },
-    "before": { "content_hash": "..." },
-    "after": { "content_hash": "..." }
-  },
-  "summary": {
-    "main_event_ids": ["event:1"],
-    "counts_by_domain": {},
-    "counts_by_impact": {}
-  },
-  "subjects": {
-    "before": [],
-    "after": []
-  },
+  "schema_version": "1.0",
+  "analysis_status": "complete | partial | failed",
+  "profile": {},
   "subject_alignments": [],
-  "events": [
-    {
-      "id": "event:1",
-      "primary_subject_alignment_id": "alignment:1",
-      "domains": ["geometry"],
-      "description": "A related group moved to the right.",
-      "atomic_difference_ids": ["diff:1"],
-      "rendered_outcome": {
-        "status": "computed",
-        "profile_id": "profile:1",
-        "difference_region_ids": ["region:1"],
-        "magnitude": {
-          "coverage": {},
-          "raster": {},
-          "perceptual": {
-            "status": "not_computed",
-            "reason_code": "perceptual_background_absent"
-          }
-        }
-      },
-      "impact_assessment": {}
-    }
-  ],
-  "atomic_differences": [
-    {
-      "id": "diff:1",
-      "domain": "geometry.position",
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "resolved_facts_differ"
-      },
-      "subject": { "subject_alignment_id": "alignment:1" },
-      "before": {},
-      "after": {},
-      "evidence": {
-        "source_semantics": {},
-        "computed_appearance": {}
-      },
-      "magnitude": {
-        "parameter": {},
-        "geometry": {}
-      },
-      "impact_assessment": {},
-      "confidence": {}
-    }
-  ],
+  "changed_facts": [],
+  "source_resolutions": [],
+  "atomic_differences": [],
+  "events": [],
   "diagnostics": []
 }
 ```
 
-Rendered measurements occur only under `events[].rendered_outcome`; Atomic Differences retain source and computed facts and magnitudes without copying the Event's raster values. A rendered outcome whose analysis is unavailable uses `status: "not_computed"`, `magnitude: null`, and referenced Diagnostics rather than zero-valued measurements. The formal engine preserves this status shape and JSON round trip across the supported v1 scenarios.
+`analysis_status` describes coverage of the attempted comparison, not the severity of the visual change. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its Diagnostics.
 
-## Deliberately hidden implementation
+## Current invariants
 
-The external interface does not expose separate parser, resolver, matcher, renderer, scorer, or event-aggregation interfaces. These are implementation stages of the comparison module. Authored XML parsing and Source Spans are supplied by `Milky2018/xml@0.4.0` behind private Source Semantics helpers; SVG-aware declared facts and report evidence remain project responsibilities. Rendering has a separate internal seam because a community MoonBit renderer is being evaluated against a possible future project-owned workspace module and an external conformance oracle; dependency-specific source, scene, and image types do not cross the external comparison interface.
+1. Formatting-only XML and declaration changes do not become Atomic Differences.
+2. Supported authored distinctions remain reportable even when computed values are equivalent or rendered magnitude is zero.
+3. Unsupported semantics cannot produce a false claim of complete equality.
+4. `equivalent`, `different`, `indeterminate`, and `not_applicable` remain distinct computed states.
+5. Measured zero and unavailable measurement remain distinct serialized states.
+6. Atomic Differences retain references to their Changed Facts and evidence layers.
+7. Event grouping does not delete or merge away Atomic Differences.
+8. Every reported Difference Region carries a Cause Envelope.
+9. A Cause Envelope claiming `sound_overapproximation` may contain false positives but must contain every actual changed cause within the supported coverage boundary.
+10. Dependency-specific XML, SVG scene, image, and renderer types do not cross the public report seam.
+11. HTML is a presentation of the Structured Report and must not recompute semantic differences.
 
-## Open decisions
+## Not implemented in schema 1.0
 
-1. The exact versioned fields and defaults of the Comparison Profile.
-2. The stable subdomain taxonomy beneath the accepted top-level Difference Domains.
-3. Coverage semantics for unsupported SVG features and missing resources.
-4. The amount of subject and evidence detail required in the canonical JSON.
+The following concepts are intentional future work rather than hidden current fields:
+
+- an agent summary or universal main-difference score;
+- explicit Impact Assessment policy and confidence fields;
+- exact per-pixel Contribution Index or minimal root-cause set;
+- perceptual-background-dependent metrics such as FLIP;
+- deterministic font loading, shaping, layout, and glyph evidence;
+- caller-supplied resource bundles and implicit viewport derivation;
+- complete CSS, paths, transforms, filters, masks, clipping, blending, reuse, and nested viewport semantics;
+- cross-subject Visual Event aggregation.
+
+Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).
