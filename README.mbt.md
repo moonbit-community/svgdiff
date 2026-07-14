@@ -32,7 +32,7 @@ compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 
 The stable JSON contract is version `1.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, and the pinned renderer identity. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
-The root package is the stable product seam. Its implementation lives in the formal `engine` package; only renderer and provenance experiments remain under `prototype`.
+The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
 ### Compare SVG sources
 
@@ -113,6 +113,8 @@ Appearance and Rendered Evidence must be treated as unavailable until the
 upstream fix is released.
 
 The complete implementation boundary, including guarded partial cases, is in the [current v1 support contract](docs/v1-scope.md).
+
+The hand-authored [evaluation corpus](evaluation/corpus/README.md) contains stable SVG pairs for equivalent, subtle, salient, structural, resource-mediated, zero-contribution, and unsupported cases. Run `sh scripts/test-corpus.sh` to validate every pair through the production CLI.
 
 ## Documentation
 

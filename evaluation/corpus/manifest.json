@@ -1,0 +1,82 @@
+{
+  "schema_version": "svgdiff-corpus/1",
+  "cases": [
+    {
+      "id": "equivalent-color-spelling",
+      "title": "Equivalent named and hexadecimal fill",
+      "categories": ["equivalent"],
+      "before": "cases/equivalent-color-spelling/before.svg",
+      "after": "cases/equivalent-color-spelling/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": []
+    },
+    {
+      "id": "subtle-geometry-shift",
+      "title": "Subpixel rectangle position change",
+      "categories": ["subtle"],
+      "before": "cases/subtle-geometry-shift/before.svg",
+      "after": "cases/subtle-geometry-shift/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": []
+    },
+    {
+      "id": "salient-fill-change",
+      "title": "Large red-to-blue fill change",
+      "categories": ["salient"],
+      "before": "cases/salient-fill-change/before.svg",
+      "after": "cases/salient-fill-change/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": []
+    },
+    {
+      "id": "structural-rect-insertion",
+      "title": "Opaque rectangle insertion",
+      "categories": ["structural"],
+      "before": "cases/structural-rect-insertion/before.svg",
+      "after": "cases/structural-rect-insertion/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": []
+    },
+    {
+      "id": "resource-gradient-stop-change",
+      "title": "Referenced gradient stop color change",
+      "categories": ["resource-mediated"],
+      "before": "cases/resource-gradient-stop-change/before.svg",
+      "after": "cases/resource-gradient-stop-change/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 2,
+      "required_diagnostics": []
+    },
+    {
+      "id": "zero-contribution-insertion",
+      "title": "Fully transparent rectangle insertion",
+      "categories": ["zero-contribution"],
+      "before": "cases/zero-contribution-insertion/before.svg",
+      "after": "cases/zero-contribution-insertion/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": []
+    },
+    {
+      "id": "unsupported-path-change",
+      "title": "Unsupported path geometry change",
+      "categories": ["unsupported"],
+      "before": "cases/unsupported-path-change/before.svg",
+      "after": "cases/unsupported-path-change/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "partial",
+      "minimum_atomic_differences": 0,
+      "required_diagnostics": ["unsupported_visual_subject"]
+    }
+  ]
+}
