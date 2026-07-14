@@ -112,6 +112,7 @@ graph TD
   ISS_094["ISS-094: Implement stroke used geometry"]
   ISS_095["ISS-095: Implement marker placement and viewport semantics"]
   ISS_096["ISS-096: Resolve authored SVG length units"]
+  ISS_097["ISS-097: Implement the SVG CSS cascade"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -302,8 +303,8 @@ graph TD
   ISS_093 --> ISS_094
   ISS_094 --> ISS_095
   ISS_095 --> ISS_096
+  ISS_096 --> ISS_097
 ```
-
 ## Warnings
 
 None.

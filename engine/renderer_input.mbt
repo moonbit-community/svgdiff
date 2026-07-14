@@ -15,6 +15,18 @@ fn escape_renderer_attribute_value(value : String) -> String {
 }
 
 ///|
+fn canonical_renderer_inline_style(facts : Array[DeclaredVisualFact]) -> String {
+  let mut result = ""
+  for index, fact in facts {
+    if index > 0 {
+      result += ";"
+    }
+    result += fact.property + ":" + fact.declared_value
+  }
+  result
+}
+
+///|
 fn renderer_value_edits_for_element(
   input : String,
   element : @xml.NamespaceElement,
@@ -36,6 +48,13 @@ fn renderer_value_edits_for_element(
       if !style.complete {
         return
       }
+      edits.push({
+        start_offset: attribute.value_span.start.offset,
+        end_offset: attribute.value_span.end.offset,
+        replacement: escape_renderer_attribute_value(
+          canonical_renderer_inline_style(style.facts),
+        ),
+      })
       for fact in style.facts {
         for presentation in presentations {
           if presentation.name.local_name == fact.property {

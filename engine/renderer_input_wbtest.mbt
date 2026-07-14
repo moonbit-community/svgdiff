@@ -38,6 +38,22 @@ test "renderer input retains incomplete style for conservative guarding" {
 }
 
 ///|
+test "renderer input materializes inline important winners" {
+  let source = "<svg width='4' height='4'><rect width='4' height='4' fill='black' style='fill:red!important;fill:blue'/></svg>"
+  let normalized = normalize_renderer_style_precedence(source)
+  assert_true(normalized.find("fill='red'") is Some(_))
+  assert_true(normalized.find("style='fill:red'") is Some(_))
+  guard @svg.parse_svg_document(normalized) is Some(document) else {
+    fail("normalized important declaration must parse")
+  }
+  let image = @svg.render_svg_document_to_image(document, 4, 4)
+  assert_eq(
+    (image.pixels[0].r, image.pixels[0].g, image.pixels[0].b),
+    (255, 0, 0),
+  )
+}
+
+///|
 test "renderer input resolves and clamps rounded shape radii" {
   let implicit = "<svg width='10' height='6'><rect width='10' height='6' rx='8'/></svg>"
   let explicit = "<svg width='10' height='6'><rect width='10' height='6' rx='5' ry='3'/></svg>"

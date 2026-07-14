@@ -60,6 +60,12 @@
     { "id": "length-absolute-canonical", "source": "evaluation/renderer-conformance/fixtures/length-absolute-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "length-percentage-canonical", "source": "evaluation/renderer-conformance/fixtures/length-percentage-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "length-viewport-relative-canonical", "source": "evaluation/renderer-conformance/fixtures/length-viewport-relative-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
-    { "id": "length-nested-viewport-canonical", "source": "evaluation/renderer-conformance/fixtures/length-nested-viewport-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" }
+    { "id": "length-nested-viewport-canonical", "source": "evaluation/renderer-conformance/fixtures/length-nested-viewport-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "cascade-inline-origin", "source": "evaluation/renderer-conformance/fixtures/cascade-inline-origin.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "cascade-inline-origin-canonical" },
+    { "id": "cascade-inline-origin-canonical", "source": "evaluation/renderer-conformance/fixtures/cascade-inline-origin-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "cascade-inline-important", "source": "evaluation/renderer-conformance/fixtures/cascade-inline-important.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "cascade-inline-important-canonical" },
+    { "id": "cascade-inline-important-canonical", "source": "evaluation/renderer-conformance/fixtures/cascade-inline-important-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "cascade-stylesheet-specificity", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-specificity.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "cascade-stylesheet-source-order", "source": "evaluation/renderer-conformance/fixtures/cascade-stylesheet-source-order.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" }
   ]
 }

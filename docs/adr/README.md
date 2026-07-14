@@ -56,6 +56,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0050](0050-resolve-stroke-used-geometry-before-raster-conformance.md) | Accepted, implemented for the unitless static slice | Resolve canonical stroke used geometry independently from renderer conformance. |
 | [0051](0051-model-marker-placement-before-child-paint.md) | Accepted, implemented for placement and viewport semantics | Resolve marker placement independently from marker child paint and renderer conformance. |
 | [0052](0052-resolve-svg-lengths-with-explicit-context.md) | Accepted, implemented for deterministic absolute and viewport-relative units | Preserve authored length spelling while resolving one explicit used-value context. |
+| [0053](0053-separate-cascade-selection-from-selector-matching.md) | Accepted, implemented for author declaration ordering | Select cascade winners independently from stylesheet selector applicability. |
 
 ## CLI and distribution decisions
 

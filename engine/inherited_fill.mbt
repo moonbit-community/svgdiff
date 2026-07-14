@@ -81,7 +81,7 @@ fn visual_declarations_from_element(
   element : @xml.NamespaceElement,
   coverage_codes : Array[String],
 ) -> Array[DeclaredVisualFact] {
-  let declarations : Array[DeclaredVisualFact] = []
+  let candidates : Array[CssCascadeCandidate] = []
   let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
     let property = attribute.name.local_name
@@ -90,18 +90,18 @@ fn visual_declarations_from_element(
     } else if property == "style" {
       style_attribute = Some(attribute)
     } else if resolved_visual_properties().contains(property) {
-      upsert_declared_fact(
-        declarations,
-        presentation_fact(input, property, attribute),
+      let fact = presentation_fact(input, property, attribute)
+      candidates.push(
+        presentation_cascade_candidate(fact, attribute.span.start.offset),
       )
     }
   }
   match style_attribute {
     Some(attribute) => {
       let parsed = inline_style_facts(input, attribute)
-      for fact in parsed.facts {
-        if resolved_visual_properties().contains(fact.property) {
-          upsert_declared_fact(declarations, fact)
+      for candidate in parsed.candidates {
+        if resolved_visual_properties().contains(candidate.declaration.property) {
+          candidates.push(candidate)
         }
       }
       if !parsed.complete {
@@ -110,6 +110,7 @@ fn visual_declarations_from_element(
     }
     None => ()
   }
+  let declarations = cascade_visual_declarations(candidates)
   for fact in declarations {
     if fact.property == "fill" || fact.property == "stroke" {
       let value = fact.declared_value.to_lower()
@@ -283,9 +284,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
     match event.kind {
       Start(element) => {
         let kind = element.name.local_name
-        if kind == "style" {
-          push_unique(coverage_codes, "css_cascade_unsupported")
-        } else if fill_hierarchy_kind(kind) {
+        if fill_hierarchy_kind(kind) {
           let parent_index = stack.last()
           let index = add_fill_source_element(
             input, element, parent_index, elements, rect_subject_ids, coverage_codes,
@@ -301,9 +300,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
       }
       Empty(element) => {
         let kind = element.name.local_name
-        if kind == "style" {
-          push_unique(coverage_codes, "css_cascade_unsupported")
-        } else if fill_hierarchy_kind(kind) {
+        if fill_hierarchy_kind(kind) {
           ignore(
             add_fill_source_element(
               input,
@@ -336,6 +333,10 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
     rect_subject_ids,
     coverage_codes,
     has_inherited_visual: false,
+  }
+  let stylesheets = parse_document_stylesheets_or_raise(input)
+  if stylesheet_requires_selector_matching(stylesheets) {
+    push_unique(hierarchy.coverage_codes, "css_cascade_unsupported")
   }
   for subject_id in rect_subject_ids {
     for property in inherited_visual_properties() {
@@ -611,7 +612,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.11",
+    schema_version: "1.12",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],

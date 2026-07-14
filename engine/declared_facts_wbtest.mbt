@@ -60,3 +60,23 @@ test "inline style overrides presentation facts and keeps exact value spans" {
     _ => fail("expected one extracted rect")
   }
 }
+
+///|
+test "inline cascade resolves important and duplicate declarations" {
+  let source = "<svg><rect id='box' fill='black' style='fill: red !IMPORTANT; fill: blue; stroke:black!important; stroke: green !important'/></svg>"
+  match extract_rect_declared_facts(source) {
+    Parsed(Some(rect)) => {
+      assert_eq(rect.coverage_codes, [])
+      let fill = declared_fact(rect, "fill").unwrap()
+      assert_eq(fill.authored_value, "red")
+      assert_eq(fill.declared_value, "red")
+      assert_eq(fill.origin, "inline_style")
+      assert_eq(declared_fact_span_slice(source, fill), "red")
+      let stroke = declared_fact(rect, "stroke").unwrap()
+      assert_eq(stroke.authored_value, "green")
+      assert_eq(stroke.declared_value, "green")
+      assert_eq(declared_fact_span_slice(source, stroke), "green")
+    }
+    _ => fail("expected cascaded inline declarations")
+  }
+}

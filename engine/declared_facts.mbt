@@ -14,6 +14,7 @@ priv enum RectFactExtraction {
 ///|
 priv struct InlineStyleFacts {
   facts : Array[DeclaredVisualFact]
+  candidates : Array[CssCascadeCandidate]
   complete : Bool
 }
 
@@ -130,12 +131,14 @@ fn presentation_fact(
 }
 
 ///|
-fn parse_style_segment(
+fn parse_css_declaration_segment(
   raw_style : String,
   attribute_start : Int,
   segment_start : Int,
   segment_end : Int,
-  facts : Array[DeclaredVisualFact],
+  origin : String,
+  specificity : CssSpecificity,
+  candidates : Array[CssCascadeCandidate],
 ) -> Bool {
   let (start, end) = trim_range(raw_style, segment_start, segment_end)
   if start == end {
@@ -152,7 +155,8 @@ fn parse_style_segment(
     return false
   }
   let (name_start, name_end) = trim_range(raw_style, start, colon)
-  let (value_start, value_end) = trim_range(raw_style, colon + 1, end)
+  let (value_start, initial_value_end) = trim_range(raw_style, colon + 1, end)
+  let mut value_end = initial_value_end
   if name_start == name_end || value_start == value_end {
     return false
   }
@@ -161,9 +165,22 @@ fn parse_style_segment(
   if !supported_rect_property(property) {
     return false
   }
+  let raw_value = source_range_slice(raw_style, value_start, value_end)
+  let lower_value = raw_value.to_lower()
+  let mut important = false
+  if lower_value.has_suffix("!important") {
+    important = true
+    value_end -= "!important".length()
+    let trimmed = trim_range(raw_style, value_start, value_end)
+    value_end = trimmed.1
+  } else if raw_value.find("!") is Some(_) {
+    return false
+  }
+  if value_start == value_end {
+    return false
+  }
   let authored_value = source_range_slice(raw_style, value_start, value_end)
-  if authored_value.find("!important") is Some(_) ||
-    authored_value.find("var(") is Some(_) {
+  if authored_value.to_lower().find("var(") is Some(_) {
     return false
   }
   let declared_value = try @xml.unescape(authored_value) catch {
@@ -171,16 +188,32 @@ fn parse_style_segment(
   } noraise {
     value => value.trim().to_owned()
   }
-  upsert_declared_fact(facts, {
+  let declaration : DeclaredVisualFact = {
     property,
     authored_value,
     declared_value,
-    origin: "inline_style",
+    origin,
     source_span: {
       start_offset: attribute_start + value_start,
       end_offset: attribute_start + value_end,
     },
-  })
+  }
+  candidates.push(
+    if origin == "inline_style" {
+      inline_cascade_candidate(
+        declaration,
+        important,
+        attribute_start + segment_start,
+      )
+    } else {
+      stylesheet_cascade_candidate(
+        declaration,
+        important,
+        specificity,
+        attribute_start + segment_start,
+      )
+    },
+  )
   true
 }
 
@@ -190,7 +223,7 @@ fn inline_style_facts(
   attribute : @xml.NamespaceAttribute,
 ) -> InlineStyleFacts {
   let raw_style = source_slice(input, attribute.value_span)
-  let facts : Array[DeclaredVisualFact] = []
+  let candidates : Array[CssCascadeCandidate] = []
   let mut complete = true
   let mut segment_start = 0
   let mut in_entity = false
@@ -202,12 +235,14 @@ fn inline_style_facts(
       if in_entity {
         in_entity = false
       } else {
-        if !parse_style_segment(
+        if !parse_css_declaration_segment(
             raw_style,
             attribute.value_span.start.offset,
             segment_start,
             index,
-            facts,
+            "inline_style",
+            inline_specificity(),
+            candidates,
           ) {
           complete = false
         }
@@ -220,16 +255,18 @@ fn inline_style_facts(
   if in_entity {
     complete = false
   }
-  if !parse_style_segment(
+  if !parse_css_declaration_segment(
       raw_style,
       attribute.value_span.start.offset,
       segment_start,
       raw_style.length(),
-      facts,
+      "inline_style",
+      inline_specificity(),
+      candidates,
     ) {
     complete = false
   }
-  { facts, complete }
+  { facts: cascade_visual_declarations(candidates), candidates, complete }
 }
 
 ///|
@@ -237,7 +274,7 @@ fn rect_declared_facts_from_element(
   input : String,
   element : @xml.NamespaceElement,
 ) -> RectDeclaredFacts {
-  let facts : Array[DeclaredVisualFact] = []
+  let candidates : Array[CssCascadeCandidate] = []
   let coverage_codes : Array[String] = []
   let mut subject_id = "rect:0"
   let mut style_attribute : @xml.NamespaceAttribute? = None
@@ -253,22 +290,23 @@ fn rect_declared_facts_from_element(
     } else if name == "style" {
       style_attribute = Some(attribute)
     } else if supported_rect_property(name) {
-      upsert_declared_fact(facts, presentation_fact(input, name, attribute))
+      let fact = presentation_fact(input, name, attribute)
+      candidates.push(
+        presentation_cascade_candidate(fact, attribute.span.start.offset),
+      )
     }
   }
   match style_attribute {
     Some(attribute) => {
       let parsed = inline_style_facts(input, attribute)
-      for fact in parsed.facts {
-        upsert_declared_fact(facts, fact)
-      }
+      candidates.push_iter(parsed.candidates.iter())
       if !parsed.complete {
         push_unique(coverage_codes, "css_cascade_unsupported")
       }
     }
     None => ()
   }
-  { subject_id, facts, coverage_codes }
+  { subject_id, facts: cascade_visual_declarations(candidates), coverage_codes }
 }
 
 ///|
@@ -279,13 +317,10 @@ fn extract_rect_declared_facts_or_raise(
   let events = reader.read_events_until_eof()
   let mut rect : RectDeclaredFacts? = None
   let mut rect_count = 0
-  let mut has_stylesheet = false
   for event in events {
     match event.kind {
       Start(element) | Empty(element) =>
-        if element.name.local_name == "style" {
-          has_stylesheet = true
-        } else if element.name.local_name == "rect" {
+        if element.name.local_name == "rect" {
           rect_count += 1
           if rect is None {
             rect = Some(rect_declared_facts_from_element(input, element))
@@ -296,7 +331,8 @@ fn extract_rect_declared_facts_or_raise(
   }
   match rect {
     Some(facts) => {
-      if has_stylesheet {
+      let stylesheets = parse_document_stylesheets_or_raise(input)
+      if stylesheet_requires_selector_matching(stylesheets) {
         push_unique(facts.coverage_codes, "css_cascade_unsupported")
       }
       if rect_count > 1 {

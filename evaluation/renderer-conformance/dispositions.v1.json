@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/8",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/9",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -215,6 +215,32 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_marker_raster_unproven",
       "reason": "The pinned renderer and Chromium disagree on the marker raster after resolving percentage marker viewport lengths."
+    },
+    {
+      "id": "cascade-inline-origin",
+      "disposition": "normalizer",
+      "normalizer_id": "svgdiff/style-precedence-normalizer@2",
+      "canonical_case_id": "cascade-inline-origin-canonical",
+      "reason": "Chromium renders inline style over a later presentation attribute identically to the canonical winner, and the production cascade normalizer proves that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "cascade-inline-important",
+      "disposition": "normalizer",
+      "normalizer_id": "svgdiff/style-precedence-normalizer@2",
+      "canonical_case_id": "cascade-inline-important-canonical",
+      "reason": "Chromium renders the important inline declaration identically to the canonical winner, and the production cascade normalizer proves that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "cascade-stylesheet-specificity",
+      "disposition": "diagnostic",
+      "diagnostic_code": "inherited_fill_rendered_evidence_deferred",
+      "reason": "Selector matching is not yet admitted, so css_cascade_unsupported limits the specificity result and inherited_fill_rendered_evidence_deferred prevents the raw pixel divergence from becoming accepted evidence."
+    },
+    {
+      "id": "cascade-stylesheet-source-order",
+      "disposition": "diagnostic",
+      "diagnostic_code": "inherited_fill_rendered_evidence_deferred",
+      "reason": "Selector matching is not yet admitted, so css_cascade_unsupported limits the source-order result and inherited_fill_rendered_evidence_deferred prevents the raw pixel divergence from becoming accepted evidence."
     }
   ]
 }

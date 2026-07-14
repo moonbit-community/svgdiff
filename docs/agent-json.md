@@ -1,6 +1,6 @@
 # Compact Agent JSON
 
-Status: current schema `1.11` serialization mode
+Status: current schema `1.12` serialization mode
 
 Last verified: 2026-07-14
 

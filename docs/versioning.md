@@ -10,11 +10,11 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.4.5` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.11` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.11` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.4.6` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.12` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.12` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/8` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/9` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -55,6 +55,8 @@ Module `0.4.3` resolves canonical unitless stroke width, caps, joins, miter limi
 Module `0.4.4` resolves local marker attachments, marker resource viewport properties, SVG path vertices and automatic orientation, and conservative clipped marker instance envelopes while retaining authored provenance. Missing or unsupported marker semantics, deferred marker-content interpretation, and raw-renderer divergence receive separate stable Diagnostics. Five Chromium fixtures advance renderer conformance to `/7`; the new Diagnostic conditions advance Structured Report schema to `1.10`, while public report fields, production renderer identity, and v2 tuple policy remain unchanged.
 
 Module `0.4.5` preserves authored SVG length spellings while resolving unitless, CSS absolute, SVG percentage, and static viewport-relative units for admitted shapes, strokes, nested viewports, and markers. The private renderer identity adds `length-used-value-normalizer@1`; browser-equivalent canonical fixture pairs and guarded stroke/marker fixtures advance renderer conformance to `/8`. The expanded semantic boundary advances Structured Report schema to `1.11`, while public report fields and v2 tuple policy remain unchanged. Font-relative, environment-dependent, dynamic viewport, and arithmetic lengths remain guarded.
+
+Module `0.4.6` introduces a project-owned author cascade over applicable declaration candidates. Presentation attributes, inline declarations, parsed stylesheet declarations, importance, selector specificity, and source order share one winner-selection module; inline `!important` and duplicate declarations become complete while stylesheet applicability remains guarded until selector matching is implemented. The renderer adapter canonicalizes the winning inline declarations, advancing `style-precedence-normalizer` to `@2`; six Chromium fixtures advance conformance to `/9`. Retiring the old inline-important limitation advances Structured Report schema to `1.12`, while public report fields and v2 tuple policy remain unchanged.
 
 ## Structured Report schema versions
 

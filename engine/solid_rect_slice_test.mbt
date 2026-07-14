@@ -82,6 +82,24 @@ test "renderer style precedence normalization preserves a visual change" {
 }
 
 ///|
+test "inline important cascade remains complete and renderer-equivalent" {
+  let before = "<svg width='16' height='16'><rect id='box' width='16' height='16' fill='blue' style='fill:red!important;fill:green'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='box' width='16' height='16' fill='red'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_eq(report.analysis_status, "complete")
+  let fill = report.atomic_differences.filter(difference => {
+      difference.domain == "paint.fill"
+    })[0]
+  assert_eq(fill.computed_relation.status, "equivalent")
+  assert_eq(fill.source_fact_before.unwrap().origin, "inline_style")
+  assert_eq(fill.source_fact_before.unwrap().authored_value, "red")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+}
+
+///|
 test "incomplete inline style retains the renderer precedence guard" {
   let source = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' fill='blue' style='fill:red;unknown:value'",
@@ -187,7 +205,7 @@ test "declared fact provenance is serialized into JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.11",
+      "schema_version": "1.12",
       "atomic_differences": [
         {
           "source_fact_before": {

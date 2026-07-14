@@ -34,7 +34,7 @@ fn help_text() -> String {
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.4.5\nengine: 0.4.5\nschema: 1.11\nrenderer: svgdiff/style-precedence-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/8\nordering-policy: v2_domain_lexicographic"
+  "svgdiff 0.4.6\nengine: 0.4.6\nschema: 1.12\nrenderer: svgdiff/style-precedence-normalizer@2+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/9\nordering-policy: v2_domain_lexicographic"
 }
 
 ///|
