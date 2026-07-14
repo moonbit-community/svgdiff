@@ -7,6 +7,18 @@ priv struct CssBounds {
 }
 
 ///|
+priv enum DifferenceRegionExtraction {
+  Regions(Array[DifferenceRegion])
+  RegionLimitExceeded
+}
+
+///|
+priv enum DifferenceRegionAttachment {
+  RegionsAttached(StructuredReport)
+  AttachmentRegionLimitExceeded
+}
+
+///|
 fn union_bounds(left : CssBounds?, right : CssBounds?) -> CssBounds? {
   match (left, right) {
     (None, None) => None
@@ -115,11 +127,12 @@ fn pixels_differ(before : @svg.Image, after : @svg.Image, index : Int) -> Bool {
 fn pixel_difference_regions(
   before : @svg.Image,
   after : @svg.Image,
-) -> Array[DifferenceRegion] {
+  max_regions : Int,
+) -> DifferenceRegionExtraction {
   let width = before.width
   let height = before.height
   if width != after.width || height != after.height {
-    return []
+    return Regions([])
   }
   let visited = Array::make(width * height, false)
   let regions : Array[DifferenceRegion] = []
@@ -165,6 +178,9 @@ fn pixel_difference_regions(
         }
       }
     }
+    if regions.length() >= max_regions {
+      return RegionLimitExceeded
+    }
     regions.push({
       id: "region:pixel:\{regions.length()}",
       source: "pixel_mask",
@@ -188,7 +204,7 @@ fn pixel_difference_regions(
       },
     })
   }
-  regions
+  Regions(regions)
 }
 
 ///|
@@ -417,7 +433,8 @@ fn attach_difference_regions(
   before_svg : String,
   after_svg : String,
   alignments : Array[SubjectAlignment],
-) -> StructuredReport {
+  max_regions : Int,
+) -> DifferenceRegionAttachment {
   let before = extract_source_subjects_or_raise(before_svg) catch { _ => [] }
   let after = extract_source_subjects_or_raise(after_svg) catch { _ => [] }
   let rendered_images = match
@@ -441,10 +458,14 @@ fn attach_difference_regions(
   }
   let pixel_regions = match rendered_images {
     Some((before_image, after_image)) =>
-      pixel_difference_regions(before_image, after_image)
+      match pixel_difference_regions(before_image, after_image, max_regions) {
+        Regions(regions) => regions
+        RegionLimitExceeded => return AttachmentRegionLimitExceeded
+      }
     None => []
   }
   let events : Array[VisualEvent] = []
+  let mut attached_region_count = 0
   for event in report.events {
     let bounds = match alignment_for_event(event, alignments) {
       Some(alignment) => alignment_bounds(alignment, before, after)
@@ -456,14 +477,28 @@ fn attach_difference_regions(
         Some(bounds) =>
           for region in pixel_regions {
             if regions_intersect(region, bounds) {
+              if attached_region_count >= max_regions {
+                return AttachmentRegionLimitExceeded
+              }
               regions.push(region)
+              attached_region_count += 1
             }
           }
-        None => regions.push_iter(pixel_regions.iter())
+        None =>
+          for region in pixel_regions {
+            if attached_region_count >= max_regions {
+              return AttachmentRegionLimitExceeded
+            }
+            regions.push(region)
+            attached_region_count += 1
+          }
       }
     } else {
       match bounds {
-        Some(bounds) =>
+        Some(bounds) => {
+          if attached_region_count >= max_regions {
+            return AttachmentRegionLimitExceeded
+          }
           regions.push(
             computed_bounds_region(
               "region:bounds:\{event.id}",
@@ -471,6 +506,8 @@ fn attach_difference_regions(
               report.profile,
             ),
           )
+          attached_region_count += 1
+        }
         None => ()
       }
     }
@@ -500,5 +537,5 @@ fn attach_difference_regions(
       ),
     })
   }
-  { ..report, atomic_differences: differences, events }
+  RegionsAttached({ ..report, atomic_differences: differences, events })
 }

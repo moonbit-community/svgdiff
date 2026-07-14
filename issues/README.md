@@ -95,6 +95,7 @@ graph TD
   ISS_076["ISS-076: Validate hostile-source HTML isolation"]
   ISS_077["ISS-077: Add the continuous validation workflow"]
   ISS_078["ISS-078: Preserve Diagnostic source locations"]
+  ISS_079["ISS-079: Bound comparison resource growth"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -243,6 +244,12 @@ graph TD
   ISS_053 --> ISS_078
   ISS_057 --> ISS_078
   ISS_058 --> ISS_078
+  ISS_037 --> ISS_079
+  ISS_051 --> ISS_079
+  ISS_053 --> ISS_079
+  ISS_058 --> ISS_079
+  ISS_075 --> ISS_079
+  ISS_078 --> ISS_079
 ```
 
 ## Warnings

@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.2`
+Status: current model for Structured Report schema `1.3`
 
 Last verified: 2026-07-14
 
@@ -27,14 +27,14 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.2
+  -> Structured Report 1.3
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.2` records:
+Schema `1.3` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -155,7 +155,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.2` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.3` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -167,15 +167,15 @@ Separate primary alignments remain separate events even when they overlap or are
 
 ### Diagnostic
 
-A `Diagnostic` identifies an unsupported, unresolved, or failed analysis condition, the affected subject, and the evidence layers whose claims are constrained. Its source locations pair a `before` or `after` input role with a half-open UTF-16 Source Span in that input. One Diagnostic may retain several locations when the same stable condition occurs on both sides or at several declarations; a comparison-global synthetic Diagnostic has an empty location array rather than fabricated provenance. Diagnostics are part of the result, not debug logging.
+A `Diagnostic` identifies an unsupported, unresolved, or failed analysis condition, the affected subject, and the evidence layers whose claims are constrained. Its source locations pair a `before` or `after` input role with a half-open UTF-16 Source Span in that input. One Diagnostic may retain several locations when the same stable condition occurs on both sides or at several declarations; a comparison-global synthetic Diagnostic has an empty location array rather than fabricated provenance. `resource_limit_exceeded` uses the subject as a stable budget-dimension key and makes the whole comparison failed instead of exposing a truncated inventory. Diagnostics are part of the result, not debug logging.
 
 ### Structured Report
 
-The schema `1.2` top-level object contains exactly these conceptual sections:
+The schema `1.3` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -189,7 +189,7 @@ The schema `1.2` top-level object contains exactly these conceptual sections:
 }
 ```
 
-Each `coverage_matrix` row names one encountered feature and subject, records `covered`, `limited`, `not_applicable`, or `failed` independently for Source Semantics, Computed Appearance, and Rendered Evidence, and references the Diagnostics that justify limitations. `analysis_status` is the summary of those rows, not a separate severity judgment. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its matrix and Diagnostics. The exact caller obligations are defined in the [Analysis Status Contract](analysis-status.md).
+Each `coverage_matrix` row names one encountered feature and subject, records `covered`, `limited`, `not_applicable`, or `failed` independently for Source Semantics, Computed Appearance, and Rendered Evidence, and references the Diagnostics that justify limitations. `analysis_status` is the summary of those rows, not a separate severity judgment. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its matrix and Diagnostics. A resource-rejected report contains only failed `resource.<dimension>` rows plus Diagnostics and deliberately empty semantic inventories. The exact caller obligations are defined in the [Analysis Status Contract](analysis-status.md).
 
 ## Current invariants
 
@@ -206,7 +206,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 11. HTML is a presentation of the Structured Report and must not recompute semantic differences.
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 
-## Not implemented in schema 1.2
+## Not implemented in schema 1.3
 
 The following concepts are intentional future work rather than hidden current fields:
 

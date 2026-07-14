@@ -18,7 +18,7 @@ PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/after.svg" >report.json 2>report.err
 test ! -s report.err
 jq -e '
-  .schema_version == "1.2" and
+  .schema_version == "1.3" and
   .profile.renderer_conformance_profile_id ==
     "svgdiff-renderer-conformance-profile/1" and
   .analysis_status == "complete" and
@@ -28,8 +28,8 @@ jq -e '
 PATH="$bindir:$PATH" svgdiff --help >help.txt
 PATH="$bindir:$PATH" svgdiff --version >version.txt
 grep -q '^Usage: svgdiff ' help.txt
-grep -q '^svgdiff 0.3.0$' version.txt
-grep -q '^schema: 1.2$' version.txt
+grep -q '^svgdiff 0.3.1$' version.txt
+grep -q '^schema: 1.3$' version.txt
 grep -q '^renderer: mizchi/svg@0.2.1$' version.txt
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/1$' version.txt
 
@@ -38,17 +38,17 @@ PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/after.svg" --agent-json >agent.json 2>agent.err
 test ! -s agent.err
 test "$(wc -l <agent.json | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.2" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and (.atomic_differences | length) == 1' agent.json >/dev/null
+jq -e '.schema_version == "1.3" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and (.atomic_differences | length) == 1' agent.json >/dev/null
 
 cat "$root/testdata/before.svg" | PATH="$bindir:$PATH" svgdiff \
   - "$root/testdata/after.svg" >stdin-report.json 2>stdin-report.err
 test ! -s stdin-report.err
-jq -e '.schema_version == "1.2" and .analysis_status == "complete"' stdin-report.json >/dev/null
+jq -e '.schema_version == "1.3" and .analysis_status == "complete"' stdin-report.json >/dev/null
 
 cat "$root/testdata/after.svg" | PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/before.svg" - >stdin-after-report.json 2>stdin-after-report.err
 test ! -s stdin-after-report.err
-jq -e '.schema_version == "1.2" and .analysis_status == "complete"' stdin-after-report.json >/dev/null
+jq -e '.schema_version == "1.3" and .analysis_status == "complete"' stdin-after-report.json >/dev/null
 
 if printf '%s\n' '<svg/>' | PATH="$bindir:$PATH" svgdiff \
   - - >double-stdin.out 2>double-stdin.err; then

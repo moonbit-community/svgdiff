@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.3",
+  "analysis_status": "failed",
+  "coverage_matrix": [
+    {
+      "feature_id": "resource.raster_dimensions",
+      "subject_id": "raster_dimensions",
+      "source_semantics": "failed",
+      "computed_appearance": "failed",
+      "rendered_evidence": "failed",
+      "diagnostic_ids": [
+        "diagnostic:resource-limit-exceeded:raster_dimensions"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [],
+  "profile": {
+    "viewport_width": 8193,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/1"
+  },
+  "subject_alignments": [],
+  "changed_facts": [],
+  "source_resolutions": [],
+  "atomic_differences": [],
+  "events": [],
+  "diagnostics": [
+    {
+      "id": "diagnostic:resource-limit-exceeded:raster_dimensions",
+      "code": "resource_limit_exceeded",
+      "subject_id": "raster_dimensions",
+      "affected_evidence_layers": [
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": []
+    }
+  ]
+}

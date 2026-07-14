@@ -774,26 +774,32 @@ fn finish_report(
   alignments : Array[SubjectAlignment],
   before_svg : String,
   after_svg : String,
+  limits : ResourceLimits,
 ) -> StructuredReport {
   let (report, extra_alignments) = attach_group_opacity_differences(
     report, before_svg, after_svg,
   )
   let combined_alignments = alignments.copy()
   combined_alignments.push_iter(extra_alignments.iter())
-  let report = attach_feature_coverage(
-    attach_difference_magnitudes(
-      attach_cause_envelopes(
-        attach_difference_regions(
-          attach_subject_alignments(
-            apply_preflight_diagnostics(report, diagnostics),
-            combined_alignments,
-          ),
-          before_svg,
-          after_svg,
-          combined_alignments,
-        ),
+  let report = match
+    attach_difference_regions(
+      attach_subject_alignments(
+        apply_preflight_diagnostics(report, diagnostics),
+        combined_alignments,
       ),
-    ),
+      before_svg,
+      after_svg,
+      combined_alignments,
+      limits.max_regions,
+    ) {
+    RegionsAttached(report) => report
+    AttachmentRegionLimitExceeded =>
+      return failed_resource_report(report.profile, [
+        resource_limit_diagnostic("regions", None, None),
+      ])
+  }
+  let report = attach_feature_coverage(
+    attach_difference_magnitudes(attach_cause_envelopes(report)),
     before_svg,
     after_svg,
   )

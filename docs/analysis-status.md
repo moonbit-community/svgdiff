@@ -1,6 +1,6 @@
 # Analysis Status Contract
 
-Status: current schema `1.2` caller contract
+Status: current schema `1.3` caller contract
 
 Last verified: 2026-07-14
 
@@ -29,7 +29,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.2`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.3`'s implemented support contract under the recorded Comparison Profile.
 
 It does not support any of these stronger statements:
 
@@ -62,7 +62,7 @@ Consumers may use the supported differences, magnitudes, regions, and candidates
 
 ## `failed`
 
-A `failed` report means the engine could not establish a usable semantic comparison. In schema `1.2`, malformed XML is the primary implemented failure path and produces `svg_parse_failed` with the parser's source-role-qualified UTF-16 span.
+A `failed` report means the engine could not establish a usable semantic comparison. Malformed XML produces `svg_parse_failed` with the parser's source-role-qualified UTF-16 span. Crossing a fixed [comparison resource limit](resource-limits.md) produces `resource_limit_exceeded`; its subject identifies the dimension, and source-local structural limits retain the first offending span.
 
 The report still has the schema's required top-level fields so callers can parse it uniformly, but its difference arrays must not be interpreted as evidence of equality or absence. Callers should surface the Diagnostics and stop semantic interpretation. The CLI returns status `1`.
 
@@ -74,7 +74,7 @@ Status follows the strongest encountered failure condition:
 failed > partial > complete
 ```
 
-- A parse failure makes the comparison `failed`.
+- A parse failure or resource-limit rejection makes the comparison `failed`.
 - Otherwise, any `limited` coverage cell makes the comparison `partial` and references one or more Diagnostics.
 - Only a matrix with no `limited` or `failed` cell may summarize to `complete`.
 

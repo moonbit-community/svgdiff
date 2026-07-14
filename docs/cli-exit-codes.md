@@ -18,7 +18,7 @@ The exit status says whether `svgdiff` delivered a usable comparison report, a f
 | --- | ---: | --- |
 | `analysis_status: "complete"` | `0` | Interpret the report within its Comparison Profile and support contract. |
 | `analysis_status: "partial"` | `0` | Retain supported evidence, surface Diagnostics, and do not claim equality. |
-| `analysis_status: "failed"` | `1` | Parse the report, surface Diagnostics, and stop semantic interpretation. |
+| `analysis_status: "failed"` | `1` | Parse the report, surface malformed-input or resource-limit Diagnostics, and stop semantic interpretation. |
 | Missing or invalid arguments | `2` | Read stderr and correct the invocation. |
 | Input read failure | `2` | Read stderr; no report was produced. |
 | JSON or HTML output write failure | `2` | Read stderr; treat any requested output artifact as unavailable. |

@@ -332,14 +332,22 @@ def checked_path(relative_path: str) -> Path:
 
 
 def generate(cli: Path, case: dict[str, Any]) -> bytes:
+    command = [
+        str(cli),
+        str(checked_path(case["before"])),
+        str(checked_path(case["after"])),
+        *case.get("cli_args", []),
+    ]
     result = subprocess.run(
-        [str(cli), str(checked_path(case["before"])), str(checked_path(case["after"]))],
+        command,
         check=False,
         capture_output=True,
     )
-    if result.returncode != 0 or result.stderr:
+    expected_status = case.get("expected_exit_status", 0)
+    if result.returncode != expected_status or result.stderr:
         raise ValueError(
-            f"{case['id']}: CLI failed with status {result.returncode}: "
+            f"{case['id']}: CLI returned status {result.returncode}, "
+            f"expected {expected_status}: "
             f"{result.stderr.decode(errors='replace')!r}"
         )
     return result.stdout

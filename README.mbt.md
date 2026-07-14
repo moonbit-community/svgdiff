@@ -51,7 +51,7 @@ Add `--html report.html` to generate a self-contained interactive report with
 side-by-side sandboxed SVG previews, report-defined diff groups, region
 highlighting, and the complete JSON payload.
 
-The command exits with status `2` for invalid arguments or file I/O errors and status `1` when SVG analysis fails. A `partial` report is still emitted successfully because its Diagnostics describe exactly which evidence layers are unavailable.
+The command exits with status `2` for invalid arguments or file I/O errors and status `1` when SVG analysis fails, including malformed input or a fixed resource-limit rejection. A `partial` report is still emitted successfully because its Diagnostics describe exactly which evidence layers are unavailable. Resource failures return a small report rather than a truncated difference inventory; the fixed budgets are documented in [`docs/resource-limits.md`](docs/resource-limits.md).
 
 ## Library API
 
@@ -61,7 +61,7 @@ The root package exposes one comparison operation:
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 ```
 
-The current JSON contract is version `1.2`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.3`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -80,7 +80,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.2")
+  assert_eq(report.schema_version, "1.3")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -119,7 +119,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.2\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.3\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
@@ -163,7 +163,7 @@ The [adversarial suite](evaluation/adversarial/README.md) checks false-complete,
 
 The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, and unknown-ordering-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch and validation against every entry in the [released Schema registry](schema/registry.v1.json) before semantic interpretation.
 
-The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, and partial coverage. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
+The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, partial coverage, and resource-limit failure. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
 
 The [determinism evaluation](evaluation/determinism/README.md) repeats equivalent, changed, structural, resource, unsupported, multi-event, and non-default-viewport comparisons in separate CLI processes. Run `sh scripts/test-report-determinism.sh` to verify byte-stable output, globally unique report-local IDs, closed references, and identical evidence in default and compact JSON.
 

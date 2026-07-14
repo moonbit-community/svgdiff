@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.2` coverage map
+Status: current schema `1.3` coverage map
 
 Last verified: 2026-07-14
 
@@ -13,7 +13,7 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.2`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `1.3`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
@@ -28,7 +28,7 @@ Every current report emits `coverage_matrix`. It is the sole canonical coverage 
 | `not_applicable` | This row makes no Source Semantics claim. | This row makes no Computed Appearance claim. | This row makes no Rendered Evidence claim. |
 | `failed` | The layer could not be established because the comparison failed. | Same. | Same. |
 
-Feature IDs use four current namespaces:
+Feature IDs use five current namespaces:
 
 | Feature ID form | Meaning |
 | --- | --- |
@@ -37,8 +37,9 @@ Feature IDs use four current namespaces:
 | `property.<name>` | One encountered supported authored property. |
 | `domain.<difference-domain>` | One emitted Atomic Difference domain. |
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
+| `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.2` engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.3` engine always emits it.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -71,6 +72,7 @@ Renderer-specific rows also produce one encountered `renderer_capability_gaps` r
 | Feature or condition | Report status | Diagnostic code | Constrained evidence | Executable coverage |
 | --- | --- | --- | --- | --- |
 | Malformed XML | Failed | `svg_parse_failed` | All layers | [`structured_report_test.mbt`](../engine/structured_report_test.mbt): `parse failure is diagnosed`; [`source_adapter_wbtest.mbt`](../engine/source_adapter_wbtest.mbt): `source adapter rejects malformed XML` |
+| Input, structure, raster, region, or report resource budget exceeded | Failed | `resource_limit_exceeded` | All layers | [`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt): exact and one-past tests for all eight dimensions; [`test-cli.sh`](../scripts/test-cli.sh): public failed-report exit behavior |
 | Unsupported visual element, including `path` in v1 | Partial | `unsupported_visual_subject` | Computed, rendered | [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt): `unsupported path semantics remain partial and diagnosed` |
 | Unsupported visual attribute, including `transform` in v1 | Partial | `unsupported_visual_attribute` | Source, computed, rendered | [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt): `unsupported visual attributes reduce subject coverage` |
 | Non-identity root viewport semantics (`viewBox`, including `preserveAspectRatio`) | Partial | `viewport_semantics_unsupported` | Source, computed, rendered | [`unsupported_input_property_test.mbt`](../engine/unsupported_input_property_test.mbt): unsupported attribute family property test. An identity `0 0 <profile-width> <profile-height>` viewBox is a proven no-op. |
@@ -99,6 +101,7 @@ Renderer-specific rows also produce one encountered `renderer_capability_gaps` r
 - Solid-rect fallback coverage: [`solid_rect_report.mbt`](../engine/solid_rect_report.mbt)
 - Cause Envelope guarantee downgrade: [`cause_envelopes.mbt`](../engine/cause_envelopes.mbt)
 - Final complete-status proof gate: [`coverage_proof.mbt`](../engine/coverage_proof.mbt)
+- Resource admission and bounded failure reports: [`resource_limits.mbt`](../engine/resource_limits.mbt)
 
 ## Maintenance rule
 
