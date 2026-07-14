@@ -44,7 +44,7 @@ jq -e \
   (.build.target_os | length) > 0 and
   (.build.target_architecture | length) > 0 and
   .product.module_version == $version and
-  .product.report_schema_version == "1.0" and
+  .product.report_schema_version == "1.1" and
   .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and
   .product.ordering_policy_id == "v1_domain_lexicographic" and
   (.resolved_dependencies | length) == 7

@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.0`
+Status: current model for Structured Report schema `1.1`
 
 Last verified: 2026-07-14
 
@@ -27,14 +27,14 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.0
+  -> Structured Report 1.1
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.0` records:
+Schema `1.1` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -98,9 +98,9 @@ The array does not enumerate capabilities unused by the inputs. An empty array t
 
 A `SubjectReference` identifies a report subject by source index, SVG kind, and optional authored ID. Authored IDs and source order are evidence, not authoritative cross-document identity.
 
-A `SubjectAlignment` relates sets of before and after subjects. Its relation may express correspondence, insertion, deletion, split, or merge. The current analyzer implements basic set-to-set alignment for its supported shape subset; broader many-to-many and ambiguity handling remain roadmap work.
+A `SubjectAlignment` relates sets of before and after subjects. Its relation may express correspondence, insertion, deletion, split, or merge. The current analyzer implements basic set-to-set alignment for its supported shape subset; broader many-to-many matching remains roadmap work.
 
-Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). The selected pairing is repeatable but does not imply that alternatives are impossible or that confidence has been measured.
+Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). Schema `1.1` adds optional selection `evidence`, and current producers always emit its score kind, nullable selected score, local candidate counts, and `unique`, `tied`, or `not_assessed` ambiguity. `confidence` remains null with `confidence_status: "not_calibrated"`. The selected pairing is repeatable, but local uniqueness does not imply authoritative identity or global assignment uniqueness.
 
 ### Changed Fact
 
@@ -155,7 +155,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.0` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.1` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one primary subject alignment. Cross-subject outcome grouping, shared-resource event synthesis, and semantic theme detection are future work. Atomic Differences remain independently recoverable even when grouped.
 
@@ -165,11 +165,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.0` top-level object contains exactly these conceptual sections:
+The schema `1.1` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -200,7 +200,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 11. HTML is a presentation of the Structured Report and must not recompute semantic differences.
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 
-## Not implemented in schema 1.0
+## Not implemented in schema 1.1
 
 The following concepts are intentional future work rather than hidden current fields:
 

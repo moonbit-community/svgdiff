@@ -139,7 +139,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P0** Extend Subject Alignment to paths, groups, text, resource definitions, and `<use>` instances.
 - [ ] **P0** Add transform-aware and rendered-geometry-aware correspondence features.
 - [ ] **P0** Improve repeated-subject matching without relying on authored IDs or source order.
-- [ ] **P0** Record alignment evidence, ambiguity, and confidence without converting uncertainty into equality.
+- [x] **P0** Record alignment evidence, ambiguity, and confidence without converting uncertainty into equality.
 - [ ] **P1** Validate one-to-one, insertion, deletion, split, merge, and many-to-many reorganizations on the benchmark corpus.
 - [x] **P1** Define stable deterministic tie-breaking for equally plausible alignments.
 - [ ] **P1** Align Visual Resources separately from Visual Entities while preserving mediated outcomes.

@@ -15,7 +15,7 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 | Authored XML parser | `Milky2018/xml@0.4.0` | well-formedness, namespaces, entity behavior, UTF-16 Source Spans |
 | Baseline pixel comparison | `mizchi/pixelmatch@0.6.1` | connected pixel-mask regions and renderer comparison support |
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
-| JSON Schema | `1.0` | every serialized field, enum, null/absence rule, and top-level invariant |
+| JSON Schema | `1.1` | every serialized field, enum, null/absence rule, and top-level invariant |
 | Same-domain ordering | `v1_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 
 The source of dependency versions is `moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json). The [compatibility and versioning contract](versioning.md) decides which identity each consumer-visible change must increment.
@@ -128,13 +128,13 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Schema `1.0` is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
+Every released Schema, currently `1.0` and `1.1`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
 
 ### Procedure
 
 1. Describe the old and new JSON shapes with concrete examples.
 2. Classify whether old consumers can safely interpret new output without code changes.
-3. If interpretation can change or parsing can fail, allocate a new `schema_version`; do not mutate the meaning of `1.0`.
+3. If interpretation can change or parsing can fail, allocate a new `schema_version`; do not mutate the meaning of an existing identity.
 4. Update public MoonBit types and serialization first, then regenerate `.mbti` with `moon info`.
 5. Update `schema/svgdiff-report.schema.json` and its `$id`, title, constants, required fields, definitions, and enums.
 6. Add the new version to the [released Schema registry](../schema/registry.v1.json) with its Schema file, ordering policies, canonical examples, and compatibility cases.

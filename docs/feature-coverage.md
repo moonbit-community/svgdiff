@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.0` coverage map
+Status: current schema `1.1` coverage map
 
 Last verified: 2026-07-14
 
@@ -13,7 +13,7 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.0`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `1.1`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
@@ -38,7 +38,7 @@ Feature IDs use four current namespaces:
 | `domain.<difference-domain>` | One emitted Atomic Difference domain. |
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Current schema `1.0` adds `coverage_matrix` as an optional JSON-Schema property for backward compatibility with previously emitted reports; the current engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.1` engine always emits it.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -55,7 +55,7 @@ The matrix is validated by the [Coverage Proof Obligations](coverage-proof-oblig
 | Integer-valued basic geometry facts for the supported shapes | Source, computed, rendered | None | [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt): `all changed facts across aligned subjects are enumerated` |
 | Supported fill, stroke, stroke width, and leaf opacity `0` or `1` facts | Source, computed, rendered where available | None | [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt): `ordinary inherited stroke changes are reported`; [`structured_report_test.mbt`](../engine/structured_report_test.mbt): `salient paint changes retain source computed and rendered evidence`, `zero-contribution insertion retains numeric presence footprint` |
 | Equivalent color spelling such as `red` and `#ff0000` | Source distinction, equivalent computed relation, measured zero rendered response | None | [`structured_report_test.mbt`](../engine/structured_report_test.mbt): `equivalent paint syntax remains a source-level difference` |
-| Subject correspondence, insertion, deletion, split, and merge for supported shapes | Source and computed alignment evidence | None | [`alignment_test.mbt`](../engine/alignment_test.mbt): all alignment tests, including `a visual merge is represented set to set and serialized` |
+| Subject correspondence, insertion, deletion, split, and merge for supported shapes | Source and computed alignment evidence, local ambiguity, and explicit uncalibrated confidence status | None | [`alignment_test.mbt`](../engine/alignment_test.mbt): unique, exact-duplicate tie, equal-distance tie, structural, unmatched, and merge cases |
 | Exact parameter and geometry magnitude | Computed magnitude remains continuous and separate from guarded renderer observations | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): `tiny geometry changes retain continuous magnitude independent of pixels` |
 | Presence footprint and isolated painted coverage | Computed footprint and rendered measurements | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): insertion/deletion and isolated coverage tests |
 | Same-domain lexicographic ordering | Report ordering evidence | None | [`difference_ordering_wbtest.mbt`](../engine/difference_ordering_wbtest.mbt): all v1 tuple families, missing values, and comparator direction; [`magnitude_test.mbt`](../engine/magnitude_test.mbt): descending magnitude and stable equal-tuple tie-breaking |

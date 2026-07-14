@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.1",
-  "title": "SVG Diff Structured Report 1.1",
+  "$id": "https://example.invalid/svgdiff/schema/1.0",
+  "title": "SVG Diff Structured Report 1.0",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.1" },
+    "schema_version": { "const": "1.0" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -148,35 +148,6 @@
         "authored_id": { "$ref": "#/$defs/nullableString" }
       }
     },
-    "alignmentEvidence": {
-      "type": "object",
-      "required": [
-        "score_kind",
-        "selected_score",
-        "candidate_count",
-        "equal_score_candidate_count",
-        "ambiguity",
-        "confidence",
-        "confidence_status"
-      ],
-      "properties": {
-        "score_kind": {
-          "enum": [
-            "exact_visual_signature",
-            "property_distance",
-            "structural_rule",
-            "unmatched",
-            "group_identity_or_singleton"
-          ]
-        },
-        "selected_score": { "$ref": "#/$defs/nullableNumber" },
-        "candidate_count": { "type": "integer", "minimum": 0 },
-        "equal_score_candidate_count": { "type": "integer", "minimum": 0 },
-        "ambiguity": { "enum": ["unique", "tied", "not_assessed"] },
-        "confidence": { "$ref": "#/$defs/nullableNumber" },
-        "confidence_status": { "const": "not_calibrated" }
-      }
-    },
     "subjectAlignment": {
       "type": "object",
       "required": ["id", "relation", "before", "after", "basis"],
@@ -185,8 +156,7 @@
         "relation": { "enum": ["correspondence", "insertion", "deletion", "split", "merge"] },
         "before": { "type": "array", "items": { "$ref": "#/$defs/subjectReference" } },
         "after": { "type": "array", "items": { "$ref": "#/$defs/subjectReference" } },
-        "basis": { "type": "string" },
-        "evidence": { "$ref": "#/$defs/alignmentEvidence" }
+        "basis": { "type": "string" }
       }
     },
     "changedFact": {

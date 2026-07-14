@@ -297,6 +297,7 @@ fn make_alignment(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
   basis : String,
+  evidence : AlignmentEvidence,
 ) -> SubjectAlignment {
   {
     id: "alignment:\{index}",
@@ -304,6 +305,26 @@ fn make_alignment(
     before: alignment_refs(before),
     after: alignment_refs(after),
     basis,
+    evidence,
+  }
+}
+
+///|
+fn alignment_evidence(
+  score_kind : String,
+  selected_score : Double?,
+  candidate_count : Int,
+  equal_score_candidate_count : Int,
+  ambiguity : String,
+) -> AlignmentEvidence {
+  {
+    score_kind,
+    selected_score,
+    candidate_count,
+    equal_score_candidate_count,
+    ambiguity,
+    confidence: None,
+    confidence_status: "not_calibrated",
   }
 }
 
@@ -450,23 +471,55 @@ fn align_source_subjects(
   let before_used = Array::make(before.length(), false)
   let after_used = Array::make(after.length(), false)
   for before_index, before_subject in before {
-    for after_index, after_subject in after {
-      if !before_used[before_index] &&
-        !after_used[after_index] &&
-        before_subject.signature == after_subject.signature {
-        before_used[before_index] = true
-        after_used[after_index] = true
-        alignments.push(
-          make_alignment(
-            alignments.length(),
-            "correspondence",
-            [before_subject],
-            [after_subject],
-            "exact_visual_signature",
-          ),
-        )
-        break
+    if before_used[before_index] {
+      continue
+    }
+    let candidates = [
+      for after_index, after_subject in after if !after_used[after_index] &&
+      before_subject.signature == after_subject.signature => after_index
+    ]
+    if !candidates.is_empty() {
+      let after_index = candidates[0]
+      let mut before_signature_count = 0
+      let mut after_signature_count = 0
+      for subject in before {
+        if subject.signature == before_subject.signature {
+          before_signature_count += 1
+        }
       }
+      for subject in after {
+        if subject.signature == before_subject.signature {
+          after_signature_count += 1
+        }
+      }
+      let equal_score_candidate_count = if before_signature_count >
+        after_signature_count {
+        before_signature_count
+      } else {
+        after_signature_count
+      }
+      before_used[before_index] = true
+      after_used[after_index] = true
+      alignments.push(
+        make_alignment(
+          alignments.length(),
+          "correspondence",
+          [before_subject],
+          [after[after_index]],
+          "exact_visual_signature",
+          alignment_evidence(
+            "exact_visual_signature",
+            Some(0.0),
+            equal_score_candidate_count,
+            equal_score_candidate_count,
+            if equal_score_candidate_count == 1 {
+              "unique"
+            } else {
+              "tied"
+            },
+          ),
+        ),
+      )
     }
   }
   for before_index, before_subject in before {
@@ -495,6 +548,7 @@ fn align_source_subjects(
           [before_subject],
           candidates,
           "equivalent_rect_coverage",
+          alignment_evidence("structural_rule", None, 0, 0, "not_assessed"),
         ),
       )
     }
@@ -525,6 +579,7 @@ fn align_source_subjects(
           candidates,
           [after_subject],
           "equivalent_rect_coverage",
+          alignment_evidence("structural_rule", None, 0, 0, "not_assessed"),
         ),
       )
     }
@@ -570,6 +625,44 @@ fn align_source_subjects(
           [before[before_index]],
           [after[after_index]],
           "minimum_property_distance",
+          {
+            let selected_score = subject_distance(
+              before[before_index],
+              after[after_index],
+            )
+            let compatible = if before_indices.length() > after_indices.length() {
+              before_indices.length()
+            } else {
+              after_indices.length()
+            }
+            let mut equal_scores = 0
+            if before_indices.length() > after_indices.length() {
+              for index in before_indices {
+                if subject_distance(before[index], after[after_index]) ==
+                  selected_score {
+                  equal_scores += 1
+                }
+              }
+            } else {
+              for index in after_indices {
+                if subject_distance(before[before_index], after[index]) ==
+                  selected_score {
+                  equal_scores += 1
+                }
+              }
+            }
+            alignment_evidence(
+              "property_distance",
+              Some(selected_score),
+              compatible,
+              equal_scores,
+              if equal_scores == 1 {
+                "unique"
+              } else {
+                "tied"
+              },
+            )
+          },
         ),
       )
     }
@@ -583,6 +676,7 @@ fn align_source_subjects(
           [subject],
           [],
           "unmatched_subject",
+          alignment_evidence("unmatched", None, 0, 0, "not_assessed"),
         ),
       )
     }
@@ -596,6 +690,7 @@ fn align_source_subjects(
           [],
           [subject],
           "unmatched_subject",
+          alignment_evidence("unmatched", None, 0, 0, "not_assessed"),
         ),
       )
     }

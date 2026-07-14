@@ -15,6 +15,8 @@ pub fn render_html_report(String, String, @engine.StructuredReport) -> String
 // Types and methods
 
 // Type aliases
+pub using @engine {type AlignmentEvidence}
+
 pub using @engine {type AtomicDifference}
 
 pub using @engine {type CauseEnvelope}

@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.0` interpretation guide
+Status: current schema `1.1` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -16,16 +16,27 @@ Read the report in this order:
 4. `coverage_matrix`: identify the exact feature and evidence-layer cells that are covered, limited, not applicable, or failed.
 5. `diagnostics`: explain every limited or failed coverage row.
 6. `renderer_capability_gaps`: identify encountered renderer-specific limits without inferring them from Diagnostic code names.
-7. `events`: use these as the primary navigation and localization units.
-8. `atomic_differences`: explain exactly what changed and at which evidence layers.
-9. `magnitude` and `domain_ordering`: quantify and order differences without inventing a universal score.
-10. `difference_regions`: describe where the outcome occurs.
-11. `cause_envelope`: list possible Changed Fact causes with the correct guarantee.
-12. `changed_facts` and source spans: recover authored provenance when needed.
+7. `subject_alignments`: inspect selection evidence and state local ambiguity without inventing identity confidence.
+8. `events`: use these as the primary navigation and localization units.
+9. `atomic_differences`: explain exactly what changed and at which evidence layers.
+10. `magnitude` and `domain_ordering`: quantify and order differences without inventing a universal score.
+11. `difference_regions`: describe where the outcome occurs.
+12. `cause_envelope`: list possible Changed Fact causes with the correct guarantee.
+13. `changed_facts` and source spans: recover authored provenance when needed.
 
 Never start by counting `atomic_differences`. A partial report with zero differences is not equality, while a complete report may contain a source distinction with zero visual effect.
 
 Treat `coverage_matrix` itself as the complete coverage summary. Group or filter its rows by `subject_id`, `feature_id`, or evidence-layer state when answering a question; do not infer a second summary from events, differences, or Diagnostic code names.
+
+## Alignment evidence and uncertainty
+
+For each referenced Subject Alignment, read `evidence` before describing the aligned subjects as corresponding. `score_kind` and `selected_score` state how the selected endpoint was evaluated; `candidate_count` and `equal_score_candidate_count` expose the local alternative set. Interpret `ambiguity` as follows:
+
+- `unique` means only that one candidate has the selected local score;
+- `tied` means the deterministic policy selected among equal local scores;
+- `not_assessed` means the applicable structural or unmatched rule did not assess comparable alternatives.
+
+Local uniqueness is not proof of authored identity or global assignment uniqueness. A deterministic tie-break is not confidence. Current reports therefore use `confidence: null` with `confidence_status: "not_calibrated"`; never derive a probability from candidate counts. Because `evidence` is additive and optional in Schema `1.1`, absence means uncertainty evidence was not reported and must not be rewritten as `unique`.
 
 ## Interpreting one Atomic Difference
 
@@ -58,7 +69,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.0` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.1` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

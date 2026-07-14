@@ -10,9 +10,9 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.1.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.0` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.0` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.2.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.1` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.1` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings and the evidence layers they constrain. |
 | Same-domain ordering | `v1_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/1` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
 

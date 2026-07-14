@@ -108,6 +108,15 @@ fn attach_group_opacity_differences(
         },
       ],
       basis: "group_identity_or_singleton",
+      evidence: {
+        score_kind: "group_identity_or_singleton",
+        selected_score: None,
+        candidate_count: 0,
+        equal_score_candidate_count: 0,
+        ambiguity: "not_assessed",
+        confidence: None,
+        confidence_status: "not_calibrated",
+      },
     })
     changed_facts.push({
       id: fact_id,

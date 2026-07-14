@@ -24,7 +24,10 @@ test "reordered and renamed subjects align by visual facts" {
       alignment.relation == "correspondence" &&
       alignment.before.length() == 1 &&
       alignment.after.length() == 1 &&
-      alignment.basis == "exact_visual_signature"
+      alignment.basis == "exact_visual_signature" &&
+      alignment.evidence.ambiguity == "unique" &&
+      alignment.evidence.candidate_count == 1 &&
+      alignment.evidence.equal_score_candidate_count == 1
     }),
   )
 }
@@ -44,12 +47,16 @@ test "insertions and deletions have an empty alignment side" {
   )
   assert_true(
     report.subject_alignments.any(alignment => {
-      alignment.relation == "deletion" && alignment.after.is_empty()
+      alignment.relation == "deletion" &&
+      alignment.after.is_empty() &&
+      alignment.evidence.ambiguity == "not_assessed"
     }),
   )
   assert_true(
     report.subject_alignments.any(alignment => {
-      alignment.relation == "insertion" && alignment.before.is_empty()
+      alignment.relation == "insertion" &&
+      alignment.before.is_empty() &&
+      alignment.evidence.ambiguity == "not_assessed"
     }),
   )
 }
@@ -71,7 +78,8 @@ test "one rectangle can align with a visual split" {
     report.subject_alignments.any(alignment => {
       alignment.relation == "split" &&
       alignment.before.length() == 1 &&
-      alignment.after.length() == 2
+      alignment.after.length() == 2 &&
+      alignment.evidence.ambiguity == "not_assessed"
     }),
   )
 }
@@ -95,7 +103,10 @@ test "similar subjects use deterministic minimum geometry distance" {
       alignment.before[0].source_index == 0 &&
       alignment.after.length() == 1 &&
       alignment.after[0].source_index == 1 &&
-      alignment.basis == "minimum_property_distance"
+      alignment.basis == "minimum_property_distance" &&
+      alignment.evidence.ambiguity == "unique" &&
+      alignment.evidence.candidate_count == 2 &&
+      alignment.evidence.equal_score_candidate_count == 1
     }),
   )
 }
@@ -144,6 +155,15 @@ test "duplicate exact signatures tie-break by source index" {
     }
   ]
   assert_eq(pairs, [(0, 0), (1, 1)])
+  for alignment in report.subject_alignments {
+    assert_eq(alignment.evidence.score_kind, "exact_visual_signature")
+    assert_true(alignment.evidence.selected_score == Some(0.0))
+    assert_eq(alignment.evidence.candidate_count, 2)
+    assert_eq(alignment.evidence.equal_score_candidate_count, 2)
+    assert_eq(alignment.evidence.ambiguity, "tied")
+    assert_true(alignment.evidence.confidence is None)
+    assert_eq(alignment.evidence.confidence_status, "not_calibrated")
+  }
 }
 
 ///|
@@ -166,6 +186,15 @@ test "equal minimum costs retain stable signature and source order" {
     }
   ]
   assert_eq(pairs, [(0, 0), (1, 1)])
+  for alignment in report.subject_alignments {
+    assert_eq(alignment.evidence.score_kind, "property_distance")
+    assert_true(alignment.evidence.selected_score == Some(1.0))
+    assert_eq(alignment.evidence.candidate_count, 2)
+    assert_eq(alignment.evidence.equal_score_candidate_count, 2)
+    assert_eq(alignment.evidence.ambiguity, "tied")
+    assert_true(alignment.evidence.confidence is None)
+    assert_eq(alignment.evidence.confidence_status, "not_calibrated")
+  }
 }
 
 ///|

@@ -201,6 +201,81 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
             )
 
 
+def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> None:
+    required = {
+        "score_kind",
+        "selected_score",
+        "candidate_count",
+        "equal_score_candidate_count",
+        "ambiguity",
+        "confidence",
+        "confidence_status",
+    }
+    assessed_score_kinds = {"exact_visual_signature", "property_distance"}
+    unassessed_score_kinds = {
+        "structural_rule",
+        "unmatched",
+        "group_identity_or_singleton",
+    }
+    for index, alignment in enumerate(report["subject_alignments"]):
+        evidence = alignment.get("evidence")
+        if not isinstance(evidence, dict) or not required <= set(evidence):
+            raise ValueError(
+                f"{case['id']}: alignment {index} lacks complete selection evidence"
+            )
+        candidate_count = evidence["candidate_count"]
+        equal_count = evidence["equal_score_candidate_count"]
+        if (
+            not isinstance(candidate_count, int)
+            or isinstance(candidate_count, bool)
+            or not isinstance(equal_count, int)
+            or isinstance(equal_count, bool)
+            or candidate_count < 0
+            or equal_count < 0
+            or equal_count > candidate_count
+        ):
+            raise ValueError(f"{case['id']}: alignment {index} has invalid counts")
+        if evidence["confidence"] is not None or evidence["confidence_status"] != (
+            "not_calibrated"
+        ):
+            raise ValueError(
+                f"{case['id']}: alignment {index} invents calibrated confidence"
+            )
+        score_kind = evidence["score_kind"]
+        ambiguity = evidence["ambiguity"]
+        if score_kind in assessed_score_kinds:
+            if evidence["selected_score"] is None:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} lacks its selected score"
+                )
+            if ambiguity == "unique" and equal_count != 1:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} has inconsistent uniqueness"
+                )
+            if ambiguity == "tied" and equal_count < 2:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} has inconsistent tie evidence"
+                )
+            if ambiguity not in {"unique", "tied"}:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} lost assessed ambiguity"
+                )
+        elif score_kind in unassessed_score_kinds:
+            if (
+                evidence["selected_score"] is not None
+                or candidate_count != 0
+                or equal_count != 0
+                or ambiguity != "not_assessed"
+            ):
+                raise ValueError(
+                    f"{case['id']}: alignment {index} overstates unassessed evidence"
+                )
+        else:
+            raise ValueError(
+                f"{case['id']}: alignment {index} has unknown score kind {score_kind!r}"
+            )
+
+
 def checked_path(relative_path: str) -> Path:
     path = (ROOT / relative_path).resolve()
     if ROOT not in path.parents:
@@ -255,6 +330,7 @@ def main() -> None:
         assert_semantics(case, report)
         assert_coverage_summary(case, report)
         assert_raw_magnitude_authority(case, report)
+        assert_alignment_evidence(case, report)
         output = checked_path(case["output"])
         if args.update:
             output.parent.mkdir(parents=True, exist_ok=True)
@@ -275,6 +351,15 @@ def main() -> None:
     wrong_nullable_fact = copy.deepcopy(reports["subject-insertion"])
     wrong_nullable_fact["changed_facts"][0]["before"] = 7
     expect_schema_rejection(wrong_nullable_fact, schema, "wrong nullable fact")
+    incomplete_alignment_evidence = copy.deepcopy(
+        reports["equivalent-color-spelling"]
+    )
+    del incomplete_alignment_evidence["subject_alignments"][0]["evidence"][
+        "confidence_status"
+    ]
+    expect_schema_rejection(
+        incomplete_alignment_evidence, schema, "incomplete alignment evidence"
+    )
 
     action = "updated" if args.update else "validated"
     print(f"Schema examples: {len(cases)} production reports {action}")

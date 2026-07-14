@@ -146,6 +146,8 @@ def classify(report: dict, policy: dict) -> tuple[str, str]:
             return "rejected", "unknown_ordering_policy"
     if any(not path_exists(report, path) for path in policy["legacy_optional_paths"]):
         return "accepted", "accepted_legacy_optional_fields"
+    if report["schema_version"] != policy["current_schema_version"]:
+        return "accepted", "accepted_legacy_schema"
     if set(report) - KNOWN_TOP_LEVEL:
         return "accepted", "accepted_additive_fields"
     return "accepted", "accepted_current"
@@ -213,6 +215,10 @@ def main() -> None:
     policy = manifest.get("consumer_policy")
     if policy.get("policy_id") != "svgdiff-consumer-compatibility/1":
         raise ValueError("unsupported consumer compatibility policy")
+    if policy.get("current_schema_version") not in policy.get(
+        "accepted_schema_versions", []
+    ):
+        raise ValueError("current Schema is not accepted by the consumer policy")
     cases = manifest.get("cases")
     if not isinstance(cases, list) or not cases:
         raise ValueError("compatibility corpus contains no cases")

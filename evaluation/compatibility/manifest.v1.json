@@ -7,7 +7,8 @@
   },
   "consumer_policy": {
     "policy_id": "svgdiff-consumer-compatibility/1",
-    "accepted_schema_versions": ["1.0"],
+    "accepted_schema_versions": ["1.0", "1.1"],
+    "current_schema_version": "1.1",
     "accepted_ordering_policy_ids": ["v1_domain_lexicographic"],
     "legacy_optional_paths": [
       ["coverage_matrix"],
@@ -19,6 +20,25 @@
     {
       "id": "current-schema-and-policy",
       "mutations": [],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_current",
+      "expected_schema_validation": "valid"
+    },
+    {
+      "id": "legacy-schema-1.0",
+      "mutations": [
+        { "op": "set", "path": ["schema_version"], "value": "1.0" },
+        { "op": "remove", "path": ["subject_alignments", 0, "evidence"] }
+      ],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_legacy_schema",
+      "expected_schema_validation": "valid"
+    },
+    {
+      "id": "optional-alignment-evidence-absent",
+      "mutations": [
+        { "op": "remove", "path": ["subject_alignments", 0, "evidence"] }
+      ],
       "expected_decision": "accepted",
       "expected_reason": "accepted_current",
       "expected_schema_validation": "valid"

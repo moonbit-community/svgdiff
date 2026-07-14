@@ -7,6 +7,17 @@ pub fn compare(String, String, ComparisonProfile) -> StructuredReport
 // Errors
 
 // Types and methods
+pub(all) struct AlignmentEvidence {
+  score_kind : String
+  selected_score : Double?
+  candidate_count : Int
+  equal_score_candidate_count : Int
+  ambiguity : String
+  confidence : Double?
+  confidence_status : String
+}
+pub impl ToJson for AlignmentEvidence
+
 pub(all) struct AtomicDifference {
   id : String
   subject_role : String
@@ -191,6 +202,7 @@ pub(all) struct SubjectAlignment {
   before : Array[SubjectReference]
   after : Array[SubjectReference]
   basis : String
+  evidence : AlignmentEvidence
 } derive(ToJson)
 
 pub(all) struct SubjectReference {

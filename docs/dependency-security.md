@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-14
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.0`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.1`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -49,7 +49,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 ## Known security gaps
 
-Schema `1.0` does not yet provide production-grade hostile-input resource control:
+Schema `1.1` does not yet provide production-grade hostile-input resource control:
 
 - no configurable limit for input bytes, element count, nesting depth, path complexity, references, raster dimensions, region count, or report size;
 - no cancellation or comparison time budget;

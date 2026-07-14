@@ -1,6 +1,6 @@
 # Compact Agent JSON
 
-Status: current schema `1.0` serialization mode
+Status: current schema `1.1` serialization mode
 
 Last verified: 2026-07-14
 
@@ -18,6 +18,6 @@ Consumers can switch between default and compact serialization without changing 
 
 The retained Comparison Profile includes `renderer_conformance_profile_id`. Consumers must not infer that identity from `schema_version` or `renderer_id`.
 
-The retained `renderer_capability_gaps` array is encountered-input metadata. An empty array is not a global renderer support claim.
+The retained `renderer_capability_gaps` array is encountered-input metadata. An empty array is not a global renderer support claim. Every current Subject Alignment also retains its selection `evidence`, including local ambiguity and explicit uncalibrated confidence status.
 
 An agent should still follow the [Text-Only Agent Report Guide](agent-report-guide.md). Any future derived summary, field projection, or importance policy requires its own versioned contract and must remain traceable to this complete evidence.

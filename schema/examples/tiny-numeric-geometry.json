@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -127,7 +127,16 @@
           "authored_id": "box"
         }
       ],
-      "basis": "minimum_property_distance"
+      "basis": "minimum_property_distance",
+      "evidence": {
+        "score_kind": "property_distance",
+        "selected_score": 0.00000999999999995449,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
     }
   ],
   "changed_facts": [

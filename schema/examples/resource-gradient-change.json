@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -137,7 +137,16 @@
           "authored_id": "box"
         }
       ],
-      "basis": "exact_visual_signature"
+      "basis": "exact_visual_signature",
+      "evidence": {
+        "score_kind": "exact_visual_signature",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
     }
   ],
   "changed_facts": [

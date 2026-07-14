@@ -1,6 +1,6 @@
 # Analysis Status Contract
 
-Status: current schema `1.0` caller contract
+Status: current schema `1.1` caller contract
 
 Last verified: 2026-07-14
 
@@ -29,7 +29,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.0`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.1`'s implemented support contract under the recorded Comparison Profile.
 
 It does not support any of these stronger statements:
 
@@ -62,7 +62,7 @@ Consumers may use the supported differences, magnitudes, regions, and candidates
 
 ## `failed`
 
-A `failed` report means the engine could not establish a usable semantic comparison. In schema `1.0`, malformed XML is the primary implemented failure path and produces `svg_parse_failed`.
+A `failed` report means the engine could not establish a usable semantic comparison. In schema `1.1`, malformed XML is the primary implemented failure path and produces `svg_parse_failed`.
 
 The report still has the schema's required top-level fields so callers can parse it uniformly, but its difference arrays must not be interpreted as evidence of equality or absence. Callers should surface the Diagnostics and stop semantic interpretation. The CLI returns status `1`.
 

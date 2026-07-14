@@ -86,6 +86,7 @@ graph TD
   ISS_067["ISS-067: Enforce event-region provenance pruning"]
   ISS_068["ISS-068: Prevent subject-region pixel contamination"]
   ISS_069["ISS-069: Define stable alignment tie-breaking"]
+  ISS_070["ISS-070: Report alignment evidence and uncertainty"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -189,6 +190,10 @@ graph TD
   ISS_067 --> ISS_068
   ISS_006 --> ISS_069
   ISS_058 --> ISS_069
+  ISS_053 --> ISS_070
+  ISS_056 --> ISS_070
+  ISS_057 --> ISS_070
+  ISS_069 --> ISS_070
 ```
 
 ## Warnings

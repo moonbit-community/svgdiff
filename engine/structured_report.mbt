@@ -237,6 +237,34 @@ pub impl ToJson for SubjectReference with fn to_json(self) {
 }
 
 ///|
+/// Reviewable selection evidence for one Subject Alignment.
+///
+/// `confidence` remains null while `confidence_status` is `not_calibrated`;
+/// deterministic selection does not imply a calibrated probability.
+pub(all) struct AlignmentEvidence {
+  score_kind : String
+  selected_score : Double?
+  candidate_count : Int
+  equal_score_candidate_count : Int
+  ambiguity : String
+  confidence : Double?
+  confidence_status : String
+}
+
+///|
+pub impl ToJson for AlignmentEvidence with fn to_json(self) {
+  {
+    "score_kind": self.score_kind,
+    "selected_score": nullable_report_value(self.selected_score),
+    "candidate_count": self.candidate_count,
+    "equal_score_candidate_count": self.equal_score_candidate_count,
+    "ambiguity": self.ambiguity,
+    "confidence": nullable_report_value(self.confidence),
+    "confidence_status": self.confidence_status,
+  }
+}
+
+///|
 /// Set-to-set relationship between before and after visual subjects.
 pub(all) struct SubjectAlignment {
   id : String
@@ -244,6 +272,7 @@ pub(all) struct SubjectAlignment {
   before : Array[SubjectReference]
   after : Array[SubjectReference]
   basis : String
+  evidence : AlignmentEvidence
 } derive(ToJson)
 
 ///|
@@ -932,7 +961,7 @@ fn preflight_source(
 fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.0",
+    schema_version: "1.1",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1248,7 +1277,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.0",
+        schema_version: "1.1",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1324,7 +1353,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.0",
+        schema_version: "1.1",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1374,7 +1403,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.0",
+        schema_version: "1.1",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1478,7 +1507,7 @@ fn gradient_change_report(
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
         Some({
-          schema_version: "1.0",
+          schema_version: "1.1",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1500,7 +1529,7 @@ fn gradient_change_report(
         })
       } else {
         Some({
-          schema_version: "1.0",
+          schema_version: "1.1",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1660,7 +1689,7 @@ pub fn compare(
         None =>
           finish_report(
             {
-              schema_version: "1.0",
+              schema_version: "1.1",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],
