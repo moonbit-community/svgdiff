@@ -266,6 +266,38 @@
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
+      "id": "mutate-line-x1-absolute-unit",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='1in' y1='8' x2='100' y2='8'/>",
+      "after_value": "<line id='edge' x1='97px' y1='8' x2='100' y2='8'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "x1", "report_property": "x1", "before_declared_value": "1in", "after_declared_value": "97px", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-radius-percentage",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<circle id='dot' cx='8' cy='8' r='12.5%' fill='blue'/>",
+      "after_value": "<circle id='dot' cx='8' cy='8' r='25%' fill='blue'/>",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "r", "report_property": "r", "before_declared_value": "12.5%", "after_declared_value": "25%", "affected_subject_ids": ["dot"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-stroke-width-percentage",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='12.5%'/>",
+      "after_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='25%'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "stroke-width", "report_property": "stroke-width", "before_declared_value": "12.5%", "after_declared_value": "25%", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-marker-width-percentage",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><marker id='m' markerWidth='25%'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "after_value": "<defs><marker id='m' markerWidth='50%'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "markerWidth", "report_property": "markerWidth", "before_declared_value": "4", "after_declared_value": "8", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
       "id": "mutate-inherited-fill",
       "template": "templates/inherited-fill.svg.tmpl",
       "before_value": "red", "after_value": "green",

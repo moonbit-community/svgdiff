@@ -100,7 +100,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P1** Complete geometry edge cases for rect, circle, ellipse, line, polyline, and polygon.
 - [x] **P1** Implement stroke geometry including width, line caps, joins, miter limits, dash arrays, dash offsets, and `vector-effect`.
 - [x] **P1** Implement marker placement and marker viewport/orientation semantics.
-- [ ] **P1** Preserve exact authored units while resolving device-space and viewport-relative values.
+- [x] **P1** Preserve exact authored units while resolving device-space and viewport-relative values.
 
 ### CSS, inheritance, and paint
 

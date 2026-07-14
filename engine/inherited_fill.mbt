@@ -611,7 +611,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.10",
+    schema_version: "1.11",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],

@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.4.4` and schema `1.10` contract
+Status: current module `0.4.5` and schema `1.11` contract
 
 Last verified: 2026-07-14
 

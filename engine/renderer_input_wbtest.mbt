@@ -124,3 +124,30 @@ test "renderer input leaves invalid stroke geometry for diagnostics" {
   let source = "<svg><line stroke='black' stroke-dasharray='4,-1'/></svg>"
   assert_eq(normalize_renderer_input(source), source)
 }
+
+///|
+test "renderer input resolves supported units with the comparison profile" {
+  let profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: 200,
+    viewport_height: 100,
+  }
+  let source =
+    #|<svg xmlns="http://www.w3.org/2000/svg" width="100vw" height="100vh" viewBox="0 0 400 200"><defs><marker id="m" markerWidth="25%" markerHeight="25%" refX="1in" refY="10vh"/></defs><line x1="25%" y1="25%" x2="75%" y2="75%" stroke="black" stroke-width="10%" stroke-dasharray="10% 1cm" marker-end="url(#m)"/></svg>
+  let normalized = normalize_renderer_input_with_profile(source, profile)
+  assert_true(normalized.find("width=\"200\"") is Some(_))
+  assert_true(normalized.find("height=\"100\"") is Some(_))
+  assert_true(normalized.find("markerWidth=\"100\"") is Some(_))
+  assert_true(normalized.find("markerHeight=\"50\"") is Some(_))
+  assert_true(normalized.find("refX=\"96\"") is Some(_))
+  assert_true(normalized.find("refY=\"10\"") is Some(_))
+  assert_true(normalized.find("x1=\"100\"") is Some(_))
+  assert_true(normalized.find("y1=\"50\"") is Some(_))
+  assert_true(normalized.find("x2=\"300\"") is Some(_))
+  assert_true(normalized.find("y2=\"150\"") is Some(_))
+  assert_true(normalized.find("stroke-width=\"31.62277660168379\"") is Some(_))
+  assert_true(
+    normalized.find("stroke-dasharray=\"31.62277660168379 37.79527559055118\"")
+    is Some(_),
+  )
+}

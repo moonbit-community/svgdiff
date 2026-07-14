@@ -284,6 +284,8 @@ fn marker_reference_coordinate(
   source : String,
   axis : String,
   view_box : ViewBoxValue?,
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Double? {
   let value = source.trim().to_owned().to_lower()
   let keyword_percentage = match (axis, value) {
@@ -322,7 +324,16 @@ fn marker_reference_coordinate(
           None => None
         }
       } else {
-        parse_shape_number(value)
+        parse_svg_length(
+          value,
+          if axis == "x" {
+            Horizontal
+          } else {
+            Vertical
+          },
+          viewport,
+          profile,
+        )
       }
   }
 }
@@ -333,6 +344,8 @@ fn marker_resource_from_element(
   element : @xml.NamespaceElement,
   node_index : Int,
   content_offset : Int,
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> MarkerResource {
   let authored_id = authored_subject_id(element)
   let subject_id = authored_id.unwrap_or(
@@ -389,10 +402,14 @@ fn marker_resource_from_element(
       }
     None => default_preserve_aspect_ratio()
   }
-  fn number_attribute(property : String, default_value : Double) -> Double {
+  fn length_attribute(
+    property : String,
+    direction : SvgLengthDirection,
+    default_value : Double,
+  ) -> Double {
     match marker_attribute(element, property) {
       Some(attribute) =>
-        match parse_shape_number(attribute.value) {
+        match parse_svg_length(attribute.value, direction, viewport, profile) {
           Some(value) => {
             facts.push({
               ..marker_fact(input, property, attribute),
@@ -408,8 +425,8 @@ fn marker_resource_from_element(
       None => default_value
     }
   }
-  let marker_width = number_attribute("markerWidth", 3.0)
-  let marker_height = number_attribute("markerHeight", 3.0)
+  let marker_width = length_attribute("markerWidth", Horizontal, 3.0)
+  let marker_height = length_attribute("markerHeight", Vertical, 3.0)
   if marker_width < 0.0 {
     match marker_attribute(element, "markerWidth") {
       Some(attribute) => invalid(attribute, "markerWidth")
@@ -482,7 +499,14 @@ fn marker_resource_from_element(
   }
   let ref_x = match marker_attribute(element, "refX") {
     Some(attribute) =>
-      match marker_reference_coordinate(attribute.value, "x", view_box) {
+      match
+        marker_reference_coordinate(
+          attribute.value,
+          "x",
+          view_box,
+          viewport,
+          profile,
+        ) {
         Some(value) => {
           facts.push({
             ..marker_fact(input, "refX", attribute),
@@ -499,7 +523,14 @@ fn marker_resource_from_element(
   }
   let ref_y = match marker_attribute(element, "refY") {
     Some(attribute) =>
-      match marker_reference_coordinate(attribute.value, "y", view_box) {
+      match
+        marker_reference_coordinate(
+          attribute.value,
+          "y",
+          view_box,
+          viewport,
+          profile,
+        ) {
         Some(value) => {
           facts.push({
             ..marker_fact(input, "refY", attribute),
@@ -561,14 +592,29 @@ fn marker_resource_from_element(
 ///|
 fn extract_marker_resources_or_raise(
   input : String,
+  profile : ComparisonProfile,
 ) -> Array[MarkerResource] raise {
   let resources : Array[MarkerResource] = []
   let resource_stack : Array[(Int, Int)] = []
+  let viewport_contexts : Array[ViewportContext] = []
   let mut node_index = 0
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
       Start(element) => {
+        if element.name.local_name == "svg" {
+          let (_, child_viewport) = source_transform_site_with_viewport(
+            input,
+            element,
+            node_index,
+            profile,
+            viewport_contexts.last(),
+          )
+          match child_viewport {
+            Some(context) => viewport_contexts.push(context)
+            None => ()
+          }
+        }
         if element.name.local_name == "marker" {
           let index = resources.length()
           resources.push(
@@ -577,6 +623,13 @@ fn extract_marker_resources_or_raise(
               element,
               node_index,
               event.span.end.offset,
+              viewport_contexts
+              .last()
+              .unwrap_or({
+                width: profile.viewport_width.to_double(),
+                height: profile.viewport_height.to_double(),
+              }),
+              profile,
             ),
           )
           resource_stack.push((index, event.span.end.offset))
@@ -591,26 +644,39 @@ fn extract_marker_resources_or_raise(
               element,
               node_index,
               event.span.end.offset,
+              viewport_contexts
+              .last()
+              .unwrap_or({
+                width: profile.viewport_width.to_double(),
+                height: profile.viewport_height.to_double(),
+              }),
+              profile,
             ),
           )
         }
         node_index += 1
       }
-      End(name) if name.local_name == "marker" =>
-        match resource_stack.pop() {
-          Some((index, start_offset)) => {
-            let end_offset = event.span.start.offset
-            let content = source_range_slice(input, start_offset, end_offset)
-            resources[index].content_fact = {
-              property: "content",
-              authored_value: content,
-              declared_value: content,
-              origin: "resource_content",
-              source_span: { start_offset, end_offset },
+      End(name) => {
+        if name.local_name == "marker" {
+          match resource_stack.pop() {
+            Some((index, start_offset)) => {
+              let end_offset = event.span.start.offset
+              let content = source_range_slice(input, start_offset, end_offset)
+              resources[index].content_fact = {
+                property: "content",
+                authored_value: content,
+                declared_value: content,
+                origin: "resource_content",
+                source_span: { start_offset, end_offset },
+              }
             }
+            None => ()
           }
-          None => ()
         }
+        if name.local_name == "svg" {
+          ignore(viewport_contexts.pop())
+        }
+      }
       _ => ()
     }
   }
@@ -1305,8 +1371,9 @@ fn marker_fact_for_property(
 fn resolve_marker_subjects_or_raise(
   input : String,
   subjects : Array[SourceSubject],
+  profile : ComparisonProfile,
 ) -> Array[SourceSubject] raise {
-  let resources = extract_marker_resources_or_raise(input)
+  let resources = extract_marker_resources_or_raise(input, profile)
   let resolved : Array[SourceSubject] = []
   for subject in subjects {
     let invalid_facts = subject.marker_invalid_facts.copy()

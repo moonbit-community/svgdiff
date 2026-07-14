@@ -56,6 +56,15 @@ fn parse_shape_number(source : String) -> Double? {
 }
 
 ///|
+fn basic_shape_length_direction(property : String) -> SvgLengthDirection {
+  match property {
+    "x" | "width" | "rx" | "cx" | "x1" | "x2" => Horizontal
+    "y" | "height" | "ry" | "cy" | "y1" | "y2" => Vertical
+    _ => Unspecified
+  }
+}
+
+///|
 fn shape_fact(
   facts : Array[DeclaredVisualFact],
   property : String,
@@ -82,12 +91,20 @@ fn resolved_shape_number(
   default_value : Double,
   nonnegative : Bool,
   invalid : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Double {
   let fact = shape_fact(facts, property)
   match fact {
     None => default_value
     Some(fact) =>
-      match parse_shape_number(fact.declared_value) {
+      match
+        parse_svg_length(
+          fact.declared_value,
+          basic_shape_length_direction(property),
+          viewport,
+          profile,
+        ) {
         Some(value) if !nonnegative || value >= 0.0 => value
         _ => {
           push_invalid_shape_fact(invalid, Some(fact))
@@ -102,13 +119,21 @@ fn resolved_shape_dimension(
   facts : Array[DeclaredVisualFact],
   property : String,
   invalid : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Double {
   match shape_fact(facts, property) {
     None => 0.0
     Some(fact) if fact.declared_value.trim().to_owned().to_lower() == "auto" =>
       0.0
     Some(fact) =>
-      match parse_shape_number(fact.declared_value) {
+      match
+        parse_svg_length(
+          fact.declared_value,
+          basic_shape_length_direction(property),
+          viewport,
+          profile,
+        ) {
         Some(value) if value >= 0.0 => value
         _ => {
           push_invalid_shape_fact(invalid, Some(fact))
@@ -123,6 +148,8 @@ fn resolved_auto_shape_radius(
   facts : Array[DeclaredVisualFact],
   property : String,
   invalid : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Double? {
   let fact = shape_fact(facts, property)
   match fact {
@@ -130,7 +157,13 @@ fn resolved_auto_shape_radius(
     Some(fact) if fact.declared_value.trim().to_owned().to_lower() == "auto" =>
       None
     Some(fact) =>
-      match parse_shape_number(fact.declared_value) {
+      match
+        parse_svg_length(
+          fact.declared_value,
+          basic_shape_length_direction(property),
+          viewport,
+          profile,
+        ) {
         Some(value) if value >= 0.0 => Some(value)
         _ => {
           push_invalid_shape_fact(invalid, Some(fact))
@@ -218,9 +251,11 @@ fn canonical_shape_points(values : Array[Double]) -> String {
 }
 
 ///|
-fn resolve_basic_shape_geometry(
+fn resolve_basic_shape_geometry_with_context(
   kind : String,
   facts : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> BasicShapeGeometryResolution {
   let values : Array[(String, String)] = []
   let invalid_facts : Array[DeclaredVisualFact] = []
@@ -228,12 +263,24 @@ fn resolve_basic_shape_geometry(
   let mut renders_geometry = true
   match kind {
     "rect" => {
-      let x = resolved_shape_number(facts, "x", 0.0, false, invalid_facts)
-      let y = resolved_shape_number(facts, "y", 0.0, false, invalid_facts)
-      let width = resolved_shape_dimension(facts, "width", invalid_facts)
-      let height = resolved_shape_dimension(facts, "height", invalid_facts)
-      let authored_rx = resolved_auto_shape_radius(facts, "rx", invalid_facts)
-      let authored_ry = resolved_auto_shape_radius(facts, "ry", invalid_facts)
+      let x = resolved_shape_number(
+        facts, "x", 0.0, false, invalid_facts, viewport, profile,
+      )
+      let y = resolved_shape_number(
+        facts, "y", 0.0, false, invalid_facts, viewport, profile,
+      )
+      let width = resolved_shape_dimension(
+        facts, "width", invalid_facts, viewport, profile,
+      )
+      let height = resolved_shape_dimension(
+        facts, "height", invalid_facts, viewport, profile,
+      )
+      let authored_rx = resolved_auto_shape_radius(
+        facts, "rx", invalid_facts, viewport, profile,
+      )
+      let authored_ry = resolved_auto_shape_radius(
+        facts, "ry", invalid_facts, viewport, profile,
+      )
       let (unclamped_rx, unclamped_ry) = match (authored_rx, authored_ry) {
         (None, None) => (0.0, 0.0)
         (Some(rx), None) => (rx, rx)
@@ -251,19 +298,33 @@ fn resolve_basic_shape_geometry(
       renders_geometry = width > 0.0 && height > 0.0
     }
     "circle" => {
-      let cx = resolved_shape_number(facts, "cx", 0.0, false, invalid_facts)
-      let cy = resolved_shape_number(facts, "cy", 0.0, false, invalid_facts)
-      let radius = resolved_shape_number(facts, "r", 0.0, true, invalid_facts)
+      let cx = resolved_shape_number(
+        facts, "cx", 0.0, false, invalid_facts, viewport, profile,
+      )
+      let cy = resolved_shape_number(
+        facts, "cy", 0.0, false, invalid_facts, viewport, profile,
+      )
+      let radius = resolved_shape_number(
+        facts, "r", 0.0, true, invalid_facts, viewport, profile,
+      )
       push_shape_value(values, "cx", cx)
       push_shape_value(values, "cy", cy)
       push_shape_value(values, "r", radius)
       renders_geometry = radius > 0.0
     }
     "ellipse" => {
-      let cx = resolved_shape_number(facts, "cx", 0.0, false, invalid_facts)
-      let cy = resolved_shape_number(facts, "cy", 0.0, false, invalid_facts)
-      let authored_rx = resolved_auto_shape_radius(facts, "rx", invalid_facts)
-      let authored_ry = resolved_auto_shape_radius(facts, "ry", invalid_facts)
+      let cx = resolved_shape_number(
+        facts, "cx", 0.0, false, invalid_facts, viewport, profile,
+      )
+      let cy = resolved_shape_number(
+        facts, "cy", 0.0, false, invalid_facts, viewport, profile,
+      )
+      let authored_rx = resolved_auto_shape_radius(
+        facts, "rx", invalid_facts, viewport, profile,
+      )
+      let authored_ry = resolved_auto_shape_radius(
+        facts, "ry", invalid_facts, viewport, profile,
+      )
       let (rx, ry) = match (authored_rx, authored_ry) {
         (None, None) => (0.0, 0.0)
         (Some(rx), None) => (rx, rx)
@@ -281,7 +342,9 @@ fn resolve_basic_shape_geometry(
         push_shape_value(
           values,
           property,
-          resolved_shape_number(facts, property, 0.0, false, invalid_facts),
+          resolved_shape_number(
+            facts, property, 0.0, false, invalid_facts, viewport, profile,
+          ),
         )
       }
     "polyline" | "polygon" => {

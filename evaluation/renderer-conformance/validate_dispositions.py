@@ -45,18 +45,23 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def compare_source(cli: Path, source: Path) -> dict:
+def compare_pair(cli: Path, before: Path, after: Path) -> dict:
     result = subprocess.run(
-        [str(cli), str(source), str(source), "--agent-json"],
+        [str(cli), str(before), str(after), "--agent-json"],
         check=False,
         capture_output=True,
         text=True,
     )
     if result.returncode != 0 or result.stderr:
         raise ValueError(
-            f"CLI failed for {source}: status={result.returncode}, stderr={result.stderr!r}"
+            f"CLI failed for {before} and {after}: "
+            f"status={result.returncode}, stderr={result.stderr!r}"
         )
     return json.loads(result.stdout)
+
+
+def compare_source(cli: Path, source: Path) -> dict:
+    return compare_pair(cli, source, source)
 
 
 def main() -> None:
@@ -64,7 +69,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/7"
+    expected_profile = "svgdiff-renderer-conformance-profile/8"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:
@@ -81,9 +86,58 @@ def main() -> None:
     if set(mappings) != divergent or len(mappings) != len(dispositions["cases"]):
         raise ValueError("divergent baseline cases and dispositions are not one-to-one")
 
+    diagnostic_count = 0
+    normalizer_count = 0
     for case_id in sorted(divergent):
         mapping = mappings[case_id]
-        if mapping.get("disposition") != "diagnostic":
+        disposition = mapping.get("disposition")
+        if disposition == "normalizer":
+            canonical_id = mapping.get("canonical_case_id")
+            normalizer_id = mapping.get("normalizer_id")
+            if canonical_id not in fixtures or not isinstance(normalizer_id, str):
+                raise ValueError(f"invalid normalizer disposition for {case_id}")
+            if fixtures[case_id].get("canonical_equivalent_id") != canonical_id:
+                raise ValueError(f"manifest canonical fixture differs for {case_id}")
+            canonical_baseline = next(
+                (case for case in baseline["cases"] if case["id"] == canonical_id),
+                None,
+            )
+            if (
+                canonical_baseline is None
+                or canonical_baseline["comparison"] != "exact"
+                or canonical_baseline["coverage_claim"] != "supported"
+            ):
+                raise ValueError(f"canonical fixture is not exact and supported: {case_id}")
+            source = (ROOT / fixtures[case_id]["source"]).resolve()
+            canonical = (ROOT / fixtures[canonical_id]["source"]).resolve()
+            report = compare_pair(args.cli, source, canonical)
+            if report.get("analysis_status") != "complete":
+                raise ValueError(f"normalizer comparison remained partial: {case_id}")
+            renderer_components = report["profile"]["renderer_id"].split("+")
+            component_id = normalizer_id.removeprefix("svgdiff/")
+            if normalizer_id not in renderer_components and component_id not in renderer_components:
+                raise ValueError(f"normalizer identity missing for {case_id}")
+            differences = report.get("atomic_differences", [])
+            if not differences or any(
+                difference.get("computed_relation", {}).get("status") != "equivalent"
+                for difference in differences
+            ):
+                raise ValueError(f"normalizer did not prove computed equivalence: {case_id}")
+            events = report.get("events", [])
+            if not events or any(
+                event.get("rendered_outcome", {}).get("magnitude", {}).get(
+                    "changed_pixels"
+                )
+                != 0
+                for event in events
+            ):
+                raise ValueError(f"normalizer changed production pixels: {case_id}")
+            emitted = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+            if emitted & NEW_CONFORMANCE_CODES:
+                raise ValueError(f"normalizer comparison acquired a guard: {case_id}")
+            normalizer_count += 1
+            continue
+        if disposition != "diagnostic":
             raise ValueError(f"unsupported disposition for {case_id}")
         code = mapping.get("diagnostic_code")
         if not isinstance(code, str) or not code:
@@ -100,6 +154,7 @@ def main() -> None:
             for row in report["coverage_matrix"]
         ):
             raise ValueError(f"rendered guard coverage missing for {case_id}: {code}")
+        diagnostic_count += 1
 
     exact_supported = [
         case
@@ -118,7 +173,8 @@ def main() -> None:
             )
 
     print(
-        f"Renderer dispositions: {len(divergent)} divergences guarded, "
+        f"Renderer dispositions: {len(divergent)} divergences disposed "
+        f"({diagnostic_count} diagnostic, {normalizer_count} normalizer), "
         f"{len(exact_supported)} exact supported cases retain their prior coverage"
     )
 

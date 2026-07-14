@@ -505,15 +505,115 @@
       "id": "marker-zero-size",
       "max_channel_delta": 255,
       "premultiplied_rgba8_rmse": 0.192638171476
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0625,
+      "changed_pixels": 16,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "length-absolute",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.160943399299
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.25,
+      "changed_pixels": 64,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "length-percentage",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.335410196625
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.25,
+      "changed_pixels": 64,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "length-viewport-relative",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.289635786616
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0625,
+      "changed_pixels": 16,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "length-nested-viewport",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.15612494996
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.05078125,
+      "changed_pixels": 13,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "length-stroke",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.113422146573
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.1328125,
+      "changed_pixels": 34,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "length-marker",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.123166642182
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "length-absolute-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "length-percentage-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "length-viewport-relative-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "length-nested-viewport-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/7",
-  "fixture_source_set_sha256": "bdc8372ad371d1eda4dfb53a0b6f18ed1ad974598ab41808593d6e7f8f99742b",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/8",
+  "fixture_source_set_sha256": "a81e1354b5a0bba06d060a35a7e319b7f74bd0ff27405f97d6f4c43e21168bdd",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 50,
+    "cases": 60,
     "categories": {
       "alpha": {
         "cases": 3,
@@ -531,9 +631,9 @@
         "exact": 0
       },
       "geometry": {
-        "cases": 39,
-        "divergent": 25,
-        "exact": 14
+        "cases": 49,
+        "divergent": 31,
+        "exact": 18
       },
       "paint": {
         "cases": 6,
@@ -541,10 +641,10 @@
         "exact": 4
       }
     },
-    "divergent": 29,
-    "exact": 21,
+    "divergent": 35,
+    "exact": 25,
     "exploratory": 2,
-    "guarded": 28,
-    "supported": 20
+    "guarded": 30,
+    "supported": 28
   }
 }

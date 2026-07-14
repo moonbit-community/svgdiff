@@ -149,33 +149,13 @@ fn parse_preserve_aspect_ratio_value(
 ///|
 fn parse_viewport_length(
   source : String,
-  percentage_reference : Double,
+  direction : SvgLengthDirection,
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> ResolvedViewportLength? {
-  let value = source.trim().to_owned()
-  if value == "" {
-    return None
-  }
-  let (number_source, multiplier) = if value[value.length() - 1] == '%' {
-    (
-      value.view(start_offset=0, end_offset=value.length() - 1),
-      percentage_reference / 100.0,
-    )
-  } else if value.length() >= 2 &&
-    value[value.length() - 2] == 'p' &&
-    value[value.length() - 1] == 'x' {
-    (value.view(start_offset=0, end_offset=value.length() - 2), 1.0)
-  } else {
-    (value.view(), 1.0)
-  }
-  let parsed = try @string.parse_double(number_source) catch {
-    _ => return None
-  } noraise {
-    value => value
-  }
-  if parsed.is_nan() || parsed.is_inf() {
-    None
-  } else {
-    Some({ value: normalized_transform_component(parsed * multiplier) })
+  match parse_svg_length(source, direction, viewport, profile) {
+    Some(value) => Some({ value, })
+    None => None
   }
 }
 
@@ -312,13 +292,14 @@ fn source_viewport_resolution(
   fn resolve_length(
     attribute : @xml.NamespaceAttribute?,
     property : String,
-    percentage_reference : Double,
+    direction : SvgLengthDirection,
     default_value : Double,
     positive : Bool,
   ) -> Double {
     match attribute {
       Some(attribute) =>
-        match parse_viewport_length(attribute.value, percentage_reference) {
+        match
+          parse_viewport_length(attribute.value, direction, reference, profile) {
           Some(resolved) if !positive || resolved.value > 0.0 => {
             facts.push(
               normalized_viewport_fact(
@@ -341,25 +322,19 @@ fn source_viewport_resolution(
       None => default_value
     }
   }
-  let declared_x = resolve_length(x_attribute, "x", reference.width, 0.0, false)
-  let declared_y = resolve_length(
-    y_attribute,
-    "y",
-    reference.height,
-    0.0,
-    false,
-  )
+  let declared_x = resolve_length(x_attribute, "x", Horizontal, 0.0, false)
+  let declared_y = resolve_length(y_attribute, "y", Vertical, 0.0, false)
   let declared_width = resolve_length(
     width_attribute,
     "width",
-    reference.width,
+    Horizontal,
     reference.width,
     true,
   )
   let declared_height = resolve_length(
     height_attribute,
     "height",
-    reference.height,
+    Vertical,
     reference.height,
     true,
   )

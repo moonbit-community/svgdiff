@@ -33,11 +33,32 @@ test "preserveAspectRatio parser covers alignments meet slice and none" {
 }
 
 ///|
-test "viewport lengths resolve unitless px and percentages" {
-  assert_eq(parse_viewport_length("12", 80.0).unwrap().value, 12.0)
-  assert_eq(parse_viewport_length("12px", 80.0).unwrap().value, 12.0)
-  assert_eq(parse_viewport_length("25%", 80.0).unwrap().value, 20.0)
-  assert_true(parse_viewport_length("12pt", 80.0) is None)
+test "viewport lengths use the shared SVG unit resolver" {
+  let profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: 80,
+    viewport_height: 40,
+  }
+  let viewport : ViewportContext = { width: 80.0, height: 40.0 }
+  assert_eq(
+    parse_viewport_length("12", Horizontal, viewport, profile).unwrap().value,
+    12.0,
+  )
+  assert_eq(
+    parse_viewport_length("1in", Horizontal, viewport, profile).unwrap().value,
+    96.0,
+  )
+  assert_eq(
+    parse_viewport_length("25%", Horizontal, viewport, profile).unwrap().value,
+    20.0,
+  )
+  assert_eq(
+    parse_viewport_length("25vh", Vertical, viewport, profile).unwrap().value,
+    10.0,
+  )
+  assert_true(
+    parse_viewport_length("12em", Horizontal, viewport, profile) is None,
+  )
 }
 
 ///|

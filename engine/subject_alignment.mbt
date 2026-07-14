@@ -67,6 +67,8 @@ fn subject_from_element(
   hierarchy_signature : String,
   transform_chain : Array[SourceTransformSite],
   inherited_marker_facts : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let path_segments : Array[PathSegmentEvidence] = []
@@ -108,8 +110,13 @@ fn subject_from_element(
     }
     None => ()
   }
-  let geometry = resolve_basic_shape_geometry(element.name.local_name, facts)
-  let stroke = resolve_stroke_geometry(facts)
+  let geometry = resolve_basic_shape_geometry_with_context(
+    element.name.local_name,
+    facts,
+    viewport,
+    profile,
+  )
+  let stroke = resolve_stroke_geometry_with_context(facts, viewport, profile)
   let marker = resolve_marker_attachments(facts, inherited_marker_facts)
   let values : Array[(String, String)] = []
   for fact in facts {
@@ -301,6 +308,13 @@ fn extract_source_subjects_with_profile_or_raise(
               joined_hierarchy_signature(hierarchy),
               transforms.copy(),
               inherited_markers.last().unwrap_or([]),
+              viewport_contexts
+              .last()
+              .unwrap_or({
+                width: profile.viewport_width.to_double(),
+                height: profile.viewport_height.to_double(),
+              }),
+              profile,
             ),
           )
         }
@@ -325,6 +339,13 @@ fn extract_source_subjects_with_profile_or_raise(
               joined_hierarchy_signature(hierarchy),
               transform_chain,
               inherited_markers.last().unwrap_or([]),
+              viewport_contexts
+              .last()
+              .unwrap_or({
+                width: profile.viewport_width.to_double(),
+                height: profile.viewport_height.to_double(),
+              }),
+              profile,
             ),
           )
         }
@@ -345,7 +366,7 @@ fn extract_source_subjects_with_profile_or_raise(
       _ => ()
     }
   }
-  resolve_marker_subjects_or_raise(input, subjects)
+  resolve_marker_subjects_or_raise(input, subjects, profile)
 }
 
 ///|

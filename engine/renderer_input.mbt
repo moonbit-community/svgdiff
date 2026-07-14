@@ -117,18 +117,144 @@ fn renderer_element_insert_offset(
 }
 
 ///|
+fn renderer_canonical_fact_edits(
+  element : @xml.NamespaceElement,
+  facts : Array[DeclaredVisualFact],
+  properties : Array[String],
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  for property in properties {
+    match (renderer_attribute(element, property), shape_fact(facts, property)) {
+      (Some(attribute), Some(fact)) =>
+        edits.push({
+          start_offset: attribute.value_span.start.offset,
+          end_offset: attribute.value_span.end.offset,
+          replacement: fact.declared_value,
+        })
+      _ => ()
+    }
+  }
+}
+
+///|
+fn normalize_renderer_context_lengths_with_profile(
+  input : String,
+  profile : ComparisonProfile,
+) -> String {
+  let reader = @xml.NamespaceReader::from_string(input)
+  let events = reader.read_events_until_eof() catch { _ => return input }
+  let edits : Array[RendererValueEdit] = []
+  let viewport_contexts : Array[ViewportContext] = []
+  let mut node_index = 0
+  for event in events {
+    match event.kind {
+      Start(element) => {
+        if element.name.local_name == "svg" {
+          let resolution = source_viewport_resolution(
+            input,
+            element,
+            profile,
+            viewport_contexts.last(),
+          )
+          if resolution.complete {
+            renderer_canonical_fact_edits(
+              element,
+              resolution.facts,
+              ["x", "y", "width", "height"],
+              edits,
+            )
+          }
+          viewport_contexts.push(resolution.child_context)
+        } else if element.name.local_name == "marker" {
+          let resource = marker_resource_from_element(
+            input,
+            element,
+            node_index,
+            event.span.end.offset,
+            viewport_contexts
+            .last()
+            .unwrap_or({
+              width: profile.viewport_width.to_double(),
+              height: profile.viewport_height.to_double(),
+            }),
+            profile,
+          )
+          if resource.complete {
+            renderer_canonical_fact_edits(
+              element,
+              resource.facts,
+              ["markerWidth", "markerHeight", "refX", "refY"],
+              edits,
+            )
+          }
+        }
+        node_index += 1
+      }
+      Empty(element) => {
+        if element.name.local_name == "svg" {
+          let resolution = source_viewport_resolution(
+            input,
+            element,
+            profile,
+            viewport_contexts.last(),
+          )
+          if resolution.complete {
+            renderer_canonical_fact_edits(
+              element,
+              resolution.facts,
+              ["x", "y", "width", "height"],
+              edits,
+            )
+          }
+        } else if element.name.local_name == "marker" {
+          let resource = marker_resource_from_element(
+            input,
+            element,
+            node_index,
+            event.span.end.offset,
+            viewport_contexts
+            .last()
+            .unwrap_or({
+              width: profile.viewport_width.to_double(),
+              height: profile.viewport_height.to_double(),
+            }),
+            profile,
+          )
+          if resource.complete {
+            renderer_canonical_fact_edits(
+              element,
+              resource.facts,
+              ["markerWidth", "markerHeight", "refX", "refY"],
+              edits,
+            )
+          }
+        }
+        node_index += 1
+      }
+      End(name) if name.local_name == "svg" => ignore(viewport_contexts.pop())
+      _ => ()
+    }
+  }
+  apply_renderer_value_edits(input, edits)
+}
+
+///|
 fn renderer_shape_geometry_edits(
   input : String,
   span : @xml.SourceSpan,
   element : @xml.NamespaceElement,
   edits : Array[RendererValueEdit],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Unit {
   let kind = element.name.local_name
   if !visual_subject_kind(kind) || kind == "path" {
     return
   }
   let facts = rect_declared_facts_from_element(input, element).facts
-  let resolution = resolve_basic_shape_geometry(kind, facts)
+  let resolution = resolve_basic_shape_geometry_with_context(
+    kind, facts, viewport, profile,
+  )
   if !resolution.complete {
     return
   }
@@ -192,14 +318,63 @@ fn shape_geometry_value_for_renderer(
 }
 
 ///|
-fn normalize_renderer_shape_geometry(input : String) -> String {
+fn normalize_renderer_shape_geometry_with_profile(
+  input : String,
+  profile : ComparisonProfile,
+) -> String {
   let reader = @xml.NamespaceReader::from_string(input)
   let events = reader.read_events_until_eof() catch { _ => return input }
   let edits : Array[RendererValueEdit] = []
+  let viewport_contexts : Array[ViewportContext] = []
+  let mut node_index = 0
   for event in events {
     match event.kind {
-      Start(element) | Empty(element) =>
-        renderer_shape_geometry_edits(input, event.span, element, edits)
+      Start(element) => {
+        if element.name.local_name == "svg" {
+          let (_, child_viewport) = source_transform_site_with_viewport(
+            input,
+            element,
+            node_index,
+            profile,
+            viewport_contexts.last(),
+          )
+          match child_viewport {
+            Some(context) => viewport_contexts.push(context)
+            None => ()
+          }
+        }
+        renderer_shape_geometry_edits(
+          input,
+          event.span,
+          element,
+          edits,
+          viewport_contexts
+          .last()
+          .unwrap_or({
+            width: profile.viewport_width.to_double(),
+            height: profile.viewport_height.to_double(),
+          }),
+          profile,
+        )
+        node_index += 1
+      }
+      Empty(element) => {
+        renderer_shape_geometry_edits(
+          input,
+          event.span,
+          element,
+          edits,
+          viewport_contexts
+          .last()
+          .unwrap_or({
+            width: profile.viewport_width.to_double(),
+            height: profile.viewport_height.to_double(),
+          }),
+          profile,
+        )
+        node_index += 1
+      }
+      End(name) if name.local_name == "svg" => ignore(viewport_contexts.pop())
       _ => ()
     }
   }
@@ -207,13 +382,25 @@ fn normalize_renderer_shape_geometry(input : String) -> String {
 }
 
 ///|
+fn normalize_renderer_shape_geometry(input : String) -> String {
+  normalize_renderer_shape_geometry_with_profile(
+    input,
+    ComparisonProfile::v1_default(),
+  )
+}
+
+///|
 fn renderer_stroke_geometry_edits(
   input : String,
   element : @xml.NamespaceElement,
   edits : Array[RendererValueEdit],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Unit {
   let facts = rect_declared_facts_from_element(input, element).facts
-  let resolution = resolve_stroke_geometry(facts)
+  let resolution = resolve_stroke_geometry_with_context(
+    facts, viewport, profile,
+  )
   if !resolution.complete {
     return
   }
@@ -245,14 +432,61 @@ fn renderer_stroke_geometry_edits(
 }
 
 ///|
-fn normalize_renderer_stroke_geometry(input : String) -> String {
+fn normalize_renderer_stroke_geometry_with_profile(
+  input : String,
+  profile : ComparisonProfile,
+) -> String {
   let reader = @xml.NamespaceReader::from_string(input)
   let events = reader.read_events_until_eof() catch { _ => return input }
   let edits : Array[RendererValueEdit] = []
+  let viewport_contexts : Array[ViewportContext] = []
+  let mut node_index = 0
   for event in events {
     match event.kind {
-      Start(element) | Empty(element) =>
-        renderer_stroke_geometry_edits(input, element, edits)
+      Start(element) => {
+        if element.name.local_name == "svg" {
+          let (_, child_viewport) = source_transform_site_with_viewport(
+            input,
+            element,
+            node_index,
+            profile,
+            viewport_contexts.last(),
+          )
+          match child_viewport {
+            Some(context) => viewport_contexts.push(context)
+            None => ()
+          }
+        }
+        renderer_stroke_geometry_edits(
+          input,
+          element,
+          edits,
+          viewport_contexts
+          .last()
+          .unwrap_or({
+            width: profile.viewport_width.to_double(),
+            height: profile.viewport_height.to_double(),
+          }),
+          profile,
+        )
+        node_index += 1
+      }
+      Empty(element) => {
+        renderer_stroke_geometry_edits(
+          input,
+          element,
+          edits,
+          viewport_contexts
+          .last()
+          .unwrap_or({
+            width: profile.viewport_width.to_double(),
+            height: profile.viewport_height.to_double(),
+          }),
+          profile,
+        )
+        node_index += 1
+      }
+      End(name) if name.local_name == "svg" => ignore(viewport_contexts.pop())
       _ => ()
     }
   }
@@ -260,10 +494,41 @@ fn normalize_renderer_stroke_geometry(input : String) -> String {
 }
 
 ///|
+fn normalize_renderer_stroke_geometry(input : String) -> String {
+  normalize_renderer_stroke_geometry_with_profile(
+    input,
+    ComparisonProfile::v1_default(),
+  )
+}
+
+///|
+fn normalize_renderer_input_with_profile(
+  input : String,
+  profile : ComparisonProfile,
+) -> String {
+  if profile.viewport_width == 16 && profile.viewport_height == 16 {
+    return normalize_renderer_input(input)
+  }
+  normalize_renderer_shape_geometry_with_profile(
+    normalize_renderer_stroke_geometry_with_profile(
+      normalize_renderer_context_lengths_with_profile(
+        normalize_renderer_style_precedence(input),
+        profile,
+      ),
+      profile,
+    ),
+    profile,
+  )
+}
+
+///|
 fn normalize_renderer_input(input : String) -> String {
   normalize_renderer_shape_geometry(
     normalize_renderer_stroke_geometry(
-      normalize_renderer_style_precedence(input),
+      normalize_renderer_context_lengths_with_profile(
+        normalize_renderer_style_precedence(input),
+        ComparisonProfile::v1_default(),
+      ),
     ),
   )
 }

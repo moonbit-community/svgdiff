@@ -59,7 +59,10 @@ test "marker attachments inherit and a local longhand overrides the shorthand" {
 ///|
 test "marker resources resolve defaults and canonical values" {
   let source = "<svg><defs><marker id='m' markerWidth='3.0' markerHeight='4' refX='center' refY='bottom' orient='.5turn' viewBox='0 0 10 20' preserveAspectRatio='none' overflow='hidden'/></defs></svg>"
-  let resources = extract_marker_resources_or_raise(source)
+  let resources = extract_marker_resources_or_raise(
+    source,
+    ComparisonProfile::v1_default(),
+  )
   guard resources is [resource] else { fail("expected one marker resource") }
   assert_eq(resource.authored_id, Some("m"))
   assert_eq(resource.marker_units, "strokeWidth")
@@ -89,8 +92,11 @@ test "marker resources resolve defaults and canonical values" {
 
 ///|
 test "marker resources reject unsupported lengths values and overflow" {
-  let source = "<svg><marker id='m' markerUnits='objectBoundingBox' markerWidth='2px' markerHeight='-1' refX='left' orient='sideways' viewBox='0 0 0 2' preserveAspectRatio='stretch' overflow='visible'/></svg>"
-  let resources = extract_marker_resources_or_raise(source)
+  let source = "<svg><marker id='m' markerUnits='objectBoundingBox' markerWidth='2em' markerHeight='-1' refX='left' orient='sideways' viewBox='0 0 0 2' preserveAspectRatio='stretch' overflow='visible'/></svg>"
+  let resources = extract_marker_resources_or_raise(
+    source,
+    ComparisonProfile::v1_default(),
+  )
   guard resources is [resource] else { fail("expected one marker resource") }
   assert_false(resource.complete)
   assert_eq(resource.invalid_facts.map(fact => fact.property), [

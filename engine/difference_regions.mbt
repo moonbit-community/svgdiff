@@ -512,7 +512,9 @@ fn isolated_subjects_image(
   }
   let source = "<svg width='\{profile.viewport_width}' height='\{profile.viewport_height}'>\{body}</svg>"
   let document = match
-    @svg.parse_svg_document(normalize_renderer_input(source)) {
+    @svg.parse_svg_document(
+      normalize_renderer_input_with_profile(source, profile),
+    ) {
     Some(document) => document
     None => return None
   }
@@ -808,8 +810,12 @@ fn attach_difference_regions(
   }
   let rendered_images = match
     (
-      @svg.parse_svg_document(normalize_renderer_input(before_svg)),
-      @svg.parse_svg_document(normalize_renderer_input(after_svg)),
+      @svg.parse_svg_document(
+        normalize_renderer_input_with_profile(before_svg, report.profile),
+      ),
+      @svg.parse_svg_document(
+        normalize_renderer_input_with_profile(after_svg, report.profile),
+      ),
     ) {
     (Some(before_document), Some(after_document)) =>
       Some(

@@ -67,7 +67,7 @@ test "unsupported attribute families never produce complete equality" {
   }
   for
     viewport_attribute in [
-      "viewBox='0 0 0 8'", "viewBox='0 0 8 8' preserveAspectRatio='invalid'", "viewBox='0 0 8 8' width='12pt'",
+      "viewBox='0 0 0 8'", "viewBox='0 0 8 8' preserveAspectRatio='invalid'", "viewBox='0 0 8 8' x='12em'",
     ] {
     assert_unsupported_never_proves_equality(
       "<svg width='16' height='16' \{viewport_attribute}><rect width='8' height='8'/></svg>",
@@ -96,8 +96,8 @@ test "supported integer viewport mappings remain complete" {
 test "unsupported basic shape geometry never proves equality" {
   for
     content in [
-      "<rect id='box' width='-1' height='8'/>", "<rect id='box' width='8px' height='8'/>",
-      "<circle id='dot' r='-1'/>", "<ellipse id='oval' rx='2' ry='-1'/>", "<line id='edge' x1='1px' x2='8'/>",
+      "<rect id='box' width='-1' height='8'/>", "<rect id='box' width='8em' height='8'/>",
+      "<circle id='dot' r='-1'/>", "<ellipse id='oval' rx='2' ry='-1'/>", "<line id='edge' x1='1em' x2='8'/>",
       "<polyline id='route' points='0,0 4,invalid'/>", "<polygon id='area' points='0,0 4,0 4,4 99'/>",
     ] {
     assert_unsupported_never_proves_equality(unsupported_document(content))
@@ -108,10 +108,10 @@ test "unsupported basic shape geometry never proves equality" {
 test "unsupported stroke geometry never proves equality" {
   for
     attributes in [
-      "stroke='black' stroke-width='-1'", "stroke='black' stroke-width='2px'", "stroke='black' stroke-linecap='triangle'",
+      "stroke='black' stroke-width='-1'", "stroke='black' stroke-width='2em'", "stroke='black' stroke-linecap='triangle'",
       "stroke='black' stroke-linejoin='sharp'", "stroke='black' stroke-miterlimit='-1'",
       "stroke='black' stroke-dasharray='4 -1'", "stroke='black' stroke-dasharray='4,,2'",
-      "stroke='black' stroke-dashoffset='2px'", "stroke='black' vector-effect='non-rotation'",
+      "stroke='black' stroke-dashoffset='2em'", "stroke='black' vector-effect='non-rotation'",
     ] {
     assert_unsupported_never_proves_equality(
       unsupported_document(
@@ -128,7 +128,7 @@ test "unsupported marker semantics never prove equality" {
       "<line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#missing)'/>",
       "<defs><linearGradient id='m'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
       "<line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(https://example.com/m.svg#m)'/>",
-      "<defs><marker id='m' markerWidth='2px'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "<defs><marker id='m' markerWidth='2em'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
       "<defs><marker id='m' markerHeight='-1'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
       "<defs><marker id='m' orient='sideways'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
       "<defs><marker id='m' refX='center'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",

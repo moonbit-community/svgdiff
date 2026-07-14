@@ -191,6 +191,7 @@ def main() -> None:
         raise ValueError("browser oracle and conformance manifest cases differ")
 
     cases = []
+    browser_pixels = {}
     for fixture in fixtures:
         source = (ROOT / fixture["source"]).resolve()
         if ROOT not in source.parents or not source.is_file():
@@ -203,6 +204,7 @@ def main() -> None:
         if (width, height) != (fixture["width"], fixture["height"]):
             raise ValueError(f"oracle dimensions mismatch: {fixture['id']}")
         renderer_rgba = render_with_adapter(args.adapter, source, width, height)
+        browser_pixels[fixture["id"]] = browser_rgba
         cases.append(
             {
                 "id": fixture["id"],
@@ -211,6 +213,21 @@ def main() -> None:
                 **compare_pixels(renderer_rgba, browser_rgba),
             }
         )
+
+    for fixture in fixtures:
+        canonical_id = fixture.get("canonical_equivalent_id")
+        if canonical_id is None:
+            continue
+        if canonical_id not in browser_pixels:
+            raise ValueError(
+                f"missing canonical equivalent fixture for {fixture['id']}: {canonical_id}"
+            )
+        if compare_pixels(
+            browser_pixels[fixture["id"]], browser_pixels[canonical_id]
+        )["comparison"] != "exact":
+            raise ValueError(
+                f"browser canonical equivalent differs for {fixture['id']}: {canonical_id}"
+            )
 
     category_summary = {}
     for category in sorted(REQUIRED_CATEGORIES):
@@ -232,7 +249,7 @@ def main() -> None:
     ]
     report = {
         "schema_version": "svgdiff-renderer-conformance/1",
-        "conformance_profile_id": "svgdiff-renderer-conformance-profile/7",
+        "conformance_profile_id": "svgdiff-renderer-conformance-profile/8",
         "renderer_id": "mizchi/svg@0.2.1",
         "raster_representation": "premultiplied_rgba8",
         "browser_environment": {

@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.10`
+Status: current model for Structured Report schema `1.11`
 
 Last verified: 2026-07-15
 
@@ -27,21 +27,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.10
+  -> Structured Report 1.11
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.10` records:
+Schema `1.11` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
-- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/7`.
+- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/8`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -49,11 +49,11 @@ The root `compare` function currently preserves only the caller-supplied viewpor
 
 The style-precedence normalizer operates on private renderer-input copies only. It rewrites a conflicting presentation-attribute value to the complete supported inline value before every production renderer parse. Source Semantics, Source Spans, Changed Facts, Diagnostics, resource admission, and HTML source display continue to use the original SVG strings.
 
-The basic-shape used-geometry normalizer runs after style precedence on the same private copy. It canonicalizes the current unitless numeric slice and materializes paired `rx`/`ry` values needed by the pinned renderer. Authored values remain unchanged in Source Semantics. Rounded rectangles and polygons retain separate raster-conformance guards because canonical used geometry does not by itself prove browser-equivalent antialiasing.
+The length used-value normalizer runs after style precedence on the same private copy. It resolves admitted CSS absolute units, SVG percentages, and static viewport-relative units from explicit SVG and Comparison Profile contexts. The basic-shape used-geometry normalizer then canonicalizes shape values and materializes paired `rx`/`ry` values needed by the pinned renderer. Authored values remain unchanged in Source Semantics. Rounded rectangles and polygons retain separate raster-conformance guards because canonical used geometry does not by itself prove browser-equivalent antialiasing.
 
-The stroke used-geometry normalizer resolves unitless width, caps, joins, miter limits, dash arrays, dash offsets, and `vector-effect` before the basic-shape adapter. Odd dash arrays duplicate, all-zero arrays become solid, and effective offsets normalize by the even pattern sum. Stroke-none, zero-width, and topology-specific inactive properties retain authored differences while comparing their computed effects as equivalent. Width differences retain both the full parameter delta and the transform-aware half-width boundary displacement; non-spatial scalar controls do not claim a Cartesian displacement. Active stroke outline, join, dash, and non-scaling-stroke pixels retain separate renderer-conformance guards.
+The stroke used-geometry normalizer resolves length-aware width, dash arrays, and dash offsets plus caps, joins, miter limits, and `vector-effect` before the basic-shape adapter. Odd dash arrays duplicate, all-zero arrays become solid, and effective offsets normalize by the even pattern sum. Stroke-none, zero-width, and topology-specific inactive properties retain authored differences while comparing their computed effects as equivalent. Width differences retain both the full parameter delta and the transform-aware half-width boundary displacement; non-spatial scalar controls do not claim a Cartesian displacement. Active stroke outline, join, dash, and non-scaling-stroke pixels retain separate renderer-conformance guards.
 
-Marker adaptation is renderer-independent. The engine retains authored `marker` shorthand and longhand facts, resolves supported local fragment references, and extracts canonical unitless `markerUnits`, viewport size, reference point, orientation, `viewBox`, `preserveAspectRatio`, and hidden overflow facts. Each admitted shape is converted to its SVG equivalent path vertices; start, mid, and end roles preserve closed-subpath duplication and zero-length direction search. Automatic orientation uses segment tangents and mid-vertex bisectors, while `auto-start-reverse` reverses only start instances. Placement, orientation, stroke-width or user-space units, viewport mapping, reference offset, and subject transforms produce a conservative clipped marker viewport envelope. Resource changes use `resource.marker.*` domains and attribute every referenced instance through `affected_subject_ids`. Marker child paint, cascade/inheritance, context paint, unsupported lengths or visible overflow, external references, and pinned-renderer pixels remain explicitly guarded.
+Marker adaptation is renderer-independent. The engine retains authored `marker` shorthand and longhand facts, resolves supported local fragment references, and extracts canonical length-aware `markerUnits`, viewport size, reference point, orientation, `viewBox`, `preserveAspectRatio`, and hidden overflow facts. Each admitted shape is converted to its SVG equivalent path vertices; start, mid, and end roles preserve closed-subpath duplication and zero-length direction search. Automatic orientation uses segment tangents and mid-vertex bisectors, while `auto-start-reverse` reverses only start instances. Placement, orientation, stroke-width or user-space units, viewport mapping, reference offset, and subject transforms produce a conservative clipped marker viewport envelope. Resource changes use `resource.marker.*` domains and attribute every referenced instance through `affected_subject_ids`. Marker child paint, cascade/inheritance, context paint, environment-dependent lengths or visible overflow, external references, and pinned-renderer pixels remain explicitly guarded.
 
 Intrinsic viewport derivation, resource bundles, fonts, perceptual backgrounds, alternate DPRs, wide-gamut profiles, and cross-renderer profiles are not part of the implemented v1 profile. Accepted target decisions for some of these capabilities remain recorded in ADRs and the roadmap.
 
@@ -75,7 +75,7 @@ Path source adaptation is renderer-independent. The engine strictly consumes eve
 
 SVG transform adaptation is likewise renderer-independent. A strict parser consumes `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`, preserves normalized authored function structure, and post-multiplies matrices in authored order. Each leaf subject retains the root-to-leaf transform chain and exact cumulative affine matrix across entities, groups, resource containers, and nested `svg` elements. `geometry.transform.list` reports authored-list changes, including matrix-equivalent rewrites; `geometry.transform.cumulative_matrix` reports a changed leaf coordinate mapping. The engine independently decomposes the before and after cumulative matrices into canonical translation, rotation, signed X/Y scale, and X-skew components, then emits one typed effect difference for every changed component. This avoids treating raw affine coefficients as a visual magnitude. A singular linear transform has no unique finite decomposition, so its exact six coefficients and determinant are retained under `geometry.transform.residual_matrix` instead. Resource-local gradient and pattern transforms use parallel source/computed records but remain guarded until resource units, references, and paint semantics are complete.
 
-SVG viewport adaptation interleaves with that transform chain. The root `svg` maps its `viewBox` into the profile's explicit common viewport; authored root `width` and `height` remain intrinsic declaration facts and do not independently resize before and after canvases. Each nested `svg` resolves unitless, `px`, or percentage `x`, `y`, `width`, and `height` against the nearest viewport, then establishes a child coordinate basis from its `viewBox` when present. `document.viewport` identifies a changed declaration, while the existing cumulative-matrix and typed transform-effect domains identify every affected aligned leaf mapping. Equivalent normalized declarations and ignored `preserveAspectRatio` without a `viewBox` remain source-visible but computed-equivalent.
+SVG viewport adaptation interleaves with that transform chain. The root `svg` maps its `viewBox` into the profile's explicit common viewport; authored root `width` and `height` remain intrinsic declaration facts and do not independently resize before and after canvases. Each nested `svg` resolves unitless and CSS absolute lengths, nearest-viewport percentages, or initial-profile `vw`/`vh`/`vmin`/`vmax` values for `x`, `y`, `width`, and `height`, then establishes a child coordinate basis from its `viewBox` when present. `document.viewport` identifies a changed declaration, while the existing cumulative-matrix and typed transform-effect domains identify every affected aligned leaf mapping. Equivalent normalized declarations and ignored `preserveAspectRatio` without a `viewBox` remain source-visible but computed-equivalent.
 
 Basic-shape adaptation resolves a separate canonical used-geometry record while retaining every authored fact. Omitted coordinates and dimensions use SVG defaults, and explicit rectangle `auto` dimensions resolve to zero; rectangle radii propagate and clamp to half-dimensions; one omitted or `auto` ellipse radius copies the other; zero dimensions remain valid non-rendering numeric geometry; line has no fillable interior; polyline retains open topology but an open subpath is implicitly closed for fill; polygon retains explicit closure semantics; and point lists normalize separators, compact signs, and exponent forms. An odd final point coordinate is dropped from used geometry but remains a source-located error. Invalid syntax, negative dimensions or radii, and unsupported units make the computed relation indeterminate through `basic_shape_geometry_unsupported` rather than silently substituting a valid shape.
 
@@ -172,7 +172,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.10` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.11` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -188,11 +188,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.10` top-level object contains exactly these conceptual sections:
+The schema `1.11` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.10",
+  "schema_version": "1.11",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -224,7 +224,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.10
+## Not implemented in schema 1.11
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -233,8 +233,8 @@ The following concepts are intentional future work rather than hidden current fi
 - exact per-pixel Contribution Index or minimal root-cause set;
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
-- caller-supplied resource bundles, implicit Comparison Viewport derivation, physical viewport units, and CSS sizing/cascade;
-- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or non-unitless marker semantics, `pathLength` calibration, non-unitless stroke lengths, precise transformed localization, filters, masks, clipping, blending, and reuse;
+- caller-supplied resource bundles, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
+- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, masks, clipping, blending, and reuse;
 - cross-subject Visual Event aggregation.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).

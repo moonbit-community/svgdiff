@@ -183,7 +183,7 @@ test "different marker ids are presence changes rather than positional pairs" {
 ///|
 test "invalid marker resources produce source-located stable diagnostics" {
   let source = marker_diff_svg(
-    "<marker id='m' markerWidth='2px' overflow='visible'/>", "<line id='edge' x1='2' y1='10' x2='20' y2='10' marker-end='url(#m)'/>",
+    "<marker id='m' markerWidth='2em' overflow='visible'/>", "<line id='edge' x1='2' y1='10' x2='20' y2='10' marker-end='url(#m)'/>",
   )
   let report = compare(source, source, ComparisonProfile::v1_default())
   assert_eq(report.analysis_status, "partial")

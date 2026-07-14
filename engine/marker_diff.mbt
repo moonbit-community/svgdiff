@@ -347,10 +347,16 @@ fn attach_marker_resource_differences(
   before_svg : String,
   after_svg : String,
 ) -> StructuredReport {
-  let before_resources = extract_marker_resources_or_raise(before_svg) catch {
+  let before_resources = extract_marker_resources_or_raise(
+    before_svg,
+    report.profile,
+  ) catch {
     _ => return report
   }
-  let after_resources = extract_marker_resources_or_raise(after_svg) catch {
+  let after_resources = extract_marker_resources_or_raise(
+    after_svg,
+    report.profile,
+  ) catch {
     _ => return report
   }
   let before_subjects = extract_source_subjects_with_profile_or_raise(
@@ -475,10 +481,11 @@ fn attach_marker_resource_differences(
 ///|
 fn append_marker_resource_diagnostics(
   input : String,
+  profile : ComparisonProfile,
   source_role : String,
   diagnostics : Array[Diagnostic],
 ) -> Unit raise {
-  for resource in extract_marker_resources_or_raise(input) {
+  for resource in extract_marker_resources_or_raise(input, profile) {
     if !resource.complete {
       merge_diagnostic_into(diagnostics, {
         ..unlocated_diagnostic(

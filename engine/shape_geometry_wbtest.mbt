@@ -54,7 +54,7 @@ test "point lists normalize separators compact signs exponents and odd tails" {
 
 ///|
 test "rectangle used radii propagate and clamp independently" {
-  let resolution = resolve_basic_shape_geometry("rect", [
+  let resolution = test_resolve_basic_shape_geometry("rect", [
     shape_geometry_test_fact("width", "10"),
     shape_geometry_test_fact("height", "6"),
     shape_geometry_test_fact("rx", "8"),
@@ -63,12 +63,12 @@ test "rectangle used radii propagate and clamp independently" {
   assert_eq(shape_geometry_value(resolution, "rx"), "5")
   assert_eq(shape_geometry_value(resolution, "ry"), "3")
   assert_true(resolution.renders_geometry)
-  let invalid = resolve_basic_shape_geometry("rect", [
+  let invalid = test_resolve_basic_shape_geometry("rect", [
     shape_geometry_test_fact("width", "-1"),
   ])
   assert_true(!invalid.complete)
   assert_eq(invalid.invalid_facts[0].property, "width")
-  let auto = resolve_basic_shape_geometry("rect", [
+  let auto = test_resolve_basic_shape_geometry("rect", [
     shape_geometry_test_fact("width", "auto"),
     shape_geometry_test_fact("height", "6"),
   ])
@@ -79,18 +79,18 @@ test "rectangle used radii propagate and clamp independently" {
 
 ///|
 test "circle and ellipse radii preserve valid zero and auto behavior" {
-  let circle = resolve_basic_shape_geometry("circle", [])
+  let circle = test_resolve_basic_shape_geometry("circle", [])
   assert_true(circle.complete)
   assert_eq(shape_geometry_value(circle, "r"), "0")
   assert_true(!circle.renders_geometry)
-  let ellipse = resolve_basic_shape_geometry("ellipse", [
+  let ellipse = test_resolve_basic_shape_geometry("ellipse", [
     shape_geometry_test_fact("rx", "4"),
     shape_geometry_test_fact("ry", "auto"),
   ])
   assert_eq(shape_geometry_value(ellipse, "rx"), "4")
   assert_eq(shape_geometry_value(ellipse, "ry"), "4")
   assert_true(ellipse.renders_geometry)
-  let invalid = resolve_basic_shape_geometry("ellipse", [
+  let invalid = test_resolve_basic_shape_geometry("ellipse", [
     shape_geometry_test_fact("rx", "-1"),
     shape_geometry_test_fact("ry", "2"),
   ])
@@ -100,21 +100,35 @@ test "circle and ellipse radii preserve valid zero and auto behavior" {
 
 ///|
 test "lines and point shapes retain interior and rendering distinctions" {
-  let line = resolve_basic_shape_geometry("line", [])
+  let line = test_resolve_basic_shape_geometry("line", [])
   assert_true(!line.fillable_interior)
   assert_true(line.renders_geometry)
-  let polyline = resolve_basic_shape_geometry("polyline", [
+  let polyline = test_resolve_basic_shape_geometry("polyline", [
     shape_geometry_test_fact("points", "0,0 1,1"),
   ])
   assert_true(!polyline.fillable_interior)
   assert_true(polyline.renders_geometry)
-  let filled_polyline = resolve_basic_shape_geometry("polyline", [
+  let filled_polyline = test_resolve_basic_shape_geometry("polyline", [
     shape_geometry_test_fact("points", "0,0 1,1 2,0"),
   ])
   assert_true(filled_polyline.fillable_interior)
-  let polygon = resolve_basic_shape_geometry("polygon", [
+  let polygon = test_resolve_basic_shape_geometry("polygon", [
     shape_geometry_test_fact("points", "0,0 1,1 2,0"),
   ])
   assert_true(polygon.fillable_interior)
   assert_true(polygon.renders_geometry)
+}
+
+///|
+fn test_resolve_basic_shape_geometry(
+  kind : String,
+  facts : Array[DeclaredVisualFact],
+) -> BasicShapeGeometryResolution {
+  let profile = ComparisonProfile::v1_default()
+  resolve_basic_shape_geometry_with_context(
+    kind,
+    facts,
+    { width: 16.0, height: 16.0 },
+    profile,
+  )
 }

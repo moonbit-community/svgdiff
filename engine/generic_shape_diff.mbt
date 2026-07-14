@@ -36,6 +36,16 @@ fn generic_property_domain(property : String) -> String {
 }
 
 ///|
+fn declared_fact_uses_length_unit(fact : DeclaredVisualFact?) -> Bool {
+  match fact {
+    Some(fact) =>
+      fact.declared_value.trim().to_owned().to_lower() != "auto" &&
+      parse_shape_number(fact.declared_value) is None
+    None => false
+  }
+}
+
+///|
 fn generic_default_value(property : String) -> String? {
   match property {
     "x"
@@ -379,11 +389,30 @@ fn generic_initial_magnitude(
   parameter_delta : Double?,
 ) -> DifferenceMagnitude {
   let magnitude = empty_difference_magnitude()
-  if property != "stroke-width" || relation.status != "different" {
+  if relation.status != "different" {
     return magnitude
   }
   match parameter_delta {
     Some(delta) => {
+      if basic_shape_geometry_property(before_subject.kind, property) {
+        fn scale(subject : SourceSubject) -> Double {
+          let matrix = subject.cumulative_transform
+          match basic_shape_length_direction(property) {
+            Horizontal => @math.hypot(matrix.a, matrix.b)
+            Vertical => @math.hypot(matrix.c, matrix.d)
+            Unspecified => matrix.max_linear_scale()
+          }
+        }
+        return {
+          ..magnitude,
+          geometry_displacement_css_px: Some(
+            delta.abs() * scale(before_subject).max(scale(after_subject)),
+          ),
+        }
+      }
+      if property != "stroke-width" {
+        return magnitude
+      }
       let before_scale = if before_subject.stroke_non_scaling {
         1.0
       } else {
@@ -474,6 +503,15 @@ fn generic_basic_shape_report(
         declared_fact_changed(
           source_subject_fact(before_subject, property),
           source_subject_fact(after_subject, property),
+        )
+      }) ||
+      ["x", "y", "width", "height"].any(property => {
+        let before_fact = source_subject_fact(before_subject, property)
+        let after_fact = source_subject_fact(after_subject, property)
+        declared_fact_changed(before_fact, after_fact) &&
+        (
+          declared_fact_uses_length_unit(before_fact) ||
+          declared_fact_uses_length_unit(after_fact)
         )
       })
     }
@@ -663,7 +701,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.10",
+    schema_version: "1.11",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

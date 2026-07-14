@@ -209,6 +209,22 @@
       }
     },
     {
+      "id": "length-unit-equivalent",
+      "before": "evaluation/schema-examples/cases/length-unit-equivalent/before.svg",
+      "after": "evaluation/schema-examples/cases/length-unit-equivalent/after.svg",
+      "output": "schema/examples/length-unit-equivalent.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["geometry.position", "geometry.size"],
+        "computed_relations": ["equivalent", "equivalent"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "geometry.position", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 0 },
+          { "domain": "geometry.size", "field": "magnitude.geometry_displacement_css_px", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

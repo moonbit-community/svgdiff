@@ -50,6 +50,16 @@
     { "id": "marker-auto-start-reverse", "source": "evaluation/renderer-conformance/fixtures/marker-auto-start-reverse.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
     { "id": "marker-stroke-width-units", "source": "evaluation/renderer-conformance/fixtures/marker-stroke-width-units.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
     { "id": "marker-viewport-ref", "source": "evaluation/renderer-conformance/fixtures/marker-viewport-ref.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
-    { "id": "marker-zero-size", "source": "evaluation/renderer-conformance/fixtures/marker-zero-size.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
+    { "id": "marker-zero-size", "source": "evaluation/renderer-conformance/fixtures/marker-zero-size.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "length-absolute", "source": "evaluation/renderer-conformance/fixtures/length-absolute.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported", "canonical_equivalent_id": "length-absolute-canonical" },
+    { "id": "length-percentage", "source": "evaluation/renderer-conformance/fixtures/length-percentage.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported", "canonical_equivalent_id": "length-percentage-canonical" },
+    { "id": "length-viewport-relative", "source": "evaluation/renderer-conformance/fixtures/length-viewport-relative.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported", "canonical_equivalent_id": "length-viewport-relative-canonical" },
+    { "id": "length-nested-viewport", "source": "evaluation/renderer-conformance/fixtures/length-nested-viewport.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported", "canonical_equivalent_id": "length-nested-viewport-canonical" },
+    { "id": "length-stroke", "source": "evaluation/renderer-conformance/fixtures/length-stroke.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "length-marker", "source": "evaluation/renderer-conformance/fixtures/length-marker.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "length-absolute-canonical", "source": "evaluation/renderer-conformance/fixtures/length-absolute-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "length-percentage-canonical", "source": "evaluation/renderer-conformance/fixtures/length-percentage-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "length-viewport-relative-canonical", "source": "evaluation/renderer-conformance/fixtures/length-viewport-relative-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "length-nested-viewport-canonical", "source": "evaluation/renderer-conformance/fixtures/length-nested-viewport-canonical.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" }
   ]
 }

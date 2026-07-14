@@ -28,7 +28,10 @@ fn viewport_fact_changed(
   match (before, after) {
     (None, None) => false
     (Some(_), None) | (None, Some(_)) => true
-    (Some(before), Some(after)) => before.declared_value != after.declared_value
+    (Some(before), Some(after)) =>
+      before.authored_value != after.authored_value ||
+      before.declared_value != after.declared_value ||
+      before.origin != after.origin
   }
 }
 

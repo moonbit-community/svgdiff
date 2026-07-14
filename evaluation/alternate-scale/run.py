@@ -119,7 +119,7 @@ def main() -> None:
         raise ValueError("manifest does not identify the pinned renderer")
     if (
         manifest.get("conformance_profile_id")
-        != "svgdiff-renderer-conformance-profile/7"
+        != "svgdiff-renderer-conformance-profile/8"
     ):
         raise ValueError("unsupported renderer conformance profile")
     scales = manifest.get("scales")

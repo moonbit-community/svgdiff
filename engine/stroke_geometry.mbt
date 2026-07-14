@@ -33,7 +33,11 @@ fn push_invalid_stroke_fact(
 }
 
 ///|
-fn parse_stroke_dasharray(source : String) -> (Array[Double], Bool) {
+fn parse_stroke_dasharray_with_context(
+  source : String,
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
+) -> (Array[Double], Bool) {
   let parser : TransformListParser = { data: source, position: 0 }
   let values : Array[Double] = []
   ignore(parser.skip_whitespace())
@@ -41,7 +45,7 @@ fn parse_stroke_dasharray(source : String) -> (Array[Double], Bool) {
     return (values, false)
   }
   while parser.position < source.length() {
-    match parser.parse_number() {
+    match parse_svg_length_at(parser, Unspecified, viewport, profile) {
       Some(value) => values.push(value)
       None => return (values, false)
     }
@@ -113,9 +117,35 @@ fn normalized_stroke_number(
 }
 
 ///|
+fn normalized_stroke_length(
+  facts : Array[DeclaredVisualFact],
+  property : String,
+  default_value : Double,
+  nonnegative : Bool,
+  invalid : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
+) -> Double {
+  match shape_fact(facts, property) {
+    None => default_value
+    Some(fact) =>
+      match
+        parse_svg_length(fact.declared_value, Unspecified, viewport, profile) {
+        Some(value) if !nonnegative || value >= 0.0 => value
+        _ => {
+          push_invalid_stroke_fact(invalid, Some(fact))
+          default_value
+        }
+      }
+  }
+}
+
+///|
 fn normalized_dash_pattern(
   facts : Array[DeclaredVisualFact],
   invalid : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> Array[Double] {
   let fact = shape_fact(facts, "stroke-dasharray")
   match fact {
@@ -123,7 +153,11 @@ fn normalized_dash_pattern(
     Some(fact) if fact.declared_value.trim().to_owned().to_lower() == "none" =>
       []
     Some(fact) => {
-      let (parsed, complete) = parse_stroke_dasharray(fact.declared_value)
+      let (parsed, complete) = parse_stroke_dasharray_with_context(
+        fact.declared_value,
+        viewport,
+        profile,
+      )
       if !complete || parsed.any(value => value < 0.0) {
         push_invalid_stroke_fact(invalid, Some(fact))
         return []
@@ -151,12 +185,14 @@ fn effective_dash_offset(offset : Double, pattern : Array[Double]) -> Double {
 }
 
 ///|
-fn resolve_stroke_geometry(
+fn resolve_stroke_geometry_with_context(
   facts : Array[DeclaredVisualFact],
+  viewport : ViewportContext,
+  profile : ComparisonProfile,
 ) -> StrokeGeometryResolution {
   let invalid_facts : Array[DeclaredVisualFact] = []
-  let width = normalized_stroke_number(
-    facts, "stroke-width", 1.0, true, invalid_facts,
+  let width = normalized_stroke_length(
+    facts, "stroke-width", 1.0, true, invalid_facts, viewport, profile,
   )
   let linecap = normalized_stroke_keyword(
     facts,
@@ -175,9 +211,11 @@ fn resolve_stroke_geometry(
   let miterlimit = normalized_stroke_number(
     facts, "stroke-miterlimit", 4.0, true, invalid_facts,
   )
-  let dasharray = normalized_dash_pattern(facts, invalid_facts)
-  let authored_offset = normalized_stroke_number(
-    facts, "stroke-dashoffset", 0.0, false, invalid_facts,
+  let dasharray = normalized_dash_pattern(
+    facts, invalid_facts, viewport, profile,
+  )
+  let authored_offset = normalized_stroke_length(
+    facts, "stroke-dashoffset", 0.0, false, invalid_facts, viewport, profile,
   )
   let dashoffset = effective_dash_offset(authored_offset, dasharray)
   let vector_effect = normalized_stroke_keyword(
