@@ -5,7 +5,7 @@
 ## Install
 
 ```sh
-moon add Milky2018/svgdiff@0.4.3
+moon add Milky2018/svgdiff@0.4.4
 ```
 
 The module currently supports the native backend only.
@@ -22,7 +22,7 @@ test "compare SVG source strings through the public package" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.9")
+  assert_eq(report.schema_version, "1.10")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() > 0)
   assert_true(report.events.length() > 0)
@@ -41,6 +41,6 @@ The root package exposes:
 - typed report, difference, magnitude, region, provenance, coverage, and Diagnostic records;
 - canonical formatted and compact JSON serialization through `StructuredReport` methods.
 
-Module version `0.4.3` emits Structured Report Schema `1.9`. The current engine is intentionally limited to a documented deterministic static subset. Basic shapes and unitless stroke width, caps, joins, miter limits, dash patterns, dash offsets, and `vector-effect` resolve canonically while retaining authored facts; paths have guarded exact segment differences; SVG transform lists and root or nested viewport mappings have exact source and cumulative affine evidence plus typed translation, rotation, signed-scale, skew, or singular residual effects. Active-stroke browser rasterization remains guarded. Markers, path-length calibration, non-unitless geometry, rounded-rectangle and polygon browser-conformant rasterization, general affine or non-integer viewport rasterization, resource transforms, precise transformed outlines, physical viewport units, general CSS, filters, masks, fonts, images, scripting, animation, and `foreignObject` remain guarded rather than implying equality.
+Module version `0.4.4` emits Structured Report Schema `1.10`. The current engine is intentionally limited to a documented deterministic static subset. Basic shapes, unitless stroke geometry, and local marker placement/viewport/orientation semantics resolve canonically while retaining authored facts; paths have guarded exact segment differences; SVG transform lists and root or nested viewport mappings have exact source and cumulative affine evidence plus typed effects. Active-stroke and marker rasterization remain guarded. Marker child paint/cascade/context paint, external or non-unitless marker references, path-length calibration, non-unitless geometry, browser-conformant curved/point-shape rasterization, general affine or non-integer viewport rasterization, resource transforms, precise transformed outlines, physical viewport units, general CSS, filters, masks, fonts, images, scripting, animation, and `foreignObject` remain guarded rather than implying equality.
 
 The module is licensed under Apache-2.0.

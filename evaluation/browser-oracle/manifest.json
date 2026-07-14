@@ -45,6 +45,11 @@
     { "id": "stroke-zero-width", "source": "evaluation/renderer-conformance/fixtures/stroke-zero-width.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "stroke-join-miter-clip", "source": "evaluation/renderer-conformance/fixtures/stroke-join-miter-clip.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
     { "id": "stroke-join-arcs", "source": "evaluation/renderer-conformance/fixtures/stroke-join-arcs.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
-    { "id": "stroke-non-scaling", "source": "evaluation/renderer-conformance/fixtures/stroke-non-scaling.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
+    { "id": "stroke-non-scaling", "source": "evaluation/renderer-conformance/fixtures/stroke-non-scaling.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "marker-roles", "source": "evaluation/renderer-conformance/fixtures/marker-roles.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "marker-auto-start-reverse", "source": "evaluation/renderer-conformance/fixtures/marker-auto-start-reverse.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "marker-stroke-width-units", "source": "evaluation/renderer-conformance/fixtures/marker-stroke-width-units.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "marker-viewport-ref", "source": "evaluation/renderer-conformance/fixtures/marker-viewport-ref.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "marker-zero-size", "source": "evaluation/renderer-conformance/fixtures/marker-zero-size.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
   ]
 }

@@ -43,6 +43,10 @@ fn supported_rect_property(property : String) -> Bool {
     | "stroke-dasharray"
     | "stroke-dashoffset"
     | "vector-effect"
+    | "marker"
+    | "marker-start"
+    | "marker-mid"
+    | "marker-end"
     | "opacity" => true
     _ => false
   }

@@ -7,6 +7,7 @@
       "x1", "y1", "x2", "y2", "points", "fill", "stroke",
       "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
       "stroke-dasharray", "stroke-dashoffset", "vector-effect",
+      "marker-end", "markerUnits", "markerWidth", "refX", "orient",
       "opacity", "transform", "viewBox"
     ]
   },
@@ -206,6 +207,46 @@
       "before_value": "<line id='edge' x1='2' y1='4' x2='7' y2='4' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='none'/>",
       "after_value": "<line id='edge' x1='2' y1='4' x2='7' y2='4' stroke='black' stroke-width='2' transform='scale(2)' vector-effect='non-scaling-stroke'/>",
       "expected_changed_fact": { "subject_kind": "line", "source_property": "vector-effect", "report_property": "vector-effect", "before_declared_value": "none", "after_declared_value": "non-scaling-stroke", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-marker-end",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><marker id='a'/><marker id='b'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#a)'/>",
+      "after_value": "<defs><marker id='a'/><marker id='b'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#b)'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "marker-end", "report_property": "marker-end", "before_declared_value": "url(#a)", "after_declared_value": "url(#b)", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-marker-units",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><marker id='m' markerUnits='strokeWidth'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "after_value": "<defs><marker id='m' markerUnits='userSpaceOnUse'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "markerUnits", "report_property": "markerUnits", "before_declared_value": "strokeWidth", "after_declared_value": "userSpaceOnUse", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-marker-width",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><marker id='m' markerWidth='2'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "after_value": "<defs><marker id='m' markerWidth='4'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "markerWidth", "report_property": "markerWidth", "before_declared_value": "2", "after_declared_value": "4", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-marker-reference-point",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><marker id='m' refX='0'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "after_value": "<defs><marker id='m' refX='1'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "refX", "report_property": "refX", "before_declared_value": "0", "after_declared_value": "1", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-marker-orientation",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><marker id='m' orient='0'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "after_value": "<defs><marker id='m' orient='90deg'/></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "orient", "report_property": "orient", "before_declared_value": "0", "after_declared_value": "90", "affected_subject_ids": ["edge"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {

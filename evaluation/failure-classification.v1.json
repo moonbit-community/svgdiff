@@ -15,7 +15,8 @@
         "renderer_stroke_outline_raster_unproven",
         "renderer_stroke_join_raster_unproven",
         "renderer_stroke_dash_raster_unproven",
-        "renderer_non_scaling_stroke_unproven"
+        "renderer_non_scaling_stroke_unproven",
+        "renderer_marker_raster_unproven"
       ],
       "prefix": []
     },
@@ -33,6 +34,9 @@
         "gradient_semantics_unsupported",
         "inherited_fill_rendered_evidence_deferred",
         "inherited_visual_analysis_coverage_incomplete",
+        "marker_content_semantics_unsupported",
+        "marker_resource_semantics_unsupported",
+        "marker_semantics_unsupported",
         "paint_server_analysis_unsupported",
         "paint_value_semantics_unsupported",
         "rect_analysis_coverage_incomplete",

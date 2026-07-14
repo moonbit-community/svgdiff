@@ -46,6 +46,10 @@ test "current renderer diagnostics expose stable capability gaps" {
       "raster.non_scaling_stroke", "guarded",
     ),
     (
+      "<svg width='16' height='16'><defs><marker id='m'><path d='M0 0L2 1L0 2Z'/></marker></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/></svg>",
+      "raster.marker", "guarded",
+    ),
+    (
       "<svg width='16' height='16'><defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#gradient)'/></svg>",
       "raster.referenced_gradient", "guarded",
     ),

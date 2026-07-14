@@ -4,7 +4,7 @@ Status: active generated evaluation input
 
 Specification version: `svgdiff-mutations/1`
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 This suite generates SVG pairs from one-value templates. Each mutation spec declares the expected authored Changed Fact and affected visual subjects before `svgdiff` analyzes the pair, so the report cannot define its own ground truth.
 
@@ -18,7 +18,7 @@ Each template contains exactly one `{{VALUE}}` placeholder. A case supplies the 
 - the visual subject IDs expected in `ChangedFact.affected_subject_ids`;
 - the comparison viewport and expected analysis status.
 
-The coverage contract names all six current basic subject kinds and all twenty-six current authored properties across twenty-eight cases. Seven cases remain complete and produce fourteen complete directional comparisons; active stroke, curved/point geometry, fractional opacity, and inherited-value cases are intentionally partial under their documented guards. Stroke cases cover width, cap, join, miter limit, dash array, dash offset, and vector effect while proving that every authored fact remains reportable. The viewport case verifies that one changed root declaration reaches its affected leaf and every complete region's Cause Envelope.
+The coverage contract names all six current basic subject kinds and thirty-one current authored properties across thirty-three cases. Seven cases remain complete and produce fourteen complete directional comparisons; active stroke, marker, curved/point geometry, fractional opacity, and inherited-value cases are intentionally partial under their documented guards. Stroke cases cover width, cap, join, miter limit, dash array, dash offset, and vector effect. Marker cases cover host attachment plus resource units, viewport width, reference point, and orientation while proving that every authored fact remains reportable and linked to the affected host. The viewport case verifies that one changed root declaration reaches its affected leaf and every complete region's Cause Envelope.
 
 ## Generate
 

@@ -1,0 +1,431 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/svgdiff/schema/1.9",
+  "title": "SVG Diff Structured Report 1.9",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "analysis_status",
+    "profile",
+    "subject_alignments",
+    "changed_facts",
+    "source_resolutions",
+    "atomic_differences",
+    "events",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.9" },
+    "analysis_status": { "enum": ["complete", "partial", "failed"] },
+    "coverage_matrix": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/featureCoverage" }
+    },
+    "renderer_capability_gaps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rendererCapabilityGap" }
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "viewport_width",
+        "viewport_height",
+        "comparison_dpr",
+        "color_interpretation",
+        "raster_representation",
+        "renderer_id"
+      ],
+      "properties": {
+        "viewport_width": { "type": "integer", "minimum": 1 },
+        "viewport_height": { "type": "integer", "minimum": 1 },
+        "comparison_dpr": { "const": 1.0 },
+        "color_interpretation": { "const": "srgb" },
+        "raster_representation": {
+          "const": "linear_srgb_premultiplied_rgba_f64"
+        },
+        "renderer_id": { "type": "string", "minLength": 1 },
+        "renderer_conformance_profile_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "subject_alignments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/subjectAlignment" }
+    },
+    "changed_facts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/changedFact" }
+    },
+    "source_resolutions": { "type": "array" },
+    "atomic_differences": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/atomicDifference" }
+    },
+    "events": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/visualEvent" }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/diagnostic" }
+    }
+  },
+  "$defs": {
+    "featureCoverage": {
+      "type": "object",
+      "required": [
+        "feature_id",
+        "subject_id",
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence",
+        "diagnostic_ids"
+      ],
+      "properties": {
+        "feature_id": { "type": "string" },
+        "subject_id": { "type": "string" },
+        "source_semantics": {
+          "enum": ["covered", "limited", "not_applicable", "failed"]
+        },
+        "computed_appearance": {
+          "enum": ["covered", "limited", "not_applicable", "failed"]
+        },
+        "rendered_evidence": {
+          "enum": ["covered", "limited", "not_applicable", "failed"]
+        },
+        "diagnostic_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "rendererCapabilityGap": {
+      "type": "object",
+      "required": ["capability_id", "support_status", "diagnostic_ids"],
+      "properties": {
+        "capability_id": { "type": "string", "minLength": 1 },
+        "support_status": { "enum": ["guarded", "unavailable"] },
+        "diagnostic_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "nullableString": { "type": ["string", "null"] },
+    "nullableNumber": { "type": ["number", "null"] },
+    "sourceSpan": {
+      "type": "object",
+      "required": ["start_offset", "end_offset"],
+      "properties": {
+        "start_offset": { "type": "integer", "minimum": 0 },
+        "end_offset": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "diagnosticSourceLocation": {
+      "type": "object",
+      "required": ["source_role", "source_span"],
+      "properties": {
+        "source_role": { "enum": ["before", "after"] },
+        "source_span": { "$ref": "#/$defs/sourceSpan" }
+      }
+    },
+    "declaredFact": {
+      "type": ["object", "null"],
+      "properties": {
+        "property": { "type": "string" },
+        "authored_value": { "type": "string" },
+        "declared_value": { "type": "string" },
+        "origin": { "type": "string" },
+        "source_span": { "$ref": "#/$defs/sourceSpan" }
+      }
+    },
+    "nullableDeclaredFact": {
+      "anyOf": [
+        { "$ref": "#/$defs/declaredFact" },
+        { "type": "null" }
+      ]
+    },
+    "subjectReference": {
+      "type": "object",
+      "required": ["source_index", "kind", "authored_id"],
+      "properties": {
+        "source_index": { "type": "integer", "minimum": 0 },
+        "kind": { "type": "string" },
+        "authored_id": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "alignmentEvidence": {
+      "type": "object",
+      "required": [
+        "score_kind",
+        "selected_score",
+        "candidate_count",
+        "equal_score_candidate_count",
+        "ambiguity",
+        "confidence",
+        "confidence_status"
+      ],
+      "properties": {
+        "score_kind": {
+          "enum": [
+            "exact_visual_signature",
+            "property_distance",
+            "structural_rule",
+            "unmatched",
+            "group_identity_or_singleton"
+          ]
+        },
+        "selected_score": { "$ref": "#/$defs/nullableNumber" },
+        "candidate_count": { "type": "integer", "minimum": 0 },
+        "equal_score_candidate_count": { "type": "integer", "minimum": 0 },
+        "ambiguity": { "enum": ["unique", "tied", "not_assessed"] },
+        "confidence": { "$ref": "#/$defs/nullableNumber" },
+        "confidence_status": { "const": "not_calibrated" }
+      }
+    },
+    "subjectAlignment": {
+      "type": "object",
+      "required": ["id", "relation", "before", "after", "basis"],
+      "properties": {
+        "id": { "type": "string" },
+        "relation": { "enum": ["correspondence", "insertion", "deletion", "split", "merge"] },
+        "before": { "type": "array", "items": { "$ref": "#/$defs/subjectReference" } },
+        "after": { "type": "array", "items": { "$ref": "#/$defs/subjectReference" } },
+        "basis": { "type": "string" },
+        "evidence": { "$ref": "#/$defs/alignmentEvidence" }
+      }
+    },
+    "changedFact": {
+      "type": "object",
+      "required": ["id", "subject_id", "property", "before", "after", "affected_subject_ids"],
+      "properties": {
+        "id": { "type": "string" },
+        "subject_id": { "type": "string" },
+        "property": { "type": "string" },
+        "before": { "$ref": "#/$defs/nullableDeclaredFact" },
+        "after": { "$ref": "#/$defs/nullableDeclaredFact" },
+        "affected_subject_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "transformEffect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "before_x_css_px",
+            "before_y_css_px",
+            "after_x_css_px",
+            "after_y_css_px",
+            "delta_x_css_px",
+            "delta_y_css_px",
+            "norm_css_px"
+          ],
+          "properties": {
+            "kind": { "const": "translation" },
+            "before_x_css_px": { "type": "number" },
+            "before_y_css_px": { "type": "number" },
+            "after_x_css_px": { "type": "number" },
+            "after_y_css_px": { "type": "number" },
+            "delta_x_css_px": { "type": "number" },
+            "delta_y_css_px": { "type": "number" },
+            "norm_css_px": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "before_degrees",
+            "after_degrees",
+            "signed_delta_degrees",
+            "abs_delta_degrees"
+          ],
+          "properties": {
+            "kind": { "const": "rotation" },
+            "before_degrees": { "type": "number" },
+            "after_degrees": { "type": "number" },
+            "signed_delta_degrees": { "type": "number" },
+            "abs_delta_degrees": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "before_x",
+            "before_y",
+            "after_x",
+            "after_y",
+            "max_abs_delta"
+          ],
+          "properties": {
+            "kind": { "const": "scale" },
+            "before_x": { "type": "number" },
+            "before_y": { "type": "number" },
+            "after_x": { "type": "number" },
+            "after_y": { "type": "number" },
+            "max_abs_delta": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "before_degrees",
+            "after_degrees",
+            "signed_delta_degrees",
+            "abs_delta_degrees"
+          ],
+          "properties": {
+            "kind": { "const": "skew" },
+            "before_degrees": { "type": "number" },
+            "after_degrees": { "type": "number" },
+            "signed_delta_degrees": { "type": "number" },
+            "abs_delta_degrees": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "before_matrix",
+            "after_matrix",
+            "before_determinant",
+            "after_determinant"
+          ],
+          "properties": {
+            "kind": { "const": "residual_matrix" },
+            "before_matrix": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "items": { "type": "number" }
+            },
+            "after_matrix": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "items": { "type": "number" }
+            },
+            "before_determinant": { "type": "number" },
+            "after_determinant": { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "magnitude": {
+      "type": "object",
+      "required": [
+        "parameter_abs_user_units",
+        "parameter_signed_user_units",
+        "symmetric_relative",
+        "geometry_displacement_css_px",
+        "geometry_viewport_fraction",
+        "presence_painted_viewport_fraction",
+        "raster_changed_pixel_fraction",
+        "raster_rgba8_rmse",
+        "raster_linear_premultiplied_rgba_rmse"
+      ],
+      "properties": {
+        "transform_effect": { "$ref": "#/$defs/transformEffect" }
+      },
+      "additionalProperties": { "$ref": "#/$defs/nullableNumber" }
+    },
+    "atomicDifference": {
+      "type": "object",
+      "required": [
+        "id",
+        "subject_role",
+        "subject_alignment_id",
+        "domain",
+        "changed_fact_ids",
+        "evidence_layers",
+        "computed_relation",
+        "magnitude",
+        "domain_ordering"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "subject_role": { "enum": ["entity", "resource"] },
+        "subject_alignment_id": { "$ref": "#/$defs/nullableString" },
+        "domain": { "type": "string" },
+        "changed_fact_ids": { "type": "array", "items": { "type": "string" } },
+        "evidence_layers": { "type": "array", "items": { "type": "string" } },
+        "computed_relation": { "type": "object" },
+        "magnitude": { "$ref": "#/$defs/magnitude" },
+        "domain_ordering": {
+          "type": "object",
+          "required": ["policy_id", "components"],
+          "properties": {
+            "policy_id": { "const": "v2_domain_lexicographic" },
+            "components": { "type": "array", "items": { "type": "number" } }
+          }
+        }
+      }
+    },
+    "causeEnvelope": {
+      "type": "object",
+      "required": ["guarantee", "coverage", "fallback_scope", "candidate_changed_fact_ids", "diagnostic_ids"],
+      "properties": {
+        "guarantee": { "enum": ["sound_overapproximation", "not_established"] },
+        "coverage": { "enum": ["complete", "partial"] },
+        "fallback_scope": { "enum": ["comparison", "event_region"] },
+        "candidate_changed_fact_ids": { "type": "array", "items": { "type": "string" } },
+        "diagnostic_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "differenceRegion": {
+      "type": "object",
+      "required": ["id", "source", "pixel_x", "pixel_y", "pixel_width", "pixel_height", "css_x", "css_y", "css_width", "css_height", "changed_pixels", "viewport_fraction", "cause_envelope"],
+      "properties": {
+        "id": { "type": "string" },
+        "source": { "enum": ["pixel_mask", "computed_bounds"] },
+        "pixel_x": { "type": "integer" },
+        "pixel_y": { "type": "integer" },
+        "pixel_width": { "type": "integer", "minimum": 0 },
+        "pixel_height": { "type": "integer", "minimum": 0 },
+        "css_x": { "type": "number" },
+        "css_y": { "type": "number" },
+        "css_width": { "type": "number", "minimum": 0 },
+        "css_height": { "type": "number", "minimum": 0 },
+        "changed_pixels": { "type": "integer", "minimum": 0 },
+        "viewport_fraction": { "type": "number", "minimum": 0 },
+        "cause_envelope": { "$ref": "#/$defs/causeEnvelope" }
+      }
+    },
+    "visualEvent": {
+      "type": "object",
+      "required": ["id", "primary_subject_id", "atomic_difference_ids", "rendered_outcome", "difference_regions"],
+      "properties": {
+        "id": { "type": "string" },
+        "primary_subject_id": { "type": "string" },
+        "atomic_difference_ids": { "type": "array", "items": { "type": "string" } },
+        "rendered_outcome": { "type": "object" },
+        "difference_regions": { "type": "array", "items": { "$ref": "#/$defs/differenceRegion" } }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["id", "code", "subject_id", "affected_evidence_layers"],
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "subject_id": { "type": "string" },
+        "affected_evidence_layers": { "type": "array", "items": { "type": "string" } },
+        "source_locations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/diagnosticSourceLocation" }
+        }
+      }
+    }
+  }
+}

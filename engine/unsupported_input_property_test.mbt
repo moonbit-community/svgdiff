@@ -122,6 +122,23 @@ test "unsupported stroke geometry never proves equality" {
 }
 
 ///|
+test "unsupported marker semantics never prove equality" {
+  for
+    content in [
+      "<line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#missing)'/>",
+      "<defs><linearGradient id='m'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "<line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(https://example.com/m.svg#m)'/>",
+      "<defs><marker id='m' markerWidth='2px'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "<defs><marker id='m' markerHeight='-1'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "<defs><marker id='m' orient='sideways'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "<defs><marker id='m' refX='center'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+      "<defs><marker id='m' overflow='visible'/></defs><line id='edge' x1='1' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
+    ] {
+    assert_unsupported_never_proves_equality(unsupported_document(content))
+  }
+}
+
+///|
 test "unsupported CSS paint resource and compositing families never prove equality" {
   let cases = [
     "<rect width='8' height='8' fill='currentColor'/>", "<rect width='8' height='8' fill='inherit'/>",
@@ -144,6 +161,7 @@ test "unproven renderer conformance families never prove equality" {
       "<defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#gradient)'/>",
       "<rect id='box' x='2' y='2' width='8' height='8' transform='skewX(20)'/>",
       "<rect id='box' x='2' y='2' width='8' height='8' rx='2'/>", "<polygon id='area' points='2,2 14,2 8,14'/>",
+      "<defs><marker id='m' markerUnits='userSpaceOnUse' markerWidth='3' markerHeight='3'><path d='M0 0L3 1.5L0 3Z'/></marker></defs><line id='edge' x1='2' y1='8' x2='14' y2='8' marker-end='url(#m)'/>",
     ] {
     assert_unsupported_never_proves_equality(unsupported_document(content))
   }

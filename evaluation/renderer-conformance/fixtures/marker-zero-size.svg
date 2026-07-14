@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <marker id="hidden" markerUnits="userSpaceOnUse" markerWidth="0" markerHeight="4">
+      <rect width="8" height="8" fill="#ff0000"/>
+    </marker>
+  </defs>
+  <line x1="2" y1="8" x2="14" y2="8" stroke="#000000" marker-end="url(#hidden)"/>
+</svg>

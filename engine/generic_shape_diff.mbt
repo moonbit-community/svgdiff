@@ -28,6 +28,8 @@ fn generic_property_domain(property : String) -> String {
     "stroke-dasharray" => "geometry.stroke_dash_pattern"
     "stroke-dashoffset" => "geometry.stroke_dash_offset"
     "vector-effect" => "geometry.stroke_vector_effect"
+    "marker" | "marker-start" | "marker-mid" | "marker-end" =>
+      "geometry.marker_attachment"
     "opacity" => "paint.opacity"
     _ => "document.unsupported"
   }
@@ -58,6 +60,7 @@ fn generic_default_value(property : String) -> String? {
     "stroke-dasharray" => Some("none")
     "stroke-dashoffset" => Some("0")
     "vector-effect" => Some("none")
+    "marker" | "marker-start" | "marker-mid" | "marker-end" => Some("none")
     _ => None
   }
 }
@@ -98,6 +101,14 @@ fn generic_subject_computed_value(
     if !stroke_subject_property_active(subject, property) {
       return Some("inactive")
     }
+    return subject_value(subject, property)
+  }
+  if property == "marker" {
+    return Some(
+      "\{subject_value(subject, "marker-start").unwrap_or("none")}|\{subject_value(subject, "marker-mid").unwrap_or("none")}|\{subject_value(subject, "marker-end").unwrap_or("none")}",
+    )
+  }
+  if marker_attachment_property(property) {
     return subject_value(subject, property)
   }
   if property == "fill" && !subject.fillable_interior {
@@ -237,6 +248,25 @@ fn generic_relation(
       ),
     }
   }
+  if marker_attachment_property(property) &&
+    (!before_subject.marker_complete || !after_subject.marker_complete) {
+    let ids : Array[String] = []
+    for subject in [before_subject, after_subject] {
+      if !subject.marker_complete {
+        let id = "diagnostic:marker-semantics-unsupported:\{source_subject_id(subject)}"
+        if !ids.contains(id) {
+          ids.push(id)
+        }
+      }
+    }
+    ids.sort()
+    return {
+      status: "indeterminate",
+      reason_code: "marker_semantics_unsupported",
+      missing_side: None,
+      diagnostic_ids: ids,
+    }
+  }
   let before_value = generic_subject_computed_value(
     before_subject, property, before,
   )
@@ -253,6 +283,26 @@ fn generic_relation(
         (Some(before_number), Some(after_number)) =>
           before_number == after_number
         _ => before_value == after_value
+      }
+      if marker_attachment_property(property) && !equivalent {
+        let ids : Array[String] = []
+        for subject in [before_subject, after_subject] {
+          if subject.marker_active {
+            let id = "diagnostic:marker-content-semantics-unsupported:\{source_subject_id(subject)}"
+            if !ids.contains(id) {
+              ids.push(id)
+            }
+          }
+        }
+        if !ids.is_empty() {
+          ids.sort()
+          return {
+            status: "indeterminate",
+            reason_code: "marker_content_semantics_unsupported",
+            missing_side: None,
+            diagnostic_ids: ids,
+          }
+        }
       }
       {
         status: if equivalent {
@@ -412,7 +462,9 @@ fn generic_basic_shape_report(
   let single_rect_special_change = match (before, after) {
     ([before_subject], [after_subject]) if before_subject.kind == "rect" &&
       after_subject.kind == "rect" => {
-      let properties = ["rx", "ry", "stroke"]
+      let properties = [
+        "rx", "ry", "stroke", "marker", "marker-start", "marker-mid", "marker-end",
+      ]
       for property in alignment_property_order() {
         if stroke_geometry_property(property) {
           properties.push(property)
@@ -611,7 +663,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.9",
+    schema_version: "1.10",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

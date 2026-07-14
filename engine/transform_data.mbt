@@ -161,6 +161,31 @@ fn AffineTransform::multiply(
 }
 
 ///|
+fn AffineTransform::apply_point(
+  self : AffineTransform,
+  x : Double,
+  y : Double,
+) -> (Double, Double) {
+  (
+    normalized_transform_component(self.a * x + self.c * y + self.e),
+    normalized_transform_component(self.b * x + self.d * y + self.f),
+  )
+}
+
+///|
+fn AffineTransform::apply_direction_angle(
+  self : AffineTransform,
+  degrees : Double,
+) -> Double {
+  let radians = degrees * 3.141592653589793 / 180.0
+  let x = @math.cos(radians)
+  let y = @math.sin(radians)
+  @math.atan2(self.b * x + self.d * y, self.a * x + self.c * y) *
+  180.0 /
+  3.141592653589793
+}
+
+///|
 fn AffineTransform::signature(self : AffineTransform) -> String {
   "matrix(\{self.a},\{self.b},\{self.c},\{self.d},\{self.e},\{self.f})"
 }

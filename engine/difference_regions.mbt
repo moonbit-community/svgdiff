@@ -160,28 +160,29 @@ fn source_subject_geometry_bounds(subject : SourceSubject) -> CssBounds? {
 
 ///|
 fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
-  let bounds = match source_subject_geometry_bounds(subject) {
-    Some(bounds) => bounds
-    None => return None
+  let geometry_bounds = match source_subject_geometry_bounds(subject) {
+    Some(bounds) => Some(bounds)
+    None => None
   }
-  if !subject.stroke_active {
-    return Some(bounds)
+  let painted_geometry = match geometry_bounds {
+    Some(bounds) if !subject.stroke_active => Some(bounds)
+    Some(bounds) if subject.stroke_non_scaling =>
+      Some(
+        inflate_bounds(
+          transform_bounds(bounds, subject.cumulative_transform),
+          subject.stroke_conservative_expansion,
+        ),
+      )
+    Some(bounds) =>
+      Some(
+        transform_bounds(
+          inflate_bounds(bounds, subject.stroke_conservative_expansion),
+          subject.cumulative_transform,
+        ),
+      )
+    None => None
   }
-  if subject.stroke_non_scaling {
-    Some(
-      inflate_bounds(
-        transform_bounds(bounds, subject.cumulative_transform),
-        subject.stroke_conservative_expansion,
-      ),
-    )
-  } else {
-    Some(
-      transform_bounds(
-        inflate_bounds(bounds, subject.stroke_conservative_expansion),
-        subject.cumulative_transform,
-      ),
-    )
-  }
+  union_bounds(painted_geometry, marker_subject_bounds(subject))
 }
 
 ///|
@@ -450,6 +451,38 @@ fn alignment_for_event(
     }
   }
   None
+}
+
+///|
+fn marker_resource_bounds_for_event(
+  event : VisualEvent,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> CssBounds? {
+  if !event.id.has_prefix("event:marker-resource:") {
+    return None
+  }
+  let suffix = event.id.view(start_offset="event:marker-resource:".length())
+  let resource_id = match suffix.find(":presence") {
+    Some(offset) => suffix.view(end_offset=offset).to_owned()
+    None => suffix.to_owned()
+  }
+  let mut bounds : CssBounds? = None
+  for subject in before {
+    for placement in subject.marker_placements {
+      if placement.resource_id == resource_id {
+        bounds = union_bounds(bounds, Some(placement.bounds))
+      }
+    }
+  }
+  for subject in after {
+    for placement in subject.marker_placements {
+      if placement.resource_id == resource_id {
+        bounds = union_bounds(bounds, Some(placement.bounds))
+      }
+    }
+  }
+  bounds
 }
 
 ///|
@@ -807,9 +840,13 @@ fn attach_difference_regions(
   let mut attached_region_count = 0
   for event in report.events {
     comparison_guard.checkpoint()
-    let bounds = match alignment_for_event(event, alignments) {
-      Some(alignment) => alignment_bounds(alignment, before, after)
-      None => None
+    let bounds = match marker_resource_bounds_for_event(event, before, after) {
+      Some(bounds) => Some(bounds)
+      None =>
+        match alignment_for_event(event, alignments) {
+          Some(alignment) => alignment_bounds(alignment, before, after)
+          None => None
+        }
     }
     let regions : Array[DifferenceRegion] = []
     if event.rendered_outcome.status == "computed" {

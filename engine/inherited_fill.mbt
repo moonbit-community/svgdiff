@@ -23,7 +23,8 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     | "ellipse"
     | "line"
     | "polyline"
-    | "polygon" => true
+    | "polygon"
+    | "path" => true
     _ => false
   }
 }
@@ -61,7 +62,7 @@ fn generated_subject_id(kind : String, index : Int) -> String {
 fn inherited_visual_properties() -> Array[String] {
   [
     "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
-    "stroke-dasharray", "stroke-dashoffset",
+    "stroke-dasharray", "stroke-dashoffset", "marker-start", "marker-mid", "marker-end",
   ]
 }
 
@@ -69,7 +70,8 @@ fn inherited_visual_properties() -> Array[String] {
 fn resolved_visual_properties() -> Array[String] {
   [
     "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
-    "stroke-dasharray", "stroke-dashoffset", "vector-effect", "opacity",
+    "stroke-dasharray", "stroke-dashoffset", "vector-effect", "opacity", "marker",
+    "marker-start", "marker-mid", "marker-end",
   ]
 }
 
@@ -194,6 +196,7 @@ fn initial_visual_value(property : String) -> String {
     "stroke-dasharray" => "none"
     "stroke-dashoffset" => "0"
     "vector-effect" => "none"
+    "marker-start" | "marker-mid" | "marker-end" => "none"
     _ => ""
   }
 }
@@ -203,7 +206,17 @@ fn local_visual_declaration(
   element : FillSourceElement,
   property : String,
 ) -> DeclaredVisualFact? {
-  declared_fact_in_array(element.visual_declarations, property)
+  match declared_fact_in_array(element.visual_declarations, property) {
+    Some(fact) => Some(fact)
+    None if property == "marker-start" ||
+      property == "marker-mid" ||
+      property == "marker-end" =>
+      match declared_fact_in_array(element.visual_declarations, "marker") {
+        Some(fact) => Some({ ..fact, property, })
+        None => None
+      }
+    None => None
+  }
 }
 
 ///|
@@ -598,7 +611,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.9",
+    schema_version: "1.10",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],

@@ -455,15 +455,65 @@
       "id": "stroke-non-scaling",
       "max_channel_delta": 255,
       "premultiplied_rgba8_rmse": 0.25
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.140625,
+      "changed_pixels": 36,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "marker-roles",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.130699261946
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.12109375,
+      "changed_pixels": 31,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "marker-auto-start-reverse",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.159602302741
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.046875,
+      "changed_pixels": 12,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "marker-stroke-width-units",
+      "max_channel_delta": 128,
+      "premultiplied_rgba8_rmse": 0.054338848865
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.078125,
+      "changed_pixels": 20,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "marker-viewport-ref",
+      "max_channel_delta": 128,
+      "premultiplied_rgba8_rmse": 0.069877661604
+    },
+    {
+      "category": "geometry",
+      "changed_pixel_fraction": 0.15625,
+      "changed_pixels": 40,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "marker-zero-size",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.192638171476
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/6",
-  "fixture_source_set_sha256": "1d3d0f0a42342e304879879f78581c6577f1f0197300b7a1dac3e66471d9e53b",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/7",
+  "fixture_source_set_sha256": "bdc8372ad371d1eda4dfb53a0b6f18ed1ad974598ab41808593d6e7f8f99742b",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 45,
+    "cases": 50,
     "categories": {
       "alpha": {
         "cases": 3,
@@ -481,8 +531,8 @@
         "exact": 0
       },
       "geometry": {
-        "cases": 34,
-        "divergent": 20,
+        "cases": 39,
+        "divergent": 25,
         "exact": 14
       },
       "paint": {
@@ -491,10 +541,10 @@
         "exact": 4
       }
     },
-    "divergent": 24,
+    "divergent": 29,
     "exact": 21,
     "exploratory": 2,
-    "guarded": 23,
+    "guarded": 28,
     "supported": 20
   }
 }

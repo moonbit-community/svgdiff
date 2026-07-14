@@ -189,6 +189,26 @@
       }
     },
     {
+      "id": "marker-equivalent",
+      "before": "evaluation/schema-examples/cases/marker-equivalent/before.svg",
+      "after": "evaluation/schema-examples/cases/marker-equivalent/after.svg",
+      "output": "schema/examples/marker-equivalent.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["resource.marker.viewport_size"],
+        "computed_relations": ["equivalent"],
+        "diagnostic_codes": [
+          "unsupported_visual_subject",
+          "marker_content_semantics_unsupported",
+          "renderer_marker_raster_unproven",
+          "renderer_stroke_outline_raster_unproven"
+        ],
+        "magnitude_checks": [
+          { "domain": "resource.marker.viewport_size", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

@@ -2,9 +2,9 @@
 
 Status: implementation-aligned contract
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
-This document states what schema `1.9` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.10` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -23,7 +23,7 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
 | Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/6`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/7`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -44,6 +44,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - basic shape subjects with canonical unitless used geometry: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`, including omitted defaults, rectangle `auto` dimensions, zero-size numeric geometry, rectangle and ellipse radius propagation, rectangle radius clamping, point-list normalization, line no-interior semantics, and polyline/polygon fill closure semantics;
 - basic subject correspondence, insertion, deletion, split, and merge relationships for the supported shape inventory;
 - supported geometry facts for those shapes, plus fill, stroke paint, canonical unitless stroke width, caps, joins, miter limits, dash arrays, dash offsets, `vector-effect`, and opacity facts where implemented by the analyzer; active stroke rasterization remains separately guarded;
+- local `marker`, `marker-start`, `marker-mid`, and `marker-end` attachment facts plus canonical unitless marker viewport properties, SVG path vertex roles, automatic orientation, instance transforms, and conservative clipped viewport envelopes; marker child paint and rasterization remain separately guarded;
 - ordinary inherited fill provenance in the validated inheritance slice;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red` and `#ff0000`;
 - exact continuous parameter deltas independent of raster quantization;
@@ -74,13 +75,16 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Active stroke outline rasterization | Canonical stroke used geometry, computed relations, conservative bounds, and a pinned-renderer measurement | Chromium differs from the pinned renderer for admitted caps and outlines; `renderer_stroke_outline_raster_unproven` limits Rendered Evidence. |
 | Active stroke joins and dashes | Canonical joins, miter limits, dash patterns, offsets, computed relations, and conservative bounds | Chromium differs from the pinned renderer; `renderer_stroke_join_raster_unproven` and `renderer_stroke_dash_raster_unproven` limit Rendered Evidence. |
 | Transformed `non-scaling-stroke` rasterization | Distinct host-space used-width semantics and conservative bounds | Chromium differs from the pinned renderer; `renderer_non_scaling_stroke_unproven` limits Rendered Evidence. |
+| Marker placement and viewport semantics | Authored attachment/resource facts, local-reference resolution, SVG start/mid/end vertices, automatic orientation, unit and viewBox transforms, typed resource differences, and conservative clipped instance envelopes | Marker child paint/cascade and context paint are not interpreted; `marker_content_semantics_unsupported` limits Computed Appearance and Rendered Evidence. |
+| Invalid or unsupported marker semantics | Exact authored declaration and Source Span where available | `marker_semantics_unsupported` or `marker_resource_semantics_unsupported` prevents false equality for missing, wrong-kind, external, malformed, unsupported-unit, visible-overflow, or otherwise unresolved marker input. |
+| Marker rasterization | Independently modeled placement and conservative marker regions | All five Chromium fixtures diverge from the pinned renderer, including zero-size behavior; `renderer_marker_raster_unproven` limits Rendered Evidence. |
 | Malformed transform syntax | The exact authored declaration and source span | `transform_syntax_unsupported` prevents source, computed, and rendered completeness. |
 | `gradientTransform` and `patternTransform` | Authored transform-list and resource-local matrix differences | Resource units, inheritance, references, and paint behavior remain unresolved under `resource_transform_semantics_unsupported`. |
 | Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
-Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, general affine, viewport, referenced-gradient rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
+Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, viewport, referenced-gradient rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
 
 ## Unsupported or deferred
 
@@ -92,9 +96,9 @@ V1 does not completely analyze:
 - complete path semantics, including transformed geometry, continuous-curve boundary distance, and browser-conformant stroke and paint evaluation;
 - precise transform-aware bounds and localization beyond the conservative whole-scene outcome regions;
 - automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, physical viewport units, or object-bounding-box coordinate systems;
-- percentage or physical basic-shape geometry units, exact continuous transformed stroke outlines, percentage or physical stroke lengths, markers, `pathLength` calibration, or precise transform-aware shape localization;
+- percentage or physical basic-shape geometry units, exact continuous transformed stroke outlines, percentage or physical stroke lengths, `pathLength` calibration, or precise transform-aware shape localization;
 - the general CSS cascade, selectors, custom properties, or `!important`;
-- full gradients, radial gradients, patterns, markers, images, symbols, or `<use>` instances;
+- full gradients, radial gradients, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, non-unitless marker lengths, visible marker overflow, images, symbols, or `<use>` instances;
 - clipping, masking, filters, blending, isolation, and complete group compositing;
 - deterministic fonts, shaping, text layout, and glyph rasterization;
 - perceptual backgrounds, FLIP, SSIM, learned perceptual metrics, and advanced color profiles;

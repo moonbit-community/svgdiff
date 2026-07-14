@@ -1,0 +1,476 @@
+{
+  "schema_version": "1.9",
+  "analysis_status": "partial",
+  "coverage_matrix": [
+    {
+      "feature_id": "property.x1",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.x2",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.y1",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.y2",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.line",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.stroke",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.stroke-width",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.stroke-dasharray",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.stroke-dashoffset",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "domain.geometry.stroke_dash_offset",
+      "subject_id": "alignment:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "domain.geometry.stroke_dash_pattern",
+      "subject_id": "alignment:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "guard.renderer_stroke_dash_raster_unproven",
+      "subject_id": "edge",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_stroke_outline_raster_unproven",
+      "subject_id": "edge",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [
+    {
+      "capability_id": "raster.stroke_dash",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-dash-raster-unproven:edge"
+      ]
+    },
+    {
+      "capability_id": "raster.stroke_outline",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    }
+  ],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/6"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "line",
+          "authored_id": "edge"
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "line",
+          "authored_id": "edge"
+        }
+      ],
+      "basis": "exact_visual_signature",
+      "evidence": {
+        "score_kind": "exact_visual_signature",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:alignment:0:stroke-dasharray",
+      "subject_id": "alignment:0",
+      "property": "stroke-dasharray",
+      "before": {
+        "property": "stroke-dasharray",
+        "authored_value": "5,3,2",
+        "declared_value": "5,3,2",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 163,
+          "end_offset": 168
+        }
+      },
+      "after": {
+        "property": "stroke-dasharray",
+        "authored_value": "5 3 2 5 3 2",
+        "declared_value": "5 3 2 5 3 2",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 163,
+          "end_offset": 174
+        }
+      },
+      "affected_subject_ids": [
+        "edge"
+      ]
+    },
+    {
+      "id": "fact:alignment:0:stroke-dashoffset",
+      "subject_id": "alignment:0",
+      "property": "stroke-dashoffset",
+      "before": {
+        "property": "stroke-dashoffset",
+        "authored_value": "-1",
+        "declared_value": "-1",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 189,
+          "end_offset": 191
+        }
+      },
+      "after": {
+        "property": "stroke-dashoffset",
+        "authored_value": "19",
+        "declared_value": "19",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 195,
+          "end_offset": 197
+        }
+      },
+      "affected_subject_ids": [
+        "edge"
+      ]
+    }
+  ],
+  "source_resolutions": [],
+  "atomic_differences": [
+    {
+      "id": "diff:alignment:0:stroke-dasharray",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "geometry.stroke_dash_pattern",
+      "source_before": "5,3,2",
+      "source_after": "5 3 2 5 3 2",
+      "source_fact_before": {
+        "property": "stroke-dasharray",
+        "authored_value": "5,3,2",
+        "declared_value": "5,3,2",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 163,
+          "end_offset": 168
+        }
+      },
+      "source_fact_after": {
+        "property": "stroke-dasharray",
+        "authored_value": "5 3 2 5 3 2",
+        "declared_value": "5 3 2 5 3 2",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 163,
+          "end_offset": 174
+        }
+      },
+      "changed_fact_ids": [
+        "fact:alignment:0:stroke-dasharray"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "equivalent",
+        "reason_code": "same_resolved_fact",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0,
+        "raster_rgba8_rmse": 0,
+        "raster_linear_premultiplied_rgba_rmse": 0
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0
+        ]
+      }
+    },
+    {
+      "id": "diff:alignment:0:stroke-dashoffset",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "geometry.stroke_dash_offset",
+      "source_before": "-1",
+      "source_after": "19",
+      "source_fact_before": {
+        "property": "stroke-dashoffset",
+        "authored_value": "-1",
+        "declared_value": "-1",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 189,
+          "end_offset": 191
+        }
+      },
+      "source_fact_after": {
+        "property": "stroke-dashoffset",
+        "authored_value": "19",
+        "declared_value": "19",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 195,
+          "end_offset": 197
+        }
+      },
+      "changed_fact_ids": [
+        "fact:alignment:0:stroke-dashoffset"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "equivalent",
+        "reason_code": "same_resolved_fact",
+        "diagnostic_ids": []
+      },
+      "parameter_delta_css_px": 0,
+      "magnitude": {
+        "parameter_abs_user_units": 0,
+        "parameter_signed_user_units": 0,
+        "symmetric_relative": 2,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0,
+        "raster_rgba8_rmse": 0,
+        "raster_linear_premultiplied_rgba_rmse": 0
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:alignment:0",
+      "primary_subject_id": "alignment:0",
+      "atomic_difference_ids": [
+        "diff:alignment:0:stroke-dasharray",
+        "diff:alignment:0:stroke-dashoffset"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 0,
+          "changed_pixel_fraction": 0,
+          "rgba8_rmse": 0,
+          "linear_premultiplied_rgba_rmse": 0
+        }
+      },
+      "difference_regions": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic:renderer-stroke-outline-raster-unproven:edge",
+      "code": "renderer_stroke_outline_raster_unproven",
+      "subject_id": "edge",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 121,
+            "end_offset": 126
+          }
+        },
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 142,
+            "end_offset": 143
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 121,
+            "end_offset": 126
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 142,
+            "end_offset": 143
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:renderer-stroke-dash-raster-unproven:edge",
+      "code": "renderer_stroke_dash_raster_unproven",
+      "subject_id": "edge",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 163,
+            "end_offset": 168
+          }
+        },
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 189,
+            "end_offset": 191
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 163,
+            "end_offset": 174
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 195,
+            "end_offset": 197
+          }
+        }
+      ]
+    }
+  ]
+}

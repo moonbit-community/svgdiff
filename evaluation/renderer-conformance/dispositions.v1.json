@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/6",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/7",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -145,6 +145,36 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_non_scaling_stroke_unproven",
       "reason": "The pinned renderer and Chromium disagree on 64 pixels for a transformed non-scaling stroke."
+    },
+    {
+      "id": "marker-roles",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_marker_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 36 pixels for start, mid, and end marker attachment roles."
+    },
+    {
+      "id": "marker-auto-start-reverse",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_marker_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 31 pixels for auto-start-reverse orientation."
+    },
+    {
+      "id": "marker-stroke-width-units",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_marker_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 12 pixels for stroke-width marker units."
+    },
+    {
+      "id": "marker-viewport-ref",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_marker_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 20 pixels for marker viewBox and reference-point mapping."
+    },
+    {
+      "id": "marker-zero-size",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_marker_raster_unproven",
+      "reason": "The pinned renderer paints 40 pixels that Chromium suppresses for a zero-width marker viewport."
     }
   ]
 }

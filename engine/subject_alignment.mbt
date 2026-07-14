@@ -17,6 +17,11 @@ priv struct SourceSubject {
   stroke_active : Bool
   stroke_conservative_expansion : Double
   stroke_non_scaling : Bool
+  marker_invalid_facts : Array[DeclaredVisualFact]
+  marker_effective_facts : Array[DeclaredVisualFact]
+  marker_complete : Bool
+  marker_active : Bool
+  marker_placements : Array[MarkerPlacement]
   path_segments : Array[PathSegmentEvidence]
   path_data_complete : Bool
   transform_chain : Array[SourceTransformSite]
@@ -39,7 +44,7 @@ fn alignment_property_order() -> Array[String] {
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2",
     "points", "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin",
     "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
-    "opacity",
+    "marker", "marker-start", "marker-mid", "marker-end", "opacity",
   ]
 }
 
@@ -61,6 +66,7 @@ fn subject_from_element(
   source_index : Int,
   hierarchy_signature : String,
   transform_chain : Array[SourceTransformSite],
+  inherited_marker_facts : Array[DeclaredVisualFact],
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let path_segments : Array[PathSegmentEvidence] = []
@@ -104,13 +110,15 @@ fn subject_from_element(
   }
   let geometry = resolve_basic_shape_geometry(element.name.local_name, facts)
   let stroke = resolve_stroke_geometry(facts)
+  let marker = resolve_marker_attachments(facts, inherited_marker_facts)
   let values : Array[(String, String)] = []
   for fact in facts {
     if fact.property == "transform" {
       continue
     }
     if !basic_shape_geometry_property(element.name.local_name, fact.property) &&
-      !stroke_geometry_property(fact.property) {
+      !stroke_geometry_property(fact.property) &&
+      !marker_attachment_property(fact.property) {
       values.push(
         (
           fact.property,
@@ -127,6 +135,9 @@ fn subject_from_element(
     values.push(value)
   }
   for value in stroke.values {
+    values.push(value)
+  }
+  for value in marker.values {
     values.push(value)
   }
   let stroke_paint_present = resolved_stroke_paint_present(facts)
@@ -179,6 +190,11 @@ fn subject_from_element(
     ),
     stroke_non_scaling: resolved_stroke_value(stroke, "vector-effect") ==
     "non-scaling-stroke",
+    marker_invalid_facts: marker.invalid_facts,
+    marker_effective_facts: marker.effective_facts,
+    marker_complete: marker.complete,
+    marker_active: false,
+    marker_placements: [],
     path_segments,
     path_data_complete,
     transform_chain,
@@ -243,7 +259,9 @@ fn extract_source_subjects_with_profile_or_raise(
   let hierarchy : Array[String] = []
   let transforms : Array[SourceTransformSite] = []
   let viewport_contexts : Array[ViewportContext] = []
+  let inherited_markers : Array[Array[DeclaredVisualFact]] = []
   let mut node_index = 0
+  let mut marker_depth = 0
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -255,8 +273,18 @@ fn extract_source_subjects_with_profile_or_raise(
         )
         node_index += 1
         transforms.push(transform)
+        if kind == "marker" {
+          marker_depth += 1
+        }
         if kind == "svg" || kind == "g" {
           hierarchy.push(hierarchy_element_signature(input, element))
+          inherited_markers.push(
+            marker_inherited_facts_for_element(
+              input,
+              element,
+              inherited_markers.last().unwrap_or([]),
+            ),
+          )
         }
         if kind == "svg" {
           match child_viewport {
@@ -264,7 +292,7 @@ fn extract_source_subjects_with_profile_or_raise(
             None => ()
           }
         }
-        if visual_subject_kind(kind) {
+        if visual_subject_kind(kind) && marker_depth == 0 {
           subjects.push(
             subject_from_element(
               input,
@@ -272,6 +300,7 @@ fn extract_source_subjects_with_profile_or_raise(
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transforms.copy(),
+              inherited_markers.last().unwrap_or([]),
             ),
           )
         }
@@ -287,7 +316,7 @@ fn extract_source_subjects_with_profile_or_raise(
         )
         transform_chain.push(transform)
         node_index += 1
-        if visual_subject_kind(element.name.local_name) {
+        if visual_subject_kind(element.name.local_name) && marker_depth == 0 {
           subjects.push(
             subject_from_element(
               input,
@@ -295,14 +324,19 @@ fn extract_source_subjects_with_profile_or_raise(
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transform_chain,
+              inherited_markers.last().unwrap_or([]),
             ),
           )
         }
       }
       End(name) => {
         ignore(transforms.pop())
+        if name.local_name == "marker" {
+          marker_depth -= 1
+        }
         if name.local_name == "svg" || name.local_name == "g" {
           ignore(hierarchy.pop())
+          ignore(inherited_markers.pop())
         }
         if name.local_name == "svg" {
           ignore(viewport_contexts.pop())
@@ -311,7 +345,7 @@ fn extract_source_subjects_with_profile_or_raise(
       _ => ()
     }
   }
-  subjects
+  resolve_marker_subjects_or_raise(input, subjects)
 }
 
 ///|
@@ -963,6 +997,8 @@ fn finish_report(
   let report = attach_resource_transform_differences(
     report, before_svg, after_svg,
   )
+  comparison_guard.checkpoint()
+  let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = match
     attach_difference_regions(

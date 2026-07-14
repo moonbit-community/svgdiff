@@ -1,0 +1,438 @@
+{
+  "schema_version": "1.10",
+  "analysis_status": "partial",
+  "coverage_matrix": [
+    {
+      "feature_id": "property.x1",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.x2",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.y1",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.y2",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.line",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.stroke",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "property.marker-end",
+      "subject_id": "edge",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge",
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "guard.unsupported_visual_subject",
+      "subject_id": "path",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:unsupported-visual-subject:path"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.marker.viewport_size",
+      "subject_id": "arrow",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge",
+        "diagnostic:marker-content-semantics-unsupported:edge"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_marker_raster_unproven",
+      "subject_id": "edge",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge"
+      ]
+    },
+    {
+      "feature_id": "guard.marker_content_semantics_unsupported",
+      "subject_id": "edge",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:marker-content-semantics-unsupported:edge"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_stroke_outline_raster_unproven",
+      "subject_id": "edge",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [
+    {
+      "capability_id": "raster.marker",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-marker-raster-unproven:edge"
+      ]
+    },
+    {
+      "capability_id": "raster.stroke_outline",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+      ]
+    }
+  ],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/7"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "line",
+          "authored_id": "edge"
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "line",
+          "authored_id": "edge"
+        }
+      ],
+      "basis": "exact_visual_signature",
+      "evidence": {
+        "score_kind": "exact_visual_signature",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:marker-resource:2:2:markerWidth",
+      "subject_id": "arrow",
+      "property": "markerWidth",
+      "before": {
+        "property": "markerWidth",
+        "authored_value": "3",
+        "declared_value": "3",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 158,
+          "end_offset": 159
+        }
+      },
+      "after": {
+        "property": "markerWidth",
+        "authored_value": "3.0",
+        "declared_value": "3",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 158,
+          "end_offset": 161
+        }
+      },
+      "affected_subject_ids": [
+        "edge"
+      ]
+    }
+  ],
+  "source_resolutions": [],
+  "atomic_differences": [
+    {
+      "id": "diff:marker-resource:2:2:markerWidth",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.marker.viewport_size",
+      "source_before": "3",
+      "source_after": "3",
+      "source_fact_before": {
+        "property": "markerWidth",
+        "authored_value": "3",
+        "declared_value": "3",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 158,
+          "end_offset": 159
+        }
+      },
+      "source_fact_after": {
+        "property": "markerWidth",
+        "authored_value": "3.0",
+        "declared_value": "3",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 158,
+          "end_offset": 161
+        }
+      },
+      "changed_fact_ids": [
+        "fact:marker-resource:2:2:markerWidth"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "equivalent",
+        "reason_code": "same_marker_resource_value",
+        "diagnostic_ids": [
+          "diagnostic:marker-content-semantics-unsupported:edge",
+          "diagnostic:renderer-marker-raster-unproven:edge"
+        ]
+      },
+      "parameter_delta_css_px": 0,
+      "magnitude": {
+        "parameter_abs_user_units": 0,
+        "parameter_signed_user_units": 0,
+        "symmetric_relative": 0,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": null,
+        "raster_rgba8_rmse": null,
+        "raster_linear_premultiplied_rgba_rmse": null
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": []
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:marker-resource:arrow",
+      "primary_subject_id": "arrow",
+      "atomic_difference_ids": [
+        "diff:marker-resource:2:2:markerWidth"
+      ],
+      "rendered_outcome": {
+        "status": "not_computed",
+        "reason_code": "renderer_marker_raster_unproven"
+      },
+      "difference_regions": [
+        {
+          "id": "region:bounds:event:marker-resource:arrow",
+          "source": "computed_bounds",
+          "pixel_x": 9,
+          "pixel_y": 6,
+          "pixel_width": 3,
+          "pixel_height": 3,
+          "css_x": 9,
+          "css_y": 6.5,
+          "css_width": 3,
+          "css_height": 3,
+          "changed_pixels": 0,
+          "viewport_fraction": 0.03515625,
+          "cause_envelope": {
+            "guarantee": "not_established",
+            "coverage": "partial",
+            "fallback_scope": "comparison",
+            "candidate_changed_fact_ids": [
+              "fact:marker-resource:2:2:markerWidth"
+            ],
+            "diagnostic_ids": [
+              "diagnostic:unsupported-visual-subject:path",
+              "diagnostic:marker-content-semantics-unsupported:edge",
+              "diagnostic:renderer-marker-raster-unproven:edge",
+              "diagnostic:renderer-stroke-outline-raster-unproven:edge"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic:unsupported-visual-subject:path",
+      "code": "unsupported_visual_subject",
+      "subject_id": "path",
+      "affected_evidence_layers": [
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 219,
+            "end_offset": 257
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 221,
+            "end_offset": 259
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:marker-content-semantics-unsupported:edge",
+      "code": "marker_content_semantics_unsupported",
+      "subject_id": "edge",
+      "affected_evidence_layers": [
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 356,
+            "end_offset": 367
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 358,
+            "end_offset": 369
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:renderer-marker-raster-unproven:edge",
+      "code": "renderer_marker_raster_unproven",
+      "subject_id": "edge",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 356,
+            "end_offset": 367
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 358,
+            "end_offset": 369
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:renderer-stroke-outline-raster-unproven:edge",
+      "code": "renderer_stroke_outline_raster_unproven",
+      "subject_id": "edge",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 337,
+            "end_offset": 342
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 339,
+            "end_offset": 344
+          }
+        }
+      ]
+    }
+  ]
+}
