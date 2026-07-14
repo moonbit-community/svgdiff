@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-14
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.1`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.2`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -15,12 +15,13 @@ This ledger records the licenses shipped with the currently resolved packages, t
 | `mizchi/pixelmatch` | Direct; baseline image difference support | `0.6.1` | Apache-2.0 | Yes |
 | `moonbitlang/async` | Direct module dependency | `0.19.1` | Apache-2.0 | Yes |
 | `moonbitlang/x` | Direct module dependency | `0.4.40` | Apache-2.0 | No |
+| `moonbitlang/quickcheck` | Direct module dependency retained by `moon info` | `0.14.0` | Apache-2.0 | Yes |
 | `mizchi/image` | Transitive through `pixelmatch` | `0.1.2` | Apache-2.0 | No |
 | `mizchi/zlib` | Transitive through `image` | `0.4.0` | Apache-2.0 | Yes |
 
 Evidence comes from the resolved `.mooncakes` manifests and packaged LICENSE files on 2026-07-14. The root project declares Apache-2.0 and includes its own [`LICENSE`](../LICENSE).
 
-All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all seven resolved packages. This is transparent packaging evidence, not a legal opinion.
+All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all eight resolved packages. This is transparent packaging evidence, not a legal opinion.
 
 `mizchi/canvas@0.9.0` and its `mizchi/image@0.4.2` dependency were used only in an experiment. They are not part of the production dependency graph above.
 
@@ -50,7 +51,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 ## Known security gaps
 
-Schema `1.1` does not yet provide production-grade hostile-input resource control:
+Schema `1.2` does not yet provide production-grade hostile-input resource control:
 
 - no configurable limit for input bytes, element count, nesting depth, path complexity, references, raster dimensions, region count, or report size;
 - no cancellation or comparison time budget;

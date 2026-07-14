@@ -797,7 +797,9 @@ fn finish_report(
     before_svg,
     after_svg,
   )
-  attach_renderer_capability_gaps(
-    enforce_coverage_proof(report, before_svg, after_svg),
+  attach_diagnostic_fact_locations(
+    attach_renderer_capability_gaps(
+      enforce_coverage_proof(report, before_svg, after_svg),
+    ),
   )
 }

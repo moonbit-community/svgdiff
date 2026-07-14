@@ -13,6 +13,16 @@
     },
     {
       "report_schema_version": "1.1",
+      "status": "legacy",
+      "schema": "schema/svgdiff-report-1.1.schema.json",
+      "accepted_ordering_policy_ids": ["v1_domain_lexicographic"],
+      "canonical_examples": "evaluation/schema-examples/manifest.1.1.json",
+      "compatibility_case_ids": [
+        "legacy-schema-1.1"
+      ]
+    },
+    {
+      "report_schema_version": "1.2",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "accepted_ordering_policy_ids": ["v1_domain_lexicographic"],
@@ -20,6 +30,7 @@
       "compatibility_case_ids": [
         "current-schema-and-policy",
         "optional-alignment-evidence-absent",
+        "optional-diagnostic-source-locations-absent",
         "legacy-optional-fields-absent",
         "unknown-additive-top-level-field"
       ]

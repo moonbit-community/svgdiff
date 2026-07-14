@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.0` API accepts caller-provided viewport dimensions and
+/// The root schema `1.2` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.0` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.2` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -186,6 +186,13 @@ fn empty_domain_ordering() -> DomainOrdering {
 pub(all) struct ReportSourceSpan {
   start_offset : Int
   end_offset : Int
+} derive(ToJson)
+
+///|
+/// One source-qualified location establishing a Diagnostic.
+pub(all) struct DiagnosticSourceLocation {
+  source_role : String
+  source_span : ReportSourceSpan
 } derive(ToJson)
 
 ///|
@@ -373,7 +380,139 @@ pub(all) struct Diagnostic {
   code : String
   subject_id : String
   affected_evidence_layers : Array[String]
+  source_locations : Array[DiagnosticSourceLocation]
 } derive(ToJson)
+
+///|
+fn diagnostic_location(
+  source_role : String,
+  span : ReportSourceSpan,
+) -> DiagnosticSourceLocation {
+  { source_role, source_span: span }
+}
+
+///|
+fn diagnostic_location_from_xml(
+  source_role : String,
+  span : @xml.SourceSpan,
+) -> DiagnosticSourceLocation {
+  diagnostic_location(source_role, {
+    start_offset: span.start.offset,
+    end_offset: span.end.offset,
+  })
+}
+
+///|
+fn unlocated_diagnostic(
+  id : String,
+  code : String,
+  subject_id : String,
+  affected_evidence_layers : Array[String],
+) -> Diagnostic {
+  { id, code, subject_id, affected_evidence_layers, source_locations: [] }
+}
+
+///|
+fn located_diagnostic(
+  id : String,
+  code : String,
+  subject_id : String,
+  affected_evidence_layers : Array[String],
+  source_role : String,
+  span : @xml.SourceSpan,
+) -> Diagnostic {
+  {
+    id,
+    code,
+    subject_id,
+    affected_evidence_layers,
+    source_locations: [diagnostic_location_from_xml(source_role, span)],
+  }
+}
+
+///|
+fn same_diagnostic_location(
+  left : DiagnosticSourceLocation,
+  right : DiagnosticSourceLocation,
+) -> Bool {
+  left.source_role == right.source_role &&
+  left.source_span.start_offset == right.source_span.start_offset &&
+  left.source_span.end_offset == right.source_span.end_offset
+}
+
+///|
+fn merge_diagnostic_into(
+  diagnostics : Array[Diagnostic],
+  diagnostic : Diagnostic,
+) -> Unit {
+  let mut index = 0
+  while index < diagnostics.length() {
+    if diagnostics[index].id == diagnostic.id {
+      for location in diagnostic.source_locations {
+        if !diagnostics[index].source_locations.any(current => {
+            same_diagnostic_location(current, location)
+          }) {
+          diagnostics[index].source_locations.push(location)
+        }
+      }
+      return
+    }
+    index += 1
+  }
+  diagnostics.push(diagnostic)
+}
+
+///|
+fn element_diagnostic_locations(
+  input : String,
+  source_role : String,
+  local_name : String,
+) -> Array[DiagnosticSourceLocation] {
+  let locations : Array[DiagnosticSourceLocation] = []
+  let reader = @xml.NamespaceReader::from_string(input)
+  let events = reader.read_events_until_eof() catch { _ => return locations }
+  for event in events {
+    match event.kind {
+      Start(element) | Empty(element) if element.name.local_name == local_name =>
+        locations.push(diagnostic_location_from_xml(source_role, event.span))
+      _ => ()
+    }
+  }
+  locations
+}
+
+///|
+fn attach_diagnostic_fact_locations(
+  report : StructuredReport,
+) -> StructuredReport {
+  for diagnostic in report.diagnostics {
+    if !diagnostic.source_locations.is_empty() {
+      continue
+    }
+    for difference in report.atomic_differences {
+      if !difference.computed_relation.diagnostic_ids.contains(diagnostic.id) {
+        continue
+      }
+      match difference.source_fact_before {
+        Some(fact) =>
+          merge_diagnostic_into(report.diagnostics, {
+            ..diagnostic,
+            source_locations: [diagnostic_location("before", fact.source_span)],
+          })
+        None => ()
+      }
+      match difference.source_fact_after {
+        Some(fact) =>
+          merge_diagnostic_into(report.diagnostics, {
+            ..diagnostic,
+            source_locations: [diagnostic_location("after", fact.source_span)],
+          })
+        None => ()
+      }
+    }
+  }
+  report
+}
 
 ///|
 /// Coverage of one encountered feature at each canonical evidence layer.
@@ -401,7 +540,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.0` result of one SVG comparison.
+/// Complete schema `1.2` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -420,13 +559,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.0` JSON.
+/// Serialize this report as indented schema `1.2` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.0` JSON.
+/// Serialize this report as whitespace-free schema `1.2` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -440,7 +579,7 @@ pub fn StructuredReport::to_compact_json_string(
 priv enum SourcePreflight {
   SourceCovered
   SourcePartial(Array[Diagnostic])
-  SourceFailed
+  SourceFailed(Diagnostic)
 }
 
 ///|
@@ -670,10 +809,13 @@ fn identity_view_box(value : String, profile : ComparisonProfile) -> Bool {
 fn preflight_source_or_raise(
   input : String,
   profile : ComparisonProfile,
+  source_role : String,
 ) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
   let paint_server_ids : Array[String] = []
-  let paint_server_references : Array[(String, String, String)] = []
+  let paint_server_references : Array[
+    (String, String, String, ReportSourceSpan),
+  ] = []
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -681,84 +823,97 @@ fn preflight_source_or_raise(
         let kind = element.name.local_name
         if !known_source_element(kind) {
           let id = "diagnostic:unsupported-visual-subject:\{kind}"
-          if !diagnostics.any(diagnostic => diagnostic.id == id) {
-            diagnostics.push({
+          merge_diagnostic_into(
+            diagnostics,
+            located_diagnostic(
               id,
-              code: "unsupported_visual_subject",
-              subject_id: kind,
-              affected_evidence_layers: [
-                "computed_appearance", "rendered_evidence",
-              ],
-            })
-          }
+              "unsupported_visual_subject",
+              kind,
+              ["computed_appearance", "rendered_evidence"],
+              source_role,
+              event.span,
+            ),
+          )
         } else {
-          let presentation_properties : Array[String] = []
-          let unsupported_paint_properties : Array[String] = []
-          let paint_references : Array[(String, String)] = []
-          let fractional_geometry_properties : Array[String] = []
+          let presentation_properties : Array[(String, ReportSourceSpan)] = []
+          let unsupported_paint_properties : Array[(String, ReportSourceSpan)] = []
+          let paint_references : Array[(String, String, ReportSourceSpan)] = []
+          let fractional_geometry_properties : Array[(String, ReportSourceSpan)] = []
           let mut style_attribute : @xml.NamespaceAttribute? = None
           let mut subject_id = kind
-          let mut has_group_opacity = false
-          let mut has_fractional_leaf_opacity = false
-          let mut view_box_value : String? = None
+          let group_opacity_spans : Array[ReportSourceSpan] = []
+          let fractional_leaf_opacity_spans : Array[ReportSourceSpan] = []
+          let mut view_box_attribute : @xml.NamespaceAttribute? = None
           for attribute in element.attributes {
             let name = attribute.name.local_name
+            let attribute_span = {
+              start_offset: attribute.span.start.offset,
+              end_offset: attribute.span.end.offset,
+            }
             if name == "id" && attribute.value.trim() != "" {
               subject_id = attribute.value.trim().to_owned()
             } else if name == "style" {
               style_attribute = Some(attribute)
             } else if supported_rect_property(name) {
-              presentation_properties.push(name)
+              presentation_properties.push((name, attribute_span))
             }
             if unsupported_paint_value(name, attribute.value) {
-              unsupported_paint_properties.push(name)
+              unsupported_paint_properties.push((name, attribute_span))
             }
             match paint_server_reference(attribute.value) {
               Some(id) if name == "fill" || name == "stroke" =>
-                paint_references.push((name, id))
+                paint_references.push((name, id, attribute_span))
               _ => ()
             }
             if (kind == "svg" || kind == "g") && name == "opacity" {
-              has_group_opacity = true
+              group_opacity_spans.push(attribute_span)
             }
             if geometry_source_property(kind, name) &&
               contains_fractional_number(attribute.value) {
-              fractional_geometry_properties.push(name)
+              fractional_geometry_properties.push((name, attribute_span))
             }
             if kind != "svg" &&
               kind != "g" &&
               name == "opacity" &&
               contains_fractional_number(attribute.value) {
-              has_fractional_leaf_opacity = true
+              fractional_leaf_opacity_spans.push(attribute_span)
             }
             if kind == "svg" && name == "viewBox" {
-              view_box_value = Some(attribute.value)
+              view_box_attribute = Some(attribute)
             }
             if !known_source_attribute(kind, name) {
               let id = "diagnostic:unsupported-visual-attribute:\{kind}:\{name}"
-              if !diagnostics.any(diagnostic => diagnostic.id == id) {
-                diagnostics.push({
+              merge_diagnostic_into(
+                diagnostics,
+                located_diagnostic(
                   id,
-                  code: "unsupported_visual_attribute",
-                  subject_id: kind,
-                  affected_evidence_layers: [
+                  "unsupported_visual_attribute",
+                  kind,
+                  [
                     "source_semantics", "computed_appearance", "rendered_evidence",
                   ],
-                })
-              }
+                  source_role,
+                  attribute.span,
+                ),
+              )
             }
           }
-          match view_box_value {
-            Some(value) if !identity_view_box(value, profile) => {
+          match view_box_attribute {
+            Some(attribute) if !identity_view_box(attribute.value, profile) => {
               let id = "diagnostic:viewport-semantics-unsupported:viewBox"
-              diagnostics.push({
-                id,
-                code: "viewport_semantics_unsupported",
-                subject_id: "svg",
-                affected_evidence_layers: [
-                  "source_semantics", "computed_appearance", "rendered_evidence",
-                ],
-              })
+              merge_diagnostic_into(
+                diagnostics,
+                located_diagnostic(
+                  id,
+                  "viewport_semantics_unsupported",
+                  "svg",
+                  [
+                    "source_semantics", "computed_appearance", "rendered_evidence",
+                  ],
+                  source_role,
+                  attribute.span,
+                ),
+              )
             }
             _ => ()
           }
@@ -766,43 +921,53 @@ fn preflight_source_or_raise(
             paint_server_ids.push(subject_id)
           }
           for reference in paint_references {
-            let (property, id) = reference
-            paint_server_references.push((subject_id, property, id))
+            let (property, id, span) = reference
+            paint_server_references.push((subject_id, property, id, span))
           }
-          if has_group_opacity {
-            diagnostics.push({
-              id: "diagnostic:group-opacity-compositing-unsupported:\{subject_id}",
-              code: "group_opacity_compositing_unsupported",
-              subject_id,
-              affected_evidence_layers: [
-                "source_semantics", "computed_appearance", "rendered_evidence",
-              ],
+          for span in group_opacity_spans {
+            merge_diagnostic_into(diagnostics, {
+              ..unlocated_diagnostic(
+                "diagnostic:group-opacity-compositing-unsupported:\{subject_id}",
+                "group_opacity_compositing_unsupported",
+                subject_id,
+                ["source_semantics", "computed_appearance", "rendered_evidence"],
+              ),
+              source_locations: [diagnostic_location(source_role, span)],
             })
           }
-          for property in fractional_geometry_properties {
-            diagnostics.push({
-              id: "diagnostic:renderer-fractional-geometry-unproven:\{subject_id}:\{property}",
-              code: "renderer_fractional_geometry_unproven",
-              subject_id,
-              affected_evidence_layers: ["rendered_evidence"],
+          for property_and_span in fractional_geometry_properties {
+            let (property, span) = property_and_span
+            merge_diagnostic_into(diagnostics, {
+              ..unlocated_diagnostic(
+                "diagnostic:renderer-fractional-geometry-unproven:\{subject_id}:\{property}",
+                "renderer_fractional_geometry_unproven",
+                subject_id,
+                ["rendered_evidence"],
+              ),
+              source_locations: [diagnostic_location(source_role, span)],
             })
           }
-          if has_fractional_leaf_opacity {
-            diagnostics.push({
-              id: "diagnostic:renderer-fractional-opacity-unproven:\{subject_id}",
-              code: "renderer_fractional_opacity_unproven",
-              subject_id,
-              affected_evidence_layers: ["rendered_evidence"],
+          for span in fractional_leaf_opacity_spans {
+            merge_diagnostic_into(diagnostics, {
+              ..unlocated_diagnostic(
+                "diagnostic:renderer-fractional-opacity-unproven:\{subject_id}",
+                "renderer_fractional_opacity_unproven",
+                subject_id,
+                ["rendered_evidence"],
+              ),
+              source_locations: [diagnostic_location(source_role, span)],
             })
           }
-          for property in unsupported_paint_properties {
-            diagnostics.push({
-              id: "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}",
-              code: "paint_value_semantics_unsupported",
-              subject_id,
-              affected_evidence_layers: [
-                "computed_appearance", "rendered_evidence",
-              ],
+          for property_and_span in unsupported_paint_properties {
+            let (property, span) = property_and_span
+            merge_diagnostic_into(diagnostics, {
+              ..unlocated_diagnostic(
+                "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}",
+                "paint_value_semantics_unsupported",
+                subject_id,
+                ["computed_appearance", "rendered_evidence"],
+              ),
+              source_locations: [diagnostic_location(source_role, span)],
             })
           }
           match style_attribute {
@@ -811,73 +976,88 @@ fn preflight_source_or_raise(
               for fact in style.facts {
                 if (kind == "svg" || kind == "g") && fact.property == "opacity" {
                   let id = "diagnostic:group-opacity-compositing-unsupported:\{subject_id}"
-                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
-                    diagnostics.push({
+                  merge_diagnostic_into(diagnostics, {
+                    ..unlocated_diagnostic(
                       id,
-                      code: "group_opacity_compositing_unsupported",
+                      "group_opacity_compositing_unsupported",
                       subject_id,
-                      affected_evidence_layers: [
+                      [
                         "source_semantics", "computed_appearance", "rendered_evidence",
                       ],
-                    })
-                  }
+                    ),
+                    source_locations: [
+                      diagnostic_location(source_role, fact.source_span),
+                    ],
+                  })
                 }
                 if geometry_source_property(kind, fact.property) &&
                   contains_fractional_number(fact.declared_value) {
                   let id = "diagnostic:renderer-fractional-geometry-unproven:\{subject_id}:\{fact.property}"
-                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
-                    diagnostics.push({
+                  merge_diagnostic_into(diagnostics, {
+                    ..unlocated_diagnostic(
                       id,
-                      code: "renderer_fractional_geometry_unproven",
+                      "renderer_fractional_geometry_unproven",
                       subject_id,
-                      affected_evidence_layers: ["rendered_evidence"],
-                    })
-                  }
+                      ["rendered_evidence"],
+                    ),
+                    source_locations: [
+                      diagnostic_location(source_role, fact.source_span),
+                    ],
+                  })
                 }
                 if kind != "svg" &&
                   kind != "g" &&
                   fact.property == "opacity" &&
                   contains_fractional_number(fact.declared_value) {
                   let id = "diagnostic:renderer-fractional-opacity-unproven:\{subject_id}"
-                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
-                    diagnostics.push({
+                  merge_diagnostic_into(diagnostics, {
+                    ..unlocated_diagnostic(
                       id,
-                      code: "renderer_fractional_opacity_unproven",
+                      "renderer_fractional_opacity_unproven",
                       subject_id,
-                      affected_evidence_layers: ["rendered_evidence"],
-                    })
-                  }
+                      ["rendered_evidence"],
+                    ),
+                    source_locations: [
+                      diagnostic_location(source_role, fact.source_span),
+                    ],
+                  })
                 }
                 if unsupported_paint_value(fact.property, fact.declared_value) {
                   let id = "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{fact.property}"
-                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
-                    diagnostics.push({
+                  merge_diagnostic_into(diagnostics, {
+                    ..unlocated_diagnostic(
                       id,
-                      code: "paint_value_semantics_unsupported",
+                      "paint_value_semantics_unsupported",
                       subject_id,
-                      affected_evidence_layers: [
-                        "computed_appearance", "rendered_evidence",
-                      ],
-                    })
-                  }
+                      ["computed_appearance", "rendered_evidence"],
+                    ),
+                    source_locations: [
+                      diagnostic_location(source_role, fact.source_span),
+                    ],
+                  })
                 }
                 match paint_server_reference(fact.declared_value) {
                   Some(id) if fact.property == "fill" ||
                     fact.property == "stroke" =>
                     paint_server_references.push(
-                      (subject_id, fact.property, id),
+                      (subject_id, fact.property, id, fact.source_span),
                     )
                   _ => ()
                 }
-                if presentation_properties.contains(fact.property) {
-                  let id = "diagnostic:renderer-style-precedence-unresolved:\{subject_id}:\{fact.property}"
-                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
-                    diagnostics.push({
-                      id,
-                      code: "renderer_style_precedence_unresolved",
-                      subject_id,
-                      affected_evidence_layers: [
-                        "computed_appearance", "rendered_evidence",
+                for presentation in presentation_properties {
+                  let (property, presentation_span) = presentation
+                  if property == fact.property {
+                    let id = "diagnostic:renderer-style-precedence-unresolved:\{subject_id}:\{fact.property}"
+                    merge_diagnostic_into(diagnostics, {
+                      ..unlocated_diagnostic(
+                        id,
+                        "renderer_style_precedence_unresolved",
+                        subject_id,
+                        ["computed_appearance", "rendered_evidence"],
+                      ),
+                      source_locations: [
+                        diagnostic_location(source_role, presentation_span),
+                        diagnostic_location(source_role, fact.source_span),
                       ],
                     })
                   }
@@ -893,17 +1073,18 @@ fn preflight_source_or_raise(
   }
   let visual_subjects = extract_source_subjects_or_raise(input)
   for reference in paint_server_references {
-    let (subject_id, property, server_id) = reference
+    let (subject_id, property, server_id, span) = reference
     if !paint_server_ids.contains(server_id) {
       let id = "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}"
-      if !diagnostics.any(diagnostic => diagnostic.id == id) {
-        diagnostics.push({
+      merge_diagnostic_into(diagnostics, {
+        ..unlocated_diagnostic(
           id,
-          code: "paint_value_semantics_unsupported",
+          "paint_value_semantics_unsupported",
           subject_id,
-          affected_evidence_layers: ["computed_appearance", "rendered_evidence"],
-        })
-      }
+          ["computed_appearance", "rendered_evidence"],
+        ),
+        source_locations: [diagnostic_location(source_role, span)],
+      })
     } else {
       let proven_gradient_slice = paint_server_ids.length() == 1 &&
         server_id == "gradient" &&
@@ -914,26 +1095,26 @@ fn preflight_source_or_raise(
         visual_subjects[0].reference.authored_id == Some("box")
       if !proven_gradient_slice {
         let id = "diagnostic:paint-server-analysis-unsupported:\{subject_id}:\{property}"
-        if !diagnostics.any(diagnostic => diagnostic.id == id) {
-          diagnostics.push({
+        merge_diagnostic_into(diagnostics, {
+          ..unlocated_diagnostic(
             id,
-            code: "paint_server_analysis_unsupported",
+            "paint_server_analysis_unsupported",
             subject_id,
-            affected_evidence_layers: [
-              "source_semantics", "computed_appearance", "rendered_evidence",
-            ],
-          })
-        }
+            ["source_semantics", "computed_appearance", "rendered_evidence"],
+          ),
+          source_locations: [diagnostic_location(source_role, span)],
+        })
       } else {
         let id = "diagnostic:renderer-gradient-raster-unproven:\{subject_id}:\{property}"
-        if !diagnostics.any(diagnostic => diagnostic.id == id) {
-          diagnostics.push({
+        merge_diagnostic_into(diagnostics, {
+          ..unlocated_diagnostic(
             id,
-            code: "renderer_gradient_raster_unproven",
+            "renderer_gradient_raster_unproven",
             subject_id,
-            affected_evidence_layers: ["rendered_evidence"],
-          })
-        }
+            ["rendered_evidence"],
+          ),
+          source_locations: [diagnostic_location(source_role, span)],
+        })
       }
     }
   }
@@ -944,9 +1125,29 @@ fn preflight_source_or_raise(
 fn preflight_source(
   input : String,
   profile : ComparisonProfile,
+  source_role : String,
 ) -> SourcePreflight {
-  try preflight_source_or_raise(input, profile) catch {
-    _ => SourceFailed
+  try preflight_source_or_raise(input, profile, source_role) catch {
+    @xml.At(error=_, span~) =>
+      SourceFailed(
+        located_diagnostic(
+          "diagnostic:svg-parse-failed:document",
+          "svg_parse_failed",
+          "document",
+          ["source_semantics", "computed_appearance", "rendered_evidence"],
+          source_role,
+          span,
+        ),
+      )
+    _ =>
+      SourceFailed(
+        unlocated_diagnostic(
+          "diagnostic:svg-parse-failed:document",
+          "svg_parse_failed",
+          "document",
+          ["source_semantics", "computed_appearance", "rendered_evidence"],
+        ),
+      )
   } noraise {
     diagnostics =>
       if diagnostics.is_empty() {
@@ -958,10 +1159,13 @@ fn preflight_source(
 }
 
 ///|
-fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
+fn failed_source_report(
+  profile : ComparisonProfile,
+  diagnostics : Array[Diagnostic],
+) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.1",
+    schema_version: "1.2",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -980,16 +1184,7 @@ fn failed_source_report(profile : ComparisonProfile) -> StructuredReport {
     source_resolutions: [],
     atomic_differences: [],
     events: [],
-    diagnostics: [
-      {
-        id: diagnostic_id,
-        code: "svg_parse_failed",
-        subject_id: "document",
-        affected_evidence_layers: [
-          "source_semantics", "computed_appearance", "rendered_evidence",
-        ],
-      },
-    ],
+    diagnostics,
   }
 }
 
@@ -1003,9 +1198,7 @@ fn apply_preflight_diagnostics(
   }
   let combined = report.diagnostics.copy()
   for diagnostic in diagnostics {
-    if !combined.any(current => current.id == diagnostic.id) {
-      combined.push(diagnostic)
-    }
+    merge_diagnostic_into(combined, diagnostic)
   }
   {
     schema_version: report.schema_version,
@@ -1277,7 +1470,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.1",
+        schema_version: "1.2",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1328,6 +1521,10 @@ fn deferred_font_report(
             affected_evidence_layers: [
               "computed_appearance", "rendered_evidence",
             ],
+            source_locations: element_diagnostic_locations(
+              before_svg, "before", "text",
+            ) +
+            element_diagnostic_locations(after_svg, "after", "text"),
           },
         ],
       })
@@ -1353,7 +1550,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.1",
+        schema_version: "1.2",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1403,7 +1600,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.1",
+        schema_version: "1.2",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1507,7 +1704,7 @@ fn gradient_change_report(
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
         Some({
-          schema_version: "1.1",
+          schema_version: "1.2",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1529,7 +1726,7 @@ fn gradient_change_report(
         })
       } else {
         Some({
-          schema_version: "1.1",
+          schema_version: "1.2",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1596,12 +1793,21 @@ pub fn compare(
   let preflight_diagnostics : Array[Diagnostic] = []
   match
     (
-      preflight_source(before_svg, profile),
-      preflight_source(after_svg, profile),
+      preflight_source(before_svg, profile, "before"),
+      preflight_source(after_svg, profile, "after"),
     ) {
-    (SourceFailed, _) | (_, SourceFailed) =>
+    (SourceFailed(before), SourceFailed(after)) => {
+      let diagnostics = [before]
+      merge_diagnostic_into(diagnostics, after)
       return enforce_coverage_proof(
-        failed_source_report(profile),
+        failed_source_report(profile, diagnostics),
+        before_svg,
+        after_svg,
+      )
+    }
+    (SourceFailed(diagnostic), _) | (_, SourceFailed(diagnostic)) =>
+      return enforce_coverage_proof(
+        failed_source_report(profile, [diagnostic]),
         before_svg,
         after_svg,
       )
@@ -1624,13 +1830,17 @@ pub fn compare(
     _ => ""
   }
   if before_gradient_signature != after_gradient_signature {
-    preflight_diagnostics.push({
+    merge_diagnostic_into(preflight_diagnostics, {
       id: "diagnostic:gradient-semantics-unsupported:document",
       code: "gradient_semantics_unsupported",
       subject_id: "document",
       affected_evidence_layers: [
         "source_semantics", "computed_appearance", "rendered_evidence",
       ],
+      source_locations: element_diagnostic_locations(
+        before_svg, "before", "linearGradient",
+      ) +
+      element_diagnostic_locations(after_svg, "after", "linearGradient"),
     })
   }
   let subject_alignments = subject_alignments_for_sources(before_svg, after_svg)
@@ -1689,7 +1899,7 @@ pub fn compare(
         None =>
           finish_report(
             {
-              schema_version: "1.1",
+              schema_version: "1.2",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],
@@ -1707,6 +1917,7 @@ pub fn compare(
                   affected_evidence_layers: [
                     "source_semantics", "computed_appearance", "rendered_evidence",
                   ],
+                  source_locations: [],
                 },
               ],
             },
@@ -1717,6 +1928,14 @@ pub fn compare(
           )
       }
     }
-    _ => failed_source_report(profile)
+    _ =>
+      failed_source_report(profile, [
+        unlocated_diagnostic(
+          "diagnostic:svg-parse-failed:document",
+          "svg_parse_failed",
+          "document",
+          ["source_semantics", "computed_appearance", "rendered_evidence"],
+        ),
+      ])
   }
 }

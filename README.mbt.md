@@ -61,7 +61,7 @@ The root package exposes one comparison operation:
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 ```
 
-The current JSON contract is version `1.1`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.2`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -80,7 +80,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.1")
+  assert_eq(report.schema_version, "1.2")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -119,7 +119,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.1\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.2\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
@@ -137,6 +137,8 @@ The CLI option `--agent-json` emits the same schema and evidence without formatt
 - geometry, fill, stroke, stroke width, opacity, insertion, deletion, and basic structure differences;
 - exact continuous parameter magnitudes, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
+
+Current Diagnostics also emit `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span, and source-anchored limitations merge all applicable locations under one stable Diagnostic ID. An empty array is reserved for comparison-global or derived conditions; legacy reports may omit the optional JSON field.
 
 Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, paths, filters, masks, and deterministic font shaping are not currently evaluated. Unsupported content is never silently treated as equal.
 

@@ -235,14 +235,12 @@ fn enforce_coverage_proof(
   let diagnostics = report.diagnostics.copy()
   let matrix = report.coverage_matrix.copy()
   for failure in failures {
-    let diagnostic = {
-      id: "diagnostic:coverage-proof-incomplete:\{failure}",
-      code: "coverage_proof_incomplete",
-      subject_id: "document",
-      affected_evidence_layers: [
-        "source_semantics", "computed_appearance", "rendered_evidence",
-      ],
-    }
+    let diagnostic = unlocated_diagnostic(
+      "diagnostic:coverage-proof-incomplete:\{failure}",
+      "coverage_proof_incomplete",
+      "document",
+      ["source_semantics", "computed_appearance", "rendered_evidence"],
+    )
     diagnostics.push(diagnostic)
     add_guard_coverage(matrix, diagnostic)
   }

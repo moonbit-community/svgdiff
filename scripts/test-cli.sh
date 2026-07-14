@@ -22,12 +22,12 @@ assert_status() {
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
-jq -e '.schema_version == "1.1" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
+jq -e '.schema_version == "1.2" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
 test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.1" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
+jq -e '.schema_version == "1.2" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/1" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
 test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
 test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
 
@@ -49,6 +49,13 @@ jq -e '
     "#/$defs/rendererCapabilityGap") and
   (.required | index("renderer_capability_gaps") == null)
 ' schema/svgdiff-report.schema.json >/dev/null
+jq -e '
+  (."$defs".diagnostic.properties.source_locations.items."$ref" ==
+    "#/$defs/diagnosticSourceLocation") and
+  (."$defs".diagnostic.required | index("source_locations") == null) and
+  (."$defs".diagnosticSourceLocation.properties.source_role.enum ==
+    ["before", "after"])
+' schema/svgdiff-report.schema.json >/dev/null
 
 printf '%s\n' "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='red' stroke='red' style='fill:blue;stroke:blue'/></svg>" >"$tmp/renderer-gap.svg"
 moon run --target native cmd/svgdiff -- \
@@ -68,11 +75,11 @@ jq -e '
 
 cat testdata/before.svg | moon run --target native cmd/svgdiff -- - testdata/after.svg >"$tmp/stdin-before.json" 2>"$tmp/stdin-before.err"
 test ! -s "$tmp/stdin-before.err"
-jq -e '.schema_version == "1.1" and .analysis_status == "complete"' "$tmp/stdin-before.json" >/dev/null
+jq -e '.schema_version == "1.2" and .analysis_status == "complete"' "$tmp/stdin-before.json" >/dev/null
 
 cat testdata/after.svg | moon run --target native cmd/svgdiff -- testdata/before.svg - >"$tmp/stdin-after.json" 2>"$tmp/stdin-after.err"
 test ! -s "$tmp/stdin-after.err"
-jq -e '.schema_version == "1.1" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
+jq -e '.schema_version == "1.2" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
 
 assert_status 0 moon run --target native cmd/svgdiff -- \
   evaluation/corpus/cases/unsupported-path-change/before.svg \
@@ -81,6 +88,16 @@ assert_status 0 moon run --target native cmd/svgdiff -- \
 jq -e '.analysis_status == "partial" and (.diagnostics | length) > 0' "$tmp/partial.json" >/dev/null
 jq -e '.renderer_capability_gaps == []' "$tmp/partial.json" >/dev/null
 jq -e 'any(.coverage_matrix[]; .computed_appearance == "limited" or .rendered_evidence == "limited")' "$tmp/partial.json" >/dev/null
+jq -e '
+  any(.diagnostics[];
+    .code == "unsupported_visual_subject" and
+    [.source_locations[].source_role] == ["before", "after"] and
+    all(.source_locations[];
+      .source_span.start_offset >= 0 and
+      .source_span.end_offset > .source_span.start_offset
+    )
+  )
+' "$tmp/partial.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
 grep -q '^Usage: svgdiff ' "$tmp/help.txt"
@@ -88,9 +105,9 @@ grep -q -- '--version' "$tmp/help.txt"
 grep -q 'Invalid arguments or file I/O failure' "$tmp/help.txt"
 
 moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.2.0$' "$tmp/version.txt"
-grep -q '^engine: 0.2.0$' "$tmp/version.txt"
-grep -q '^schema: 1.1$' "$tmp/version.txt"
+grep -q '^svgdiff 0.3.0$' "$tmp/version.txt"
+grep -q '^engine: 0.3.0$' "$tmp/version.txt"
+grep -q '^schema: 1.2$' "$tmp/version.txt"
 grep -q '^renderer: mizchi/svg@0.2.1$' "$tmp/version.txt"
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/1$' "$tmp/version.txt"
 grep -q '^ordering-policy: v1_domain_lexicographic$' "$tmp/version.txt"
@@ -115,5 +132,19 @@ printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
 assert_status 1 moon run --target native cmd/svgdiff -- "$tmp/malformed.svg" testdata/after.svg >"$tmp/failed.json" 2>"$tmp/failed.err"
 test ! -s "$tmp/failed.err"
 jq -e '.analysis_status == "failed" and (.diagnostics | length) > 0' "$tmp/failed.json" >/dev/null
+jq -e '
+  .diagnostics == [{
+    "id": "diagnostic:svg-parse-failed:document",
+    "code": "svg_parse_failed",
+    "subject_id": "document",
+    "affected_evidence_layers": [
+      "source_semantics", "computed_appearance", "rendered_evidence"
+    ],
+    "source_locations": [{
+      "source_role": "before",
+      "source_span": {"start_offset": 11, "end_offset": 16}
+    }]
+  }]
+' "$tmp/failed.json" >/dev/null
 jq -e '.renderer_capability_gaps == []' "$tmp/failed.json" >/dev/null
 jq -e 'all(.coverage_matrix[]; .source_semantics == "failed" and .computed_appearance == "failed" and .rendered_evidence == "failed")' "$tmp/failed.json" >/dev/null

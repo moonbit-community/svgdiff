@@ -86,6 +86,12 @@ pub(all) struct Diagnostic {
   code : String
   subject_id : String
   affected_evidence_layers : Array[String]
+  source_locations : Array[DiagnosticSourceLocation]
+} derive(ToJson)
+
+pub(all) struct DiagnosticSourceLocation {
+  source_role : String
+  source_span : ReportSourceSpan
 } derive(ToJson)
 
 pub(all) struct DifferenceMagnitude {

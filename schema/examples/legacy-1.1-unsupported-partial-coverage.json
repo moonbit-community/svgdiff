@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.1",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -55,8 +55,7 @@
         "source_semantics",
         "computed_appearance",
         "rendered_evidence"
-      ],
-      "source_locations": []
+      ]
     },
     {
       "id": "diagnostic:unsupported-visual-subject:path",
@@ -65,22 +64,6 @@
       "affected_evidence_layers": [
         "computed_appearance",
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "before",
-          "source_span": {
-            "start_offset": 86,
-            "end_offset": 163
-          }
-        },
-        {
-          "source_role": "after",
-          "source_span": {
-            "start_offset": 86,
-            "end_offset": 163
-          }
-        }
       ]
     }
   ]

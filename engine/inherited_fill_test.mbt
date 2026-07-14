@@ -72,6 +72,14 @@ test "one ancestor changed fact identifies every affected rect" {
   let subjects = [ for event in report.events => event.primary_subject_id ]
   subjects.sort()
   assert_eq(subjects, ["a", "b"])
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "computed_fill_value_semantics_deferred" &&
+      diagnostic.source_locations.length() == 2 &&
+      diagnostic.source_locations[0].source_role == "before" &&
+      diagnostic.source_locations[1].source_role == "after"
+    }),
+  )
 }
 
 ///|
@@ -99,7 +107,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.1",
+      "schema_version": "1.2",
       "source_resolutions": [
         {
           "subject_id": "box",

@@ -276,6 +276,54 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
             )
 
 
+def assert_diagnostic_locations(case: dict[str, Any], report: dict[str, Any]) -> None:
+    sources = {
+        "before": checked_path(case["before"]).read_text(encoding="utf-8"),
+        "after": checked_path(case["after"]).read_text(encoding="utf-8"),
+    }
+    required_locations = {
+        "unsupported_visual_subject",
+        "renderer_fractional_geometry_unproven",
+        "renderer_gradient_raster_unproven",
+    }
+    for index, diagnostic in enumerate(report["diagnostics"]):
+        locations = diagnostic.get("source_locations")
+        if not isinstance(locations, list):
+            raise ValueError(
+                f"{case['id']}: Diagnostic {index} has no current source_locations"
+            )
+        if diagnostic["code"] in required_locations and not locations:
+            raise ValueError(
+                f"{case['id']}: {diagnostic['code']} lost its source location"
+            )
+        keys = []
+        for location in locations:
+            role = location.get("source_role")
+            span = location.get("source_span")
+            if role not in sources or not isinstance(span, dict):
+                raise ValueError(
+                    f"{case['id']}: Diagnostic {index} has an invalid source role"
+                )
+            start = span.get("start_offset")
+            end = span.get("end_offset")
+            source_length = len(sources[role].encode("utf-16-le")) // 2
+            if (
+                type(start) is not int
+                or type(end) is not int
+                or start < 0
+                or end < start
+                or end > source_length
+            ):
+                raise ValueError(
+                    f"{case['id']}: Diagnostic {index} has an invalid UTF-16 span"
+                )
+            keys.append((role, start, end))
+        if len(keys) != len(set(keys)):
+            raise ValueError(
+                f"{case['id']}: Diagnostic {index} repeats a source location"
+            )
+
+
 def checked_path(relative_path: str) -> Path:
     path = (ROOT / relative_path).resolve()
     if ROOT not in path.parents:
@@ -331,6 +379,7 @@ def main() -> None:
         assert_coverage_summary(case, report)
         assert_raw_magnitude_authority(case, report)
         assert_alignment_evidence(case, report)
+        assert_diagnostic_locations(case, report)
         output = checked_path(case["output"])
         if args.update:
             output.parent.mkdir(parents=True, exist_ok=True)
@@ -359,6 +408,22 @@ def main() -> None:
     ]
     expect_schema_rejection(
         incomplete_alignment_evidence, schema, "incomplete alignment evidence"
+    )
+    invalid_diagnostic_role = copy.deepcopy(reports["tiny-numeric-geometry"])
+    invalid_diagnostic_role["diagnostics"][0]["source_locations"][0][
+        "source_role"
+    ] = "left"
+    expect_schema_rejection(
+        invalid_diagnostic_role, schema, "invalid Diagnostic source role"
+    )
+    incomplete_diagnostic_location = copy.deepcopy(
+        reports["tiny-numeric-geometry"]
+    )
+    del incomplete_diagnostic_location["diagnostics"][0]["source_locations"][0][
+        "source_span"
+    ]
+    expect_schema_rejection(
+        incomplete_diagnostic_location, schema, "incomplete Diagnostic location"
     )
 
     action = "updated" if args.update else "validated"

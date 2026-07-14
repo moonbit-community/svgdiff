@@ -125,7 +125,9 @@ fn add_diagnostic(
     }
   }
   let id = "diagnostic:\{code}:\{subject_id}"
-  diagnostics.push({ id, code, subject_id, affected_evidence_layers })
+  diagnostics.push(
+    unlocated_diagnostic(id, code, subject_id, affected_evidence_layers),
+  )
   id
 }
 
@@ -144,7 +146,7 @@ fn rect_coverage_report(
   let subject_id = "rect:0"
   let diagnostic_id = "diagnostic:\{code}:\{subject_id}"
   {
-    schema_version: "1.1",
+    schema_version: "1.2",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],
@@ -162,6 +164,7 @@ fn rect_coverage_report(
         affected_evidence_layers: [
           "source_semantics", "computed_appearance", "rendered_evidence",
         ],
+        source_locations: [],
       },
     ],
   }
@@ -288,7 +291,7 @@ fn compare_rect_declared_facts(
     })
   }
   {
-    schema_version: "1.1",
+    schema_version: "1.2",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

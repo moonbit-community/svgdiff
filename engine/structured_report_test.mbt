@@ -335,7 +335,7 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.1",
+      "schema_version": "1.2",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -419,7 +419,7 @@ test "compact JSON preserves the complete structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "1.1",
+      "schema_version": "1.2",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -458,7 +458,7 @@ test "unsupported visual subjects cannot produce complete equality" {
 ///|
 test "parse failure is diagnosed" {
   let report = @engine.compare(
-    "<svg><rect></svg>",
+    "<svg>😀<rect></svg>",
     "<svg><rect/></svg>",
     @engine.ComparisonProfile::v1_default(),
   )
@@ -466,4 +466,91 @@ test "parse failure is diagnosed" {
   assert_true(
     report.diagnostics.any(diagnostic => diagnostic.code == "svg_parse_failed"),
   )
+}
+
+///|
+test "malformed inputs retain parser spans for both source roles" {
+  let report = @engine.compare(
+    "<svg>😀<rect></svg>",
+    "<svg><circle></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "failed")
+  assert_eq(report.diagnostics.length(), 1)
+  let locations = report.diagnostics[0].source_locations
+  assert_eq(locations.length(), 2)
+  assert_eq(locations[0].source_role, "before")
+  assert_eq(locations[0].source_span.start_offset, 13)
+  assert_eq(locations[0].source_span.end_offset, 18)
+  assert_eq(locations[1].source_role, "after")
+  assert_eq(locations[1].source_span.start_offset, 13)
+  assert_eq(locations[1].source_span.end_offset, 18)
+}
+
+///|
+test "limited diagnostics merge narrow locations across both sources" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><path id='shape' d='M0 0 L1 1'/></svg>",
+    "<svg width='16' height='16'><path id='shape' d='M0 0 L2 2'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let mut found : @engine.Diagnostic? = None
+  for diagnostic in report.diagnostics {
+    if diagnostic.code == "unsupported_visual_subject" {
+      found = Some(diagnostic)
+    }
+  }
+  match found {
+    Some(diagnostic) => {
+      assert_eq(diagnostic.source_locations.length(), 2)
+      assert_eq(diagnostic.source_locations[0].source_role, "before")
+      assert_eq(diagnostic.source_locations[0].source_span.start_offset, 28)
+      assert_eq(diagnostic.source_locations[0].source_span.end_offset, 60)
+      assert_eq(diagnostic.source_locations[1].source_role, "after")
+      assert_eq(diagnostic.source_locations[1].source_span.start_offset, 28)
+      assert_eq(diagnostic.source_locations[1].source_span.end_offset, 60)
+    }
+    None => fail("expected unsupported path Diagnostic")
+  }
+}
+
+///|
+test "attribute, value, and renderer guards retain declaration locations" {
+  let before = "<svg width='16' height='16'><rect id='box' x='1.5' filter='url(#f)' fill='red' style='fill:blue'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='box' x='2.5' filter='url(#f)' fill='red' style='fill:green'/></svg>"
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let expectations = [
+    ("unsupported_visual_attribute", 2),
+    ("renderer_fractional_geometry_unproven", 2),
+    ("renderer_style_precedence_unresolved", 4),
+  ]
+  for expectation in expectations {
+    let (code, expected_locations) = expectation
+    let mut found : @engine.Diagnostic? = None
+    for diagnostic in report.diagnostics {
+      if diagnostic.code == code {
+        found = Some(diagnostic)
+      }
+    }
+    match found {
+      Some(diagnostic) => {
+        assert_eq(diagnostic.source_locations.length(), expected_locations)
+        assert_true(
+          diagnostic.source_locations.any(location => {
+            location.source_role == "before"
+          }),
+        )
+        assert_true(
+          diagnostic.source_locations.any(location => {
+            location.source_role == "after"
+          }),
+        )
+      }
+      None => fail("expected located Diagnostic \{code}")
+    }
+  }
 }

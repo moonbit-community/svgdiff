@@ -43,6 +43,14 @@
       "packaged_license_file": false
     },
     {
+      "name": "moonbitlang/quickcheck",
+      "version": "0.14.0",
+      "relationship": "direct",
+      "repository": "https://github.com/moonbitlang/quickcheck",
+      "license": "Apache-2.0",
+      "packaged_license_file": true
+    },
+    {
       "name": "mizchi/image",
       "version": "0.1.2",
       "relationship": "transitive through mizchi/pixelmatch",

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -310,6 +310,15 @@
       "subject_id": "box",
       "affected_evidence_layers": [
         "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 101,
+            "end_offset": 112
+          }
+        }
       ]
     }
   ]

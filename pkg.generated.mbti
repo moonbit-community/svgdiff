@@ -31,6 +31,8 @@ pub using @engine {type DeclaredVisualFact}
 
 pub using @engine {type Diagnostic}
 
+pub using @engine {type DiagnosticSourceLocation}
+
 pub using @engine {type DifferenceMagnitude}
 
 pub using @engine {type DifferenceRegion}

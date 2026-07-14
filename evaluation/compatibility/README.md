@@ -10,20 +10,22 @@ Last verified: 2026-07-14
 
 This corpus generates one real current report through the production CLI and applies versioned, reviewable mutations to its schema and ordering identities. Run `sh scripts/test-compatibility.sh`; every case is consumer-classified and validated against the [released Schema registry](../../schema/registry.v1.json) twice, and the versioned results must be byte-identical.
 
-The current policy accepts schemas `1.0` and `1.1` with `v1_domain_lexicographic`. Current producers emit `1.1` with alignment evidence. The explicit legacy migration case changes a real current report to `1.0` and removes that additive evidence, proving that the archived Schema remains readable. The policy also accepts reports that omit historical optional coverage, renderer-conformance-profile, and renderer-capability fields, and safely ignores an unknown additive top-level field under a recognized identity. It rejects unknown schema versions before interpreting report fields and rejects unknown ordering policies before using their component vectors.
+The current policy accepts schemas `1.0`, `1.1`, and `1.2` with `v1_domain_lexicographic`. Current producers emit `1.2` with alignment evidence and Diagnostic source locations. Explicit legacy migration cases remove fields introduced after each identity and prove that the archived Schemas remain readable. The policy also accepts a current `1.2` report that omits optional Diagnostic locations with the explicit meaning “not reported,” reports that omit historical optional coverage, renderer-conformance-profile, and renderer-capability fields, and an unknown additive top-level field under a recognized identity. It rejects unknown schema versions before interpreting report fields and rejects unknown ordering policies before using their component vectors.
 
-The registry retains Schema `1.0` as legacy and names Schema `1.1` as current. Each entry names its checked-in Schema, accepted ordering policy, canonical-example manifest, and migration cases. The shared project validator audits the complete assertion vocabulary used by both Schemas and rejects unknown future keywords. It is not advertised as a general-purpose JSON Schema implementation.
+The registry retains Schemas `1.0` and `1.1` as legacy and names Schema `1.2` as current. Each entry names its checked-in Schema, accepted ordering policy, canonical-example manifest, and migration cases. The shared project validator audits the complete assertion vocabulary used by every Schema and rejects unknown future keywords. It is not advertised as a general-purpose JSON Schema implementation.
 
-No schema `2.0` or ordering policy v2 migration is implemented; those values are deliberately unknown test inputs. An unknown declared Schema must fail every released Schema, and an unknown ordering policy under `1.1` must fail the current policy constraint before ranking.
+No schema `2.0` or ordering policy v2 migration is implemented; those values are deliberately unknown test inputs. An unknown declared Schema must fail every released Schema, and an unknown ordering policy under `1.2` must fail the current policy constraint before ranking.
 
 ## Cases
 
 | Case | Consumer decision | Schema validation |
 | --- | --- | --- |
-| Current schema and policy | Accept as current. | Valid `1.1`. |
-| Legacy schema without alignment evidence | Accept through the registered legacy migration. | Valid `1.0`. |
-| Optional alignment evidence absent | Accept with uncertainty evidence unreported. | Valid `1.1`. |
-| Legacy optional fields absent | Accept with explicit legacy handling. | Valid `1.1`. |
-| Unknown additive top-level field under declared `1.1` | Accept while ignoring the unknown field. | Valid `1.1`. |
+| Current schema and policy | Accept as current. | Valid `1.2`. |
+| Legacy `1.0` without alignment or Diagnostic-location evidence | Accept through the registered legacy migration. | Valid `1.0`. |
+| Legacy `1.1` without Diagnostic-location evidence | Accept through the registered legacy migration. | Valid `1.1`. |
+| Optional alignment evidence absent | Accept with uncertainty evidence unreported. | Valid `1.2`. |
+| Optional Diagnostic source locations absent | Accept with locations unreported. | Valid `1.2`. |
+| Legacy optional fields absent | Accept with explicit legacy handling. | Valid `1.2`. |
+| Unknown additive top-level field under declared `1.2` | Accept while ignoring the unknown field. | Valid `1.2`. |
 | Unknown schema version | Reject before interpretation. | Invalid under every released Schema. |
-| Unknown ordering policy | Reject before ranking. | Invalid `1.1`. |
+| Unknown ordering policy | Reject before ranking. | Invalid `1.2`. |
