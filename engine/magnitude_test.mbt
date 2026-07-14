@@ -57,6 +57,25 @@ test "same-domain differences are ordered by descending magnitude" {
 }
 
 ///|
+test "equal same-domain tuples use stable report-local IDs" {
+  let before = "<svg width='20' height='20'><rect id='z' x='1' y='1' width='2' height='2'/><rect id='a' x='10' y='10' width='2' height='2'/></svg>"
+  let after = "<svg width='20' height='20'><rect id='z' x='2' y='1' width='2' height='2'/><rect id='a' x='11' y='10' width='2' height='2'/></svg>"
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.atomic_differences.length(), 2)
+  assert_eq(
+    report.atomic_differences[0].domain_ordering.components,
+    report.atomic_differences[1].domain_ordering.components,
+  )
+  assert_true(
+    report.atomic_differences[0].id.compare(report.atomic_differences[1].id) < 0,
+  )
+}
+
+///|
 test "generic shape insertion and deletion expose numeric presence magnitude" {
   let base = "<svg width='16' height='16'><rect id='anchor' x='0' y='0' width='1' height='1'/></svg>"
   let with_circle = "<svg width='16' height='16'><rect id='anchor' x='0' y='0' width='1' height='1'/><circle id='dot' cx='8' cy='8' r='2' fill='red'/></svg>"

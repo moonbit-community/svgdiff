@@ -132,7 +132,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 
 Unavailable components are `null`, not numeric zero. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists.
 
-`DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within a domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit.
+`DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v1 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
 ### Difference Region
 

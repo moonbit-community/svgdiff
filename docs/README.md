@@ -26,6 +26,7 @@ This directory separates the current product contract from future plans and hist
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
 | Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
+| How are same-domain differences ordered? | [`domain-ordering.md`](domain-ordering.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
 | Which compatibility change increments which version? | [`versioning.md`](versioning.md) |
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |

@@ -148,6 +148,8 @@ Use the allocation rules in the [compatibility and versioning contract](versioni
 
 `DomainOrdering` is versioned separately from the JSON Schema because ranking semantics can change without changing field shape.
 
+The current tuple layouts and exact-domain consumer procedure are defined in the [Domain Ordering Policy](domain-ordering.md).
+
 ### Procedure
 
 1. State the affected domain and why the old component tuple is inadequate.
