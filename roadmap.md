@@ -163,7 +163,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P2** Evaluate LPIPS as an optional experiment, never as an equality oracle.
 - [ ] **P1** Define policy behavior for spatially small but semantically important changes.
 - [x] **P1** Version and test domain-specific lexicographic ordering tuples.
-- [ ] **Decision** Decide whether a cross-domain scalar is needed at all; if adopted, record policy ID, weights, thresholds, corpus, and metric versions.
+- [x] **Decision** Decide whether a cross-domain scalar is needed at all; if adopted, record policy ID, weights, thresholds, corpus, and metric versions.
 
 ## Phase 6: Difference Regions and causal completeness
 

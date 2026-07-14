@@ -59,5 +59,6 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0036](0036-report-encountered-renderer-capability-gaps.md) | Accepted, implemented | Report encountered renderer capability gaps without claiming a global support manifest. |
 | [0037](0037-version-product-contracts-independently.md) | Accepted, implemented | Version module, report, Diagnostic, ordering, and conformance contracts independently. |
 | [0038](0038-defer-exact-contribution-index-until-task-failure.md) | Accepted | Defer exact Contribution Index until a concrete Agent task or precision threshold fails. |
+| [0039](0039-do-not-adopt-a-universal-cross-domain-scalar.md) | Accepted | Keep cross-domain Impact Assessment structured rather than adopting a universal scalar. |
 
 Some accepted ADRs intentionally describe a target that is not yet fully implemented. The implementation status above is a navigation aid; [`v1-scope.md`](../v1-scope.md) remains authoritative for current support.

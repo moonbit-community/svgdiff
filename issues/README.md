@@ -82,6 +82,7 @@ graph TD
   ISS_063["ISS-063: Property-test complete Cause Envelope containment"]
   ISS_064["ISS-064: Validate before and after provenance union"]
   ISS_065["ISS-065: Decide exact Contribution Index scope"]
+  ISS_066["ISS-066: Decide cross-domain scalar policy"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -173,6 +174,9 @@ graph TD
   ISS_062 --> ISS_065
   ISS_063 --> ISS_065
   ISS_064 --> ISS_065
+  ISS_027 --> ISS_066
+  ISS_055 --> ISS_066
+  ISS_060 --> ISS_066
 ```
 
 ## Warnings

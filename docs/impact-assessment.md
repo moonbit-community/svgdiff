@@ -29,3 +29,5 @@ Any future Impact Assessment must be additive and derived. It must:
 7. allocate a new policy identity whenever interpretation changes.
 
 Until those requirements and the separate roadmap policy and calibration items are complete, agents should quote named raw measurements and disclose any cross-domain interpretation instead of inventing a severity label.
+
+[ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) rejects a universal cross-domain scalar. A future Impact Assessment should begin as a structured, traceable policy result that permits ties or incomparability; scalar adoption can be reconsidered only after a concrete Agent task demonstrates that such a result is insufficient and a calibrated proposal satisfies the recorded evidence requirements.
