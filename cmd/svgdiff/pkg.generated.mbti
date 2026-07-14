@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Milky2018/svgdiff/cmd/main"
+package "Milky2018/svgdiff/cmd/svgdiff"
 
 // Values
 

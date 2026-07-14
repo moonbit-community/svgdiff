@@ -7,13 +7,13 @@
 Run the native CLI from the repository root:
 
 ```sh
-moon run --target native cmd/main -- before.svg after.svg
+moon run --target native cmd/svgdiff -- before.svg after.svg
 ```
 
 Set the common comparison viewport or write the report to a file:
 
 ```sh
-moon run --target native cmd/main -- before.svg after.svg --width 800 --height 600 --output report.json
+moon run --target native cmd/svgdiff -- before.svg after.svg --width 800 --height 600 --output report.json
 ```
 
 Add `--html report.html` to generate a self-contained interactive report with

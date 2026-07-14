@@ -1,5 +1,5 @@
 import {
-  "Milky2018/svgdiff",
+  "Milky2018/svgdiff" @lib,
   "moonbitlang/core/string",
   "moonbitlang/x/fs",
   "moonbitlang/x/sys",

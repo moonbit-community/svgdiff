@@ -38,6 +38,7 @@ graph TD
   ISS_019["ISS-019: Guard paired gradient stop semantics"]
   ISS_020["ISS-020: Promote the comparison engine out of prototype"]
   ISS_021["ISS-021: Rename the module owner to Milky2018"]
+  ISS_022["ISS-022: Rename the CLI package to cmd/svgdiff"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -53,6 +54,7 @@ graph TD
   ISS_018 --> ISS_019
   ISS_004 --> ISS_020
   ISS_020 --> ISS_021
+  ISS_021 --> ISS_022
 ```
 
 ## Warnings

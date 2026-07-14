@@ -106,8 +106,8 @@ fn main {
       return
     }
   }
-  let report = @svgdiff.compare(before_svg, after_svg, {
-    ..@svgdiff.ComparisonProfile::v1_default(),
+  let report = @lib.compare(before_svg, after_svg, {
+    ..@lib.ComparisonProfile::v1_default(),
     viewport_width: config.width,
     viewport_height: config.height,
   })
@@ -124,7 +124,7 @@ fn main {
   }
   match config.html_path {
     Some(path) => {
-      let html = @svgdiff.render_html_report(before_svg, after_svg, report)
+      let html = @lib.render_html_report(before_svg, after_svg, report)
       @fs.write_string_to_file(path, html, encoding="utf8") catch {
         error => {
           println("Failed to write \{path}: \{error}")
