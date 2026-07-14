@@ -6,6 +6,8 @@ Last verified: 2026-07-14
 
 Annotation files contain manually authored reference answers for the curated SVG corpus. They are available to benchmark scoring but must not be included in the prompt, context, filenames, or tools exposed to the evaluated text-only agent.
 
+The report-only [agent harness](../harness/README.md) deliberately does not read this directory when preparing or running tasks.
+
 ## Main-change labels
 
 `main-changes.v1.json` records:

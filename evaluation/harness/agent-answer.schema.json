@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://milky2018.github.io/svgdiff/schema/agent-answer-1.json",
+  "title": "SVG Diff text-only agent answer",
+  "type": "object",
+  "required": [
+    "case_id",
+    "acceptance_version",
+    "coverage",
+    "differences",
+    "main_changes",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": { "type": "string", "minLength": 1 },
+    "acceptance_version": { "const": "agent-acceptance/1" },
+    "coverage": {
+      "type": "object",
+      "required": ["analysis_status", "equality_conclusion", "diagnostic_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "analysis_status": { "enum": ["complete", "partial", "failed"] },
+        "equality_conclusion": { "enum": ["established", "different", "not_established"] },
+        "diagnostic_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "differences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "atomic_difference_ids",
+          "kind",
+          "subject_ids",
+          "description",
+          "magnitude_claims",
+          "region_ids",
+          "possible_cause_changed_fact_ids",
+          "cause_guarantee",
+          "diagnostic_ids"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "atomic_difference_ids": { "type": "array", "minItems": 1, "items": { "type": "string" }, "uniqueItems": true },
+          "kind": { "type": "string", "minLength": 1 },
+          "subject_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "description": { "type": "string", "minLength": 1 },
+          "magnitude_claims": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field", "status", "value", "unit"],
+              "additionalProperties": false,
+              "properties": {
+                "field": { "type": "string", "minLength": 1 },
+                "status": { "enum": ["measured", "not_computed", "indeterminate"] },
+                "value": {},
+                "unit": { "type": ["string", "null"] }
+              }
+            }
+          },
+          "region_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "possible_cause_changed_fact_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "cause_guarantee": { "enum": ["sound_overapproximation", "not_established", "not_applicable"] },
+          "diagnostic_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+        }
+      }
+    },
+    "main_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_ids", "atomic_difference_ids", "description", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "event_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "atomic_difference_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "description": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,3 @@
+Read the SVG Diff Structured Report and return an evidence-grounded comparison.
+
+First state whether the report establishes a complete comparison, a partial comparison, or a failed analysis. Then identify every reported visual-semantic difference, including differences with zero rendered magnitude. For each difference, report its kind, subject, measured magnitude with units, location when available, and possible changed causes. Distinguish a sound over-approximation from unproven causation. Identify the main visual changes using only the report evidence, and state any Diagnostics that prevent equality, magnitude, location, or causal conclusions. Cite the report IDs supporting each claim. Never treat missing or indeterminate evidence as zero.
