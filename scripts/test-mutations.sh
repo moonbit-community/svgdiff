@@ -37,6 +37,9 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   moon run --target native cmd/svgdiff -- \
     "$first/$before" "$first/$after" \
     --width "$width" --height "$height" >"$tmp/$id-report.json"
+  moon run --target native cmd/svgdiff -- \
+    "$first/$after" "$first/$before" \
+    --width "$width" --height "$height" >"$tmp/$id-reverse-report.json"
 
   if ! printf '%s' "$case_json" | jq -e --slurpfile report "$tmp/$id-report.json" '
       ($report[0].analysis_status == .expected_analysis_status) and

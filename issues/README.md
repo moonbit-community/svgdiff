@@ -80,6 +80,7 @@ graph TD
   ISS_061["ISS-061: Enforce conservative causal fallback"]
   ISS_062["ISS-062: Measure Cause Envelope candidate volume"]
   ISS_063["ISS-063: Property-test complete Cause Envelope containment"]
+  ISS_064["ISS-064: Validate before and after provenance union"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -164,6 +165,9 @@ graph TD
   ISS_026 --> ISS_063
   ISS_042 --> ISS_063
   ISS_061 --> ISS_063
+  ISS_017 --> ISS_064
+  ISS_042 --> ISS_064
+  ISS_063 --> ISS_064
 ```
 
 ## Warnings

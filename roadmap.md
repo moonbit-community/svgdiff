@@ -172,7 +172,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P0** Attach source subjects and rendered regions without allowing scene-wide pixels to contaminate subject-specific evidence.
 - [ ] **P0** Propagate may-influence tokens through every supported geometry, paint, resource, transform, and structural input.
 - [ ] **P0** Propagate provenance through group surfaces, clips, masks, filters, blending, and compositing.
-- [ ] **P0** Union before and after provenance for every Difference Region.
+- [x] **P0** Union before and after provenance for every Difference Region.
 - [x] **P0** Fall back to all Changed Facts or revoke the guarantee whenever a propagation rule is unavailable.
 - [x] **P0** Add property tests asserting that actual causes are always contained in every complete Cause Envelope.
 - [x] **P0** Measure false-positive candidate volume so conservative completeness remains useful to agents.

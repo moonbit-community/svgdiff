@@ -77,6 +77,17 @@ def validate_case(case: dict[str, Any], report: dict[str, Any]) -> int:
     return len(regions)
 
 
+def reversed_case(case: dict[str, Any]) -> dict[str, Any]:
+    result = copy.deepcopy(case)
+    result["id"] = f"{case['id']}:reverse"
+    expected = result["expected_changed_fact"]
+    expected["before_declared_value"], expected["after_declared_value"] = (
+        expected["after_declared_value"],
+        expected["before_declared_value"],
+    )
+    return result
+
+
 def main() -> None:
     args = parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
@@ -87,23 +98,29 @@ def main() -> None:
         raise ValueError("generated mutation manifest has no cases")
 
     reports = {}
-    complete_cases = 0
+    complete_comparisons = 0
     complete_regions = 0
     for case in cases:
-        report_path = args.reports / f"{case['id']}-report.json"
-        if not report_path.is_file():
-            raise ValueError(f"{case['id']}: missing production report")
-        report = json.loads(report_path.read_text(encoding="utf-8"))
-        reports[case["id"]] = report
-        region_count = validate_case(case, report)
-        if case["expected_analysis_status"] == "complete":
-            complete_cases += 1
-            complete_regions += region_count
+        directions = (
+            (case, args.reports / f"{case['id']}-report.json"),
+            (reversed_case(case), args.reports / f"{case['id']}-reverse-report.json"),
+        )
+        for directional_case, report_path in directions:
+            if not report_path.is_file():
+                raise ValueError(
+                    f"{directional_case['id']}: missing production report"
+                )
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            reports[directional_case["id"]] = report
+            region_count = validate_case(directional_case, report)
+            if directional_case["expected_analysis_status"] == "complete":
+                complete_comparisons += 1
+                complete_regions += region_count
 
-    if complete_cases != 18 or complete_regions == 0:
+    if complete_comparisons != 36 or complete_regions == 0:
         raise ValueError(
             "causal property did not cover the complete mutation surface: "
-            f"cases={complete_cases}, regions={complete_regions}"
+            f"comparisons={complete_comparisons}, regions={complete_regions}"
         )
 
     negative_case = next(
@@ -135,7 +152,8 @@ def main() -> None:
 
     print(
         "Mutation causal property: "
-        f"{complete_cases} complete cases, {complete_regions} complete regions, "
+        f"{complete_comparisons} complete directional comparisons, "
+        f"{complete_regions} complete regions, "
         "missing-cause negative control: ok"
     )
 
