@@ -49,7 +49,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 - [x] **P0** Define an agent-facing acceptance specification for identifying difference kind, magnitude, location, and possible cause.
 - [x] **P0** Build a curated corpus of real SVG pairs covering equivalent, subtle, salient, structural, resource-mediated, zero-contribution, and unsupported cases.
-- [ ] **P0** Add mutation-generated pairs with known changed facts and known affected subjects.
+- [x] **P0** Add mutation-generated pairs with known changed facts and known affected subjects.
 - [ ] **P0** Record human labels for the main visual changes, their relative importance, and acceptable alternative descriptions.
 - [ ] **P0** Record region ground truth or conservative reference bounds for localizable cases.
 - [ ] **P0** Record actual-cause ground truth for cases used to test Cause Envelope recall.

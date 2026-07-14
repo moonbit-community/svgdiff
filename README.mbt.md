@@ -116,6 +116,8 @@ The complete implementation boundary, including guarded partial cases, is in the
 
 The hand-authored [evaluation corpus](evaluation/corpus/README.md) contains stable SVG pairs for equivalent, subtle, salient, structural, resource-mediated, zero-contribution, and unsupported cases. Run `sh scripts/test-corpus.sh` to validate every pair through the production CLI.
 
+The complementary [mutation suite](evaluation/mutations/README.md) generates deterministic pairs with independently declared Changed Facts and affected subjects. Run `sh scripts/test-mutations.sh` to verify generation and report retention.
+
 ## Documentation
 
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;

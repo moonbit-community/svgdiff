@@ -42,6 +42,7 @@ graph TD
   ISS_023["ISS-023: Record the complete post-v1 roadmap"]
   ISS_024["ISS-024: Define the text-only agent acceptance contract"]
   ISS_025["ISS-025: Build the curated SVG pair corpus"]
+  ISS_026["ISS-026: Add deterministic mutation-generated SVG pairs"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -60,6 +61,7 @@ graph TD
   ISS_021 --> ISS_022
   ISS_022 --> ISS_023
   ISS_024 --> ISS_025
+  ISS_025 --> ISS_026
 ```
 
 ## Warnings

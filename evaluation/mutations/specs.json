@@ -1,0 +1,50 @@
+{
+  "schema_version": "svgdiff-mutations/1",
+  "cases": [
+    {
+      "id": "mutate-rect-fill",
+      "template": "templates/rect-fill.svg.tmpl",
+      "before_value": "red",
+      "after_value": "blue",
+      "expected_changed_fact": {
+        "source_property": "fill",
+        "report_property": "paint.fill",
+        "before_declared_value": "red",
+        "after_declared_value": "blue",
+        "affected_subject_ids": ["box"]
+      },
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-circle-position",
+      "template": "templates/circle-position.svg.tmpl",
+      "before_value": "6",
+      "after_value": "10",
+      "expected_changed_fact": {
+        "source_property": "cx",
+        "report_property": "cx",
+        "before_declared_value": "6",
+        "after_declared_value": "10",
+        "affected_subject_ids": ["dot"]
+      },
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-inherited-fill",
+      "template": "templates/inherited-fill.svg.tmpl",
+      "before_value": "red",
+      "after_value": "green",
+      "expected_changed_fact": {
+        "source_property": "fill",
+        "report_property": "fill",
+        "before_declared_value": "red",
+        "after_declared_value": "green",
+        "affected_subject_ids": ["dot"]
+      },
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "partial"
+    }
+  ]
+}
