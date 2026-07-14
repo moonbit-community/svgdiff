@@ -6,6 +6,8 @@ Last verified: 2026-07-14
 
 This file records the current production decision and unresolved renderer blockers. Detailed experiment output is retained in [research](research/README.md) and the archived [influence-provenance prototype](../prototype/influence_provenance/README.md).
 
+Any dependency change must follow the synchronized [upgrade procedures](upgrade-procedures.md).
+
 ## Decision
 
 Use pure-MoonBit community dependencies capability by capability behind the private engine seam. Do not replace a passing parser or scene layer merely because another renderer layer has a gap. Own a workspace module only when a reproducible required capability cannot be supplied by the dependency or a focused upstream extension.

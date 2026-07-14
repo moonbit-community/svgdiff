@@ -255,7 +255,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **P0** Document exactly what `complete`, `partial`, and `failed` guarantee to callers.
 - [x] **P0** Document report interpretation for text-only agents with worked examples.
 - [x] **P1** Generate public MoonBit interface documentation and library examples.
-- [ ] **P1** Document renderer, XML parser, metric, schema, and policy upgrade procedures.
+- [x] **P1** Document renderer, XML parser, metric, schema, and policy upgrade procedures.
 - [ ] **P1** Keep dependency licenses, security posture, and upstream blockers current.
 - [ ] **P1** Convert roadmap items into `ISS-###` issues only when they are accepted for implementation; do not duplicate unscheduled work prematurely.
 - [ ] **P1** Remove or archive `prototype/influence_provenance` after all validated logic is absorbed and no experiment still depends on it.

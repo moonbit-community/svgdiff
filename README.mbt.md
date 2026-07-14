@@ -122,6 +122,7 @@ The complete implementation boundary, including guarded partial cases, is in the
 - [Analysis status contract](docs/analysis-status.md): exact guarantees for complete, partial, and failed reports;
 - [Text-only agent guide](docs/agent-report-guide.md): report reading procedure and worked examples;
 - [MoonBit library API](docs/library-api.md): public operations, report types, and generated documentation commands;
+- [Upgrade procedures](docs/upgrade-procedures.md): renderer, parser, metric, schema, and ordering-policy gates;
 - [Core comparison model](docs/core-model.md): report concepts and invariants;
 - [Post-v1 roadmap](roadmap.md): all known unfinished product work;
 - [ADR index](docs/adr/README.md): architectural decisions and supersession status;
