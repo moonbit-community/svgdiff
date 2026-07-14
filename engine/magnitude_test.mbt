@@ -13,7 +13,7 @@ test "tiny geometry changes retain continuous magnitude independent of pixels" {
     None => fail("expected exact parameter magnitude")
   }
   assert_true(difference.magnitude.geometry_viewport_fraction is Some(_))
-  assert_eq(difference.domain_ordering.policy_id, "v1_domain_lexicographic")
+  assert_eq(difference.domain_ordering.policy_id, "v2_domain_lexicographic")
 }
 
 ///|

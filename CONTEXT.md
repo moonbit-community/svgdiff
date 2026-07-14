@@ -10,7 +10,7 @@ Last verified: 2026-07-14
 
 ## Current state
 
-The repository contains a production comparison engine for a narrow deterministic static-SVG subset, a stable JSON report schema at version `1.5`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine. The current slice includes strict SVG transform-list parsing and cumulative affine matrices; only the browser-verified integer axis-transform raster slice is complete-eligible, while general affine and resource transforms remain explicitly guarded.
+The repository contains a production comparison engine for a narrow deterministic static-SVG subset, a stable JSON report schema at version `1.6`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine. The current slice includes strict SVG transform-list parsing, cumulative affine matrices, and typed canonical transform effects; only the browser-verified integer axis-transform raster slice is complete-eligible, while general affine and resource transforms remain explicitly guarded.
 
 The engine deliberately reports three evidence layers separately:
 

@@ -11,15 +11,36 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.5")
+  assert_eq(report.schema_version, "1.6")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.5", "events": [_], .. } => ()
+    { "schema_version": "1.6", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.5", "events": [_], .. } => ()
+    { "schema_version": "1.6", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
+  }
+}
+
+///|
+test "root package exposes typed transform magnitudes" {
+  let translation : @svgdiff.TransformTranslationMagnitude = {
+    before_x_css_px: 0.0,
+    before_y_css_px: 0.0,
+    after_x_css_px: 2.0,
+    after_y_css_px: 0.0,
+    delta_x_css_px: 2.0,
+    delta_y_css_px: 0.0,
+    norm_css_px: 2.0,
+  }
+  let effect : @svgdiff.TransformEffectMagnitude = @svgdiff.TransformEffectMagnitude::TranslationEffect(
+    translation,
+  )
+  match effect {
+    @svgdiff.TransformEffectMagnitude::TranslationEffect(value) =>
+      assert_eq(value.norm_css_px, 2.0)
+    _ => fail("root transform effect constructor changed")
   }
 }
 
@@ -211,7 +232,7 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("sandbox=\"\"") is Some(_))
   assert_true(html.find("default-src &#39;none&#39;") is Some(_))
   assert_true(html.find("difference_regions") is Some(_))
-  assert_true(html.find("v1_domain_lexicographic") is Some(_))
+  assert_true(html.find("v2_domain_lexicographic") is Some(_))
   assert_true(html.find("<script>alert('unsafe')</script>") is None)
   assert_true(html.find("<details class=\"json-panel\">") is Some(_))
 }

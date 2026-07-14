@@ -86,7 +86,7 @@
       "after": "cases/group-transform-change/after.svg",
       "viewport": { "width": 16, "height": 16 },
       "expected_analysis_status": "complete",
-      "minimum_atomic_differences": 2,
+      "minimum_atomic_differences": 3,
       "required_diagnostics": []
     }
   ]

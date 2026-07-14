@@ -116,11 +116,17 @@
       "output": "schema/examples/group-transform-change.json",
       "expected": {
         "analysis_status": "complete",
-        "domains": ["geometry.transform.list", "geometry.transform.cumulative_matrix"],
-        "computed_relations": ["different", "different"],
+        "domains": [
+          "geometry.transform.list",
+          "geometry.transform.cumulative_matrix",
+          "geometry.transform.translation"
+        ],
+        "computed_relations": ["different", "different", "different"],
         "diagnostic_codes": [],
         "magnitude_checks": [
-          { "domain": "geometry.transform.cumulative_matrix", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+          { "domain": "geometry.transform.cumulative_matrix", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 },
+          { "domain": "geometry.transform.translation", "field": "magnitude.transform_effect.norm_css_px", "op": "eq", "value": 4 },
+          { "domain": "geometry.transform.translation", "field": "magnitude.geometry_displacement_css_px", "op": "eq", "value": 4 }
         ]
       }
     },

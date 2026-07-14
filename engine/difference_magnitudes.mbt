@@ -34,6 +34,16 @@ fn symmetric_relative_delta(before : Double, after : Double) -> Double {
 }
 
 ///|
+fn transform_translation_displacement(
+  effect : TransformEffectMagnitude?,
+) -> Double? {
+  match effect {
+    Some(TranslationEffect(value)) => Some(value.norm_css_px)
+    _ => None
+  }
+}
+
+///|
 fn difference_magnitude(
   report : StructuredReport,
   difference : AtomicDifference,
@@ -56,6 +66,9 @@ fn difference_magnitude(
   }
   let geometry = difference.domain.find("geometry.") == Some(0)
   let path_geometry = difference.domain.find("geometry.path.") == Some(0)
+  let transform_translation = transform_translation_displacement(
+    difference.magnitude.transform_effect,
+  )
   let viewport_diagonal = (report.profile.viewport_width.to_double() *
   report.profile.viewport_width.to_double() +
   report.profile.viewport_height.to_double() *
@@ -65,7 +78,9 @@ fn difference_magnitude(
     parameter_abs_user_units: parameter_abs,
     parameter_signed_user_units: parameter_delta,
     symmetric_relative,
-    geometry_displacement_css_px: if path_geometry {
+    geometry_displacement_css_px: if transform_translation is Some(_) {
+      transform_translation
+    } else if path_geometry {
       difference.magnitude.geometry_displacement_css_px
     } else if geometry {
       parameter_abs
@@ -73,7 +88,9 @@ fn difference_magnitude(
       None
     },
     geometry_viewport_fraction: if geometry {
-      let displacement = if path_geometry {
+      let displacement = if transform_translation is Some(_) {
+        transform_translation
+      } else if path_geometry {
         difference.magnitude.geometry_displacement_css_px
       } else {
         parameter_abs
@@ -101,6 +118,7 @@ fn difference_magnitude(
       Some(rendered) => Some(rendered.linear_premultiplied_rgba_rmse)
       None => None
     },
+    transform_effect: difference.magnitude.transform_effect,
   }
 }
 
@@ -118,29 +136,52 @@ fn ordering_for_magnitude(
   magnitude : DifferenceMagnitude,
 ) -> DomainOrdering {
   let components : Array[Double] = []
-  if domain.find("geometry.") == Some(0) {
-    push_measurement(components, magnitude.geometry_displacement_css_px)
-    push_measurement(components, magnitude.geometry_viewport_fraction)
-    push_measurement(components, magnitude.raster_changed_pixel_fraction)
-  } else if domain.find("paint.") == Some(0) {
-    push_measurement(
-      components,
-      magnitude.raster_linear_premultiplied_rgba_rmse,
-    )
-    push_measurement(components, magnitude.raster_rgba8_rmse)
-    push_measurement(components, magnitude.raster_changed_pixel_fraction)
-  } else if domain.find("presence.") == Some(0) || domain == "presence" {
-    push_measurement(components, magnitude.presence_painted_viewport_fraction)
-    push_measurement(components, magnitude.raster_changed_pixel_fraction)
-  } else {
-    push_measurement(components, magnitude.raster_changed_pixel_fraction)
-    push_measurement(
-      components,
-      magnitude.raster_linear_premultiplied_rgba_rmse,
-    )
-    push_measurement(components, magnitude.raster_rgba8_rmse)
+  match (domain, magnitude.transform_effect) {
+    ("geometry.transform.translation", Some(TranslationEffect(value))) => {
+      components.push(value.norm_css_px)
+      push_measurement(components, magnitude.geometry_viewport_fraction)
+      push_measurement(components, magnitude.raster_changed_pixel_fraction)
+    }
+    ("geometry.transform.rotation", Some(RotationEffect(value))) => {
+      components.push(value.abs_delta_degrees)
+      push_measurement(components, magnitude.raster_changed_pixel_fraction)
+    }
+    ("geometry.transform.scale", Some(ScaleEffect(value))) => {
+      components.push(value.max_abs_delta)
+      push_measurement(components, magnitude.raster_changed_pixel_fraction)
+    }
+    ("geometry.transform.skew", Some(SkewEffect(value))) => {
+      components.push(value.abs_delta_degrees)
+      push_measurement(components, magnitude.raster_changed_pixel_fraction)
+    }
+    _ =>
+      if domain.find("geometry.") == Some(0) {
+        push_measurement(components, magnitude.geometry_displacement_css_px)
+        push_measurement(components, magnitude.geometry_viewport_fraction)
+        push_measurement(components, magnitude.raster_changed_pixel_fraction)
+      } else if domain.find("paint.") == Some(0) {
+        push_measurement(
+          components,
+          magnitude.raster_linear_premultiplied_rgba_rmse,
+        )
+        push_measurement(components, magnitude.raster_rgba8_rmse)
+        push_measurement(components, magnitude.raster_changed_pixel_fraction)
+      } else if domain.find("presence.") == Some(0) || domain == "presence" {
+        push_measurement(
+          components,
+          magnitude.presence_painted_viewport_fraction,
+        )
+        push_measurement(components, magnitude.raster_changed_pixel_fraction)
+      } else {
+        push_measurement(components, magnitude.raster_changed_pixel_fraction)
+        push_measurement(
+          components,
+          magnitude.raster_linear_premultiplied_rgba_rmse,
+        )
+        push_measurement(components, magnitude.raster_rgba8_rmse)
+      }
   }
-  { policy_id: "v1_domain_lexicographic", components }
+  { policy_id: "v2_domain_lexicographic", components }
 }
 
 ///|

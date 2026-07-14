@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.5",
+  "schema_version": "1.6",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -231,7 +231,7 @@
         "raster_linear_premultiplied_rgba_rmse": 0.30319826947951
       },
       "domain_ordering": {
-        "policy_id": "v1_domain_lexicographic",
+        "policy_id": "v2_domain_lexicographic",
         "components": [
           0.140625,
           0.140625

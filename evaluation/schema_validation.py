@@ -15,6 +15,7 @@ SCHEMA_KEYWORDS = {
     "minimum",
     "minLength",
     "minItems",
+    "maxItems",
     "required",
     "properties",
     "additionalProperties",
@@ -130,6 +131,8 @@ def validate_instance(
     if isinstance(value, list) and array_declared:
         if len(value) < schema.get("minItems", 0):
             raise ValueError(f"{path}: array is shorter than minItems")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            raise ValueError(f"{path}: array is longer than maxItems")
         if isinstance(schema.get("items"), dict):
             for index, item in enumerate(value):
                 validate_instance(item, schema["items"], root, f"{path}[{index}]")

@@ -28,6 +28,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0043](0043-treat-comparison-interruption-as-control-flow.md) | Accepted | Treat cooperative cancellation and elapsed-time expiry as typed control flow rather than incomplete report evidence. |
 | [0044](0044-compare-canonical-report-bundles-across-a-fixed-platform-matrix.md) | Accepted, implemented | Compare canonical report bundles across an explicit three-platform, two-architecture CI matrix. |
 | [0045](0045-publish-only-version-matched-cross-platform-release-assets.md) | Accepted, implemented | Publish native archives only from a version-matched tag after cross-platform candidate gates pass. |
+| [0047](0047-decompose-paired-cumulative-transforms.md) | Accepted | Decompose paired cumulative transforms into typed domain-specific effects without a raw matrix score. |
 
 ## Correctness boundary and provenance
 

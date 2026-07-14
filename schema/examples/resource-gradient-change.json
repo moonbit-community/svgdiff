@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.5",
+  "schema_version": "1.6",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -204,7 +204,7 @@
         "raster_linear_premultiplied_rgba_rmse": 0.17690423700330205
       },
       "domain_ordering": {
-        "policy_id": "v1_domain_lexicographic",
+        "policy_id": "v2_domain_lexicographic",
         "components": [
           0.515625,
           0.17690423700330205,
@@ -242,7 +242,7 @@
         "raster_linear_premultiplied_rgba_rmse": 0.17690423700330205
       },
       "domain_ordering": {
-        "policy_id": "v1_domain_lexicographic",
+        "policy_id": "v2_domain_lexicographic",
         "components": [
           0.17690423700330205,
           0.24798386869905079,

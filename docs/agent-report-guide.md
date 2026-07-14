@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.5` interpretation guide
+Status: current schema `1.6` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -70,18 +70,19 @@ The following outcomes are deliberately different:
 - computed `indeterminate`: the engine cannot soundly decide because a Diagnostic constrains coverage;
 - computed `not_applicable`: one side has no comparable fact, as in insertion or deletion.
 
-For transforms, keep `geometry.transform.list` and `geometry.transform.cumulative_matrix` distinct. The first identifies the authored transform declaration and may be computed-equivalent to another list; the second identifies the resulting root-to-subject affine mapping. Do not interpret raw matrix coefficient changes as translation, rotation, scale, skew, or severity: schema `1.5` deliberately leaves those decomposition fields for the next contract item. Transform events currently use the complete scene pixel mask because ordinary subject bounds are not transform-aware; this is a conservative localization, not a claim that every returned region belongs only to that subject.
+For transforms, keep `geometry.transform.list`, `geometry.transform.cumulative_matrix`, and the five effect domains distinct. The first identifies the authored transform declaration and may be computed-equivalent to another list; the second identifies the resulting root-to-subject affine mapping. `geometry.transform.translation`, `.rotation`, `.scale`, and `.skew` carry a tagged `magnitude.transform_effect` with before, after, and domain-specific delta fields. Translation uses CSS pixels, rotation and skew use shortest signed degree deltas, and signed X/Y scales preserve reflections. `geometry.transform.residual_matrix` retains exact coefficients when a singular linear transform has no unique finite decomposition; do not turn those coefficients into a scalar distance. These domains are separate evidence and must not be added or compared across units. Transform events currently use the complete scene pixel mask because ordinary subject bounds are not transform-aware; this is a conservative localization, not a claim that every returned region belongs only to that subject.
 
 ## Magnitude and importance
 
 Magnitude fields are evidence, not severity labels:
 
 - parameter and geometry fields describe exact or device-space displacement;
+- tagged transform-effect fields describe canonical affine component changes in their declared CSS-pixel, degree, scale, or exact-matrix units;
 - presence fields describe bounds and painted footprint on the side where the subject exists;
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.5` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.6` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

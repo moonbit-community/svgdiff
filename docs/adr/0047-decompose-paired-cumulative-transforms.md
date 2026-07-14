@@ -1,0 +1,11 @@
+# Decompose paired cumulative transforms into typed effects
+
+SVG Diff will independently decompose the before and after cumulative two-dimensional affine matrices into a canonical translation, rotation, signed axis scale, and X-skew representation. The decomposition uses the QR/unmatrix component model from CSS Transforms, operates in viewport coordinates, normalizes angular deltas to `[-180, 180)` degrees, and retains a negative determinant in the Y scale as the single reflection convention.
+
+The report will emit separate exact domains for translation, rotation, scale, skew, and a non-decomposable residual linear matrix. Translation records signed X/Y CSS-pixel deltas and their Euclidean norm. Rotation and skew record signed and absolute degree deltas. Scale records signed before/after X/Y values and the maximum absolute departure between paired values. These are named raw measurements for ordering only within the exact same domain; they are not mutually comparable and do not define a cross-domain visual-severity scalar.
+
+If either linear matrix is singular, the engine may still report its exact translation change, but it will not invent rotation, scale, or skew values. A changed singular linear part becomes a residual-matrix effect containing exact before/after affine coefficients and determinants. No Euclidean distance over matrix coefficients is reported. A successfully decomposed pair has no residual effect.
+
+The alternative of decomposing `after * inverse(before)` was rejected for this report layer. Although it exactly maps before viewport coordinates to after viewport coordinates when the before matrix is invertible, its translation component depends on the viewport origin and becomes counterintuitive when scale or rotation also changes. Independent canonical decomposition gives a stable CSS-pixel translation comparison, supports singular inputs conservatively, and follows the mature before/after component comparison model used for CSS matrix interpolation.
+
+This decision does not claim that parameter deltas equal painted-boundary displacement. Transform-aware subject bounds, continuous device-space displacement, viewport mapping, CSS transform cascade semantics, and cross-domain Impact Assessment remain separate roadmap work.

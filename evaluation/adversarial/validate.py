@@ -65,7 +65,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.5":
+    if report.get("schema_version") != "1.6":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -229,7 +229,7 @@ def validate_magnitude_ordering(report: dict) -> None:
     if magnitudes != [4, 1]:
         raise ValueError(f"geometry magnitudes are not descending: {magnitudes}")
     if any(
-        difference["domain_ordering"]["policy_id"] != "v1_domain_lexicographic"
+        difference["domain_ordering"]["policy_id"] != "v2_domain_lexicographic"
         for difference in differences
     ):
         raise ValueError("magnitude ordering lost its policy identity")

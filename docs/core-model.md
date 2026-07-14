@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.5`
+Status: current model for Structured Report schema `1.6`
 
 Last verified: 2026-07-14
 
@@ -27,14 +27,14 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.5
+  -> Structured Report 1.6
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.5` records:
+Schema `1.6` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -67,7 +67,7 @@ Attribute order, quote style, tag-closing style, entity spelling, and declaratio
 
 Path source adaptation is renderer-independent. The engine strictly consumes every path command and repeated parameter group, expands relative, horizontal/vertical, and smooth shorthand into absolute Move, Line, Cubic, Quadratic, Arc, and Close segments, and retains each segment's exact authored slice plus half-open UTF-16 span. One-to-one path comparison aligns those normalized segments and emits every differing command, parameter, insertion, or deletion. Exact numeric deltas remain independent of raster quantization; command-family or relative/absolute spelling changes that normalize to the same segment are computed-equivalent source differences. When the fixed observation budget permits, `geometry_displacement_css_px` records the symmetric maximum nearest alpha-boundary pixel-center distance from isolated rendering. Path reports remain partial because this observation does not establish continuous geometric Hausdorff distance, transformed-path boundary measurement, complete stroke and paint semantics, or accepted path renderer conformance.
 
-SVG transform adaptation is likewise renderer-independent. A strict parser consumes `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`, preserves normalized authored function structure, and post-multiplies matrices in authored order. Each leaf subject retains the root-to-leaf transform chain and exact cumulative affine matrix across entities, groups, resource containers, and nested `svg` elements. `geometry.transform.list` reports authored-list changes, including matrix-equivalent rewrites; `geometry.transform.cumulative_matrix` reports a changed leaf coordinate mapping. Raw affine-coefficient distance is intentionally absent because it is not a visual magnitude. Resource-local gradient and pattern transforms use parallel source/computed records but remain guarded until resource units, references, and paint semantics are complete.
+SVG transform adaptation is likewise renderer-independent. A strict parser consumes `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`, preserves normalized authored function structure, and post-multiplies matrices in authored order. Each leaf subject retains the root-to-leaf transform chain and exact cumulative affine matrix across entities, groups, resource containers, and nested `svg` elements. `geometry.transform.list` reports authored-list changes, including matrix-equivalent rewrites; `geometry.transform.cumulative_matrix` reports a changed leaf coordinate mapping. The engine independently decomposes the before and after cumulative matrices into canonical translation, rotation, signed X/Y scale, and X-skew components, then emits one typed effect difference for every changed component. This avoids treating raw affine coefficients as a visual magnitude. A singular linear transform has no unique finite decomposition, so its exact six coefficients and determinant are retained under `geometry.transform.residual_matrix` instead. Resource-local gradient and pattern transforms use parallel source/computed records but remain guarded until resource units, references, and paint semantics are complete.
 
 ### Computed Appearance
 
@@ -134,13 +134,14 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - absolute and signed parameter delta in user units;
 - symmetric relative delta;
 - geometry displacement in CSS pixels and viewport fraction;
+- a tagged transform effect containing translation in CSS pixels, rotation or skew in degrees, signed scale, or an exact residual affine matrix;
 - presence painted viewport fraction;
 - raster changed-pixel fraction;
 - RGBA8 and linear-premultiplied-RGBA RMSE.
 
 Unavailable components are `null`, not numeric zero. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists.
 
-`DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v1 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
+`DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v2 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
 The raw magnitude fields remain authoritative when no Impact Assessment exists or when a future policy-derived assessment is unavailable. The current absence and the constraints on future severity or cross-domain policy are defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 
@@ -161,7 +162,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.5` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.6` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -177,11 +178,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.5` top-level object contains exactly these conceptual sections:
+The schema `1.6` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.5",
+  "schema_version": "1.6",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -213,7 +214,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.5
+## Not implemented in schema 1.6
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -223,7 +224,7 @@ The following concepts are intentional future work rather than hidden current fi
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
 - caller-supplied resource bundles and implicit viewport derivation;
-- complete CSS, complete path rendering, transform decomposition and precise transformed localization, filters, masks, clipping, blending, reuse, and nested viewport mapping semantics;
+- complete CSS, complete path rendering, precise transformed localization, filters, masks, clipping, blending, reuse, and nested viewport mapping semantics;
 - cross-subject Visual Event aggregation.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).

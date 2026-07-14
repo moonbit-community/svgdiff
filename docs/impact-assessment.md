@@ -1,18 +1,19 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: current schema `1.5` contract
+Status: current schema `1.6` contract
 
 Last verified: 2026-07-14
 
-Schema `1.5` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
+Schema `1.6` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
 
 - `AtomicDifference.magnitude` for continuous parameter, relative, device-space, viewport-relative, presence, and raster observations;
+- optional tagged `AtomicDifference.magnitude.transform_effect` for raw translation, rotation, signed-scale, skew, or singular residual-matrix effects;
 - optional `AtomicDifference.presence_magnitude` for inserted or deleted subject count, bounds, and isolated painted footprint;
 - `VisualEvent.rendered_outcome.magnitude` for the canonical event raster response.
 
 Unavailable observations remain null or explicitly not computed. Numeric zero is a measured result and cannot be replaced by absence, while absence cannot be converted to zero.
 
-`AtomicDifference.domain_ordering` is a versioned derived view for ordering only differences from the exact same domain. Every component of `v1_domain_lexicographic` is copied from a named retained raw magnitude field, in the order defined by the [Domain Ordering Policy](domain-ordering.md). It does not contain a hidden score and is never more authoritative than its source fields.
+`AtomicDifference.domain_ordering` is a versioned derived view for ordering only differences from the exact same domain. Every component of `v2_domain_lexicographic` is copied from a named retained raw magnitude field, in the order defined by the [Domain Ordering Policy](domain-ordering.md). Transform component domains deliberately retain different leading units and are incomparable with one another. The tuple does not contain a hidden score and is never more authoritative than its source fields.
 
 The `none`, `low`, `medium`, and `high` tiers in the [human annotations](../evaluation/annotations/README.md) are hidden evaluation labels, not report evidence. Corpus directory names such as `subtle` or `salient` likewise do not enter production reports and must not be inferred as engine classifications.
 

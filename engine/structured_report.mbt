@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.5` API accepts caller-provided viewport dimensions and
+/// The root schema `1.6` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.5` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.6` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -102,6 +102,115 @@ pub(all) struct PresenceMagnitude {
 } derive(ToJson)
 
 ///|
+/// Viewport-space translation change and its Euclidean CSS-pixel magnitude.
+pub(all) struct TransformTranslationMagnitude {
+  before_x_css_px : Double
+  before_y_css_px : Double
+  after_x_css_px : Double
+  after_y_css_px : Double
+  delta_x_css_px : Double
+  delta_y_css_px : Double
+  norm_css_px : Double
+} derive(ToJson)
+
+///|
+/// Canonical paired rotation values and shortest signed angular change.
+pub(all) struct TransformRotationMagnitude {
+  before_degrees : Double
+  after_degrees : Double
+  signed_delta_degrees : Double
+  abs_delta_degrees : Double
+} derive(ToJson)
+
+///|
+/// Canonical signed axis scales and their largest absolute paired delta.
+pub(all) struct TransformScaleMagnitude {
+  before_x : Double
+  before_y : Double
+  after_x : Double
+  after_y : Double
+  max_abs_delta : Double
+} derive(ToJson)
+
+///|
+/// Canonical paired X-skew values and shortest signed angular change.
+pub(all) struct TransformSkewMagnitude {
+  before_degrees : Double
+  after_degrees : Double
+  signed_delta_degrees : Double
+  abs_delta_degrees : Double
+} derive(ToJson)
+
+///|
+/// Exact singular linear transforms retained without a coefficient score.
+pub(all) struct TransformResidualMagnitude {
+  before_matrix : Array[Double]
+  after_matrix : Array[Double]
+  before_determinant : Double
+  after_determinant : Double
+} derive(ToJson)
+
+///|
+/// Tagged raw magnitude for one canonical transform-effect domain.
+pub(all) enum TransformEffectMagnitude {
+  TranslationEffect(TransformTranslationMagnitude)
+  RotationEffect(TransformRotationMagnitude)
+  ScaleEffect(TransformScaleMagnitude)
+  SkewEffect(TransformSkewMagnitude)
+  ResidualMatrixEffect(TransformResidualMagnitude)
+}
+
+///|
+pub impl ToJson for TransformEffectMagnitude with fn to_json(self) {
+  match self {
+    TranslationEffect(value) =>
+      {
+        "kind": "translation",
+        "before_x_css_px": value.before_x_css_px,
+        "before_y_css_px": value.before_y_css_px,
+        "after_x_css_px": value.after_x_css_px,
+        "after_y_css_px": value.after_y_css_px,
+        "delta_x_css_px": value.delta_x_css_px,
+        "delta_y_css_px": value.delta_y_css_px,
+        "norm_css_px": value.norm_css_px,
+      }
+    RotationEffect(value) =>
+      {
+        "kind": "rotation",
+        "before_degrees": value.before_degrees,
+        "after_degrees": value.after_degrees,
+        "signed_delta_degrees": value.signed_delta_degrees,
+        "abs_delta_degrees": value.abs_delta_degrees,
+      }
+    ScaleEffect(value) =>
+      {
+        "kind": "scale",
+        "before_x": value.before_x,
+        "before_y": value.before_y,
+        "after_x": value.after_x,
+        "after_y": value.after_y,
+        "max_abs_delta": value.max_abs_delta,
+      }
+    SkewEffect(value) =>
+      {
+        "kind": "skew",
+        "before_degrees": value.before_degrees,
+        "after_degrees": value.after_degrees,
+        "signed_delta_degrees": value.signed_delta_degrees,
+        "abs_delta_degrees": value.abs_delta_degrees,
+      }
+    ResidualMatrixEffect(value) =>
+      {
+        "kind": "residual_matrix",
+        "before_matrix": value.before_matrix,
+        "after_matrix": value.after_matrix,
+        "before_determinant": value.before_determinant,
+        "after_determinant": value.after_determinant,
+      }
+  }
+}
+
+///|
 /// Domain-appropriate magnitude vector for one Atomic Difference.
 ///
 /// Optional components that were not computed serialize as null rather than zero.
@@ -115,6 +224,7 @@ pub(all) struct DifferenceMagnitude {
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
   raster_linear_premultiplied_rgba_rmse : Double?
+  transform_effect : TransformEffectMagnitude?
 }
 
 ///|
@@ -127,31 +237,35 @@ fn[T : ToJson] nullable_report_value(value : T?) -> Json {
 
 ///|
 pub impl ToJson for DifferenceMagnitude with fn to_json(self) {
-  {
-    "parameter_abs_user_units": nullable_report_value(
-      self.parameter_abs_user_units,
-    ),
-    "parameter_signed_user_units": nullable_report_value(
-      self.parameter_signed_user_units,
-    ),
-    "symmetric_relative": nullable_report_value(self.symmetric_relative),
-    "geometry_displacement_css_px": nullable_report_value(
-      self.geometry_displacement_css_px,
-    ),
-    "geometry_viewport_fraction": nullable_report_value(
-      self.geometry_viewport_fraction,
-    ),
-    "presence_painted_viewport_fraction": nullable_report_value(
-      self.presence_painted_viewport_fraction,
-    ),
-    "raster_changed_pixel_fraction": nullable_report_value(
-      self.raster_changed_pixel_fraction,
-    ),
-    "raster_rgba8_rmse": nullable_report_value(self.raster_rgba8_rmse),
-    "raster_linear_premultiplied_rgba_rmse": nullable_report_value(
-      self.raster_linear_premultiplied_rgba_rmse,
-    ),
+  let fields : Map[String, Json] = Map([])
+  fields["parameter_abs_user_units"] = nullable_report_value(
+    self.parameter_abs_user_units,
+  )
+  fields["parameter_signed_user_units"] = nullable_report_value(
+    self.parameter_signed_user_units,
+  )
+  fields["symmetric_relative"] = nullable_report_value(self.symmetric_relative)
+  fields["geometry_displacement_css_px"] = nullable_report_value(
+    self.geometry_displacement_css_px,
+  )
+  fields["geometry_viewport_fraction"] = nullable_report_value(
+    self.geometry_viewport_fraction,
+  )
+  fields["presence_painted_viewport_fraction"] = nullable_report_value(
+    self.presence_painted_viewport_fraction,
+  )
+  fields["raster_changed_pixel_fraction"] = nullable_report_value(
+    self.raster_changed_pixel_fraction,
+  )
+  fields["raster_rgba8_rmse"] = nullable_report_value(self.raster_rgba8_rmse)
+  fields["raster_linear_premultiplied_rgba_rmse"] = nullable_report_value(
+    self.raster_linear_premultiplied_rgba_rmse,
+  )
+  match self.transform_effect {
+    Some(value) => fields["transform_effect"] = value.to_json()
+    None => ()
   }
+  Json::object(fields)
 }
 
 ///|
@@ -173,12 +287,13 @@ fn empty_difference_magnitude() -> DifferenceMagnitude {
     raster_changed_pixel_fraction: None,
     raster_rgba8_rmse: None,
     raster_linear_premultiplied_rgba_rmse: None,
+    transform_effect: None,
   }
 }
 
 ///|
 fn empty_domain_ordering() -> DomainOrdering {
-  { policy_id: "v1_domain_lexicographic", components: [] }
+  { policy_id: "v2_domain_lexicographic", components: [] }
 }
 
 ///|
@@ -540,7 +655,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.5` result of one SVG comparison.
+/// Complete schema `1.6` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -559,13 +674,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.5` JSON.
+/// Serialize this report as indented schema `1.6` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.5` JSON.
+/// Serialize this report as whitespace-free schema `1.6` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1237,7 +1352,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.5",
+    schema_version: "1.6",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1542,7 +1657,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.5",
+        schema_version: "1.6",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1622,7 +1737,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.5",
+        schema_version: "1.6",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1672,7 +1787,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.5",
+        schema_version: "1.6",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1776,7 +1891,7 @@ fn gradient_change_report(
       if !has_subject(before_document, "box") &&
         !has_subject(after_document, "box") {
         Some({
-          schema_version: "1.5",
+          schema_version: "1.6",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1798,7 +1913,7 @@ fn gradient_change_report(
         })
       } else {
         Some({
-          schema_version: "1.5",
+          schema_version: "1.6",
           analysis_status: "complete",
           coverage_matrix: [],
           renderer_capability_gaps: [],
@@ -1989,7 +2104,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.5",
+              schema_version: "1.6",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

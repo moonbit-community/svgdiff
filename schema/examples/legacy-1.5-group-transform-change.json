@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.6",
+  "schema_version": "1.5",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -62,14 +62,6 @@
       "feature_id": "domain.geometry.transform.list",
       "subject_id": "alignment:0",
       "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "domain.geometry.transform.translation",
-      "subject_id": "alignment:0",
-      "source_semantics": "not_applicable",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
       "diagnostic_ids": []
@@ -206,7 +198,7 @@
         "raster_linear_premultiplied_rgba_rmse": 0.2795084971874737
       },
       "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
+        "policy_id": "v1_domain_lexicographic",
         "components": [
           0.15625
         ]
@@ -243,57 +235,8 @@
         "raster_linear_premultiplied_rgba_rmse": 0.2795084971874737
       },
       "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
+        "policy_id": "v1_domain_lexicographic",
         "components": [
-          0.15625
-        ]
-      }
-    },
-    {
-      "id": "diff:alignment:0:transform:effect:translation",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "geometry.transform.translation",
-      "source_before": "translate(1,0)",
-      "source_after": "translate(5,0)",
-      "changed_fact_ids": [
-        "fact:transform:1:1:transform"
-      ],
-      "evidence_layers": [
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "cumulative_transform_translation_differs",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "geometry_displacement_css_px": 4,
-        "geometry_viewport_fraction": 0.17677669529663687,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.15625,
-        "raster_rgba8_rmse": 0.2795084971874737,
-        "raster_linear_premultiplied_rgba_rmse": 0.2795084971874737,
-        "transform_effect": {
-          "kind": "translation",
-          "before_x_css_px": 1,
-          "before_y_css_px": 0,
-          "after_x_css_px": 5,
-          "after_y_css_px": 0,
-          "delta_x_css_px": 4,
-          "delta_y_css_px": 0,
-          "norm_css_px": 4
-        }
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          4,
-          0.17677669529663687,
           0.15625
         ]
       }
@@ -305,8 +248,7 @@
       "primary_subject_id": "alignment:0",
       "atomic_difference_ids": [
         "diff:alignment:0:transform:list:fact:transform:1:1:transform",
-        "diff:alignment:0:transform:cumulative",
-        "diff:alignment:0:transform:effect:translation"
+        "diff:alignment:0:transform:cumulative"
       ],
       "rendered_outcome": {
         "status": "computed",

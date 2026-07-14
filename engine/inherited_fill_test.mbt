@@ -107,7 +107,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.5",
+      "schema_version": "1.6",
       "source_resolutions": [
         {
           "subject_id": "box",

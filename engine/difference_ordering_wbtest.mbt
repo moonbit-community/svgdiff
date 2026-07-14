@@ -17,11 +17,12 @@ fn ordering_test_magnitude(
     raster_changed_pixel_fraction: changed_pixel_fraction,
     raster_rgba8_rmse: rgba8_rmse,
     raster_linear_premultiplied_rgba_rmse: linear_rmse,
+    transform_effect: None,
   }
 }
 
 ///|
-test "v1 ordering constructs every current domain family tuple" {
+test "v2 ordering preserves established domain family tuples" {
   let magnitude = ordering_test_magnitude(
     geometry_css_px=8.0,
     geometry_viewport_fraction=0.25,
@@ -45,13 +46,73 @@ test "v1 ordering constructs every current domain family tuple" {
     ] {
     let (domain, expected) = entry
     let ordering = ordering_for_magnitude(domain, magnitude)
-    assert_eq(ordering.policy_id, "v1_domain_lexicographic")
+    assert_eq(ordering.policy_id, "v2_domain_lexicographic")
     assert_eq(ordering.components, expected)
   }
 }
 
 ///|
-test "v1 ordering omits unavailable measurements instead of inventing zero" {
+test "v2 ordering uses transform effect units only inside exact domains" {
+  let base = ordering_test_magnitude()
+  let translation = ordering_for_magnitude("geometry.transform.translation", {
+    ..base,
+    geometry_viewport_fraction: Some(0.25),
+    raster_changed_pixel_fraction: Some(0.5),
+    transform_effect: Some(
+      TranslationEffect({
+        before_x_css_px: 0.0,
+        before_y_css_px: 0.0,
+        after_x_css_px: 3.0,
+        after_y_css_px: 4.0,
+        delta_x_css_px: 3.0,
+        delta_y_css_px: 4.0,
+        norm_css_px: 5.0,
+      }),
+    ),
+  })
+  assert_eq(translation.components, [5.0, 0.25, 0.5])
+  let rotation = ordering_for_magnitude("geometry.transform.rotation", {
+    ..base,
+    raster_changed_pixel_fraction: Some(0.5),
+    transform_effect: Some(
+      RotationEffect({
+        before_degrees: 179.0,
+        after_degrees: -179.0,
+        signed_delta_degrees: 2.0,
+        abs_delta_degrees: 2.0,
+      }),
+    ),
+  })
+  assert_eq(rotation.components, [2.0, 0.5])
+  let scale = ordering_for_magnitude("geometry.transform.scale", {
+    ..base,
+    transform_effect: Some(
+      ScaleEffect({
+        before_x: 1.0,
+        before_y: 1.0,
+        after_x: 1.0,
+        after_y: -1.0,
+        max_abs_delta: 2.0,
+      }),
+    ),
+  })
+  assert_eq(scale.components, [2.0])
+  let skew = ordering_for_magnitude("geometry.transform.skew", {
+    ..base,
+    transform_effect: Some(
+      SkewEffect({
+        before_degrees: 0.0,
+        after_degrees: 20.0,
+        signed_delta_degrees: 20.0,
+        abs_delta_degrees: 20.0,
+      }),
+    ),
+  })
+  assert_eq(skew.components, [20.0])
+}
+
+///|
+test "v2 ordering omits unavailable measurements instead of inventing zero" {
   let magnitude = ordering_test_magnitude(
     geometry_viewport_fraction=0.25,
     changed_pixel_fraction=0.0,
@@ -67,7 +128,7 @@ test "v1 ordering omits unavailable measurements instead of inventing zero" {
 }
 
 ///|
-test "v1 ordering compares descending then prefers a longer equal prefix" {
+test "v2 ordering compares descending then prefers a longer equal prefix" {
   assert_true(compare_ordering_components([2.0], [1.0]) < 0)
   assert_true(compare_ordering_components([1.0], [2.0]) > 0)
   assert_true(compare_ordering_components([1.0, 0.5], [1.0]) < 0)

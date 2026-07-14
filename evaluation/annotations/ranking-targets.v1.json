@@ -56,7 +56,8 @@
       "accepted_top_event_ids": ["event:alignment:0:transform"],
       "accepted_top_atomic_difference_id_sets": [[
         "diff:alignment:0:transform:list:fact:transform:1:1:transform",
-        "diff:alignment:0:transform:cumulative"
+        "diff:alignment:0:transform:cumulative",
+        "diff:alignment:0:transform:effect:translation"
       ]]
     }
   ]

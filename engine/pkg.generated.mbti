@@ -120,6 +120,7 @@ pub(all) struct DifferenceMagnitude {
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
   raster_linear_premultiplied_rgba_rmse : Double?
+  transform_effect : TransformEffectMagnitude?
 }
 pub impl ToJson for DifferenceMagnitude
 
@@ -233,6 +234,54 @@ pub(all) struct SubjectReference {
   authored_id : String?
 }
 pub impl ToJson for SubjectReference
+
+pub(all) enum TransformEffectMagnitude {
+  TranslationEffect(TransformTranslationMagnitude)
+  RotationEffect(TransformRotationMagnitude)
+  ScaleEffect(TransformScaleMagnitude)
+  SkewEffect(TransformSkewMagnitude)
+  ResidualMatrixEffect(TransformResidualMagnitude)
+}
+pub impl ToJson for TransformEffectMagnitude
+
+pub(all) struct TransformResidualMagnitude {
+  before_matrix : Array[Double]
+  after_matrix : Array[Double]
+  before_determinant : Double
+  after_determinant : Double
+} derive(ToJson)
+
+pub(all) struct TransformRotationMagnitude {
+  before_degrees : Double
+  after_degrees : Double
+  signed_delta_degrees : Double
+  abs_delta_degrees : Double
+} derive(ToJson)
+
+pub(all) struct TransformScaleMagnitude {
+  before_x : Double
+  before_y : Double
+  after_x : Double
+  after_y : Double
+  max_abs_delta : Double
+} derive(ToJson)
+
+pub(all) struct TransformSkewMagnitude {
+  before_degrees : Double
+  after_degrees : Double
+  signed_delta_degrees : Double
+  abs_delta_degrees : Double
+} derive(ToJson)
+
+pub(all) struct TransformTranslationMagnitude {
+  before_x_css_px : Double
+  before_y_css_px : Double
+  after_x_css_px : Double
+  after_y_css_px : Double
+  delta_x_css_px : Double
+  delta_y_css_px : Double
+  norm_css_px : Double
+} derive(ToJson)
 
 pub(all) struct VisualEvent {
   id : String

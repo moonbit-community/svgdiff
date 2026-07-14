@@ -70,6 +70,18 @@ pub using @engine {type SubjectAlignment}
 
 pub using @engine {type SubjectReference}
 
+pub using @engine {type TransformEffectMagnitude}
+
+pub using @engine {type TransformResidualMagnitude}
+
+pub using @engine {type TransformRotationMagnitude}
+
+pub using @engine {type TransformScaleMagnitude}
+
+pub using @engine {type TransformSkewMagnitude}
+
+pub using @engine {type TransformTranslationMagnitude}
+
 pub using @engine {type VisualEvent}
 
 // Traits

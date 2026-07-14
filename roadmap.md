@@ -95,7 +95,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Implement complete `path` parsing, normalization, and segment-level source evidence.
 - [x] **P0** Compare path geometry with exact segment parameters and painted-boundary measurements.
 - [x] **P0** Implement transform lists and cumulative transforms for entities, groups, resources, and nested viewports.
-- [ ] **P0** Decompose transform changes into translation, rotation, scale, skew, and residual matrix effects.
+- [x] **P0** Decompose transform changes into translation, rotation, scale, skew, and residual matrix effects.
 - [ ] **P0** Implement `viewBox`, `preserveAspectRatio`, intrinsic sizing, and nested `<svg>` viewport semantics.
 - [ ] **P1** Complete geometry edge cases for rect, circle, ellipse, line, polyline, and polygon.
 - [ ] **P1** Implement stroke geometry including width, line caps, joins, miter limits, dash arrays, dash offsets, and `vector-effect`.

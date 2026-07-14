@@ -106,6 +106,7 @@ graph TD
   ISS_088["ISS-088: Parse and normalize path data with segment source evidence"]
   ISS_089["ISS-089: Compare path geometry and painted boundaries"]
   ISS_090["ISS-090: Resolve transform lists and cumulative coordinate transforms"]
+  ISS_091["ISS-091: Decompose cumulative transform changes into typed effects"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -290,6 +291,7 @@ graph TD
   ISS_002 --> ISS_088
   ISS_088 --> ISS_089
   ISS_089 --> ISS_090
+  ISS_090 --> ISS_091
 ```
 
 ## Warnings

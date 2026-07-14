@@ -153,19 +153,48 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
     )
     for difference in report["atomic_differences"]:
         magnitude = difference.get("magnitude")
-        if not isinstance(magnitude, dict) or set(magnitude) != set(magnitude_fields):
+        if not isinstance(magnitude, dict) or not set(magnitude_fields) <= set(
+            magnitude
+        ) or set(magnitude) - set(magnitude_fields) > {"transform_effect"}:
             raise ValueError(
                 f"{case['id']}: {difference['id']} lost the raw magnitude vector"
             )
         if any(
             value is not None and type(value) not in {int, float}
-            for value in magnitude.values()
+            for name, value in magnitude.items()
+            if name != "transform_effect"
         ):
             raise ValueError(
                 f"{case['id']}: {difference['id']} has a nonnumeric raw magnitude"
             )
         domain = difference["domain"]
-        if domain.startswith("geometry."):
+        effect = magnitude.get("transform_effect")
+        transform_components = {
+            "geometry.transform.translation": (
+                "norm_css_px",
+                "geometry_viewport_fraction",
+            ),
+            "geometry.transform.rotation": ("abs_delta_degrees",),
+            "geometry.transform.scale": ("max_abs_delta",),
+            "geometry.transform.skew": ("abs_delta_degrees",),
+            "geometry.transform.residual_matrix": (),
+        }
+        if domain in transform_components:
+            if not isinstance(effect, dict):
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} lacks typed transform magnitude"
+                )
+            expected_components = []
+            for field in transform_components[domain]:
+                if field == "geometry_viewport_fraction":
+                    value = magnitude[field]
+                else:
+                    value = effect[field]
+                if value is not None:
+                    expected_components.append(value)
+            if magnitude["raster_changed_pixel_fraction"] is not None:
+                expected_components.append(magnitude["raster_changed_pixel_fraction"])
+        elif domain.startswith("geometry."):
             source_fields = (
                 "geometry_displacement_css_px",
                 "geometry_viewport_fraction",
@@ -188,11 +217,14 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
                 "raster_linear_premultiplied_rgba_rmse",
                 "raster_rgba8_rmse",
             )
-        expected_components = [
-            magnitude[field] for field in source_fields if magnitude[field] is not None
-        ]
+        if domain not in transform_components:
+            expected_components = [
+                magnitude[field]
+                for field in source_fields
+                if magnitude[field] is not None
+            ]
         ordering = difference["domain_ordering"]
-        if ordering["policy_id"] != "v1_domain_lexicographic":
+        if ordering["policy_id"] != "v2_domain_lexicographic":
             raise ValueError(f"{case['id']}: unknown ordering policy")
         if ordering["components"] != expected_components:
             raise ValueError(
@@ -432,6 +464,28 @@ def main() -> None:
     ]
     expect_schema_rejection(
         incomplete_diagnostic_location, schema, "incomplete Diagnostic location"
+    )
+    invalid_transform_effect = copy.deepcopy(reports["group-transform-change"])
+    transform_effect = next(
+        difference["magnitude"]["transform_effect"]
+        for difference in invalid_transform_effect["atomic_differences"]
+        if difference["domain"] == "geometry.transform.translation"
+    )
+    transform_effect["kind"] = "unknown"
+    expect_schema_rejection(
+        invalid_transform_effect, schema, "unknown transform-effect kind"
+    )
+    extra_transform_effect_field = copy.deepcopy(
+        reports["group-transform-change"]
+    )
+    transform_effect = next(
+        difference["magnitude"]["transform_effect"]
+        for difference in extra_transform_effect_field["atomic_differences"]
+        if difference["domain"] == "geometry.transform.translation"
+    )
+    transform_effect["extra"] = 1
+    expect_schema_rejection(
+        extra_transform_effect_field, schema, "extra transform-effect field"
     )
 
     action = "updated" if args.update else "validated"

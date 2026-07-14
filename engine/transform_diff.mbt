@@ -465,6 +465,9 @@ fn append_transform_difference(
       domain_ordering: empty_domain_ordering(),
     })
     difference_ids.push(difference_id)
+    append_transform_effect_differences(
+      report, alignment, before, after, changed_fact_ids, differences, difference_ids,
+    )
   }
   changed_fact_ids
 }

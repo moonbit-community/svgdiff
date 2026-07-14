@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.6",
-  "title": "SVG Diff Structured Report 1.6",
+  "$id": "https://example.invalid/svgdiff/schema/1.5",
+  "title": "SVG Diff Structured Report 1.5",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.6" },
+    "schema_version": { "const": "1.5" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -210,118 +210,6 @@
         "affected_subject_ids": { "type": "array", "items": { "type": "string" } }
       }
     },
-    "transformEffect": {
-      "anyOf": [
-        {
-          "type": "object",
-          "required": [
-            "kind",
-            "before_x_css_px",
-            "before_y_css_px",
-            "after_x_css_px",
-            "after_y_css_px",
-            "delta_x_css_px",
-            "delta_y_css_px",
-            "norm_css_px"
-          ],
-          "properties": {
-            "kind": { "const": "translation" },
-            "before_x_css_px": { "type": "number" },
-            "before_y_css_px": { "type": "number" },
-            "after_x_css_px": { "type": "number" },
-            "after_y_css_px": { "type": "number" },
-            "delta_x_css_px": { "type": "number" },
-            "delta_y_css_px": { "type": "number" },
-            "norm_css_px": { "type": "number", "minimum": 0 }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "kind",
-            "before_degrees",
-            "after_degrees",
-            "signed_delta_degrees",
-            "abs_delta_degrees"
-          ],
-          "properties": {
-            "kind": { "const": "rotation" },
-            "before_degrees": { "type": "number" },
-            "after_degrees": { "type": "number" },
-            "signed_delta_degrees": { "type": "number" },
-            "abs_delta_degrees": { "type": "number", "minimum": 0 }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "kind",
-            "before_x",
-            "before_y",
-            "after_x",
-            "after_y",
-            "max_abs_delta"
-          ],
-          "properties": {
-            "kind": { "const": "scale" },
-            "before_x": { "type": "number" },
-            "before_y": { "type": "number" },
-            "after_x": { "type": "number" },
-            "after_y": { "type": "number" },
-            "max_abs_delta": { "type": "number", "minimum": 0 }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "kind",
-            "before_degrees",
-            "after_degrees",
-            "signed_delta_degrees",
-            "abs_delta_degrees"
-          ],
-          "properties": {
-            "kind": { "const": "skew" },
-            "before_degrees": { "type": "number" },
-            "after_degrees": { "type": "number" },
-            "signed_delta_degrees": { "type": "number" },
-            "abs_delta_degrees": { "type": "number", "minimum": 0 }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": [
-            "kind",
-            "before_matrix",
-            "after_matrix",
-            "before_determinant",
-            "after_determinant"
-          ],
-          "properties": {
-            "kind": { "const": "residual_matrix" },
-            "before_matrix": {
-              "type": "array",
-              "minItems": 6,
-              "maxItems": 6,
-              "items": { "type": "number" }
-            },
-            "after_matrix": {
-              "type": "array",
-              "minItems": 6,
-              "maxItems": 6,
-              "items": { "type": "number" }
-            },
-            "before_determinant": { "type": "number" },
-            "after_determinant": { "type": "number" }
-          },
-          "additionalProperties": false
-        }
-      ]
-    },
     "magnitude": {
       "type": "object",
       "required": [
@@ -335,9 +223,6 @@
         "raster_rgba8_rmse",
         "raster_linear_premultiplied_rgba_rmse"
       ],
-      "properties": {
-        "transform_effect": { "$ref": "#/$defs/transformEffect" }
-      },
       "additionalProperties": { "$ref": "#/$defs/nullableNumber" }
     },
     "atomicDifference": {
@@ -366,7 +251,7 @@
           "type": "object",
           "required": ["policy_id", "components"],
           "properties": {
-            "policy_id": { "const": "v2_domain_lexicographic" },
+            "policy_id": { "const": "v1_domain_lexicographic" },
             "components": { "type": "array", "items": { "type": "number" } }
           }
         }

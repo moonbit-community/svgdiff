@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-14
 
-This document states what schema `1.5` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.6` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -37,7 +37,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 
 - strict XML well-formedness and namespace-aware authored Source Spans through `Milky2018/xml@0.4.0`;
 - strict path-data parsing, absolute segment normalization, segment-level authored spans, geometry-aware one-to-one path alignment, and guarded exact segment-parameter and topology differences;
-- strict SVG transform-list parsing for `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`; source-located authored facts; and cumulative affine matrices through entities, groups, resource containers, and nested `svg` ancestry;
+- strict SVG transform-list parsing for `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`; source-located authored facts; cumulative affine matrices through entities, groups, resource containers, and nested `svg` ancestry; and canonical typed translation, rotation, signed-scale, skew, or singular residual effects;
 - formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
 - supported presentation attributes and supported inline-style declarations, including complete supported presentation/inline overlaps normalized at the private renderer boundary;
 - basic shape subjects: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`;
@@ -47,7 +47,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - source, computed, and rendered distinction for equivalent paint spellings such as `red` and `#ff0000`;
 - exact continuous parameter deltas independent of raster quantization;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
-- deterministic same-domain ordering under `v1_domain_lexicographic`;
+- deterministic same-domain ordering under `v2_domain_lexicographic`;
 - connected pixel-mask Difference Regions and conservative computed-bounds fallback regions;
 - conservative Cause Envelopes with a sound-overapproximation guarantee for complete covered regions;
 - self-contained HTML presentation generated from the report without recomputing comparison semantics.
@@ -81,7 +81,7 @@ V1 does not completely analyze:
 - static `foreignObject` through an HTML/CSS layout engine;
 - implicit network resources or caller-supplied resource bundles;
 - complete path semantics, including transformed geometry, continuous-curve boundary distance, and browser-conformant stroke and paint evaluation;
-- transform decomposition into translation, rotation, scale, skew, and residual effects, plus precise transform-aware bounds and localization;
+- precise transform-aware bounds and localization beyond the conservative whole-scene outcome regions;
 - `viewBox`, `preserveAspectRatio`, nested SVG viewports, or intrinsic viewport derivation;
 - the general CSS cascade, selectors, custom properties, or `!important`;
 - full gradients, radial gradients, patterns, markers, images, symbols, or `<use>` instances;
