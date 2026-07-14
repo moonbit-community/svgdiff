@@ -26,7 +26,8 @@ Unsupported semantics produce Diagnostics and reduce `analysis_status`; they are
 2. [`docs/README.md`](docs/README.md) for document authority and navigation.
 3. [`docs/v1-scope.md`](docs/v1-scope.md) for the current support boundary.
 4. [`docs/core-model.md`](docs/core-model.md) for report concepts and invariants.
-5. [`roadmap.md`](roadmap.md) for unfinished work.
+5. [`docs/agent-report-guide.md`](docs/agent-report-guide.md) for text-only interpretation examples.
+6. [`roadmap.md`](roadmap.md) for unfinished work.
 
 ADRs, research notes, issues, and prototypes are historical evidence. They explain why the project reached its current design but do not override the current contract or JSON Schema.
 

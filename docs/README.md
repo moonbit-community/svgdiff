@@ -15,6 +15,7 @@ This directory separates the current product contract from future plans and hist
 | What can v1 analyze completely today? | [`v1-scope.md`](v1-scope.md) |
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
+| How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | What do the report concepts and invariants mean? | [`core-model.md`](core-model.md) |
 | How is causal completeness defined? | [`influence-provenance.md`](influence-provenance.md) |
 | What remains to be built? | [`roadmap.md`](../roadmap.md) |
@@ -43,6 +44,7 @@ These files must be updated whenever behavior changes:
 - [`v1-scope.md`](v1-scope.md): implemented support and coverage boundary;
 - [`feature-coverage.md`](feature-coverage.md): feature-to-Diagnostic-to-test traceability;
 - [`analysis-status.md`](analysis-status.md): exact caller guarantees for every analysis status;
+- [`agent-report-guide.md`](agent-report-guide.md): reading order and worked report interpretations for text-only agents;
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.
