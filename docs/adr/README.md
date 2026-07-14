@@ -29,6 +29,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0044](0044-compare-canonical-report-bundles-across-a-fixed-platform-matrix.md) | Accepted, implemented | Compare canonical report bundles across an explicit three-platform, two-architecture CI matrix. |
 | [0045](0045-publish-only-version-matched-cross-platform-release-assets.md) | Accepted, implemented | Publish native archives only from a version-matched tag after cross-platform candidate gates pass. |
 | [0047](0047-decompose-paired-cumulative-transforms.md) | Accepted | Decompose paired cumulative transforms into typed domain-specific effects without a raw matrix score. |
+| [0048](0048-resolve-svg-viewports-under-one-comparison-viewport.md) | Accepted, implemented for the explicit-profile integer-axis slice | Resolve root and nested SVG viewport mappings without giving the inputs independent raster canvases. |
 
 ## Correctness boundary and provenance
 
@@ -36,7 +37,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | --- | --- | --- |
 | [0009](0009-scope-initial-correctness-to-deterministic-static-svg.md) | Accepted | Scope the initial correctness claim to deterministic static SVG. |
 | [0010](0010-guarantee-causal-completeness-with-conservative-provenance.md) | Accepted, implemented for the supported slice | Guarantee causal completeness through conservative provenance. |
-| [0021](0021-use-one-resolved-comparison-viewport.md) | Accepted target; only explicit viewport dimensions are implemented | Compare both inputs under one resolved viewport. |
+| [0021](0021-use-one-resolved-comparison-viewport.md) | Refined by 0048; explicit viewport dimensions and SVG-internal mappings are implemented | Compare both inputs under one resolved viewport. |
 | [0022](0022-separate-raw-raster-evidence-from-perceptual-background.md) | Accepted target; perceptual backgrounds are not implemented | Separate raw raster evidence from a perceptual background. |
 | [0023](0023-default-the-comparison-dpr-to-one.md) | Accepted, implemented as a fixed v1 value | Default Comparison DPR to one. |
 | [0024](0024-use-srgb-semantics-and-linear-srgb-raster-math.md) | Accepted, implemented for the v1 raster metrics | Use sRGB semantics and linear-sRGB premultiplied raster math. |

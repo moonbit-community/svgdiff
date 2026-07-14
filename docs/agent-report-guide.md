@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.6` interpretation guide
+Status: current schema `1.7` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -72,6 +72,8 @@ The following outcomes are deliberately different:
 
 For transforms, keep `geometry.transform.list`, `geometry.transform.cumulative_matrix`, and the five effect domains distinct. The first identifies the authored transform declaration and may be computed-equivalent to another list; the second identifies the resulting root-to-subject affine mapping. `geometry.transform.translation`, `.rotation`, `.scale`, and `.skew` carry a tagged `magnitude.transform_effect` with before, after, and domain-specific delta fields. Translation uses CSS pixels, rotation and skew use shortest signed degree deltas, and signed X/Y scales preserve reflections. `geometry.transform.residual_matrix` retains exact coefficients when a singular linear transform has no unique finite decomposition; do not turn those coefficients into a scalar distance. These domains are separate evidence and must not be added or compared across units. Transform events currently use the complete scene pixel mask because ordinary subject bounds are not transform-aware; this is a conservative localization, not a claim that every returned region belongs only to that subject.
 
+Read `document.viewport` the same way as an authored coordinate-system cause, not as a second raster canvas. Resolve its Changed Fact to see whether `x`, `y`, `width`, `height`, `viewBox`, or `preserveAspectRatio` changed, then follow linked cumulative-matrix and typed effect differences to describe the consequence for each affected leaf. A root intrinsic `width` or `height` change can be computed-equivalent because the recorded profile still supplies one common viewport. A `preserveAspectRatio` change without a `viewBox` is likewise ignored by computed mapping. Do not hide either source distinction, and do not claim that the two inputs were rendered at different sizes.
+
 ## Magnitude and importance
 
 Magnitude fields are evidence, not severity labels:
@@ -82,7 +84,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.6` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.7` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

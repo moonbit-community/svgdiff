@@ -127,13 +127,19 @@ fn validate_subject_and_property_coverage(
   after_svg : String,
   failures : Array[String],
 ) -> Unit {
-  let before_subjects = extract_source_subjects_or_raise(before_svg) catch {
+  let before_subjects = extract_source_subjects_with_profile_or_raise(
+    before_svg,
+    report.profile,
+  ) catch {
     _ => {
       add_coverage_proof_failure(failures, "before_subject_inventory_failed")
       []
     }
   }
-  let after_subjects = extract_source_subjects_or_raise(after_svg) catch {
+  let after_subjects = extract_source_subjects_with_profile_or_raise(
+    after_svg,
+    report.profile,
+  ) catch {
     _ => {
       add_coverage_proof_failure(failures, "after_subject_inventory_failed")
       []

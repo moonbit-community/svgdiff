@@ -67,7 +67,7 @@ test "unsupported attribute families never produce complete equality" {
   }
   for
     viewport_attribute in [
-      "viewBox='0 0 8 8'", "viewBox='0 0 8 8' preserveAspectRatio='none'",
+      "viewBox='0 0 0 8'", "viewBox='0 0 8 8' preserveAspectRatio='invalid'", "viewBox='0 0 8 8' width='12pt'",
     ] {
     assert_unsupported_never_proves_equality(
       "<svg width='16' height='16' \{viewport_attribute}><rect width='8' height='8'/></svg>",
@@ -76,10 +76,11 @@ test "unsupported attribute families never produce complete equality" {
 }
 
 ///|
-test "identity viewBox spellings remain a covered no-op" {
+test "supported integer viewport mappings remain complete" {
   for
     viewport_attribute in [
-      "viewBox='0 0 16 16'", "viewBox='0,0,16,16'", "viewBox=' 0  0  16  16 '", "viewBox='0 0 16 16' preserveAspectRatio='none'",
+      "viewBox='0 0 16 16'", "viewBox='0,0,16,16'", "viewBox=' 0  0  16  16 '", "viewBox='0 0 8 8' preserveAspectRatio='none'",
+      "viewBox='0 0 8 4' preserveAspectRatio='xMinYMin meet'", "viewBox='0 0 8 32' preserveAspectRatio='xMaxYMax slice'",
     ] {
     let source = "<svg width='16' height='16' \{viewport_attribute}><rect width='8' height='8'/></svg>"
     let report = @engine.compare(

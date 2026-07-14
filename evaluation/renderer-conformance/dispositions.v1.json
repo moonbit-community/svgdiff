@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/3",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/4",
   "cases": [
     {
       "id": "subtle-geometry-after",

@@ -194,10 +194,12 @@ fn generic_basic_shape_report(
   profile : ComparisonProfile,
   alignments : Array[SubjectAlignment],
 ) -> StructuredReport? {
-  let before = extract_source_subjects_or_raise(before_svg) catch {
+  let before = extract_source_subjects_with_profile_or_raise(
+    before_svg, profile,
+  ) catch {
     _ => return None
   }
-  let after = extract_source_subjects_or_raise(after_svg) catch {
+  let after = extract_source_subjects_with_profile_or_raise(after_svg, profile) catch {
     _ => return None
   }
   let needs_generic = before.length() > 1 ||
@@ -378,7 +380,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.6",
+    schema_version: "1.7",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

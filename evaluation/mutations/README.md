@@ -18,7 +18,7 @@ Each template contains exactly one `{{VALUE}}` placeholder. A case supplies the 
 - the visual subject IDs expected in `ChangedFact.affected_subject_ids`;
 - the comparison viewport and expected analysis status.
 
-The coverage contract names all six current basic subject kinds and all nineteen current authored properties. Nineteen complete cases cover the minimum applicable property/subject combinations, including a transform mutation. The fractional-opacity case verifies retained source/computed evidence behind a renderer-conformance guard, and the inherited-fill case verifies retained source evidence where computed color and rendered reconstruction remain deferred.
+The coverage contract names all six current basic subject kinds and all twenty current authored properties. Twenty complete cases cover the minimum applicable property/subject combinations, including transform and root `viewBox` mutations. The viewport case verifies that one changed root declaration reaches its affected leaf and every complete region's Cause Envelope. The fractional-opacity case verifies retained source/computed evidence behind a renderer-conformance guard, and the inherited-fill case verifies retained source evidence where computed color and rendered reconstruction remain deferred.
 
 ## Generate
 

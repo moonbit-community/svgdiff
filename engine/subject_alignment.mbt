@@ -185,23 +185,34 @@ fn joined_hierarchy_signature(stack : Array[String]) -> String {
 }
 
 ///|
-fn extract_source_subjects_or_raise(
+fn extract_source_subjects_with_profile_or_raise(
   input : String,
+  profile : ComparisonProfile,
 ) -> Array[SourceSubject] raise {
   let subjects : Array[SourceSubject] = []
   let hierarchy : Array[String] = []
   let transforms : Array[SourceTransformSite] = []
+  let viewport_contexts : Array[ViewportContext] = []
   let mut node_index = 0
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
       Start(element) => {
         let kind = element.name.local_name
-        let transform = source_transform_site(input, element, node_index)
+        let parent_viewport = viewport_contexts.last()
+        let (transform, child_viewport) = source_transform_site_with_viewport(
+          input, element, node_index, profile, parent_viewport,
+        )
         node_index += 1
         transforms.push(transform)
         if kind == "svg" || kind == "g" {
           hierarchy.push(hierarchy_element_signature(input, element))
+        }
+        if kind == "svg" {
+          match child_viewport {
+            Some(context) => viewport_contexts.push(context)
+            None => ()
+          }
         }
         if visual_subject_kind(kind) {
           subjects.push(
@@ -217,7 +228,14 @@ fn extract_source_subjects_or_raise(
       }
       Empty(element) => {
         let transform_chain = transforms.copy()
-        transform_chain.push(source_transform_site(input, element, node_index))
+        let (transform, _) = source_transform_site_with_viewport(
+          input,
+          element,
+          node_index,
+          profile,
+          viewport_contexts.last(),
+        )
+        transform_chain.push(transform)
         node_index += 1
         if visual_subject_kind(element.name.local_name) {
           subjects.push(
@@ -236,11 +254,24 @@ fn extract_source_subjects_or_raise(
         if name.local_name == "svg" || name.local_name == "g" {
           ignore(hierarchy.pop())
         }
+        if name.local_name == "svg" {
+          ignore(viewport_contexts.pop())
+        }
       }
       _ => ()
     }
   }
   subjects
+}
+
+///|
+fn extract_source_subjects_or_raise(
+  input : String,
+) -> Array[SourceSubject] raise {
+  extract_source_subjects_with_profile_or_raise(
+    input,
+    ComparisonProfile::v1_default(),
+  )
 }
 
 ///|

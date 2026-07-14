@@ -36,6 +36,9 @@ priv struct SourceTransformSite {
   normalized_signature : String
   matrix : AffineTransform
   complete : Bool
+  viewport_facts : Array[DeclaredVisualFact]
+  viewport_matrix : AffineTransform
+  viewport_complete : Bool
 }
 
 ///|
@@ -415,6 +418,9 @@ fn source_transform_site(
             normalized_signature: normalized.signature,
             matrix: normalized.matrix,
             complete: true,
+            viewport_facts: [],
+            viewport_matrix: AffineTransform::identity(),
+            viewport_complete: true,
           }
         InvalidTransformList =>
           {
@@ -426,6 +432,9 @@ fn source_transform_site(
             normalized_signature: "",
             matrix: AffineTransform::identity(),
             complete: false,
+            viewport_facts: [],
+            viewport_matrix: AffineTransform::identity(),
+            viewport_complete: true,
           }
       }
     }
@@ -439,6 +448,9 @@ fn source_transform_site(
     normalized_signature: "",
     matrix: AffineTransform::identity(),
     complete: true,
+    viewport_facts: [],
+    viewport_matrix: AffineTransform::identity(),
+    viewport_complete: true,
   }
 }
 
@@ -453,10 +465,13 @@ fn cumulative_transform(
     if site.fact is Some(_) {
       has_transform = true
     }
-    if !site.complete {
+    if !site.complete || !site.viewport_complete {
       complete = false
     }
-    matrix = matrix.multiply(site.matrix)
+    matrix = matrix.multiply(site.matrix).multiply(site.viewport_matrix)
+    if !site.viewport_matrix.is_identity() || !site.viewport_facts.is_empty() {
+      has_transform = true
+    }
   }
   (matrix, complete, has_transform)
 }

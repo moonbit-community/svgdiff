@@ -10,11 +10,11 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.4.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.6` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.6` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.4.1` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.7` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.7` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/3` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/4` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -45,6 +45,8 @@ Module `0.3.6` adds guarded path correspondence, exact normalized segment parame
 Module `0.3.7` adds strict SVG transform-list parsing, source-located transform facts, cumulative affine matrices, entity and guarded resource-transform differences, and conservative whole-scene transform regions. Valid transform attributes retire the prior `unsupported_visual_attribute` condition; malformed lists, unresolved resource transforms, and unproven general-affine rasterization allocate new Diagnostics, so Structured Report schema advances additively to `1.5`. Six browser fixtures establish exact integer axis-transform behavior and guard skew divergence, advancing the renderer conformance profile to `/3`. The report shape, production renderer identity, and ordering policy remain unchanged.
 
 Module `0.4.0` decomposes each side's cumulative affine matrix into canonical translation, rotation, signed scale, and skew components, retaining an exact residual matrix for singular linear transforms. The new optional tagged `DifferenceMagnitude.transform_effect` advances Structured Report schema additively to `1.6`. Adding that public record field is source-incompatible for exhaustive record construction below 1.0, and transform-specific ordering changes the default tuple semantics, so the module advances to `0.4.0` and the ordering policy to `v2_domain_lexicographic`. Renderer behavior, Diagnostics, production renderer identity, and conformance profile `/3` remain unchanged.
+
+Module `0.4.1` resolves root and nested SVG viewport mappings under the one explicit Comparison Viewport. Viewport declarations now produce `document.viewport` facts and their leaf consequences flow through cumulative matrices and typed transform effects. Invalid viewport semantics and unproven fractional rasterization allocate distinct Diagnostics, while four exact browser fixtures advance renderer conformance to `/4`. These behavior and Diagnostic additions advance Structured Report schema to `1.7`; public report shape and v2 ordering tuples remain unchanged.
 
 ## Structured Report schema versions
 

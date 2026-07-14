@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-14
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.6`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.7`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -53,7 +53,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 ## Known security gaps
 
-Schema `1.6` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.7` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;

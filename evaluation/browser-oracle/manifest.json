@@ -21,6 +21,10 @@
     { "id": "transform-scale", "source": "evaluation/renderer-conformance/fixtures/transform-scale.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "transform-rotate", "source": "evaluation/renderer-conformance/fixtures/transform-rotate.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "transform-skew-x", "source": "evaluation/renderer-conformance/fixtures/transform-skew-x.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
-    { "id": "transform-skew-y", "source": "evaluation/renderer-conformance/fixtures/transform-skew-y.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
+    { "id": "transform-skew-y", "source": "evaluation/renderer-conformance/fixtures/transform-skew-y.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "viewport-none", "source": "evaluation/renderer-conformance/fixtures/viewport-none.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "viewport-meet", "source": "evaluation/renderer-conformance/fixtures/viewport-meet.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "viewport-slice", "source": "evaluation/renderer-conformance/fixtures/viewport-slice.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "viewport-nested", "source": "evaluation/renderer-conformance/fixtures/viewport-nested.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" }
   ]
 }

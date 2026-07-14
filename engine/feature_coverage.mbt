@@ -260,10 +260,16 @@ fn attach_feature_coverage(
       diagnostic_ids: [],
     },
   ]
-  let before_subjects = extract_source_subjects_or_raise(before_svg) catch {
+  let before_subjects = extract_source_subjects_with_profile_or_raise(
+    before_svg,
+    report.profile,
+  ) catch {
     _ => []
   }
-  let after_subjects = extract_source_subjects_or_raise(after_svg) catch {
+  let after_subjects = extract_source_subjects_with_profile_or_raise(
+    after_svg,
+    report.profile,
+  ) catch {
     _ => []
   }
   for subject in before_subjects {

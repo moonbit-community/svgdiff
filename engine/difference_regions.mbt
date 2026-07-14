@@ -669,8 +669,18 @@ fn attach_difference_regions(
   comparison_guard : ComparisonGuard,
 ) -> DifferenceRegionAttachment raise ComparisonInterrupted {
   comparison_guard.checkpoint()
-  let before = extract_source_subjects_or_raise(before_svg) catch { _ => [] }
-  let after = extract_source_subjects_or_raise(after_svg) catch { _ => [] }
+  let before = extract_source_subjects_with_profile_or_raise(
+    before_svg,
+    report.profile,
+  ) catch {
+    _ => []
+  }
+  let after = extract_source_subjects_with_profile_or_raise(
+    after_svg,
+    report.profile,
+  ) catch {
+    _ => []
+  }
   let rendered_images = match
     (
       @svg.parse_svg_document(normalize_renderer_style_precedence(before_svg)),

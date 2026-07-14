@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-14
 
-This document states what schema `1.6` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.7` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -23,7 +23,7 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
 | Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/3`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/4`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -38,6 +38,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - strict XML well-formedness and namespace-aware authored Source Spans through `Milky2018/xml@0.4.0`;
 - strict path-data parsing, absolute segment normalization, segment-level authored spans, geometry-aware one-to-one path alignment, and guarded exact segment-parameter and topology differences;
 - strict SVG transform-list parsing for `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`; source-located authored facts; cumulative affine matrices through entities, groups, resource containers, and nested `svg` ancestry; and canonical typed translation, rotation, signed-scale, skew, or singular residual effects;
+- root `viewBox` mapping into the explicit Comparison Viewport and nested `svg` viewport mapping from unitless, `px`, or percentage `x`, `y`, `width`, and `height`, including all `preserveAspectRatio` alignments, `none`, `meet`, and `slice`; source-located `document.viewport` facts remain distinct from leaf cumulative matrices and typed effects;
 - formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
 - supported presentation attributes and supported inline-style declarations, including complete supported presentation/inline overlaps normalized at the private renderer boundary;
 - basic shape subjects: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`;
@@ -65,13 +66,15 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Stylesheets, selectors, or unsupported CSS syntax | Any independently supported source facts | The full cascade and selector model are not implemented. |
 | Path geometry | Strict normalized segment inventory with authored Source Spans, geometry-aware one-to-one correspondence, exact normalized command/parameter/topology differences, continuous parameter deltas, and a bounded isolated alpha-boundary maximum-distance observation | Transformed-path boundary measurement, continuous-curve boundary distance, complete stroke and paint semantics, and accepted path renderer conformance are not implemented; `unsupported_visual_subject` continues to limit computed/rendered claims. |
 | General affine transform rasterization | Exact authored transform-list and cumulative-matrix differences plus a pinned-renderer measurement | Only integer axis-aligned matrices, translations, scales, and quadrant rotations have accepted browser fixtures; `renderer_transform_raster_unproven` limits other affine Rendered Evidence. |
+| Non-integer viewport mapping | Exact viewport declarations, resolved cumulative matrices, typed transform effects, and a pinned-renderer measurement | Root and nested `none`, meet, slice, and integer-axis mappings have exact browser fixtures; `renderer_viewport_raster_unproven` limits other viewport Rendered Evidence. |
+| Invalid, non-positive, or unsupported-unit viewport declaration | Exact authored declaration and Source Span when available | `viewport_semantics_unsupported` prevents a complete coordinate mapping. |
 | Malformed transform syntax | The exact authored declaration and source span | `transform_syntax_unsupported` prevents source, computed, and rendered completeness. |
 | `gradientTransform` and `patternTransform` | Authored transform-list and resource-local matrix differences | Resource units, inheritance, references, and paint behavior remain unresolved under `resource_transform_semantics_unsupported`. |
 | Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
-Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, general affine transform rasterization, referenced-gradient rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
+Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, general affine and viewport rasterization, referenced-gradient rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
 
 ## Unsupported or deferred
 
@@ -82,7 +85,7 @@ V1 does not completely analyze:
 - implicit network resources or caller-supplied resource bundles;
 - complete path semantics, including transformed geometry, continuous-curve boundary distance, and browser-conformant stroke and paint evaluation;
 - precise transform-aware bounds and localization beyond the conservative whole-scene outcome regions;
-- `viewBox`, `preserveAspectRatio`, nested SVG viewports, or intrinsic viewport derivation;
+- automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, physical viewport units, or object-bounding-box coordinate systems;
 - the general CSS cascade, selectors, custom properties, or `!important`;
 - full gradients, radial gradients, patterns, markers, images, symbols, or `<use>` instances;
 - clipping, masking, filters, blending, isolation, and complete group compositing;

@@ -9,6 +9,13 @@
       "viewport": { "width": 16, "height": 16 }
     },
     {
+      "id": "false-complete-invalid-view-box",
+      "failure_mode": "viewport_false_complete",
+      "before": "evaluation/adversarial/cases/false-complete-invalid-view-box/before.svg",
+      "after": "evaluation/adversarial/cases/false-complete-invalid-view-box/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
       "id": "false-equality-path-change",
       "failure_mode": "false_equality",
       "before": "evaluation/adversarial/cases/false-equality-path-change/before.svg",

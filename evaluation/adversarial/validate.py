@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_MODES = {
     "false_complete",
+    "viewport_false_complete",
     "false_equality",
     "wrong_alignment",
     "attribution_leakage",
@@ -65,7 +66,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.6":
+    if report.get("schema_version") != "1.7":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -100,6 +101,17 @@ def validate_false_complete(case: dict, report: dict) -> None:
         raise ValueError("unchanged malformed transform produced complete analysis")
     if "transform_syntax_unsupported" not in diagnostic_codes(report):
         raise ValueError("false-complete case lost its transform-syntax Diagnostic")
+
+
+def validate_viewport_false_complete(case: dict, report: dict) -> None:
+    before = checked_source(case["before"])
+    after = checked_source(case["after"])
+    if before.read_bytes() != after.read_bytes():
+        raise ValueError("viewport false-complete case must be an exact self-comparison")
+    if report["analysis_status"] != "partial":
+        raise ValueError("unchanged invalid viewBox produced complete analysis")
+    if "viewport_semantics_unsupported" not in diagnostic_codes(report):
+        raise ValueError("viewport false-complete case lost its viewport Diagnostic")
 
 
 def validate_false_equality(case: dict, report: dict) -> None:
@@ -288,6 +300,7 @@ def main() -> None:
     results = []
     validators = {
         "false_complete": lambda case, report: validate_false_complete(case, report),
+        "viewport_false_complete": validate_viewport_false_complete,
         "false_equality": lambda case, report: validate_false_equality(case, report),
         "wrong_alignment": lambda _case, report: validate_wrong_alignment(report),
         "attribution_leakage": validate_attribution_leakage,

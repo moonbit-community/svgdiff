@@ -55,7 +55,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.4.0` with `moon add Milky2018/svgdiff@0.4.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.4.1` with `moon add Milky2018/svgdiff@0.4.1` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -64,7 +64,7 @@ compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 compare_with_control(before_svg, after_svg, comparison_profile, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.6`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/3`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.7`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/4`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -85,7 +85,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.6")
+  assert_eq(report.schema_version, "1.7")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -124,7 +124,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.6\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.7\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
@@ -140,12 +140,13 @@ The CLI option `--agent-json` emits the same schema and evidence without formatt
 - source spans, authored values, normalized declarations, inline-style provenance, and ordinary inherited fill;
 - set-to-set alignment for rect, circle, ellipse, line, polyline, polygon, and guarded path subjects without treating IDs or source order as identity;
 - geometry, exact normalized path parameter and topology, fill, stroke, stroke width, opacity, insertion, deletion, and basic structure differences;
+- root and nested SVG viewport declarations, nearest-viewport percentage resolution, and exact cumulative coordinate mappings under one explicit common Comparison Viewport;
 - exact continuous parameter magnitudes, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
 
 Current Diagnostics also emit `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span, and source-anchored limitations merge all applicable locations under one stable Diagnostic ID. An empty array is reserved for comparison-global or derived conditions; legacy reports may omit the optional JSON field.
 
-Scripts, animation, event state, `foreignObject`, general CSS selectors, complete path semantics, filters, masks, and deterministic font shaping are not currently evaluated. Path data is strictly parsed into normalized absolute segments with authored spans. SVG `transform` lists are strictly parsed into cumulative affine matrices across entities, groups, resource containers, and nested `svg` ancestry; authored list changes remain visible even when matrices are equivalent. Canonical typed transform effects separately report translation, rotation, signed scale, skew, or an exact singular residual matrix. Integer axis-aligned transforms have accepted browser-conformance fixtures, while fractional, non-quadrant rotated, skewed, or otherwise general affine rasterization is guarded by `renderer_transform_raster_unproven`. Resource-local transforms remain source/computed evidence behind their resource-semantics guard, and precise transform-aware bounds remain a later roadmap item. Unsupported content is never silently treated as equal.
+Scripts, animation, event state, `foreignObject`, general CSS selectors, complete path semantics, filters, masks, and deterministic font shaping are not currently evaluated. Path data is strictly parsed into normalized absolute segments with authored spans. SVG `transform` lists and root or nested viewport mappings are strictly parsed into cumulative affine matrices; authored declarations remain visible even when mappings are equivalent. Canonical typed transform effects separately report translation, rotation, signed scale, skew, or an exact singular residual matrix. Integer axis-aligned transforms and viewport mappings have accepted browser-conformance fixtures, while general affine rasterization and non-integer viewport mappings remain guarded. Root intrinsic `width` and `height` never select separate before/after canvases: the profile supplies one common Comparison Viewport. Resource-local transforms, physical viewport units, automatic viewport inference, and precise transform-aware bounds remain later roadmap items. Unsupported content is never silently treated as equal.
 
 Fractional geometry, fractional leaf opacity, and referenced-gradient raster measurements currently remain numeric pinned-renderer observations, but their Rendered Evidence coverage is limited by stable conformance Diagnostics. Exact source and computed differences remain available; consumers must not treat those raster values as browser-conformant.
 
@@ -159,11 +160,11 @@ The hand-authored [evaluation corpus](evaluation/corpus/README.md) contains stab
 
 The complementary [mutation suite](evaluation/mutations/README.md) generates deterministic pairs with independently declared Changed Facts and affected subjects. Run `sh scripts/test-mutations.sh` to verify generation and report retention.
 
-The [adversarial suite](evaluation/adversarial/README.md) checks false-complete, false-equality, source-order alignment, attribution-leakage, and magnitude-ordering counterexamples through the production CLI. Run `sh scripts/test-adversarial.sh` to execute each safety invariant twice and verify deterministic results.
+The [adversarial suite](evaluation/adversarial/README.md) checks malformed transform and viewport false-complete cases, false equality, source-order alignment, attribution leakage, magnitude ordering, and unsafe reference graphs through the production CLI. Run `sh scripts/test-adversarial.sh` to execute each safety invariant twice and verify deterministic results.
 
 The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, and unknown-ordering-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch and validation against every entry in the [released Schema registry](schema/registry.v1.json) before semantic interpretation.
 
-The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, partial coverage, and resource-limit failure. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
+The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, tiny numeric change, salient change, insertion, deletion, resources, viewport mapping, partial coverage, and failed admission. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
 
 The [determinism evaluation](evaluation/determinism/README.md) repeats equivalent, changed, structural, resource, unsupported, multi-event, and non-default-viewport comparisons in separate CLI processes. Run `sh scripts/test-report-determinism.sh` to verify byte-stable output, globally unique report-local IDs, closed references, and identical evidence in default and compact JSON. CI also compares exact canonical bundles across Ubuntu 24.04 x64, Windows Server 2025 x64, and macOS 15 arm64; `sh scripts/test-cross-platform-determinism.sh` exercises the same aggregation policy locally with positive and negative controls.
 

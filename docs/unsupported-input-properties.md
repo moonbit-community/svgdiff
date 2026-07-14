@@ -18,7 +18,7 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 
 - unsupported visual elements, both direct and nested in groups;
 - unsupported attributes across every currently supported basic shape;
-- non-identity root viewport semantics (`viewBox` and its `preserveAspectRatio` behavior); identity view boxes matching the explicit Comparison Profile are a proven no-op;
+- invalid or non-positive `viewBox`, invalid `preserveAspectRatio`, and physical viewport units; valid unitless, `px`, percentage, meet, slice, none, root, and nested viewport mappings have moved to focused complete-path tests;
 - unsupported CSS declarations and stylesheets;
 - unresolved paint values and paint servers;
 - group/root compositing and effect inputs.

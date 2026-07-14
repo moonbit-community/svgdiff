@@ -131,6 +131,26 @@
       }
     },
     {
+      "id": "viewport-change",
+      "before": "evaluation/schema-examples/cases/viewport-change/before.svg",
+      "after": "evaluation/schema-examples/cases/viewport-change/after.svg",
+      "output": "schema/examples/viewport-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": [
+          "document.viewport",
+          "geometry.transform.cumulative_matrix",
+          "geometry.transform.scale"
+        ],
+        "computed_relations": ["different", "different", "different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "document.viewport", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 },
+          { "domain": "geometry.transform.scale", "field": "magnitude.transform_effect.max_abs_delta", "op": "eq", "value": 1 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

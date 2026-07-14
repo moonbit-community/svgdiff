@@ -227,6 +227,13 @@ fn transform_fact_changes_for_alignment(
       affected_subject_ids,
     )
   }
+  add_viewport_fact_changes_for_alignment(
+    changes,
+    before.transform_chain,
+    after.transform_chain,
+    site_alignment,
+    affected_subject_ids,
+  )
   site_alignment
 }
 
@@ -276,9 +283,25 @@ fn transform_chain_renderer_diagnostic_ids(
   }
   for site in before.transform_chain {
     append_unique(transform_renderer_diagnostic_ids(report, Some(site), None))
+    append_unique(
+      viewport_diagnostic_ids(
+        report,
+        "renderer_viewport_raster_unproven",
+        Some(site),
+        None,
+      ),
+    )
   }
   for site in after.transform_chain {
     append_unique(transform_renderer_diagnostic_ids(report, None, Some(site)))
+    append_unique(
+      viewport_diagnostic_ids(
+        report,
+        "renderer_viewport_raster_unproven",
+        None,
+        Some(site),
+      ),
+    )
   }
   ids.sort()
   ids
@@ -397,7 +420,9 @@ fn append_transform_difference(
   differences : Array[AtomicDifference],
   difference_ids : Array[String],
 ) -> Array[String] {
-  let changed_fact_ids : Array[String] = []
+  let changed_fact_ids = append_viewport_differences(
+    report, alignment, before, after, site_alignment, changes, differences, difference_ids,
+  )
   for pair in site_alignment {
     let (before_index, after_index) = pair
     let before_site = transform_site_at(before.transform_chain, before_index)
@@ -501,10 +526,16 @@ fn attach_transform_differences(
   after_svg : String,
   alignments : Array[SubjectAlignment],
 ) -> StructuredReport {
-  let before_subjects = extract_source_subjects_or_raise(before_svg) catch {
+  let before_subjects = extract_source_subjects_with_profile_or_raise(
+    before_svg,
+    report.profile,
+  ) catch {
     _ => return report
   }
-  let after_subjects = extract_source_subjects_or_raise(after_svg) catch {
+  let after_subjects = extract_source_subjects_with_profile_or_raise(
+    after_svg,
+    report.profile,
+  ) catch {
     _ => return report
   }
   let changes : Array[TransformFactChange] = []
