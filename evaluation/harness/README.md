@@ -50,6 +50,18 @@ Metrics version `svgdiff-evaluation-metrics/1` keeps report and agent layers sep
 
 `evidence_test_agent.py` is a deterministic protocol and scoring fixture that copies report evidence without reading hidden labels. It is not an intelligent benchmark baseline.
 
+## Reproducible benchmark gate
+
+Run the checked repository baseline with:
+
+```sh
+sh scripts/run-agent-benchmark.sh --output /tmp/svgdiff-benchmark
+```
+
+Pass a real adapter with `--agent "command --arguments"`. The output directory must be empty and receives `reports/`, `tasks.jsonl`, `answers.jsonl`, `metrics.json`, and `gate.json`. The default `evaluation/benchmark-thresholds.v1.json` uses independent minimum and maximum checks; it does not compute a combined score. Use `--thresholds FILE` only for an explicitly versioned alternate policy.
+
+The current strict thresholds are calibrated to the seven-case corpus and deterministic evidence adapter. They are regression gates, not evidence that an external language model has been evaluated. Any corpus or metric version change requires an explicit threshold review.
+
 ## Verify
 
 ```sh

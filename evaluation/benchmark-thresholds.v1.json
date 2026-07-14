@@ -1,0 +1,22 @@
+{
+  "schema_version": "svgdiff-benchmark-thresholds/1",
+  "metrics_version": "svgdiff-evaluation-metrics/1",
+  "corpus_version": "svgdiff-corpus/1",
+  "minimum": {
+    "agent_coverage_status_accuracy_macro": 1.0,
+    "agent_equality_conclusion_accuracy_macro": 1.0,
+    "agent_required_diagnostic_recall_macro": 1.0,
+    "agent_atomic_difference_recall_macro": 1.0,
+    "agent_main_difference_mrr": 1.0,
+    "report_region_overlap_macro": 0.8,
+    "agent_region_overlap_macro": 0.8,
+    "report_cause_envelope_recall_macro": 1.0,
+    "agent_possible_cause_recall_macro": 1.0
+  },
+  "maximum": {
+    "agent_hard_safety_failure_count": 0,
+    "report_cause_false_positive_count": 1,
+    "agent_cause_false_positive_count": 1,
+    "invalid_evidence_reference_count": 0
+  }
+}

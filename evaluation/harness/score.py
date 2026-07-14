@@ -136,6 +136,35 @@ def score_case(task, answer, ranking, region_label, cause_label):
     report = task["report"]
     validate_answer(answer, case_id)
 
+    coverage = answer["coverage"]
+    coverage_status_accuracy = (
+        1.0 if coverage["analysis_status"] == report["analysis_status"] else 0.0
+    )
+    if report["analysis_status"] != "complete":
+        expected_equality = "not_established"
+    elif report["atomic_differences"]:
+        expected_equality = "different"
+    else:
+        expected_equality = "established"
+    equality_accuracy = (
+        1.0 if coverage["equality_conclusion"] == expected_equality else 0.0
+    )
+    required_diagnostic_ids = {item["id"] for item in report["diagnostics"]}
+    agent_diagnostic_ids = set(coverage["diagnostic_ids"])
+    if required_diagnostic_ids:
+        diagnostic_recall = len(required_diagnostic_ids & agent_diagnostic_ids) / len(
+            required_diagnostic_ids
+        )
+    else:
+        diagnostic_recall = 1.0
+    hard_safety_failure = (
+        1
+        if coverage_status_accuracy < 1
+        or equality_accuracy < 1
+        or diagnostic_recall < 1
+        else 0
+    )
+
     expected_difference_ids = {
         difference["id"] for difference in report["atomic_differences"]
     }
@@ -208,6 +237,10 @@ def score_case(task, answer, ranking, region_label, cause_label):
 
     return {
         "case_id": case_id,
+        "agent_coverage_status_accuracy": coverage_status_accuracy,
+        "agent_equality_conclusion_accuracy": equality_accuracy,
+        "agent_required_diagnostic_recall": diagnostic_recall,
+        "agent_hard_safety_failure": hard_safety_failure,
         "agent_atomic_difference_recall": atomic_recall,
         "agent_main_difference_reciprocal_rank": reciprocal_rank(answer, ranking),
         "report_region_overlap": report_region_overlap,
@@ -274,6 +307,18 @@ def main():
             "metrics_version": "svgdiff-evaluation-metrics/1",
             "case_count": len(per_case),
             "aggregate": {
+                "agent_coverage_status_accuracy_macro": mean(
+                    values("agent_coverage_status_accuracy")
+                ),
+                "agent_equality_conclusion_accuracy_macro": mean(
+                    values("agent_equality_conclusion_accuracy")
+                ),
+                "agent_required_diagnostic_recall_macro": mean(
+                    values("agent_required_diagnostic_recall")
+                ),
+                "agent_hard_safety_failure_count": sum(
+                    values("agent_hard_safety_failure")
+                ),
                 "agent_atomic_difference_recall_macro": mean(
                     values("agent_atomic_difference_recall")
                 ),

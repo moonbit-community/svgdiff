@@ -48,6 +48,7 @@ graph TD
   ISS_029["ISS-029: Add actual-cause reference labels"]
   ISS_030["ISS-030: Build the text-only agent evaluation harness"]
   ISS_031["ISS-031: Measure core report and agent evaluation metrics"]
+  ISS_032["ISS-032: Establish reproducible benchmark thresholds"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -72,6 +73,7 @@ graph TD
   ISS_028 --> ISS_029
   ISS_029 --> ISS_030
   ISS_030 --> ISS_031
+  ISS_031 --> ISS_032
 ```
 
 ## Warnings

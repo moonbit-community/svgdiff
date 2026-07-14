@@ -44,6 +44,10 @@ python3 evaluation/harness/score.py \
 jq -e '
   .metrics_version == "svgdiff-evaluation-metrics/1" and
   .case_count == 7 and
+  .aggregate.agent_coverage_status_accuracy_macro == 1 and
+  .aggregate.agent_equality_conclusion_accuracy_macro == 1 and
+  .aggregate.agent_required_diagnostic_recall_macro == 1 and
+  .aggregate.agent_hard_safety_failure_count == 0 and
   .aggregate.agent_atomic_difference_recall_macro == 1 and
   .aggregate.agent_main_difference_mrr == 1 and
   .aggregate.report_region_overlap_macro == 0.8 and
@@ -56,6 +60,7 @@ jq -e '
 ' "$evidence_metrics" >/dev/null
 
 jq -e '
+  .aggregate.agent_hard_safety_failure_count == 0 and
   .aggregate.agent_atomic_difference_recall_macro < 1 and
   .aggregate.agent_main_difference_mrr == 0 and
   .aggregate.agent_region_overlap_macro == 0 and
