@@ -14,6 +14,17 @@ fn usage() -> String {
 }
 
 ///|
+fn help_text() -> String {
+  usage() +
+  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
+}
+
+///|
+fn version_text() -> String {
+  "svgdiff 0.1.0\nengine: 0.1.0\nschema: 1.0\nrenderer: mizchi/svg@0.2.1\nordering-policy: v1_domain_lexicographic"
+}
+
+///|
 fn parse_positive_int(value : String, option : String) -> Int? {
   let parsed = @string.parse_int(value) catch { _ => return None }
   if parsed > 0 {
@@ -85,7 +96,16 @@ fn read_svg(path : String) -> String? {
 
 ///|
 fn main {
-  let config = match parse_cli(@sys.get_cli_args()) {
+  let args = @sys.get_cli_args()
+  if args.any(argument => argument == "--help") {
+    println(help_text())
+    return
+  }
+  if args.any(argument => argument == "--version") {
+    println(version_text())
+    return
+  }
+  let config = match parse_cli(args) {
     Some(config) => config
     None => {
       @sys.exit(2)

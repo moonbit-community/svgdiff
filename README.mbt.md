@@ -22,6 +22,15 @@ sh scripts/install.sh --bindir "$HOME/bin"
 
 ## Command line
 
+Inspect the installed command and every version that affects report interpretation:
+
+```sh
+svgdiff --help
+svgdiff --version
+```
+
+Version output identifies the `svgdiff` module and engine, Structured Report schema, pinned renderer, and domain-ordering policy. These identities must be reviewed together when their corresponding contracts change.
+
 Run the native CLI from the repository root:
 
 ```sh

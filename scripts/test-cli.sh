@@ -17,6 +17,18 @@ grep -q 'sandbox=""' "$tmp/report.html"
 grep -q 'id="report-data"' "$tmp/report.html"
 jq empty schema/svgdiff-report.schema.json
 
+moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
+grep -q '^Usage: svgdiff ' "$tmp/help.txt"
+grep -q -- '--version' "$tmp/help.txt"
+grep -q 'Invalid arguments or file I/O failure' "$tmp/help.txt"
+
+moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
+grep -q '^svgdiff 0.1.0$' "$tmp/version.txt"
+grep -q '^engine: 0.1.0$' "$tmp/version.txt"
+grep -q '^schema: 1.0$' "$tmp/version.txt"
+grep -q '^renderer: mizchi/svg@0.2.1$' "$tmp/version.txt"
+grep -q '^ordering-policy: v1_domain_lexicographic$' "$tmp/version.txt"
+
 if moon run --target native cmd/svgdiff -- >/dev/null 2>&1; then
   echo "CLI unexpectedly accepted missing arguments" >&2
   exit 1

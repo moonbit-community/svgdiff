@@ -25,3 +25,24 @@ test "CLI rejects missing and invalid arguments" {
     parse_cli(["svgdiff", "a.svg", "b.svg", "--unknown", "x"]) is None,
   )
 }
+
+///|
+test "CLI help documents options and exit statuses" {
+  let help = help_text()
+  assert_true(help.has_prefix("Usage: svgdiff"))
+  assert_true(help.contains("--width N"))
+  assert_true(help.contains("--height N"))
+  assert_true(help.contains("--output FILE"))
+  assert_true(help.contains("--html FILE"))
+  assert_true(help.contains("--help"))
+  assert_true(help.contains("--version"))
+  assert_true(help.contains("2  Invalid arguments or file I/O failure"))
+}
+
+///|
+test "CLI version exposes every contract identity" {
+  assert_eq(
+    version_text(),
+    "svgdiff 0.1.0\nengine: 0.1.0\nschema: 1.0\nrenderer: mizchi/svg@0.2.1\nordering-policy: v1_domain_lexicographic",
+  )
+}

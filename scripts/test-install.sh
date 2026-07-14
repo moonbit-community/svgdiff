@@ -21,6 +21,12 @@ jq -e '
   .analysis_status == "complete" and
   (.atomic_differences | length) == 1
 ' report.json >/dev/null
+PATH="$bindir:$PATH" svgdiff --help >help.txt
+PATH="$bindir:$PATH" svgdiff --version >version.txt
+grep -q '^Usage: svgdiff ' help.txt
+grep -q '^svgdiff 0.1.0$' version.txt
+grep -q '^schema: 1.0$' version.txt
+grep -q '^renderer: mizchi/svg@0.2.1$' version.txt
 
 cd "$root"
 second_output=$(sh scripts/install.sh --bindir "$bindir")
