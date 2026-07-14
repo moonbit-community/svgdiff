@@ -22,6 +22,8 @@ The completed v1 foundation is tracked in [`issues/`](issues/). This file is the
 
 The phase checklists below are intentionally exhaustive. Use the milestone gates near the end for release decisions and the phase lists for issue creation. Items should move into the issue tracker when scheduled; completion evidence belongs in the issue rather than being duplicated here.
 
+Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.md). Planned, deferred, and undecided capabilities remain visible; any intentional rejection or supersession must be recorded in that document before an item is removed.
+
 ## Tags
 
 - **P0**: required for the next credible product milestone.
@@ -259,7 +261,13 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **P1** Keep dependency licenses, security posture, and upstream blockers current.
 - [x] **P1** Convert roadmap items into `ISS-###` issues only when they are accepted for implementation; do not duplicate unscheduled work prematurely.
 - [x] **P1** Remove or archive `prototype/influence_provenance` after all validated logic is absorbed and no experiment still depends on it.
-- [ ] **P1** Review this roadmap at every milestone and record intentionally rejected capabilities rather than silently deleting them.
+- [x] **P1** Review this roadmap at every milestone and record intentionally rejected capabilities rather than silently deleting them.
+
+## Review log
+
+| Date | Review point | Result |
+| --- | --- | --- |
+| 2026-07-14 | Pre-M1 baseline | Retained every unchecked capability; established the rejection ledger from accepted ADRs. |
 
 ## Milestone gates
 

@@ -20,6 +20,7 @@ This directory separates the current product contract from future plans and hist
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
 | When does roadmap work become an `ISS-###` issue? | [`work-planning.md`](work-planning.md) |
+| How are milestone reviews and rejected capabilities recorded? | [`roadmap-governance.md`](roadmap-governance.md) |
 | What do the report concepts and invariants mean? | [`core-model.md`](core-model.md) |
 | How is causal completeness defined? | [`influence-provenance.md`](influence-provenance.md) |
 | What remains to be built? | [`roadmap.md`](../roadmap.md) |
@@ -61,6 +62,8 @@ These files must be updated whenever behavior changes:
 [`roadmap.md`](../roadmap.md) is the complete post-v1 capability backlog. Unchecked items are not current capabilities.
 
 [`work-planning.md`](work-planning.md) defines the admission and one-item-per-commit workflow for the Markdown issue tracker.
+
+[`roadmap-governance.md`](roadmap-governance.md) defines milestone review triggers and the rejection ledger. Unchecked capabilities must not disappear from the roadmap without an explicit rejection or supersession record.
 
 ### Historical evidence
 
