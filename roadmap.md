@@ -251,7 +251,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 ## Phase 12: Documentation and maintenance
 
 - [x] **P0** Replace stale design open decisions with accepted ADRs or explicit unresolved entries.
-- [ ] **P0** Maintain a feature-to-coverage matrix linked to Diagnostics and tests.
+- [x] **P0** Maintain a feature-to-coverage matrix linked to Diagnostics and tests.
 - [ ] **P0** Document exactly what `complete`, `partial`, and `failed` guarantee to callers.
 - [ ] **P0** Document report interpretation for text-only agents with worked examples.
 - [ ] **P1** Generate public MoonBit interface documentation and library examples.
