@@ -67,6 +67,7 @@ graph TD
   ISS_048["ISS-048: Add alternate-scale renderer QA"]
   ISS_049["ISS-049: Report encountered renderer capability gaps"]
   ISS_050["ISS-050: Add adversarial comparison pairs"]
+  ISS_051["ISS-051: Add schema and policy compatibility corpus"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -110,6 +111,7 @@ graph TD
   ISS_047 --> ISS_048
   ISS_048 --> ISS_049
   ISS_049 --> ISS_050
+  ISS_050 --> ISS_051
 ```
 
 ## Warnings

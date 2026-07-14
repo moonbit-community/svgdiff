@@ -155,6 +155,8 @@ The complementary [mutation suite](evaluation/mutations/README.md) generates det
 
 The [adversarial suite](evaluation/adversarial/README.md) checks false-complete, false-equality, source-order alignment, attribution-leakage, and magnitude-ordering counterexamples through the production CLI. Run `sh scripts/test-adversarial.sh` to execute each safety invariant twice and verify deterministic results.
 
+The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, and unknown-ordering-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch before semantic interpretation.
+
 ## Documentation
 
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;
@@ -184,6 +186,7 @@ sh scripts/test-renderer-conformance.sh
 sh scripts/test-renderer-dispositions.sh
 sh scripts/test-alternate-scale-qa.sh
 sh scripts/test-adversarial.sh
+sh scripts/test-compatibility.sh
 ```
 
 The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.

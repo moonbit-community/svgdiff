@@ -1,0 +1,68 @@
+{
+  "schema_version": "svgdiff-compatibility-corpus/1",
+  "base_report": {
+    "before": "testdata/before.svg",
+    "after": "testdata/after.svg",
+    "viewport": { "width": 16, "height": 16 }
+  },
+  "consumer_policy": {
+    "policy_id": "svgdiff-consumer-compatibility/1",
+    "accepted_schema_versions": ["1.0"],
+    "accepted_ordering_policy_ids": ["v1_domain_lexicographic"],
+    "legacy_optional_paths": [
+      ["coverage_matrix"],
+      ["profile", "renderer_conformance_profile_id"],
+      ["renderer_capability_gaps"]
+    ]
+  },
+  "cases": [
+    {
+      "id": "current-schema-and-policy",
+      "mutations": [],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_current"
+    },
+    {
+      "id": "legacy-optional-fields-absent",
+      "mutations": [
+        { "op": "remove", "path": ["coverage_matrix"] },
+        { "op": "remove", "path": ["profile", "renderer_conformance_profile_id"] },
+        { "op": "remove", "path": ["renderer_capability_gaps"] }
+      ],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_legacy_optional_fields"
+    },
+    {
+      "id": "future-additive-top-level-field",
+      "mutations": [
+        {
+          "op": "set",
+          "path": ["future_optional_metadata"],
+          "value": { "producer_hint": "ignored-by-v1-consumer" }
+        }
+      ],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_additive_fields"
+    },
+    {
+      "id": "unknown-schema-version",
+      "mutations": [
+        { "op": "set", "path": ["schema_version"], "value": "2.0" }
+      ],
+      "expected_decision": "rejected",
+      "expected_reason": "unknown_schema_version"
+    },
+    {
+      "id": "unknown-ordering-policy",
+      "mutations": [
+        {
+          "op": "set",
+          "path": ["atomic_differences", 0, "domain_ordering", "policy_id"],
+          "value": "v2_unknown_policy"
+        }
+      ],
+      "expected_decision": "rejected",
+      "expected_reason": "unknown_ordering_policy"
+    }
+  ]
+}

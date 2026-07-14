@@ -23,6 +23,7 @@ This directory separates the current product contract from future plans and hist
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
+| Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
 | What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |

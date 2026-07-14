@@ -138,8 +138,9 @@ Schema `1.0` is a versioned consumer contract. A change to required fields, fiel
 4. Update public MoonBit types and serialization first, then regenerate `.mbti` with `moon info`.
 5. Update `schema/svgdiff-report.schema.json` and its `$id`, title, constants, required fields, definitions, and enums.
 6. Add validation fixtures for every supported schema version and an explicit migration or rejection test.
-7. Update README examples, the core model, status contract, agent guide, and CLI version output when available.
-8. Verify that the HTML report consumes the new shape without becoming a second semantic implementation.
+7. Update the [compatibility corpus](../evaluation/compatibility/README.md) with current, legacy, additive, and unknown-version decisions.
+8. Update README examples, the core model, status contract, agent guide, and CLI version output when available.
+9. Verify that the HTML report consumes the new shape without becoming a second semantic implementation.
 
 Until formal compatibility rules are accepted, prefer a new version for any ambiguous consumer-visible change.
 
@@ -154,8 +155,9 @@ Until formal compatibility rules are accepted, prefer a new version for any ambi
 3. Add controlled same-domain cases whose intended order is explainable without the implementation.
 4. Compare old and new ordering across the evaluation corpus.
 5. Allocate a new `policy_id` whenever components, order, direction, or tie-breaking changes.
-6. Update report construction, HTML grouping/order behavior, agent interpretation guidance, tests, and the feature coverage matrix.
-7. Never compare tuples from different policy IDs as if they shared semantics.
+6. Add the new ID and its old-to-new acceptance or rejection cases to the [compatibility corpus](../evaluation/compatibility/README.md).
+7. Update report construction, HTML grouping/order behavior, agent interpretation guidance, tests, and the feature coverage matrix.
+8. Never compare tuples from different policy IDs as if they shared semantics.
 
 Cross-domain ranking requires its own accepted policy and must not be smuggled into a same-domain upgrade.
 
