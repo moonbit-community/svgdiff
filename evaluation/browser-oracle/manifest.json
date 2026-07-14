@@ -25,6 +25,13 @@
     { "id": "viewport-none", "source": "evaluation/renderer-conformance/fixtures/viewport-none.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "viewport-meet", "source": "evaluation/renderer-conformance/fixtures/viewport-meet.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "viewport-slice", "source": "evaluation/renderer-conformance/fixtures/viewport-slice.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
-    { "id": "viewport-nested", "source": "evaluation/renderer-conformance/fixtures/viewport-nested.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" }
+    { "id": "viewport-nested", "source": "evaluation/renderer-conformance/fixtures/viewport-nested.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "basic-shape-rounded-rect", "source": "evaluation/renderer-conformance/fixtures/basic-shape-rounded-rect.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "basic-shape-zero-circle", "source": "evaluation/renderer-conformance/fixtures/basic-shape-zero-circle.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "basic-shape-polygon", "source": "evaluation/renderer-conformance/fixtures/basic-shape-polygon.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "basic-shape-circle", "source": "evaluation/renderer-conformance/fixtures/basic-shape-circle.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "basic-shape-ellipse", "source": "evaluation/renderer-conformance/fixtures/basic-shape-ellipse.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "basic-shape-line-fill-only", "source": "evaluation/renderer-conformance/fixtures/basic-shape-line-fill-only.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "basic-shape-polyline-fill", "source": "evaluation/renderer-conformance/fixtures/basic-shape-polyline-fill.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
   ]
 }

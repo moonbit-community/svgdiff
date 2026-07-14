@@ -76,7 +76,7 @@
       "template": "templates/circle-position.svg.tmpl",
       "before_value": "6", "after_value": "10",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "cx", "report_property": "cx", "before_declared_value": "6", "after_declared_value": "10", "affected_subject_ids": ["dot"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-circle-cy",
@@ -84,7 +84,7 @@
       "before_value": "<circle id='dot' cx='8' cy='6' r='3' fill='blue'/>",
       "after_value": "<circle id='dot' cx='8' cy='10' r='3' fill='blue'/>",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "cy", "report_property": "cy", "before_declared_value": "6", "after_declared_value": "10", "affected_subject_ids": ["dot"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-circle-r",
@@ -92,7 +92,7 @@
       "before_value": "<circle id='dot' cx='8' cy='8' r='3' fill='blue'/>",
       "after_value": "<circle id='dot' cx='8' cy='8' r='5' fill='blue'/>",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "r", "report_property": "r", "before_declared_value": "3", "after_declared_value": "5", "affected_subject_ids": ["dot"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-circle-stroke",
@@ -100,7 +100,7 @@
       "before_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='red'/>",
       "after_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='blue'/>",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "stroke", "report_property": "stroke", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["dot"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-circle-stroke-width",
@@ -108,7 +108,7 @@
       "before_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='black' stroke-width='1'/>",
       "after_value": "<circle id='dot' cx='8' cy='8' r='3' fill='none' stroke='black' stroke-width='2'/>",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "stroke-width", "report_property": "stroke-width", "before_declared_value": "1", "after_declared_value": "2", "affected_subject_ids": ["dot"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-ellipse-rx",
@@ -116,7 +116,7 @@
       "before_value": "<ellipse id='oval' cx='8' cy='8' rx='3' ry='2' fill='blue'/>",
       "after_value": "<ellipse id='oval' cx='8' cy='8' rx='5' ry='2' fill='blue'/>",
       "expected_changed_fact": { "subject_kind": "ellipse", "source_property": "rx", "report_property": "rx", "before_declared_value": "3", "after_declared_value": "5", "affected_subject_ids": ["oval"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-ellipse-ry",
@@ -124,7 +124,7 @@
       "before_value": "<ellipse id='oval' cx='8' cy='8' rx='3' ry='2' fill='blue'/>",
       "after_value": "<ellipse id='oval' cx='8' cy='8' rx='3' ry='4' fill='blue'/>",
       "expected_changed_fact": { "subject_kind": "ellipse", "source_property": "ry", "report_property": "ry", "before_declared_value": "2", "after_declared_value": "4", "affected_subject_ids": ["oval"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-line-x1",
@@ -164,7 +164,7 @@
       "before_value": "<polyline id='route' points='1,1 8,8 14,1' fill='none' stroke='black'/>",
       "after_value": "<polyline id='route' points='1,1 8,12 14,1' fill='none' stroke='black'/>",
       "expected_changed_fact": { "subject_kind": "polyline", "source_property": "points", "report_property": "points", "before_declared_value": "1,1 8,8 14,1", "after_declared_value": "1,1 8,12 14,1", "affected_subject_ids": ["route"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-polygon-points",
@@ -172,7 +172,7 @@
       "before_value": "<polygon id='area' points='1,1 8,8 14,1' fill='blue'/>",
       "after_value": "<polygon id='area' points='1,1 8,12 14,1' fill='blue'/>",
       "expected_changed_fact": { "subject_kind": "polygon", "source_property": "points", "report_property": "points", "before_declared_value": "1,1 8,8 14,1", "after_declared_value": "1,1 8,12 14,1", "affected_subject_ids": ["area"] },
-      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-inherited-fill",

@@ -22,3 +22,19 @@ test "single-region magnitude scans its bounds and still excludes equal pixels" 
     _ => fail("expected one connected ring region")
   }
 }
+
+///|
+test "polygon bounds use the canonical point sequence" {
+  let source = "<svg width='20' height='20'><polygon points='1 2,8 2,5 7'/></svg>"
+  let subjects = extract_source_subjects_with_profile_or_raise(
+    source,
+    ComparisonProfile::v1_default(),
+  )
+  guard source_subject_bounds(subjects[0]) is Some(bounds) else {
+    fail("valid polygon must have computed bounds")
+  }
+  assert_eq(bounds.x, 1.0)
+  assert_eq(bounds.y, 2.0)
+  assert_eq(bounds.width, 7.0)
+  assert_eq(bounds.height, 5.0)
+}

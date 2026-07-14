@@ -93,6 +93,18 @@ test "supported integer viewport mappings remain complete" {
 }
 
 ///|
+test "unsupported basic shape geometry never proves equality" {
+  for
+    content in [
+      "<rect id='box' width='-1' height='8'/>", "<rect id='box' width='8px' height='8'/>",
+      "<circle id='dot' r='-1'/>", "<ellipse id='oval' rx='2' ry='-1'/>", "<line id='edge' x1='1px' x2='8'/>",
+      "<polyline id='route' points='0,0 4,invalid'/>", "<polygon id='area' points='0,0 4,0 4,4 99'/>",
+    ] {
+    assert_unsupported_never_proves_equality(unsupported_document(content))
+  }
+}
+
+///|
 test "unsupported CSS paint resource and compositing families never prove equality" {
   let cases = [
     "<rect width='8' height='8' fill='currentColor'/>", "<rect width='8' height='8' fill='inherit'/>",
@@ -114,6 +126,7 @@ test "unproven renderer conformance families never prove equality" {
       "<rect id='box' x='0.99999' y='2' width='8' height='8'/>", "<rect id='box' x='2' y='2' width='8' height='8' opacity='0.5'/>",
       "<defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#gradient)'/>",
       "<rect id='box' x='2' y='2' width='8' height='8' transform='skewX(20)'/>",
+      "<rect id='box' x='2' y='2' width='8' height='8' rx='2'/>", "<polygon id='area' points='2,2 14,2 8,14'/>",
     ] {
     assert_unsupported_never_proves_equality(unsupported_document(content))
   }

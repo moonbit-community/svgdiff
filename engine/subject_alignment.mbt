@@ -6,6 +6,10 @@ priv struct SourceSubject {
   kind : String
   values : Array[(String, String)]
   facts : Array[DeclaredVisualFact]
+  geometry_invalid_facts : Array[DeclaredVisualFact]
+  geometry_complete : Bool
+  fillable_interior : Bool
+  renders_geometry : Bool
   path_segments : Array[PathSegmentEvidence]
   path_data_complete : Bool
   transform_chain : Array[SourceTransformSite]
@@ -89,21 +93,27 @@ fn subject_from_element(
     }
     None => ()
   }
+  let geometry = resolve_basic_shape_geometry(element.name.local_name, facts)
   let values : Array[(String, String)] = []
   for fact in facts {
     if fact.property == "transform" {
       continue
     }
-    values.push(
-      (
-        fact.property,
-        if fact.property == "d" {
-          fact.declared_value
-        } else {
-          fact.declared_value.to_lower()
-        },
-      ),
-    )
+    if !basic_shape_geometry_property(element.name.local_name, fact.property) {
+      values.push(
+        (
+          fact.property,
+          if fact.property == "d" {
+            fact.declared_value
+          } else {
+            fact.declared_value.to_lower()
+          },
+        ),
+      )
+    }
+  }
+  for value in geometry.values {
+    values.push(value)
   }
   let (cumulative_transform, transform_complete, has_transform) = cumulative_transform(
     transform_chain,
@@ -129,6 +139,10 @@ fn subject_from_element(
     kind: element.name.local_name,
     values,
     facts,
+    geometry_invalid_facts: geometry.invalid_facts,
+    geometry_complete: geometry.complete,
+    fillable_interior: geometry.fillable_interior,
+    renders_geometry: geometry.renders_geometry,
     path_segments,
     path_data_complete,
     transform_chain,

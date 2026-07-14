@@ -22,6 +22,14 @@ test "current renderer diagnostics expose stable capability gaps" {
       "raster.viewport_mapping", "guarded",
     ),
     (
+      "<svg width='16' height='16'><rect id='box' width='8' height='8' rx='2'/></svg>",
+      "raster.curved_shapes", "guarded",
+    ),
+    (
+      "<svg width='16' height='16'><polygon id='area' points='2,2 14,2 8,14'/></svg>",
+      "raster.point_shapes", "guarded",
+    ),
+    (
       "<svg width='16' height='16'><defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#gradient)'/></svg>",
       "raster.referenced_gradient", "guarded",
     ),

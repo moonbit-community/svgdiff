@@ -51,7 +51,12 @@ test "circle geometry uses the generic aligned-subject engine" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_curved_shape_raster_unproven"
+    }),
+  )
   assert_eq(report.atomic_differences.length(), 2)
   assert_true(
     report.atomic_differences.any(difference => {
@@ -114,8 +119,177 @@ test "ellipse line polyline and polygon share generic enumeration" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_point_shape_raster_unproven"
+    }),
+  )
   assert_eq(report.atomic_differences.length(), 5)
+}
+
+///|
+test "basic shape rewrites retain source facts and compare canonical geometry" {
+  let before = shape_svg(
+    "<rect id='round' width='10' height='6' rx='8'/><polyline id='route' points='0,0 4,4'/>",
+  )
+  let after = shape_svg(
+    "<rect id='round' width='10' height='6' rx='5' ry='3'/><polyline id='route' points='0 0,4 4'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_curved_shape_raster_unproven"
+    }),
+  )
+  assert_true(report.atomic_differences.length() >= 3)
+  assert_true(
+    report.atomic_differences.all(difference => {
+      difference.computed_relation.status == "equivalent"
+    }),
+  )
+  assert_true(
+    report.events.all(event => {
+      event.rendered_outcome.magnitude.unwrap().changed_pixels == 0
+    }),
+  )
+}
+
+///|
+test "invalid basic shape geometry cannot produce complete equality" {
+  let source = shape_svg("<circle id='dot' cx='4' cy='4' r='-1'/>")
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  let diagnostics = [
+    for diagnostic in report.diagnostics if diagnostic.code ==
+    "basic_shape_geometry_unsupported" => diagnostic
+  ]
+  assert_eq(diagnostics.length(), 1)
+  assert_eq(
+    diagnostics[0].source_locations.map(location => location.source_role),
+    ["before", "after"],
+  )
+  assert_true(
+    diagnostics[0].source_locations.all(location => {
+      location.source_span.end_offset > location.source_span.start_offset
+    }),
+  )
+}
+
+///|
+test "valid zero geometry remains numeric and contributes no pixels" {
+  let before = shape_svg("<circle id='dot' cx='4' cy='4' r='0' fill='red'/>")
+  let after = shape_svg("<circle id='dot' cx='4' cy='4' fill='red'/>")
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].source_before, "0")
+  assert_eq(report.atomic_differences[0].source_after, "")
+  assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+  assert_true(report.events[0].difference_regions.is_empty())
+}
+
+///|
+test "rectangle auto dimension resolves to explicit zero" {
+  let before = shape_svg("<rect id='box' width='auto' height='6' fill='red'/>")
+  let after = shape_svg("<rect id='box' width='0' height='6' fill='red'/>")
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+}
+
+///|
+test "odd point coordinate is recovered but remains a diagnosed error" {
+  let source = shape_svg(
+    "<polygon id='area' points='0,0 4,0 4,4 99' fill='red'/>",
+  )
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "basic_shape_geometry_unsupported"
+    }),
+  )
+}
+
+///|
+test "line fill differences are source-visible and computed neutral" {
+  let before = shape_svg(
+    "<line id='edge' x1='1' y1='1' x2='8' y2='8' fill='red'/>",
+  )
+  let after = shape_svg(
+    "<line id='edge' x1='1' y1='1' x2='8' y2='8' fill='blue'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].domain, "paint.fill")
+  assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+}
+
+///|
+test "polyline fill differences use implicit subpath closure" {
+  let before = shape_svg(
+    "<polyline id='area' points='2,2 14,2 8,14' fill='red'/>",
+  )
+  let after = shape_svg(
+    "<polyline id='area' points='2,2 14,2 8,14' fill='blue'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].computed_relation.status, "different")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_point_shape_raster_unproven"
+    }),
+  )
 }
 
 ///|

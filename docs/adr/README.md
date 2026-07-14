@@ -52,6 +52,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0025](0025-own-source-semantics-as-a-workspace-module.md) | Superseded by 0026 | Originally own Source Semantics as a workspace module. |
 | [0026](0026-adopt-milky-xml-for-authored-parsing.md) | Accepted, implemented | Adopt `Milky2018/xml` for authored parsing. |
 | [0046](0046-normalize-style-precedence-at-the-renderer-boundary.md) | Accepted, implemented | Normalize complete supported style conflicts only in private renderer-input copies. |
+| [0049](0049-separate-authored-and-used-basic-shape-geometry.md) | Accepted, implemented | Preserve authored geometry while resolving canonical used basic-shape geometry. |
 
 ## CLI and distribution decisions
 

@@ -151,6 +151,21 @@
       }
     },
     {
+      "id": "basic-shape-equivalent",
+      "before": "evaluation/schema-examples/cases/basic-shape-equivalent/before.svg",
+      "after": "evaluation/schema-examples/cases/basic-shape-equivalent/after.svg",
+      "output": "schema/examples/basic-shape-equivalent.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["geometry.size", "geometry.size"],
+        "computed_relations": ["equivalent", "equivalent"],
+        "diagnostic_codes": ["renderer_curved_shape_raster_unproven"],
+        "magnitude_checks": [
+          { "domain": "geometry.size", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

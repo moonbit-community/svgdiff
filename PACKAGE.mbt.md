@@ -5,7 +5,7 @@
 ## Install
 
 ```sh
-moon add Milky2018/svgdiff@0.4.1
+moon add Milky2018/svgdiff@0.4.2
 ```
 
 The module currently supports the native backend only.
@@ -22,7 +22,7 @@ test "compare SVG source strings through the public package" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.7")
+  assert_eq(report.schema_version, "1.8")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() > 0)
   assert_true(report.events.length() > 0)
@@ -41,6 +41,6 @@ The root package exposes:
 - typed report, difference, magnitude, region, provenance, coverage, and Diagnostic records;
 - canonical formatted and compact JSON serialization through `StructuredReport` methods.
 
-Module version `0.4.1` emits Structured Report Schema `1.7`. The current engine is intentionally limited to a documented deterministic static subset; paths have guarded exact segment differences, while SVG transform lists and root or nested viewport mappings have exact source and cumulative affine evidence plus typed translation, rotation, signed-scale, skew, or singular residual effects. General affine or non-integer viewport rasterization, resource transforms, precise transform-aware localization, physical viewport units, general CSS, filters, masks, fonts, images, scripting, animation, and `foreignObject` remain guarded rather than implying equality.
+Module version `0.4.2` emits Structured Report Schema `1.8`. The current engine is intentionally limited to a documented deterministic static subset. Basic shapes resolve canonical unitless used geometry while retaining authored facts; paths have guarded exact segment differences; SVG transform lists and root or nested viewport mappings have exact source and cumulative affine evidence plus typed translation, rotation, signed-scale, skew, or singular residual effects. Stroke outlines, markers, non-unitless shape geometry, rounded-rectangle and polygon browser-conformant rasterization, general affine or non-integer viewport rasterization, resource transforms, precise transform-aware localization, physical viewport units, general CSS, filters, masks, fonts, images, scripting, animation, and `foreignObject` remain guarded rather than implying equality.
 
 The module is licensed under Apache-2.0.

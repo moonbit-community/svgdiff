@@ -70,13 +70,66 @@ fn generic_computed_value(
 }
 
 ///|
+fn generic_subject_computed_value(
+  subject : SourceSubject,
+  property : String,
+  fact : DeclaredVisualFact?,
+) -> String? {
+  if basic_shape_geometry_property(subject.kind, property) {
+    return subject_value(subject, property)
+  }
+  if property == "fill" && !subject.fillable_interior {
+    return Some("none")
+  }
+  generic_computed_value(property, fact)
+}
+
+///|
+fn shape_geometry_diagnostic_ids(
+  before : SourceSubject,
+  after : SourceSubject,
+) -> Array[String] {
+  let ids : Array[String] = []
+  if !before.geometry_complete {
+    ids.push(
+      "diagnostic:basic-shape-geometry-unsupported:\{source_subject_id(before)}",
+    )
+  }
+  if !after.geometry_complete {
+    let id = "diagnostic:basic-shape-geometry-unsupported:\{source_subject_id(after)}"
+    if !ids.contains(id) {
+      ids.push(id)
+    }
+  }
+  ids.sort()
+  ids
+}
+
+///|
 fn generic_relation(
   property : String,
+  before_subject : SourceSubject,
+  after_subject : SourceSubject,
   before : DeclaredVisualFact?,
   after : DeclaredVisualFact?,
 ) -> ComputedRelation {
-  let before_value = generic_computed_value(property, before)
-  let after_value = generic_computed_value(property, after)
+  if basic_shape_geometry_property(before_subject.kind, property) &&
+    (!before_subject.geometry_complete || !after_subject.geometry_complete) {
+    return {
+      status: "indeterminate",
+      reason_code: "basic_shape_geometry_unsupported",
+      missing_side: None,
+      diagnostic_ids: shape_geometry_diagnostic_ids(
+        before_subject, after_subject,
+      ),
+    }
+  }
+  let before_value = generic_subject_computed_value(
+    before_subject, property, before,
+  )
+  let after_value = generic_subject_computed_value(
+    after_subject, property, after,
+  )
   match (before_value, after_value) {
     (Some(before_value), Some(after_value)) => {
       let equivalent = match
@@ -129,11 +182,17 @@ fn generic_relation(
 
 ///|
 fn generic_parameter_delta(
+  property : String,
+  before_subject : SourceSubject,
+  after_subject : SourceSubject,
   before : DeclaredVisualFact?,
   after : DeclaredVisualFact?,
 ) -> Double? {
   match
-    (generic_computed_value("", before), generic_computed_value("", after)) {
+    (
+      generic_subject_computed_value(before_subject, property, before),
+      generic_subject_computed_value(after_subject, property, after),
+    ) {
     (Some(before_value), Some(after_value)) =>
       match
         (
@@ -202,10 +261,24 @@ fn generic_basic_shape_report(
   let after = extract_source_subjects_with_profile_or_raise(after_svg, profile) catch {
     _ => return None
   }
+  let single_rect_radius_change = match (before, after) {
+    ([before_subject], [after_subject]) if before_subject.kind == "rect" &&
+      after_subject.kind == "rect" =>
+      declared_fact_changed(
+        source_subject_fact(before_subject, "rx"),
+        source_subject_fact(after_subject, "rx"),
+      ) ||
+      declared_fact_changed(
+        source_subject_fact(before_subject, "ry"),
+        source_subject_fact(after_subject, "ry"),
+      )
+    _ => false
+  }
   let needs_generic = before.length() > 1 ||
     after.length() > 1 ||
     before.any(subject => subject.kind != "rect") ||
-    after.any(subject => subject.kind != "rect")
+    after.any(subject => subject.kind != "rect") ||
+    single_rect_radius_change
   if !needs_generic {
     return None
   }
@@ -234,7 +307,9 @@ fn generic_basic_shape_report(
           }
           let fact_id = "fact:\{alignment.id}:\{property}"
           let difference_id = "diff:\{alignment.id}:\{property}"
-          let relation = generic_relation(property, before_fact, after_fact)
+          let relation = generic_relation(
+            property, before_subject, after_subject, before_fact, after_fact,
+          )
           changed_facts.push({
             id: fact_id,
             subject_id: alignment.id,
@@ -265,7 +340,7 @@ fn generic_basic_shape_report(
             evidence_layers,
             computed_relation: relation,
             parameter_delta_css_px: generic_parameter_delta(
-              before_fact, after_fact,
+              property, before_subject, after_subject, before_fact, after_fact,
             ),
             presence_magnitude: None,
             magnitude: empty_difference_magnitude(),
@@ -380,7 +455,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.7",
+    schema_version: "1.8",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

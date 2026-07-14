@@ -17,7 +17,12 @@ test "reordered and renamed subjects align by visual facts" {
     @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.subject_alignments.length(), 2)
-  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_curved_shape_raster_unproven"
+    }),
+  )
   assert_eq(report.atomic_differences.length(), 0)
   assert_true(
     report.subject_alignments.all(alignment => {

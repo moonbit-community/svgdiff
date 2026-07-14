@@ -108,6 +108,7 @@ graph TD
   ISS_090["ISS-090: Resolve transform lists and cumulative coordinate transforms"]
   ISS_091["ISS-091: Decompose cumulative transform changes into typed effects"]
   ISS_092["ISS-092: Resolve SVG viewport and viewBox coordinate semantics"]
+  ISS_093["ISS-093: Complete basic-shape used-geometry edge cases"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -294,6 +295,7 @@ graph TD
   ISS_089 --> ISS_090
   ISS_090 --> ISS_091
   ISS_091 --> ISS_092
+  ISS_092 --> ISS_093
 ```
 
 ## Warnings

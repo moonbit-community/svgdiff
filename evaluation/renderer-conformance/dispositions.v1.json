@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/4",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/5",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -43,6 +43,36 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_transform_raster_unproven",
       "reason": "The pinned renderer and Chromium disagree on 26 antialiased pixels for skewY(20)."
+    },
+    {
+      "id": "basic-shape-rounded-rect",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_curved_shape_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 28 antialiased boundary pixels for the explicit used rounded rectangle."
+    },
+    {
+      "id": "basic-shape-polygon",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_point_shape_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 36 boundary pixels for the filled polygon."
+    },
+    {
+      "id": "basic-shape-circle",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_curved_shape_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 40 boundary pixels for the filled circle."
+    },
+    {
+      "id": "basic-shape-ellipse",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_curved_shape_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 31 boundary pixels for the filled ellipse."
+    },
+    {
+      "id": "basic-shape-polyline-fill",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_point_shape_raster_unproven",
+      "reason": "The pinned renderer and Chromium disagree on 84 pixels for the implicitly closed polyline fill."
     }
   ]
 }

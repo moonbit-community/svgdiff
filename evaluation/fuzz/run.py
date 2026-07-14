@@ -56,8 +56,8 @@ def supported_case(rng: random.Random, index: int) -> tuple[str, str, list[str]]
     width = rng.randrange(1, 8)
     height = rng.randrange(1, 8)
     sibling = (
-        f"<circle id='stable-{index}' cx='{rng.randrange(2, 14)}' "
-        f"cy='{rng.randrange(2, 14)}' r='1' fill='black'/>"
+        f"<rect id='stable-{index}' x='{rng.randrange(2, 14)}' "
+        f"y='{rng.randrange(2, 14)}' width='1' height='1' fill='black'/>"
     )
     before = document(
         f"<rect id='subject-{index}' x='{x}' y='{y}' width='{width}' "

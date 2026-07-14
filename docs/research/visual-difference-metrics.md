@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-13
 
-This note surveys available metrics and target design. Only fields documented in [`../core-model.md`](../core-model.md) are implemented in schema `1.7`; additional metrics remain roadmap work.
+This note surveys available metrics and target design. Only fields documented in [`../core-model.md`](../core-model.md) are implemented in schema `1.8`; additional metrics remain roadmap work.
 
 ## Conclusion
 
@@ -18,7 +18,7 @@ For a change such as `1.0 -> 0.99999`, a fixed-resolution pixel metric alone is 
 
 For corresponding scalar geometry, the exact absolute difference is the least ambiguous measurement. It should be reported in authored user units and, after applying the cumulative transform, in CSS pixels. A relative source-value delta can be useful for diagnostics, but it is not a visual measure: moving `x=1` to `x=2` and moving `x=1000` to `x=1001` both displace the result by one unit even though their source-relative changes differ radically.
 
-This layer therefore needs no opaque similarity algorithm. For a displacement `d` it should retain at least `abs_user_units`, `abs_css_px`, `viewport_fraction = abs_css_px / viewport_diagonal`, and, when meaningful, `entity_fraction = abs_css_px / entity_characteristic_size`. Transform changes should be decomposed into translation, rotation, scale, and skew before scoring; a Euclidean distance between raw matrix coefficients has no stable visual interpretation. Schema `1.7` implements that recommendation as typed raw component effects and an exact singular residual matrix; perceptual scoring of those effects remains future policy work.
+This layer therefore needs no opaque similarity algorithm. For a displacement `d` it should retain at least `abs_user_units`, `abs_css_px`, `viewport_fraction = abs_css_px / viewport_diagonal`, and, when meaningful, `entity_fraction = abs_css_px / entity_characteristic_size`. Transform changes should be decomposed into translation, rotation, scale, and skew before scoring; a Euclidean distance between raw matrix coefficients has no stable visual interpretation. Schema `1.8` implements that recommendation as typed raw component effects and an exact singular residual matrix; perceptual scoring of those effects remains future policy work.
 
 ### 2. Contour distance and changed coverage
 

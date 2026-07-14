@@ -51,11 +51,11 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
   let limits = default_resource_limits()
   let before_subjects = extract_source_subjects_or_raise(before)
   let after_subjects = extract_source_subjects_or_raise(after)
-  guard @svg.parse_svg_document(normalize_renderer_style_precedence(before))
+  guard @svg.parse_svg_document(normalize_renderer_input(before))
     is Some(before_document) else {
     fail("benchmark fixture must parse")
   }
-  guard @svg.parse_svg_document(normalize_renderer_style_precedence(after))
+  guard @svg.parse_svg_document(normalize_renderer_input(after))
     is Some(after_document) else {
     fail("benchmark fixture must parse")
   }
@@ -70,10 +70,10 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
     let before_preflight = preflight_source(before, profile, "before")
     let after_preflight = preflight_source(after, profile, "after")
     let before_document = @svg.parse_svg_document(
-      normalize_renderer_style_precedence(before),
+      normalize_renderer_input(before),
     )
     let after_document = @svg.parse_svg_document(
-      normalize_renderer_style_precedence(after),
+      normalize_renderer_input(after),
     )
     benchmark.keep(
       (

@@ -13,6 +13,10 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
       Some(("raster.affine_transform", "guarded"))
     "renderer_viewport_raster_unproven" =>
       Some(("raster.viewport_mapping", "guarded"))
+    "renderer_curved_shape_raster_unproven" =>
+      Some(("raster.curved_shapes", "guarded"))
+    "renderer_point_shape_raster_unproven" =>
+      Some(("raster.point_shapes", "guarded"))
     "group_opacity_compositing_unsupported" =>
       Some(("compositing.group_opacity", "unavailable"))
     _ => None

@@ -39,7 +39,33 @@ fn bounds_number(subject : SourceSubject, property : String) -> Double? {
 }
 
 ///|
+fn points_bounds(subject : SourceSubject) -> CssBounds? {
+  let (points, complete, odd) = parse_shape_points(
+    subject_value(subject, "points").unwrap_or(""),
+  )
+  if !complete || odd || points.length() < 2 {
+    return None
+  }
+  let mut min_x = points[0]
+  let mut max_x = points[0]
+  let mut min_y = points[1]
+  let mut max_y = points[1]
+  let mut index = 2
+  while index + 1 < points.length() {
+    min_x = min_x.min(points[index])
+    max_x = max_x.max(points[index])
+    min_y = min_y.min(points[index + 1])
+    max_y = max_y.max(points[index + 1])
+    index += 2
+  }
+  Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+}
+
+///|
 fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
+  if !subject.renders_geometry {
+    return None
+  }
   match subject.kind {
     "rect" =>
       match
@@ -88,6 +114,7 @@ fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
         height: (y2 - y1).abs(),
       })
     }
+    "polyline" | "polygon" => points_bounds(subject)
     _ => None
   }
 }
@@ -387,7 +414,7 @@ fn isolated_subjects_image(
   }
   let source = "<svg width='\{profile.viewport_width}' height='\{profile.viewport_height}'>\{body}</svg>"
   let document = match
-    @svg.parse_svg_document(normalize_renderer_style_precedence(source)) {
+    @svg.parse_svg_document(normalize_renderer_input(source)) {
     Some(document) => document
     None => return None
   }
@@ -683,8 +710,8 @@ fn attach_difference_regions(
   }
   let rendered_images = match
     (
-      @svg.parse_svg_document(normalize_renderer_style_precedence(before_svg)),
-      @svg.parse_svg_document(normalize_renderer_style_precedence(after_svg)),
+      @svg.parse_svg_document(normalize_renderer_input(before_svg)),
+      @svg.parse_svg_document(normalize_renderer_input(after_svg)),
     ) {
     (Some(before_document), Some(after_document)) =>
       Some(

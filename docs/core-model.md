@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.7`
+Status: current model for Structured Report schema `1.8`
 
 Last verified: 2026-07-14
 
@@ -27,27 +27,29 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.7
+  -> Structured Report 1.8
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.7` records:
+Schema `1.8` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
-- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/4`.
+- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/5`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
 `schema_version` identifies the serialized report shape, `renderer_id` identifies the complete production rendering implementation including project-owned adapters, and `renderer_conformance_profile_id` identifies the reviewed fixture, disposition, guard, and future tolerance policy that bounds Rendered Evidence claims. None can substitute for another. JSON Schema verifies that renderer identities are present and structurally valid; the versioned compatibility policy decides which concrete identities a consumer accepts.
 
 The style-precedence normalizer operates on private renderer-input copies only. It rewrites a conflicting presentation-attribute value to the complete supported inline value before every production renderer parse. Source Semantics, Source Spans, Changed Facts, Diagnostics, resource admission, and HTML source display continue to use the original SVG strings.
+
+The basic-shape used-geometry normalizer runs after style precedence on the same private copy. It canonicalizes the current unitless numeric slice and materializes paired `rx`/`ry` values needed by the pinned renderer. Authored values remain unchanged in Source Semantics. Rounded rectangles and polygons retain separate raster-conformance guards because canonical used geometry does not by itself prove browser-equivalent antialiasing.
 
 Intrinsic viewport derivation, resource bundles, fonts, perceptual backgrounds, alternate DPRs, wide-gamut profiles, and cross-renderer profiles are not part of the implemented v1 profile. Accepted target decisions for some of these capabilities remain recorded in ADRs and the roadmap.
 
@@ -70,6 +72,8 @@ Path source adaptation is renderer-independent. The engine strictly consumes eve
 SVG transform adaptation is likewise renderer-independent. A strict parser consumes `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`, preserves normalized authored function structure, and post-multiplies matrices in authored order. Each leaf subject retains the root-to-leaf transform chain and exact cumulative affine matrix across entities, groups, resource containers, and nested `svg` elements. `geometry.transform.list` reports authored-list changes, including matrix-equivalent rewrites; `geometry.transform.cumulative_matrix` reports a changed leaf coordinate mapping. The engine independently decomposes the before and after cumulative matrices into canonical translation, rotation, signed X/Y scale, and X-skew components, then emits one typed effect difference for every changed component. This avoids treating raw affine coefficients as a visual magnitude. A singular linear transform has no unique finite decomposition, so its exact six coefficients and determinant are retained under `geometry.transform.residual_matrix` instead. Resource-local gradient and pattern transforms use parallel source/computed records but remain guarded until resource units, references, and paint semantics are complete.
 
 SVG viewport adaptation interleaves with that transform chain. The root `svg` maps its `viewBox` into the profile's explicit common viewport; authored root `width` and `height` remain intrinsic declaration facts and do not independently resize before and after canvases. Each nested `svg` resolves unitless, `px`, or percentage `x`, `y`, `width`, and `height` against the nearest viewport, then establishes a child coordinate basis from its `viewBox` when present. `document.viewport` identifies a changed declaration, while the existing cumulative-matrix and typed transform-effect domains identify every affected aligned leaf mapping. Equivalent normalized declarations and ignored `preserveAspectRatio` without a `viewBox` remain source-visible but computed-equivalent.
+
+Basic-shape adaptation resolves a separate canonical used-geometry record while retaining every authored fact. Omitted coordinates and dimensions use SVG defaults, and explicit rectangle `auto` dimensions resolve to zero; rectangle radii propagate and clamp to half-dimensions; one omitted or `auto` ellipse radius copies the other; zero dimensions remain valid non-rendering numeric geometry; line has no fillable interior; polyline retains open topology but an open subpath is implicitly closed for fill; polygon retains explicit closure semantics; and point lists normalize separators, compact signs, and exponent forms. An odd final point coordinate is dropped from used geometry but remains a source-located error. Invalid syntax, negative dimensions or radii, and unsupported units make the computed relation indeterminate through `basic_shape_geometry_unsupported` rather than silently substituting a valid shape.
 
 ### Computed Appearance
 
@@ -164,7 +168,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.7` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.8` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -180,11 +184,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.7` top-level object contains exactly these conceptual sections:
+The schema `1.8` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -216,7 +220,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.7
+## Not implemented in schema 1.8
 
 The following concepts are intentional future work rather than hidden current fields:
 

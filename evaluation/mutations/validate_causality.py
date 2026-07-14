@@ -117,7 +117,13 @@ def main() -> None:
                 complete_comparisons += 1
                 complete_regions += region_count
 
-    if complete_comparisons != 40 or complete_regions == 0:
+    expected_complete_comparisons = 2 * sum(
+        case["expected_analysis_status"] == "complete" for case in cases
+    )
+    if (
+        complete_comparisons != expected_complete_comparisons
+        or complete_regions == 0
+    ):
         raise ValueError(
             "causal property did not cover the complete mutation surface: "
             f"comparisons={complete_comparisons}, regions={complete_regions}"

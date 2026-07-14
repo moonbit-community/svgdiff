@@ -505,8 +505,8 @@ fn transform_rendered_evidence(
 ) -> RenderedEvidence {
   match
     (
-      @svg.parse_svg_document(normalize_renderer_style_precedence(before_svg)),
-      @svg.parse_svg_document(normalize_renderer_style_precedence(after_svg)),
+      @svg.parse_svg_document(normalize_renderer_input(before_svg)),
+      @svg.parse_svg_document(normalize_renderer_input(after_svg)),
     ) {
     (Some(before), Some(after)) =>
       computed_rendered_evidence(rendered_difference(before, after, profile))

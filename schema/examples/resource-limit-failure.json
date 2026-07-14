@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "analysis_status": "failed",
   "coverage_matrix": [
     {
@@ -20,8 +20,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/4"
+    "renderer_id": "svgdiff/style-precedence-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/5"
   },
   "subject_alignments": [],
   "changed_facts": [],
