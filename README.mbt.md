@@ -55,6 +55,8 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
+Install the published native MoonBit module with `moon add Milky2018/svgdiff@0.3.3`. Its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package; repository-only design, evaluation, and maintenance artifacts are deliberately excluded from the registry archive.
+
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
 ```text

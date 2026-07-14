@@ -103,6 +103,7 @@ graph TD
   ISS_084["ISS-084: Add controlled comparison interruption"]
   ISS_085["ISS-085: Gate cross-platform report determinism"]
   ISS_086["ISS-086: Publish supported native release binaries"]
+  ISS_087["ISS-087: Publish the MoonBit library module"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -282,6 +283,8 @@ graph TD
   ISS_034 --> ISS_086
   ISS_054 --> ISS_086
   ISS_085 --> ISS_086
+  ISS_053 --> ISS_087
+  ISS_084 --> ISS_087
 ```
 
 ## Warnings

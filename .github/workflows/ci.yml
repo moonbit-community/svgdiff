@@ -46,6 +46,9 @@ jobs:
           sh scripts/test-cli.sh
           sh scripts/test-versioning.sh
 
+      - name: Validate MoonBit publication package
+        run: sh scripts/test-module-package.sh
+
       - name: Validate Schema and compatibility
         run: |
           sh scripts/test-schema-examples.sh

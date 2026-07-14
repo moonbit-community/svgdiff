@@ -32,7 +32,7 @@ At and after `1.0.0`:
 - MINOR changes add backward-compatible public operations or capabilities;
 - PATCH changes fix defects without invalidating conforming callers.
 
-Adding a function is compatible. Removing or renaming a public declaration, changing parameters or results, adding a required field to a publicly constructible record, or changing documented behavior incompatibly is breaking. The generated root `pkg.generated.mbti` is the review artifact. The CLI executable and `engine:` line use the module version; they are not separately released products today.
+Adding a function is compatible. Removing or renaming a public declaration, changing parameters or results, adding a required field to a publicly constructible record, or changing documented behavior incompatibly is breaking. The generated root `pkg.generated.mbti` is the review artifact. The Mooncakes module, native release archives, CLI `svgdiff` line, and CLI `engine:` line share this module version; they are separate distribution channels, not separate compatibility identities.
 
 Module `0.3.3` adds `ComparisonControl`, `ComparisonInterrupted`, and `compare_with_control` without changing `compare` or CLI behavior. Interruption returns no report, so Structured Report Schema `1.4`, Diagnostics, ordering policy, and renderer conformance identities remain unchanged.
 

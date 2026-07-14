@@ -13,17 +13,15 @@ name = "Milky2018/svgdiff"
 
 version = "0.3.3"
 
-readme = "README.mbt.md"
-
-repository = ""
+readme = "PACKAGE.mbt.md"
 
 license = "Apache-2.0"
 
-keywords = [ ]
+keywords = [ "svg", "diff", "visual-semantics", "structured-report", "agent" ]
 
 preferred_target = "native"
 
-description = ""
+description = "Deterministic visual-semantic SVG comparison with typed reports for programs and text-only agents."
 
 import {
   "moonbitlang/async@0.19.1",
@@ -33,3 +31,27 @@ import {
   "moonbitlang/x@0.4.40",
   "moonbitlang/quickcheck@0.14.0",
 }
+
+options(
+  exclude: [
+    ".github",
+    "cmd",
+    "completions",
+    "docs",
+    "evaluation",
+    "issues",
+    "prototype",
+    "release",
+    "schema",
+    "scripts",
+    "testdata",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "README.md",
+    "README.mbt.md",
+    "roadmap.md",
+    "*_test.mbt",
+    "*_wbtest.mbt",
+    "engine/README.md",
+  ],
+)

@@ -63,6 +63,8 @@ Schema `1.4` provides fixed resource admission but does not yet provide a comple
 
 These gaps do not permit false complete analysis, and fixed limits plus local-reference admission bound the major deterministic growth dimensions. Embedding callers can use [`compare_with_control`](library-api.md) to stop at cooperative engine checkpoints, but this is not process isolation or a hard deadline. The [performance budget suite](../evaluation/performance/README.md) measures complete-process peak RSS for named representative workloads, including final serialization, but does not enforce memory or time for arbitrary inputs. Crafted inputs can still consume excessive time or transient memory within fixed admission bounds. Do not expose the CLI as an unauthenticated hostile-upload service until process-level hard time and memory enforcement are complete.
 
+`Milky2018/svgdiff@0.3.3` is published on Mooncakes with its Apache-2.0 license, focused registry README, dependency versions, and package checksum. Its repository field is intentionally absent because this checkout has no configured canonical Git remote; do not replace that omission with an unverified URL. The publication archive excludes repository-only tests, evaluations, issues, scripts, prototypes, release automation, and security documentation, so consumers should use the registry checksum and packaged license as the available source-distribution evidence until a canonical repository is established.
+
 ## Current upstream blockers
 
 | Blocker | Live upstream status on 2026-07-14 | Project impact | Current safe behavior |

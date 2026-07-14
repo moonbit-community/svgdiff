@@ -6,6 +6,14 @@ Last verified: 2026-07-14
 
 Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.4` comparison conditions.
 
+Install the published native module with:
+
+```sh
+moon add Milky2018/svgdiff@0.3.3
+```
+
+The registry archive contains only the root and `engine` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. `sh scripts/test-module-package.sh` validates that inventory, runs MoonBit's packaged-source check, and compiles a separate workspace consumer against the generated zip. The published [Mooncakes module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
+
 Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
 
 ## Public operations
@@ -72,7 +80,7 @@ moon ide doc '@Milky2018/svgdiff.StructuredReport'
 
 `moon info` regenerates `pkg.generated.mbti`, which is the reviewable public signature. `moon ide doc` includes the owning-package docstrings.
 
-The current toolchain's optional `moon doc` site generation is blocked while checking transitive dependency tests: `mizchi/image`'s `ColorType` and `moonbitlang/x`'s `Rational[Int64]` are used by `assert_eq` without implementing `Debug`. This does not affect `moon info`, `moon ide doc`, `moon check`, or project tests. Do not patch dependency caches to generate the site; retry `moon doc --serve` after released upstream packages remove those test-only constraints. Live blocker status is recorded in [`dependency-security.md`](dependency-security.md).
+The current toolchain's optional local `moon doc` site generation is blocked while checking transitive dependency tests: `mizchi/image`'s `ColorType` and `moonbitlang/x`'s `Rational[Int64]` are used by `assert_eq` without implementing `Debug`. This does not affect `moon info`, `moon ide doc`, module publication, consumer checks, or project tests. Do not patch dependency caches to generate the site; retry `moon doc --serve` after released upstream packages remove those test-only constraints. Live blocker status is recorded in [`dependency-security.md`](dependency-security.md).
 
 Do not edit `.mbti` files by hand. Public API changes must originate in MoonBit declarations and be reviewed through the regenerated interface diff.
 
