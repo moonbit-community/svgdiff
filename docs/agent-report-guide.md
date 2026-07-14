@@ -38,6 +38,14 @@ For each referenced Subject Alignment, read `evidence` before describing the ali
 
 Local uniqueness is not proof of authored identity or global assignment uniqueness. A deterministic tie-break is not confidence. Current reports therefore use `confidence: null` with `confidence_status: "not_calibrated"`; never derive a probability from candidate counts. Because `evidence` is additive and optional in Schema `1.1`, absence means uncertainty evidence was not reported and must not be rewritten as `unique`.
 
+## Events and shared causes
+
+Treat a Visual Event as one aligned-subject outcome, not as one source edit. Every Atomic Difference appears in exactly one owning event, and several differences for that outcome may share its one rendered measurement and region set. Do not add child raster magnitudes to reconstruct the event magnitude.
+
+One Changed Fact may appear through different Atomic Differences in several events when a shared or inherited declaration affects several subjects. Describe this as one possible authored cause with multiple outcomes; do not collapse those events or report the Changed Fact several times as though it were several edits. The reverse also holds: one event may contain differences that reference several Changed Facts.
+
+Resource and entity differences may share an event only when the resource has that sole mediated entity outcome in the current report. An unreferenced resource difference can have its own zero-rendered event. Do not infer an arbitrary entity owner for future resource fan-out or duplicate one Atomic Difference across events.
+
 ## Interpreting one Atomic Difference
 
 Use the independent dimensions rather than collapsing them into one label:

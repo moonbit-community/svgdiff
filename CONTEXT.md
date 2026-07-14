@@ -10,7 +10,7 @@ Last verified: 2026-07-14
 
 ## Current state
 
-The repository contains a production comparison engine for a narrow deterministic static-SVG subset, a stable JSON report schema at version `1.0`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine.
+The repository contains a production comparison engine for a narrow deterministic static-SVG subset, a stable JSON report schema at version `1.1`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine.
 
 The engine deliberately reports three evidence layers separately:
 
@@ -41,3 +41,21 @@ ADRs, research notes, issues, and prototypes are historical evidence. They expla
 - Treat presentation, including HTML, as a projection of the Structured Report rather than a second comparison engine.
 
 Normative terminology lives in [`docs/core-model.md`](docs/core-model.md). This file intentionally stays short so that it remains useful as agent orientation rather than becoming a second glossary.
+
+## Language
+
+**Changed Fact**:
+One supported authored visual change and the subjects it may affect; it is a possible cause, not a rendered outcome.
+_Avoid_: Diff, event
+
+**Atomic Difference**:
+The smallest independently reportable visual-semantic distinction for one aligned subject or resource; it may reference one or more Changed Facts.
+_Avoid_: Cause, event
+
+**Visual Event**:
+The agent-facing grouping of Atomic Differences that describe one primary aligned-subject outcome, including its rendered outcome and regions.
+_Avoid_: Source change, Changed Fact
+
+**Primary Subject Alignment**:
+The one before/after subject relationship that owns a current Visual Event and fixes its outcome boundary.
+_Avoid_: Authored ID, global identity

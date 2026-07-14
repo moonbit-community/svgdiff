@@ -30,6 +30,7 @@ This directory separates the current product contract from future plans and hist
 | Which canonical reports demonstrate core agent interpretation cases? | [`schema/examples/README.md`](../schema/examples/README.md) |
 | What ordering and report-local ID repeatability is guaranteed? | [`report-determinism.md`](report-determinism.md) |
 | How are equally plausible Subject Alignments selected? | [`alignment-tie-breaking.md`](alignment-tie-breaking.md) |
+| How do source changes, Atomic Differences, and Visual Events group? | [`core-model.md`](core-model.md#visual-event) and [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md) |
 | How are same-domain differences ordered? | [`domain-ordering.md`](domain-ordering.md) |
 | Which measurements remain authoritative without an Impact Assessment? | [`impact-assessment.md`](impact-assessment.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |

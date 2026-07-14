@@ -23,6 +23,23 @@ test "all changed facts across aligned subjects are enumerated" {
       difference.subject_alignment_id is Some(_)
     }),
   )
+  assert_eq(report.events.length(), 2)
+  assert_true(
+    report.events.all(event => event.atomic_difference_ids.length() == 2),
+  )
+  for difference in report.atomic_differences {
+    let mut owner_count = 0
+    for event in report.events {
+      if event.atomic_difference_ids.contains(difference.id) {
+        owner_count += 1
+        assert_eq(
+          difference.subject_alignment_id,
+          Some(event.primary_subject_id),
+        )
+      }
+    }
+    assert_eq(owner_count, 1)
+  }
 }
 
 ///|

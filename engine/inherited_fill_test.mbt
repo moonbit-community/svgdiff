@@ -57,7 +57,21 @@ test "one ancestor changed fact identifies every affected rect" {
   assert_eq(report.atomic_differences.length(), 2)
   for difference in report.atomic_differences {
     assert_eq(difference.changed_fact_ids, [changed.id])
+    let mut owner_count = 0
+    for event in report.events {
+      if event.atomic_difference_ids.contains(difference.id) {
+        owner_count += 1
+      }
+    }
+    assert_eq(owner_count, 1)
   }
+  assert_eq(report.events.length(), 2)
+  assert_true(
+    report.events.all(event => event.atomic_difference_ids.length() == 1),
+  )
+  let subjects = [ for event in report.events => event.primary_subject_id ]
+  subjects.sort()
+  assert_eq(subjects, ["a", "b"])
 }
 
 ///|

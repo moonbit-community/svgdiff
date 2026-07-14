@@ -20,8 +20,9 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0016](0016-visual-entities-may-have-zero-contribution.md) | Accepted | Permit visual subjects with zero rendered contribution. |
 | [0017](0017-align-visual-subjects-set-to-set.md) | Accepted | Align Visual Subjects set-to-set. |
 | [0018](0018-preserve-evidence-layers-in-visual-event-magnitude.md) | Accepted | Preserve evidence layers in event magnitude. |
-| [0019](0019-form-visual-events-around-outcomes.md) | Accepted | Form Visual Events around outcomes. |
+| [0019](0019-form-visual-events-around-outcomes.md) | Superseded in part by 0040 | Form Visual Events around outcomes. |
 | [0020](0020-anchor-v1-visual-events-to-one-subject-alignment.md) | Accepted | Anchor each v1 event to one Subject Alignment. |
+| [0040](0040-give-each-atomic-difference-one-event-owner.md) | Accepted | Give every Atomic Difference one event owner and express causal fan-out through Changed Facts. |
 
 ## Correctness boundary and provenance
 

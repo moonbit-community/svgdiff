@@ -36,7 +36,7 @@ The following fields are report-local references and must contain no duplicate t
 | `FeatureCoverage.diagnostic_ids[]` | Diagnostics |
 | `RendererCapabilityGap.diagnostic_ids[]` | Diagnostics |
 
-Every Atomic Difference belongs to exactly one Visual Event. Empty reference arrays remain valid when the corresponding evidence needs no target.
+Every Atomic Difference belongs to exactly one owning Visual Event. A Changed Fact may still be referenced by several Atomic Differences in different events; that is causal fan-out, not duplicate event ownership. Empty reference arrays remain valid when the corresponding evidence needs no target.
 
 ## Source-subject identity boundary
 

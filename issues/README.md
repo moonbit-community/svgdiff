@@ -89,6 +89,7 @@ graph TD
   ISS_070["ISS-070: Report alignment evidence and uncertainty"]
   ISS_071["ISS-071: Validate the M1 installed CLI gate"]
   ISS_072["ISS-072: Validate the M1 versioned-contract gate"]
+  ISS_073["ISS-073: Define Visual Event grouping cardinality"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -207,6 +208,11 @@ graph TD
   ISS_051 --> ISS_072
   ISS_053 --> ISS_072
   ISS_070 --> ISS_072
+  ISS_007 --> ISS_073
+  ISS_008 --> ISS_073
+  ISS_009 --> ISS_073
+  ISS_024 --> ISS_073
+  ISS_058 --> ISS_073
 ```
 
 ## Warnings
