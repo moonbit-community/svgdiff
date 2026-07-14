@@ -100,6 +100,8 @@ A `SubjectReference` identifies a report subject by source index, SVG kind, and 
 
 A `SubjectAlignment` relates sets of before and after subjects. Its relation may express correspondence, insertion, deletion, split, or merge. The current analyzer implements basic set-to-set alignment for its supported shape subset; broader many-to-many and ambiguity handling remain roadmap work.
 
+Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). The selected pairing is repeatable but does not imply that alternatives are impossible or that confidence has been measured.
+
 ### Changed Fact
 
 A `ChangedFact` stores one supported authored change and the subject IDs it may affect. Atomic Differences refer to Changed Fact IDs so a shared inherited declaration or resource change does not need to be duplicated for each outcome.

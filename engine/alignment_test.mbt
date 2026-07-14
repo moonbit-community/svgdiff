@@ -125,6 +125,50 @@ test "changed subjects use global rather than greedy minimum cost" {
 }
 
 ///|
+test "duplicate exact signatures tie-break by source index" {
+  let before = alignment_svg(
+    "<rect id='before-a' x='2' y='2' width='4' height='4' fill='red'/><rect id='before-b' x='2' y='2' width='4' height='4' fill='red'/>",
+  )
+  let after = alignment_svg(
+    "<rect id='after-b' x='2' y='2' width='4' height='4' fill='red'/><rect id='after-a' x='2' y='2' width='4' height='4' fill='red'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let pairs = [
+    for alignment in report.subject_alignments if alignment.basis ==
+    "exact_visual_signature" => {
+      (alignment.before[0].source_index, alignment.after[0].source_index)
+    }
+  ]
+  assert_eq(pairs, [(0, 0), (1, 1)])
+}
+
+///|
+test "equal minimum costs retain stable signature and source order" {
+  let before = alignment_svg(
+    "<rect x='0' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='red'/>",
+  )
+  let after = alignment_svg(
+    "<rect x='1' y='2' width='4' height='4' fill='red'/><rect x='1' y='2' width='4' height='4' fill='red'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let pairs = [
+    for alignment in report.subject_alignments if alignment.basis ==
+    "minimum_property_distance" => {
+      (alignment.before[0].source_index, alignment.after[0].source_index)
+    }
+  ]
+  assert_eq(pairs, [(0, 0), (1, 1)])
+}
+
+///|
 test "inherited hierarchy context participates in exact alignment" {
   let before = alignment_svg(
     "<g fill='red'><rect id='red-box' x='2' y='2' width='4' height='4'/></g><g fill='blue'><rect id='blue-box' x='2' y='2' width='4' height='4'/></g>",
