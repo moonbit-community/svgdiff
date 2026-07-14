@@ -41,7 +41,7 @@ The pinned `mizchi/svg@0.2.1` renderer does not guarantee that inline `style` wi
 
 ### Supersampled canvas adoption
 
-The evaluated `mizchi/canvas@0.9.0` path was blocked under the tested toolchain by a test-compatibility problem in transitive `mizchi/image@0.4.2`: an `assert_eq` requires `ColorType` to implement `Debug`. The experiment used a temporary dependency-cache patch only to isolate raster behavior. No cache modification is part of this repository, and production does not depend on the patched package.
+The evaluated `mizchi/canvas@0.9.0` path was blocked under the tested toolchain by a test-compatibility problem in transitive `mizchi/image@0.4.2`: an `assert_eq` requires `ColorType` to implement `Debug`. The experiment used a temporary dependency-cache patch only to isolate raster behavior. No cache modification is part of this repository, and production does not depend on the patched package. The focused fix remains open as [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3).
 
 ### Feature coverage
 
@@ -65,3 +65,4 @@ For each missing capability:
 - [XMLParser 0.2.5 evaluation](research/xmlparser-evaluation.md)
 - [Historical influence-provenance prototype](../prototype/influence_provenance/README.md)
 - [Current v1 support contract](v1-scope.md)
+- [Dependency, security, and upstream status](dependency-security.md)

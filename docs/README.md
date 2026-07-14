@@ -18,6 +18,7 @@ This directory separates the current product contract from future plans and hist
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
 | How are dependencies and report contracts upgraded? | [`upgrade-procedures.md`](upgrade-procedures.md) |
+| What licenses, security gaps, and upstream blockers are current? | [`dependency-security.md`](dependency-security.md) |
 | What do the report concepts and invariants mean? | [`core-model.md`](core-model.md) |
 | How is causal completeness defined? | [`influence-provenance.md`](influence-provenance.md) |
 | What remains to be built? | [`roadmap.md`](../roadmap.md) |
@@ -52,6 +53,7 @@ These files must be updated whenever behavior changes:
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.
 - [`upgrade-procedures.md`](upgrade-procedures.md): renderer, parser, metric, schema, and policy upgrade gates.
+- [`dependency-security.md`](dependency-security.md): resolved licenses, input/output security boundary, and live blockers.
 
 ### Planning
 
