@@ -102,7 +102,7 @@
         "analysis_status": "partial",
         "domains": [],
         "computed_relations": [],
-        "diagnostic_codes": ["analysis_coverage_unproven", "unsupported_visual_subject"],
+        "diagnostic_codes": ["unsupported_visual_subject"],
         "magnitude_checks": []
       }
     },

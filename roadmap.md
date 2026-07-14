@@ -92,7 +92,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ### Geometry and coordinate systems
 
-- [ ] **P0** Implement complete `path` parsing, normalization, and segment-level source evidence.
+- [x] **P0** Implement complete `path` parsing, normalization, and segment-level source evidence.
 - [ ] **P0** Compare path geometry with exact segment parameters and painted-boundary measurements.
 - [ ] **P0** Implement transform lists and cumulative transforms for entities, groups, resources, and nested viewports.
 - [ ] **P0** Decompose transform changes into translation, rotation, scale, skew, and residual matrix effects.

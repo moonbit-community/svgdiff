@@ -6,12 +6,15 @@ priv struct SourceSubject {
   kind : String
   values : Array[(String, String)]
   facts : Array[DeclaredVisualFact]
+  path_segments : Array[PathSegmentEvidence]
+  path_data_complete : Bool
 }
 
 ///|
 fn visual_subject_kind(kind : String) -> Bool {
   match kind {
-    "rect" | "circle" | "ellipse" | "line" | "polyline" | "polygon" => true
+    "rect" | "circle" | "ellipse" | "line" | "polyline" | "polygon" | "path" =>
+      true
     _ => false
   }
 }
@@ -43,6 +46,8 @@ fn subject_from_element(
   hierarchy_signature : String,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
+  let path_segments : Array[PathSegmentEvidence] = []
+  let mut path_data_complete = element.name.local_name != "path"
   let mut authored_id : String? = None
   let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
@@ -54,6 +59,16 @@ fn subject_from_element(
       }
     } else if name == "style" {
       style_attribute = Some(attribute)
+    } else if element.name.local_name == "path" && name == "d" {
+      let authored = source_slice(input, attribute.value_span)
+      match
+        parse_path_attribute_data(authored, attribute.value_span.start.offset) {
+        Valid(segments) => {
+          path_segments.push_iter(segments.iter())
+          path_data_complete = true
+        }
+        Invalid => path_data_complete = false
+      }
     } else if alignment_property_order().contains(name) {
       upsert_declared_fact(facts, presentation_fact(input, name, attribute))
     }
@@ -77,6 +92,9 @@ fn subject_from_element(
     let (name, value) = item
     signature = "\{signature}|\{name}=\{value}"
   }
+  if element.name.local_name == "path" {
+    signature = "\{signature}|path=\{path_segments_signature(path_segments)}|path-complete=\{path_data_complete}"
+  }
   {
     reference: { source_index, kind: element.name.local_name, authored_id },
     signature,
@@ -84,6 +102,8 @@ fn subject_from_element(
     kind: element.name.local_name,
     values,
     facts,
+    path_segments,
+    path_data_complete,
   }
 }
 
@@ -349,6 +369,14 @@ fn subject_distance(left : SourceSubject, right : SourceSubject) -> Double {
         _ => distance += 1000000.0
       }
     }
+  }
+  if left.kind == "path" && right.kind == "path" {
+    if left.path_data_complete != right.path_data_complete {
+      distance += 1000000.0
+    }
+    distance += (left.path_segments.length() - right.path_segments.length())
+      .abs()
+      .to_double()
   }
   distance
 }

@@ -10,7 +10,7 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.3.4` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.3.5` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.4` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Diagnostics | Schema `1.4` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v1_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
@@ -37,6 +37,8 @@ Adding a function is compatible. Removing or renaming a public declaration, chan
 Module `0.3.3` adds `ComparisonControl`, `ComparisonInterrupted`, and `compare_with_control` without changing `compare` or CLI behavior. Interruption returns no report, so Structured Report Schema `1.4`, Diagnostics, ordering policy, and renderer conformance identities remain unchanged.
 
 Module `0.3.4` fixes inline-style precedence at the private renderer-input boundary. It advances the production renderer identity to `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1` and conformance profile to `/2` without changing Structured Report field meanings, so schema `1.4` remains current. The Schema validates renderer identities structurally; the compatibility policy accepts known identities and rejects unknown identities before interpreting rendered evidence.
+
+Module `0.3.5` adds a strict renderer-independent path-data parser and absolute segment IR with authored UTF-16 provenance. Path geometry comparison remains guarded, so Structured Report schema `1.4`, renderer identities, Diagnostics, and ordering semantics do not change.
 
 ## Structured Report schema versions
 

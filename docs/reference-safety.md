@@ -1,6 +1,6 @@
 # Local Reference Safety
 
-Status: current module `0.3.4` and schema `1.4` admission contract
+Status: current module `0.3.5` and schema `1.4` admission contract
 
 Last verified: 2026-07-14
 
