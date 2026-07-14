@@ -1,6 +1,6 @@
 # Structured Report Determinism and Local Identifiers
 
-Status: current schema `1.3` contract
+Status: current schema `1.4` contract
 
 Last verified: 2026-07-14
 
@@ -40,7 +40,7 @@ Every Atomic Difference belongs to exactly one owning Visual Event. A Changed Fa
 
 ## Source-subject identity boundary
 
-`SubjectReference.authored_id`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.3` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them.
+`SubjectReference.authored_id`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.4` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them.
 
 ## Ordering boundary
 

@@ -23,6 +23,7 @@ This directory separates the current product contract from future plans and hist
 | How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | Which fixed budgets bound one comparison? | [`resource-limits.md`](resource-limits.md) |
+| How are local reference cycles and explosive `<use>` DAGs rejected? | [`reference-safety.md`](reference-safety.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
@@ -57,12 +58,13 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.3`.
+- The stable report schema is `1.4`.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
 - The CLI lives in `cmd/svgdiff` and can emit JSON plus an optional self-contained HTML presentation.
 - The implemented analyzer covers a deliberately narrow deterministic static-SVG subset.
 - Unsupported semantics produce Diagnostics and prevent a false `complete` claim.
 - Fixed resource budgets fail safely instead of returning a truncated difference inventory.
+- Cyclic or explosively expanding accepted local-reference graphs fail before renderer parsing.
 - Font-dependent analysis and the broader SVG feature set are future work recorded in the roadmap.
 
 ## Document classes
@@ -76,6 +78,7 @@ These files must be updated whenever behavior changes:
 - [`feature-coverage.md`](feature-coverage.md): feature-to-Diagnostic-to-test traceability;
 - [`analysis-status.md`](analysis-status.md): exact caller guarantees for every analysis status;
 - [`resource-limits.md`](resource-limits.md): fixed input, structure, raster, region, and report budgets and their failure semantics;
+- [`reference-safety.md`](reference-safety.md): conservative local-reference graph, cycle detection, and transitive expansion budget;
 - [`agent-report-guide.md`](agent-report-guide.md): reading order and worked report interpretations for text-only agents;
 - [`agent-acceptance-spec.md`](agent-acceptance-spec.md): text-only evaluation boundary, answer contract, scoring dimensions, and safety gates;
 - [`report-determinism.md`](report-determinism.md): repeatability, report-local ID uniqueness, reference closure, and source-subject identity boundary;

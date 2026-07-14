@@ -27,7 +27,7 @@ pub using @engine {
 }
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.3` profile.
+/// Compare two deterministic static SVG sources under one schema `1.4` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width` and `profile.viewport_height` and pins
@@ -49,5 +49,5 @@ pub fn compare(
     viewport_height: profile.viewport_height,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.3" }
+  { ..report, schema_version: "1.4" }
 }

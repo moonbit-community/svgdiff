@@ -1,10 +1,10 @@
 # MoonBit Library API
 
-Status: current public interface for module version `0.3.1`
+Status: current public interface for module version `0.3.2`
 
 Last verified: 2026-07-14
 
-Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.3` comparison conditions.
+Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.4` comparison conditions.
 
 Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
 
@@ -20,9 +20,9 @@ StructuredReport::to_compact_json_string() -> String
 
 `compare` is the only semantic comparison operation. `render_html_report` is a presentation over an existing report and never recomputes differences.
 
-Both JSON methods serialize schema `1.3`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
+Both JSON methods serialize schema `1.4`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
 
-Every call uses the fixed [comparison resource limits](resource-limits.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; it never returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.3.1`.
+Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.3.2`.
 
 ## Public report types
 
@@ -50,9 +50,9 @@ Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as t
 
 `DiagnosticSourceLocation.source_role` is `before` or `after`; its `source_span` uses half-open UTF-16 offsets into that exact input. Current producers always emit `Diagnostic.source_locations`. The field is optional in JSON for legacy compatibility, where absence means “not reported”; an emitted empty array means the Diagnostic is comparison-global or derived and has no non-fabricated source anchor.
 
-The root API canonicalizes all profile fields other than viewport width and height. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.3`.
+The root API canonicalizes all profile fields other than viewport width and height. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.4`.
 
-The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/1"`. This ID versions accepted renderer claims and guards independently from both report schema `1.3` and `mizchi/svg@0.2.1`.
+The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/1"`. This ID versions accepted renderer claims and guards independently from both report schema `1.4` and `mizchi/svg@0.2.1`.
 
 ## Generated documentation
 

@@ -14,6 +14,8 @@ EXPECTED_MODES = {
     "wrong_alignment",
     "attribution_leakage",
     "magnitude_ordering",
+    "reference_cycle",
+    "reference_expansion",
 }
 
 
@@ -56,13 +58,14 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
         capture_output=True,
         text=True,
     )
-    if result.returncode != 0 or result.stderr:
+    expected_exit_status = case.get("expected_exit_status", 0)
+    if result.returncode != expected_exit_status or result.stderr:
         raise ValueError(
             f"CLI failed for {case['id']}: "
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.3":
+    if report.get("schema_version") != "1.4":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -219,6 +222,31 @@ def validate_magnitude_ordering(report: dict) -> None:
         raise ValueError("magnitude ordering lost its policy identity")
 
 
+def validate_reference_cycle(report: dict) -> None:
+    if report["analysis_status"] != "failed":
+        raise ValueError("cyclic local reference graph was not rejected")
+    if diagnostic_codes(report) != {"reference_cycle_detected"}:
+        raise ValueError("cyclic reference case lost its stable Diagnostic")
+    if report["atomic_differences"] or report["events"]:
+        raise ValueError("cyclic reference failure exposed a partial inventory")
+    locations = [
+        location
+        for diagnostic in report["diagnostics"]
+        for location in diagnostic["source_locations"]
+    ]
+    if {location["source_role"] for location in locations} != {"before", "after"}:
+        raise ValueError("cyclic reference Diagnostic lost source-role locations")
+
+
+def validate_reference_expansion(report: dict) -> None:
+    if report["analysis_status"] != "failed":
+        raise ValueError("explosive acyclic reference graph was not rejected")
+    if diagnostic_codes(report) != {"reference_expansion_limit_exceeded"}:
+        raise ValueError("reference expansion case lost its stable Diagnostic")
+    if report["atomic_differences"] or report["events"]:
+        raise ValueError("reference expansion failure exposed a partial inventory")
+
+
 def main() -> None:
     args = parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
@@ -251,6 +279,8 @@ def main() -> None:
         "wrong_alignment": lambda _case, report: validate_wrong_alignment(report),
         "attribution_leakage": validate_attribution_leakage,
         "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),
+        "reference_cycle": lambda _case, report: validate_reference_cycle(report),
+        "reference_expansion": lambda _case, report: validate_reference_expansion(report),
     }
     for case in cases:
         report, report_sha256 = run_case(args.cli, case)

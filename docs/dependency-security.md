@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-14
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.3`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.4`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -34,6 +34,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 - Unsupported SVG elements, attributes, CSS, resources, and dynamic behavior reduce analysis coverage through Diagnostics rather than being executed or treated as equality.
 - The comparison engine performs no implicit network fetches.
 - Fixed [comparison resource limits](resource-limits.md) bound UTF-8 input bytes, XML elements and nesting, path-data work, references, raster dimensions, Difference Regions, and built-in JSON output. An overrun returns a bounded failed report rather than a truncated inventory.
+- The project-owned [local-reference guard](reference-safety.md) rejects cycles and saturates transitive `<use>` expansion before the pinned renderer can clone the graph.
 
 ### Rendering and HTML output
 
@@ -52,16 +53,15 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 ## Known security gaps
 
-Schema `1.3` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.4` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - no cancellation or comparison time budget;
 - no streaming admission before the CLI allocates the complete input String, no peak-memory accounting for final serialization, and no configurable embedding policy;
-- no reference-cycle or adversarial-expansion guard beyond the fixed reference and input budgets;
 - no coverage-guided or sanitizer-guided fuzzing; the fixed-seed generative [fuzz smoke](../evaluation/fuzz/README.md) covers parser, adapter, renderer, JSON, and HTML boundaries but does not measure code coverage;
 - no automated dependency advisory or SBOM check, and no CI enforcement or signing of the locally generated license and provenance evidence;
 - no cross-platform determinism gate for released binaries.
 
-These gaps do not permit false complete analysis, and fixed limits bound the major deterministic growth dimensions, but crafted inputs can still consume excessive time or transient memory within those bounds. Do not expose the CLI as an unauthenticated hostile-upload service until cycle detection, cancellation, and measured memory budgets are complete.
+These gaps do not permit false complete analysis, and fixed limits plus local-reference admission bound the major deterministic growth dimensions, but crafted inputs can still consume excessive time or transient memory within those bounds. Do not expose the CLI as an unauthenticated hostile-upload service until cancellation and measured memory budgets are complete.
 
 ## Current upstream blockers
 

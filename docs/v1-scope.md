@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-14
 
-This document states what schema `1.3` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.4` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -12,7 +12,7 @@ The executable trace from each feature to its Diagnostic and tests lives in the 
 
 V1 compares two well-formed deterministic static SVG source strings under one explicit common viewport and a pinned rendering profile. A `complete` report means every encountered visual semantic is covered by the implemented analyzer slice. It does not claim browser equivalence, cross-renderer equivalence, or equivalence under another viewport or environment.
 
-When an input leaves the supported slice, the engine emits Diagnostics and changes `analysis_status` to `partial` or `failed`. Supported source-level differences may still be reported even when computed or rendered evidence is unavailable. Crossing a fixed [comparison resource limit](resource-limits.md) is a failed admission result and never returns a truncated difference inventory.
+When an input leaves the supported slice, the engine emits Diagnostics and changes `analysis_status` to `partial` or `failed`. Supported source-level differences may still be reported even when computed or rendered evidence is unavailable. Crossing a fixed [comparison resource limit](resource-limits.md), forming an accepted local-reference cycle, or exceeding the conservative transitive `<use>` bound is a failed admission result and never returns a truncated difference inventory.
 
 ## Implemented profile
 
@@ -26,6 +26,7 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/1`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
+| Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
 | Fonts | No deterministic font environment or font-dependent completeness claim. |
 
 The root library seam canonicalizes DPR, color interpretation, raster representation, renderer identity, and renderer conformance profile. It currently uses only the caller-supplied viewport dimensions from `ComparisonProfile`.

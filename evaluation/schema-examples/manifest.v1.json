@@ -120,6 +120,20 @@
         "diagnostic_codes": ["resource_limit_exceeded"],
         "magnitude_checks": []
       }
+    },
+    {
+      "id": "reference-cycle-failure",
+      "before": "evaluation/adversarial/cases/reference-cycle-self-use/before.svg",
+      "after": "evaluation/adversarial/cases/reference-cycle-self-use/after.svg",
+      "expected_exit_status": 1,
+      "output": "schema/examples/reference-cycle-failure.json",
+      "expected": {
+        "analysis_status": "failed",
+        "domains": [],
+        "computed_relations": [],
+        "diagnostic_codes": ["reference_cycle_detected", "reference_cycle_detected"],
+        "magnitude_checks": []
+      }
     }
   ]
 }

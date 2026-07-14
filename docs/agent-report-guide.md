@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.3` interpretation guide
+Status: current schema `1.4` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -28,7 +28,7 @@ Never start by counting `atomic_differences`. A partial report with zero differe
 
 Treat `coverage_matrix` itself as the complete coverage summary. Group or filter its rows by `subject_id`, `feature_id`, or evidence-layer state when answering a question; do not infer a second summary from events, differences, or Diagnostic code names.
 
-For every limiting or failed Diagnostic, read `source_locations` before searching the raw SVG. Each entry names the `before` or `after` input and a half-open UTF-16 offset span in that exact source. Several entries under one Diagnostic mean the same stable condition is established at several declarations or on both sides; they are not duplicate Diagnostics. An empty array means the condition is comparison-global or derived and has no honest source anchor. Legacy Schema `1.0` and `1.1` reports, and tolerated `1.2` or `1.3` reports, may omit the optional field; absence means locations were not reported, not that no relevant source exists.
+For every limiting or failed Diagnostic, read `source_locations` before searching the raw SVG. Each entry names the `before` or `after` input and a half-open UTF-16 offset span in that exact source. Several entries under one Diagnostic mean the same stable condition is established at several declarations or on both sides; they are not duplicate Diagnostics. An empty array means the condition is comparison-global or derived and has no honest source anchor. Legacy Schema `1.0` and `1.1` reports, and tolerated `1.2`, `1.3`, or `1.4` reports, may omit the optional field; absence means locations were not reported, not that no relevant source exists.
 
 ## Alignment evidence and uncertainty
 
@@ -79,7 +79,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.3` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v1 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.4` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

@@ -9,6 +9,8 @@ priv struct ResourceLimits {
   max_path_data_units : Int
   max_nesting_depth : Int
   max_references : Int
+  max_reference_graph_edges : Int
+  max_expanded_elements : Int
   max_raster_dimension : Int
   max_raster_pixels : Int
   max_regions : Int
@@ -23,6 +25,8 @@ fn default_resource_limits() -> ResourceLimits {
     max_path_data_units: 1_000_000,
     max_nesting_depth: 256,
     max_references: 100_000,
+    max_reference_graph_edges: 1_000_000,
+    max_expanded_elements: 1_000_000,
     max_raster_dimension: 8_192,
     max_raster_pixels: 16_777_216,
     max_regions: 65_536,
@@ -118,7 +122,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "1.3",
+    schema_version: "1.4",
     analysis_status: "failed",
     coverage_matrix,
     renderer_capability_gaps: [],
@@ -257,9 +261,19 @@ fn source_limit(
       resource_limit_diagnostic("input_bytes", Some(source_role), None),
     )
   }
-  try source_structure_limit(input, source_role, limits) catch {
+  let structure = try source_structure_limit(input, source_role, limits) catch {
     // The ordinary parser preflight owns malformed-XML evidence and its exact
     // Source Span. Resource scanning must not replace that Diagnostic.
+    _ => None
+  } noraise {
+    diagnostic => diagnostic
+  }
+  match structure {
+    Some(diagnostic) => return Some(diagnostic)
+    None => ()
+  }
+  try reference_safety_diagnostic(input, source_role, limits) catch {
+    // Malformed XML remains owned by the ordinary parser preflight.
     _ => None
   } noraise {
     diagnostic => diagnostic

@@ -34,7 +34,7 @@ fn help_text() -> String {
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.3.1\nengine: 0.3.1\nschema: 1.3\nrenderer: mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/1\nordering-policy: v1_domain_lexicographic"
+  "svgdiff 0.3.2\nengine: 0.3.2\nschema: 1.4\nrenderer: mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/1\nordering-policy: v1_domain_lexicographic"
 }
 
 ///|

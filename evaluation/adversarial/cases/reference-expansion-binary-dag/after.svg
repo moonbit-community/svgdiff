@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <defs>
+    <symbol id="s0"><rect width="1" height="1"/></symbol>
+    <symbol id="s1"><use href="#s0"/><use href="#s0"/></symbol>
+    <symbol id="s2"><use href="#s1"/><use href="#s1"/></symbol>
+    <symbol id="s3"><use href="#s2"/><use href="#s2"/></symbol>
+    <symbol id="s4"><use href="#s3"/><use href="#s3"/></symbol>
+    <symbol id="s5"><use href="#s4"/><use href="#s4"/></symbol>
+    <symbol id="s6"><use href="#s5"/><use href="#s5"/></symbol>
+    <symbol id="s7"><use href="#s6"/><use href="#s6"/></symbol>
+    <symbol id="s8"><use href="#s7"/><use href="#s7"/></symbol>
+    <symbol id="s9"><use href="#s8"/><use href="#s8"/></symbol>
+    <symbol id="s10"><use href="#s9"/><use href="#s9"/></symbol>
+    <symbol id="s11"><use href="#s10"/><use href="#s10"/></symbol>
+    <symbol id="s12"><use href="#s11"/><use href="#s11"/></symbol>
+    <symbol id="s13"><use href="#s12"/><use href="#s12"/></symbol>
+    <symbol id="s14"><use href="#s13"/><use href="#s13"/></symbol>
+    <symbol id="s15"><use href="#s14"/><use href="#s14"/></symbol>
+    <symbol id="s16"><use href="#s15"/><use href="#s15"/></symbol>
+    <symbol id="s17"><use href="#s16"/><use href="#s16"/></symbol>
+    <symbol id="s18"><use href="#s17"/><use href="#s17"/></symbol>
+  </defs>
+  <use href="#s18"/>
+</svg>

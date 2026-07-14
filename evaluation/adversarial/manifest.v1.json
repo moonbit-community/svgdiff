@@ -49,6 +49,22 @@
       "before": "evaluation/adversarial/cases/magnitude-ordering-two-movements/before.svg",
       "after": "evaluation/adversarial/cases/magnitude-ordering-two-movements/after.svg",
       "viewport": { "width": 16, "height": 16 }
+    },
+    {
+      "id": "reference-cycle-self-use",
+      "failure_mode": "reference_cycle",
+      "before": "evaluation/adversarial/cases/reference-cycle-self-use/before.svg",
+      "after": "evaluation/adversarial/cases/reference-cycle-self-use/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_exit_status": 1
+    },
+    {
+      "id": "reference-expansion-binary-dag",
+      "failure_mode": "reference_expansion",
+      "before": "evaluation/adversarial/cases/reference-expansion-binary-dag/before.svg",
+      "after": "evaluation/adversarial/cases/reference-expansion-binary-dag/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_exit_status": 1
     }
   ]
 }
