@@ -10,8 +10,8 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 
 | Component | Current identity | Contract surface |
 | --- | --- | --- |
-| SVG scene and canonical renderer | `mizchi/svg@0.2.1` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
-| Renderer conformance profile | `svgdiff-renderer-conformance-profile/1` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
+| SVG scene and canonical renderer | `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
+| Renderer conformance profile | `svgdiff-renderer-conformance-profile/2` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
 | Authored XML parser | `Milky2018/xml@0.4.0` | well-formedness, namespaces, entity behavior, UTF-16 Source Spans |
 | Baseline pixel comparison | `mizchi/pixelmatch@0.6.1` | connected pixel-mask regions and renderer comparison support |
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
@@ -58,8 +58,8 @@ Before replacing or owning a layer, apply the [Renderer Upstream and Ownership G
 - Update the dependency version in `moon.mod` through `moon add` or the supported package command.
 - Update `ComparisonProfile::v1_default().renderer_id` when the production renderer identity changes.
 - Review and normally increment `renderer_conformance_profile_id` when fixtures, dispositions, guards, tolerances, or accepted capability claims change, even if the renderer package does not.
-- Update the Schema constant for `profile.renderer_id`.
-- Update the Schema constant for `profile.renderer_conformance_profile_id`, the conformance baseline, CLI version output, and disposition validator together.
+- Keep the Schema structural constraints for `profile.renderer_id` and `profile.renderer_conformance_profile_id` independent from concrete accepted identities; update the versioned consumer compatibility policy whenever either production identity changes.
+- Update the conformance baseline, CLI version output, compatibility cases, and disposition validator together.
 - Reassess Diagnostics whose only purpose was to guard an old renderer defect. Remove a guard only after its negative test is replaced by a positive conformance test.
 - Update the encountered renderer-capability mapping and its tests whenever a renderer Diagnostic is added, removed, or changes support status.
 - Update [`renderer-evaluation.md`](renderer-evaluation.md), [`feature-coverage.md`](feature-coverage.md), and [`v1-scope.md`](v1-scope.md).
@@ -74,7 +74,7 @@ Use this procedure when the renderer fixture set, divergence dispositions, accep
 1. Compare the old and proposed browser-oracle and pinned-renderer baselines.
 2. Explain every added, removed, or changed divergence and its production consequence.
 3. Allocate a new `renderer_conformance_profile_id` when the accepted claim changes; comment-only, formatting-only, and evaluation-tool refactors that preserve all evidence do not require a new ID.
-4. Update `ComparisonProfile::v1_default`, the optional JSON Schema constant, conformance baseline, dispositions, disposition validator, CLI version output, and current-contract documentation together.
+4. Update `ComparisonProfile::v1_default`, the compatibility policy, conformance baseline, dispositions, disposition validator, CLI version output, and current-contract documentation together.
 5. Keep `schema_version` unchanged when serialized field meanings and compatibility are unchanged; review `renderer_id` independently when implementation identity or pixel behavior changes.
 6. Run the browser oracle, conformance comparison, dispositions, CLI, and benchmark gates before accepting the new profile.
 

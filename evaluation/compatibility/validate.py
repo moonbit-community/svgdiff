@@ -133,6 +133,22 @@ def classify(report: dict, policy: dict) -> tuple[str, str]:
         return "rejected", "malformed_report"
     if report["schema_version"] not in policy["accepted_schema_versions"]:
         return "rejected", "unknown_schema_version"
+    profile = report.get("profile")
+    if not isinstance(profile, dict):
+        return "rejected", "malformed_report"
+    renderer_id = profile.get("renderer_id")
+    if not isinstance(renderer_id, str):
+        return "rejected", "malformed_report"
+    if renderer_id not in policy["accepted_renderer_ids"]:
+        return "rejected", "unknown_renderer_id"
+    conformance_profile_id = profile.get("renderer_conformance_profile_id")
+    if conformance_profile_id is not None:
+        if not isinstance(conformance_profile_id, str):
+            return "rejected", "malformed_report"
+        if conformance_profile_id not in policy[
+            "accepted_renderer_conformance_profile_ids"
+        ]:
+            return "rejected", "unknown_renderer_conformance_profile"
     differences = report.get("atomic_differences")
     if not isinstance(differences, list):
         return "rejected", "malformed_report"

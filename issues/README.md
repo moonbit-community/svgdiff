@@ -10,7 +10,6 @@ No ready issues.
 
 | ID | Status | Priority | Type | Assignee | Blocked by | Blocks | Title |
 | --- | --- | ---: | --- | --- | --- | --- | --- |
-| [ISS-002](ISS-002.md) | blocked | 1 | bug | unassigned | none | none | Make style precedence independent of attribute order |
 | [ISS-013](ISS-013.md) | deferred | 4 | feature | unassigned | none | none | Add deterministic font-dependent text analysis |
 
 ## Dependency Graph

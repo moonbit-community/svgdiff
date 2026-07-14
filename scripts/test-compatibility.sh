@@ -15,8 +15,8 @@ cmp "$tmp/first.json" "$tmp/second.json"
 jq -e '
   .schema_version == "svgdiff-compatibility-results/1" and
   .consumer_policy_id == "svgdiff-consumer-compatibility/1" and
-  ([.cases[] | select(.decision == "accepted")] | length) == 9 and
-  ([.cases[] | select(.decision == "rejected")] | length) == 2
+  ([.cases[] | select(.decision == "accepted")] | length) == 10 and
+  ([.cases[] | select(.decision == "rejected")] | length) == 4
 ' "$tmp/first.json" >/dev/null
 
 printf 'Compatibility corpus: deterministic migration decisions: ok\n'

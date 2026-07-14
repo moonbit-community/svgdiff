@@ -1,6 +1,6 @@
 # MoonBit Library API
 
-Status: current public interface for module version `0.3.3`
+Status: current public interface for module version `0.3.4`
 
 Last verified: 2026-07-14
 
@@ -9,7 +9,7 @@ Consumers should import the root package `Milky2018/svgdiff`. The `engine` packa
 Install the published native module with:
 
 ```sh
-moon add Milky2018/svgdiff@0.3.3
+moon add Milky2018/svgdiff@0.3.4
 ```
 
 The registry archive contains only the root and `engine` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. `sh scripts/test-module-package.sh` validates that inventory, runs MoonBit's packaged-source check, and compiles a separate workspace consumer against the generated zip. The published [Mooncakes module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
@@ -31,7 +31,7 @@ StructuredReport::to_compact_json_string() -> String
 
 Both JSON methods serialize schema `1.4`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
 
-Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.3.3`.
+Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.3.4`.
 
 `ComparisonControl` contains `should_cancel: () -> Bool` and `max_elapsed_milliseconds: Int?`; `ComparisonControl::unlimited()` disables both controls. A true predicate raises `Cancelled`. A nonpositive time budget expires at the first checkpoint, and a positive budget raises `TimeBudgetExceeded(max_elapsed_milliseconds=...)` once elapsed time reaches it. Cancellation is checked first when both conditions hold.
 
@@ -65,7 +65,7 @@ Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as t
 
 The root API canonicalizes all profile fields other than viewport width and height. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.4`.
 
-The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/1"`. This ID versions accepted renderer claims and guards independently from both report schema `1.4` and `mizchi/svg@0.2.1`.
+The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/2"`. This ID versions accepted renderer claims and guards independently from both report schema `1.4` and the production `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1` renderer identity.
 
 ## Generated documentation
 

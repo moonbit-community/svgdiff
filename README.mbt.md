@@ -55,7 +55,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install the published native MoonBit module with `moon add Milky2018/svgdiff@0.3.3`. Its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package; repository-only design, evaluation, and maintenance artifacts are deliberately excluded from the registry archive.
+Install module version `0.3.4` with `moon add Milky2018/svgdiff@0.3.4` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -64,7 +64,7 @@ compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 compare_with_control(before_svg, after_svg, comparison_profile, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.4`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, pinned renderer identity, and `svgdiff-renderer-conformance-profile/1`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.4`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/2`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -151,12 +151,7 @@ Fractional geometry, fractional leaf opacity, and referenced-gradient raster mea
 
 Current reports project renderer-specific limitations encountered by the inputs into `renderer_capability_gaps`. Each record provides a stable capability ID, `guarded` or `unavailable` support status, and establishing Diagnostic IDs. An empty array does not claim that the renderer supports all SVG features; the coverage matrix remains authoritative.
 
-The current renderer dependency does not yet guarantee that inline `style`
-overrides a conflicting presentation attribute independently of XML attribute
-order. Such overlap emits `renderer_style_precedence_unresolved` and reduces
-the report to `partial`; Source Semantics remains normalized, while Computed
-Appearance and Rendered Evidence must be treated as unavailable until the
-upstream fix is released.
+The production renderer identity includes a private style-precedence normalizer in front of `mizchi/svg@0.2.1`. When the supported inline declaration parser is complete, overlapping presentation attributes are normalized only in the renderer-input copy, so inline `style` wins independently of XML attribute order while the original source remains authoritative for facts and spans. Incomplete or unsupported inline syntax still emits `renderer_style_precedence_unresolved` and keeps Computed Appearance and Rendered Evidence partial.
 
 The complete implementation boundary, including guarded partial cases, is in the [current v1 support contract](docs/v1-scope.md).
 

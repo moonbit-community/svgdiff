@@ -75,7 +75,7 @@ Record one row per candidate before proposing ownership:
 
 | Gap | Evidence | Decision under this gate |
 | --- | --- | --- |
-| Inline-style precedence | One localized CSS-cascade mechanism, focused upstream PR open, safe Diagnostic present | Continue focused upstream path; do not own a layer. |
+| Inline-style precedence | One localized XML-value adapter, focused upstream PR open, positive production regressions, conservative fallback Diagnostic | Own only the private renderer-input adapter while keeping the upstream path open; do not fork the renderer. |
 | Fractional geometry quantization | Measured browser divergence with a rendered-only guard; broader geometry work is not yet complete | Keep guarded while identifying the smallest sampling layer; ownership evidence is incomplete. |
 | Referenced-gradient sampling | Two raster observations in one paint-server family with a guard | Keep guarded; it does not meet breadth or control trigger. |
 | Fractional leaf opacity | One arithmetic boundary case with a guard | Keep guarded and prefer a focused upstream correction if promoted to active scope. |

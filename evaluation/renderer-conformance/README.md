@@ -4,9 +4,9 @@ Status: measurement baseline
 
 Last verified: 2026-07-14
 
-Conformance profile: `svgdiff-renderer-conformance-profile/1`
+Conformance profile: `svgdiff-renderer-conformance-profile/2`
 
-This evaluation compares `mizchi/svg@0.2.1` with the deterministic Chromium oracle. Its report shape remains `svgdiff-renderer-conformance/1`, independently from the conformance claim identified by `svgdiff-renderer-conformance-profile/1` in the production Comparison Profile.
+This evaluation compares raw `mizchi/svg@0.2.1` with the deterministic Chromium oracle. Its report shape remains `svgdiff-renderer-conformance/1`, independently from the conformance claim identified by `svgdiff-renderer-conformance-profile/2` in the production Comparison Profile. Engine regressions separately prove the project-owned style-precedence normalizer because this adapter deliberately isolates the underlying dependency.
 
 Fixtures are classified as geometry, paint, alpha, clipping, or compositing. `supported` means the fixture exercises the current complete-eligible contract, `guarded` identifies a measured input that now has a production conformance Diagnostic, and `exploratory` measures behavior without expanding the contract. Both images are normalized to premultiplied RGBA8 before measuring changed pixels, changed-pixel fraction, RMSE, and maximum channel delta.
 
@@ -16,7 +16,7 @@ The MoonBit adapter under `evaluation/renderer_adapter` exports raw pinned-rende
 
 ## Divergence dispositions
 
-[`dispositions.v1.json`](dispositions.v1.json) maps every divergent baseline case to a production Diagnostic. The baseline and disposition set both record `svgdiff-renderer-conformance-profile/1`; validation rejects a missing or mismatched identity. Fractional geometry, referenced gradients, and fractional leaf opacity keep numeric source/computed evidence and the pinned-renderer measurement, but rendered coverage is limited. Group opacity remains limited by `group_opacity_compositing_unsupported`.
+[`dispositions.v1.json`](dispositions.v1.json) maps every divergent baseline case to a production Diagnostic. The baseline and disposition set both record `svgdiff-renderer-conformance-profile/2`; validation rejects a missing or mismatched identity. Fractional geometry, referenced gradients, and fractional leaf opacity keep numeric source/computed evidence and the pinned-renderer measurement, but rendered coverage is limited. Group opacity remains limited by `group_opacity_compositing_unsupported`.
 
 Run `sh scripts/test-renderer-dispositions.sh` to require a one-to-one disposition for every divergence, execute each guard through the production CLI, and confirm that exact supported fixtures do not acquire a new conformance guard. Other analyzer limitations remain independent. A future versioned conformance profile may replace a guard with a reviewed tolerance or adapter fix.
 

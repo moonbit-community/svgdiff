@@ -516,8 +516,8 @@ test "limited diagnostics merge narrow locations across both sources" {
 
 ///|
 test "attribute, value, and renderer guards retain declaration locations" {
-  let before = "<svg width='16' height='16'><rect id='box' x='1.5' filter='url(#f)' fill='red' style='fill:blue'/></svg>"
-  let after = "<svg width='16' height='16'><rect id='box' x='2.5' filter='url(#f)' fill='red' style='fill:green'/></svg>"
+  let before = "<svg width='16' height='16'><rect id='box' x='1.5' filter='url(#f)' fill='red' style='fill:blue;unknown:value'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='box' x='2.5' filter='url(#f)' fill='red' style='fill:green;unknown:value'/></svg>"
   let report = @engine.compare(
     before,
     after,

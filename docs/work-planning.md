@@ -86,9 +86,8 @@ If work discovers a genuinely separate accepted task, create a new issue with `D
 
 ## Current tracker audit
 
-The tracker derivation on 2026-07-14 reports no warnings and no ready issues. Its only unresolved records are:
+The tracker derivation on 2026-07-14 reports no warnings. After the private renderer-input normalization closed `ISS-002`, its only unresolved record is:
 
-- `ISS-002`: blocked on a released renderer precedence fix; the current Diagnostic fallback is implemented;
 - `ISS-013`: deterministic font-dependent analysis, explicitly deferred.
 
-Both are referenced by the roadmap. Closed `ISS-001` through `ISS-023` remain execution history and are not rewritten to match current terminology.
+It is referenced by the roadmap. Closed records remain execution history and are not rewritten to match current terminology.

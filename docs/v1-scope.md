@@ -22,8 +22,8 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | DPR | Fixed to `1.0`. |
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
-| Renderer identity | Pinned as `mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/1`. |
+| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/2`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -37,7 +37,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 
 - strict XML well-formedness and namespace-aware authored Source Spans through `Milky2018/xml@0.4.0`;
 - formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
-- supported presentation attributes and supported inline-style declarations, except conflicting presentation/inline declarations described below;
+- supported presentation attributes and supported inline-style declarations, including complete supported presentation/inline overlaps normalized at the private renderer boundary;
 - basic shape subjects: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`;
 - basic subject correspondence, insertion, deletion, split, and merge relationships for the supported shape inventory;
 - supported geometry facts for those shapes, plus fill, stroke, stroke width, and opacity facts where implemented by the analyzer; canonical rendered completeness currently requires integer-valued geometry and leaf opacity `0` or `1`;
@@ -59,7 +59,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Fractional basic-shape geometry | Exact authored and computed numeric differences plus a pinned-renderer measurement | Chromium shows that the pinned renderer can quantize browser-invisible subpixel movement into full pixel changes; `renderer_fractional_geometry_unproven` limits Rendered Evidence. |
 | Fractional leaf opacity | Authored/computed opacity and a numeric pinned-renderer measurement | The pinned renderer floors `0.5` to alpha `127` while Chromium uses `128`; `renderer_fractional_opacity_unproven` limits Rendered Evidence. |
 | Referenced linear gradient | Narrow first-stop/single-rect source and computed analysis plus a pinned-renderer measurement | Browser interpolation differs from the pinned raster; `renderer_gradient_raster_unproven` limits Rendered Evidence even for the narrow slice, while other gradient semantics retain their broader guards. |
-| Conflicting presentation attribute and inline style | Normalized Source Semantics | The pinned renderer does not yet guarantee correct precedence independent of XML attribute order; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
+| Conflicting presentation attribute and inline style with incomplete or unsupported inline syntax | Independently supported Source Semantics | The private adapter cannot prove a safe renderer rewrite; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Stylesheets, selectors, or unsupported CSS syntax | Any independently supported source facts | The full cascade and selector model are not implemented. |
 | Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 

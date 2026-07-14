@@ -36,7 +36,10 @@ test "v1 profile records canonical rendering conditions" {
     report.profile.raster_representation,
     "linear_srgb_premultiplied_rgba_f64",
   )
-  assert_eq(report.profile.renderer_id, "mizchi/svg@0.2.1")
+  assert_eq(
+    report.profile.renderer_id,
+    "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
+  )
   match report.events[0].rendered_outcome.magnitude {
     Some(magnitude) =>
       assert_true(magnitude.linear_premultiplied_rgba_rmse > 0.0)
@@ -58,7 +61,10 @@ test "comparison normalizes fixed v1 rendering conditions" {
   )
   assert_eq(report.profile.comparison_dpr, 1.0)
   assert_eq(report.profile.color_interpretation, "srgb")
-  assert_eq(report.profile.renderer_id, "mizchi/svg@0.2.1")
+  assert_eq(
+    report.profile.renderer_id,
+    "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
+  )
 }
 
 ///|

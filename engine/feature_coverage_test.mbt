@@ -72,7 +72,7 @@ test "failed report marks every evidence layer failed" {
 
 ///|
 test "one feature row retains every diagnostic for its subject" {
-  let source = "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='red' stroke='red' style='fill:blue;stroke:blue'/></svg>"
+  let source = "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='red' stroke='red' style='fill:blue;stroke:blue;unknown:value'/></svg>"
   let report = @engine.compare(
     source,
     source,

@@ -368,7 +368,8 @@ fn isolated_presence_painted_pixels(
     body += "/>"
   }
   let source = "<svg width='\{profile.viewport_width}' height='\{profile.viewport_height}'>\{body}</svg>"
-  let document = match @svg.parse_svg_document(source) {
+  let document = match
+    @svg.parse_svg_document(normalize_renderer_style_precedence(source)) {
     Some(document) => document
     None => return None
   }
@@ -466,7 +467,10 @@ fn attach_difference_regions(
   let before = extract_source_subjects_or_raise(before_svg) catch { _ => [] }
   let after = extract_source_subjects_or_raise(after_svg) catch { _ => [] }
   let rendered_images = match
-    (@svg.parse_svg_document(before_svg), @svg.parse_svg_document(after_svg)) {
+    (
+      @svg.parse_svg_document(normalize_renderer_style_precedence(before_svg)),
+      @svg.parse_svg_document(normalize_renderer_style_precedence(after_svg)),
+    ) {
     (Some(before_document), Some(after_document)) =>
       Some(
         (

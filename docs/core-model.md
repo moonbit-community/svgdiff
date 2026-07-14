@@ -40,12 +40,14 @@ Schema `1.4` records:
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
-- `renderer_id`, currently fixed to `mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed to `svgdiff-renderer-conformance-profile/1`.
+- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/2`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
-`schema_version` identifies the serialized report shape, `renderer_id` identifies the concrete rendering implementation, and `renderer_conformance_profile_id` identifies the reviewed fixture, disposition, guard, and future tolerance policy that bounds Rendered Evidence claims. None can substitute for another.
+`schema_version` identifies the serialized report shape, `renderer_id` identifies the complete production rendering implementation including project-owned adapters, and `renderer_conformance_profile_id` identifies the reviewed fixture, disposition, guard, and future tolerance policy that bounds Rendered Evidence claims. None can substitute for another. JSON Schema verifies that renderer identities are present and structurally valid; the versioned compatibility policy decides which concrete identities a consumer accepts.
+
+The style-precedence normalizer operates on private renderer-input copies only. It rewrites a conflicting presentation-attribute value to the complete supported inline value before every production renderer parse. Source Semantics, Source Spans, Changed Facts, Diagnostics, resource admission, and HTML source display continue to use the original SVG strings.
 
 Intrinsic viewport derivation, resource bundles, fonts, perceptual backgrounds, alternate DPRs, wide-gamut profiles, and cross-renderer profiles are not part of the implemented v1 profile. Accepted target decisions for some of these capabilities remain recorded in ADRs and the roadmap.
 

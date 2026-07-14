@@ -35,7 +35,7 @@ test "declaration whitespace and XML entity spelling normalize" {
 }
 
 ///|
-test "renderer style precedence conflict cannot produce complete equality" {
+test "renderer style precedence normalization preserves complete equality" {
   let before = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' style='fill:red' fill='blue'",
   )
@@ -47,13 +47,54 @@ test "renderer style precedence conflict cannot produce complete equality" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 0)
+  assert_eq(report.events.length(), 0)
+  assert_false(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_style_precedence_unresolved"
+    }),
+  )
+}
+
+///|
+test "renderer style precedence normalization preserves a visual change" {
+  let before = solid_rect_document(
+    "id='box' x='2' y='2' width='8' height='8' style='fill:red' fill='blue'",
+  )
+  let after = solid_rect_document(
+    "id='box' x='2' y='2' width='8' height='8' style='fill:green' fill='blue'",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_true(
+    report.atomic_differences[0].magnitude.raster_changed_pixel_fraction
+    is Some(fraction) &&
+    fraction > 0.0,
+  )
+  assert_eq(report.events.length(), 1)
+  assert_true(!report.events[0].difference_regions.is_empty())
+}
+
+///|
+test "incomplete inline style retains the renderer precedence guard" {
+  let source = solid_rect_document(
+    "id='box' x='2' y='2' width='8' height='8' fill='blue' style='fill:red;unknown:value'",
+  )
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
   assert_true(
     report.diagnostics.any(diagnostic => {
-      diagnostic.code == "renderer_style_precedence_unresolved" &&
-      diagnostic.affected_evidence_layers ==
-      ["computed_appearance", "rendered_evidence"]
+      diagnostic.code == "renderer_style_precedence_unresolved"
     }),
   )
 }

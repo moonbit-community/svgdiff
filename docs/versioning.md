@@ -10,11 +10,11 @@ Last verified: 2026-07-14
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.3.3` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.3.4` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.4` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Diagnostics | Schema `1.4` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v1_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/1` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/2` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -35,6 +35,8 @@ At and after `1.0.0`:
 Adding a function is compatible. Removing or renaming a public declaration, changing parameters or results, adding a required field to a publicly constructible record, or changing documented behavior incompatibly is breaking. The generated root `pkg.generated.mbti` is the review artifact. The Mooncakes module, native release archives, CLI `svgdiff` line, and CLI `engine:` line share this module version; they are separate distribution channels, not separate compatibility identities.
 
 Module `0.3.3` adds `ComparisonControl`, `ComparisonInterrupted`, and `compare_with_control` without changing `compare` or CLI behavior. Interruption returns no report, so Structured Report Schema `1.4`, Diagnostics, ordering policy, and renderer conformance identities remain unchanged.
+
+Module `0.3.4` fixes inline-style precedence at the private renderer-input boundary. It advances the production renderer identity to `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1` and conformance profile to `/2` without changing Structured Report field meanings, so schema `1.4` remains current. The Schema validates renderer identities structurally; the compatibility policy accepts known identities and rejects unknown identities before interpreting rendered evidence.
 
 ## Structured Report schema versions
 

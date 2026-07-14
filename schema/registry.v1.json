@@ -49,6 +49,7 @@
       "canonical_examples": "evaluation/schema-examples/manifest.v1.json",
       "compatibility_case_ids": [
         "current-schema-and-policy",
+        "previous-renderer-identities",
         "optional-alignment-evidence-absent",
         "optional-diagnostic-source-locations-absent",
         "legacy-optional-fields-absent",

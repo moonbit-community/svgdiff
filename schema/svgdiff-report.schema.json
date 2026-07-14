@@ -43,9 +43,10 @@
         "raster_representation": {
           "const": "linear_srgb_premultiplied_rgba_f64"
         },
-        "renderer_id": { "const": "mizchi/svg@0.2.1" },
+        "renderer_id": { "type": "string", "minLength": 1 },
         "renderer_conformance_profile_id": {
-          "const": "svgdiff-renderer-conformance-profile/1"
+          "type": "string",
+          "minLength": 1
         }
       }
     },

@@ -34,11 +34,11 @@ V1 therefore preserves exact computed parameter deltas separately from canonical
 
 The historical `mizchi/canvas` supersampling experiment produced monotonic and directionally symmetric premultiplied-RGBA responses within the declared RGBA8 rounding allowance. The current [alternate-scale QA baseline](../evaluation/alternate-scale/README.md) separately rerenders the pinned production renderer at scales 1, 2, 4, and 8 and makes its quantization and directional asymmetry reproducible. Both are renderer QA evidence only and do not enter Structured Report magnitude.
 
-## Current blockers and guards
+## Current adapters and guards
 
 ### Inline-style precedence
 
-The pinned `mizchi/svg@0.2.1` renderer does not guarantee that inline `style` wins over a conflicting presentation attribute independently of XML attribute order. Until a released dependency fixes this, overlapping supported declarations emit `renderer_style_precedence_unresolved` and make computed and rendered coverage partial.
+The pinned `mizchi/svg@0.2.1` dependency applies conflicting presentation attributes and inline declarations in XML attribute order. Production therefore uses `svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1`: a private renderer-input adapter replaces only overlapping presentation values when the existing inline declaration parser proves a complete supported result. The original source remains untouched for source-level evidence. Complete supported overlaps are complete-eligible and order-independent; incomplete or unsupported inline syntax remains unchanged, emits `renderer_style_precedence_unresolved`, and makes computed and rendered coverage partial. Upstream PR [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4) remains useful but is no longer a product blocker.
 
 ### Supersampled canvas adoption
 
@@ -52,7 +52,7 @@ Paths, transforms, general CSS, complete gradients, filters, masks, clipping, bl
 
 The [browser rendering oracle](../evaluation/browser-oracle/README.md) captures the complete-analysis corpus fixtures and focused conformance fixtures under Chromium, DPR `1`, explicit viewports, an offline context, and a transparent background. It records browser identity plus source and PNG hashes and validates reproducible RGB/RGBA output.
 
-The independent [renderer conformance comparison](../evaluation/renderer-conformance/README.md) normalizes browser and `mizchi/svg@0.2.1` pixels to premultiplied RGBA8. Its initial 15-case baseline records 10 exact cases and 5 divergences across geometry, paint, alpha, and compositing; the exploratory clipping case is exact. Baseline observations, accepted dispositions, and production guards are bound by `svgdiff-renderer-conformance-profile/1`, independently from both report schema `1.4` and the renderer package identity.
+The independent [renderer conformance comparison](../evaluation/renderer-conformance/README.md) normalizes browser and raw `mizchi/svg@0.2.1` pixels to premultiplied RGBA8. Its 15-case dependency baseline records 10 exact cases and 5 divergences across geometry, paint, alpha, and compositing; the exploratory clipping case is exact. Production adapter regressions are exercised through engine and CLI tests because the raw evaluation adapter intentionally isolates the dependency. Baseline observations, accepted dispositions, production guards, and the accepted style-precedence adapter are bound by `svgdiff-renderer-conformance-profile/2`, independently from report schema `1.4` and the production renderer identity.
 
 Every divergence now has an executable disposition. A browser-invisible `1.0` to `0.99999` position change becomes 16 full-channel changed pixels in the pinned renderer, so fractional geometry emits `renderer_fractional_geometry_unproven`. Gradient sampling differs by up to 11 premultiplied RGBA8 levels, so referenced gradients emit `renderer_gradient_raster_unproven`. Leaf opacity `0.5` becomes alpha `127` instead of Chromium's `128`, so it emits `renderer_fractional_opacity_unproven`. Group opacity remains guarded by `group_opacity_compositing_unsupported`. These guards limit only the evidence layers they name and retain numeric source/computed evidence plus the renderer observation where available.
 

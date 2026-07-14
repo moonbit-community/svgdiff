@@ -24,8 +24,8 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     comparison_dpr: 1.0,
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
-    renderer_id: "mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/1",
+    renderer_id: "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/2",
   }
 }
 
@@ -1046,7 +1046,7 @@ fn preflight_source_or_raise(
                 }
                 for presentation in presentation_properties {
                   let (property, presentation_span) = presentation
-                  if property == fact.property {
+                  if !style.complete && property == fact.property {
                     let id = "diagnostic:renderer-style-precedence-unresolved:\{subject_id}:\{fact.property}"
                     merge_diagnostic_into(diagnostics, {
                       ..unlocated_diagnostic(
@@ -1861,8 +1861,8 @@ fn compare_without_resource_limits(
     None => ()
   }
   let documents = (
-    @svg.parse_svg_document(before_svg),
-    @svg.parse_svg_document(after_svg),
+    @svg.parse_svg_document(normalize_renderer_style_precedence(before_svg)),
+    @svg.parse_svg_document(normalize_renderer_style_precedence(after_svg)),
   )
   comparison_guard.checkpoint()
   match documents {

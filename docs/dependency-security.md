@@ -65,11 +65,11 @@ These gaps do not permit false complete analysis, and fixed limits plus local-re
 
 `Milky2018/svgdiff@0.3.3` is published on Mooncakes with its Apache-2.0 license, focused registry README, dependency versions, and package checksum. Its repository field is intentionally absent because this checkout has no configured canonical Git remote; do not replace that omission with an unverified URL. The publication archive excludes repository-only tests, evaluations, issues, scripts, prototypes, release automation, and security documentation, so consumers should use the registry checksum and packaged license as the available source-distribution evidence until a canonical repository is established.
 
-## Current upstream blockers
+## Current upstream follow-ups and blockers
 
-| Blocker | Live upstream status on 2026-07-14 | Project impact | Current safe behavior |
+| Item | Live upstream status on 2026-07-14 | Project impact | Current safe behavior |
 | --- | --- | --- | --- |
-| [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Open, ready for review; the pinned `0.2.1` package does not contain the change | The pinned renderer can resolve conflicting presentation and inline declarations in XML attribute order | Emit `renderer_style_precedence_unresolved`; keep Source Semantics; make computed/rendered coverage partial |
+| [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Open, ready for review; the pinned `0.2.1` package does not contain the change | The raw dependency can resolve conflicting presentation and inline declarations in XML attribute order | Normalize complete supported overlaps in a private renderer-input copy; retain `renderer_style_precedence_unresolved` only when a safe rewrite is unproven |
 | [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Blocks the evaluated `mizchi/canvas` path and contributes to `moon doc` dependency-test failure | Keep canvas out of production; do not patch the dependency cache |
 | `moonbitlang/x@0.4.40` `Rational[Int64]` lacks `Debug` in dependency `assert_eq` tests | No matching open upstream PR found in the 2026-07-14 check | `moon doc` fails while checking transitive dependency tests | Use `moon ide doc` and `moon info`; project check, tests, and CLI remain green |
 
