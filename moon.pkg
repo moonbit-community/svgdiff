@@ -1,5 +1,5 @@
 import {
-  "username/svgdiff/engine" @engine,
+  "Milky2018/svgdiff/engine" @engine,
   "moonbitlang/core/json",
 }
 

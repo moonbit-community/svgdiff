@@ -1,5 +1,5 @@
 import {
-  "username/svgdiff",
+  "Milky2018/svgdiff",
   "moonbitlang/core/string",
   "moonbitlang/x/fs",
   "moonbitlang/x/sys",

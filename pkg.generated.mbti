@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "username/svgdiff"
+package "Milky2018/svgdiff"
 
 import {
-  "username/svgdiff/engine",
+  "Milky2018/svgdiff/engine",
 }
 
 // Values

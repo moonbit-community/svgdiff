@@ -9,7 +9,7 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "username/svgdiff"
+name = "Milky2018/svgdiff"
 
 version = "0.1.0"
 
