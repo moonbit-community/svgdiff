@@ -163,7 +163,7 @@ Changed Facts express causal fan-out rather than event ownership. One Changed Fa
 
 A resource difference may share one entity event when that entity is its sole mediated outcome. An unreferenced resource change uses its own resource event. Future resource changes with several independent entity outcomes must use a separate resource event and shared Changed Fact references until the project accepts a versioned contextual-event link; assigning the resource Atomic Difference to one arbitrary entity or duplicating it across events is forbidden.
 
-Separate primary alignments remain separate events even when they share a cause or appear visually coherent. Cross-subject outcome grouping, separately aligned resource synthesis, and semantic theme detection remain future work. The governing ownership and fan-out decision is [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md).
+Separate primary alignments remain separate events even when they overlap or are adjacent, share hierarchy, Changed Facts, or resources, or appear visually coherent. These relationships may support Agent explanation, but none is current event identity. Cross-subject outcome grouping, separately aligned resource synthesis, and semantic theme detection remain future work. The governing ownership and fan-out decision is [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md); [ADR 0041](adr/0041-defer-cross-subject-event-aggregation.md) requires a measured report-only Agent failure plus a deterministic, traceable, versioned grouping and evaluation policy before this boundary can reopen.
 
 ### Diagnostic
 

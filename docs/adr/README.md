@@ -21,8 +21,9 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0017](0017-align-visual-subjects-set-to-set.md) | Accepted | Align Visual Subjects set-to-set. |
 | [0018](0018-preserve-evidence-layers-in-visual-event-magnitude.md) | Accepted | Preserve evidence layers in event magnitude. |
 | [0019](0019-form-visual-events-around-outcomes.md) | Superseded in part by 0040 | Form Visual Events around outcomes. |
-| [0020](0020-anchor-v1-visual-events-to-one-subject-alignment.md) | Accepted | Anchor each v1 event to one Subject Alignment. |
+| [0020](0020-anchor-v1-visual-events-to-one-subject-alignment.md) | Refined by 0041 | Anchor each v1 event to one Subject Alignment. |
 | [0040](0040-give-each-atomic-difference-one-event-owner.md) | Accepted | Give every Atomic Difference one event owner and express causal fan-out through Changed Facts. |
+| [0041](0041-defer-cross-subject-event-aggregation.md) | Accepted | Keep cross-subject aggregation deferred until a measured Agent failure and complete deterministic policy exist. |
 
 ## Correctness boundary and provenance
 
