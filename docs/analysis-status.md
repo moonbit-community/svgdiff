@@ -48,7 +48,7 @@ A `partial` report guarantees all of the following:
 2. Independently supported evidence is retained, including source-level differences that can be established before the unsupported layer.
 3. Every known coverage gap is represented by one or more Diagnostics with affected evidence layers.
 4. Computed relations blocked by a coverage gap use `indeterminate` rather than being coerced to `equivalent` or `different`.
-5. Unavailable measurements remain absent or `not_computed`; they are not serialized as measured zero.
+5. Unavailable measurements remain absent or `not_computed`; they are not serialized as measured zero. A numeric pinned-renderer observation may remain present when only renderer conformance is limited, but the relevant coverage cell and Diagnostic prevent treating it as browser-conformant evidence.
 6. Cause Envelopes whose completeness cannot be proven use `not_established` and retain the relevant Diagnostic IDs.
 
 A partial report does not permit an equality conclusion, even when:

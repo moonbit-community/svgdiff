@@ -19,9 +19,9 @@
       "before": "cases/subtle-geometry-shift/before.svg",
       "after": "cases/subtle-geometry-shift/after.svg",
       "viewport": { "width": 16, "height": 16 },
-      "expected_analysis_status": "complete",
+      "expected_analysis_status": "partial",
       "minimum_atomic_differences": 1,
-      "required_diagnostics": []
+      "required_diagnostics": ["renderer_fractional_geometry_unproven"]
     },
     {
       "id": "salient-fill-change",
@@ -52,9 +52,9 @@
       "before": "cases/resource-gradient-stop-change/before.svg",
       "after": "cases/resource-gradient-stop-change/after.svg",
       "viewport": { "width": 16, "height": 16 },
-      "expected_analysis_status": "complete",
+      "expected_analysis_status": "partial",
       "minimum_atomic_differences": 2,
-      "required_diagnostics": []
+      "required_diagnostics": ["renderer_gradient_raster_unproven"]
     },
     {
       "id": "zero-contribution-insertion",

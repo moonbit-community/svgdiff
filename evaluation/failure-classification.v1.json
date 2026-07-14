@@ -2,7 +2,13 @@
   "schema_version": "svgdiff-failure-classification/1",
   "diagnostic_domains": {
     "renderer_conformance": {
-      "exact": ["renderer_style_precedence_unresolved"],
+      "exact": [
+        "group_opacity_compositing_unsupported",
+        "renderer_fractional_geometry_unproven",
+        "renderer_fractional_opacity_unproven",
+        "renderer_gradient_raster_unproven",
+        "renderer_style_precedence_unresolved"
+      ],
       "prefix": []
     },
     "input_failure": {
@@ -17,7 +23,6 @@
         "duplicate_source_subject_id",
         "font_analysis_deferred",
         "gradient_semantics_unsupported",
-        "group_opacity_compositing_unsupported",
         "inherited_fill_rendered_evidence_deferred",
         "inherited_visual_analysis_coverage_incomplete",
         "paint_server_analysis_unsupported",

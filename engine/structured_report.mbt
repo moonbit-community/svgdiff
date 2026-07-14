@@ -411,6 +411,52 @@ fn paint_server_reference(value : String) -> String? {
 }
 
 ///|
+fn geometry_source_property(kind : String, property : String) -> Bool {
+  match kind {
+    "rect" =>
+      property == "x" ||
+      property == "y" ||
+      property == "width" ||
+      property == "height" ||
+      property == "rx" ||
+      property == "ry"
+    "circle" => property == "cx" || property == "cy" || property == "r"
+    "ellipse" =>
+      property == "cx" ||
+      property == "cy" ||
+      property == "rx" ||
+      property == "ry"
+    "line" =>
+      property == "x1" ||
+      property == "y1" ||
+      property == "x2" ||
+      property == "y2"
+    "polyline" | "polygon" => property == "points"
+    _ => false
+  }
+}
+
+///|
+fn contains_fractional_number(value : String) -> Bool {
+  let normalized = value
+    .replace_all(old=",", new=" ")
+    .replace_all(old="\t", new=" ")
+    .replace_all(old="\n", new=" ")
+    .replace_all(old="\r", new=" ")
+  for token in normalized.split(" ") {
+    let token = token.trim()
+    if token == "" {
+      continue
+    }
+    match parse_alignment_number(Some(token.to_owned())) {
+      Some(number) if number != number.floor() => return true
+      _ => ()
+    }
+  }
+  false
+}
+
+///|
 fn gradient_unsupported_signature_or_raise(input : String) -> String raise {
   let reader = @xml.NamespaceReader::from_string(input)
   let mut signature = ""
@@ -513,9 +559,11 @@ fn preflight_source_or_raise(
           let presentation_properties : Array[String] = []
           let unsupported_paint_properties : Array[String] = []
           let paint_references : Array[(String, String)] = []
+          let fractional_geometry_properties : Array[String] = []
           let mut style_attribute : @xml.NamespaceAttribute? = None
           let mut subject_id = kind
           let mut has_group_opacity = false
+          let mut has_fractional_leaf_opacity = false
           let mut view_box_value : String? = None
           for attribute in element.attributes {
             let name = attribute.name.local_name
@@ -536,6 +584,16 @@ fn preflight_source_or_raise(
             }
             if (kind == "svg" || kind == "g") && name == "opacity" {
               has_group_opacity = true
+            }
+            if geometry_source_property(kind, name) &&
+              contains_fractional_number(attribute.value) {
+              fractional_geometry_properties.push(name)
+            }
+            if kind != "svg" &&
+              kind != "g" &&
+              name == "opacity" &&
+              contains_fractional_number(attribute.value) {
+              has_fractional_leaf_opacity = true
             }
             if kind == "svg" && name == "viewBox" {
               view_box_value = Some(attribute.value)
@@ -585,6 +643,22 @@ fn preflight_source_or_raise(
               ],
             })
           }
+          for property in fractional_geometry_properties {
+            diagnostics.push({
+              id: "diagnostic:renderer-fractional-geometry-unproven:\{subject_id}:\{property}",
+              code: "renderer_fractional_geometry_unproven",
+              subject_id,
+              affected_evidence_layers: ["rendered_evidence"],
+            })
+          }
+          if has_fractional_leaf_opacity {
+            diagnostics.push({
+              id: "diagnostic:renderer-fractional-opacity-unproven:\{subject_id}",
+              code: "renderer_fractional_opacity_unproven",
+              subject_id,
+              affected_evidence_layers: ["rendered_evidence"],
+            })
+          }
           for property in unsupported_paint_properties {
             diagnostics.push({
               id: "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}",
@@ -609,6 +683,32 @@ fn preflight_source_or_raise(
                       affected_evidence_layers: [
                         "source_semantics", "computed_appearance", "rendered_evidence",
                       ],
+                    })
+                  }
+                }
+                if geometry_source_property(kind, fact.property) &&
+                  contains_fractional_number(fact.declared_value) {
+                  let id = "diagnostic:renderer-fractional-geometry-unproven:\{subject_id}:\{fact.property}"
+                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
+                    diagnostics.push({
+                      id,
+                      code: "renderer_fractional_geometry_unproven",
+                      subject_id,
+                      affected_evidence_layers: ["rendered_evidence"],
+                    })
+                  }
+                }
+                if kind != "svg" &&
+                  kind != "g" &&
+                  fact.property == "opacity" &&
+                  contains_fractional_number(fact.declared_value) {
+                  let id = "diagnostic:renderer-fractional-opacity-unproven:\{subject_id}"
+                  if !diagnostics.any(diagnostic => diagnostic.id == id) {
+                    diagnostics.push({
+                      id,
+                      code: "renderer_fractional_opacity_unproven",
+                      subject_id,
+                      affected_evidence_layers: ["rendered_evidence"],
                     })
                   }
                 }
@@ -686,6 +786,16 @@ fn preflight_source_or_raise(
             affected_evidence_layers: [
               "source_semantics", "computed_appearance", "rendered_evidence",
             ],
+          })
+        }
+      } else {
+        let id = "diagnostic:renderer-gradient-raster-unproven:\{subject_id}:\{property}"
+        if !diagnostics.any(diagnostic => diagnostic.id == id) {
+          diagnostics.push({
+            id,
+            code: "renderer_gradient_raster_unproven",
+            subject_id,
+            affected_evidence_layers: ["rendered_evidence"],
           })
         }
       }

@@ -116,7 +116,7 @@ Human labels may allow multiple faithful descriptions, but cannot authorize clai
 | Report case | Required conclusion | Unacceptable conclusion |
 | --- | --- | --- |
 | `red` to `#ff0000`, complete, computed-equivalent, zero pixels | Report the source spelling difference and zero measured visual effect | "The files are identical" or "the color visibly changed" |
-| `1.0` to `0.99999`, complete, tiny computed displacement, nonzero raster edge response | Preserve both the tiny CSS-unit displacement and the canonical pixel response | Use changed-pixel count as the displacement or call the edit major without a policy |
+| `1.0` to `0.99999`, partial, tiny computed displacement, guarded nonzero pinned-raster response | Preserve the tiny CSS-unit displacement, surface `renderer_fractional_geometry_unproven`, and avoid claiming visible change from the guarded pixel count | Use changed-pixel count as the displacement, omit the Diagnostic, or call the edit major without a policy |
 | Opaque red to blue rectangle with a localized region | Report paint kind, resolved color change, magnitude, region, and possible changed fill fact | Mention a color change without its subject, location, or evidence IDs |
 | Inserted zero-opacity shape | Report insertion and geometric footprint separately from zero painted and raster contribution | Drop the insertion because it is not visible |
 | Empty difference list with unsupported path Diagnostic | State that equality is not established | "No visual differences" |

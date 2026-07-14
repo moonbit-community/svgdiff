@@ -136,6 +136,8 @@ The CLI option `--agent-json` emits the same schema and evidence without formatt
 
 Scripts, animation, event state, `foreignObject`, general CSS selectors, transforms, paths, filters, masks, and deterministic font shaping are not currently evaluated. Unsupported content is never silently treated as equal.
 
+Fractional geometry, fractional leaf opacity, and referenced-gradient raster measurements currently remain numeric pinned-renderer observations, but their Rendered Evidence coverage is limited by stable conformance Diagnostics. Exact source and computed differences remain available; consumers must not treat those raster values as browser-conformant.
+
 The current renderer dependency does not yet guarantee that inline `style`
 overrides a conflicting presentation attribute independently of XML attribute
 order. Such overlap emits `renderer_style_precedence_unresolved` and reduces
@@ -175,6 +177,7 @@ sh scripts/test-cli.sh
 sh scripts/test-install.sh
 sh scripts/test-browser-oracle.sh
 sh scripts/test-renderer-conformance.sh
+sh scripts/test-renderer-dispositions.sh
 ```
 
 The browser oracle and renderer-conformance validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine.

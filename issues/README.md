@@ -61,6 +61,7 @@ graph TD
   ISS_042["ISS-042: Cover every supported property and subject kind with mutations"]
   ISS_043["ISS-043: Build the deterministic browser rendering oracle"]
   ISS_044["ISS-044: Compare the pinned renderer with the browser oracle"]
+  ISS_045["ISS-045: Dispose every measured renderer divergence"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -98,6 +99,7 @@ graph TD
   ISS_041 --> ISS_042
   ISS_042 --> ISS_043
   ISS_043 --> ISS_044
+  ISS_044 --> ISS_045
 ```
 
 ## Warnings

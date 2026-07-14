@@ -66,7 +66,13 @@ test "tiny geometry changes retain continuous computed magnitude" {
     positioned_rect_svg("0.99999", "red"),
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_fractional_geometry_unproven" &&
+      diagnostic.affected_evidence_layers == ["rendered_evidence"]
+    }),
+  )
   assert_eq(report.atomic_differences.length(), 1)
   let difference = report.atomic_differences[0]
   assert_eq(difference.domain, "geometry.position")
@@ -123,7 +129,13 @@ test "resource changes and entity outcomes share one rendered event" {
     gradient_rect_svg("green"),
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_gradient_raster_unproven" &&
+      diagnostic.affected_evidence_layers == ["rendered_evidence"]
+    }),
+  )
   assert_eq(report.atomic_differences.length(), 2)
   let resource_difference = report.atomic_differences[0]
   assert_eq(resource_difference.id, "diff:resource:gradient:stop:0")
@@ -153,6 +165,35 @@ test "resource changes and entity outcomes share one rendered event" {
     Some(magnitude) => assert_true(magnitude.changed_pixels > 0)
     None => fail("expected computed rendered magnitude")
   }
+}
+
+///|
+test "fractional leaf opacity retains numeric evidence behind a renderer guard" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' fill='red' opacity='0.5'/></svg>",
+    "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' fill='red' opacity='0.75'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.atomic_differences.length(), 1)
+  assert_eq(report.atomic_differences[0].domain, "paint.opacity")
+  assert_eq(report.atomic_differences[0].computed_relation.status, "different")
+  match report.events[0].rendered_outcome.magnitude {
+    Some(magnitude) => assert_true(magnitude.rgba8_rmse > 0.0)
+    None => fail("expected numeric renderer observation")
+  }
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_fractional_opacity_unproven" &&
+      diagnostic.affected_evidence_layers == ["rendered_evidence"]
+    }),
+  )
+  assert_true(
+    report.coverage_matrix.any(row => {
+      row.feature_id == "guard.renderer_fractional_opacity_unproven" &&
+      row.rendered_evidence == "limited"
+    }),
+  )
 }
 
 ///|

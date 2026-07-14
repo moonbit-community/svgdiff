@@ -18,7 +18,7 @@ Each template contains exactly one `{{VALUE}}` placeholder. A case supplies the 
 - the visual subject IDs expected in `ChangedFact.affected_subject_ids`;
 - the comparison viewport and expected analysis status.
 
-The coverage contract names all six current basic subject kinds and all eighteen current authored properties. Nineteen complete cases cover the minimum applicable property/subject combinations; one additional inherited-fill case verifies retained source evidence on a partial path.
+The coverage contract names all six current basic subject kinds and all eighteen current authored properties. Eighteen complete cases cover the minimum applicable property/subject combinations. The fractional-opacity case verifies retained source/computed evidence behind a renderer-conformance guard, and the inherited-fill case verifies retained source evidence where computed color and rendered reconstruction remain deferred.
 
 ## Generate
 
@@ -34,6 +34,6 @@ The output contains `cases/<id>/before.svg`, `cases/<id>/after.svg`, and `genera
 sh scripts/test-mutations.sh
 ```
 
-The check generates into a temporary directory, reruns generation to compare hashes, proves that cases cover the exact declared subject-kind and source-property sets, executes every pair through the production CLI, and verifies Subject Alignment plus the independently declared report property, declared values, and affected subjects. The inherited case expects `partial` because its source fact is retained while computed color and rendered evidence remain explicitly deferred.
+The check generates into a temporary directory, reruns generation to compare hashes, proves that cases cover the exact declared subject-kind and source-property sets, executes every pair through the production CLI, and verifies Subject Alignment plus the independently declared report property, declared values, and affected subjects. Fractional opacity and inherited fill expect `partial` for their documented, distinct coverage guards.
 
 Mutation-generated pairs complement the hand-authored [curated corpus](../corpus/README.md). They do not provide human importance labels, region bounds, actual-cause annotations, or agent answers.

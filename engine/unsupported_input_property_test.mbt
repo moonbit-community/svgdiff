@@ -106,3 +106,14 @@ test "unsupported CSS paint resource and compositing families never prove equali
     assert_unsupported_never_proves_equality(unsupported_document(content))
   }
 }
+
+///|
+test "unproven renderer conformance families never prove equality" {
+  for
+    content in [
+      "<rect id='box' x='0.99999' y='2' width='8' height='8'/>", "<rect id='box' x='2' y='2' width='8' height='8' opacity='0.5'/>",
+      "<defs><linearGradient id='gradient'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#gradient)'/>",
+    ] {
+    assert_unsupported_never_proves_equality(unsupported_document(content))
+  }
+}

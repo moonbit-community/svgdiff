@@ -1,0 +1,35 @@
+{
+  "schema_version": "svgdiff-renderer-conformance-dispositions/1",
+  "cases": [
+    {
+      "id": "subtle-geometry-after",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_fractional_geometry_unproven",
+      "reason": "The pinned renderer turns a browser-invisible 0.00001 CSS-pixel movement into sixteen full-channel pixel changes."
+    },
+    {
+      "id": "gradient-stop-before",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser gradient interpolation samples differ across the painted rectangle."
+    },
+    {
+      "id": "gradient-stop-after",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser gradient interpolation samples differ across the painted rectangle."
+    },
+    {
+      "id": "leaf-alpha",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_fractional_opacity_unproven",
+      "reason": "Opacity 0.5 becomes alpha 127 in the pinned renderer and alpha 128 in Chromium."
+    },
+    {
+      "id": "group-opacity",
+      "disposition": "diagnostic",
+      "diagnostic_code": "group_opacity_compositing_unsupported",
+      "reason": "The pinned renderer leaves group children opaque while Chromium composites the group at alpha 128."
+    }
+  ]
+}

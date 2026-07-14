@@ -47,6 +47,7 @@ Use this procedure for `mizchi/svg`, a replacement renderer, or a project-owned 
 - Exercise every known preflight guard, especially inline-style precedence, paint servers, unsupported attributes, and group opacity.
 - Add a regression fixture for every upstream bug the new version claims to fix.
 - Use an external renderer only as a conformance oracle; do not substitute its output into the production profile without a separate decision.
+- Run `scripts/test-browser-oracle.sh`, `scripts/test-renderer-conformance.sh`, and `scripts/test-renderer-dispositions.sh`; every changed divergence must receive a reviewed disposition.
 
 ### Required synchronized changes
 

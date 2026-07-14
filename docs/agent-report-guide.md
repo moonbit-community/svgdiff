@@ -110,7 +110,8 @@ Input change: rectangle `x="1.0"` to `x="0.99999"` in a `16 x 16` profile.
 
 ```json
 {
-  "analysis_status": "complete",
+  "analysis_status": "partial",
+  "diagnostic": "renderer_fractional_geometry_unproven",
   "domain": "geometry.position",
   "computed_relation": { "status": "different" },
   "magnitude": {
@@ -119,15 +120,16 @@ Input change: rectangle `x="1.0"` to `x="0.99999"` in a `16 x 16` profile.
     "geometry_viewport_fraction": 4.419417382395809e-7,
     "raster_changed_pixel_fraction": 0.0625
   },
-  "rendered_outcome": { "magnitude": { "changed_pixels": 16 } }
+  "rendered_outcome": { "magnitude": { "changed_pixels": 16 } },
+  "rendered_coverage": "limited"
 }
 ```
 
 Correct interpretation:
 
-> The rectangle moved left by approximately `0.00001` CSS pixels. This is an extremely small computed geometry change. Under the pinned rasterizer it changed 16 edge pixels, but the raster count must not be used to exaggerate the underlying displacement.
+> The rectangle moved left by approximately `0.00001` CSS pixels. This is an extremely small and exact computed geometry change. The pinned renderer reports 16 edge pixels, but Rendered Evidence is limited because Chromium produces zero changed canonical pixels for this pair. Do not claim a visible outcome from the pinned count.
 
-The two reported pixel regions lie on the vacated and occupied vertical edges. Their Cause Envelopes contain the changed `x` fact. The exact parameter magnitude and the quantized raster response answer different questions and must both be retained.
+The pinned renderer's two edge regions remain numeric observations, but their Cause Envelopes are `not_established` and they are not browser-conformant visual regions. Retain the exact parameter magnitude, report the conformance Diagnostic, and do not use the quantized raster artifact to rank this edit as visually important.
 
 ## Worked example 3: salient paint change
 

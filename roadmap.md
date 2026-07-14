@@ -82,7 +82,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **P0** Resolve [ISS-002](issues/ISS-002.md), upgrading the renderer or privately normalizing inline-style precedence.
 - [x] **P0** Build a browser-based rendering oracle for supported deterministic fixtures.
 - [x] **P0** Compare the pinned renderer against the oracle for geometry, paint, alpha, clipping, and compositing cases as coverage expands.
-- [ ] **P0** Convert every accepted renderer divergence into either an adapter fix, a narrower completeness claim, or a stable Diagnostic.
+- [x] **P0** Convert every accepted renderer divergence into either an adapter fix, a narrower completeness claim, or a stable Diagnostic.
 - [ ] **P1** Version the renderer conformance profile separately from the JSON Schema.
 - [ ] **P1** Define the minimum conformance threshold that triggers a focused upstream patch versus a project-owned rendering module.
 - [ ] **P1** Add alternate-scale rerendering as renderer QA only, without allowing it to redefine canonical report evidence.

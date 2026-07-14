@@ -32,7 +32,7 @@ The check requires a one-to-one case mapping with the curated corpus and validat
 
 ## Region labels
 
-`regions.v1.json` records localizable outcomes in comparison CSS-pixel coordinates. Simple filled shapes use `exact_painted_bounds`; quantized micro-geometry and unsupported stroked paths use `conservative_css_bounds` with a containment scoring rule. Equivalent and zero-contribution cases are explicitly `not_applicable` rather than represented by fabricated zero-area regions.
+`regions.v1.json` records localizable outcomes in comparison CSS-pixel coordinates. Simple filled shapes use `exact_painted_bounds`, while unsupported stroked paths use `conservative_css_bounds` with a containment scoring rule. Equivalent, zero-contribution, and browser-invisible micro-geometry cases are explicitly `not_applicable` rather than represented by fabricated or nonconformant regions.
 
 Validate them with:
 
@@ -42,9 +42,9 @@ sh scripts/test-region-annotations.sh
 
 ## Actual-cause labels
 
-`actual-causes.v1.json` admits only controlled cases with rendered outcomes and sufficient coverage for Cause Envelope recall evaluation. Actual causes use semantic fact locators instead of report-local IDs. The resource-mediated case intentionally identifies the edited gradient stop as the actual changed cause while allowing downstream computed paint facts to remain conservative false-positive candidates.
+`actual-causes.v1.json` admits only controlled cases with rendered outcomes and sufficient coverage for Cause Envelope recall evaluation. Actual causes use semantic fact locators instead of report-local IDs. Fractional geometry and referenced-gradient cases remain excluded while renderer conformance prevents a complete Cause Envelope guarantee.
 
-Equivalent, zero-contribution, and unsupported cases are explicitly `not_applicable`. Validate corpus coverage and reference integrity with:
+Equivalent, zero-contribution, renderer-guarded, and unsupported cases are explicitly `not_applicable`. Validate corpus coverage and reference integrity with:
 
 ```sh
 sh scripts/test-cause-annotations.sh

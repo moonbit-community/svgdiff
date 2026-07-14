@@ -11,16 +11,9 @@
     },
     {
       "case_id": "subtle-geometry-shift",
-      "localization_status": "localizable",
-      "reason": "The changed outcome is confined to the quantized raster bounds around the union of the before and after rectangle footprints.",
-      "regions": [
-        {
-          "id": "region-ref:subtle-geometry-shift:union",
-          "reference_kind": "conservative_css_bounds",
-          "comparison_rule": "predicted_region_contained_by_reference",
-          "bounds": { "x": 0.0, "y": 2.0, "width": 9.0, "height": 8.0 }
-        }
-      ]
+      "localization_status": "not_applicable",
+      "reason": "Chromium produces identical canonical RGBA8 pixels for the 0.00001 CSS-pixel movement; the pinned renderer's edge regions are not browser-conformant.",
+      "regions": []
     },
     {
       "case_id": "salient-fill-change",

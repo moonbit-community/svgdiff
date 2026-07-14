@@ -183,7 +183,7 @@ def main() -> None:
     if categories != REQUIRED_CATEGORIES:
         raise ValueError("conformance fixtures do not cover every required category")
     if any(
-        fixture.get("coverage_claim") not in {"supported", "exploratory"}
+        fixture.get("coverage_claim") not in {"supported", "guarded", "exploratory"}
         for fixture in fixtures
     ):
         raise ValueError("invalid conformance fixture coverage claim")
@@ -249,6 +249,7 @@ def main() -> None:
             "exploratory": sum(
                 case["coverage_claim"] == "exploratory" for case in cases
             ),
+            "guarded": sum(case["coverage_claim"] == "guarded" for case in cases),
             "exact": sum(case["comparison"] == "exact" for case in cases),
             "divergent": sum(case["comparison"] == "divergent" for case in cases),
             "categories": category_summary,

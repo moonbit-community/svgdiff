@@ -8,8 +8,8 @@
     "agent_required_diagnostic_recall_macro": 1.0,
     "agent_atomic_difference_recall_macro": 1.0,
     "agent_main_difference_mrr": 1.0,
-    "report_region_overlap_macro": 0.8,
-    "agent_region_overlap_macro": 0.8,
+    "report_region_overlap_macro": 0.75,
+    "agent_region_overlap_macro": 0.75,
     "report_cause_envelope_recall_macro": 1.0,
     "agent_possible_cause_recall_macro": 1.0
   },

@@ -38,7 +38,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - supported presentation attributes and supported inline-style declarations, except conflicting presentation/inline declarations described below;
 - basic shape subjects: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`;
 - basic subject correspondence, insertion, deletion, split, and merge relationships for the supported shape inventory;
-- supported geometry facts for those shapes, plus fill, stroke, stroke width, and opacity facts where implemented by the analyzer;
+- supported geometry facts for those shapes, plus fill, stroke, stroke width, and opacity facts where implemented by the analyzer; canonical rendered completeness currently requires integer-valued geometry and leaf opacity `0` or `1`;
 - ordinary inherited fill provenance in the validated inheritance slice;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red` and `#ff0000`;
 - exact continuous parameter deltas independent of raster quantization;
@@ -54,12 +54,14 @@ The following capabilities can participate in a `complete` report when no unsupp
 | --- | --- | --- |
 | Text content | Source-level `text.content` difference | Font loading, shaping, layout, and glyph raster evidence are deferred. |
 | Group or root opacity | Supported source-level compositing difference | Isolated group compositing semantics are not fully modeled. |
-| Referenced linear gradient | Narrow validated first-stop/single-rect cases may be analyzed | Other stops, attributes, references, and placements are diagnosed rather than generalized. |
+| Fractional basic-shape geometry | Exact authored and computed numeric differences plus a pinned-renderer measurement | Chromium shows that the pinned renderer can quantize browser-invisible subpixel movement into full pixel changes; `renderer_fractional_geometry_unproven` limits Rendered Evidence. |
+| Fractional leaf opacity | Authored/computed opacity and a numeric pinned-renderer measurement | The pinned renderer floors `0.5` to alpha `127` while Chromium uses `128`; `renderer_fractional_opacity_unproven` limits Rendered Evidence. |
+| Referenced linear gradient | Narrow first-stop/single-rect source and computed analysis plus a pinned-renderer measurement | Browser interpolation differs from the pinned raster; `renderer_gradient_raster_unproven` limits Rendered Evidence even for the narrow slice, while other gradient semantics retain their broader guards. |
 | Conflicting presentation attribute and inline style | Normalized Source Semantics | The pinned renderer does not yet guarantee correct precedence independent of XML attribute order; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Stylesheets, selectors, or unsupported CSS syntax | Any independently supported source facts | The full cascade and selector model are not implemented. |
 | Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 
-These guards are part of v1 correctness. They are not temporary permission to interpret absent rendered evidence as zero.
+These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
 ## Unsupported or deferred
 

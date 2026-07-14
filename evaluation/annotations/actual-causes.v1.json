@@ -12,22 +12,10 @@
     },
     {
       "case_id": "subtle-geometry-shift",
-      "evaluation_status": "eligible",
-      "reason": "A single controlled x-position edit produces the edge Difference Regions.",
-      "reference_region_ids": ["region-ref:subtle-geometry-shift:union"],
-      "actual_causes": [
-        {
-          "id": "actual:subtle-geometry-shift:x",
-          "fact_locator": {
-            "report_property": "geometry.position",
-            "source_property": "x",
-            "before_declared_value": "1.0",
-            "after_declared_value": "0.99999",
-            "affected_subject_ids": ["box"]
-          },
-          "rationale": "No other authored or environment input changes between the two documents."
-        }
-      ]
+      "evaluation_status": "not_applicable",
+      "reason": "Chromium has no changed-pixel outcome for this movement, and the pinned renderer regions are guarded as nonconformant.",
+      "reference_region_ids": [],
+      "actual_causes": []
     },
     {
       "case_id": "salient-fill-change",
@@ -69,22 +57,10 @@
     },
     {
       "case_id": "resource-gradient-stop-change",
-      "evaluation_status": "eligible",
-      "reason": "The first gradient stop is the sole authored edit that changes the referenced paint outcome.",
-      "reference_region_ids": ["region-ref:resource-gradient-stop-change:box"],
-      "actual_causes": [
-        {
-          "id": "actual:resource-gradient-stop-change:first-stop",
-          "fact_locator": {
-            "report_property": "resource.gradient.stop_color",
-            "source_property": "stop-color",
-            "before_declared_value": "red",
-            "after_declared_value": "green",
-            "affected_subject_ids": ["box"]
-          },
-          "rationale": "The rectangle's authored fill reference is unchanged; its downstream computed paint difference is a consequence and may remain a conservative envelope candidate, but the edited first-stop fact is the actual changed cause."
-        }
-      ]
+      "evaluation_status": "not_applicable",
+      "reason": "The authored cause is controlled, but renderer-gradient conformance is limited and the report Cause Envelope is not established.",
+      "reference_region_ids": [],
+      "actual_causes": []
     },
     {
       "case_id": "zero-contribution-insertion",
