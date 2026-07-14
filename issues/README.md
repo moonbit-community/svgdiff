@@ -88,6 +88,7 @@ graph TD
   ISS_069["ISS-069: Define stable alignment tie-breaking"]
   ISS_070["ISS-070: Report alignment evidence and uncertainty"]
   ISS_071["ISS-071: Validate the M1 installed CLI gate"]
+  ISS_072["ISS-072: Validate the M1 versioned-contract gate"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -199,6 +200,13 @@ graph TD
   ISS_035 --> ISS_071
   ISS_036 --> ISS_071
   ISS_070 --> ISS_071
+  ISS_035 --> ISS_072
+  ISS_037 --> ISS_072
+  ISS_038 --> ISS_072
+  ISS_046 --> ISS_072
+  ISS_051 --> ISS_072
+  ISS_053 --> ISS_072
+  ISS_070 --> ISS_072
 ```
 
 ## Warnings
