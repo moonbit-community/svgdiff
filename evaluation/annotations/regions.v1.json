@@ -1,0 +1,84 @@
+{
+  "schema_version": "svgdiff-region-labels/1",
+  "corpus_version": "svgdiff-corpus/1",
+  "coordinate_space": "comparison_css_px",
+  "cases": [
+    {
+      "case_id": "equivalent-color-spelling",
+      "localization_status": "not_applicable",
+      "reason": "The authored fill spelling changes, but resolved appearance and rendered pixels are equivalent.",
+      "regions": []
+    },
+    {
+      "case_id": "subtle-geometry-shift",
+      "localization_status": "localizable",
+      "reason": "The changed outcome is confined to the union of the before and after rectangle footprints; exact raster edge pixels are profile-quantized.",
+      "regions": [
+        {
+          "id": "region-ref:subtle-geometry-shift:union",
+          "reference_kind": "conservative_css_bounds",
+          "comparison_rule": "predicted_region_contained_by_reference",
+          "bounds": { "x": 0.99999, "y": 2.0, "width": 8.00001, "height": 8.0 }
+        }
+      ]
+    },
+    {
+      "case_id": "salient-fill-change",
+      "localization_status": "localizable",
+      "reason": "The complete filled rectangle changes color.",
+      "regions": [
+        {
+          "id": "region-ref:salient-fill-change:panel",
+          "reference_kind": "exact_painted_bounds",
+          "comparison_rule": "intersection_over_union",
+          "bounds": { "x": 2.0, "y": 2.0, "width": 12.0, "height": 12.0 }
+        }
+      ]
+    },
+    {
+      "case_id": "structural-rect-insertion",
+      "localization_status": "localizable",
+      "reason": "The inserted opaque rectangle is the only changed painted outcome.",
+      "regions": [
+        {
+          "id": "region-ref:structural-rect-insertion:badge",
+          "reference_kind": "exact_painted_bounds",
+          "comparison_rule": "intersection_over_union",
+          "bounds": { "x": 5.0, "y": 5.0, "width": 6.0, "height": 6.0 }
+        }
+      ]
+    },
+    {
+      "case_id": "resource-gradient-stop-change",
+      "localization_status": "localizable",
+      "reason": "The referenced paint-resource change affects the complete filled rectangle.",
+      "regions": [
+        {
+          "id": "region-ref:resource-gradient-stop-change:box",
+          "reference_kind": "exact_painted_bounds",
+          "comparison_rule": "intersection_over_union",
+          "bounds": { "x": 2.0, "y": 2.0, "width": 12.0, "height": 12.0 }
+        }
+      ]
+    },
+    {
+      "case_id": "zero-contribution-insertion",
+      "localization_status": "not_applicable",
+      "reason": "The inserted rectangle has opacity zero and produces no painted or rendered difference region.",
+      "regions": []
+    },
+    {
+      "case_id": "unsupported-path-change",
+      "localization_status": "localizable",
+      "reason": "The reference covers both diagonals plus the one-pixel half-stroke expansion; the current engine remains partial for path semantics.",
+      "regions": [
+        {
+          "id": "region-ref:unsupported-path-change:stroke-union",
+          "reference_kind": "conservative_css_bounds",
+          "comparison_rule": "predicted_region_contained_by_reference",
+          "bounds": { "x": 1.0, "y": 1.0, "width": 14.0, "height": 14.0 }
+        }
+      ]
+    }
+  ]
+}

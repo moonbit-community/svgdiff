@@ -27,3 +27,13 @@ sh scripts/test-annotations.sh
 ```
 
 The check requires a one-to-one case mapping with the curated corpus and validates IDs, summaries, ranks, tiers, rationales, and alternative descriptions.
+
+## Region labels
+
+`regions.v1.json` records localizable outcomes in comparison CSS-pixel coordinates. Simple filled shapes use `exact_painted_bounds`; quantized micro-geometry and unsupported stroked paths use `conservative_css_bounds` with a containment scoring rule. Equivalent and zero-contribution cases are explicitly `not_applicable` rather than represented by fabricated zero-area regions.
+
+Validate them with:
+
+```sh
+sh scripts/test-region-annotations.sh
+```
