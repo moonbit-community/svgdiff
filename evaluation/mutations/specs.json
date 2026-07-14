@@ -306,6 +306,14 @@
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
+      "id": "mutate-stylesheet-class-fill",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<style>.paint { fill: red; }</style><rect id='box' class='paint' width='16' height='16'/>",
+      "after_value": "<style>.paint { fill: blue; }</style><rect id='box' class='paint' width='16' height='16'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "paint.fill", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
       "id": "mutate-inherited-fill",
       "template": "templates/inherited-fill.svg.tmpl",
       "before_value": "red", "after_value": "green",

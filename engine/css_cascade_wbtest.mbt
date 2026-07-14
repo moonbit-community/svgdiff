@@ -223,12 +223,13 @@ test "stylesheet parser retains selector specificity declarations and spans" {
 ///|
 test "specificity parser counts supported static selector syntax" {
   let specificity = css_specificity_for_selector(
-    "svg g#layer.item[hidden] > rect:hover::before",
+    "svg g#layer.item[hidden] > rect.hot",
   ).unwrap()
   assert_eq(specificity.ids, 1)
   assert_eq(specificity.classes, 3)
-  assert_eq(specificity.types, 4)
+  assert_eq(specificity.types, 3)
   assert_true(css_specificity_for_selector("rect:not(.disabled)") is None)
+  assert_true(css_specificity_for_selector("rect:hover") is None)
 }
 
 ///|
@@ -236,5 +237,6 @@ test "stylesheet parser keeps unsupported syntax explicitly incomplete" {
   let parsed = parse_stylesheet_text("rect:not(.disabled) { fill: red; }", 0)
   assert_true(!parsed.complete)
   assert_eq(parsed.rules.length(), 0)
-  assert_true(stylesheet_requires_selector_matching(parsed))
+  let commented = parse_stylesheet_text("rect { fill: red /* chosen */; }", 0)
+  assert_true(!commented.complete)
 }

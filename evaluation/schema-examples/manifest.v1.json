@@ -240,6 +240,21 @@
       }
     },
     {
+      "id": "stylesheet-selector-equivalent",
+      "before": "evaluation/schema-examples/cases/stylesheet-selector-equivalent/before.svg",
+      "after": "evaluation/schema-examples/cases/stylesheet-selector-equivalent/after.svg",
+      "output": "schema/examples/stylesheet-selector-equivalent.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["paint.fill"],
+        "computed_relations": ["equivalent"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "paint.fill", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

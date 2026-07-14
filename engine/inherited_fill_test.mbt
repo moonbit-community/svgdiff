@@ -83,7 +83,7 @@ test "one ancestor changed fact identifies every affected rect" {
 }
 
 ///|
-test "stylesheet fill keeps inherited source analysis partial" {
+test "stylesheet selector participates in inherited fill without a CSS guard" {
   let source = "<svg width='16' height='16'><style>g { fill: red; }</style><g id='layer'><rect id='box' x='2' y='2' width='8' height='8'/></g></svg>"
   let report = @engine.compare(
     source,
@@ -92,7 +92,7 @@ test "stylesheet fill keeps inherited source analysis partial" {
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
-    report.diagnostics.any(diagnostic => {
+    !report.diagnostics.any(diagnostic => {
       diagnostic.code == "css_cascade_unsupported"
     }),
   )
@@ -107,7 +107,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.12",
+      "schema_version": "1.13",
       "source_resolutions": [
         {
           "subject_id": "box",

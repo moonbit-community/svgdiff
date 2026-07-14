@@ -75,6 +75,6 @@ test "CLI help documents options and exit statuses" {
 test "CLI version exposes every contract identity" {
   assert_eq(
     version_text(),
-    "svgdiff 0.4.6\nengine: 0.4.6\nschema: 1.12\nrenderer: svgdiff/style-precedence-normalizer@2+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/9\nordering-policy: v2_domain_lexicographic",
+    "svgdiff 0.4.7\nengine: 0.4.7\nschema: 1.13\nrenderer: svgdiff/style-precedence-normalizer@3+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/10\nordering-policy: v2_domain_lexicographic",
   )
 }

@@ -19,7 +19,7 @@ test "$first_hashes" = "$second_hashes"
 manifest="$first/generated-manifest.json"
 jq -e '
   .schema_version == "svgdiff-generated-mutations/1" and
-  (.cases | length == 38) and
+  (.cases | length == 39) and
   (.coverage_contract.subject_kinds | sort) == ["circle", "ellipse", "line", "polygon", "polyline", "rect"] and
   (.coverage_contract.source_properties | sort) == ["cx", "cy", "fill", "height", "marker-end", "markerUnits", "markerWidth", "opacity", "orient", "points", "r", "refX", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-width", "transform", "vector-effect", "viewBox", "width", "x", "x1", "x2", "y", "y1", "y2"] and
   ([.cases[].expected_changed_fact.subject_kind] | unique | sort) == (.coverage_contract.subject_kinds | sort) and

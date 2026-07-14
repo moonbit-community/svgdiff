@@ -27,7 +27,7 @@ fn canonical_renderer_inline_style(facts : Array[DeclaredVisualFact]) -> String 
 }
 
 ///|
-fn renderer_value_edits_for_element(
+fn renderer_inline_value_edits_for_element(
   input : String,
   element : @xml.NamespaceElement,
   edits : Array[RendererValueEdit],
@@ -72,14 +72,141 @@ fn renderer_value_edits_for_element(
 }
 
 ///|
+fn renderer_cascade_value_edits_for_element(
+  input : String,
+  element : @xml.NamespaceElement,
+  span : @xml.SourceSpan,
+  stylesheet_match : CssStylesheetMatch,
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  if !stylesheet_match.complete {
+    return
+  }
+  let presentations : Array[@xml.NamespaceAttribute] = []
+  let candidates : Array[CssCascadeCandidate] = []
+  let style_properties : Array[String] = []
+  let mut style_attribute : @xml.NamespaceAttribute? = None
+  for attribute in element.attributes {
+    let name = attribute.name.local_name
+    if name == "style" {
+      style_attribute = Some(attribute)
+    } else if supported_rect_property(name) {
+      presentations.push(attribute)
+      candidates.push(
+        presentation_cascade_candidate(
+          presentation_fact(input, name, attribute),
+          attribute.span.start.offset,
+        ),
+      )
+    }
+  }
+  match style_attribute {
+    Some(attribute) => {
+      let style = inline_style_facts(input, attribute)
+      if !style.complete {
+        return
+      }
+      candidates.push_iter(style.candidates.iter())
+      for candidate in style.candidates {
+        push_unique(style_properties, candidate.declaration.property)
+      }
+    }
+    None => ()
+  }
+  candidates.push_iter(stylesheet_match.candidates.iter())
+  for candidate in stylesheet_match.candidates {
+    push_unique(style_properties, candidate.declaration.property)
+  }
+  let facts = cascade_visual_declarations(candidates)
+  let style_facts = [
+    for fact in facts if style_properties.contains(fact.property) => fact
+  ]
+  if style_attribute is Some(attribute) {
+    edits.push({
+      start_offset: attribute.value_span.start.offset,
+      end_offset: attribute.value_span.end.offset,
+      replacement: escape_renderer_attribute_value(
+        canonical_renderer_inline_style(style_facts),
+      ),
+    })
+  } else if !stylesheet_match.candidates.is_empty() {
+    edits.push({
+      start_offset: renderer_element_insert_offset(input, span),
+      end_offset: renderer_element_insert_offset(input, span),
+      replacement: " style=\"" +
+      escape_renderer_attribute_value(
+        canonical_renderer_inline_style(style_facts),
+      ) +
+      "\"",
+    })
+  }
+  for fact in facts {
+    for presentation in presentations {
+      if presentation.name.local_name == fact.property {
+        edits.push({
+          start_offset: presentation.value_span.start.offset,
+          end_offset: presentation.value_span.end.offset,
+          replacement: escape_renderer_attribute_value(fact.declared_value),
+        })
+      }
+    }
+  }
+}
+
+///|
 fn normalize_renderer_style_precedence(input : String) -> String {
+  let css_document = try parse_static_css_document_or_raise(input) catch {
+    _ => return input
+  } noraise {
+    document => document
+  }
   let reader = @xml.NamespaceReader::from_string(input)
   let events = reader.read_events_until_eof() catch { _ => return input }
   let edits : Array[RendererValueEdit] = []
+  let mut in_stylesheet = false
   for event in events {
     match event.kind {
-      Start(element) | Empty(element) =>
-        renderer_value_edits_for_element(input, element, edits)
+      Start(element) => {
+        if element.name.local_name == "style" {
+          in_stylesheet = true
+        }
+        if css_document.complete {
+          renderer_cascade_value_edits_for_element(
+            input,
+            element,
+            event.span,
+            css_stylesheet_match_for_source(
+              css_document,
+              event.span.start.offset,
+            ),
+            edits,
+          )
+        } else {
+          renderer_inline_value_edits_for_element(input, element, edits)
+        }
+      }
+      Empty(element) =>
+        if css_document.complete {
+          renderer_cascade_value_edits_for_element(
+            input,
+            element,
+            event.span,
+            css_stylesheet_match_for_source(
+              css_document,
+              event.span.start.offset,
+            ),
+            edits,
+          )
+        } else {
+          renderer_inline_value_edits_for_element(input, element, edits)
+        }
+      Text(_) if in_stylesheet && css_document.complete =>
+        edits.push({
+          start_offset: event.span.start.offset,
+          end_offset: event.span.end.offset,
+          replacement: "",
+        })
+      End(name) if name.local_name == "style" => in_stylesheet = false
       _ => ()
     }
   }
@@ -270,7 +397,11 @@ fn renderer_shape_geometry_edits(
   if !visual_subject_kind(kind) || kind == "path" {
     return
   }
-  let facts = rect_declared_facts_from_element(input, element).facts
+  let facts = rect_declared_facts_from_element(
+      input,
+      element,
+      empty_css_stylesheet_match(),
+    ).facts
   let resolution = resolve_basic_shape_geometry_with_context(
     kind, facts, viewport, profile,
   )
@@ -416,7 +547,11 @@ fn renderer_stroke_geometry_edits(
   viewport : ViewportContext,
   profile : ComparisonProfile,
 ) -> Unit {
-  let facts = rect_declared_facts_from_element(input, element).facts
+  let facts = rect_declared_facts_from_element(
+      input,
+      element,
+      empty_css_stylesheet_match(),
+    ).facts
   let resolution = resolve_stroke_geometry_with_context(
     facts, viewport, profile,
   )

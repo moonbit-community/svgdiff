@@ -63,6 +63,7 @@ fn subject_value(subject : SourceSubject, property : String) -> String? {
 fn subject_from_element(
   input : String,
   element : @xml.NamespaceElement,
+  stylesheet_match : CssStylesheetMatch,
   source_index : Int,
   hierarchy_signature : String,
   transform_chain : Array[SourceTransformSite],
@@ -71,6 +72,7 @@ fn subject_from_element(
   profile : ComparisonProfile,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
+  let candidates : Array[CssCascadeCandidate] = []
   let path_segments : Array[PathSegmentEvidence] = []
   let mut path_data_complete = true
   let mut authored_id : String? = None
@@ -98,17 +100,32 @@ fn subject_from_element(
         Invalid => path_data_complete = false
       }
     } else if alignment_property_order().contains(name) {
-      upsert_declared_fact(facts, presentation_fact(input, name, attribute))
+      candidates.push(
+        presentation_cascade_candidate(
+          presentation_fact(input, name, attribute),
+          attribute.span.start.offset,
+        ),
+      )
     }
   }
   match style_attribute {
     Some(attribute) => {
       let style = inline_style_facts(input, attribute)
-      for fact in style.facts {
-        upsert_declared_fact(facts, fact)
+      for candidate in style.candidates {
+        if alignment_property_order().contains(candidate.declaration.property) {
+          candidates.push(candidate)
+        }
       }
     }
     None => ()
+  }
+  for candidate in stylesheet_match.candidates {
+    if alignment_property_order().contains(candidate.declaration.property) {
+      candidates.push(candidate)
+    }
+  }
+  for fact in cascade_visual_declarations(candidates) {
+    upsert_declared_fact(facts, fact)
   }
   let geometry = resolve_basic_shape_geometry_with_context(
     element.name.local_name,
@@ -214,28 +231,42 @@ fn subject_from_element(
 fn hierarchy_element_signature(
   input : String,
   element : @xml.NamespaceElement,
+  stylesheet_match : CssStylesheetMatch,
 ) -> String {
-  let facts : Array[DeclaredVisualFact] = []
+  let candidates : Array[CssCascadeCandidate] = []
   let mut style_attribute : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
     let property = attribute.name.local_name
     if property == "style" {
       style_attribute = Some(attribute)
     } else if inherited_visual_properties().contains(property) {
-      upsert_declared_fact(facts, presentation_fact(input, property, attribute))
+      candidates.push(
+        presentation_cascade_candidate(
+          presentation_fact(input, property, attribute),
+          attribute.span.start.offset,
+        ),
+      )
     }
   }
   match style_attribute {
     Some(attribute) => {
       let style = inline_style_facts(input, attribute)
-      for fact in style.facts {
-        if inherited_visual_properties().contains(fact.property) {
-          upsert_declared_fact(facts, fact)
+      for candidate in style.candidates {
+        if inherited_visual_properties().contains(
+            candidate.declaration.property,
+          ) {
+          candidates.push(candidate)
         }
       }
     }
     None => ()
   }
+  for candidate in stylesheet_match.candidates {
+    if inherited_visual_properties().contains(candidate.declaration.property) {
+      candidates.push(candidate)
+    }
+  }
+  let facts = cascade_visual_declarations(candidates)
   facts.sort_by(fn(left, right) { left.property.compare(right.property) })
   let mut signature = element.name.local_name
   for fact in facts {
@@ -262,6 +293,7 @@ fn extract_source_subjects_with_profile_or_raise(
   input : String,
   profile : ComparisonProfile,
 ) -> Array[SourceSubject] raise {
+  let css_document = parse_static_css_document_or_raise(input)
   let subjects : Array[SourceSubject] = []
   let hierarchy : Array[String] = []
   let transforms : Array[SourceTransformSite] = []
@@ -284,11 +316,18 @@ fn extract_source_subjects_with_profile_or_raise(
           marker_depth += 1
         }
         if kind == "svg" || kind == "g" {
-          hierarchy.push(hierarchy_element_signature(input, element))
+          let stylesheet_match = css_stylesheet_match_for_source(
+            css_document,
+            event.span.start.offset,
+          )
+          hierarchy.push(
+            hierarchy_element_signature(input, element, stylesheet_match),
+          )
           inherited_markers.push(
             marker_inherited_facts_for_element(
               input,
               element,
+              stylesheet_match,
               inherited_markers.last().unwrap_or([]),
             ),
           )
@@ -304,6 +343,10 @@ fn extract_source_subjects_with_profile_or_raise(
             subject_from_element(
               input,
               element,
+              css_stylesheet_match_for_source(
+                css_document,
+                event.span.start.offset,
+              ),
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transforms.copy(),
@@ -335,6 +378,10 @@ fn extract_source_subjects_with_profile_or_raise(
             subject_from_element(
               input,
               element,
+              css_stylesheet_match_for_source(
+                css_document,
+                event.span.start.offset,
+              ),
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
               transform_chain,

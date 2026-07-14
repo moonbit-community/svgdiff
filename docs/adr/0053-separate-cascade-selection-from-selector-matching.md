@@ -23,3 +23,5 @@ Selector applicability is a separate seam and the next roadmap item. Until a mat
 The cascade module is the single test surface for importance, inline precedence, specificity, and source order. Property analyzers consume only its winners and do not learn priority rules. The later selector matcher can be tested independently, then pass applicable rules into the existing cascade interface without changing precedence logic.
 
 This item does not implement user or user-agent origins, animations, transitions, cascade layers, scope proximity, custom properties, CSS-wide keywords, inheritance expansion, or selector matching. Those capabilities remain explicit roadmap work and must extend candidate metadata or pre-cascade applicability without weakening current provenance.
+
+Follow-up [ADR 0054](0054-bound-static-selector-matching-to-xml-state.md) implements the bounded deterministic selector matcher and supplies its applicable candidates through this seam; the remaining exclusions above are unchanged.

@@ -179,31 +179,40 @@ fn resolve_marker_attachments(
 fn marker_inherited_facts_for_element(
   input : String,
   element : @xml.NamespaceElement,
+  stylesheet_match : CssStylesheetMatch,
   inherited : Array[DeclaredVisualFact],
 ) -> Array[DeclaredVisualFact] {
   let effective = inherited.copy()
-  let declarations : Array[DeclaredVisualFact] = []
+  let candidates : Array[CssCascadeCandidate] = []
   let mut style : @xml.NamespaceAttribute? = None
   for attribute in element.attributes {
     let property = attribute.name.local_name
     if property == "style" {
       style = Some(attribute)
     } else if marker_attachment_property(property) {
-      upsert_declared_fact(
-        declarations,
-        presentation_fact(input, property, attribute),
+      candidates.push(
+        presentation_cascade_candidate(
+          presentation_fact(input, property, attribute),
+          attribute.span.start.offset,
+        ),
       )
     }
   }
   match style {
     Some(attribute) =>
-      for fact in inline_style_facts(input, attribute).facts {
-        if marker_attachment_property(fact.property) {
-          upsert_declared_fact(declarations, fact)
+      for candidate in inline_style_facts(input, attribute).candidates {
+        if marker_attachment_property(candidate.declaration.property) {
+          candidates.push(candidate)
         }
       }
     None => ()
   }
+  for candidate in stylesheet_match.candidates {
+    if marker_attachment_property(candidate.declaration.property) {
+      candidates.push(candidate)
+    }
+  }
+  let declarations = cascade_visual_declarations(candidates)
   match shape_fact(declarations, "marker") {
     Some(fact) =>
       for property in ["marker-start", "marker-mid", "marker-end"] {

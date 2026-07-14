@@ -294,7 +294,9 @@ test "polyline fill differences use implicit subpath closure" {
 
 ///|
 test "unsupported visual attributes reduce subject coverage" {
-  let source = shape_svg("<circle cx='8' cy='8' r='2' class='unresolved'/>")
+  let source = shape_svg(
+    "<circle cx='8' cy='8' r='2' paint-order='stroke fill'/>",
+  )
   let report = @engine.compare(
     source,
     source,
@@ -334,6 +336,48 @@ test "ordinary inherited stroke changes are reported" {
 test "incomplete inline style cannot produce complete equality" {
   let source = shape_svg(
     "<rect x='1' y='1' width='8' height='8' style='fill:red;unknown-paint:blue'/>",
+  )
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "css_cascade_unsupported"
+    }),
+  )
+}
+
+///|
+test "matched stylesheet declarations reach every generic aligned subject" {
+  let before = shape_svg(
+    "<style>.paint { fill: red; }</style><rect id='a' class='paint' x='1' y='1' width='4' height='4'/><rect id='b' class='paint' x='9' y='9' width='4' height='4'/>",
+  )
+  let after = shape_svg(
+    "<style>.paint { fill: blue; }</style><rect id='a' class='paint' x='1' y='1' width='4' height='4'/><rect id='b' class='paint' x='9' y='9' width='4' height='4'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  let fill_differences = report.atomic_differences.filter(difference => {
+    difference.domain == "paint.fill"
+  })
+  assert_eq(fill_differences.length(), 2)
+  for difference in fill_differences {
+    assert_eq(difference.source_fact_before.unwrap().origin, "stylesheet_rule")
+    assert_eq(difference.source_fact_after.unwrap().origin, "stylesheet_rule")
+  }
+}
+
+///|
+test "unsupported selectors guard the generic multi-subject path" {
+  let source = shape_svg(
+    "<style>rect:hover { fill: red; }</style><rect id='a' width='4' height='4'/><rect id='b' x='8' width='4' height='4'/>",
   )
   let report = @engine.compare(
     source,

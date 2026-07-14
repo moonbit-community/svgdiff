@@ -35,11 +35,11 @@ The publication job refuses to replace an existing release. Verify the downloade
 To release after the version change and validation commit are on the intended branch, create and push the matching tag explicitly:
 
 ```sh
-sh scripts/check-release-tag.sh v0.4.6
-git tag -a v0.4.6 -m "svgdiff v0.4.6"
-git push origin v0.4.6
+sh scripts/check-release-tag.sh v0.4.7
+git tag -a v0.4.7 -m "svgdiff v0.4.7"
+git push origin v0.4.7
 ```
 
-Replace `0.4.6` with the current `moon.mod` version. The workflow rejects any mismatch before packaging and uses `--verify-tag` before publication.
+Replace `0.4.7` with the current `moon.mod` version. The workflow rejects any mismatch before packaging and uses `--verify-tag` before publication.
 
 This metadata is an unsigned project attestation. The release does not claim SLSA conformance, an SBOM, hermetic or cross-toolchain reproducible builds, malware scanning, code signing, or macOS notarization. The fixed hosted matrix and canonical corpus are tested; that is not exhaustive proof over all platform environments or SVG inputs.

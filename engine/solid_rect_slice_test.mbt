@@ -174,19 +174,37 @@ test "all changed facts on one rect are enumerated" {
 }
 
 ///|
-test "unsupported CSS reduces coverage instead of proving equality" {
+test "supported class stylesheet selector can prove equality" {
   let source = "<svg width='16' height='16'><style>.paint { fill: red; }</style><rect id='box' class='paint' x='2' y='2' width='8' height='8'/></svg>"
   let report = @engine.compare(
     source,
     source,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 0)
   assert_true(
-    report.diagnostics.any(diagnostic => {
+    !report.diagnostics.any(diagnostic => {
       diagnostic.code == "css_cascade_unsupported"
     }),
+  )
+}
+
+///|
+test "stylesheet specificity winner is renderer-equivalent to canonical paint" {
+  let before = "<svg width='16' height='16'><style>rect { fill: blue; } #box { fill: red; }</style><rect id='box' width='16' height='16'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='box' width='16' height='16' fill='red'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_eq(report.analysis_status, "complete")
+  assert_eq(report.atomic_differences.length(), 1)
+  let fill = report.atomic_differences[0]
+  assert_eq(fill.domain, "paint.fill")
+  assert_eq(fill.computed_relation.status, "equivalent")
+  assert_eq(fill.source_fact_before.unwrap().origin, "stylesheet_rule")
+  assert_eq(fill.source_fact_after.unwrap().origin, "presentation_attribute")
+  assert_eq(
+    report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
   )
 }
 
@@ -205,7 +223,7 @@ test "declared fact provenance is serialized into JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.12",
+      "schema_version": "1.13",
       "atomic_differences": [
         {
           "source_fact_before": {

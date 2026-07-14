@@ -51,8 +51,8 @@ test "unsupported element families never produce complete equality" {
 ///|
 test "unsupported attribute families never produce complete equality" {
   let attributes = [
-    "class='painted'", "clip-path='url(#clip)'", "mask='url(#mask)'", "filter='url(#filter)'",
-    "mix-blend-mode='multiply'", "paint-order='stroke fill'",
+    "clip-path='url(#clip)'", "mask='url(#mask)'", "filter='url(#filter)'", "mix-blend-mode='multiply'",
+    "paint-order='stroke fill'",
   ]
   let shape_starts = [
     "<rect width='8' height='8'", "<circle cx='4' cy='4' r='3'", "<ellipse cx='4' cy='4' rx='3' ry='2'",
@@ -144,7 +144,7 @@ test "unsupported CSS paint resource and compositing families never prove equali
     "<rect width='8' height='8' fill='currentColor'/>", "<rect width='8' height='8' fill='inherit'/>",
     "<rect width='8' height='8' fill='initial'/>", "<rect width='8' height='8' fill='unset'/>",
     "<rect width='8' height='8' fill='revert'/>", "<rect width='8' height='8' fill='url(#missing)'/>",
-    "<rect width='8' height='8' style='unknown-paint:red'/>", "<style>rect { fill: red; }</style><rect width='8' height='8'/>",
+    "<rect width='8' height='8' style='unknown-paint:red'/>", "<style>rect:hover { fill: red; }</style><rect width='8' height='8'/>",
     "<g opacity='0.5'><rect width='8' height='8'/></g>", "<svg opacity='0.5'><rect width='8' height='8'/></svg>",
     "<defs><linearGradient id='other'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#other)'/>",
   ]

@@ -19,7 +19,7 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 - unsupported visual elements, both direct and nested in groups;
 - unsupported attributes across every currently supported basic shape;
 - invalid or non-positive `viewBox`, invalid `preserveAspectRatio`, and environment-dependent or arithmetic viewport lengths; valid unitless, CSS absolute-unit, percentage, static viewport-relative, meet, slice, none, root, and nested viewport mappings have moved to focused complete-path tests;
-- unsupported CSS declarations and stylesheets;
+- unsupported CSS declarations and selector/stylesheet syntax outside the admitted static grammar; type, universal, ID, class, attribute presence/equality, compound, list, and four structural combinators have moved to focused complete-path and mutation tests;
 - unresolved paint values and paint servers;
 - group/root compositing and effect inputs.
 - malformed transform lists and guarded gradient/pattern resource transforms;

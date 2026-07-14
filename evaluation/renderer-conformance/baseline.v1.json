@@ -651,29 +651,49 @@
       "changed_pixel_fraction": 1.0,
       "changed_pixels": 256,
       "comparison": "divergent",
-      "coverage_claim": "guarded",
+      "coverage_claim": "supported",
       "id": "cascade-stylesheet-specificity",
       "max_channel_delta": 204,
       "premultiplied_rgba8_rmse": 0.40551750202
     },
     {
       "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "cascade-stylesheet-specificity-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
       "changed_pixel_fraction": 1.0,
       "changed_pixels": 256,
       "comparison": "divergent",
-      "coverage_claim": "guarded",
+      "coverage_claim": "supported",
       "id": "cascade-stylesheet-source-order",
       "max_channel_delta": 204,
       "premultiplied_rgba8_rmse": 0.40551750202
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "cascade-stylesheet-source-order-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/9",
-  "fixture_source_set_sha256": "c162a834e132d95bd8ee921fabd0b7d45feed7c7cfa92fa64cb3b1e606a67773",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/10",
+  "fixture_source_set_sha256": "cb0c209c45fb4d85c9b17e457b93d2a1d402170c165375d37747de865fb33be0",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 66,
+    "cases": 68,
     "categories": {
       "alpha": {
         "cases": 3,
@@ -696,15 +716,15 @@
         "exact": 18
       },
       "paint": {
-        "cases": 12,
+        "cases": 14,
         "divergent": 6,
-        "exact": 6
+        "exact": 8
       }
     },
     "divergent": 39,
-    "exact": 27,
+    "exact": 29,
     "exploratory": 2,
-    "guarded": 32,
-    "supported": 32
+    "guarded": 30,
+    "supported": 36
   }
 }

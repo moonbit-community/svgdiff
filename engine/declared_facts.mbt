@@ -273,6 +273,7 @@ fn inline_style_facts(
 fn rect_declared_facts_from_element(
   input : String,
   element : @xml.NamespaceElement,
+  stylesheet_match : CssStylesheetMatch,
 ) -> RectDeclaredFacts {
   let candidates : Array[CssCascadeCandidate] = []
   let coverage_codes : Array[String] = []
@@ -285,8 +286,6 @@ fn rect_declared_facts_from_element(
       if id != "" {
         subject_id = id
       }
-    } else if name == "class" {
-      push_unique(coverage_codes, "css_cascade_unsupported")
     } else if name == "style" {
       style_attribute = Some(attribute)
     } else if supported_rect_property(name) {
@@ -306,6 +305,10 @@ fn rect_declared_facts_from_element(
     }
     None => ()
   }
+  candidates.push_iter(stylesheet_match.candidates.iter())
+  if !stylesheet_match.complete {
+    push_unique(coverage_codes, "css_cascade_unsupported")
+  }
   { subject_id, facts: cascade_visual_declarations(candidates), coverage_codes }
 }
 
@@ -313,6 +316,7 @@ fn rect_declared_facts_from_element(
 fn extract_rect_declared_facts_or_raise(
   input : String,
 ) -> RectDeclaredFacts? raise {
+  let css_document = parse_static_css_document_or_raise(input)
   let reader = @xml.NamespaceReader::from_string(input)
   let events = reader.read_events_until_eof()
   let mut rect : RectDeclaredFacts? = None
@@ -323,7 +327,16 @@ fn extract_rect_declared_facts_or_raise(
         if element.name.local_name == "rect" {
           rect_count += 1
           if rect is None {
-            rect = Some(rect_declared_facts_from_element(input, element))
+            rect = Some(
+              rect_declared_facts_from_element(
+                input,
+                element,
+                css_stylesheet_match_for_source(
+                  css_document,
+                  event.span.start.offset,
+                ),
+              ),
+            )
           }
         }
       _ => ()
@@ -331,10 +344,6 @@ fn extract_rect_declared_facts_or_raise(
   }
   match rect {
     Some(facts) => {
-      let stylesheets = parse_document_stylesheets_or_raise(input)
-      if stylesheet_requires_selector_matching(stylesheets) {
-        push_unique(facts.coverage_codes, "css_cascade_unsupported")
-      }
       if rect_count > 1 {
         push_unique(facts.coverage_codes, "multiple_rects_unsupported")
       }

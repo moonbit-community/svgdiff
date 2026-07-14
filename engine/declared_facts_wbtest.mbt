@@ -80,3 +80,33 @@ test "inline cascade resolves important and duplicate declarations" {
     _ => fail("expected cascaded inline declarations")
   }
 }
+
+///|
+test "matched stylesheet declarations retain provenance and enter the cascade" {
+  let source = "<svg><style>rect { fill: green; } .paint { fill: blue; } #box { fill: red !important; }</style><rect id='box' class='paint' fill='black' style='fill:purple'/></svg>"
+  match extract_rect_declared_facts(source) {
+    Parsed(Some(rect)) => {
+      assert_eq(rect.coverage_codes, [])
+      let fill = declared_fact(rect, "fill").unwrap()
+      assert_eq(fill.authored_value, "red")
+      assert_eq(fill.declared_value, "red")
+      assert_eq(fill.origin, "stylesheet_rule")
+      assert_eq(declared_fact_span_slice(source, fill), "red")
+    }
+    _ => fail("expected matched stylesheet declaration")
+  }
+}
+
+///|
+test "matched stylesheet source order breaks equal-specificity ties" {
+  let source = "<svg><style>.paint { fill: red; } .paint { fill: blue; }</style><rect id='box' class='paint'/></svg>"
+  match extract_rect_declared_facts(source) {
+    Parsed(Some(rect)) => {
+      assert_eq(rect.coverage_codes, [])
+      let fill = declared_fact(rect, "fill").unwrap()
+      assert_eq(fill.declared_value, "blue")
+      assert_eq(fill.origin, "stylesheet_rule")
+    }
+    _ => fail("expected later matched stylesheet declaration")
+  }
+}

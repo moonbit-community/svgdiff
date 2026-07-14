@@ -146,114 +146,6 @@ fn cascade_visual_declarations(
 }
 
 ///|
-fn css_identifier_code_unit(code_unit : UInt16) -> Bool {
-  (code_unit >= 'a' && code_unit <= 'z') ||
-  (code_unit >= 'A' && code_unit <= 'Z') ||
-  (code_unit >= '0' && code_unit <= '9') ||
-  code_unit == '-' ||
-  code_unit == '_'
-}
-
-///|
-fn skip_css_identifier(selector : String, position : Int) -> Int? {
-  if position >= selector.length() ||
-    !css_identifier_code_unit(selector[position]) {
-    return None
-  }
-  let mut end = position + 1
-  while end < selector.length() && css_identifier_code_unit(selector[end]) {
-    end += 1
-  }
-  Some(end)
-}
-
-///|
-fn css_specificity_for_selector(source : String) -> CssSpecificity? {
-  let selector = source.trim().to_owned()
-  if selector == "" {
-    return None
-  }
-  let mut ids = 0
-  let mut classes = 0
-  let mut types = 0
-  let mut position = 0
-  let mut expects_type = true
-  while position < selector.length() {
-    let code_unit = selector[position]
-    if is_declaration_whitespace(code_unit) {
-      while position < selector.length() &&
-            is_declaration_whitespace(selector[position]) {
-        position += 1
-      }
-      expects_type = true
-    } else if code_unit == '>' || code_unit == '+' || code_unit == '~' {
-      position += 1
-      expects_type = true
-    } else if code_unit == '#' {
-      guard skip_css_identifier(selector, position + 1) is Some(end) else {
-        return None
-      }
-      ids += 1
-      position = end
-      expects_type = false
-    } else if code_unit == '.' {
-      guard skip_css_identifier(selector, position + 1) is Some(end) else {
-        return None
-      }
-      classes += 1
-      position = end
-      expects_type = false
-    } else if code_unit == '[' {
-      let mut end = position + 1
-      while end < selector.length() && selector[end] != ']' {
-        if selector[end] == '[' || selector[end] == '{' || selector[end] == '}' {
-          return None
-        }
-        end += 1
-      }
-      if end == selector.length() {
-        return None
-      }
-      classes += 1
-      position = end + 1
-      expects_type = false
-    } else if code_unit == ':' {
-      let pseudo_element = position + 1 < selector.length() &&
-        selector[position + 1] == ':'
-      let name_start = position + (if pseudo_element { 2 } else { 1 })
-      guard skip_css_identifier(selector, name_start) is Some(end) else {
-        return None
-      }
-      if end < selector.length() && selector[end] == '(' {
-        return None
-      }
-      if pseudo_element {
-        types += 1
-      } else {
-        classes += 1
-      }
-      position = end
-      expects_type = false
-    } else if code_unit == '*' {
-      position += 1
-      expects_type = false
-    } else if css_identifier_code_unit(code_unit) {
-      guard skip_css_identifier(selector, position) is Some(end) else {
-        return None
-      }
-      if expects_type {
-        types += 1
-      }
-      position = end
-      expects_type = false
-    } else {
-      return None
-    }
-  }
-  Some({ inline_style: 0, ids, classes, types })
-}
-
-///|
 fn parse_stylesheet_declarations(
   source : String,
   source_start : Int,
@@ -276,6 +168,10 @@ fn parse_stylesheet_declarations(
       code_unit == '}' ||
       code_unit == '"' ||
       code_unit == '\'' {
+      complete = false
+    } else if code_unit == '/' &&
+      index + 1 < source.length() &&
+      source[index + 1] == '*' {
       complete = false
     }
   }
@@ -311,10 +207,7 @@ fn parse_stylesheet_text(
     }
     let selector_start = position
     while position < source.length() && source[position] != '{' {
-      if source[position] == '}' ||
-        source[position] == '@' ||
-        source[position] == '"' ||
-        source[position] == '\'' {
+      if source[position] == '}' || source[position] == '@' {
         complete = false
       }
       position += 1
@@ -405,25 +298,4 @@ fn parse_document_stylesheets_or_raise(
     }
   }
   { rules, complete }
-}
-
-///|
-fn stylesheet_requires_selector_matching(parsed : CssStylesheetParse) -> Bool {
-  if !parsed.complete {
-    return true
-  }
-  for rule in parsed.rules {
-    if rule.selector == "" ||
-      rule.selector_span.start_offset >= rule.selector_span.end_offset ||
-      rule.specificity.inline_style != 0 ||
-      rule.specificity.ids < 0 ||
-      rule.specificity.classes < 0 ||
-      rule.specificity.types < 0 {
-      return true
-    }
-    if rule.declarations.length() > 0 {
-      return true
-    }
-  }
-  false
 }
