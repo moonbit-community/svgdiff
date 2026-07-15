@@ -20,6 +20,8 @@ Bundle configuration is validated before SVG analysis. Empty, fragment-only, and
 
 Decoded bundle bytes use the same normalized RGBA8 representation, encoded and pixel hashes, intrinsic dimensions, image placement facts, magnitudes, conservative bounds, and final-compositing gap as data URLs. The report never contains resource bytes. The same locator may map to different bytes in before and after, which reports a resource content change without inventing an authored locator change.
 
-## Deferred boundary
+## Unused entries and deferred boundary
 
-This policy covers PNG/JPEG `image` consumers only. It does not resolve nested SVG documents, fonts, stylesheets, external gradients or patterns, or arbitrary graph edges. It also does not yet inventory unused entries or define general cross-document cycle behavior. Those semantics belong to the following roadmap item. Network acquisition, if ever offered, must remain an explicit caller-side prefetch operation rather than comparison-time behavior.
+An entry with valid global configuration is decoded only when an authored `image` locator selects it. Unused payload bytes are caller acquisition context, not SVG source: the engine neither validates their image signature nor compares them as visual differences. Entry keys, declared MIME types, duplicate detection, counts, per-entry bytes, and cumulative bytes remain global admission checks because the caller has already supplied that input. The cross-family rationale is defined by the [Resource Outcome Policy](../resource-outcome-policy.md).
+
+This policy covers PNG/JPEG `image` consumers only. It does not resolve nested SVG documents, fonts, stylesheets, external gradients or patterns, or arbitrary graph edges. Network acquisition, if ever offered, must remain an explicit caller-side prefetch operation rather than comparison-time behavior.

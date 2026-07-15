@@ -6,7 +6,7 @@ Last verified: 2026-07-15
 
 SVG references can consume far more work than their source size suggests. A definition DAG is acyclic, yet each definition can contain several `<use>` instances of the next definition. If every level repeats the previous level twice, the authored graph grows linearly while renderer instance count grows exponentially. The ordinary element and reference limits bound the source graph, not that transitive cloning cost.
 
-The engine therefore builds one conservative typed resource-dependency graph from the same namespace-aware, already bounded XML event stream before invoking `mizchi/svg`. The graph is both the source-level topology seam for later semantic passes and the admission guard used below; it is not a complete SVG resource resolver. Separately supplied raster bundles do not mutate graph topology: an external `image` locator remains an external graph edge, then the image semantic pass may resolve that exact opaque locator against the corresponding before/after bundle.
+The engine therefore builds one conservative typed resource-dependency graph from the same namespace-aware, already bounded XML event stream before invoking `mizchi/svg`. The graph is both the source-level topology seam for later semantic passes and the admission guard used below; it is not a complete SVG resource resolver. Separately supplied raster bundles do not mutate graph topology: an external `image` locator remains an external graph edge, then the image semantic pass may resolve that exact opaque locator against the corresponding before/after bundle. The [Resource Outcome Policy](resource-outcome-policy.md) defines how graph state, family validity, and activity compose into complete, partial, or failed analysis.
 
 ## Accepted edge grammar
 
@@ -29,7 +29,7 @@ The structural instance model runs only after this graph admits the source. Its 
 
 ## Cycle rejection
 
-An iterative depth-first traversal checks the combined expanding and resource-dependency graph. It uses explicit arrays rather than the process call stack, so graph depth cannot create recursive traversal failure within the element and reference budgets.
+An iterative depth-first traversal checks the combined expanding and resource-dependency graph. It uses explicit arrays rather than the process call stack, so graph depth cannot create recursive traversal failure within the element and reference budgets. The traversal covers every accepted local resource edge, not only edges reachable from a rendered consumer, so an unused accepted cycle fails the same admission invariant as an active cycle. Missing, external, data-URI, invalid, and wrong-kind non-resource targets do not resolve to accepted local resource nodes and cannot fabricate a cycle.
 
 The first discovered gray-edge cycle returns a failed report with `reference_cycle_detected`. Its `Diagnostic.subject_id` is `reference_cycle.before` or `reference_cycle.after`, and `source_locations` identify the reference attributes that establish the discovered cycle. Both inputs are checked independently. The renderer is not invoked when either side fails.
 

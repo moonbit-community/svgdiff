@@ -71,6 +71,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0065](0065-use-one-private-typed-resource-dependency-graph.md) | Accepted, implemented for the bounded static source grammar | Use one private typed graph for resource topology, reachability, cycle safety, and use-expansion accounting. |
 | [0066](0066-decode-embedded-rasters-under-a-bounded-no-io-policy.md) | Accepted, implemented for an explicit PNG/baseline-JPEG subset | Decode bounded embedded rasters into intrinsic evidence without claiming final-canvas rendering. |
 | [0067](0067-resolve-only-explicit-caller-supplied-raster-bundles.md) | Accepted, implemented for PNG/JPEG `image` consumers | Resolve only exact caller-supplied resource bytes and retain a zero-implicit-I/O engine boundary. |
+| [0068](0068-classify-resource-outcomes-on-independent-axes.md) | Accepted, implemented across the current resource families | Classify locator, target-kind, semantic-validity, graph-safety, and activity outcomes without erasing family-specific evidence. |
 
 ## CLI and distribution decisions
 

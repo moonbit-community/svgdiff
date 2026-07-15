@@ -23,6 +23,7 @@ This directory separates the current product contract from future plans and hist
 | How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | Which fixed budgets bound one comparison? | [`resource-limits.md`](resource-limits.md) |
+| How are missing, cyclic, invalid, and unused resources classified? | [`resource-outcome-policy.md`](resource-outcome-policy.md) |
 | How are resource dependencies, local cycles, and explosive `<use>` DAGs modeled? | [`reference-safety.md`](reference-safety.md) and [resource graph research](research/svg-resource-dependency-graph.md) |
 | How are explicit local raster resources supplied without implicit I/O? | [`library-api.md`](library-api.md), [`resource-limits.md`](resource-limits.md), and [bundle policy research](research/local-resource-bundle-policy.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |

@@ -29,7 +29,7 @@ StructuredReport::to_json_string() -> String
 StructuredReport::to_compact_json_string() -> String
 ```
 
-`compare` is the unlimited semantic comparison operation. `compare_with_resources` additionally receives separate before and after `ResourceBundle` values, each containing ordered `ResourceBundleEntry { locator, media_type, bytes }` records. Locators are trimmed exact-match opaque keys; the engine does not resolve paths, normalize URLs, or fetch the network. `compare_with_control` and `compare_with_control_and_resources` add cooperative cancellation and an optional elapsed-time budget. `render_html_report` is a presentation over an existing report and never recomputes differences.
+`compare` is the unlimited semantic comparison operation. `compare_with_resources` additionally receives separate before and after `ResourceBundle` values, each containing ordered `ResourceBundleEntry { locator, media_type, bytes }` records. Locators are trimmed exact-match opaque keys; the engine does not resolve paths, normalize URLs, or fetch the network. Global bundle configuration and byte budgets apply to every entry, but payload content is decoded only when an SVG `image` selects it; unused bundle bytes are not compared as SVG differences. The complete matrix is the [Resource Outcome Policy](resource-outcome-policy.md). `compare_with_control` and `compare_with_control_and_resources` add cooperative cancellation and an optional elapsed-time budget. `render_html_report` is a presentation over an existing report and never recomputes differences.
 
 Both JSON methods serialize schema `1.24`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
 

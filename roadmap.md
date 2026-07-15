@@ -122,7 +122,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Build a resource dependency graph for gradients, patterns, markers, clips, masks, filters, symbols, and images.
 - [x] **P1** Implement embedded raster-image and data-URI resources under a declared resource policy.
 - [x] **P1** Implement explicitly supplied local resource bundles without implicit network fetching.
-- [ ] **P1** Define missing, cyclic, invalid, and unused resource behavior.
+- [x] **P1** Define missing, cyclic, invalid, and unused resource behavior.
 - [ ] **P1** Keep nonvisual metadata outside visual Atomic Differences while preserving an optional source-only audit path.
 
 ### Compositing and effects
