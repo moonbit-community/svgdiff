@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.15",
+  "schema_version": "1.16",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -116,8 +116,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/12"
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/13"
   },
   "subject_alignments": [
     {
@@ -189,6 +189,26 @@
       "domain": "resource.gradient.stop_color",
       "source_before": "red",
       "source_after": "green",
+      "source_fact_before": {
+        "property": "stop-color",
+        "authored_value": "red",
+        "declared_value": "red",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 163,
+          "end_offset": 166
+        }
+      },
+      "source_fact_after": {
+        "property": "stop-color",
+        "authored_value": "green",
+        "declared_value": "green",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 163,
+          "end_offset": 168
+        }
+      },
       "changed_fact_ids": [
         "changed:source:stop:2:stop-color"
       ],

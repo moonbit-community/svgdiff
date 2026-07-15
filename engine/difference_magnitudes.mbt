@@ -51,18 +51,26 @@ fn difference_magnitude(
   let parameter_delta = match difference.parameter_delta_css_px {
     Some(delta) => Some(delta)
     None =>
-      match numeric_source_pair(difference) {
-        Some((before, after)) => Some(after - before)
-        None => None
+      match difference.magnitude.parameter_signed_user_units {
+        Some(delta) => Some(delta)
+        None =>
+          match numeric_source_pair(difference) {
+            Some((before, after)) => Some(after - before)
+            None => None
+          }
       }
   }
   let parameter_abs = match parameter_delta {
     Some(delta) => Some(delta.abs())
     None => None
   }
-  let symmetric_relative = match numeric_source_pair(difference) {
-    Some((before, after)) => Some(symmetric_relative_delta(before, after))
-    None => None
+  let symmetric_relative = match difference.magnitude.symmetric_relative {
+    Some(value) => Some(value)
+    None =>
+      match numeric_source_pair(difference) {
+        Some((before, after)) => Some(symmetric_relative_delta(before, after))
+        None => None
+      }
   }
   let geometry = difference.domain.find("geometry.") == Some(0)
   let path_geometry = difference.domain.find("geometry.path.") == Some(0)

@@ -1,8 +1,8 @@
 # Comparison Resource Limits
 
-Status: current module `0.4.9` and schema `1.15` contract
+Status: current module `0.4.10` and schema `1.16` contract
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 Every production comparison uses the same fixed safety budgets. The public API does not expose a configurable limits record: changing these defaults is a versioned behavior change that must be reviewed against the compatibility contract and adversarial corpus.
 

@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/12",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/13",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -264,6 +264,37 @@
       "normalizer_id": "svgdiff/css-computed-value-normalizer@1",
       "canonical_case_id": "custom-currentcolor-fill-canonical",
       "reason": "Chromium renders an inherited custom property containing currentColor identically to the canonical paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "css-color3-syntax",
+      "disposition": "normalizer",
+      "normalizer_id": "svgdiff/css-color3-opacity-normalizer@1",
+      "canonical_case_id": "css-color3-syntax-canonical",
+      "reason": "Chromium renders the CSS Color 3 HSL spelling identically to canonical sRGB, and the production solid-color normalizer proves that equivalence before invoking the pinned renderer."
+    },
+    {
+      "id": "color-alpha-opacity",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_fractional_opacity_unproven",
+      "reason": "Production canonicalizes the color and multiplies its alpha into paint opacity, but the remaining one-level fractional-alpha divergence still requires the existing renderer guard."
+    },
+    {
+      "id": "color-alpha-opacity-canonical",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_fractional_opacity_unproven",
+      "reason": "The canonical effective alpha differs from Chromium by one premultiplied RGBA8 level and remains guarded."
+    },
+    {
+      "id": "inherited-paint-opacity",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_fractional_opacity_unproven",
+      "reason": "Production resolves the inherited paint opacity and color alpha, but the normalized fractional-alpha result still requires the existing renderer guard."
+    },
+    {
+      "id": "inherited-paint-opacity-canonical",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_fractional_opacity_unproven",
+      "reason": "The canonical inherited effective alpha differs from Chromium by one premultiplied RGBA8 level and remains guarded."
     }
   ]
 }

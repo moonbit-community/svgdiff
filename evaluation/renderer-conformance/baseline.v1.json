@@ -745,20 +745,100 @@
       "id": "custom-currentcolor-fill-canonical",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "css-color3-syntax",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.375
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "css-color3-syntax-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "color-alpha-opacity",
+      "max_channel_delta": 223,
+      "premultiplied_rgba8_rmse": 0.331300389521
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "color-alpha-opacity-canonical",
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.002079725827
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "inherited-paint-opacity",
+      "max_channel_delta": 223,
+      "premultiplied_rgba8_rmse": 0.463778859425
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.5625,
+      "changed_pixels": 144,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "inherited-paint-opacity-canonical",
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.002079725827
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "clamped-opacity",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "alpha",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "clamped-opacity-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/12",
-  "fixture_source_set_sha256": "8b7ac58f90eacd64be8b132cb13d52029ed2ef9bfd58c3ac9f3437558196d954",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/13",
+  "fixture_source_set_sha256": "f69457ba3e744287ac36849e25500abaaee0a9eda6d675580816373bc3065e1d",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 74,
+    "cases": 82,
     "categories": {
       "alpha": {
-        "cases": 3,
-        "divergent": 1,
-        "exact": 2
+        "cases": 9,
+        "divergent": 5,
+        "exact": 4
       },
       "clipping": {
         "cases": 1,
@@ -776,15 +856,15 @@
         "exact": 18
       },
       "paint": {
-        "cases": 20,
-        "divergent": 9,
-        "exact": 11
+        "cases": 22,
+        "divergent": 10,
+        "exact": 12
       }
     },
-    "divergent": 42,
-    "exact": 32,
+    "divergent": 47,
+    "exact": 35,
     "exploratory": 2,
-    "guarded": 30,
-    "supported": 42
+    "guarded": 34,
+    "supported": 46
   }
 }

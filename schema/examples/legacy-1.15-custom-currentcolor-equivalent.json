@@ -1,0 +1,286 @@
+{
+  "schema_version": "1.15",
+  "analysis_status": "complete",
+  "coverage_matrix": [
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.rect",
+      "subject_id": "rect:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "rect:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.width",
+      "subject_id": "rect:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.height",
+      "subject_id": "rect:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "domain.paint.fill",
+      "subject_id": "rect:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    }
+  ],
+  "renderer_capability_gaps": [],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/12"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": null
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": null
+        }
+      ],
+      "basis": "minimum_property_distance",
+      "evidence": {
+        "score_kind": "property_distance",
+        "selected_score": 1000000,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "changed:source:svg:0:color",
+      "subject_id": "svg:0",
+      "property": "color",
+      "before": {
+        "property": "color",
+        "authored_value": "#3366cc",
+        "declared_value": "#3366cc",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 90,
+          "end_offset": 97
+        }
+      },
+      "after": null,
+      "affected_subject_ids": [
+        "rect:0"
+      ]
+    },
+    {
+      "id": "changed:source:svg:0:--paint",
+      "subject_id": "svg:0",
+      "property": "--paint",
+      "before": {
+        "property": "--paint",
+        "authored_value": "currentColor",
+        "declared_value": "currentColor",
+        "origin": "inline_style",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 127
+        }
+      },
+      "after": null,
+      "affected_subject_ids": [
+        "rect:0"
+      ]
+    },
+    {
+      "id": "changed:source:rect:0:fill",
+      "subject_id": "rect:0",
+      "property": "fill",
+      "before": {
+        "property": "fill",
+        "authored_value": "var(--paint)",
+        "declared_value": "var(--paint)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 167,
+          "end_offset": 179
+        }
+      },
+      "after": {
+        "property": "fill",
+        "authored_value": "#3366cc",
+        "declared_value": "#3366cc",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 121,
+          "end_offset": 128
+        }
+      },
+      "affected_subject_ids": [
+        "rect:0"
+      ]
+    }
+  ],
+  "source_resolutions": [
+    {
+      "subject_id": "rect:0",
+      "property": "fill",
+      "before": {
+        "subject_id": "rect:0",
+        "property": "fill",
+        "resolved_value": "#3366cc",
+        "resolution": "current_color",
+        "declaration_owner_id": "rect:0",
+        "declaration": {
+          "property": "fill",
+          "authored_value": "var(--paint)",
+          "declared_value": "var(--paint)",
+          "origin": "presentation_attribute",
+          "source_span": {
+            "start_offset": 167,
+            "end_offset": 179
+          }
+        },
+        "inheritance_depth": 0
+      },
+      "after": {
+        "subject_id": "rect:0",
+        "property": "fill",
+        "resolved_value": "#3366cc",
+        "resolution": "local",
+        "declaration_owner_id": "rect:0",
+        "declaration": {
+          "property": "fill",
+          "authored_value": "#3366cc",
+          "declared_value": "#3366cc",
+          "origin": "presentation_attribute",
+          "source_span": {
+            "start_offset": 121,
+            "end_offset": 128
+          }
+        },
+        "inheritance_depth": 0
+      }
+    }
+  ],
+  "atomic_differences": [
+    {
+      "id": "diff:entity:rect:0:fill",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "paint.fill",
+      "source_before": "#3366cc",
+      "source_after": "#3366cc",
+      "source_fact_before": {
+        "property": "fill",
+        "authored_value": "var(--paint)",
+        "declared_value": "var(--paint)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 167,
+          "end_offset": 179
+        }
+      },
+      "source_fact_after": {
+        "property": "fill",
+        "authored_value": "#3366cc",
+        "declared_value": "#3366cc",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 121,
+          "end_offset": 128
+        }
+      },
+      "changed_fact_ids": [
+        "changed:source:svg:0:color",
+        "changed:source:svg:0:--paint",
+        "changed:source:rect:0:fill"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "equivalent",
+        "reason_code": "same_resolved_fact",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0,
+        "raster_rgba8_rmse": 0,
+        "raster_linear_premultiplied_rgba_rmse": 0
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:rect:0:fill",
+      "primary_subject_id": "rect:0",
+      "atomic_difference_ids": [
+        "diff:entity:rect:0:fill"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 0,
+          "changed_pixel_fraction": 0,
+          "rgba8_rmse": 0,
+          "linear_premultiplied_rgba_rmse": 0
+        }
+      },
+      "difference_regions": []
+    }
+  ],
+  "diagnostics": []
+}

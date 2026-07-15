@@ -139,7 +139,7 @@ test "renderer inheritance normalizer materializes CSS-wide keywords" {
 test "renderer input materializes currentColor and custom-property consumers" {
   let source = "<svg width='16' height='16' style='--paint:currentColor;color:red;--left:2'><rect id='box' x='var(--left)' y='2' width='4' height='4' fill='var(--paint)'/></svg>"
   let normalized = normalize_renderer_input(source)
-  assert_true(normalized.find("fill:red") is Some(_))
+  assert_true(normalized.find("fill:#ff0000") is Some(_))
   assert_true(normalized.find("x:2") is Some(_))
   assert_false(normalized.find("fill:var(") is Some(_))
   guard @svg.parse_svg_document(normalized) is Some(document) else {
@@ -149,6 +149,34 @@ test "renderer input materializes currentColor and custom-property consumers" {
   assert_true(
     image.pixels.any(pixel => pixel.r == 255 && pixel.g == 0 && pixel.b == 0),
   )
+}
+
+///|
+test "renderer input separates sRGB channels and multiplies paint alpha" {
+  let source = "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='hsla(120,100%,50%,25%)' fill-opacity='50%'/></svg>"
+  let normalized = normalize_renderer_input(source)
+  assert_true(normalized.find("fill:#00ff00") is Some(_))
+  assert_true(normalized.find("fill-opacity:0.125") is Some(_))
+}
+
+///|
+test "computed solid paint includes color paint and leaf alpha factors" {
+  let source = "<svg><rect id='box' width='8' height='8' fill='rgba(255,0,0,0.5)' fill-opacity='25%' opacity='0.5'/></svg>"
+  let subject = extract_source_subjects_or_raise(source)[0]
+  assert_eq(
+    generic_subject_computed_value(
+      subject,
+      "fill",
+      source_subject_fact(subject, "fill"),
+    ),
+    Some("rgba(255,0,0,0.0625)"),
+  )
+}
+
+///|
+test "computed gradient stop multiplies color and stop opacity" {
+  let source = "<svg><defs><linearGradient id='gradient'><stop stop-color='rgba(255,0,0,0.5)' stop-opacity='25%'/></linearGradient></defs></svg>"
+  assert_eq(effective_first_gradient_stop(source), Some("rgba(255,0,0,0.125)"))
 }
 
 ///|
@@ -236,7 +264,8 @@ test "renderer input canonicalizes used dash geometry" {
 ///|
 test "renderer input leaves invalid stroke geometry for diagnostics" {
   let source = "<svg><line stroke='black' stroke-dasharray='4,-1'/></svg>"
-  assert_eq(normalize_renderer_input(source), source)
+  let normalized = normalize_renderer_input(source)
+  assert_true(normalized.find("stroke-dasharray='4,-1'") is Some(_))
 }
 
 ///|

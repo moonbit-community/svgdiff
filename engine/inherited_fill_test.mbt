@@ -180,7 +180,7 @@ test "removing an ancestor declaration falls back to the initial value" {
     (Some(before_value), Some(after_value)) => {
       assert_eq(before_value.resolution, "inherited")
       assert_eq(after_value.resolution, "initial")
-      assert_eq(after_value.resolved_value, "black")
+      assert_eq(after_value.resolved_value, "rgba(0,0,0,1)")
       assert_true(after_value.declaration is None)
     }
     _ => fail("expected inherited-to-initial resolutions")
@@ -199,7 +199,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.15",
+      "schema_version": "1.16",
       "source_resolutions": [
         {
           "subject_id": "box",
@@ -287,7 +287,7 @@ test "CSS-wide defaulting distinguishes inherited and non-inherited properties" 
   ]
   assert_eq(fill.length(), 1)
   assert_eq(fill[0].before.unwrap().resolution, "explicit_inherit_inherit")
-  assert_eq(fill[0].before.unwrap().resolved_value, "red")
+  assert_eq(fill[0].before.unwrap().resolved_value, "rgba(255,0,0,1)")
   let opacity = [
     for pair in report.source_resolutions if pair.subject_id == "box" &&
     pair.property == "opacity" => pair
@@ -313,7 +313,10 @@ test "author revert follows ordinary defaulting in the author-only profile" {
     report.source_resolutions[0].before.unwrap().resolution,
     "explicit_revert_inherit",
   )
-  assert_eq(report.source_resolutions[0].before.unwrap().resolved_value, "blue")
+  assert_eq(
+    report.source_resolutions[0].before.unwrap().resolved_value,
+    "rgba(0,0,255,1)",
+  )
 }
 
 ///|
@@ -359,8 +362,8 @@ test "custom properties cascade inherit and substitute without replacing source 
     report.atomic_differences[0].source_fact_before.unwrap().declared_value,
     "var(--paint)",
   )
-  assert_eq(report.atomic_differences[0].source_before, "red")
-  assert_eq(report.atomic_differences[0].source_after, "blue")
+  assert_eq(report.atomic_differences[0].source_before, "var(--paint)")
+  assert_eq(report.atomic_differences[0].source_after, "var(--paint)")
 }
 
 ///|
@@ -375,7 +378,10 @@ test "nested variable fallback can resolve a CSS-wide keyword" {
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
   assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
-  assert_eq(report.source_resolutions[0].before.unwrap().resolved_value, "red")
+  assert_eq(
+    report.source_resolutions[0].before.unwrap().resolved_value,
+    "rgba(255,0,0,1)",
+  )
 }
 
 ///|
@@ -390,7 +396,10 @@ test "cyclic variables become invalid and make the consuming property unset" {
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
   assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
-  assert_eq(report.source_resolutions[0].before.unwrap().resolved_value, "red")
+  assert_eq(
+    report.source_resolutions[0].before.unwrap().resolved_value,
+    "rgba(255,0,0,1)",
+  )
 }
 
 ///|
@@ -405,7 +414,10 @@ test "invalid substituted values make the consuming property unset" {
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
   assert_eq(report.atomic_differences[0].computed_relation.status, "equivalent")
-  assert_eq(report.source_resolutions[0].before.unwrap().resolved_value, "red")
+  assert_eq(
+    report.source_resolutions[0].before.unwrap().resolved_value,
+    "rgba(255,0,0,1)",
+  )
 }
 
 ///|

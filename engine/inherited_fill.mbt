@@ -65,9 +65,9 @@ fn generated_subject_id(kind : String, index : Int) -> String {
 ///|
 fn inherited_visual_properties() -> Array[String] {
   [
-    "color", "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin",
-    "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "marker-start",
-    "marker-mid", "marker-end",
+    "color", "fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width",
+    "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
+    "stroke-dashoffset", "marker-start", "marker-mid", "marker-end",
   ]
 }
 
@@ -75,10 +75,10 @@ fn inherited_visual_properties() -> Array[String] {
 fn resolved_visual_properties() -> Array[String] {
   [
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2",
-    "points", "stop-color", "stop-opacity", "color", "fill", "stroke", "stroke-width",
-    "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
-    "stroke-dashoffset", "vector-effect", "opacity", "marker", "marker-start", "marker-mid",
-    "marker-end",
+    "points", "stop-color", "stop-opacity", "color", "fill", "fill-opacity", "stroke",
+    "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
+    "stroke-dasharray", "stroke-dashoffset", "vector-effect", "opacity", "marker",
+    "marker-start", "marker-mid", "marker-end",
   ]
 }
 
@@ -213,10 +213,10 @@ fn fill_source_element(
 ///|
 fn initial_visual_value(property : String) -> String {
   match property {
-    "color" => "black"
-    "fill" => "black"
+    "color" => "rgba(0,0,0,1)"
+    "fill" => "rgba(0,0,0,1)"
     "stroke" => "none"
-    "stroke-width" | "opacity" => "1"
+    "stroke-width" | "opacity" | "fill-opacity" | "stroke-opacity" => "1"
     "stroke-linecap" => "butt"
     "stroke-linejoin" => "miter"
     "stroke-miterlimit" => "4"
@@ -224,7 +224,7 @@ fn initial_visual_value(property : String) -> String {
     "stroke-dashoffset" => "0"
     "vector-effect" => "none"
     "marker-start" | "marker-mid" | "marker-end" => "none"
-    "stop-color" => "black"
+    "stop-color" => "rgba(0,0,0,1)"
     "stop-opacity" => "1"
     "x" | "y" | "cx" | "cy" | "x1" | "y1" | "x2" | "y2" | "r" => "0"
     "width" | "height" | "rx" | "ry" => "auto"
@@ -503,27 +503,10 @@ fn substituted_paint_value_valid(property : String, value : String) -> Bool {
   if property != "color" && normalized == "none" {
     return true
   }
-  if normalized.has_prefix("#") {
-    let digits = normalized.length() - 1
-    return digits == 3 || digits == 4 || digits == 6 || digits == 8
+  match @css_color.parse_solid_color(normalized) {
+    Resolved(_) | CurrentColor | SystemColor(_) => true
+    Invalid => false
   }
-  if normalized.has_prefix("rgb(") ||
-    normalized.has_prefix("rgba(") ||
-    normalized.has_prefix("hsl(") ||
-    normalized.has_prefix("hsla(") {
-    return normalized.has_suffix(")")
-  }
-  if parse_svg_length(
-      normalized,
-      Unspecified,
-      { width: 16.0, height: 16.0 },
-      ComparisonProfile::v1_default(),
-    )
-    is Some(_) {
-    return false
-  }
-  normalized != "" &&
-  normalized.all(code => (code >= 'a' && code <= 'z') || code == '-')
 }
 
 ///|
@@ -589,11 +572,60 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
       parse_svg_length(normalized, Unspecified, viewport, profile) is Some(_)
     "vector-effect" =>
       normalized == "none" || normalized == "non-scaling-stroke"
-    "opacity" => parse_shape_number(normalized) is Some(_)
-    "stop-opacity" => parse_shape_number(normalized) is Some(_)
+    "opacity" | "fill-opacity" | "stroke-opacity" | "stop-opacity" =>
+      @css_color.parse_alpha_value(normalized) is Some(_)
     "marker" | "marker-start" | "marker-mid" | "marker-end" =>
       normalized == "none" || canonical_marker_reference(normalized) is Some(_)
     _ => false
+  }
+}
+
+///|
+fn canonical_computed_visual_value(
+  hierarchy : FillHierarchy,
+  property : String,
+  source : String,
+) -> (String, Bool) {
+  let value = source.trim().to_owned().to_lower()
+  match property {
+    "fill" | "stroke" if value == "none" => ("none", true)
+    "color" | "fill" | "stroke" | "stop-color" =>
+      match @css_color.parse_solid_color(value) {
+        Resolved(color) => (color.signature(), true)
+        CurrentColor => (value, false)
+        SystemColor(_) => {
+          push_unique(
+            hierarchy.coverage_codes,
+            "system_color_environment_unsupported",
+          )
+          (value, false)
+        }
+        Invalid => {
+          push_unique(
+            hierarchy.coverage_codes,
+            if value.has_prefix("lab(") ||
+              value.has_prefix("lch(") ||
+              value.has_prefix("oklab(") ||
+              value.has_prefix("oklch(") ||
+              value.has_prefix("color(") ||
+              value.has_prefix("hwb(") {
+              "color_profile_unsupported"
+            } else {
+              "solid_color_syntax_unsupported"
+            },
+          )
+          (value, false)
+        }
+      }
+    "opacity" | "fill-opacity" | "stroke-opacity" | "stop-opacity" =>
+      match @css_color.parse_alpha_value(value) {
+        Some(alpha) => (alpha.to_string(), true)
+        None => {
+          push_unique(hierarchy.coverage_codes, "opacity_syntax_unsupported")
+          (value, false)
+        }
+      }
+    _ => (source, true)
   }
 }
 
@@ -816,11 +848,14 @@ fn computed_visual_for_index(
           hierarchy, index, property, declaration, "unset", dependencies,
         )
       }
+      let canonical = canonical_computed_visual_value(
+        hierarchy, property, value,
+      )
       {
         reported: {
           subject_id: element.subject_id,
           property,
-          resolved_value: value,
+          resolved_value: canonical.0,
           resolution: "local",
           declaration_owner_id: Some(element.subject_id),
           declaration: Some(declaration),
@@ -828,11 +863,11 @@ fn computed_visual_for_index(
         },
         computed_fact: computed_fact_from_resolution(
           property,
-          value,
+          canonical.0,
           Some(declaration),
         ),
         dependencies,
-        complete,
+        complete: complete && canonical.1,
       }
     }
   }
@@ -905,7 +940,68 @@ fn renderer_computed_override_facts_for_subject(
       _ => ()
     }
   }
+  append_renderer_paint_overrides(
+    hierarchy, subject_id, "fill", "fill-opacity", facts,
+  )
+  append_renderer_paint_overrides(
+    hierarchy, subject_id, "stroke", "stroke-opacity", facts,
+  )
+  append_renderer_paint_overrides(
+    hierarchy, subject_id, "stop-color", "stop-opacity", facts,
+  )
   facts
+}
+
+///|
+fn append_renderer_paint_overrides(
+  hierarchy : FillHierarchy,
+  subject_id : String,
+  color_property : String,
+  opacity_property : String,
+  facts : Array[DeclaredVisualFact],
+) -> Unit {
+  guard computed_visual_for_subject(hierarchy, subject_id, color_property)
+    is Some(color_resolution) else {
+    return
+  }
+  guard color_resolution.complete else { return }
+  guard @css_color.parse_solid_color(color_resolution.reported.resolved_value)
+    is Resolved(color) else {
+    return
+  }
+  match color_resolution.computed_fact {
+    Some(fact) =>
+      upsert_declared_fact(facts, {
+        ..fact,
+        declared_value: color.renderer_hex(),
+      })
+    None => ()
+  }
+  if color.alpha == 1.0 {
+    return
+  }
+  guard computed_visual_for_subject(hierarchy, subject_id, opacity_property)
+    is Some(opacity_resolution) else {
+    return
+  }
+  guard opacity_resolution.complete else { return }
+  guard @css_color.parse_alpha_value(opacity_resolution.reported.resolved_value)
+    is Some(opacity) else {
+    return
+  }
+  let source_fact = match opacity_resolution.computed_fact {
+    Some(fact) => Some(fact)
+    None => color_resolution.computed_fact
+  }
+  match source_fact {
+    Some(fact) =>
+      upsert_declared_fact(facts, {
+        ..fact,
+        property: opacity_property,
+        declared_value: (opacity * color.alpha).to_string(),
+      })
+    None => ()
+  }
 }
 
 ///|
@@ -1373,14 +1469,29 @@ fn inherited_fill_report_from_hierarchies(
             subject_role: "entity",
             subject_alignment_id: None,
             domain: generic_property_domain(property),
-            source_before: before_value.resolved_value,
-            source_after: after_value.resolved_value,
+            source_before: match before_value.declaration {
+              Some(declaration) => declaration.declared_value
+              None => before_value.resolved_value
+            },
+            source_after: match after_value.declaration {
+              Some(declaration) => declaration.declared_value
+              None => after_value.resolved_value
+            },
             source_fact_before: before_value.declaration,
             source_fact_after: after_value.declaration,
             changed_fact_ids,
             evidence_layers,
             computed_relation: relation,
-            parameter_delta_css_px: parameter_delta,
+            parameter_delta_css_px: if before_subject
+              .map(subject => {
+                basic_shape_geometry_property(subject.kind, property)
+              })
+              .unwrap_or(false) ||
+              property == "stroke-width" {
+              parameter_delta
+            } else {
+              None
+            },
             presence_magnitude: None,
             magnitude,
             domain_ordering: empty_domain_ordering(),
@@ -1412,7 +1523,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.15",
+    schema_version: "1.16",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
@@ -1528,4 +1639,39 @@ fn gradient_style_changed_facts(
     .map(id => fact.affected_subject_ids.contains(id))
     .unwrap_or(false) => fact
   ]
+}
+
+///|
+fn resolved_first_gradient_stop(
+  svg : String,
+  property : String,
+) -> ResolvedVisualFact? {
+  guard extract_fill_hierarchy(svg) is ParsedFillHierarchy(hierarchy) else {
+    return None
+  }
+  guard first_hierarchy_subject_id(hierarchy, "stop") is Some(stop_id) else {
+    return None
+  }
+  resolved_visual_for_subject(hierarchy, stop_id, property)
+}
+
+///|
+fn effective_first_gradient_stop(svg : String) -> String? {
+  guard resolved_first_gradient_stop(svg, "stop-color")
+    is Some(color_resolution) else {
+    return None
+  }
+  guard @css_color.parse_solid_color(color_resolution.resolved_value)
+    is Resolved(color) else {
+    return Some(color_resolution.resolved_value)
+  }
+  guard resolved_first_gradient_stop(svg, "stop-opacity")
+    is Some(opacity_resolution) else {
+    return Some(color.signature())
+  }
+  guard @css_color.parse_alpha_value(opacity_resolution.resolved_value)
+    is Some(opacity) else {
+    return Some(color.signature())
+  }
+  Some({ ..color, alpha: color.alpha * opacity }.signature())
 }

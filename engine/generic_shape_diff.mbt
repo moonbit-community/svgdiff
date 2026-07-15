@@ -20,7 +20,9 @@ fn generic_property_domain(property : String) -> String {
       "geometry.position"
     "width" | "height" | "rx" | "ry" | "r" => "geometry.size"
     "fill" => "paint.fill"
+    "fill-opacity" => "paint.fill_opacity"
     "stroke" => "paint.stroke"
+    "stroke-opacity" => "paint.stroke_opacity"
     "stroke-width" => "geometry.stroke_width"
     "stroke-linecap" => "geometry.stroke_cap"
     "stroke-linejoin" => "geometry.stroke_join"
@@ -61,9 +63,9 @@ fn generic_default_value(property : String) -> String? {
     | "rx"
     | "ry"
     | "r" => Some("0")
-    "fill" => Some("black")
+    "fill" => Some("rgba(0,0,0,1)")
     "stroke" => Some("none")
-    "stroke-width" | "opacity" => Some("1")
+    "stroke-width" | "opacity" | "fill-opacity" | "stroke-opacity" => Some("1")
     "stroke-linecap" => Some("butt")
     "stroke-linejoin" => Some("miter")
     "stroke-miterlimit" => Some("4")
@@ -81,17 +83,61 @@ fn generic_computed_value(
   fact : DeclaredVisualFact?,
 ) -> String? {
   match fact {
-    Some(fact) => {
-      let value = fact.declared_value.trim().to_owned().to_lower()
-      match (property, value) {
-        ("fill" | "stroke", "red" | "#f00" | "#ff0000") => Some("#ff0000")
-        ("fill" | "stroke", "blue" | "#00f" | "#0000ff") => Some("#0000ff")
-        ("fill" | "stroke", "black" | "#000" | "#000000") => Some("#000000")
-        _ => Some(value)
-      }
-    }
+    Some(fact) => Some(generic_computed_string(property, fact.declared_value))
     None => generic_default_value(property)
   }
+}
+
+///|
+fn generic_computed_string(property : String, source : String) -> String {
+  let value = source.trim().to_owned().to_lower()
+  match property {
+    "fill" | "stroke" | "color" | "stop-color" =>
+      match @css_color.parse_solid_color(value) {
+        Resolved(color) => color.signature()
+        _ => value
+      }
+    "opacity" | "fill-opacity" | "stroke-opacity" | "stop-opacity" =>
+      match @css_color.parse_alpha_value(value) {
+        Some(alpha) => alpha.to_string()
+        None => value
+      }
+    _ => value
+  }
+}
+
+///|
+fn generic_subject_alpha(subject : SourceSubject, property : String) -> Double? {
+  let value = subject_value(subject, property).unwrap_or("1")
+  @css_color.parse_alpha_value(value)
+}
+
+///|
+fn generic_effective_paint(
+  subject : SourceSubject,
+  property : String,
+  fact : DeclaredVisualFact?,
+) -> String? {
+  let value = match subject_value(subject, property) {
+    Some(value) => value
+    None => return generic_computed_value(property, fact)
+  }
+  guard @css_color.parse_solid_color(value) is Resolved(color) else {
+    return Some(generic_computed_string(property, value))
+  }
+  let paint_opacity_property = if property == "fill" {
+    "fill-opacity"
+  } else {
+    "stroke-opacity"
+  }
+  guard generic_subject_alpha(subject, paint_opacity_property)
+    is Some(paint_opacity) else {
+    return Some(color.signature())
+  }
+  guard generic_subject_alpha(subject, "opacity") is Some(opacity) else {
+    return Some(color.signature())
+  }
+  Some({ ..color, alpha: color.alpha * paint_opacity * opacity }.signature())
 }
 
 ///|
@@ -123,6 +169,17 @@ fn generic_subject_computed_value(
   }
   if property == "fill" && !subject.fillable_interior {
     return Some("none")
+  }
+  if property == "fill" || property == "stroke" {
+    return generic_effective_paint(subject, property, fact)
+  }
+  if property == "opacity" ||
+    property == "fill-opacity" ||
+    property == "stroke-opacity" {
+    return match subject_value(subject, property) {
+      Some(value) => Some(generic_computed_string(property, value))
+      None => generic_computed_value(property, fact)
+    }
   }
   generic_computed_value(property, fact)
 }
@@ -394,6 +451,33 @@ fn generic_initial_magnitude(
   }
   match parameter_delta {
     Some(delta) => {
+      if property == "opacity" ||
+        property == "fill-opacity" ||
+        property == "stroke-opacity" {
+        fn computed_number(subject : SourceSubject) -> Double? {
+          match
+            generic_subject_computed_value(
+              subject,
+              property,
+              source_subject_fact(subject, property),
+            ) {
+            Some(value) => parse_alignment_number(Some(value))
+            None => None
+          }
+        }
+        let before = computed_number(before_subject)
+        let after = computed_number(after_subject)
+        return {
+          ..magnitude,
+          parameter_abs_user_units: Some(delta.abs()),
+          parameter_signed_user_units: Some(delta),
+          symmetric_relative: match (before, after) {
+            (Some(before), Some(after)) =>
+              Some(symmetric_relative_delta(before, after))
+            _ => None
+          },
+        }
+      }
       if basic_shape_geometry_property(before_subject.kind, property) {
         fn scale(subject : SourceSubject) -> Double {
           let matrix = subject.cumulative_transform
@@ -492,7 +576,8 @@ fn generic_basic_shape_report(
     ([before_subject], [after_subject]) if before_subject.kind == "rect" &&
       after_subject.kind == "rect" => {
       let properties = [
-        "rx", "ry", "stroke", "marker", "marker-start", "marker-mid", "marker-end",
+        "rx", "ry", "fill-opacity", "stroke", "stroke-opacity", "marker", "marker-start",
+        "marker-mid", "marker-end",
       ]
       for property in alignment_property_order() {
         if stroke_geometry_property(property) {
@@ -585,7 +670,15 @@ fn generic_basic_shape_report(
             changed_fact_ids: [fact_id],
             evidence_layers,
             computed_relation: relation,
-            parameter_delta_css_px: parameter_delta,
+            parameter_delta_css_px: if basic_shape_geometry_property(
+                before_subject.kind,
+                property,
+              ) ||
+              property == "stroke-width" {
+              parameter_delta
+            } else {
+              None
+            },
             presence_magnitude: None,
             magnitude: generic_initial_magnitude(
               property, relation, before_subject, after_subject, parameter_delta,
@@ -701,7 +794,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.15",
+    schema_version: "1.16",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

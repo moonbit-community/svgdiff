@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.15` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.16` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -22,8 +22,8 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | DPR | Fixed to `1.0`. |
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
-| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/12`. |
+| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/13`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -47,7 +47,9 @@ The following capabilities can participate in a `complete` report when no unsupp
 - local `marker`, `marker-start`, `marker-mid`, and `marker-end` attachment facts plus canonical length-aware marker viewport/reference properties, SVG path vertex roles, automatic orientation, instance transforms, and conservative clipped viewport envelopes; marker child paint and rasterization remain separately guarded;
 - ordinary inheritance for supported `fill`, `stroke`, stroke-width/cap/join/miter/dash properties, and marker longhands across admitted `svg`/`g` ancestry, including nearest-owner or initial-value resolution, owner-level Changed Facts, leaf consequences, computed relations, and renderer-input materialization;
 - `inherit`, `initial`, `unset`, and author-origin `revert` for every supported inherited and non-inherited property; deterministic black initial `color`; `currentColor` for supported paint consumers; and case-sensitive inherited custom properties with bounded nested `var()` references and fallbacks, invalid-at-computed-value behavior, dependency-aware Changed Facts, and private renderer materialization;
-- source, computed, and rendered distinction for equivalent paint spellings such as `red` and `#ff0000`;
+- strict deterministic sRGB solid colors across CSS Color 3 hexadecimal, RGB(A), HSL(A), extended named colors, `transparent`, and admitted alpha-hex syntax; canonical computed channels remain separate from exact authored spelling and Source Span;
+- number-or-percentage `opacity`, inherited `fill-opacity` and `stroke-opacity`, and non-inherited `stop-opacity`, with `[0,1]` clamping, continuous numeric deltas, and effective leaf or stop alpha multiplication;
+- source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
 - exact continuous parameter deltas independent of raster quantization;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
@@ -63,6 +65,9 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Group or root opacity | Supported source-level compositing difference | Isolated group compositing semantics are not fully modeled. |
 | Fractional basic-shape geometry | Exact authored and computed numeric differences plus a pinned-renderer measurement | Chromium shows that the pinned renderer can quantize browser-invisible subpixel movement into full pixel changes; `renderer_fractional_geometry_unproven` limits Rendered Evidence. |
 | Fractional leaf opacity | Authored/computed opacity and a numeric pinned-renderer measurement | The pinned renderer floors `0.5` to alpha `127` while Chromium uses `128`; `renderer_fractional_opacity_unproven` limits Rendered Evidence. |
+| Environment-dependent system colors | Exact authored value and Source Span | No pinned system palette exists; `system_color_environment_unsupported` prevents environment-dependent equality. |
+| Wide-gamut or out-of-profile color functions | Exact authored value and Source Span | Profile conversion is deferred; `color_profile_unsupported` prevents clipping or substitution into sRGB. |
+| Malformed solid color or opacity syntax | Exact authored value and Source Span | `solid_color_syntax_unsupported` or `opacity_syntax_unsupported` prevents invalid values from silently becoming black, transparent, or another numeric value. |
 | Referenced linear gradient | Narrow first-stop/single-rect source and computed analysis plus a pinned-renderer measurement | Browser interpolation differs from the pinned raster; `renderer_gradient_raster_unproven` limits Rendered Evidence even for the narrow slice, while other gradient semantics retain their broader guards. |
 | Conflicting presentation attribute and inline style with incomplete or unsupported inline syntax | Independently supported Source Semantics | The private adapter cannot prove a safe renderer rewrite; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Selector or stylesheet syntax outside the admitted static grammar | Any independently parsed selector, declaration, authored value, and Source Span evidence | `css_cascade_unsupported` prevents unsupported applicability from being approximated as matching or not matching. |
@@ -101,7 +106,7 @@ V1 does not completely analyze:
 - precise transform-aware bounds and localization beyond the conservative whole-scene outcome regions;
 - automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, dynamic viewport variants, or object-bounding-box coordinate systems;
 - CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization;
-- selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system colors, or custom-property syntax outside the admitted balanced subset;
+- selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system palette selection, or custom-property syntax outside the admitted balanced subset;
 - full gradients, radial gradients, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, images, symbols, or `<use>` instances;
 - clipping, masking, filters, blending, isolation, and complete group compositing;
 - deterministic fonts, shaping, text layout, and glyph rasterization;

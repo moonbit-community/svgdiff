@@ -42,9 +42,10 @@ fn visual_subject_kind(kind : String) -> Bool {
 fn alignment_property_order() -> Array[String] {
   [
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2",
-    "points", "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin",
-    "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
-    "marker", "marker-start", "marker-mid", "marker-end", "opacity",
+    "points", "fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width",
+    "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
+    "stroke-dashoffset", "vector-effect", "marker", "marker-start", "marker-mid",
+    "marker-end", "opacity",
   ]
 }
 

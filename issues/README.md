@@ -117,6 +117,7 @@ graph TD
   ISS_099["ISS-099: Complete ordinary inheritance for supported visual properties"]
   ISS_100["ISS-100: Resolve CSS-wide values, currentColor, and custom properties"]
   ISS_101["ISS-101: Preserve declaration provenance through cascade resolution"]
+  ISS_102["ISS-102: Complete deterministic solid colors and opacity semantics"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -312,6 +313,7 @@ graph TD
   ISS_098 --> ISS_099
   ISS_099 --> ISS_100
   ISS_100 --> ISS_101
+  ISS_101 --> ISS_102
 ```
 
 ## Warnings

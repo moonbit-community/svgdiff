@@ -273,7 +273,11 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
       code == "css_cascade_unsupported" ||
       code == "css_revert_layer_unsupported" ||
       code == "css_variable_syntax_unsupported" ||
-      code == "css_variable_expansion_limit"
+      code == "css_variable_expansion_limit" ||
+      code == "system_color_environment_unsupported" ||
+      code == "color_profile_unsupported" ||
+      code == "solid_color_syntax_unsupported" ||
+      code == "opacity_syntax_unsupported"
     }) {
     return input
   }

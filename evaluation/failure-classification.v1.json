@@ -28,6 +28,7 @@
       "exact": [
         "analysis_coverage_unproven",
         "computed_rect_fact_unavailable",
+        "color_profile_unsupported",
         "css_cascade_unsupported",
         "css_revert_layer_unsupported",
         "css_variable_expansion_limit",
@@ -42,9 +43,12 @@
         "ordinary_inheritance_renderer_unavailable",
         "paint_server_analysis_unsupported",
         "paint_value_semantics_unsupported",
+        "opacity_syntax_unsupported",
         "rect_analysis_coverage_incomplete",
         "single_rect_alignment_unsupported",
         "source_subject_alignment_unsupported",
+        "solid_color_syntax_unsupported",
+        "system_color_environment_unsupported",
         "unsupported_visual_attribute",
         "unsupported_visual_subject"
       ],

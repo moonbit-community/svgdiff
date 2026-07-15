@@ -122,7 +122,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "1.15",
+    schema_version: "1.16",
     analysis_status: "failed",
     coverage_matrix,
     renderer_capability_gaps: [],

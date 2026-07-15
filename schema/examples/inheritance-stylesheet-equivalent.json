@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.15",
+  "schema_version": "1.16",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -58,8 +58,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/12"
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/13"
   },
   "subject_alignments": [
     {
@@ -138,7 +138,7 @@
       "before": {
         "subject_id": "rect:0",
         "property": "fill",
-        "resolved_value": "#00cc66",
+        "resolved_value": "rgba(0,204,102,1)",
         "resolution": "inherited",
         "declaration_owner_id": "g:0",
         "declaration": {
@@ -156,7 +156,7 @@
       "after": {
         "subject_id": "rect:0",
         "property": "fill",
-        "resolved_value": "#00cc66",
+        "resolved_value": "rgba(0,204,102,1)",
         "resolution": "local",
         "declaration_owner_id": "rect:0",
         "declaration": {

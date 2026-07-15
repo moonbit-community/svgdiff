@@ -60,7 +60,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.15`.
+- The stable report schema is `1.16`.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
 - The CLI lives in `cmd/svgdiff` and can emit JSON plus an optional self-contained HTML presentation.
 - The implemented analyzer covers a deliberately narrow deterministic static-SVG subset.

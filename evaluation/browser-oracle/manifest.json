@@ -74,6 +74,14 @@
     { "id": "css-wide-fill", "source": "evaluation/renderer-conformance/fixtures/css-wide-fill.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "css-wide-fill-canonical" },
     { "id": "css-wide-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/css-wide-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
     { "id": "custom-currentcolor-fill", "source": "evaluation/renderer-conformance/fixtures/custom-currentcolor-fill.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "custom-currentcolor-fill-canonical" },
-    { "id": "custom-currentcolor-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/custom-currentcolor-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
+    { "id": "custom-currentcolor-fill-canonical", "source": "evaluation/renderer-conformance/fixtures/custom-currentcolor-fill-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "css-color3-syntax", "source": "evaluation/renderer-conformance/fixtures/css-color3-syntax.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "css-color3-syntax-canonical" },
+    { "id": "css-color3-syntax-canonical", "source": "evaluation/renderer-conformance/fixtures/css-color3-syntax-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "color-alpha-opacity", "source": "evaluation/renderer-conformance/fixtures/color-alpha-opacity.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "guarded", "canonical_equivalent_id": "color-alpha-opacity-canonical" },
+    { "id": "color-alpha-opacity-canonical", "source": "evaluation/renderer-conformance/fixtures/color-alpha-opacity-canonical.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "guarded" },
+    { "id": "inherited-paint-opacity", "source": "evaluation/renderer-conformance/fixtures/inherited-paint-opacity.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "guarded", "canonical_equivalent_id": "inherited-paint-opacity-canonical" },
+    { "id": "inherited-paint-opacity-canonical", "source": "evaluation/renderer-conformance/fixtures/inherited-paint-opacity-canonical.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "guarded" },
+    { "id": "clamped-opacity", "source": "evaluation/renderer-conformance/fixtures/clamped-opacity.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "supported", "canonical_equivalent_id": "clamped-opacity-canonical" },
+    { "id": "clamped-opacity-canonical", "source": "evaluation/renderer-conformance/fixtures/clamped-opacity-canonical.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "supported" }
   ]
 }

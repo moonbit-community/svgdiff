@@ -61,6 +61,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0055](0055-resolve-inheritance-after-cascade-without-reowning-declarations.md) | Accepted, implemented for supported visual properties | Resolve ordinary inheritance after cascade while retaining ancestor ownership and leaf consequences. |
 | [0056](0056-resolve-css-computed-values-as-dependencies.md) | Accepted, implemented for supported SVG values | Resolve CSS-wide keywords, custom-property substitution, and currentColor as computed dependencies without rewriting source facts. |
 | [0057](0057-keep-declaration-provenance-immutable.md) | Accepted, implemented for supported author declarations | Keep cascade-winner origin and Source Span immutable through inheritance and computed-value resolution. |
+| [0058](0058-own-deterministic-solid-color-resolution.md) | Accepted, implemented for deterministic sRGB solid paint | Own strict solid-color and paint-opacity computed values while preserving authored facts and future profile boundaries. |
 
 ## CLI and distribution decisions
 

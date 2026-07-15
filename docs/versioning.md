@@ -10,11 +10,11 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.4.9` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.15` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.15` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.4.10` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.16` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.16` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/12` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/13` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -63,6 +63,8 @@ Module `0.4.7` adds a right-to-left static selector matcher over an indexed XML 
 Module `0.4.8` resolves ordinary inheritance after cascade for supported fill, stroke, stroke-geometry, and marker properties while retaining ancestor declaration ownership, exact provenance, inheritance depth, and leaf fan-out. Inheritance reports now reuse leaf used-value relations, numeric deltas, and rendered measurements instead of emitting the retired deferred conditions. The private renderer identity adds `ordinary-inheritance-normalizer@1`; an inherited-stylesheet canonical pair expands the Chromium baseline to 70 fixtures and conformance profile `/11`. The expanded supported behavior, retired Diagnostics, and new `css_wide_keyword_unsupported` boundary advance Structured Report schema to `1.14`, while public fields and v2 tuple policy remain unchanged.
 
 Module `0.4.9` resolves `inherit`, `initial`, `unset`, author-origin `revert`, bounded case-sensitive custom properties, nested `var()` fallback, invalid-at-computed-value behavior, and `currentColor` dependencies for every currently supported SVG value. Authored declarations and Source Spans remain unchanged while dependency-aware Changed Facts identify affected leaves and admitted gradient stops. The private renderer identity adds `css-computed-value-normalizer@1`; CSS-wide and custom-property/`currentColor` canonical pairs expand the Chromium baseline to 74 fixtures and conformance profile `/12`. Retiring `css_wide_keyword_unsupported` and adding stable guards for `revert-layer`, excluded variable syntax, and expansion limits advance Structured Report schema to `1.15`, while public fields and v2 tuple policy remain unchanged.
+
+Module `0.4.10` adds strict deterministic CSS Color 3 solid-color parsing, canonical straight-alpha sRGB values, clamped number/percentage opacity, inherited fill/stroke opacity, non-inherited stop opacity, and effective leaf/stop alpha multiplication without changing authored declaration provenance. The private renderer identity adds `css-color3-opacity-normalizer@1`; HSL, alpha multiplication, inherited paint opacity, and clamping canonical pairs expand the Chromium baseline to 82 fixtures and conformance profile `/13`. New stable Diagnostics distinguish malformed color or opacity syntax, environment-dependent system colors, and out-of-profile color functions, advancing Structured Report schema to `1.16`. Public report fields and v2 ordering tuples remain unchanged.
 
 ## Structured Report schema versions
 

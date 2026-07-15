@@ -285,6 +285,21 @@
       }
     },
     {
+      "id": "color-alpha-opacity-equivalent",
+      "before": "evaluation/renderer-conformance/fixtures/color-alpha-opacity.svg",
+      "after": "evaluation/renderer-conformance/fixtures/color-alpha-opacity-canonical.svg",
+      "output": "schema/examples/color-alpha-opacity-equivalent.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["paint.fill", "paint.fill_opacity"],
+        "computed_relations": ["equivalent", "different"],
+        "diagnostic_codes": ["renderer_fractional_opacity_unproven"],
+        "magnitude_checks": [
+          { "domain": "paint.fill", "field": "magnitude.raster_changed_pixel_fraction", "op": "eq", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

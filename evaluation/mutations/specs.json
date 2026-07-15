@@ -4,7 +4,7 @@
     "subject_kinds": ["rect", "circle", "ellipse", "line", "polyline", "polygon"],
     "source_properties": [
       "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
-      "x1", "y1", "x2", "y2", "points", "fill", "stroke",
+      "x1", "y1", "x2", "y2", "points", "fill", "fill-opacity", "stroke", "stroke-opacity",
       "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
       "stroke-dasharray", "stroke-dashoffset", "vector-effect",
       "marker-end", "markerUnits", "markerWidth", "refX", "orient",
@@ -50,6 +50,29 @@
       "before_value": "red", "after_value": "blue",
       "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "paint.fill", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-rect-equivalent-color-syntax",
+      "template": "templates/rect-fill.svg.tmpl",
+      "before_value": "red", "after_value": "hsl(0,100%,50%)",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "paint.fill", "before_declared_value": "red", "after_declared_value": "hsl(0,100%,50%)", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-rect-fill-opacity",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' fill-opacity='0.25'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' fill-opacity='0.75'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill-opacity", "report_property": "fill-opacity", "before_declared_value": "0.25", "after_declared_value": "0.75", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-line-stroke-opacity",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-opacity='0.25'/>",
+      "after_value": "<line id='edge' x1='2' y1='8' x2='14' y2='8' stroke='black' stroke-width='2' stroke-opacity='0.75'/>",
+      "expected_changed_fact": { "subject_kind": "line", "source_property": "stroke-opacity", "report_property": "stroke-opacity", "before_declared_value": "0.25", "after_declared_value": "0.75", "affected_subject_ids": ["edge"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     },
     {
       "id": "mutate-rect-inline-important-fill",

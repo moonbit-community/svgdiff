@@ -17,13 +17,25 @@ fn resolved_fill_declaration_slice(
 }
 
 ///|
+fn canonical_test_visual_value(property : String, value : String) -> String {
+  if ["color", "fill", "stroke", "stop-color"].contains(property) {
+    match @css_color.parse_solid_color(value) {
+      Resolved(color) => color.signature()
+      _ => value
+    }
+  } else {
+    value
+  }
+}
+
+///|
 test "fill resolves through the nearest authored ancestor" {
   let source = "<svg id='root' fill='black'><g id='outer' fill='red'><g id='inner' fill='yellow' style='fill: blue'><rect id='box'/><rect id='local' fill='green'/></g></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) => {
       match resolved_visual_for_subject(hierarchy, "box", "fill") {
         Some(resolution) => {
-          assert_eq(resolution.resolved_value, "blue")
+          assert_eq(resolution.resolved_value, "rgba(0,0,255,1)")
           assert_eq(resolution.resolution, "inherited")
           assert_eq(resolution.declaration_owner_id, Some("inner"))
           assert_eq(resolution.inheritance_depth, 1)
@@ -40,7 +52,7 @@ test "fill resolves through the nearest authored ancestor" {
       }
       match resolved_visual_for_subject(hierarchy, "local", "fill") {
         Some(resolution) => {
-          assert_eq(resolution.resolved_value, "green")
+          assert_eq(resolution.resolved_value, "rgba(0,128,0,1)")
           assert_eq(resolution.resolution, "local")
           assert_eq(resolution.declaration_owner_id, Some("local"))
           assert_eq(resolution.inheritance_depth, 0)
@@ -59,7 +71,7 @@ test "undeclared fill resolves to the SVG initial value" {
     ParsedFillHierarchy(hierarchy) =>
       match resolved_visual_for_subject(hierarchy, "box", "fill") {
         Some(resolution) => {
-          assert_eq(resolution.resolved_value, "black")
+          assert_eq(resolution.resolved_value, "rgba(0,0,0,1)")
           assert_eq(resolution.resolution, "initial")
           assert_eq(resolution.declaration_owner_id, None)
           assert_eq(resolution.inheritance_depth, 0)
@@ -73,7 +85,7 @@ test "undeclared fill resolves to the SVG initial value" {
 
 ///|
 test "every admitted ordinary inherited property uses the nearest ancestor" {
-  let source = "<svg id='root' color='green' fill='red' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
+  let source = "<svg id='root' color='green' fill='red' fill-opacity='0.5' stroke='black' stroke-opacity='0.75' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) =>
       for property in inherited_visual_properties() {
@@ -147,7 +159,10 @@ test "CSS-wide keywords cover every supported computed property" {
       } else {
         initial_visual_value(property)
       }
-      assert_eq(resolution.resolved_value, expected)
+      assert_eq(
+        resolution.resolved_value,
+        canonical_test_visual_value(property, expected),
+      )
       assert_eq(
         resolution.resolution,
         if keyword == "inherit" ||
@@ -211,7 +226,10 @@ test "custom properties feed every supported computed property" {
       fail("expected hierarchy for \{property}:var(--value)")
     }
     let resolution = resolved_visual_for_subject(hierarchy, "box", property).unwrap()
-    assert_eq(resolution.resolved_value, value)
+    assert_eq(
+      resolution.resolved_value,
+      canonical_test_visual_value(property, value),
+    )
     assert_eq(resolution.declaration.unwrap().declared_value, "var(--value)")
   }
 }
@@ -223,7 +241,7 @@ test "currentColor resolves supported stroke paint" {
     fail("expected currentColor hierarchy")
   }
   let stroke = resolved_visual_for_subject(hierarchy, "box", "stroke").unwrap()
-  assert_eq(stroke.resolved_value, "red")
+  assert_eq(stroke.resolved_value, "rgba(255,0,0,1)")
   assert_eq(stroke.declaration.unwrap().declared_value, "currentColor")
 }
 
