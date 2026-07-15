@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/24",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
   "cases": [
     {
       "id": "mask-container",
@@ -466,6 +466,26 @@
       "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
       "validation_domain": "resource.filter.primitive.offset",
       "reason": "The raw renderer ignores SVG filter graphs; the product derives the alpha-only standard input before applying the admitted offset graph."
+    },
+    {
+      "id": "blend-modes",
+      "disposition": "compositor",
+      "compositor_id": "static-blend-compositor@1",
+      "canonical_case_id": "blend-modes-canonical",
+      "validation_before": "evaluation/schema-examples/cases/blend-mode-change/before.svg",
+      "validation_after": "evaluation/schema-examples/cases/blend-mode-change/after.svg",
+      "validation_domain": "compositing.blend_mode",
+      "reason": "The raw renderer ignores CSS blend modes; the product compositor implements all sixteen opaque binary-alpha formulas and matches the Chromium canonical colors."
+    },
+    {
+      "id": "blend-isolation-auto",
+      "disposition": "compositor",
+      "compositor_id": "static-blend-compositor@1",
+      "canonical_case_id": "blend-isolation-auto-canonical",
+      "validation_before": "evaluation/schema-examples/cases/blend-mode-change/before.svg",
+      "validation_after": "evaluation/schema-examples/cases/blend-mode-change/after.svg",
+      "validation_domain": "compositing.blend_mode",
+      "reason": "The raw renderer ignores CSS blending and therefore misses the ordinary group's parent backdrop; the product compositor preserves the non-isolated stacking context and matches the canonical black overlap."
     }
   ]
 }

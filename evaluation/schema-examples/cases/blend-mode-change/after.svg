@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <rect id="back" x="2" y="2" width="12" height="12" fill="#c86432"/>
+  <rect id="front" x="4" y="4" width="8" height="8" fill="#6496c8" style="mix-blend-mode:screen"/>
+</svg>

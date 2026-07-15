@@ -2,6 +2,21 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "blend-mode-change",
+      "before": "evaluation/schema-examples/cases/blend-mode-change/before.svg",
+      "after": "evaluation/schema-examples/cases/blend-mode-change/after.svg",
+      "output": "schema/examples/blend-mode-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["compositing.blend_mode"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "compositing.blend_mode", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "filter-offset-change",
       "before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
       "after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",

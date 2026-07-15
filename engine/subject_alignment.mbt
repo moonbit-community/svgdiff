@@ -1427,10 +1427,15 @@ fn finish_report(
   let (report, extra_alignments) = attach_group_opacity_differences(
     report, before_svg, after_svg,
   )
-  let combined_alignments = alignments.copy()
-  combined_alignments.push_iter(extra_alignments.iter())
   comparison_guard.checkpoint()
   let report = apply_preflight_diagnostics(report, diagnostics)
+  comparison_guard.checkpoint()
+  let (report, blend_alignments) = attach_blend_differences(
+    report, before_svg, after_svg,
+  )
+  let combined_alignments = alignments.copy()
+  combined_alignments.push_iter(extra_alignments.iter())
+  combined_alignments.push_iter(blend_alignments.iter())
   comparison_guard.checkpoint()
   let report = attach_subject_alignments(report, combined_alignments)
   comparison_guard.checkpoint()

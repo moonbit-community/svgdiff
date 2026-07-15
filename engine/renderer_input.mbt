@@ -38,7 +38,7 @@ fn renderer_inline_value_edits_for_element(
     let name = attribute.name.local_name
     if name == "style" {
       style_attribute = Some(attribute)
-    } else if supported_rect_property(name) {
+    } else if supported_presentation_property(name) {
       presentations.push(attribute)
     }
   }
@@ -90,7 +90,7 @@ fn renderer_cascade_value_edits_for_element(
     let name = attribute.name.local_name
     if name == "style" {
       style_attribute = Some(attribute)
-    } else if supported_rect_property(name) {
+    } else if supported_presentation_property(name) {
       presentations.push(attribute)
       candidates.push(
         presentation_cascade_candidate(

@@ -342,15 +342,11 @@ fn structural_rendered_evidence(
 ) -> RenderedEvidence {
   match
     (
-      @svg.parse_svg_document(
-        normalize_renderer_input_with_profile(before_svg, profile),
-      ),
-      @svg.parse_svg_document(
-        normalize_renderer_input_with_profile(after_svg, profile),
-      ),
+      render_product_source_to_image(before_svg, profile),
+      render_product_source_to_image(after_svg, profile),
     ) {
     (Some(before), Some(after)) =>
-      computed_rendered_evidence(rendered_difference(before, after, profile))
+      computed_rendered_evidence(rendered_image_difference(before, after))
     _ => not_computed_rendered_evidence("structural_renderer_unavailable")
   }
 }

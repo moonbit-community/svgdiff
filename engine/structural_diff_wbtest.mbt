@@ -172,25 +172,19 @@ test "ID renames and declaration-only changes do not invent structure" {
 }
 
 ///|
-test "unsupported compositing keeps structural analysis partial and located" {
-  let before = "<svg><rect id='red' width='12' height='12' fill='red' mix-blend-mode='multiply'/><rect id='blue' x='4' y='4' width='12' height='12' fill='blue'/></svg>"
-  let after = "<svg><rect id='blue' x='4' y='4' width='12' height='12' fill='blue'/><rect id='red' width='12' height='12' fill='red' mix-blend-mode='multiply'/></svg>"
+test "admitted compositing makes structural stacking blend-aware" {
+  let before = "<svg><rect id='red' width='12' height='12' fill='red' style='mix-blend-mode:multiply'/><rect id='blue' x='4' y='4' width='12' height='12' fill='blue'/></svg>"
+  let after = "<svg><rect id='blue' x='4' y='4' width='12' height='12' fill='blue'/><rect id='red' width='12' height='12' fill='red' style='mix-blend-mode:multiply'/></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
-  assert_eq(report.analysis_status, "partial")
-  let mut found : Diagnostic? = None
-  for diagnostic in report.diagnostics {
-    if diagnostic.code == "unsupported_visual_attribute" {
-      found = Some(diagnostic)
-    }
-  }
-  guard found is Some(diagnostic) else {
-    fail("expected unsupported compositing diagnostic")
-  }
-  assert_eq(diagnostic.source_locations.length(), 2)
+  assert_eq(report.analysis_status, "complete")
   assert_true(
-    diagnostic.source_locations.any(location => location.source_role == "before"),
+    report.atomic_differences.any(difference => {
+      difference.domain == "document.structure.stacking_order"
+    }),
   )
   assert_true(
-    diagnostic.source_locations.any(location => location.source_role == "after"),
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "unsupported_visual_attribute"
+    }),
   )
 }

@@ -10,13 +10,13 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 
 | Component | Current identity | Contract surface |
 | --- | --- | --- |
-| SVG scene and canonical renderer | `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+mizchi/svg@0.2.1` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
-| Renderer conformance profile | `svgdiff-renderer-conformance-profile/24` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
+| SVG scene and canonical renderer | `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
+| Renderer conformance profile | `svgdiff-renderer-conformance-profile/25` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
 | Authored XML parser | `Milky2018/xml@0.4.0` | well-formedness, namespaces, entity behavior, UTF-16 Source Spans |
 | Baseline pixel comparison | `mizchi/pixelmatch@0.6.1` | connected pixel-mask regions and renderer comparison support |
 | Embedded raster codec | `Milky2018/svgdiff-raster-codec@0.1.0` plus `mizchi/zlib@0.4.6` | admitted PNG/JPEG bytes, dimensions, normalized RGBA8 pixels, and intrinsic magnitude inputs |
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
-| JSON Schema | `1.29` | every serialized field, enum, null/absence rule, and top-level invariant |
+| JSON Schema | `1.30` | every serialized field, enum, null/absence rule, and top-level invariant |
 | Nonvisual source-audit schema | `1.0` | source-only fact identity, paths, values, provenance, status, and parse failures |
 | Same-domain ordering | `v2_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 
@@ -143,7 +143,7 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Every released Schema, currently `1.0` through `1.29`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
+Every released Schema, currently `1.0` through `1.30`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
 
 The independent source-audit schema follows the same discipline but is not entered in the Structured Report registry. Validate [`svgdiff-source-audit.schema.json`](../schema/svgdiff-source-audit.schema.json), its canonical example, and the public `SourceAudit*` interface whenever audit identity, paths, values, spans, status, or failures change.
 

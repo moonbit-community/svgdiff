@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.29` interpretation guide
+Status: current schema `1.30` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -68,6 +68,8 @@ For embedded or explicitly bundled images, distinguish the locator representatio
 
 For `compositing.opacity`, interpret the numeric parameter as the non-inherited container opacity, not as opacity copied to each child. The rendered outcome comes from an isolated completed child layer; overlapping siblings therefore retain their internal top-to-bottom result before one alpha factor is applied. Its Cause Envelope intentionally widens to every Changed Fact in the comparison when source-over backdrop relevance cannot be pruned safely. This is a sound overapproximation, not a claim that every candidate visibly contributed.
 
+For `compositing.blend_mode` and `compositing.isolation`, treat the computed values as categories, not points on one numeric scale. Do not invent a magnitude between `multiply` and `screen`, or reduce `auto` versus `isolate` to a visibility boolean. The foreground blends against the ordered backdrop prefix inside its nearest isolation boundary; `isolate` resets that backdrop to transparent before the completed layer returns to its parent. Use `affected_subject_ids` to name the foreground and every conservatively relevant backdrop subject, and use measured pixels to describe the final response. These events intentionally use comparison-wide Cause Envelope candidates because a simultaneous backdrop, isolation, or stacking change can be the true cause; false positives are accepted to preserve `sound_overapproximation`. Any `blend_*` or `isolation_*` Diagnostic keeps exact CSS facts but revokes complete rendered and causal claims for that path.
+
 For a paint URL with a fallback, distinguish the authored token from its selected branch. A valid local gradient or pattern makes the fallback inactive; a missing or wrong-kind local target selects the fallback, and no fallback means no paint. Report inactive fallback edits as source-visible computed equivalence. Report target-validity changes through the resulting consumer paint outcome and any resource presence facts. Only an active `currentColor` fallback should carry a color dependency; an external URL remains indeterminate rather than being described as missing.
 
 ## Interpreting one Atomic Difference
@@ -106,7 +108,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.29` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.30` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

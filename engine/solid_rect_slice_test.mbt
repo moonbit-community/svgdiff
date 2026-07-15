@@ -223,7 +223,7 @@ test "declared fact provenance is serialized into JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.29",
+      "schema_version": "1.30",
       "atomic_differences": [
         {
           "source_fact_before": {

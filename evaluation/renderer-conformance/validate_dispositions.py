@@ -44,6 +44,17 @@ ADMITTED_FILTER_CASES = {
     "filter-offset-source-alpha",
 }
 
+ADMITTED_BLEND_CASES = {
+    "blend-modes",
+    "blend-modes-canonical",
+    "blend-isolation-auto",
+    "blend-isolation-auto-canonical",
+    "blend-isolation-isolate",
+    "blend-isolation-isolate-canonical",
+    "blend-transparent-backdrop",
+    "blend-transparent-backdrop-canonical",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -92,7 +103,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/24"
+    expected_profile = "svgdiff-renderer-conformance-profile/25"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:
@@ -348,6 +359,31 @@ def main() -> None:
             raise ValueError(
                 f"admitted filter case lost complete coverage: "
                 f"{case_id} {filter_guards}"
+            )
+
+    admitted_blend_cases = {
+        case["id"]
+        for case in baseline["cases"]
+        if case["coverage_claim"] == "supported"
+        and case["id"] in ADMITTED_BLEND_CASES
+    }
+    if admitted_blend_cases != ADMITTED_BLEND_CASES:
+        raise ValueError(
+            "admitted blend fixtures are not all supported: "
+            f"{sorted(ADMITTED_BLEND_CASES - admitted_blend_cases)}"
+        )
+    for case_id in sorted(ADMITTED_BLEND_CASES):
+        source = (ROOT / fixtures[case_id]["source"]).resolve()
+        report = compare_source(args.cli, source)
+        blend_guards = sorted(
+            diagnostic["code"]
+            for diagnostic in report.get("diagnostics", [])
+            if diagnostic["code"].startswith(("blend_", "isolation_"))
+        )
+        if report.get("analysis_status") != "complete" or blend_guards:
+            raise ValueError(
+                f"admitted blend case lost complete coverage: "
+                f"{case_id} {blend_guards}"
             )
 
     print(

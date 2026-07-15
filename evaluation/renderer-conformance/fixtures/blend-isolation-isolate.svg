@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <rect id="back" width="16" height="8" fill="#00ff00"/>
+  <g id="layer" style="isolation:isolate">
+    <rect id="front" x="2" y="2" width="8" height="4" fill="red" style="mix-blend-mode:multiply"/>
+  </g>
+</svg>

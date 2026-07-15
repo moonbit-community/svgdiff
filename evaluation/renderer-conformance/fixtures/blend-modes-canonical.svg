@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <rect id="front-normal" x="0" y="0" width="4" height="4" fill="#6496c8"/>
+  <rect id="front-multiply" x="4" y="0" width="4" height="4" fill="#4e3b27"/>
+  <rect id="front-screen" x="8" y="0" width="4" height="4" fill="#debfd3"/>
+  <rect id="front-overlay" x="12" y="0" width="4" height="4" fill="#bc764e"/>
+  <rect id="front-darken" x="0" y="4" width="4" height="4" fill="#646432"/>
+  <rect id="front-lighten" x="4" y="4" width="4" height="4" fill="#c896c8"/>
+  <rect id="front-color-dodge" x="8" y="4" width="4" height="4" fill="#fff3e8"/>
+  <rect id="front-color-burn" x="12" y="4" width="4" height="4" fill="#730000"/>
+  <rect id="front-hard-light" x="0" y="8" width="4" height="4" fill="#9d7fa7"/>
+  <rect id="front-soft-light" x="4" y="8" width="4" height="4" fill="#bf6f56"/>
+  <rect id="front-difference" x="8" y="8" width="4" height="4" fill="#643296"/>
+  <rect id="front-exclusion" x="12" y="8" width="4" height="4" fill="#8f84ac"/>
+  <rect id="front-hue" x="0" y="12" width="4" height="4" fill="#408bd6"/>
+  <rect id="front-saturation" x="4" y="12" width="4" height="4" fill="#af6c4b"/>
+  <rect id="front-color" x="8" y="12" width="4" height="4" fill="#5486b8"/>
+  <rect id="front-luminosity" x="12" y="12" width="4" height="4" fill="#d87442"/>
+</svg>

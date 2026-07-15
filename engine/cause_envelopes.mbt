@@ -69,9 +69,15 @@ fn attach_cause_envelopes(input_report : StructuredReport) -> StructuredReport {
   let complete = report.analysis_status == "complete"
   let events : Array[VisualEvent] = []
   for event in report.events {
-    let source_over_group_event = event.atomic_difference_ids.any(id => {
+    let compositing_dependency_event = event.atomic_difference_ids.any(id => {
       report.atomic_differences.any(difference => {
-        difference.id == id && difference.domain == "compositing.opacity"
+        difference.id == id &&
+        (
+          difference.domain == "compositing.opacity" ||
+          difference.domain == "compositing.blend_mode" ||
+          difference.domain == "compositing.isolation" ||
+          difference.domain == "document.structure.stacking_order"
+        )
       })
     })
     let regions : Array[DifferenceRegion] = []
@@ -92,7 +98,7 @@ fn attach_cause_envelopes(input_report : StructuredReport) -> StructuredReport {
       if !complete || candidates.is_empty() {
         push_unique_fact_ids(candidates, all_fact_ids)
       }
-      if complete && source_over_group_event {
+      if complete && compositing_dependency_event {
         push_unique_fact_ids(candidates, all_fact_ids)
       }
       regions.push({

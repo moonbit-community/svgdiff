@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.5.9` and schema `1.29` contract
+Status: current module `0.5.10` and schema `1.30` contract
 
 Last verified: 2026-07-15
 
@@ -30,6 +30,8 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | Report bytes | Each built-in JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
 
 The admitted filter executor additionally caps each graph at 256 direct primitives and aggregate primitive-surface work at 16,777,216 viewport pixels per source. Crossing either bound produces partial `filter_graph_budget_exceeded` evidence rather than executing an unbounded graph; exact filter source facts remain present. This is a feature-admission guard, not a failed whole-comparison resource report.
+
+The admitted blend compositor additionally caps each source at 64 active blend or isolation surfaces and 67,108,864 aggregate viewport-surface pixels. The exact inclusive boundary is accepted. Crossing either bound produces partial `blend_surface_budget_exceeded` evidence while retaining exact declarations, resolved keywords, stacking order, and conservative affected subjects; it does not emit a truncated render or a failed whole-comparison resource report.
 
 Path-data units deliberately form a conservative lexical work budget, not a segment count or a geometry metric. Exact normalized segment comparison occurs only after this admission bound succeeds. Reference counting bounds reference-bearing source size; the separate [local-reference safety contract](reference-safety.md) rejects cycles and bounds transitive `<use>` expansion.
 

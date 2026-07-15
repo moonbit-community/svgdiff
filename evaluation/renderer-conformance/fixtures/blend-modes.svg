@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <rect id="back-normal" x="0" y="0" width="4" height="4" fill="#c86432"/><rect id="front-normal" x="0" y="0" width="4" height="4" fill="#6496c8" style="mix-blend-mode:normal"/>
+  <rect id="back-multiply" x="4" y="0" width="4" height="4" fill="#c86432"/><rect id="front-multiply" x="4" y="0" width="4" height="4" fill="#6496c8" style="mix-blend-mode:multiply"/>
+  <rect id="back-screen" x="8" y="0" width="4" height="4" fill="#c86432"/><rect id="front-screen" x="8" y="0" width="4" height="4" fill="#6496c8" style="mix-blend-mode:screen"/>
+  <rect id="back-overlay" x="12" y="0" width="4" height="4" fill="#c86432"/><rect id="front-overlay" x="12" y="0" width="4" height="4" fill="#6496c8" style="mix-blend-mode:overlay"/>
+  <rect id="back-darken" x="0" y="4" width="4" height="4" fill="#c86432"/><rect id="front-darken" x="0" y="4" width="4" height="4" fill="#6496c8" style="mix-blend-mode:darken"/>
+  <rect id="back-lighten" x="4" y="4" width="4" height="4" fill="#c86432"/><rect id="front-lighten" x="4" y="4" width="4" height="4" fill="#6496c8" style="mix-blend-mode:lighten"/>
+  <rect id="back-color-dodge" x="8" y="4" width="4" height="4" fill="#c86432"/><rect id="front-color-dodge" x="8" y="4" width="4" height="4" fill="#6496c8" style="mix-blend-mode:color-dodge"/>
+  <rect id="back-color-burn" x="12" y="4" width="4" height="4" fill="#c86432"/><rect id="front-color-burn" x="12" y="4" width="4" height="4" fill="#6496c8" style="mix-blend-mode:color-burn"/>
+  <rect id="back-hard-light" x="0" y="8" width="4" height="4" fill="#c86432"/><rect id="front-hard-light" x="0" y="8" width="4" height="4" fill="#6496c8" style="mix-blend-mode:hard-light"/>
+  <rect id="back-soft-light" x="4" y="8" width="4" height="4" fill="#c86432"/><rect id="front-soft-light" x="4" y="8" width="4" height="4" fill="#6496c8" style="mix-blend-mode:soft-light"/>
+  <rect id="back-difference" x="8" y="8" width="4" height="4" fill="#c86432"/><rect id="front-difference" x="8" y="8" width="4" height="4" fill="#6496c8" style="mix-blend-mode:difference"/>
+  <rect id="back-exclusion" x="12" y="8" width="4" height="4" fill="#c86432"/><rect id="front-exclusion" x="12" y="8" width="4" height="4" fill="#6496c8" style="mix-blend-mode:exclusion"/>
+  <rect id="back-hue" x="0" y="12" width="4" height="4" fill="#c86432"/><rect id="front-hue" x="0" y="12" width="4" height="4" fill="#6496c8" style="mix-blend-mode:hue"/>
+  <rect id="back-saturation" x="4" y="12" width="4" height="4" fill="#c86432"/><rect id="front-saturation" x="4" y="12" width="4" height="4" fill="#6496c8" style="mix-blend-mode:saturation"/>
+  <rect id="back-color" x="8" y="12" width="4" height="4" fill="#c86432"/><rect id="front-color" x="8" y="12" width="4" height="4" fill="#6496c8" style="mix-blend-mode:color"/>
+  <rect id="back-luminosity" x="12" y="12" width="4" height="4" fill="#c86432"/><rect id="front-luminosity" x="12" y="12" width="4" height="4" fill="#6496c8" style="mix-blend-mode:luminosity"/>
+</svg>

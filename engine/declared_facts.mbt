@@ -60,9 +60,18 @@ fn supported_rect_property(property : String) -> Bool {
     | "mask-mode"
     | "mask-type"
     | "color-interpolation"
+    | "mix-blend-mode"
+    | "isolation"
     | "opacity" => true
     _ => false
   }
+}
+
+///|
+fn supported_presentation_property(property : String) -> Bool {
+  supported_rect_property(property) &&
+  property != "mix-blend-mode" &&
+  property != "isolation"
 }
 
 ///|
@@ -341,7 +350,7 @@ fn rect_declared_facts_from_element(
       }
     } else if name == "style" {
       style_attribute = Some(attribute)
-    } else if supported_rect_property(name) {
+    } else if supported_presentation_property(name) {
       let fact = presentation_fact(input, name, attribute)
       candidates.push(
         presentation_cascade_candidate(fact, attribute.span.start.offset),

@@ -7,8 +7,8 @@
   },
   "consumer_policy": {
     "policy_id": "svgdiff-consumer-compatibility/1",
-    "accepted_schema_versions": ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20", "1.21", "1.22", "1.23", "1.24", "1.25", "1.26", "1.27", "1.28", "1.29"],
-    "current_schema_version": "1.29",
+    "accepted_schema_versions": ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20", "1.21", "1.22", "1.23", "1.24", "1.25", "1.26", "1.27", "1.28", "1.29", "1.30"],
+    "current_schema_version": "1.30",
     "accepted_renderer_ids": [
       "mizchi/svg@0.2.1",
       "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
@@ -24,7 +24,8 @@
       "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
       "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+mizchi/svg@0.2.1",
       "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1",
-      "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+mizchi/svg@0.2.1"
+      "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+mizchi/svg@0.2.1",
+      "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1"
     ],
     "accepted_renderer_conformance_profile_ids": [
       "svgdiff-renderer-conformance-profile/1",
@@ -50,7 +51,8 @@
       "svgdiff-renderer-conformance-profile/21",
       "svgdiff-renderer-conformance-profile/22",
       "svgdiff-renderer-conformance-profile/23",
-      "svgdiff-renderer-conformance-profile/24"
+      "svgdiff-renderer-conformance-profile/24",
+      "svgdiff-renderer-conformance-profile/25"
     ],
     "accepted_ordering_policy_ids": [
       "v1_domain_lexicographic",
@@ -378,6 +380,17 @@
         { "op": "set", "path": ["schema_version"], "value": "1.28" },
         { "op": "set", "path": ["profile", "renderer_id"], "value": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1" },
         { "op": "set", "path": ["profile", "renderer_conformance_profile_id"], "value": "svgdiff-renderer-conformance-profile/23" }
+      ],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_legacy_schema",
+      "expected_schema_validation": "valid"
+    },
+    {
+      "id": "legacy-schema-1.29",
+      "mutations": [
+        { "op": "set", "path": ["schema_version"], "value": "1.29" },
+        { "op": "set", "path": ["profile", "renderer_id"], "value": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+mizchi/svg@0.2.1" },
+        { "op": "set", "path": ["profile", "renderer_conformance_profile_id"], "value": "svgdiff-renderer-conformance-profile/24" }
       ],
       "expected_decision": "accepted",
       "expected_reason": "accepted_legacy_schema",

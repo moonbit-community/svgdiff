@@ -1,6 +1,7 @@
 ///|
 priv struct FillSourceElement {
   subject_id : String
+  has_authored_id : Bool
   kind : String
   source_offset : Int
   parent_index : Int?
@@ -121,6 +122,7 @@ fn resolved_visual_properties() -> Array[String] {
     "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
     "opacity", "marker", "marker-start", "marker-mid", "marker-end", "paint-order",
     "clip-rule", "clip-path", "filter", "mask", "mask-mode", "mask-type", "color-interpolation",
+    "mix-blend-mode", "isolation",
   ]
 }
 
@@ -150,7 +152,9 @@ fn visual_declarations_from_element(
     let property = attribute.name.local_name
     if property == "style" {
       style_attribute = Some(attribute)
-    } else if resolved_style_property(property) {
+    } else if resolved_style_property(property) &&
+      property != "mix-blend-mode" &&
+      property != "isolation" {
       let fact = presentation_fact(input, property, attribute)
       candidates.push(
         presentation_cascade_candidate(fact, attribute.span.start.offset),
@@ -210,7 +214,8 @@ fn add_fill_source_element(
     "g" => group_count
     _ => rect_count
   }
-  let subject_id = authored_subject_id(element).unwrap_or(
+  let authored_id = authored_subject_id(element)
+  let subject_id = authored_id.unwrap_or(
     generated_subject_id(kind, generated_index),
   )
   for current in elements {
@@ -228,6 +233,7 @@ fn add_fill_source_element(
   }
   elements.push({
     subject_id,
+    has_authored_id: authored_id is Some(_),
     kind,
     source_offset,
     parent_index,
@@ -286,6 +292,8 @@ fn initial_visual_value(property : String) -> String {
     "mask-mode" => "match-source"
     "mask-type" => "luminance"
     "color-interpolation" => "srgb"
+    "mix-blend-mode" => "normal"
+    "isolation" => "auto"
     "paint-order" => "fill stroke markers"
     "vector-effect" => "none"
     "marker-start" | "marker-mid" | "marker-end" => "none"
@@ -670,6 +678,8 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
       normalized == "match-source"
     "mask-type" => normalized == "alpha" || normalized == "luminance"
     "color-interpolation" => normalized == "srgb" || normalized == "linearrgb"
+    "mix-blend-mode" => blend_mode_from_keyword(normalized) is Some(_)
+    "isolation" => normalized == "auto" || normalized == "isolate"
     _ => false
   }
 }
@@ -877,6 +887,20 @@ fn canonical_computed_visual_value(
           hierarchy.coverage_codes,
           "mask_color_interpolation_invalid",
         )
+        (value, false)
+      }
+    "mix-blend-mode" =>
+      if blend_mode_from_keyword(value) is Some(_) {
+        (value, true)
+      } else {
+        push_unique(hierarchy.coverage_codes, "blend_mode_invalid")
+        (value, false)
+      }
+    "isolation" =>
+      if value == "auto" || value == "isolate" {
+        (value, true)
+      } else {
+        push_unique(hierarchy.coverage_codes, "isolation_invalid")
         (value, false)
       }
     _ => (source, true)
@@ -1662,7 +1686,9 @@ fn inherited_fill_report_from_hierarchies(
   }
   for subject_id in rect_ids {
     for property in resolved_visual_properties() {
-      if property == "color" {
+      if property == "color" ||
+        property == "mix-blend-mode" ||
+        property == "isolation" {
         continue
       }
       let before_resolution = resolved_visual_for_subject(
@@ -1830,7 +1856,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.29",
+    schema_version: "1.30",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

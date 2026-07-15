@@ -1335,15 +1335,95 @@
       "id": "filter-offset-source-alpha-canonical",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.9375,
+      "changed_pixels": 240,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "blend-modes",
+      "max_channel_delta": 200,
+      "premultiplied_rgba8_rmse": 0.271841018627
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "blend-modes-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.125,
+      "changed_pixels": 32,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "blend-isolation-auto",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.176776695297
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "blend-isolation-auto-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "blend-isolation-isolate",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "blend-isolation-isolate-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "blend-transparent-backdrop",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "blend-transparent-backdrop-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/24",
-  "fixture_source_set_sha256": "1e5f1584599c4267bb234e4232a70330e0c49041536f1c44771848fde4afc72e",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "fixture_source_set_sha256": "493865ec8a2e89d7edbddd1563deed9111af55ca874ee40832d6206ef2787528",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 133,
+    "cases": 141,
     "categories": {
       "alpha": {
         "cases": 9,
@@ -1356,9 +1436,9 @@
         "exact": 4
       },
       "compositing": {
-        "cases": 15,
-        "divergent": 6,
-        "exact": 9
+        "cases": 23,
+        "divergent": 8,
+        "exact": 15
       },
       "geometry": {
         "cases": 54,
@@ -1371,10 +1451,10 @@
         "exact": 23
       }
     },
-    "divergent": 72,
-    "exact": 61,
+    "divergent": 74,
+    "exact": 67,
     "exploratory": 0,
     "guarded": 56,
-    "supported": 77
+    "supported": 85
   }
 }

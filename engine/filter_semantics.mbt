@@ -1185,7 +1185,7 @@ fn filter_render_container(
 }
 
 ///|
-fn render_product_source_to_image(
+fn render_filter_product_source_to_image(
   source : String,
   profile : ComparisonProfile,
 ) -> @svg.Image? {
