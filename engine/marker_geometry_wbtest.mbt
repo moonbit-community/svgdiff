@@ -53,7 +53,17 @@ test "marker attachments inherit and a local longhand overrides the shorthand" {
     is Some(start) else {
     fail("inherited marker start fact must be materialized")
   }
-  assert_eq(start.origin, "inherited_presentation_attribute")
+  assert_eq(start.origin, "presentation_attribute")
+  assert_eq(start.authored_value, "url(#base)")
+  assert_eq(
+    source
+    .view(
+      start_offset=start.source_span.start_offset,
+      end_offset=start.source_span.end_offset,
+    )
+    .to_owned(),
+    "url(#base)",
+  )
 }
 
 ///|

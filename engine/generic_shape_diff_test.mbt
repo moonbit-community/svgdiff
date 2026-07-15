@@ -369,8 +369,30 @@ test "matched stylesheet declarations reach every generic aligned subject" {
   })
   assert_eq(fill_differences.length(), 2)
   for difference in fill_differences {
-    assert_eq(difference.source_fact_before.unwrap().origin, "stylesheet_rule")
-    assert_eq(difference.source_fact_after.unwrap().origin, "stylesheet_rule")
+    let before_fact = difference.source_fact_before.unwrap()
+    let after_fact = difference.source_fact_after.unwrap()
+    assert_eq(before_fact.origin, "stylesheet_rule")
+    assert_eq(after_fact.origin, "stylesheet_rule")
+    assert_eq(before_fact.authored_value, "red")
+    assert_eq(after_fact.authored_value, "blue")
+    assert_eq(
+      before
+      .view(
+        start_offset=before_fact.source_span.start_offset,
+        end_offset=before_fact.source_span.end_offset,
+      )
+      .to_owned(),
+      "red",
+    )
+    assert_eq(
+      after
+      .view(
+        start_offset=after_fact.source_span.start_offset,
+        end_offset=after_fact.source_span.end_offset,
+      )
+      .to_owned(),
+      "blue",
+    )
   }
 }
 

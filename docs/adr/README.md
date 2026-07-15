@@ -60,6 +60,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0054](0054-bound-static-selector-matching-to-xml-state.md) | Accepted, implemented for the deterministic static profile | Match a bounded selector grammar only from indexed XML ancestry and siblings. |
 | [0055](0055-resolve-inheritance-after-cascade-without-reowning-declarations.md) | Accepted, implemented for supported visual properties | Resolve ordinary inheritance after cascade while retaining ancestor ownership and leaf consequences. |
 | [0056](0056-resolve-css-computed-values-as-dependencies.md) | Accepted, implemented for supported SVG values | Resolve CSS-wide keywords, custom-property substitution, and currentColor as computed dependencies without rewriting source facts. |
+| [0057](0057-keep-declaration-provenance-immutable.md) | Accepted, implemented for supported author declarations | Keep cascade-winner origin and Source Span immutable through inheritance and computed-value resolution. |
 
 ## CLI and distribution decisions
 

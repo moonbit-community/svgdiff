@@ -644,20 +644,6 @@ fn inherited_computed_visual(
           parent_report.resolved_value,
           parent_report.declaration,
         )
-        let computed_fact = if property == "marker-start" ||
-          property == "marker-mid" ||
-          property == "marker-end" {
-          computed_fact.map(fact => {
-            ..fact,
-            origin: if fact.origin.has_prefix("inherited_") {
-              fact.origin
-            } else {
-              "inherited_\{fact.origin}"
-            },
-          })
-        } else {
-          computed_fact
-        }
         {
           reported: {
             ..parent_report,

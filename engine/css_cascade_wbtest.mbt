@@ -73,6 +73,9 @@ test "CSS cascade compares importance specificity and source order" {
   assert_eq(declarations.length(), 1)
   assert_eq(declarations[0].declared_value, "purple")
   assert_eq(declarations[0].origin, "stylesheet_rule")
+  assert_eq(declarations[0].authored_value, "purple")
+  assert_eq(declarations[0].source_span.start_offset, 4)
+  assert_eq(declarations[0].source_span.end_offset, 10)
 }
 
 ///|
@@ -129,10 +132,11 @@ test "stylesheet declarations are ordered after presentation attributes" {
     presentation_specificity(),
     1,
   )
-  assert_eq(
-    cascade_visual_declarations([presentation, stylesheet])[0].declared_value,
-    "blue",
-  )
+  let winner = cascade_visual_declarations([presentation, stylesheet])[0]
+  assert_eq(winner.declared_value, "blue")
+  assert_eq(winner.origin, "stylesheet_rule")
+  assert_eq(winner.source_span.start_offset, 1)
+  assert_eq(winner.source_span.end_offset, 5)
 }
 
 ///|
@@ -148,10 +152,11 @@ test "inline specificity also wins among important author declarations" {
     true,
     1,
   )
-  assert_eq(
-    cascade_visual_declarations([stylesheet, inline])[0].declared_value,
-    "red",
-  )
+  let winner = cascade_visual_declarations([stylesheet, inline])[0]
+  assert_eq(winner.declared_value, "red")
+  assert_eq(winner.origin, "inline_style")
+  assert_eq(winner.source_span.start_offset, 1)
+  assert_eq(winner.source_span.end_offset, 4)
 }
 
 ///|

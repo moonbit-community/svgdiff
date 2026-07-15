@@ -8,11 +8,11 @@ fn inherited_fill_document(
 
 ///|
 test "moving fill to an ancestor preserves resolved fill and changes provenance" {
-  let before = inherited_fill_document("", "fill='red'")
-  let after = inherited_fill_document("fill='red'", "")
+  let before_source = inherited_fill_document("", "fill='red'")
+  let after_source = inherited_fill_document("fill='red'", "")
   let report = @engine.compare(
-    before,
-    after,
+    before_source,
+    after_source,
     @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.analysis_status, "complete")
@@ -26,12 +26,36 @@ test "moving fill to an ancestor preserves resolved fill and changes provenance"
   let pair = report.source_resolutions[0]
   assert_eq(pair.subject_id, "box")
   match (pair.before, pair.after) {
-    (Some(before), Some(after)) => {
-      assert_eq(before.resolution, "local")
-      assert_eq(before.declaration_owner_id, Some("box"))
-      assert_eq(after.resolution, "inherited")
-      assert_eq(after.declaration_owner_id, Some("layer"))
-      assert_eq(before.resolved_value, after.resolved_value)
+    (Some(before_value), Some(after_value)) => {
+      assert_eq(before_value.resolution, "local")
+      assert_eq(before_value.declaration_owner_id, Some("box"))
+      assert_eq(after_value.resolution, "inherited")
+      assert_eq(after_value.declaration_owner_id, Some("layer"))
+      assert_eq(before_value.resolved_value, after_value.resolved_value)
+      let before_declaration = before_value.declaration.unwrap()
+      let after_declaration = after_value.declaration.unwrap()
+      assert_eq(before_declaration.origin, "presentation_attribute")
+      assert_eq(after_declaration.origin, "presentation_attribute")
+      assert_eq(before_declaration.authored_value, "red")
+      assert_eq(after_declaration.authored_value, "red")
+      assert_eq(
+        before_source
+        .view(
+          start_offset=before_declaration.source_span.start_offset,
+          end_offset=before_declaration.source_span.end_offset,
+        )
+        .to_owned(),
+        "red",
+      )
+      assert_eq(
+        after_source
+        .view(
+          start_offset=after_declaration.source_span.start_offset,
+          end_offset=after_declaration.source_span.end_offset,
+        )
+        .to_owned(),
+        "red",
+      )
     }
     _ => fail("expected aligned fill resolutions")
   }

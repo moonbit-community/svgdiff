@@ -108,7 +108,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Implement selector matching for the supported static scope.
 - [x] **P0** Implement ordinary inheritance for every supported visual property.
 - [x] **P0** Implement `inherit`, `initial`, `unset`, `revert`, `currentColor`, and CSS custom properties where they affect supported SVG values.
-- [ ] **P0** Preserve declaration origin and Source Span provenance through cascade resolution.
+- [x] **P0** Preserve declaration origin and Source Span provenance through cascade resolution.
 - [ ] **P1** Implement complete solid-color syntax and opacity semantics.
 - [ ] **P1** Implement full linear and radial gradient semantics, including all stops, offsets, opacity, units, spread methods, transforms, inheritance, and references.
 - [ ] **P1** Implement patterns and their coordinate, transform, viewport, and reference semantics.

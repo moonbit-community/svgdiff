@@ -139,10 +139,7 @@ fn resolve_marker_attachments(
   }
   let effective_facts : Array[DeclaredVisualFact] = []
   for fact in inherited_facts {
-    upsert_declared_fact(effective_facts, {
-      ..fact,
-      origin: "inherited_" + fact.origin,
-    })
+    upsert_declared_fact(effective_facts, fact)
   }
   match shorthand_fact {
     Some(fact) =>

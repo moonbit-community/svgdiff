@@ -63,7 +63,7 @@ Intrinsic viewport derivation, resource bundles, fonts, perceptual backgrounds, 
 
 ### Source Semantics
 
-Source Semantics describes supported authored visual declarations after formatting normalization while retaining provenance. A `DeclaredVisualFact` records:
+Source Semantics describes supported authored visual declarations after formatting normalization while retaining provenance. A `DeclaredVisualFact` records immutable source evidence selected by the author cascade:
 
 - property name;
 - exact authored value;
@@ -71,7 +71,7 @@ Source Semantics describes supported authored visual declarations after formatti
 - declaration origin;
 - half-open source offsets.
 
-Attribute order, quote style, tag-closing style, entity spelling, and declaration whitespace alone do not create Atomic Differences. A change in normalized visual declaration or declaration origin may create a source-level difference even when computed and rendered results remain equal.
+Attribute order, quote style, tag-closing style, entity spelling, declaration whitespace, and source-offset movement alone do not create Atomic Differences. A change in normalized visual declaration or declaration origin may create a source-level difference even when computed and rendered results remain equal. Cascade, inheritance, computed-value resolution, shorthand expansion, and private renderer normalization never rewrite a fact's authored value, declared value, origin, or half-open UTF-16 Source Span; resolution mode, declaration owner, and inheritance depth carry computed state separately.
 
 Path source adaptation is renderer-independent. The engine strictly consumes every path command and repeated parameter group, expands relative, horizontal/vertical, and smooth shorthand into absolute Move, Line, Cubic, Quadratic, Arc, and Close segments, and retains each segment's exact authored slice plus half-open UTF-16 span. One-to-one path comparison aligns those normalized segments and emits every differing command, parameter, insertion, or deletion. Exact numeric deltas remain independent of raster quantization; command-family or relative/absolute spelling changes that normalize to the same segment are computed-equivalent source differences. When the fixed observation budget permits, `geometry_displacement_css_px` records the symmetric maximum nearest alpha-boundary pixel-center distance from isolated rendering. Path reports remain partial because this observation does not establish continuous geometric Hausdorff distance, transformed-path boundary measurement, complete stroke and paint semantics, or accepted path renderer conformance.
 
