@@ -73,6 +73,14 @@
       "expected_exit_status": 1
     },
     {
+      "id": "reference-cycle-image-resource",
+      "failure_mode": "resource_dependency_cycle",
+      "before": "evaluation/adversarial/cases/reference-cycle-image-resource/before.svg",
+      "after": "evaluation/adversarial/cases/reference-cycle-image-resource/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_exit_status": 1
+    },
+    {
       "id": "reference-expansion-binary-dag",
       "failure_mode": "reference_expansion",
       "before": "evaluation/adversarial/cases/reference-expansion-binary-dag/before.svg",

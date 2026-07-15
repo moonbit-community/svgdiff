@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.22",
+  "analysis_status": "failed",
+  "coverage_matrix": [
+    {
+      "feature_id": "resource.reference_cycle.after",
+      "subject_id": "reference_cycle.after",
+      "source_semantics": "failed",
+      "computed_appearance": "failed",
+      "rendered_evidence": "failed",
+      "diagnostic_ids": [
+        "diagnostic:reference-cycle-detected:reference_cycle.after"
+      ]
+    },
+    {
+      "feature_id": "resource.reference_cycle.before",
+      "subject_id": "reference_cycle.before",
+      "source_semantics": "failed",
+      "computed_appearance": "failed",
+      "rendered_evidence": "failed",
+      "diagnostic_ids": [
+        "diagnostic:reference-cycle-detected:reference_cycle.before"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/19"
+  },
+  "subject_alignments": [],
+  "changed_facts": [],
+  "source_resolutions": [],
+  "atomic_differences": [],
+  "events": [],
+  "diagnostics": [
+    {
+      "id": "diagnostic:reference-cycle-detected:reference_cycle.before",
+      "code": "reference_cycle_detected",
+      "subject_id": "reference_cycle.before",
+      "affected_evidence_layers": [
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 89,
+            "end_offset": 101
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:reference-cycle-detected:reference_cycle.after",
+      "code": "reference_cycle_detected",
+      "subject_id": "reference_cycle.after",
+      "affected_evidence_layers": [
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 94,
+            "end_offset": 106
+          }
+        }
+      ]
+    }
+  ]
+}

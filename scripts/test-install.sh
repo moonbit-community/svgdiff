@@ -28,7 +28,7 @@ jq -e '
 PATH="$bindir:$PATH" svgdiff --help >help.txt
 PATH="$bindir:$PATH" svgdiff --version >version.txt
 grep -q '^Usage: svgdiff ' help.txt
-grep -q '^svgdiff 0.5.1$' version.txt
+grep -q '^svgdiff 0.5.2$' version.txt
 grep -q '^schema: 1.22$' version.txt
 grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1$' version.txt
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/19$' version.txt

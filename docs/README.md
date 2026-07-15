@@ -23,7 +23,7 @@ This directory separates the current product contract from future plans and hist
 | How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | Which fixed budgets bound one comparison? | [`resource-limits.md`](resource-limits.md) |
-| How are local reference cycles and explosive `<use>` DAGs rejected? | [`reference-safety.md`](reference-safety.md) |
+| How are resource dependencies, local cycles, and explosive `<use>` DAGs modeled? | [`reference-safety.md`](reference-safety.md) and [resource graph research](research/svg-resource-dependency-graph.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |

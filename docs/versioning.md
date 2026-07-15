@@ -10,7 +10,7 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.1` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.5.2` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.22` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Diagnostics | Schema `1.22` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
@@ -77,6 +77,8 @@ Module `0.4.14` resolves inherited `paint-order`, `fill-rule`, and `clip-rule` t
 Module `0.5.0` separates authored definition identity from rendered use-instance identity for admitted `g`, `defs`, `symbol`, and same-document `use` structure. Definition-owned facts fan out through deterministic nested instance paths; use-host inheritance, transforms, supplemental translation, and symbol or SVG instance viewports reuse the existing semantic seams. Optional `SubjectReference.instance_context` advances Structured Report schema to `1.21`; current producers always emit it, while compatible legacy-shaped reports may omit it. Six Chromium fixtures expand the baseline to 112 cases with 47 exact and 65 divergent observations; two transformed-use divergences allocate `renderer_use_transform_raster_unproven` and advance conformance to `/18`. Ordering tuples and production renderer identity remain unchanged.
 
 Module `0.5.1` adds consequence-aware structural attribution over the admitted rendering tree. Effective reparenting and use-resolution changes receive structural relationship facts only when they produce an existing computed consequence; potentially overlapping aligned subjects whose draw order is inverted receive a stacking relationship fact only when final rendered pixels change. These new `document.structure.*` meanings advance Structured Report schema to `1.22`. Two exact Chromium stacking fixtures expand the baseline to 114 cases with 49 exact and 65 divergent observations and advance conformance to `/19`. Public report fields, production renderer identity, Diagnostics, and v2 ordering tuples remain unchanged.
+
+Module `0.5.2` replaces the admission-only boolean reference graph with one private typed source-level graph spanning gradients, patterns, markers, clips, masks, filters, symbols, images, use instances, URL-bearing attributes, and static stylesheet text. Nodes, relationship kinds, locator states, exact reference spans, duplicate-ID-conservative forward/reverse reachability, cycle rejection, and use-expansion accounting now share one topology. A local image-resource cycle reuses the existing `reference_cycle_detected` contract. Public declarations, report fields and meanings, Diagnostic meanings, renderer behavior, conformance profile `/19`, schema `1.22`, and v2 ordering tuples remain unchanged.
 
 ## Structured Report schema versions
 

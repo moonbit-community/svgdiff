@@ -17,6 +17,7 @@ EXPECTED_MODES = {
     "attribution_leakage",
     "magnitude_ordering",
     "reference_cycle",
+    "resource_dependency_cycle",
     "reference_expansion",
     "use_invalid_reference",
 }
@@ -364,6 +365,7 @@ def main() -> None:
         "attribution_leakage": validate_attribution_leakage,
         "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),
         "reference_cycle": lambda _case, report: validate_reference_cycle(report),
+        "resource_dependency_cycle": lambda _case, report: validate_reference_cycle(report),
         "reference_expansion": lambda _case, report: validate_reference_expansion(report),
         "use_invalid_reference": lambda _case, report: validate_use_invalid_reference(report),
     }

@@ -48,10 +48,17 @@ test "production resource limits match the versioned contract" {
 test "local reference tokens preserve case and decode href fragments" {
   assert_eq(local_href_target("#a%20b"), Some("a b"))
   assert_eq(local_href_target("other.svg#a"), None)
-  assert_eq(
-    local_url_targets("fill:URL( '#Gradient' );clip-path:url(#a%20b)"),
-    ["Gradient", "a b"],
-  )
+  let targets : Array[String] = []
+  for
+    locator in resource_url_locators(
+      "fill:URL( '#Gradient' );clip-path:url(#a%20b)",
+    ) {
+    match locator.target_id {
+      Some(target) => targets.push(target)
+      None => ()
+    }
+  }
+  assert_eq(targets, ["Gradient", "a b"])
 }
 
 ///|
@@ -131,7 +138,7 @@ test "resource cycles and conservative duplicate scopes are detected" {
 ///|
 test "missing external and non-resource targets do not fabricate cycles" {
   let source = "<svg><defs><symbol id='a'><use href='#missing'/><use href='other.svg#a'/></symbol></defs><rect id='box' fill='url(#box)'/></svg>"
-  let graph = build_reference_graph(
+  let graph = build_resource_dependency_graph(
     source,
     default_resource_limits().max_reference_graph_edges,
   )
@@ -144,7 +151,7 @@ test "missing external and non-resource targets do not fabricate cycles" {
 ///|
 test "repeated acyclic use expansion accepts exact budget and rejects one less" {
   let source = "<svg><defs><symbol id='leaf'><rect/></symbol><symbol id='branch'><use href='#leaf'/><use href='#leaf'/></symbol></defs><use href='#branch'/></svg>"
-  let graph = build_reference_graph(
+  let graph = build_resource_dependency_graph(
     source,
     default_resource_limits().max_reference_graph_edges,
   )
@@ -173,7 +180,7 @@ test "repeated acyclic use expansion accepts exact budget and rejects one less" 
 ///|
 test "propagated reference graph edges reject one-past before allocation" {
   let source = "<svg id='outer'><g id='inner'><use href='#target'/></g><g id='target'/></svg>"
-  let exact = build_reference_graph(source, 2)
+  let exact = build_resource_dependency_graph(source, 2)
   assert_eq(exact.edge_instances, 2)
   assert_true(exact.edge_limit_span is None)
   let exceeded = compare_with_resource_limits(

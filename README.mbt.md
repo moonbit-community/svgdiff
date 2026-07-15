@@ -55,7 +55,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.1` with `moon add Milky2018/svgdiff@0.5.1` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.2` with `moon add Milky2018/svgdiff@0.5.2` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -75,6 +75,8 @@ Inherited `paint-order`, `fill-rule`, and `clip-rule` are resolved through the s
 Admitted `g`, `defs`, `symbol`, and same-document `use` structure preserves authored definition identity separately from each rendered placement. Reports expose deterministic nested instance paths, keep definition-owned declarations and Source Spans, fan one change out to every affected instance, and resolve use-host inheritance plus symbol or SVG instance viewports. External or invalid references remain diagnosed, and the measured transform-plus-translation renderer divergence remains guarded.
 
 Consequence-aware structure reporting links effective reparenting and use-target changes to their computed outcomes. It also reports every potentially overlapping aligned pair whose draw order is inverted and whose final pixels change, while disjoint, equal-pixel, formatting-only, and ID-only restructurings remain outside visual Atomic Differences.
+
+A private typed resource graph now unifies gradient, pattern, marker, clip, mask, filter, symbol, image, use, attribute URL, and static stylesheet dependencies. It retains locator states and exact reference spans, supplies deterministic conservative reachability, and drives the existing cycle and use-expansion safety checks. The complete unchanged graph is not added to Agent JSON; reports continue to expose only relevant resource facts, affected consumers, and Diagnostics. Image decoding, external bundles, and clip/mask/filter pixels remain later roadmap work.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 

@@ -21,6 +21,7 @@ Callers provide two SVG source strings and a Comparison Profile. Parsing, suppor
 ```text
 SVG source
   -> authored visual facts and source spans
+  -> private typed resource dependency graph
   -> supported computed facts and visual subjects
   -> before/after subject alignments
   -> changed facts and atomic differences
@@ -96,6 +97,8 @@ Paint URL fallback selection precedes gradient or pattern mediation. The engine 
 Paint order and winding rules are resolved after the same cascade and dependency stages. `paint-order` appends omitted operations in normal order and compares only the subject's active fill, stroke, and marker subsequence. `fill-rule` is inactive without fill and equivalent across admitted single simple contours; potentially self-intersecting point or path geometry retains `nonzero` or `evenodd`. `clip-rule` is inactive outside `clipPath`; inside it, the rule retains its inherited owner and affected child, while deferred clip resource construction and host application make the relation guarded rather than falsely complete. Pattern child signatures apply the same active-operation normalization.
 
 Structural relationships are reported only through admitted consequences. An aligned subject whose effective parent path or use-instance resolution changes receives a structural relationship fact when an existing computed property, cumulative transform, viewport, or resource-mediated outcome differs. Pairwise draw-order inversions receive `document.structure.stacking_order` when the subjects' conservative painted bounds may overlap and the final raster changes. Disjoint and zero-raster reorders remain absent. These facts are conservative cause candidates rather than exact contribution weights.
+
+One private typed resource graph supplies source-level topology across gradients, patterns, markers, clips, masks, filters, symbols, images, use instances, inline URL attributes, and static stylesheet URL tokens. Nodes retain source identity and kind; edges retain relationship, locator class, local target, containing definition scopes, and Source Span. Deterministic forward and reverse traversal is conservative for duplicate IDs and nested definitions. Existing semantic passes project only difference-relevant resource facts and affected consumers into the report; unsupported effect and image semantics remain partial, and the unchanged full graph is not serialized.
 
 `ComputedRelation` describes the relationship between the before and after facts:
 
