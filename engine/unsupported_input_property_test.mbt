@@ -51,7 +51,6 @@ test "unsupported element families never produce complete equality" {
 test "unsupported attribute families never produce complete equality" {
   let attributes = [
     "clip-path='url(#clip)'", "mask='url(#mask)'", "filter='url(#filter)'", "mix-blend-mode='multiply'",
-    "paint-order='stroke fill'",
   ]
   let shape_starts = [
     "<rect width='8' height='8'", "<circle cx='4' cy='4' r='3'", "<ellipse cx='4' cy='4' rx='3' ry='2'",

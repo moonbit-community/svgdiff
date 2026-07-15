@@ -113,6 +113,24 @@ test "renderer input materializes ordinary inherited stroke geometry" {
 }
 
 ///|
+test "renderer input materializes inherited paint order and winding rules" {
+  let source = "<svg><g paint-order='stroke' fill-rule='evenodd' clip-rule='evenodd'><polygon id='shape' points='0,0 8,0 4,8' fill='red' stroke='blue'/></g></svg>"
+  let normalized = normalize_renderer_input(source)
+  let start = normalized.find("<polygon").unwrap()
+  let finish = normalized
+    .view(start_offset=start, end_offset=normalized.length())
+    .to_owned()
+    .find("/>")
+    .unwrap() +
+    start +
+    2
+  let shape = normalized.view(start_offset=start, end_offset=finish).to_owned()
+  assert_true(shape.find("paint-order:stroke fill markers") is Some(_))
+  assert_true(shape.find("fill-rule:evenodd") is Some(_))
+  assert_true(shape.find("clip-rule:evenodd") is Some(_))
+}
+
+///|
 test "renderer inheritance normalizer does not materialize opacity or vector effect" {
   let source = "<svg><g opacity='0.5' vector-effect='non-scaling-stroke'><rect id='box' width='4' height='4'/></g></svg>"
   let normalized = normalize_renderer_ordinary_inheritance(source)

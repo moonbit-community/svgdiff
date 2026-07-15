@@ -193,6 +193,16 @@
     },
     {
       "report_schema_version": "1.19",
+      "status": "legacy",
+      "schema": "schema/svgdiff-report-1.19.schema.json",
+      "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
+      "canonical_examples": "evaluation/schema-examples/manifest.1.19.json",
+      "compatibility_case_ids": [
+        "legacy-schema-1.19"
+      ]
+    },
+    {
+      "report_schema_version": "1.20",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],

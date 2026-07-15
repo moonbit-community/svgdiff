@@ -985,15 +985,95 @@
       "id": "paint-fallback-none-canonical",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.328125,
+      "changed_pixels": 84,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "paint-order-inherited",
+      "max_channel_delta": 221,
+      "premultiplied_rgba8_rmse": 0.291458258875
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "guarded",
+      "id": "paint-order-inherited-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "fill-rule-inherited",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "fill-rule-inherited-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "clipping",
+      "changed_pixel_fraction": 0.12890625,
+      "changed_pixels": 33,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "clip-rule-inherited",
+      "max_channel_delta": 191,
+      "premultiplied_rgba8_rmse": 0.098329838853
+    },
+    {
+      "category": "clipping",
+      "changed_pixel_fraction": 0.12890625,
+      "changed_pixels": 33,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "clip-rule-inherited-canonical",
+      "max_channel_delta": 191,
+      "premultiplied_rgba8_rmse": 0.098329838853
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.13671875,
+      "changed_pixels": 35,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "fill-rule-nonzero",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.173396079828
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.17578125,
+      "changed_pixels": 45,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "fill-rule-evenodd",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.203233278227
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/16",
-  "fixture_source_set_sha256": "4208358f20f76654bd912525c94ecc602e91fe38190b0724a01aed661b6bfc8d",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/17",
+  "fixture_source_set_sha256": "e376b592e638db2b5b5fb7db838682cbedc96a9f83699665541b828405a90e11",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 98,
+    "cases": 106,
     "categories": {
       "alpha": {
         "cases": 9,
@@ -1001,8 +1081,8 @@
         "exact": 4
       },
       "clipping": {
-        "cases": 1,
-        "divergent": 0,
+        "cases": 3,
+        "divergent": 2,
         "exact": 1
       },
       "compositing": {
@@ -1016,15 +1096,15 @@
         "exact": 18
       },
       "paint": {
-        "cases": 38,
-        "divergent": 21,
-        "exact": 17
+        "cases": 44,
+        "divergent": 24,
+        "exact": 20
       }
     },
-    "divergent": 58,
-    "exact": 40,
+    "divergent": 63,
+    "exact": 43,
     "exploratory": 2,
-    "guarded": 46,
-    "supported": 50
+    "guarded": 52,
+    "supported": 52
   }
 }

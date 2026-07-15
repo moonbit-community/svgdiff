@@ -54,6 +54,7 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     | "g"
     | "defs"
     | "pattern"
+    | "clipPath"
     | "linearGradient"
     | "radialGradient"
     | "stop"
@@ -100,9 +101,10 @@ fn generated_subject_id(kind : String, index : Int) -> String {
 ///|
 fn inherited_visual_properties() -> Array[String] {
   [
-    "color", "fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width",
+    "color", "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
     "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
-    "stroke-dashoffset", "marker-start", "marker-mid", "marker-end",
+    "stroke-dashoffset", "marker-start", "marker-mid", "marker-end", "paint-order",
+    "clip-rule",
   ]
 }
 
@@ -110,10 +112,11 @@ fn inherited_visual_properties() -> Array[String] {
 fn resolved_visual_properties() -> Array[String] {
   [
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2",
-    "points", "stop-color", "stop-opacity", "color", "fill", "fill-opacity", "stroke",
-    "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
-    "stroke-dasharray", "stroke-dashoffset", "vector-effect", "opacity", "marker",
-    "marker-start", "marker-mid", "marker-end",
+    "points", "stop-color", "stop-opacity", "color", "fill", "fill-opacity", "fill-rule",
+    "stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin",
+    "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
+    "opacity", "marker", "marker-start", "marker-mid", "marker-end", "paint-order",
+    "clip-rule",
   ]
 }
 
@@ -262,6 +265,8 @@ fn initial_visual_value(property : String) -> String {
     "stroke-miterlimit" => "4"
     "stroke-dasharray" => "none"
     "stroke-dashoffset" => "0"
+    "fill-rule" | "clip-rule" => "nonzero"
+    "paint-order" => "fill stroke markers"
     "vector-effect" => "none"
     "marker-start" | "marker-mid" | "marker-end" => "none"
     "stop-color" => "rgba(0,0,0,1)"
@@ -622,6 +627,8 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
       @css_color.parse_alpha_value(normalized) is Some(_)
     "marker" | "marker-start" | "marker-mid" | "marker-end" =>
       normalized == "none" || canonical_marker_reference(normalized) is Some(_)
+    "paint-order" | "fill-rule" | "clip-rule" =>
+      paint_rule_value_valid(property, normalized)
     _ => false
   }
 }
@@ -758,6 +765,22 @@ fn canonical_computed_visual_value(
         Some(alpha) => (alpha.to_string(), true)
         None => {
           push_unique(hierarchy.coverage_codes, "opacity_syntax_unsupported")
+          (value, false)
+        }
+      }
+    "paint-order" =>
+      match canonical_paint_order(value) {
+        Some(order) => (order, true)
+        None => {
+          push_unique(hierarchy.coverage_codes, paint_rule_issue_code(property))
+          (value, false)
+        }
+      }
+    "fill-rule" | "clip-rule" =>
+      match canonical_winding_rule(value) {
+        Some(rule) => (rule, true)
+        None => {
+          push_unique(hierarchy.coverage_codes, paint_rule_issue_code(property))
           (value, false)
         }
       }
@@ -1698,7 +1721,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.19",
+    schema_version: "1.20",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

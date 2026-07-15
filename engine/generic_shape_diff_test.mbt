@@ -293,7 +293,7 @@ test "polyline fill differences use implicit subpath closure" {
 }
 
 ///|
-test "unsupported visual attributes reduce subject coverage" {
+test "supported paint-order does not reduce subject coverage" {
   let source = shape_svg(
     "<circle cx='8' cy='8' r='2' paint-order='stroke fill'/>",
   )
@@ -304,8 +304,8 @@ test "unsupported visual attributes reduce subject coverage" {
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "unsupported_visual_attribute"
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "unsupported_visual_attribute"
     }),
   )
 }

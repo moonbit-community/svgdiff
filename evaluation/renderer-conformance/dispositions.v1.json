@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/16",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/17",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -290,14 +290,14 @@
     {
       "id": "css-wide-fill",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/css-computed-value-normalizer@2",
+      "normalizer_id": "svgdiff/css-computed-value-normalizer@3",
       "canonical_case_id": "css-wide-fill-canonical",
       "reason": "Chromium renders explicit inherit identically to the canonical inherited paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "custom-currentcolor-fill",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/css-computed-value-normalizer@2",
+      "normalizer_id": "svgdiff/css-computed-value-normalizer@3",
       "canonical_case_id": "custom-currentcolor-fill-canonical",
       "reason": "Chromium renders an inherited custom property containing currentColor identically to the canonical paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
     },
@@ -361,6 +361,36 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_pattern_raster_unproven",
       "reason": "The pinned and browser renderers differ for recursive same-document pattern template inheritance."
+    },
+    {
+      "id": "paint-order-inherited",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
+      "reason": "Production expands and inherits the stroke-first order, but the active stroke outline remains guarded; the canonical leaf form is exact in both renderers."
+    },
+    {
+      "id": "clip-rule-inherited",
+      "disposition": "diagnostic",
+      "diagnostic_code": "clip_path_semantics_unsupported",
+      "reason": "The inherited rule is resolved for the clip-path child, while clip resource construction and host application remain deferred."
+    },
+    {
+      "id": "clip-rule-inherited-canonical",
+      "disposition": "diagnostic",
+      "diagnostic_code": "clip_path_semantics_unsupported",
+      "reason": "The canonical child rule still requires the deferred clip resource construction and host-application semantics."
+    },
+    {
+      "id": "fill-rule-nonzero",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_point_shape_raster_unproven",
+      "reason": "The nonzero interior is resolved, but the pinned renderer differs from Chromium on the self-intersecting point-shape raster."
+    },
+    {
+      "id": "fill-rule-evenodd",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_point_shape_raster_unproven",
+      "reason": "The evenodd interior is resolved, but the pinned renderer differs from Chromium on the self-intersecting point-shape raster."
     }
   ]
 }

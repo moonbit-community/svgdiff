@@ -9,7 +9,8 @@
       "stroke-dasharray", "stroke-dashoffset", "vector-effect",
       "marker-end", "markerUnits", "markerWidth", "refX", "orient",
       "opacity", "transform", "viewBox", "color", "--paint",
-      "gradientUnits", "gradientTransform", "stop-color", "patternUnits", "patternTransform"
+      "gradientUnits", "gradientTransform", "stop-color", "patternUnits", "patternTransform",
+      "paint-order", "fill-rule", "clip-rule"
     ]
   },
   "cases": [
@@ -440,6 +441,30 @@
       "after_value": "<defs><pattern id='p' patternUnits='userSpaceOnUse' width='4' height='4'><rect id='dot' width='2' height='4' fill='blue'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
       "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "child:dot:fill", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-paint-order",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' stroke='blue' stroke-width='4' paint-order='fill'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' stroke='blue' stroke-width='4' paint-order='stroke'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "paint-order", "report_property": "paint-order", "before_declared_value": "fill", "after_declared_value": "stroke", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-fill-rule",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<polygon id='star' points='8,1 12,14 1,6 15,6 4,14' fill='red' fill-rule='nonzero'/>",
+      "after_value": "<polygon id='star' points='8,1 12,14 1,6 15,6 4,14' fill='red' fill-rule='evenodd'/>",
+      "expected_changed_fact": { "subject_kind": "polygon", "source_property": "fill-rule", "report_property": "fill-rule", "before_declared_value": "nonzero", "after_declared_value": "evenodd", "affected_subject_ids": ["star"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-inactive-clip-rule",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' clip-rule='nonzero'/>",
+      "after_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' clip-rule='evenodd'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "clip-rule", "report_property": "clip-rule", "before_declared_value": "nonzero", "after_declared_value": "evenodd", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     }
   ]
 }

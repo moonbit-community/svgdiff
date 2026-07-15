@@ -15,5 +15,6 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [SVG gradient semantics](svg-gradient-semantics.md) | 2026-07-15 | Fixes the static same-document gradient boundary and records the browser-conformance guard. |
 | [SVG pattern semantics](svg-pattern-semantics.md) | 2026-07-15 | Fixes the admitted static same-document pattern boundary and records its coordinate, template, child, and raster-conformance semantics. |
 | [SVG paint fallbacks](svg-paint-fallbacks.md) | 2026-07-15 | Fixes the URL fallback grammar, missing and wrong-kind target behavior, local-reference boundary, and renderer ownership. |
+| [SVG paint order and winding rules](svg-paint-order-and-winding-rules.md) | 2026-07-15 | Fixes inherited `paint-order`, `fill-rule`, and `clip-rule`, active-operation normalization, and the clip-path boundary. |
 
 Research should be amended only to correct factual errors or to add an explicitly dated follow-up. Changes to current product policy belong in an ADR and the current contract documents.

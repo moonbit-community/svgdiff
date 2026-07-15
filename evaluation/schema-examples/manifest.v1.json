@@ -354,6 +354,19 @@
       }
     },
     {
+      "id": "paint-rules-change",
+      "before": "evaluation/schema-examples/cases/paint-rules-change/before.svg",
+      "after": "evaluation/schema-examples/cases/paint-rules-change/after.svg",
+      "output": "schema/examples/paint-rules-change.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["paint.fill_rule", "paint.order", "clipping.rule"],
+        "computed_relations": ["different", "different", "equivalent"],
+        "diagnostic_codes": ["renderer_point_shape_raster_unproven", "renderer_stroke_outline_raster_unproven", "renderer_stroke_join_raster_unproven"],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

@@ -339,3 +339,41 @@ test "pattern child paint servers remain an explicit unsupported boundary" {
     }),
   )
 }
+
+///|
+test "pattern child paint order ignores inactive operations" {
+  let before = "<svg><defs><pattern id='tile' width='.5' height='.5'><rect id='dot' width='1' height='1' fill='red' paint-order='fill stroke'/></pattern></defs><rect id='box' width='8' height='8' fill='url(#tile)'/></svg>"
+  let after = before.replace_all(old="fill stroke", new="stroke fill")
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_true(
+    report.atomic_differences.any(diff => {
+      diff.domain == "resource.pattern.child.paint_order" &&
+      diff.computed_relation.status == "equivalent"
+    }),
+  )
+  assert_true(
+    !report.atomic_differences.any(diff => {
+      diff.domain == "paint.fill" &&
+      diff.computed_relation.status == "different"
+    }),
+  )
+}
+
+///|
+test "pattern child fill rule ignores a single simple contour" {
+  let before = "<svg><defs><pattern id='tile' width='.5' height='.5'><rect id='dot' width='1' height='1' fill='red' fill-rule='nonzero'/></pattern></defs><rect id='box' width='8' height='8' fill='url(#tile)'/></svg>"
+  let after = before.replace_all(old="nonzero", new="evenodd")
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_true(
+    report.atomic_differences.any(diff => {
+      diff.domain == "resource.pattern.child.fill_rule" &&
+      diff.computed_relation.status == "equivalent"
+    }),
+  )
+  assert_true(
+    !report.atomic_differences.any(diff => {
+      diff.domain == "paint.fill" &&
+      diff.computed_relation.status == "different"
+    }),
+  )
+}

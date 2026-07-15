@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.19` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.20` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -22,8 +22,8 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | DPR | Fixed to `1.0`. |
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
-| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@2+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/16`. |
+| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/17`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -45,13 +45,14 @@ The following capabilities can participate in a `complete` report when no unsupp
 - basic subject correspondence, insertion, deletion, split, and merge relationships for the supported shape inventory;
 - supported geometry facts for those shapes, plus fill, stroke paint, canonical length-aware stroke width, dash arrays and dash offsets, caps, joins, miter limits, `vector-effect`, and opacity facts where implemented by the analyzer; active stroke rasterization remains separately guarded;
 - local `marker`, `marker-start`, `marker-mid`, and `marker-end` attachment facts plus canonical length-aware marker viewport/reference properties, SVG path vertex roles, automatic orientation, instance transforms, and conservative clipped viewport envelopes; marker child paint and rasterization remain separately guarded;
-- ordinary inheritance for supported `fill`, `stroke`, stroke-width/cap/join/miter/dash properties, and marker longhands across admitted `svg`/`g` ancestry, including nearest-owner or initial-value resolution, owner-level Changed Facts, leaf consequences, computed relations, and renderer-input materialization;
+- ordinary inheritance for supported `fill`, `fill-rule`, `stroke`, stroke-width/cap/join/miter/dash properties, marker longhands, `paint-order`, and `clip-rule` across admitted `svg`/`g` ancestry and into relevant resource children, including nearest-owner or initial-value resolution, owner-level Changed Facts, leaf consequences, computed relations, and renderer-input materialization;
 - `inherit`, `initial`, `unset`, and author-origin `revert` for every supported inherited and non-inherited property; deterministic black initial `color`; `currentColor` for supported paint consumers; and case-sensitive inherited custom properties with bounded nested `var()` references and fallbacks, invalid-at-computed-value behavior, dependency-aware Changed Facts, and private renderer materialization;
 - strict deterministic sRGB solid colors across CSS Color 3 hexadecimal, RGB(A), HSL(A), extended named colors, `transparent`, and admitted alpha-hex syntax; canonical computed channels remain separate from exact authored spelling and Source Span;
 - number-or-percentage `opacity`, inherited `fill-opacity` and `stroke-opacity`, and non-inherited `stop-opacity`, with `[0,1]` clamping, continuous numeric deltas, and effective leaf or stop alpha multiplication;
 - static same-document linear and radial gradients, including recursive `href` and `xlink:href` template inheritance, all child stops, clamped monotonic offsets, sRGB stop colors and opacity, `gradientUnits`, `spreadMethod`, `gradientTransform`, default and explicit geometry, object-bounding-box and user-space consumer coordinates, degenerate paint modes, exact resource-component differences, and fill/stroke fan-out to every consumer;
 - static same-document patterns over the admitted basic-shape child slice, including recursive `href` and `xlink:href` inheritance, tile and content units, `patternTransform`, `viewBox` and `preserveAspectRatio`, zero/empty paint modes, referencing-host inheritance, child geometry/paint/transform signatures, exact resource-component differences, and fill/stroke fan-out to every consumer;
 - SVG 2 paint-server URL fallbacks for `fill` and `stroke`: valid same-document gradients and patterns select the resource, missing or wrong-kind local targets select an optional supported solid color, `currentColor`, or `none`, and an absent fallback resolves to no paint; inactive fallbacks retain source facts without computed dependencies;
+- inherited `paint-order` with omitted-operation expansion and active-operation comparison; inherited `fill-rule` with inactive-fill and simple-contour equivalence; and inherited `clip-rule` with inactive ordinary-element semantics plus conservative `clipPath` child ownership and dependency fan-out;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
 - exact continuous parameter deltas independent of raster quantization;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
@@ -74,6 +75,8 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Referenced linear or radial gradient rasterization | Complete static source/computed resource semantics, every fill/stroke consumer outcome, conservative localization, and a pinned-renderer measurement | All six focused browser fixtures diverge from the pinned raster; `renderer_gradient_raster_unproven` limits only Rendered Evidence. |
 | Referenced pattern rasterization | Complete admitted static source/computed resource semantics, every fill/stroke consumer outcome, and a pinned-renderer measurement | Six focused browser fixtures remain guarded by `renderer_pattern_raster_unproven`, which limits only Rendered Evidence. |
 | Pattern content outside the admitted static child slice | Exact authored declarations, Source Spans, and every independently resolved tile, viewport, template, child, or consumer fact | Dynamic content, arbitrary child resources, visible overflow, malformed coordinates, external or cyclic references, and unavailable object bounds retain precise `pattern_*` Diagnostics instead of false equality. |
+| Clip-path resource construction and host application | Exact `clip-rule` declarations, inherited owners, affected clip-path children, Source Spans, and independently supported child geometry | `clip_path_semantics_unsupported` prevents the inherited winding rule from implying complete clipping geometry, host application, bounds, or raster evidence. |
+| Active paint order involving markers | Expanded order and independently supported fill/stroke/marker attachment facts | Marker child paint and compositing remain deferred, so `marker_content_semantics_unsupported` prevents complete ordering claims. |
 | Invalid or unresolved gradient semantics | Exact authored declarations, Source Spans, and every independently resolved resource or consumer fact | Dedicated Diagnostics distinguish external/invalid references, cycles, dynamic content, malformed offsets/lengths/units/spread/transforms, missing object bounds, and non-sRGB interpolation instead of treating all paint servers as one gap. |
 | Conflicting presentation attribute and inline style with incomplete or unsupported inline syntax | Independently supported Source Semantics | The private adapter cannot prove a safe renderer rewrite; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Selector or stylesheet syntax outside the admitted static grammar | Any independently parsed selector, declaration, authored value, and Source Span evidence | `css_cascade_unsupported` prevents unsupported applicability from being approximated as matching or not matching. |
@@ -113,7 +116,7 @@ V1 does not completely analyze:
 - CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization;
 - selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system palette selection, or custom-property syntax outside the admitted balanced subset;
 - external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, images, symbols, or `<use>` instances;
-- clipping, masking, filters, blending, isolation, and complete group compositing;
+- complete clip-path resource construction and host application, masking, filters, blending, isolation, and complete group compositing;
 - deterministic fonts, shaping, text layout, and glyph rasterization;
 - perceptual backgrounds, FLIP, SSIM, learned perceptual metrics, and advanced color profiles;
 - exact contribution weights, minimal root causes, or cross-subject event synthesis;

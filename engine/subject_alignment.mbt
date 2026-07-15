@@ -29,6 +29,7 @@ priv struct SourceSubject {
   transform_complete : Bool
   viewport : ViewportContext
   resource_owner_id : String?
+  clip_path_owner_id : String?
   source_offset : Int
 }
 
@@ -45,10 +46,10 @@ fn visual_subject_kind(kind : String) -> Bool {
 fn alignment_property_order() -> Array[String] {
   [
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2",
-    "points", "fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width",
+    "points", "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
     "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
     "stroke-dashoffset", "vector-effect", "marker", "marker-start", "marker-mid",
-    "marker-end", "opacity",
+    "marker-end", "paint-order", "clip-rule", "opacity",
   ]
 }
 
@@ -76,6 +77,7 @@ fn subject_from_element(
   viewport : ViewportContext,
   profile : ComparisonProfile,
   resource_owner_id : String?,
+  clip_path_owner_id : String?,
   source_offset : Int,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
@@ -241,6 +243,7 @@ fn subject_from_element(
     transform_complete,
     viewport,
     resource_owner_id,
+    clip_path_owner_id,
     source_offset,
   }
 }
@@ -344,6 +347,7 @@ fn extract_source_subjects_internal_or_raise(
   let mut node_index = 0
   let mut marker_depth = 0
   let pattern_owners : Array[String] = []
+  let clip_path_owners : Array[String] = []
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -362,6 +366,13 @@ fn extract_source_subjects_internal_or_raise(
           pattern_owners.push(
             authored_subject_id(element).unwrap_or(
               generated_subject_id("pattern", event.span.start.offset),
+            ),
+          )
+        }
+        if kind == "clipPath" {
+          clip_path_owners.push(
+            authored_subject_id(element).unwrap_or(
+              generated_subject_id("clipPath", event.span.start.offset),
             ),
           )
         }
@@ -425,6 +436,7 @@ fn extract_source_subjects_internal_or_raise(
               }),
               profile,
               pattern_owners.last(),
+              clip_path_owners.last(),
               event.span.start.offset,
             ),
           )
@@ -469,6 +481,7 @@ fn extract_source_subjects_internal_or_raise(
               }),
               profile,
               pattern_owners.last(),
+              clip_path_owners.last(),
               event.span.start.offset,
             ),
           )
@@ -481,6 +494,9 @@ fn extract_source_subjects_internal_or_raise(
         }
         if name.local_name == "pattern" {
           ignore(pattern_owners.pop())
+        }
+        if name.local_name == "clipPath" {
+          ignore(clip_path_owners.pop())
         }
         if name.local_name == "svg" || name.local_name == "g" {
           ignore(hierarchy.pop())

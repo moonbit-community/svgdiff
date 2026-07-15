@@ -21,6 +21,7 @@ fn generic_property_domain(property : String) -> String {
     "width" | "height" | "rx" | "ry" | "r" => "geometry.size"
     "fill" => "paint.fill"
     "fill-opacity" => "paint.fill_opacity"
+    "fill-rule" => "paint.fill_rule"
     "stroke" => "paint.stroke"
     "stroke-opacity" => "paint.stroke_opacity"
     "stroke-width" => "geometry.stroke_width"
@@ -32,6 +33,8 @@ fn generic_property_domain(property : String) -> String {
     "vector-effect" => "geometry.stroke_vector_effect"
     "marker" | "marker-start" | "marker-mid" | "marker-end" =>
       "geometry.marker_attachment"
+    "paint-order" => "paint.order"
+    "clip-rule" => "clipping.rule"
     "opacity" => "paint.opacity"
     _ => "document.unsupported"
   }
@@ -64,6 +67,7 @@ fn generic_default_value(property : String) -> String? {
     | "ry"
     | "r" => Some("0")
     "fill" => Some("rgba(0,0,0,1)")
+    "fill-rule" | "clip-rule" => Some("nonzero")
     "stroke" => Some("none")
     "stroke-width" | "opacity" | "fill-opacity" | "stroke-opacity" => Some("1")
     "stroke-linecap" => Some("butt")
@@ -73,6 +77,7 @@ fn generic_default_value(property : String) -> String? {
     "stroke-dashoffset" => Some("0")
     "vector-effect" => Some("none")
     "marker" | "marker-start" | "marker-mid" | "marker-end" => Some("none")
+    "paint-order" => Some("fill stroke markers")
     _ => None
   }
 }
@@ -110,6 +115,88 @@ fn generic_computed_string(property : String, source : String) -> String {
 fn generic_subject_alpha(subject : SourceSubject, property : String) -> Double? {
   let value = subject_value(subject, property).unwrap_or("1")
   @css_color.parse_alpha_value(value)
+}
+
+///|
+fn generic_paint_operation_active(
+  subject : SourceSubject,
+  property : String,
+) -> Bool {
+  if property == "fill" && !subject.fillable_interior {
+    return false
+  }
+  if property == "stroke" && !subject.stroke_active {
+    return false
+  }
+  let paint = subject_value(subject, property).unwrap_or(
+    if property == "fill" {
+      "rgba(0,0,0,1)"
+    } else {
+      "none"
+    },
+  )
+  if paint == "none" {
+    return false
+  }
+  match @css_color.parse_solid_color(paint) {
+    Resolved(color) if color.alpha == 0.0 => return false
+    _ => ()
+  }
+  let paint_opacity = if property == "fill" {
+    "fill-opacity"
+  } else {
+    "stroke-opacity"
+  }
+  generic_subject_alpha(subject, paint_opacity).unwrap_or(1.0) > 0.0 &&
+  generic_subject_alpha(subject, "opacity").unwrap_or(1.0) > 0.0
+}
+
+///|
+fn generic_active_paint_order(subject : SourceSubject) -> String {
+  let source = subject_value(subject, "paint-order").unwrap_or(
+    "fill stroke markers",
+  )
+  guard parse_paint_order_value(source) is ValidPaintOrder(order) else {
+    return source
+  }
+  let active : Array[String] = []
+  for operation in order {
+    let enabled = match operation {
+      "fill" => generic_paint_operation_active(subject, "fill")
+      "stroke" => generic_paint_operation_active(subject, "stroke")
+      "markers" => subject.marker_active
+      _ => false
+    }
+    if enabled {
+      active.push(operation)
+    }
+  }
+  if active.is_empty() {
+    "inactive"
+  } else {
+    paint_order_signature(active)
+  }
+}
+
+///|
+fn generic_winding_rule_value(
+  subject : SourceSubject,
+  property : String,
+) -> String {
+  if property == "clip-rule" {
+    return if subject.clip_path_owner_id is Some(_) {
+      subject_value(subject, property).unwrap_or("nonzero")
+    } else {
+      "inactive"
+    }
+  }
+  if !generic_paint_operation_active(subject, "fill") {
+    return "inactive"
+  }
+  match subject.kind {
+    "rect" | "circle" | "ellipse" => "single_simple_contour"
+    _ => subject_value(subject, property).unwrap_or("nonzero")
+  }
 }
 
 ///|
@@ -172,6 +259,12 @@ fn generic_subject_computed_value(
   }
   if property == "fill" || property == "stroke" {
     return generic_effective_paint(subject, property, fact)
+  }
+  if property == "paint-order" {
+    return Some(generic_active_paint_order(subject))
+  }
+  if property == "fill-rule" || property == "clip-rule" {
+    return Some(generic_winding_rule_value(subject, property))
   }
   if property == "opacity" ||
     property == "fill-opacity" ||
@@ -369,6 +462,52 @@ fn generic_relation(
             missing_side: None,
             diagnostic_ids: ids,
           }
+        }
+      }
+      if property == "paint-order" &&
+        !equivalent &&
+        (before_subject.marker_active || after_subject.marker_active) {
+        let ids : Array[String] = []
+        for subject in [before_subject, after_subject] {
+          if subject.marker_active {
+            let id = "diagnostic:marker-content-semantics-unsupported:\{source_subject_id(subject)}"
+            if !ids.contains(id) {
+              ids.push(id)
+            }
+          }
+        }
+        ids.sort()
+        return {
+          status: "indeterminate",
+          reason_code: "marker_content_semantics_unsupported",
+          missing_side: None,
+          diagnostic_ids: ids,
+        }
+      }
+      if property == "clip-rule" &&
+        !equivalent &&
+        (
+          before_subject.clip_path_owner_id is Some(_) ||
+          after_subject.clip_path_owner_id is Some(_)
+        ) {
+        let ids : Array[String] = []
+        for subject in [before_subject, after_subject] {
+          match subject.clip_path_owner_id {
+            Some(owner) => {
+              let id = "diagnostic:clip-path-semantics-unsupported:\{owner}"
+              if !ids.contains(id) {
+                ids.push(id)
+              }
+            }
+            None => ()
+          }
+        }
+        ids.sort()
+        return {
+          status: "indeterminate",
+          reason_code: "clip_path_semantics_unsupported",
+          missing_side: None,
+          diagnostic_ids: ids,
         }
       }
       {
@@ -578,8 +717,8 @@ fn generic_basic_shape_report(
     ([before_subject], [after_subject]) if before_subject.kind == "rect" &&
       after_subject.kind == "rect" => {
       let properties = [
-        "rx", "ry", "fill-opacity", "stroke", "stroke-opacity", "marker", "marker-start",
-        "marker-mid", "marker-end",
+        "rx", "ry", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "marker",
+        "marker-start", "marker-mid", "marker-end", "paint-order", "clip-rule",
       ]
       for property in alignment_property_order() {
         if stroke_geometry_property(property) {
@@ -802,7 +941,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.19",
+    schema_version: "1.20",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

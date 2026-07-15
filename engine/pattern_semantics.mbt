@@ -706,6 +706,121 @@ fn pattern_cloned_child_hierarchy(
 }
 
 ///|
+fn pattern_child_fact_value(
+  facts : Array[DeclaredVisualFact],
+  property : String,
+  fallback : String,
+) -> String {
+  declared_fact_in_array(facts, property)
+  .map(fact => fact.declared_value)
+  .unwrap_or(fallback)
+}
+
+///|
+fn pattern_child_paint_active(
+  child : SourceSubject,
+  facts : Array[DeclaredVisualFact],
+  property : String,
+) -> Bool {
+  if property == "fill" && !child.fillable_interior {
+    return false
+  }
+  if property == "stroke" {
+    if !child.stroke_path_present ||
+      parse_shape_number(pattern_child_fact_value(facts, "stroke-width", "1")).unwrap_or(
+        0.0,
+      ) <=
+      0.0 {
+      return false
+    }
+  }
+  let paint = pattern_child_fact_value(
+    facts,
+    property,
+    if property == "fill" {
+      "black"
+    } else {
+      "none"
+    },
+  )
+  if paint == "none" {
+    return false
+  }
+  match @css_color.parse_solid_color(paint) {
+    Resolved(color) if color.alpha == 0.0 => return false
+    _ => ()
+  }
+  let paint_opacity = if property == "fill" {
+    "fill-opacity"
+  } else {
+    "stroke-opacity"
+  }
+  @css_color.parse_alpha_value(
+    pattern_child_fact_value(facts, paint_opacity, "1"),
+  ).unwrap_or(1.0) >
+  0.0 &&
+  @css_color.parse_alpha_value(pattern_child_fact_value(facts, "opacity", "1")).unwrap_or(
+    1.0,
+  ) >
+  0.0
+}
+
+///|
+fn normalize_pattern_child_paint_rules(
+  child : SourceSubject,
+  facts : Array[DeclaredVisualFact],
+) -> Unit {
+  match declared_fact_in_array(facts, "paint-order") {
+    Some(fact) =>
+      match parse_paint_order_value(fact.declared_value) {
+        ValidPaintOrder(order) => {
+          let active : Array[String] = []
+          for operation in order {
+            let enabled = match operation {
+              "fill" => pattern_child_paint_active(child, facts, "fill")
+              "stroke" => pattern_child_paint_active(child, facts, "stroke")
+              "markers" => child.marker_active
+              _ => false
+            }
+            if enabled {
+              active.push(operation)
+            }
+          }
+          upsert_declared_fact(facts, {
+            ..fact,
+            declared_value: if active.is_empty() {
+              "inactive"
+            } else {
+              paint_order_signature(active)
+            },
+          })
+        }
+        InvalidPaintOrder => ()
+      }
+    None => ()
+  }
+  match declared_fact_in_array(facts, "fill-rule") {
+    Some(fact) => {
+      let computed = if !pattern_child_paint_active(child, facts, "fill") {
+        "inactive"
+      } else {
+        match child.kind {
+          "rect" | "circle" | "ellipse" => "single_simple_contour"
+          _ => fact.declared_value
+        }
+      }
+      upsert_declared_fact(facts, { ..fact, declared_value: computed })
+    }
+    None => ()
+  }
+  match declared_fact_in_array(facts, "clip-rule") {
+    Some(fact) =>
+      upsert_declared_fact(facts, { ..fact, declared_value: "inactive" })
+    None => ()
+  }
+}
+
+///|
 fn computed_pattern_child(
   document : PatternDocument,
   host : PatternSource,
@@ -785,6 +900,7 @@ fn computed_pattern_child(
     document.profile,
   )
   complete = complete && geometry.complete
+  normalize_pattern_child_paint_rules(child, resolved_facts)
   let mut signature = "\{child.kind}|matrix=\{content_matrix.multiply(relative_matrix).signature()}"
   for value in geometry.values {
     signature += "|\{value.0}=\{value.1}"
@@ -793,7 +909,7 @@ fn computed_pattern_child(
     property in [
       "fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width", "stroke-linecap",
       "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset",
-      "vector-effect", "opacity",
+      "vector-effect", "paint-order", "fill-rule", "clip-rule", "opacity",
     ] {
     match declared_fact_in_array(resolved_facts, property) {
       Some(fact) => signature += "|\{property}=\{fact.declared_value}"

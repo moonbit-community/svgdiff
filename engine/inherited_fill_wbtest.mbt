@@ -23,6 +23,10 @@ fn canonical_test_visual_value(property : String, value : String) -> String {
       Resolved(color) => color.signature()
       _ => value
     }
+  } else if property == "paint-order" {
+    canonical_paint_order(value).unwrap_or(value)
+  } else if property == "fill-rule" || property == "clip-rule" {
+    canonical_winding_rule(value).unwrap_or(value)
   } else {
     value
   }
@@ -85,7 +89,7 @@ test "undeclared fill resolves to the SVG initial value" {
 
 ///|
 test "every admitted ordinary inherited property uses the nearest ancestor" {
-  let source = "<svg id='root' color='green' fill='red' fill-opacity='0.5' stroke='black' stroke-opacity='0.75' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
+  let source = "<svg id='root' color='green' fill='red' fill-opacity='0.5' fill-rule='evenodd' stroke='black' stroke-opacity='0.75' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)' paint-order='stroke fill' clip-rule='evenodd'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) =>
       for property in inherited_visual_properties() {
@@ -130,6 +134,7 @@ test "CSS-wide keywords cover every supported computed property" {
     ("points", "1 1 2 2"),
     ("color", "red"),
     ("fill", "red"),
+    ("fill-rule", "evenodd"),
     ("stroke", "red"),
     ("stroke-width", "3"),
     ("stroke-linecap", "round"),
@@ -143,6 +148,8 @@ test "CSS-wide keywords cover every supported computed property" {
     ("marker-start", "url(#m)"),
     ("marker-mid", "url(#m)"),
     ("marker-end", "url(#m)"),
+    ("paint-order", "stroke fill"),
+    ("clip-rule", "evenodd"),
   ]
   for entry in samples {
     let (property, parent_value) = entry
@@ -205,6 +212,7 @@ test "custom properties feed every supported computed property" {
     ("points", "1 1 2 2"),
     ("color", "red"),
     ("fill", "red"),
+    ("fill-rule", "evenodd"),
     ("stroke", "red"),
     ("stroke-width", "3"),
     ("stroke-linecap", "round"),
@@ -218,6 +226,8 @@ test "custom properties feed every supported computed property" {
     ("marker-start", "url(#m)"),
     ("marker-mid", "url(#m)"),
     ("marker-end", "url(#m)"),
+    ("paint-order", "stroke fill"),
+    ("clip-rule", "evenodd"),
   ]
   for entry in samples {
     let (property, value) = entry

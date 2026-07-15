@@ -38,6 +38,7 @@ fn supported_rect_property(property : String) -> Bool {
     | "color"
     | "fill"
     | "fill-opacity"
+    | "fill-rule"
     | "stroke"
     | "stroke-opacity"
     | "stroke-width"
@@ -51,6 +52,8 @@ fn supported_rect_property(property : String) -> Bool {
     | "marker-start"
     | "marker-mid"
     | "marker-end"
+    | "paint-order"
+    | "clip-rule"
     | "opacity" => true
     _ => false
   }

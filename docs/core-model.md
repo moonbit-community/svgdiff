@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.19`
+Status: current model for Structured Report schema `1.20`
 
 Last verified: 2026-07-15
 
@@ -27,21 +27,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.19
+  -> Structured Report 1.20
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.19` records:
+Schema `1.20` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
-- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@2+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/16`.
+- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/17`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -92,6 +92,8 @@ Static same-document gradients are a resource graph plus consumer-specific compu
 Static same-document patterns use the same resource-versus-consumer separation. The resource resolves tile coordinates, `patternUnits`, `patternContentUnits`, `patternTransform`, `viewBox`, `preserveAspectRatio`, recursive same-kind template attributes, and the nearest non-descriptive child set. Each consumer supplies current user space and any object bounds; supported child shapes are resolved through the referencing pattern host and a provider-relative transform chain. Resource and child differences remain distinct from mediated `paint.fill` or `paint.stroke` outcomes. Zero tile dimensions and empty content are explicit no-paint modes. Arbitrary child SVG, dynamic or external references, visible overflow, unavailable bounds, and malformed values remain guarded.
 
 Paint URL fallback selection precedes gradient or pattern mediation. The engine parses one `<url> [none | <color>]?` value after cascade and custom-property substitution, resolves same-document target existence and kind, and selects either the valid resource, the optional fallback, or deterministic no paint. Active fallback colors use the ordinary sRGB, `currentColor`, paint-opacity, and leaf-opacity model. Inactive fallbacks retain authored facts but add no dependencies. External target validity, context paint, malformed syntax, unsupported profiles, and multi-layer paint remain guarded.
+
+Paint order and winding rules are resolved after the same cascade and dependency stages. `paint-order` appends omitted operations in normal order and compares only the subject's active fill, stroke, and marker subsequence. `fill-rule` is inactive without fill and equivalent across admitted single simple contours; potentially self-intersecting point or path geometry retains `nonzero` or `evenodd`. `clip-rule` is inactive outside `clipPath`; inside it, the rule retains its inherited owner and affected child, while deferred clip resource construction and host application make the relation guarded rather than falsely complete. Pattern child signatures apply the same active-operation normalization.
 
 `ComputedRelation` describes the relationship between the before and after facts:
 
@@ -182,7 +184,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.19` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.20` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -198,11 +200,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.19` top-level object contains exactly these conceptual sections:
+The schema `1.20` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.19",
+  "schema_version": "1.20",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -234,7 +236,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.19
+## Not implemented in schema 1.20
 
 The following concepts are intentional future work rather than hidden current fields:
 

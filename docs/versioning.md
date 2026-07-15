@@ -10,11 +10,11 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.4.13` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.19` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.19` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.4.14` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.20` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.20` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/16` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/17` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -71,6 +71,8 @@ Module `0.4.11` resolves complete static same-document linear and radial gradien
 Module `0.4.12` resolves deterministic static same-document pattern semantics over the admitted basic-shape child slice: recursive template inheritance, tile and content coordinate systems, transforms, viewBox mapping, referencing-host inheritance, child geometry/paint signatures, and every fill or stroke consumer. Resource and child facts remain distinct from mediated entity outcomes, source-visible equivalent rewrites retain computed equivalence, and unreferenced changes remain resource-only. Precise Diagnostics replace the broad pattern transform/paint-server guard at invalid, dynamic, external, visible-overflow, unavailable-bounds, and unsupported-child boundaries. Six browser fixtures expand the Chromium baseline to 94 cases; five divergences retain `renderer_pattern_raster_unproven` and advance renderer conformance to `/15`. The expanded supported behavior and Diagnostic catalog advance Structured Report schema to `1.18`; public report fields, renderer identity, and v2 ordering tuples remain unchanged.
 
 Module `0.4.13` selects the SVG 2 fallback branch for static `fill` and `stroke` URL paints before gradient or pattern mediation. Valid same-document servers win; missing or wrong-kind targets select an optional supported color, `currentColor`, or `none`, and an absent fallback selects no paint. Authored URL syntax remains source-visible while only the active branch contributes computed dependencies and resource fan-out. The private computed-value normalizer advances to `@2`; four exact Chromium fixtures expand the baseline to 98 cases and advance renderer conformance to `/16`. The expanded supported behavior and revised paint-value Diagnostic boundary advance Structured Report schema to `1.19`; public report fields and v2 ordering tuples remain unchanged.
+
+Module `0.4.14` resolves inherited `paint-order`, `fill-rule`, and `clip-rule` through the existing cascade, computed-value, provenance, dependency, pattern-child, and renderer-input seams. Paint order is expanded and filtered to active operations; inactive or simple-contour winding-rule changes remain equivalent; clip-path children retain owners and guarded semantics without claiming complete clipping. The private computed-value normalizer advances to `@3`; eight Chromium fixtures expand the baseline to 106 cases with 43 exact and 63 divergent observations and advance renderer conformance to `/17`. The expanded behavior plus new syntax and clipping-boundary Diagnostics advance Structured Report schema to `1.20`; public report fields and v2 ordering tuples remain unchanged.
 
 ## Structured Report schema versions
 

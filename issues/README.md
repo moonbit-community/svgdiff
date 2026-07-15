@@ -121,6 +121,7 @@ graph TD
   ISS_103["ISS-103: Complete static linear and radial gradient semantics"]
   ISS_104["ISS-104: Implement static pattern paint-server semantics"]
   ISS_105["ISS-105: Resolve paint fallbacks and missing paint servers"]
+  ISS_106["ISS-106: Resolve inherited paint order and winding rules"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -320,6 +321,7 @@ graph TD
   ISS_102 --> ISS_103
   ISS_103 --> ISS_104
   ISS_104 --> ISS_105
+  ISS_105 --> ISS_106
 ```
 
 ## Warnings
