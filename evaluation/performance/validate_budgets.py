@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-MANIFEST_PATH = ROOT / "evaluation/performance/budgets.v1.json"
+MANIFEST_PATH = ROOT / "evaluation/performance/budgets.v2.json"
 
 
 def parse_args() -> argparse.Namespace:

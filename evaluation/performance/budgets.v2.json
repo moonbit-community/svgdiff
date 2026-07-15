@@ -1,5 +1,5 @@
 {
-  "schema_version": "svgdiff-performance-budgets/1",
+  "schema_version": "svgdiff-performance-budgets/2",
   "result_schema_version": "svgdiff-performance-results/1",
   "target": "native",
   "build_profile": "release",
@@ -27,6 +27,20 @@
       "viewport_width": 128,
       "viewport_height": 128,
       "median_wall_time_ms_max": 2000,
+      "peak_rss_mib_max": 128
+    },
+    {
+      "id": "group-opacity-grid-64",
+      "kind": "group-opacity",
+      "size": "medium",
+      "subjects_per_input": 64,
+      "expected_differences": 1,
+      "columns": 8,
+      "cell_size": 16,
+      "rect_size": 8,
+      "viewport_width": 128,
+      "viewport_height": 128,
+      "median_wall_time_ms_max": 4000,
       "peak_rss_mib_max": 128
     },
     {

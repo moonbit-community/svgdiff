@@ -69,7 +69,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/20"
+    expected_profile = "svgdiff-renderer-conformance-profile/21"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:
@@ -88,6 +88,7 @@ def main() -> None:
 
     diagnostic_count = 0
     normalizer_count = 0
+    compositor_count = 0
     for case_id in sorted(divergent):
         mapping = mappings[case_id]
         disposition = mapping.get("disposition")
@@ -137,6 +138,52 @@ def main() -> None:
                 raise ValueError(f"normalizer comparison acquired a guard: {case_id}")
             normalizer_count += 1
             continue
+        if disposition == "compositor":
+            compositor_id = mapping.get("compositor_id")
+            before_path = mapping.get("validation_before")
+            after_path = mapping.get("validation_after")
+            if not all(isinstance(value, str) and value for value in (
+                compositor_id,
+                before_path,
+                after_path,
+            )):
+                raise ValueError(f"invalid compositor disposition for {case_id}")
+            source = (ROOT / fixtures[case_id]["source"]).resolve()
+            self_report = compare_source(args.cli, source)
+            if self_report.get("analysis_status") != "complete":
+                raise ValueError(f"compositor source remained partial: {case_id}")
+            renderer_components = self_report["profile"]["renderer_id"].split("+")
+            component_id = compositor_id.removeprefix("svgdiff/")
+            if compositor_id not in renderer_components and component_id not in renderer_components:
+                raise ValueError(f"compositor identity missing for {case_id}")
+            if any(
+                diagnostic.get("code") == "group_opacity_compositing_unsupported"
+                for diagnostic in self_report.get("diagnostics", [])
+            ):
+                raise ValueError(f"retired group opacity guard emitted: {case_id}")
+            report = compare_pair(
+                args.cli,
+                (ROOT / before_path).resolve(),
+                (ROOT / after_path).resolve(),
+            )
+            differences = [
+                difference
+                for difference in report.get("atomic_differences", [])
+                if difference.get("domain") == "compositing.opacity"
+            ]
+            if report.get("analysis_status") != "complete" or len(differences) != 1:
+                raise ValueError(f"compositor validation comparison failed: {case_id}")
+            if not any(
+                event.get("rendered_outcome", {}).get("status") == "computed"
+                and event.get("rendered_outcome", {}).get("magnitude", {}).get(
+                    "changed_pixels", 0
+                ) > 0
+                for event in report.get("events", [])
+                if differences[0]["id"] in event.get("atomic_difference_ids", [])
+            ):
+                raise ValueError(f"compositor produced no measured response: {case_id}")
+            compositor_count += 1
+            continue
         if disposition != "diagnostic":
             raise ValueError(f"unsupported disposition for {case_id}")
         code = mapping.get("diagnostic_code")
@@ -174,7 +221,8 @@ def main() -> None:
 
     print(
         f"Renderer dispositions: {len(divergent)} divergences disposed "
-        f"({diagnostic_count} diagnostic, {normalizer_count} normalizer), "
+        f"({diagnostic_count} diagnostic, {normalizer_count} normalizer, "
+        f"{compositor_count} compositor), "
         f"{len(exact_supported)} exact supported cases retain their prior coverage"
     )
 

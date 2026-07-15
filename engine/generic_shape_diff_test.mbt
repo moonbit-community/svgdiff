@@ -427,22 +427,24 @@ test "group opacity is compositing rather than inherited child opacity" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_true(
-    report.diagnostics.any(diagnostic => {
+    !report.diagnostics.any(diagnostic => {
       diagnostic.code == "group_opacity_compositing_unsupported"
     }),
   )
   assert_true(
     report.atomic_differences.any(difference => {
       difference.domain == "compositing.opacity" &&
-      difference.computed_relation.status == "indeterminate"
+      difference.computed_relation.status == "different" &&
+      difference.magnitude.parameter_signed_user_units == Some(-0.5)
     }),
   )
   assert_true(
     report.events.any(event => {
       event.atomic_difference_ids.any(id => id.find("group-opacity") is Some(_)) &&
-      event.difference_regions.is_empty()
+      event.rendered_outcome.status == "computed" &&
+      !event.difference_regions.is_empty()
     }),
   )
 }
@@ -460,10 +462,11 @@ test "inline group opacity is diagnosed and reported at source level" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_true(
     report.atomic_differences.any(difference => {
-      difference.domain == "compositing.opacity"
+      difference.domain == "compositing.opacity" &&
+      difference.computed_relation.status == "different"
     }),
   )
 }
@@ -477,7 +480,7 @@ test "root svg opacity is preserved as a source difference" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_true(
     report.atomic_differences.any(difference => {
       difference.domain == "compositing.opacity" &&

@@ -2,9 +2,9 @@
 
 Status: active native release stage and end-to-end suites
 
-Suite versions: `svgdiff-stage-benchmark-suite/1` and `svgdiff-performance-budgets/1`
+Suite versions: `svgdiff-stage-benchmark-suite/1` and `svgdiff-performance-budgets/2`
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 The stage suite measures six production pipeline stages independently: parse and admission, subject alignment, raster rendering, pixel-region extraction, Cause Envelope provenance, and Structured Report serialization. It is a performance diagnostic suite. The end-to-end suite separately enforces wall-time and peak-resident-memory budgets on representative small, medium, and large native release CLI comparisons. The `scripts/run-agent-benchmark.sh` command evaluates report and text-only Agent correctness; its scores are not timing measurements.
 
@@ -53,12 +53,13 @@ Run the budget gate with:
 sh scripts/run-performance-budgets.sh --output /tmp/svgdiff-performance-budgets.json
 ```
 
-The versioned [`budgets.v1.json`](budgets.v1.json) manifest generates deterministic pairs containing supported, ID-aligned rectangles whose fill changes from red to blue. Generation happens before measurement. Every sample launches the production native release CLI with compact Agent JSON in a fresh child of a fresh Python probe, requires `analysis_status: complete`, and verifies the exact expected Atomic Difference count.
+The versioned [`budgets.v2.json`](budgets.v2.json) manifest generates deterministic pairs containing supported, ID-aligned rectangles. Three workloads change every fill from red to blue; the isolated-opacity workload keeps 64 red children fixed and changes one enclosing group from opacity `1` to `0.5`. Generation happens before measurement. Every sample launches the production native release CLI with compact Agent JSON in a fresh child of a fresh Python probe, requires `analysis_status: complete`, and verifies the exact expected Atomic Difference count.
 
 | Size | Subjects | Viewport | Median wall-time ceiling | Peak RSS ceiling |
 | --- | ---: | ---: | ---: | ---: |
 | Small | 8 | `32 x 16` | 500 ms | 64 MiB |
 | Medium | 64 | `128 x 128` | 2,000 ms | 128 MiB |
+| Group opacity | 64 children, 1 group diff | `128 x 128` | 4,000 ms | 128 MiB |
 | Large | 256 | `256 x 256` | 10,000 ms | 256 MiB |
 
 Each workload runs three isolated samples. The gate uses median wall time to reduce isolated scheduling noise and the maximum observed peak RSS to retain the strongest memory observation. Wall time includes CLI startup, input reads, comparison, compact JSON serialization, and captured stdout. It excludes workload generation and harness setup. Peak RSS comes from `getrusage(RUSAGE_CHILDREN).ru_maxrss` and is normalized from bytes on macOS or KiB on Linux to MiB. The harness therefore supports macOS and Linux; it does not claim portable RSS semantics on other operating systems.

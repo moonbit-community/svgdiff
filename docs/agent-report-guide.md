@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.25` interpretation guide
+Status: current schema `1.26` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -60,6 +60,8 @@ Apply the [Resource Outcome Policy](resource-outcome-policy.md) before summarizi
 
 For embedded or explicitly bundled images, distinguish the locator representation, decoded resource, placement, and final canvas. `resource.image.source` can be computed-equivalent when data-URL and caller-bundle representations decode to identical dimensions and RGBA8 pixels. `resource.image.intrinsic_width`, `resource.image.intrinsic_height`, and `resource.image.content` describe decoded content; the last may carry `magnitude.intrinsic_raster`. Geometry, fitting, opacity, transform, insertion, and deletion remain separate differences. Never call `intrinsic_raster.changed_pixel_fraction` a viewport changed-pixel fraction: it is relative to the decoded resource and does not include scaling, clipping, overlap, or compositing. `renderer_embedded_raster_unavailable` means final-canvas Rendered Evidence is absent, while computed bounds still localize where the image may differ.
 
+For `compositing.opacity`, interpret the numeric parameter as the non-inherited container opacity, not as opacity copied to each child. The rendered outcome comes from an isolated completed child layer; overlapping siblings therefore retain their internal top-to-bottom result before one alpha factor is applied. Its Cause Envelope intentionally widens to every Changed Fact in the comparison when source-over backdrop relevance cannot be pruned safely. This is a sound overapproximation, not a claim that every candidate visibly contributed.
+
 For a paint URL with a fallback, distinguish the authored token from its selected branch. A valid local gradient or pattern makes the fallback inactive; a missing or wrong-kind local target selects the fallback, and no fallback means no paint. Report inactive fallback edits as source-visible computed equivalence. Report target-validity changes through the resulting consumer paint outcome and any resource presence facts. Only an active `currentColor` fallback should carry a color dependency; an external URL remains indeterminate rather than being described as missing.
 
 ## Interpreting one Atomic Difference
@@ -98,7 +100,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.25` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.26` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

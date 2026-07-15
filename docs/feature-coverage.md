@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.25` coverage map
+Status: current schema `1.26` coverage map
 
 Last verified: 2026-07-15
 
@@ -13,7 +13,7 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.25`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `1.26`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
@@ -39,7 +39,7 @@ Feature IDs use five current namespaces:
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 | `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.25` engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.26` engine always emits it.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -126,7 +126,7 @@ Renderer-specific rows also produce one encountered `renderer_capability_gaps` r
 | Wide-gamut or device-independent color outside the sRGB profile | Partial | `color_profile_unsupported` | Computed and rendered; exact authored source remains present | [`color_opacity_test.mbt`](../engine/color_opacity_test.mbt): located Display-P3 guard |
 | Malformed deterministic solid-color syntax | Partial | `solid_color_syntax_unsupported` | Computed and rendered; exact authored source remains present | [`color_opacity_test.mbt`](../engine/color_opacity_test.mbt): located malformed RGB guard |
 | Malformed opacity syntax | Partial | `opacity_syntax_unsupported` | Computed and rendered; exact authored source remains present | [`inherited_fill_wbtest.mbt`](../engine/inherited_fill_wbtest.mbt): strict alpha parsing through supported computed properties |
-| Group or root opacity | Partial | `group_opacity_compositing_unsupported` | Source, computed, rendered; supported source difference is retained | [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt): group, inline group, and root opacity tests |
+| Group or root opacity | Complete | None for the admitted static container slice | Source declaration and resolution, continuous magnitude, isolated rendered outcome, localized regions, and conservative source-over causes | [`group_compositor_wbtest.mbt`](../engine/group_compositor_wbtest.mbt): exact overlap, nesting, backdrop, order, transform, and symbol-instance pixels; [`group_opacity_wbtest.mbt`](../engine/group_opacity_wbtest.mbt): cascade, equivalence, regions, provenance, and causes |
 | External or context paint, malformed URL/fallback syntax, or paint outside the admitted grammar | Partial | `paint_value_semantics_unsupported` | Computed, rendered; exact authored declaration and Source Span remain present | [`paint_fallback_wbtest.mbt`](../engine/paint_fallback_wbtest.mbt): external, context, and malformed located guards; valid missing and wrong-kind local targets are complete fallback semantics |
 | External, missing, wrong-kind, cyclic, or otherwise invalid gradient template reference | Partial | `gradient_external_reference_unsupported`, `gradient_reference_invalid`, or `gradient_reference_cycle` | Computed and rendered; exact authored template reference remains present | [`gradient_semantics_wbtest.mbt`](../engine/gradient_semantics_wbtest.mbt): local-reference precedence, cross-kind template chains, invalid references, and bounded cycles |
 | Dynamic gradient content or animation | Partial | `gradient_dynamic_content_unsupported` | Computed and rendered; independently supported source facts remain present | [`gradient_semantics_wbtest.mbt`](../engine/gradient_semantics_wbtest.mbt): dynamic-content boundary |

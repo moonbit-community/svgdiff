@@ -39,7 +39,7 @@ def probe(cli: Path, directory: Path, workload: dict) -> dict:
             "--height",
             str(workload["viewport_height"]),
             "--expected-differences",
-            str(workload["subjects_per_input"]),
+            str(workload.get("expected_differences", workload["subjects_per_input"])),
         ],
         check=True,
         capture_output=True,

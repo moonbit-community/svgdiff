@@ -3,7 +3,6 @@
   "diagnostic_domains": {
     "renderer_conformance": {
       "exact": [
-        "group_opacity_compositing_unsupported",
         "renderer_fractional_geometry_unproven",
         "renderer_fractional_opacity_unproven",
         "renderer_gradient_raster_unproven",

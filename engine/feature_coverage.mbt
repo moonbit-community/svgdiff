@@ -151,6 +151,46 @@ fn add_embedded_image_subject_coverage(
 }
 
 ///|
+fn add_group_opacity_subject_coverage(
+  matrix : Array[FeatureCoverage],
+  report : StructuredReport,
+  reference : SubjectReference,
+) -> Unit {
+  let subject_id = coverage_reference_subject_id(reference)
+  let diagnostics = coverage_diagnostics_for_subject(
+    report,
+    subject_id,
+    reference.kind,
+  )
+  let diagnostic_ids = coverage_diagnostic_ids(diagnostics)
+  let source_status = coverage_status_for_layer(
+    diagnostics, "source_semantics", "covered",
+  )
+  let computed_status = coverage_status_for_layer(
+    diagnostics, "computed_appearance", "covered",
+  )
+  let rendered_status = coverage_status_for_layer(
+    diagnostics, "rendered_evidence", "covered",
+  )
+  add_feature_coverage(matrix, {
+    feature_id: "subject.\{reference.kind}",
+    subject_id,
+    source_semantics: source_status,
+    computed_appearance: computed_status,
+    rendered_evidence: rendered_status,
+    diagnostic_ids,
+  })
+  add_feature_coverage(matrix, {
+    feature_id: "property.opacity",
+    subject_id,
+    source_semantics: source_status,
+    computed_appearance: computed_status,
+    rendered_evidence: rendered_status,
+    diagnostic_ids,
+  })
+}
+
+///|
 fn difference_subject_id(
   report : StructuredReport,
   difference : AtomicDifference,
@@ -326,6 +366,13 @@ fn attach_feature_coverage(
   }
   for subject in after_subjects {
     add_source_subject_coverage(matrix, report, subject)
+  }
+  for alignment in report.subject_alignments {
+    if alignment.id.has_prefix("alignment:group-opacity:") {
+      for reference in alignment.before + alignment.after {
+        add_group_opacity_subject_coverage(matrix, report, reference)
+      }
+    }
   }
   let before_images = extract_embedded_image_subjects_or_raise(
     before_svg,

@@ -503,6 +503,62 @@ fn marker_resource_bounds_for_event(
 }
 
 ///|
+fn group_opacity_subject_matches(
+  subject : SourceSubject,
+  subject_id : String,
+) -> Bool {
+  if source_subject_id(subject) == subject_id ||
+    subject.reference.authored_id == Some(subject_id) {
+    return true
+  }
+  match subject.reference.instance_context {
+    Some(context) =>
+      context.definition_subject_id == subject_id ||
+      context.use_path.contains(subject_id)
+    None => false
+  }
+}
+
+///|
+fn group_opacity_event_bounds(
+  event : VisualEvent,
+  report : StructuredReport,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> CssBounds? {
+  let affected_subject_ids : Array[String] = []
+  for difference in report.atomic_differences {
+    if difference.domain != "compositing.opacity" ||
+      !event.atomic_difference_ids.contains(difference.id) {
+      continue
+    }
+    for fact_id in difference.changed_fact_ids {
+      for fact in report.changed_facts {
+        if fact.id == fact_id {
+          for subject_id in fact.affected_subject_ids {
+            if !affected_subject_ids.contains(subject_id) {
+              affected_subject_ids.push(subject_id)
+            }
+          }
+        }
+      }
+    }
+  }
+  if affected_subject_ids.is_empty() {
+    return None
+  }
+  let subjects : Array[SourceSubject] = []
+  for subject in before + after {
+    if affected_subject_ids.any(subject_id => {
+        group_opacity_subject_matches(subject, subject_id)
+      }) {
+      subjects.push(subject)
+    }
+  }
+  subjects_bounds(subjects)
+}
+
+///|
 fn escape_xml_attribute(value : String) -> String {
   value
   .replace_all(old="&", new="&amp;")
@@ -536,7 +592,7 @@ fn isolated_subjects_image(
     None => return None
   }
   Some(
-    @svg.render_svg_document_to_image(
+    render_product_document_to_image(
       document,
       profile.viewport_width,
       profile.viewport_height,
@@ -854,12 +910,12 @@ fn attach_difference_regions(
     (Some(before_document), Some(after_document)) =>
       Some(
         (
-          @svg.render_svg_document_to_image(
+          render_product_document_to_image(
             before_document,
             report.profile.viewport_width,
             report.profile.viewport_height,
           ),
-          @svg.render_svg_document_to_image(
+          render_product_document_to_image(
             after_document,
             report.profile.viewport_width,
             report.profile.viewport_height,
@@ -881,16 +937,21 @@ fn attach_difference_regions(
   let mut attached_region_count = 0
   for event in report.events {
     comparison_guard.checkpoint()
-    let bounds = match marker_resource_bounds_for_event(event, before, after) {
+    let bounds = match
+      group_opacity_event_bounds(event, report, before, after) {
       Some(bounds) => Some(bounds)
       None =>
-        match alignment_for_event(event, alignments) {
-          Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
-            embedded_image_alignment_bounds(
-              alignment, before_images, after_images,
-            )
-          Some(alignment) => alignment_bounds(alignment, before, after)
-          None => None
+        match marker_resource_bounds_for_event(event, before, after) {
+          Some(bounds) => Some(bounds)
+          None =>
+            match alignment_for_event(event, alignments) {
+              Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
+                embedded_image_alignment_bounds(
+                  alignment, before_images, after_images,
+                )
+              Some(alignment) => alignment_bounds(alignment, before, after)
+              None => None
+            }
         }
     }
     let regions : Array[DifferenceRegion] = []

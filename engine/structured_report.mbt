@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.25` API accepts caller-provided viewport dimensions and
+/// The root schema `1.26` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.25` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.26` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -24,8 +24,8 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     comparison_dpr: 1.0,
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
-    renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/20",
+    renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+mizchi/svg@0.2.1",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/21",
   }
 }
 
@@ -685,7 +685,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.25` result of one SVG comparison.
+/// Complete schema `1.26` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -704,13 +704,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.25` JSON.
+/// Serialize this report as indented schema `1.26` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.25` JSON.
+/// Serialize this report as whitespace-free schema `1.26` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1113,7 +1113,6 @@ fn preflight_source_or_raise(
           let fractional_geometry_properties : Array[(String, ReportSourceSpan)] = []
           let mut style_attribute : @xml.NamespaceAttribute? = None
           let mut subject_id = kind
-          let group_opacity_spans : Array[ReportSourceSpan] = []
           let fractional_leaf_opacity_spans : Array[ReportSourceSpan] = []
           for attribute in element.attributes {
             let name = attribute.name.local_name
@@ -1137,9 +1136,6 @@ fn preflight_source_or_raise(
               Some(id) if name == "fill" || name == "stroke" =>
                 paint_references.push((name, id, attribute_span))
               _ => ()
-            }
-            if group_opacity_container(kind) && name == "opacity" {
-              group_opacity_spans.push(attribute_span)
             }
             if geometry_source_property(kind, name) &&
               contains_fractional_number(attribute.value) {
@@ -1190,17 +1186,6 @@ fn preflight_source_or_raise(
             let (property, id, span) = reference
             paint_server_references.push((subject_id, property, id, span))
           }
-          for span in group_opacity_spans {
-            merge_diagnostic_into(diagnostics, {
-              ..unlocated_diagnostic(
-                "diagnostic:group-opacity-compositing-unsupported:\{subject_id}",
-                "group_opacity_compositing_unsupported",
-                subject_id,
-                ["source_semantics", "computed_appearance", "rendered_evidence"],
-              ),
-              source_locations: [diagnostic_location(source_role, span)],
-            })
-          }
           for property_and_span in fractional_geometry_properties {
             let (property, span) = property_and_span
             merge_diagnostic_into(diagnostics, {
@@ -1240,22 +1225,6 @@ fn preflight_source_or_raise(
             Some(attribute) => {
               let style = inline_style_facts(input, attribute)
               for fact in style.facts {
-                if group_opacity_container(kind) && fact.property == "opacity" {
-                  let id = "diagnostic:group-opacity-compositing-unsupported:\{subject_id}"
-                  merge_diagnostic_into(diagnostics, {
-                    ..unlocated_diagnostic(
-                      id,
-                      "group_opacity_compositing_unsupported",
-                      subject_id,
-                      [
-                        "source_semantics", "computed_appearance", "rendered_evidence",
-                      ],
-                    ),
-                    source_locations: [
-                      diagnostic_location(source_role, fact.source_span),
-                    ],
-                  })
-                }
                 if geometry_source_property(kind, fact.property) &&
                   contains_fractional_number(fact.declared_value) {
                   let id = "diagnostic:renderer-fractional-geometry-unproven:\{subject_id}:\{fact.property}"
@@ -1343,21 +1312,6 @@ fn preflight_source_or_raise(
           )
           for candidate in stylesheet_match.candidates {
             let fact = candidate.declaration
-            if group_opacity_container(kind) && fact.property == "opacity" {
-              merge_diagnostic_into(diagnostics, {
-                ..unlocated_diagnostic(
-                  "diagnostic:group-opacity-compositing-unsupported:{subject_id}",
-                  "group_opacity_compositing_unsupported",
-                  subject_id,
-                  [
-                    "source_semantics", "computed_appearance", "rendered_evidence",
-                  ],
-                ),
-                source_locations: [
-                  diagnostic_location(source_role, fact.source_span),
-                ],
-              })
-            }
             if geometry_source_property(kind, fact.property) &&
               contains_fractional_number(fact.declared_value) {
               merge_diagnostic_into(diagnostics, {
@@ -1512,7 +1466,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.25",
+    schema_version: "1.26",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1698,12 +1652,12 @@ fn rendered_difference(
   after : @svg.SVGDocument,
   profile : ComparisonProfile,
 ) -> RenderedMagnitude {
-  let before_image = @svg.render_svg_document_to_image(
+  let before_image = render_product_document_to_image(
     before,
     profile.viewport_width,
     profile.viewport_height,
   )
-  let after_image = @svg.render_svg_document_to_image(
+  let after_image = render_product_document_to_image(
     after,
     profile.viewport_width,
     profile.viewport_height,
@@ -1757,7 +1711,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.25",
+        schema_version: "1.26",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1837,7 +1791,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.25",
+        schema_version: "1.26",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1887,7 +1841,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.25",
+        schema_version: "1.26",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2019,7 +1973,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.25",
+            schema_version: "1.26",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2059,7 +2013,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.25",
+            schema_version: "1.26",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2119,7 +2073,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.25",
+              schema_version: "1.26",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

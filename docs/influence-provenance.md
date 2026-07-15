@@ -2,7 +2,7 @@
 
 Status: accepted design; v1 implementation validated
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 This is the current causal-completeness contract for the supported v1 slice. Feature coverage remains defined by [`v1-scope.md`](v1-scope.md); historical prototype evidence is archived in [`research/influence-provenance-prototype.md`](research/influence-provenance-prototype.md).
 
@@ -160,4 +160,4 @@ The deterministic mutation suite adds a complementary containment property acros
 
 Current production pruning is event-region level. A complete envelope with `fallback_scope: event_region` contains exactly the Changed Facts referenced by its Visual Event's Atomic Differences; a complete `comparison` fallback contains the full fact universe. The disjoint two-event adversarial case proves that each region removes the other event's fact, and a cross-event contamination negative control is rejected. This is coarser than future tile-level provenance: facts that share one event remain conservative candidates even when a finer propagation model might separate them.
 
-The same disjoint fixture independently fixes the two subject bounds at `(1, 4, 5, 5)` and `(10, 4, 5, 5)` CSS pixels. Each Visual Event resolves through its Subject Alignment to one authored subject, contains one 25-pixel region and a 25-pixel rendered outcome, and never receives the 50-pixel scene total. This is the current supported-slice protection against scene-wide pixel contamination; future transformed and composited subject localization remains separate roadmap work.
+The same disjoint fixture independently fixes the two subject bounds at `(1, 4, 5, 5)` and `(10, 4, 5, 5)` CSS pixels. Each Visual Event resolves through its Subject Alignment to one authored subject, contains one 25-pixel region and a 25-pixel rendered outcome, and never receives the 50-pixel scene total. Group-opacity events separately intersect the final pixel mask with the union of admitted before/after descendant bounds, including rendered use instances, so unrelated scene changes do not expand the region. Because source-over can depend on a changed backdrop, their complete Cause Envelopes conservatively retain the comparison-wide Changed Fact set when a narrower transfer proof is unavailable.

@@ -211,7 +211,7 @@
       "changed_pixel_fraction": 0.640625,
       "changed_pixels": 164,
       "comparison": "divergent",
-      "coverage_claim": "exploratory",
+      "coverage_claim": "supported",
       "id": "group-opacity",
       "max_channel_delta": 127,
       "premultiplied_rgba8_rmse": 0.281871056996
@@ -1167,7 +1167,7 @@
       "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/20",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/21",
   "fixture_source_set_sha256": "a435fbdf142a0d6490adddc14dac2bd80b8c3a1bc8d391ea73d7ebf2873a36b7",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
@@ -1203,8 +1203,8 @@
     },
     "divergent": 67,
     "exact": 49,
-    "exploratory": 2,
+    "exploratory": 1,
     "guarded": 56,
-    "supported": 58
+    "supported": 59
   }
 }

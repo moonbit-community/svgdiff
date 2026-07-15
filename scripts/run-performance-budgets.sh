@@ -29,6 +29,6 @@ cd "$root"
 moon build --target native --release cmd/svgdiff
 python3 evaluation/performance/run_budgets.py \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
-  --manifest evaluation/performance/budgets.v1.json \
+  --manifest evaluation/performance/budgets.v2.json \
   --output "$output"
 python3 evaluation/performance/validate_budgets.py --input "$output"

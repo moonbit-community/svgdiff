@@ -2,6 +2,22 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "group-opacity-change",
+      "before": "evaluation/schema-examples/cases/group-opacity-change/before.svg",
+      "after": "evaluation/schema-examples/cases/group-opacity-change/after.svg",
+      "output": "schema/examples/group-opacity-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["compositing.opacity"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "compositing.opacity", "field": "magnitude.parameter_signed_user_units", "op": "eq", "value": -0.5 },
+          { "domain": "compositing.opacity", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "equivalent-color-spelling",
       "before": "evaluation/corpus/cases/equivalent-color-spelling/before.svg",
       "after": "evaluation/corpus/cases/equivalent-color-spelling/after.svg",

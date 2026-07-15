@@ -61,10 +61,6 @@ test "current renderer diagnostics expose stable capability gaps" {
       "<svg width='16' height='16'><defs><pattern id='tile' width='.5' height='.5'><rect width='2' height='2' fill='red'/></pattern></defs><rect id='box' width='8' height='8' fill='url(#tile)'/></svg>",
       "raster.referenced_pattern", "guarded",
     ),
-    (
-      "<svg width='16' height='16'><g id='layer' opacity='0.5'><rect id='box' width='8' height='8' fill='red'/></g></svg>",
-      "compositing.group_opacity", "unavailable",
-    ),
   ]
   for case in cases {
     let (source, capability_id, support_status) = case

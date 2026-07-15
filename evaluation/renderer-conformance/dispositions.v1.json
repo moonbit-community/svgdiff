@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/20",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/21",
   "cases": [
     {
       "id": "embedded-raster-png",
@@ -88,9 +88,11 @@
     },
     {
       "id": "group-opacity",
-      "disposition": "diagnostic",
-      "diagnostic_code": "group_opacity_compositing_unsupported",
-      "reason": "The pinned renderer leaves group children opaque while Chromium composites the group at alpha 128."
+      "disposition": "compositor",
+      "compositor_id": "svgdiff/isolated-group-compositor@1",
+      "validation_before": "evaluation/schema-examples/cases/group-opacity-change/before.svg",
+      "validation_after": "evaluation/schema-examples/cases/group-opacity-change/after.svg",
+      "reason": "Production renders ordered group children into a transparent layer, applies container opacity once, and source-over composites the completed layer; the raw pinned-renderer divergence remains recorded."
     },
     {
       "id": "transform-skew-x",

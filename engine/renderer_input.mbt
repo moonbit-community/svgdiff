@@ -335,6 +335,179 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
 }
 
 ///|
+fn renderer_structural_node_at(
+  document : StructuralDocument,
+  source_offset : Int,
+) -> StructuralSourceNode? {
+  for node in document.nodes {
+    if node.source_offset == source_offset {
+      return Some(node)
+    }
+  }
+  None
+}
+
+///|
+fn renderer_group_opacity_value(
+  hierarchy : FillHierarchy,
+  document : StructuralDocument,
+  source_element : FillSourceElement,
+  source_offset : Int,
+) -> (String, Bool, DeclaredVisualFact?)? {
+  guard computed_visual_for_subject(
+      hierarchy,
+      source_element.subject_id,
+      "opacity",
+    )
+    is Some(base) &&
+    base.complete else {
+    return None
+  }
+  guard @css_color.parse_alpha_value(base.reported.resolved_value)
+    is Some(base_alpha) else {
+    return None
+  }
+  if source_element.kind != "use" {
+    return Some(
+      (base.reported.resolved_value, false, base.reported.declaration),
+    )
+  }
+  guard renderer_structural_node_at(document, source_offset) is Some(use_node) &&
+    use_target_index(document, use_node) is Some(target_index) else {
+    return Some(
+      (base.reported.resolved_value, false, base.reported.declaration),
+    )
+  }
+  let target = document.nodes[target_index]
+  if target.kind != "symbol" {
+    return Some(
+      (base.reported.resolved_value, false, base.reported.declaration),
+    )
+  }
+  guard computed_visual_for_subject(hierarchy, target.source_id, "opacity")
+    is Some(symbol) &&
+    symbol.complete &&
+    @css_color.parse_alpha_value(symbol.reported.resolved_value)
+    is Some(symbol_alpha) else {
+    return None
+  }
+  let declaration = match base.reported.declaration {
+    Some(declaration) => Some(declaration)
+    None => symbol.reported.declaration
+  }
+  Some(
+    ((base_alpha * symbol_alpha).to_string(), symbol_alpha != 1.0, declaration),
+  )
+}
+
+///|
+fn renderer_group_opacity_style_edit(
+  input : String,
+  element : @xml.NamespaceElement,
+  span : @xml.SourceSpan,
+  value : String,
+  declaration : DeclaredVisualFact,
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  let facts : Array[DeclaredVisualFact] = []
+  match renderer_attribute(element, "style") {
+    Some(attribute) => {
+      let style = inline_style_facts(input, attribute)
+      if !style.complete {
+        return
+      }
+      facts.push_iter(style.facts.iter())
+    }
+    None => ()
+  }
+  upsert_declared_fact(facts, {
+    ..declaration,
+    property: "opacity",
+    declared_value: value,
+  })
+  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
+  let replacement = escape_renderer_attribute_value(
+    canonical_renderer_inline_style(facts),
+  )
+  match renderer_attribute(element, "style") {
+    Some(attribute) =>
+      edits.push({
+        start_offset: attribute.value_span.start.offset,
+        end_offset: attribute.value_span.end.offset,
+        replacement,
+      })
+    None => {
+      let offset = renderer_element_insert_offset(input, span)
+      edits.push({
+        start_offset: offset,
+        end_offset: offset,
+        replacement: " style=\"\{replacement}\"",
+      })
+    }
+  }
+}
+
+///|
+fn normalize_renderer_group_opacity(input : String) -> String {
+  guard extract_fill_hierarchy(input) is ParsedFillHierarchy(hierarchy) else {
+    return input
+  }
+  let document = extract_structural_document_or_raise(input) catch {
+    _ => return input
+  }
+  let reader = @xml.NamespaceReader::from_string(input)
+  let events = reader.read_events_until_eof() catch { _ => return input }
+  let edits : Array[RendererValueEdit] = []
+  let mut hierarchy_index = 0
+  for event in events {
+    match event.kind {
+      Start(element) | Empty(element) => {
+        let kind = element.name.local_name
+        if fill_hierarchy_kind(kind) {
+          match hierarchy.elements.get(hierarchy_index) {
+            Some(source_element) if group_opacity_container(kind) =>
+              match
+                renderer_group_opacity_value(
+                  hierarchy,
+                  document,
+                  source_element,
+                  event.span.start.offset,
+                ) {
+                Some((value, symbol_applied, declaration)) => {
+                  match renderer_attribute(element, "opacity") {
+                    Some(attribute) =>
+                      edits.push({
+                        start_offset: attribute.value_span.start.offset,
+                        end_offset: attribute.value_span.end.offset,
+                        replacement: value,
+                      })
+                    None => ()
+                  }
+                  if symbol_applied && declaration is Some(declaration) {
+                    renderer_group_opacity_style_edit(
+                      input,
+                      element,
+                      event.span,
+                      value,
+                      declaration,
+                      edits,
+                    )
+                  }
+                }
+                None => ()
+              }
+            _ => ()
+          }
+          hierarchy_index += 1
+        }
+      }
+      _ => ()
+    }
+  }
+  apply_renderer_value_edits(input, edits)
+}
+
+///|
 fn apply_renderer_value_edits(
   input : String,
   edits : Array[RendererValueEdit],
@@ -787,8 +960,10 @@ fn normalize_renderer_input_with_profile(
   normalize_renderer_shape_geometry_with_profile(
     normalize_renderer_stroke_geometry_with_profile(
       normalize_renderer_context_lengths_with_profile(
-        normalize_renderer_ordinary_inheritance(
-          normalize_renderer_style_precedence(input),
+        normalize_renderer_group_opacity(
+          normalize_renderer_ordinary_inheritance(
+            normalize_renderer_style_precedence(input),
+          ),
         ),
         profile,
       ),
@@ -803,8 +978,10 @@ fn normalize_renderer_input(input : String) -> String {
   normalize_renderer_shape_geometry(
     normalize_renderer_stroke_geometry(
       normalize_renderer_context_lengths_with_profile(
-        normalize_renderer_ordinary_inheritance(
-          normalize_renderer_style_precedence(input),
+        normalize_renderer_group_opacity(
+          normalize_renderer_ordinary_inheritance(
+            normalize_renderer_style_precedence(input),
+          ),
         ),
         ComparisonProfile::v1_default(),
       ),

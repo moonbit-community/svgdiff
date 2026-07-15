@@ -139,8 +139,7 @@ test "unsupported marker semantics never prove equality" {
 test "unsupported CSS paint resource and compositing families never prove equality" {
   let cases = [
     "<rect width='8' height='8' fill='revert-layer'/>", "<rect width='8' height='8' style='unknown-paint:red'/>",
-    "<style>rect:hover { fill: red; }</style><rect width='8' height='8'/>", "<g opacity='0.5'><rect width='8' height='8'/></g>",
-    "<svg opacity='0.5'><rect width='8' height='8'/></svg>", "<defs><linearGradient id='other'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#other)'/>",
+    "<style>rect:hover { fill: red; }</style><rect width='8' height='8'/>", "<defs><linearGradient id='other'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#other)'/>",
   ]
   for content in cases {
     assert_unsupported_never_proves_equality(unsupported_document(content))

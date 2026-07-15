@@ -10,7 +10,7 @@ Benchmark results distinguish observations from regressions and preserve the pip
 
 | Domain | Meaning | Evidence source |
 | --- | --- | --- |
-| `renderer_conformance` | A pinned renderer behavior is known to diverge from the accepted SVG semantics or conformance oracle. | Explicit renderer Diagnostics for style precedence, fractional geometry/opacity, curved/point shapes, transforms/viewports, stroke outline/join/dash/non-scaling behavior, marker rasterization, gradient and pattern rasterization, and group compositing. |
+| `renderer_conformance` | A pinned renderer behavior is known to diverge from the accepted SVG semantics or conformance oracle. | Explicit renderer Diagnostics for style precedence, fractional geometry/leaf opacity, curved/point shapes, transforms/viewports, stroke outline/join/dash/non-scaling behavior, marker rasterization, and gradient or pattern rasterization; admitted group opacity is owned by the product compositor. |
 | `feature_coverage` | The requested SVG semantic is outside the currently proven analyzer or deterministic profile. | Unsupported or deferred capability Diagnostic. |
 | `input_failure` | The input cannot form a usable comparison document. | Parse or input Diagnostic such as `svg_parse_failed`. |
 | `report_model` | The report was produced, but a report-layer localization, causal-recall, or causal-precision metric missed its gate. | Failed `report_*` threshold check. |

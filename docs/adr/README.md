@@ -73,6 +73,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0067](0067-resolve-only-explicit-caller-supplied-raster-bundles.md) | Accepted, implemented for PNG/JPEG `image` consumers | Resolve only exact caller-supplied resource bytes and retain a zero-implicit-I/O engine boundary. |
 | [0068](0068-classify-resource-outcomes-on-independent-axes.md) | Accepted, implemented across the current resource families | Classify locator, target-kind, semantic-validity, graph-safety, and activity outcomes without erasing family-specific evidence. |
 | [0069](0069-separate-nonvisual-source-audit-from-visual-diff.md) | Accepted, implemented for descriptive content and metadata attributes | Keep nonvisual source facts out of visual differences and expose an independent audit. |
+| [0070](0070-own-isolated-container-opacity-compositing.md) | Accepted, implemented for static `svg`/`g`/`symbol`/`use` opacity | Complete ordered child layers before applying container opacity once, while retaining conservative source-over causes. |
 
 ## CLI and distribution decisions
 
