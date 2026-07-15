@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.28` interpretation guide
+Status: current schema `1.29` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -58,7 +58,9 @@ For clipping, `clipping.path` is the non-inherited host attachment and `resource
 
 For masking, `masking.attachment` and `masking.mode` belong to the non-inherited host, while `resource.mask.presence`, `.units`, `.type`, `.color_space`, `.transform`, `.geometry`, `.color`, and `.alpha` belong to the definition. Do not collapse these domains or turn their numeric values into visible/not-visible booleans. `alpha` mode ignores RGB-only changes; `luminance` uses sRGB channel weights times alpha; `match-source` delegates that choice to the resource `mask-type`. Use `affected_subject_ids` to explain shared-resource fan-out and the event regions to localize the union of before/after effects. A missing, wrong-kind, empty, or non-positive-region admitted mask is deterministic transparent black, not indeterminate. Any `mask_*` Diagnostic means the exact source facts remain usable but complete rendered and Cause Envelope claims do not.
 
-The producer also maintains a private typed resource graph across every admitted or guarded resource family, but does not serialize unchanged topology into the report. Use `ChangedFact.affected_subject_ids`, resource and entity Atomic Differences, and Diagnostics as the graph's difference-relevant projection. Do not infer that an absent full graph means direct-only dependencies, and do not invent general clip, mask, filter, external-resource, or final image-compositing effects when their Diagnostics keep analysis partial.
+For filtering, `filtering.attachment` belongs to the non-inherited host. `resource.filter.presence`, `.units`, `.region`, `.primitive.presence`, `.primitive.graph`, and `.primitive.offset` belong to the definition and its ordered graph. SourceGraphic and SourceAlpha name original isolated host inputs; `__previous__` in computed values means the immediately preceding primitive; other input names refer only to earlier `result` names. Report dx/dy deltas as continuous geometric parameters, not visible/not-visible booleans. Use `affected_subject_ids` for shared-resource fan-out and per-side Difference Regions for the conservative union of translated, clipped intermediate/final bounds. A computed-equivalent spelling such as `1` versus `1.0` remains a source change with zero parameter delta. A missing or wrong-kind local target means no filter is applied, while an empty admitted graph makes the host transparent. Any `filter_*` Diagnostic means exact source facts remain usable, but do not claim complete graph execution, final pixels, or `sound_overapproximation` causal coverage for the affected event.
+
+The producer also maintains a private typed resource graph across every admitted or guarded resource family, but does not serialize unchanged topology into the report. Use `ChangedFact.affected_subject_ids`, resource and entity Atomic Differences, and Diagnostics as the graph's difference-relevant projection. Do not infer that an absent full graph means direct-only dependencies, and do not invent general clip, mask, filter-primitive, external-resource, or final image-compositing effects when their Diagnostics keep analysis partial.
 
 Apply the [Resource Outcome Policy](resource-outcome-policy.md) before summarizing an unresolved or inactive resource. Missing and wrong-kind local paint servers may be completely resolved through a selected fallback or no-paint branch; the same states on another consumer remain partial. An unused SVG definition difference is a latent resource-source change, not a current pixel change, and should have no affected rendered-subject fan-out. An unused caller-bundle entry produces no difference because it is acquisition context rather than SVG source. Any accepted local cycle is failed admission even when no rendered consumer reaches it, so stop interpreting its difference arrays.
 
@@ -104,7 +106,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.28` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.29` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

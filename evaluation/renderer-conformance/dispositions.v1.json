@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/23",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/24",
   "cases": [
     {
       "id": "mask-container",
@@ -426,6 +426,46 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_point_shape_raster_unproven",
       "reason": "The evenodd interior is resolved, but the pinned renderer differs from Chromium on the self-intersecting point-shape raster."
+    },
+    {
+      "id": "filter-offset-user-space",
+      "disposition": "compositor",
+      "compositor_id": "static-filter-graph-compositor@1",
+      "canonical_case_id": "filter-offset-user-space-canonical",
+      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
+      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
+      "validation_domain": "resource.filter.primitive.offset",
+      "reason": "The raw renderer ignores SVG filter graphs; the product compositor evaluates the admitted user-space feOffset graph and matches the canonical shifted geometry."
+    },
+    {
+      "id": "filter-offset-object-bbox",
+      "disposition": "compositor",
+      "compositor_id": "static-filter-graph-compositor@1",
+      "canonical_case_id": "filter-offset-object-bbox-canonical",
+      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
+      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
+      "validation_domain": "resource.filter.primitive.offset",
+      "reason": "The raw renderer ignores SVG filter graphs; the product resolves object-bounding-box primitive units before evaluating an integer-pixel offset surface."
+    },
+    {
+      "id": "filter-offset-named-chain",
+      "disposition": "compositor",
+      "compositor_id": "static-filter-graph-compositor@1",
+      "canonical_case_id": "filter-offset-named-chain-canonical",
+      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
+      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
+      "validation_domain": "resource.filter.primitive.offset",
+      "reason": "The raw renderer ignores SVG filter graphs; the product allocates and resolves each named intermediate surface in source order."
+    },
+    {
+      "id": "filter-offset-source-alpha",
+      "disposition": "compositor",
+      "compositor_id": "static-filter-graph-compositor@1",
+      "canonical_case_id": "filter-offset-source-alpha-canonical",
+      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
+      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
+      "validation_domain": "resource.filter.primitive.offset",
+      "reason": "The raw renderer ignores SVG filter graphs; the product derives the alpha-only standard input before applying the admitted offset graph."
     }
   ]
 }

@@ -130,7 +130,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Implement group opacity as an isolated compositing operation rather than inherited leaf opacity.
 - [x] **P0** Implement clipping with exact or conservative effect bounds.
 - [x] **P0** Implement masking, including luminance/alpha mask semantics and resource units.
-- [ ] **P1** Implement filter primitive graphs, filter regions, intermediate surfaces, and conservative expansion bounds.
+- [x] **P1** Implement filter primitive graphs, filter regions, intermediate surfaces, and conservative expansion bounds.
 - [ ] **P1** Implement blending modes, isolation, and stacking/compositing dependencies.
 - [ ] **P1** Define deterministic handling for unsupported filter primitives without losing source differences.
 

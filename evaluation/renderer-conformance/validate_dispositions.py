@@ -37,6 +37,13 @@ ADMITTED_MASK_CASES = {
     "mask-transform",
 }
 
+ADMITTED_FILTER_CASES = {
+    "filter-offset-user-space",
+    "filter-offset-object-bbox",
+    "filter-offset-named-chain",
+    "filter-offset-source-alpha",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -85,7 +92,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/23"
+    expected_profile = "svgdiff-renderer-conformance-profile/24"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:
@@ -177,6 +184,45 @@ def main() -> None:
                 for diagnostic in self_report.get("diagnostics", [])
             ):
                 raise ValueError(f"retired group opacity guard emitted: {case_id}")
+            canonical_id = mapping.get("canonical_case_id")
+            if canonical_id is not None:
+                if canonical_id not in fixtures:
+                    raise ValueError(f"invalid compositor canonical case: {case_id}")
+                if fixtures[case_id].get("canonical_equivalent_id") != canonical_id:
+                    raise ValueError(f"manifest canonical fixture differs for {case_id}")
+                canonical_baseline = next(
+                    (case for case in baseline["cases"] if case["id"] == canonical_id),
+                    None,
+                )
+                if (
+                    canonical_baseline is None
+                    or canonical_baseline["comparison"] != "exact"
+                    or canonical_baseline["coverage_claim"] != "supported"
+                ):
+                    raise ValueError(
+                        f"compositor canonical fixture is not exact: {case_id}"
+                    )
+                canonical_report = compare_pair(
+                    args.cli,
+                    source,
+                    (ROOT / fixtures[canonical_id]["source"]).resolve(),
+                )
+                canonical_events = canonical_report.get("events", [])
+                if canonical_report.get("analysis_status") != "complete" or not canonical_events:
+                    raise ValueError(
+                        f"compositor canonical comparison remained partial: {case_id}"
+                    )
+                if any(
+                    event.get("rendered_outcome", {}).get("status") != "computed"
+                    or event.get("rendered_outcome", {}).get("magnitude", {}).get(
+                        "changed_pixels"
+                    )
+                    != 0
+                    for event in canonical_events
+                ):
+                    raise ValueError(
+                        f"compositor did not match canonical pixels: {case_id}"
+                    )
             report = compare_pair(
                 args.cli,
                 (ROOT / before_path).resolve(),
@@ -277,6 +323,31 @@ def main() -> None:
             raise ValueError(
                 f"admitted mask case lost complete coverage: "
                 f"{case_id} {mask_guards}"
+            )
+
+    admitted_filter_cases = {
+        case["id"]
+        for case in baseline["cases"]
+        if case["coverage_claim"] == "supported"
+        and case["id"] in ADMITTED_FILTER_CASES
+    }
+    if admitted_filter_cases != ADMITTED_FILTER_CASES:
+        raise ValueError(
+            "admitted filter fixtures are not all supported: "
+            f"{sorted(ADMITTED_FILTER_CASES - admitted_filter_cases)}"
+        )
+    for case_id in sorted(ADMITTED_FILTER_CASES):
+        source = (ROOT / fixtures[case_id]["source"]).resolve()
+        report = compare_source(args.cli, source)
+        filter_guards = sorted(
+            diagnostic["code"]
+            for diagnostic in report.get("diagnostics", [])
+            if diagnostic["code"].startswith("filter_")
+        )
+        if report.get("analysis_status") != "complete" or filter_guards:
+            raise ValueError(
+                f"admitted filter case lost complete coverage: "
+                f"{case_id} {filter_guards}"
             )
 
     print(

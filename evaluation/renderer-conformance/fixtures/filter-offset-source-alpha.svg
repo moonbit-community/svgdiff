@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <defs>
+    <filter id="alpha" x="-100%" y="-100%" width="400%" height="400%">
+      <feOffset in="SourceAlpha" dx="2" dy="1"/>
+    </filter>
+  </defs>
+  <rect id="box" x="3" y="3" width="6" height="5" fill="#ff00ff" filter="url(#alpha)"/>
+</svg>

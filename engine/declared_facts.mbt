@@ -55,6 +55,7 @@ fn supported_rect_property(property : String) -> Bool {
     | "paint-order"
     | "clip-rule"
     | "clip-path"
+    | "filter"
     | "mask"
     | "mask-mode"
     | "mask-type"

@@ -346,7 +346,7 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.28",
+      "schema_version": "1.29",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -430,7 +430,7 @@ test "compact JSON preserves the complete structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "1.28",
+      "schema_version": "1.29",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -527,15 +527,15 @@ test "limited diagnostics merge narrow locations across both sources" {
 
 ///|
 test "attribute, value, and renderer guards retain declaration locations" {
-  let before = "<svg width='16' height='16'><rect id='box' x='1.5' filter='url(#f)' fill='red' style='fill:blue;unknown:value'/></svg>"
-  let after = "<svg width='16' height='16'><rect id='box' x='2.5' filter='url(#f)' fill='red' style='fill:green;unknown:value'/></svg>"
+  let before = "<svg width='16' height='16'><rect id='box' x='1.5' filter='blur(2px)' fill='red' style='fill:blue;unknown:value'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='box' x='2.5' filter='blur(3px)' fill='red' style='fill:green;unknown:value'/></svg>"
   let report = @engine.compare(
     before,
     after,
     @engine.ComparisonProfile::v1_default(),
   )
   let expectations = [
-    ("unsupported_visual_attribute", 2),
+    ("filter_reference_invalid", 2),
     ("renderer_fractional_geometry_unproven", 2),
     ("renderer_style_precedence_unresolved", 4),
   ]

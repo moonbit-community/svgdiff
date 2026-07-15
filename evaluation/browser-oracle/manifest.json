@@ -125,6 +125,14 @@
     { "id": "mask-object-bbox", "source": "evaluation/renderer-conformance/fixtures/mask-object-bbox.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
     { "id": "mask-container", "source": "evaluation/renderer-conformance/fixtures/mask-container.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
     { "id": "mask-mode-alpha", "source": "evaluation/renderer-conformance/fixtures/mask-mode-alpha.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
-    { "id": "mask-transform", "source": "evaluation/renderer-conformance/fixtures/mask-transform.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" }
+    { "id": "mask-transform", "source": "evaluation/renderer-conformance/fixtures/mask-transform.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "filter-offset-user-space", "source": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported", "canonical_equivalent_id": "filter-offset-user-space-canonical" },
+    { "id": "filter-offset-user-space-canonical", "source": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-canonical.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "filter-offset-object-bbox", "source": "evaluation/renderer-conformance/fixtures/filter-offset-object-bbox.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported", "canonical_equivalent_id": "filter-offset-object-bbox-canonical" },
+    { "id": "filter-offset-object-bbox-canonical", "source": "evaluation/renderer-conformance/fixtures/filter-offset-object-bbox-canonical.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "filter-offset-named-chain", "source": "evaluation/renderer-conformance/fixtures/filter-offset-named-chain.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported", "canonical_equivalent_id": "filter-offset-named-chain-canonical" },
+    { "id": "filter-offset-named-chain-canonical", "source": "evaluation/renderer-conformance/fixtures/filter-offset-named-chain-canonical.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "filter-offset-source-alpha", "source": "evaluation/renderer-conformance/fixtures/filter-offset-source-alpha.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported", "canonical_equivalent_id": "filter-offset-source-alpha-canonical" },
+    { "id": "filter-offset-source-alpha-canonical", "source": "evaluation/renderer-conformance/fixtures/filter-offset-source-alpha-canonical.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" }
   ]
 }

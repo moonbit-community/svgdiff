@@ -2,6 +2,22 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "filter-offset-change",
+      "before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
+      "after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
+      "output": "schema/examples/filter-offset-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["resource.filter.primitive.offset"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "resource.filter.primitive.offset", "field": "magnitude.parameter_signed_user_units", "op": "eq", "value": 2.0 },
+          { "domain": "resource.filter.primitive.offset", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "mask-resource-change",
       "before": "evaluation/schema-examples/cases/mask-resource-change/before.svg",
       "after": "evaluation/schema-examples/cases/mask-resource-change/after.svg",

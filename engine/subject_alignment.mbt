@@ -1446,6 +1446,8 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_mask_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
+  let report = attach_filter_differences(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_embedded_image_differences(

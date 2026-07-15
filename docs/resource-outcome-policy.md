@@ -1,6 +1,6 @@
 # Resource Outcome Policy
 
-Status: current contract for schema `1.28`
+Status: current contract for schema `1.29`
 
 Last verified: 2026-07-15
 
@@ -32,6 +32,7 @@ The first matching row determines the report-level outcome. Family-specific Diag
 | Missing or wrong-kind local `fill`/`stroke` target with an admitted fallback | `complete`-eligible | Exact authored URL and fallback, selected fallback value, active dependencies | Select the fallback; do not diagnose the missing server as indeterminate. |
 | Missing or wrong-kind local `fill`/`stroke` target without a fallback | `complete`-eligible | Exact authored URL and deterministic no-paint result | Select no paint. This is not an unknown resource result. |
 | Missing or wrong-kind local target for one admitted single-layer SVG `mask` | `complete`-eligible | Exact authored mask reference, target-kind lookup, host mode, and deterministic transparent-black effect | Suppress the target completely. This CSS Masking result is not an unknown resource outcome; external locators and unsupported mask syntax remain partial. |
+| Missing or wrong-kind local target for one admitted SVG `filter` reference | `complete`-eligible | Exact authored filter reference, target-kind lookup, and deterministic unfiltered host result | Ignore the whole filter chain and render the host as if no filter were applied. External locators and unsupported filter syntax remain partial. |
 | Missing or wrong-kind local target for another consumer | `partial` | Exact locator/reference fact and Source Span plus independently supported facts | Emit the precise family Diagnostic, such as `use_target_missing`, `use_target_kind_unsupported`, or `marker_semantics_unsupported`. |
 | External locator outside an explicit admitted bundle-backed raster image | `partial` | Exact authored locator and independently supported facts | Do not fetch. Use the family-specific external-reference or missing-bundle Diagnostic. |
 | Malformed, unsupported, or semantically invalid referenced definition or payload | `partial` | Exact source facts, Source Spans, and every independently resolved component | Block only the evidence layers named by the family Diagnostic; do not substitute a guessed value or measured zero. |
@@ -56,7 +57,7 @@ This ordering explains two superficially different unused cases. An unused bundl
 
 ## Agent reading rule
 
-A text-only Agent must not infer resource meaning from the absence of an Atomic Difference alone. Read `analysis_status`, then the coverage matrix and Diagnostics. For `partial`, report the independently supported findings but never claim equality. For `failed`, stop interpreting difference arrays. For an unused resource difference, describe it as a source-visible latent resource change with no current consumer fan-out; do not call it a current pixel change. For missing paint targets, report the selected fallback or no-paint result rather than calling the paint indeterminate. For an admitted missing or wrong-kind SVG mask target, report deterministic transparent-black suppression and keep it distinct from an unsupported external or image mask.
+A text-only Agent must not infer resource meaning from the absence of an Atomic Difference alone. Read `analysis_status`, then the coverage matrix and Diagnostics. For `partial`, report the independently supported findings but never claim equality. For `failed`, stop interpreting difference arrays. For an unused resource difference, describe it as a source-visible latent resource change with no current consumer fan-out; do not call it a current pixel change. For missing paint targets, report the selected fallback or no-paint result rather than calling the paint indeterminate. For an admitted missing or wrong-kind SVG mask target, report deterministic transparent-black suppression and keep it distinct from an unsupported external or image mask. A missing or wrong-kind local filter target is a deterministic unfiltered result, while an admitted empty filter graph has a deterministic transparent output; keep both distinct from an unsupported external or malformed filter reference.
 
 ## Executable enforcement
 
@@ -65,5 +66,5 @@ A text-only Agent must not infer resource meaning from the absence of an Atomic 
 - Precise graph states and reachability: [`resource_dependency_graph_wbtest.mbt`](../engine/resource_dependency_graph_wbtest.mbt)
 - Paint fallback selection: [`paint_fallback_wbtest.mbt`](../engine/paint_fallback_wbtest.mbt)
 - Structural reuse failures and unused definitions: [`structure_semantics_wbtest.mbt`](../engine/structure_semantics_wbtest.mbt)
-- Invalid gradient, pattern, clip, mask, marker, and raster boundaries: [`gradient_diff_wbtest.mbt`](../engine/gradient_diff_wbtest.mbt), [`pattern_semantics_wbtest.mbt`](../engine/pattern_semantics_wbtest.mbt), [`clip_semantics_wbtest.mbt`](../engine/clip_semantics_wbtest.mbt), [`mask_semantics_wbtest.mbt`](../engine/mask_semantics_wbtest.mbt), [`marker_geometry_wbtest.mbt`](../engine/marker_geometry_wbtest.mbt), and [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt)
+- Invalid gradient, pattern, clip, mask, filter, marker, and raster boundaries: [`gradient_diff_wbtest.mbt`](../engine/gradient_diff_wbtest.mbt), [`pattern_semantics_wbtest.mbt`](../engine/pattern_semantics_wbtest.mbt), [`clip_semantics_wbtest.mbt`](../engine/clip_semantics_wbtest.mbt), [`mask_semantics_wbtest.mbt`](../engine/mask_semantics_wbtest.mbt), [`filter_semantics_wbtest.mbt`](../engine/filter_semantics_wbtest.mbt), [`marker_geometry_wbtest.mbt`](../engine/marker_geometry_wbtest.mbt), and [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt)
 - Bundle configuration and lazy content validation: [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt)

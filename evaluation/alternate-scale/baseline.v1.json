@@ -1,6 +1,6 @@
 {
   "canonical_report_evidence": false,
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/23",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/24",
   "directional_checks": [
     {
       "id": "micro-movement-around-one",

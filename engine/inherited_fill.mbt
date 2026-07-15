@@ -58,6 +58,7 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     | "pattern"
     | "clipPath"
     | "mask"
+    | "filter"
     | "linearGradient"
     | "radialGradient"
     | "stop"
@@ -119,7 +120,7 @@ fn resolved_visual_properties() -> Array[String] {
     "stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin",
     "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
     "opacity", "marker", "marker-start", "marker-mid", "marker-end", "paint-order",
-    "clip-rule", "clip-path", "mask", "mask-mode", "mask-type", "color-interpolation",
+    "clip-rule", "clip-path", "filter", "mask", "mask-mode", "mask-type", "color-interpolation",
   ]
 }
 
@@ -280,6 +281,7 @@ fn initial_visual_value(property : String) -> String {
     "stroke-dashoffset" => "0"
     "fill-rule" | "clip-rule" => "nonzero"
     "clip-path" => "none"
+    "filter" => "none"
     "mask" => "none"
     "mask-mode" => "match-source"
     "mask-type" => "luminance"
@@ -652,6 +654,11 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
         ClipInvalid => false
         _ => true
       }
+    "filter" =>
+      match parse_filter_reference(value) {
+        FilterInvalid => false
+        _ => true
+      }
     "mask" =>
       match parse_mask_reference(value) {
         MaskInvalid => false
@@ -825,6 +832,16 @@ fn canonical_computed_visual_value(
         ClipExternal => (source.trim().to_owned(), true)
         ClipInvalid => {
           push_unique(hierarchy.coverage_codes, "clip_path_reference_invalid")
+          (value, false)
+        }
+      }
+    "filter" =>
+      match parse_filter_reference(source) {
+        FilterNone => ("none", true)
+        FilterLocal(id) => ("url(#\{id})", true)
+        FilterExternal => (source.trim().to_owned(), true)
+        FilterInvalid => {
+          push_unique(hierarchy.coverage_codes, "filter_reference_invalid")
           (value, false)
         }
       }
@@ -1813,7 +1830,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.28",
+    schema_version: "1.29",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

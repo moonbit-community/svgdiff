@@ -1255,15 +1255,95 @@
       "id": "mask-transform",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.1640625,
+      "changed_pixels": 42,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "filter-offset-user-space",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.271949998107
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "filter-offset-user-space-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.125,
+      "changed_pixels": 32,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "filter-offset-object-bbox",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.252447648941
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "filter-offset-object-bbox-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.125,
+      "changed_pixels": 32,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "filter-offset-named-chain",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.21450769795
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "filter-offset-named-chain-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.171875,
+      "changed_pixels": 44,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "filter-offset-source-alpha",
+      "max_channel_delta": 255,
+      "premultiplied_rgba8_rmse": 0.293150984989
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "filter-offset-source-alpha-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/23",
-  "fixture_source_set_sha256": "a7b830b4cf850caf9da6b6f356eb28879a36f3b083c442d49068722671c7fde8",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/24",
+  "fixture_source_set_sha256": "1e5f1584599c4267bb234e4232a70330e0c49041536f1c44771848fde4afc72e",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 125,
+    "cases": 133,
     "categories": {
       "alpha": {
         "cases": 9,
@@ -1276,9 +1356,9 @@
         "exact": 4
       },
       "compositing": {
-        "cases": 7,
-        "divergent": 2,
-        "exact": 5
+        "cases": 15,
+        "divergent": 6,
+        "exact": 9
       },
       "geometry": {
         "cases": 54,
@@ -1291,10 +1371,10 @@
         "exact": 23
       }
     },
-    "divergent": 68,
-    "exact": 57,
+    "divergent": 72,
+    "exact": 61,
     "exploratory": 0,
     "guarded": 56,
-    "supported": 69
+    "supported": 77
   }
 }

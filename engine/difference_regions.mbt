@@ -686,6 +686,44 @@ fn mask_host_event_bounds(
 }
 
 ///|
+fn filter_host_conservative_bounds(host : ResolvedFilterHost) -> CssBounds? {
+  let mut bounds = host.effect_bounds
+  for primitive in host.primitive_bounds {
+    bounds = union_bounds(bounds, primitive)
+  }
+  bounds
+}
+
+///|
+fn filter_event_bounds(
+  event : VisualEvent,
+  before : Array[ResolvedFilterHost],
+  after : Array[ResolvedFilterHost],
+) -> CssBounds? {
+  let mut bounds : CssBounds? = None
+  if event.id.has_prefix("event:filter-host:") {
+    let owner_id = event.id
+      .view(start_offset="event:filter-host:".length())
+      .to_owned()
+    for host in before + after {
+      if host.owner_id == owner_id {
+        bounds = union_bounds(bounds, filter_host_conservative_bounds(host))
+      }
+    }
+  } else if event.id.has_prefix("event:filter:") {
+    let resource_id = event.id
+      .view(start_offset="event:filter:".length())
+      .to_owned()
+    for host in before + after {
+      if host.resource_id == Some(resource_id) {
+        bounds = union_bounds(bounds, filter_host_conservative_bounds(host))
+      }
+    }
+  }
+  bounds
+}
+
+///|
 fn escape_xml_attribute(value : String) -> String {
   value
   .replace_all(old="&", new="&amp;")
@@ -1025,30 +1063,26 @@ fn attach_difference_regions(
   ) catch {
     _ => []
   }
+  let before_filter_hosts = try
+    resolve_filter_hosts_or_raise(before_svg, report.profile)
+  catch {
+    _ => []
+  } noraise {
+    value => value.1
+  }
+  let after_filter_hosts = try
+    resolve_filter_hosts_or_raise(after_svg, report.profile)
+  catch {
+    _ => []
+  } noraise {
+    value => value.1
+  }
   let rendered_images = match
     (
-      @svg.parse_svg_document(
-        normalize_renderer_input_with_profile(before_svg, report.profile),
-      ),
-      @svg.parse_svg_document(
-        normalize_renderer_input_with_profile(after_svg, report.profile),
-      ),
+      render_product_source_to_image(before_svg, report.profile),
+      render_product_source_to_image(after_svg, report.profile),
     ) {
-    (Some(before_document), Some(after_document)) =>
-      Some(
-        (
-          render_product_document_to_image(
-            before_document,
-            report.profile.viewport_width,
-            report.profile.viewport_height,
-          ),
-          render_product_document_to_image(
-            after_document,
-            report.profile.viewport_width,
-            report.profile.viewport_height,
-          ),
-        ),
-      )
+    (Some(before_image), Some(after_image)) => Some((before_image, after_image))
     _ => None
   }
   let pixel_regions = match rendered_images {
@@ -1074,23 +1108,30 @@ fn attach_difference_regions(
             match mask_resource_event_bounds(event, report, before, after) {
               Some(bounds) => Some(bounds)
               None =>
-                match mask_host_event_bounds(event, before, after) {
+                match
+                  filter_event_bounds(
+                    event, before_filter_hosts, after_filter_hosts,
+                  ) {
                   Some(bounds) => Some(bounds)
                   None =>
-                    match
-                      marker_resource_bounds_for_event(event, before, after) {
+                    match mask_host_event_bounds(event, before, after) {
                       Some(bounds) => Some(bounds)
                       None =>
-                        match alignment_for_event(event, alignments) {
-                          Some(alignment) if alignment.id.has_prefix(
-                              "alignment:image:",
-                            ) =>
-                            embedded_image_alignment_bounds(
-                              alignment, before_images, after_images,
-                            )
-                          Some(alignment) =>
-                            alignment_bounds(alignment, before, after)
-                          None => None
+                        match
+                          marker_resource_bounds_for_event(event, before, after) {
+                          Some(bounds) => Some(bounds)
+                          None =>
+                            match alignment_for_event(event, alignments) {
+                              Some(alignment) if alignment.id.has_prefix(
+                                  "alignment:image:",
+                                ) =>
+                                embedded_image_alignment_bounds(
+                                  alignment, before_images, after_images,
+                                )
+                              Some(alignment) =>
+                                alignment_bounds(alignment, before, after)
+                              None => None
+                            }
                         }
                     }
                 }

@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.28`
+Status: current model for Structured Report schema `1.29`
 
 Last verified: 2026-07-15
 
@@ -28,21 +28,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.28
+  -> Structured Report 1.29
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.28` records:
+Schema `1.29` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
-- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/23`.
+- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+mizchi/svg@0.2.1`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/24`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -103,6 +103,8 @@ Paint order and winding rules are resolved after the same cascade and dependency
 Static rectangular clipping separates the non-inherited host attachment from the referenced resource. The host `clip-path` resolves presentation, inline, and static stylesheet declarations, CSS-wide values, custom-property dependencies, and one local fragment. The resource records presence, `clipPathUnits`, clip/child transforms, rectangle geometry, clip rule, and every active consumer. For `userSpaceOnUse` or unitless numeric `objectBoundingBox` coordinates under deterministic axis transforms, each rendered leaf retains a before-side or after-side conservative effect bound equal to its unclipped painted bound intersected with the transformed rectangle. An empty intersection is a proven zero contribution, not missing evidence. A shared resource event uses the union of all nonempty before/after consumer bounds; unsupported bounds fall back conservatively and revoke causal completeness through a Diagnostic. These rectangles localize where clipping can matter but are not contributor masks or exact curved clip coverage.
 
 Static masking similarly separates the non-inherited host `mask` and `mask-mode` facts from the referenced resource. The resource records presence, `maskUnits`, `maskContentUnits`, region coordinates, `mask-type`, color interpolation, direct rectangle geometry and transform, solid color, independent alpha declarations, and every consumer. Effective mode is host `alpha` or `luminance`, or the resource type for `match-source`; alpha uses content alpha while luminance uses non-premultiplied sRGB coefficients multiplied by that alpha. Complete target and mask surfaces are isolated before multiplication and source-over composition. Each side's conservative effect bound intersects target paint, mask region, and transformed nonzero mask content; host localization unions affected descendants from both sides so newly vacated pixels are not lost. Missing, wrong-kind, empty, and non-positive-region single SVG mask layers are deterministic transparent black. These numeric values and rectangles describe transfer and localization, not a visibility boolean or exact contributor index.
+
+Static filtering separates the non-inherited host `filter` attachment from one same-document resource graph. A missing or wrong-kind local target deterministically applies no filter; an admitted empty graph instead produces transparent output. A nonempty admitted graph contains only direct static `feOffset` primitives and resolves `filterUnits`, `primitiveUnits`, the `-10% -10% 120% 120%` default region, SourceGraphic, SourceAlpha, omitted previous input, and admitted ASCII identifier results from earlier primitives. Every primitive executes on a distinct transparent RGBA surface, and each input/output is hard-clipped to the filter region. Conservative bounds begin at host paint, translate with each offset, intersect the filter region, and remain attached to every intermediate and final result; a clipped-empty result is proven zero contribution. Resource insertion/deletion, units, region, primitive presence, graph edges, result names, and offsets remain separate typed differences with exact provenance, continuous deltas, and consumer fan-out. The execution budget admits at most 256 primitives per graph and 16,777,216 aggregate primitive-surface pixels per source. Other primitives and excluded interactions preserve source facts but revoke computed, rendered, and causal completeness through precise Diagnostics.
 
 Structural relationships are reported only through admitted consequences. An aligned subject whose effective parent path or use-instance resolution changes receives a structural relationship fact when an existing computed property, cumulative transform, viewport, or resource-mediated outcome differs. Pairwise draw-order inversions receive `document.structure.stacking_order` when the subjects' conservative painted bounds may overlap and the final raster changes. Disjoint and zero-raster reorders remain absent. These facts are conservative cause candidates rather than exact contribution weights.
 
@@ -179,7 +181,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.28` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.29` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 `DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v2 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
@@ -202,7 +204,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.28` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.29` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -218,11 +220,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.28` top-level object contains exactly these conceptual sections:
+The schema `1.29` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.28",
+  "schema_version": "1.29",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -254,7 +256,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.28
+## Not implemented in schema 1.29
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -264,7 +266,7 @@ The following concepts are intentional future work rather than hidden current fi
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
 - resource bundles beyond admitted PNG/JPEG `image` consumers, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
-- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, general mask or clip content, blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
+- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filter primitives beyond the admitted static `feOffset` graph, CSS filter functions, general mask or clip content, blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
 - cross-subject Visual Event aggregation.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).
