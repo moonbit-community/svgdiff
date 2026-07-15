@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.22` API accepts caller-provided viewport dimensions and
+/// The root schema `1.23` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.22` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.23` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -25,7 +25,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
     renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/19",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/20",
   }
 }
 
@@ -48,6 +48,20 @@ pub(all) struct RenderedMagnitude {
   changed_pixel_fraction : Double
   rgba8_rmse : Double
   linear_premultiplied_rgba_rmse : Double
+} derive(ToJson)
+
+///|
+/// Intrinsic decoded-raster comparison, independent of final SVG compositing.
+pub(all) struct IntrinsicRasterMagnitude {
+  before_width : Int
+  before_height : Int
+  after_width : Int
+  after_height : Int
+  compared_pixels : Int?
+  changed_pixels : Int?
+  changed_pixel_fraction : Double?
+  rgba8_rmse : Double?
+  linear_premultiplied_rgba_rmse : Double?
 } derive(ToJson)
 
 ///|
@@ -224,6 +238,7 @@ pub(all) struct DifferenceMagnitude {
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
   raster_linear_premultiplied_rgba_rmse : Double?
+  intrinsic_raster : IntrinsicRasterMagnitude?
   transform_effect : TransformEffectMagnitude?
 }
 
@@ -261,6 +276,7 @@ pub impl ToJson for DifferenceMagnitude with fn to_json(self) {
   fields["raster_linear_premultiplied_rgba_rmse"] = nullable_report_value(
     self.raster_linear_premultiplied_rgba_rmse,
   )
+  fields["intrinsic_raster"] = nullable_report_value(self.intrinsic_raster)
   match self.transform_effect {
     Some(value) => fields["transform_effect"] = value.to_json()
     None => ()
@@ -287,6 +303,7 @@ fn empty_difference_magnitude() -> DifferenceMagnitude {
     raster_changed_pixel_fraction: None,
     raster_rgba8_rmse: None,
     raster_linear_premultiplied_rgba_rmse: None,
+    intrinsic_raster: None,
     transform_effect: None,
   }
 }
@@ -668,7 +685,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.22` result of one SVG comparison.
+/// Complete schema `1.23` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -687,13 +704,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.22` JSON.
+/// Serialize this report as indented schema `1.23` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.22` JSON.
+/// Serialize this report as whitespace-free schema `1.23` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -729,6 +746,7 @@ fn known_source_element(kind : String) -> Bool {
     | "pattern"
     | "clipPath"
     | "marker"
+    | "image"
     | "stop"
     | "text"
     | "title"
@@ -797,6 +815,13 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
       name == "width" ||
       name == "height" ||
       name == "href"
+    "image" =>
+      name == "x" ||
+      name == "y" ||
+      name == "width" ||
+      name == "height" ||
+      name == "href" ||
+      name == "preserveAspectRatio"
     "rect" =>
       name == "x" ||
       name == "y" ||
@@ -1031,8 +1056,15 @@ fn preflight_source_or_raise(
   input : String,
   profile : ComparisonProfile,
   source_role : String,
+  limits : ResourceLimits,
 ) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
+  for
+    diagnostic in embedded_image_preflight_diagnostics(
+      input, profile, source_role, limits,
+    ) {
+    merge_diagnostic_into(diagnostics, diagnostic)
+  }
   let css_document = parse_static_css_document_or_raise(input)
   if !css_document.complete {
     merge_diagnostic_into(
@@ -1436,8 +1468,9 @@ fn preflight_source(
   input : String,
   profile : ComparisonProfile,
   source_role : String,
+  limits : ResourceLimits,
 ) -> SourcePreflight {
-  try preflight_source_or_raise(input, profile, source_role) catch {
+  try preflight_source_or_raise(input, profile, source_role, limits) catch {
     @xml.At(error=_, span~) =>
       SourceFailed(
         located_diagnostic(
@@ -1475,7 +1508,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.22",
+    schema_version: "1.23",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1720,7 +1753,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.22",
+        schema_version: "1.23",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1800,7 +1833,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.22",
+        schema_version: "1.23",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1850,7 +1883,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.22",
+        schema_version: "1.23",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1910,8 +1943,8 @@ fn compare_without_resource_limits(
   let preflight_diagnostics : Array[Diagnostic] = []
   match
     (
-      preflight_source(before_svg, profile, "before"),
-      preflight_source(after_svg, profile, "after"),
+      preflight_source(before_svg, profile, "before", limits),
+      preflight_source(after_svg, profile, "after", limits),
     ) {
     (SourceFailed(before), SourceFailed(after)) => {
       let diagnostics = [before]
@@ -1938,6 +1971,11 @@ fn compare_without_resource_limits(
   }
   let subject_alignments = subject_alignments_for_sources_with_guard(
     before_svg, after_svg, comparison_guard,
+  )
+  subject_alignments.push_iter(
+    embedded_image_alignments_for_sources(
+      before_svg, after_svg, profile, limits,
+    ).iter(),
   )
   comparison_guard.checkpoint()
   match inherited_fill_report(before_svg, after_svg, profile) {
@@ -1971,8 +2009,47 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.22",
+            schema_version: "1.23",
             analysis_status: "complete",
+            coverage_matrix: [],
+            renderer_capability_gaps: [],
+            profile,
+            subject_alignments: [],
+            changed_facts: [],
+            source_resolutions: [],
+            atomic_differences: [],
+            events: [],
+            diagnostics: [],
+          },
+          preflight_diagnostics,
+          subject_alignments,
+          before_svg,
+          after_svg,
+          limits,
+          comparison_guard,
+        )
+      }
+      let has_embedded_image_alignment = subject_alignments.any(alignment => {
+        alignment.id.has_prefix("alignment:image:")
+      })
+      let before_is_embedded_image_scene = (embedded_image_only_scene(
+          before_svg,
+        ) catch {
+          _ => false
+        }) ||
+        (empty_rendered_scene_supported(before_svg) catch { _ => false })
+      let after_is_embedded_image_scene = (embedded_image_only_scene(after_svg) catch {
+          _ => false
+        }) ||
+        (empty_rendered_scene_supported(after_svg) catch { _ => false })
+      if no_rendered_subjects &&
+        has_embedded_image_alignment &&
+        before_is_embedded_image_scene &&
+        after_is_embedded_image_scene {
+        return finish_report(
+          {
+            schema_version: "1.23",
+            analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
             profile,
@@ -2030,7 +2107,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.22",
+              schema_version: "1.23",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

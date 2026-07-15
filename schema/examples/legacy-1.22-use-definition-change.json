@@ -1,0 +1,510 @@
+{
+  "schema_version": "1.22",
+  "analysis_status": "complete",
+  "coverage_matrix": [
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.rect",
+      "subject_id": "instance/a/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.rect",
+      "subject_id": "instance/b/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "instance/a/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "instance/b/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.width",
+      "subject_id": "instance/a/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.width",
+      "subject_id": "instance/b/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.height",
+      "subject_id": "instance/a/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.height",
+      "subject_id": "instance/b/tile",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "domain.paint.fill",
+      "subject_id": "alignment:0",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "domain.paint.fill",
+      "subject_id": "alignment:1",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "covered",
+      "diagnostic_ids": []
+    }
+  ],
+  "renderer_capability_gaps": [],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/19"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "tile",
+          "instance_context": {
+            "instance_id": "instance/a/tile",
+            "definition_subject_id": "tile",
+            "use_path": [
+              "a"
+            ]
+          }
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "tile",
+          "instance_context": {
+            "instance_id": "instance/a/tile",
+            "definition_subject_id": "tile",
+            "use_path": [
+              "a"
+            ]
+          }
+        }
+      ],
+      "basis": "use_instance_path",
+      "evidence": {
+        "score_kind": "structural_rule",
+        "selected_score": null,
+        "candidate_count": 0,
+        "equal_score_candidate_count": 0,
+        "ambiguity": "not_assessed",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    },
+    {
+      "id": "alignment:1",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 1,
+          "kind": "rect",
+          "authored_id": "tile",
+          "instance_context": {
+            "instance_id": "instance/b/tile",
+            "definition_subject_id": "tile",
+            "use_path": [
+              "b"
+            ]
+          }
+        }
+      ],
+      "after": [
+        {
+          "source_index": 1,
+          "kind": "rect",
+          "authored_id": "tile",
+          "instance_context": {
+            "instance_id": "instance/b/tile",
+            "definition_subject_id": "tile",
+            "use_path": [
+              "b"
+            ]
+          }
+        }
+      ],
+      "basis": "use_instance_path",
+      "evidence": {
+        "score_kind": "structural_rule",
+        "selected_score": null,
+        "candidate_count": 0,
+        "equal_score_candidate_count": 0,
+        "ambiguity": "not_assessed",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:source:tile:fill",
+      "subject_id": "tile",
+      "property": "fill",
+      "before": {
+        "property": "fill",
+        "authored_value": "red",
+        "declared_value": "red",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 118
+        }
+      },
+      "after": {
+        "property": "fill",
+        "authored_value": "blue",
+        "declared_value": "blue",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 119
+        }
+      },
+      "affected_subject_ids": [
+        "instance/a/tile",
+        "instance/b/tile"
+      ]
+    }
+  ],
+  "source_resolutions": [
+    {
+      "subject_id": "instance/a/tile",
+      "property": "fill",
+      "before": {
+        "subject_id": "instance/a/tile",
+        "property": "fill",
+        "resolved_value": "rgba(255,0,0,1)",
+        "resolution": "local",
+        "declaration_owner_id": "tile",
+        "declaration": {
+          "property": "fill",
+          "authored_value": "red",
+          "declared_value": "red",
+          "origin": "presentation_attribute",
+          "source_span": {
+            "start_offset": 115,
+            "end_offset": 118
+          }
+        },
+        "inheritance_depth": 0
+      },
+      "after": {
+        "subject_id": "instance/a/tile",
+        "property": "fill",
+        "resolved_value": "rgba(0,0,255,1)",
+        "resolution": "local",
+        "declaration_owner_id": "tile",
+        "declaration": {
+          "property": "fill",
+          "authored_value": "blue",
+          "declared_value": "blue",
+          "origin": "presentation_attribute",
+          "source_span": {
+            "start_offset": 115,
+            "end_offset": 119
+          }
+        },
+        "inheritance_depth": 0
+      }
+    },
+    {
+      "subject_id": "instance/b/tile",
+      "property": "fill",
+      "before": {
+        "subject_id": "instance/b/tile",
+        "property": "fill",
+        "resolved_value": "rgba(255,0,0,1)",
+        "resolution": "local",
+        "declaration_owner_id": "tile",
+        "declaration": {
+          "property": "fill",
+          "authored_value": "red",
+          "declared_value": "red",
+          "origin": "presentation_attribute",
+          "source_span": {
+            "start_offset": 115,
+            "end_offset": 118
+          }
+        },
+        "inheritance_depth": 0
+      },
+      "after": {
+        "subject_id": "instance/b/tile",
+        "property": "fill",
+        "resolved_value": "rgba(0,0,255,1)",
+        "resolution": "local",
+        "declaration_owner_id": "tile",
+        "declaration": {
+          "property": "fill",
+          "authored_value": "blue",
+          "declared_value": "blue",
+          "origin": "presentation_attribute",
+          "source_span": {
+            "start_offset": 115,
+            "end_offset": 119
+          }
+        },
+        "inheritance_depth": 0
+      }
+    }
+  ],
+  "atomic_differences": [
+    {
+      "id": "diff:alignment:0:fill",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "paint.fill",
+      "source_before": "red",
+      "source_after": "blue",
+      "source_fact_before": {
+        "property": "fill",
+        "authored_value": "red",
+        "declared_value": "red",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 118
+        }
+      },
+      "source_fact_after": {
+        "property": "fill",
+        "authored_value": "blue",
+        "declared_value": "blue",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 119
+        }
+      },
+      "changed_fact_ids": [
+        "fact:source:tile:fill"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_facts_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.0625,
+        "raster_rgba8_rmse": 0.1767766952966369,
+        "raster_linear_premultiplied_rgba_rmse": 0.1767766952966369
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.1767766952966369,
+          0.1767766952966369,
+          0.0625
+        ]
+      }
+    },
+    {
+      "id": "diff:alignment:1:fill",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:1",
+      "domain": "paint.fill",
+      "source_before": "red",
+      "source_after": "blue",
+      "source_fact_before": {
+        "property": "fill",
+        "authored_value": "red",
+        "declared_value": "red",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 118
+        }
+      },
+      "source_fact_after": {
+        "property": "fill",
+        "authored_value": "blue",
+        "declared_value": "blue",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 115,
+          "end_offset": 119
+        }
+      },
+      "changed_fact_ids": [
+        "fact:source:tile:fill"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_facts_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.0625,
+        "raster_rgba8_rmse": 0.1767766952966369,
+        "raster_linear_premultiplied_rgba_rmse": 0.1767766952966369
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.1767766952966369,
+          0.1767766952966369,
+          0.0625
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:alignment:0",
+      "primary_subject_id": "alignment:0",
+      "atomic_difference_ids": [
+        "diff:alignment:0:fill"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 16,
+          "changed_pixel_fraction": 0.0625,
+          "rgba8_rmse": 0.1767766952966369,
+          "linear_premultiplied_rgba_rmse": 0.1767766952966369
+        }
+      },
+      "difference_regions": [
+        {
+          "id": "region:pixel:0",
+          "source": "pixel_mask",
+          "pixel_x": 2,
+          "pixel_y": 2,
+          "pixel_width": 4,
+          "pixel_height": 4,
+          "css_x": 2,
+          "css_y": 2,
+          "css_width": 4,
+          "css_height": 4,
+          "changed_pixels": 16,
+          "viewport_fraction": 0.0625,
+          "cause_envelope": {
+            "guarantee": "sound_overapproximation",
+            "coverage": "complete",
+            "fallback_scope": "comparison",
+            "candidate_changed_fact_ids": [
+              "fact:source:tile:fill"
+            ],
+            "diagnostic_ids": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "event:alignment:1",
+      "primary_subject_id": "alignment:1",
+      "atomic_difference_ids": [
+        "diff:alignment:1:fill"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 16,
+          "changed_pixel_fraction": 0.0625,
+          "rgba8_rmse": 0.1767766952966369,
+          "linear_premultiplied_rgba_rmse": 0.1767766952966369
+        }
+      },
+      "difference_regions": [
+        {
+          "id": "region:pixel:1",
+          "source": "pixel_mask",
+          "pixel_x": 10,
+          "pixel_y": 10,
+          "pixel_width": 4,
+          "pixel_height": 4,
+          "css_x": 10,
+          "css_y": 10,
+          "css_width": 4,
+          "css_height": 4,
+          "changed_pixels": 16,
+          "viewport_fraction": 0.0625,
+          "cause_envelope": {
+            "guarantee": "sound_overapproximation",
+            "coverage": "complete",
+            "fallback_scope": "comparison",
+            "candidate_changed_fact_ids": [
+              "fact:source:tile:fill"
+            ],
+            "diagnostic_ids": []
+          }
+        }
+      ]
+    }
+  ],
+  "diagnostics": []
+}

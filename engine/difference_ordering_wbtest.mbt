@@ -17,6 +17,7 @@ fn ordering_test_magnitude(
     raster_changed_pixel_fraction: changed_pixel_fraction,
     raster_rgba8_rmse: rgba8_rmse,
     raster_linear_premultiplied_rgba_rmse: linear_rmse,
+    intrinsic_raster: None,
     transform_effect: None,
   }
 }

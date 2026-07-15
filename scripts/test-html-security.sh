@@ -36,7 +36,7 @@ trap cleanup EXIT INT TERM
 
 cd "$root"
 moon build --target native --release cmd/svgdiff >/dev/null
-cli="$root/_build/native/release/build/cmd/svgdiff/svgdiff.exe"
+cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 "$cli" \
   evaluation/html-security/before.svg \
   evaluation/html-security/after.svg \

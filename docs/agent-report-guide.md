@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.22` interpretation guide
+Status: current schema `1.23` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -52,7 +52,9 @@ For gradients, distinguish three levels. `resource.gradient.*` domains describe 
 
 Apply the same separation to patterns. `resource.pattern.*` domains describe tile geometry, coordinate systems, transforms, viewport mapping, templates, and child operations; `paint.fill` or `paint.stroke` describes one consumer's resolved consequence. Child IDs appear in difference IDs and Changed Fact properties, not in the stable domain taxonomy. A resource Changed Fact lists all affected consumers, while an unreferenced pattern event can correctly have zero changed pixels. `renderer_pattern_raster_unproven` constrains only Rendered Evidence, not already resolved static pattern parameters.
 
-The producer also maintains a private typed resource graph across every admitted or guarded resource family, but does not serialize unchanged topology into the report. Use `ChangedFact.affected_subject_ids`, resource and entity Atomic Differences, and Diagnostics as the graph's difference-relevant projection. Do not infer that an absent full graph means direct-only dependencies, and do not invent clip, mask, filter, image, or external-resource effects when their Diagnostics keep analysis partial.
+The producer also maintains a private typed resource graph across every admitted or guarded resource family, but does not serialize unchanged topology into the report. Use `ChangedFact.affected_subject_ids`, resource and entity Atomic Differences, and Diagnostics as the graph's difference-relevant projection. Do not infer that an absent full graph means direct-only dependencies, and do not invent clip, mask, filter, external-resource, or final image-compositing effects when their Diagnostics keep analysis partial.
+
+For embedded images, distinguish the locator representation, decoded resource, placement, and final canvas. `resource.image.source` can be computed-equivalent when base64 and percent encodings decode to identical dimensions and RGBA8 pixels. `resource.image.intrinsic_width`, `resource.image.intrinsic_height`, and `resource.image.content` describe decoded content; the last may carry `magnitude.intrinsic_raster`. Geometry, fitting, opacity, transform, insertion, and deletion remain separate differences. Never call `intrinsic_raster.changed_pixel_fraction` a viewport changed-pixel fraction: it is relative to the decoded resource and does not include scaling, clipping, overlap, or compositing. `renderer_embedded_raster_unavailable` means final-canvas Rendered Evidence is absent, while computed bounds still localize where the image may differ.
 
 For a paint URL with a fallback, distinguish the authored token from its selected branch. A valid local gradient or pattern makes the fallback inactive; a missing or wrong-kind local target selects the fallback, and no fallback means no paint. Report inactive fallback edits as source-visible computed equivalence. Report target-validity changes through the resulting consumer paint outcome and any resource presence facts. Only an active `currentColor` fallback should carry a color dependency; an external URL remains indeterminate rather than being described as missing.
 
@@ -92,7 +94,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.22` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.23` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

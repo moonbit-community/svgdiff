@@ -20,9 +20,10 @@ Every component is nonnegative and compared in descending lexicographic order. C
 | `geometry.*` | `geometry_displacement_css_px`, `geometry_viewport_fraction`, `raster_changed_pixel_fraction` |
 | `paint.*` | `raster_linear_premultiplied_rgba_rmse`, `raster_rgba8_rmse`, `raster_changed_pixel_fraction` |
 | `presence`, `presence.*` | `presence_painted_viewport_fraction`, `raster_changed_pixel_fraction` |
+| `resource.image.content` | `intrinsic_raster.linear_premultiplied_rgba_rmse`, `intrinsic_raster.rgba8_rmse`, `intrinsic_raster.changed_pixel_fraction` |
 | Current fallback: `compositing.*`, `resource.*`, `text.*`, `document.*`, and any other domain | `raster_changed_pixel_fraction`, `raster_linear_premultiplied_rgba_rmse`, `raster_rgba8_rmse` |
 
-The five exact transform rows take precedence over the broader `geometry.*` fallback. Their leading components retain deliberately different units: CSS pixels, degrees, or a unitless scale delta. The table defines tuple construction, not cross-family comparability. `geometry.position` and `geometry.size` use the same construction family but remain different domains and are not numerically ranked against one another. For guarded `geometry.path.*` differences, `geometry_displacement_css_px` is the optional isolated alpha-boundary maximum distance shared by that aligned path comparison; the exact normalized parameter delta remains separately available in `parameter_abs` and `parameter_symmetric_relative`.
+The five exact transform rows take precedence over the broader `geometry.*` fallback, and `resource.image.content` takes precedence over the broad resource fallback. Their leading components retain deliberately different units: CSS pixels, degrees, a unitless scale delta, or normalized pixel error. The table defines tuple construction, not cross-family comparability. `geometry.position` and `geometry.size` use the same construction family but remain different domains and are not numerically ranked against one another. For guarded `geometry.path.*` differences, `geometry_displacement_css_px` is the optional isolated alpha-boundary maximum distance shared by that aligned path comparison; the exact normalized parameter delta remains separately available in `parameter_abs` and `parameter_symmetric_relative`.
 
 ## Missing values and ties
 
@@ -40,6 +41,6 @@ Policy `v1_domain_lexicographic` remains valid only for legacy reports through S
 2. Group by exact `AtomicDifference.domain`.
 3. Compare tuples only inside one exact-domain group and one policy ID.
 4. Preserve `DifferenceMagnitude` as the evidence shown to the agent; the tuple is derived ordering metadata.
-5. For a question about the “main” change across domains, use an explicitly versioned Impact Assessment when one exists. Schema `1.22` has none, so report the strongest domain-specific evidence and disclose the interpretation instead of comparing tuple numbers.
+5. For a question about the “main” change across domains, use an explicitly versioned Impact Assessment when one exists. Schema `1.23` has none, so report the strongest domain-specific evidence and disclose the interpretation instead of comparing tuple numbers.
 
 [ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) records that future cross-domain assessment should preserve structured evidence, ties, and incomparability instead of introducing a universal scalar without a demonstrated Agent task and calibrated policy.

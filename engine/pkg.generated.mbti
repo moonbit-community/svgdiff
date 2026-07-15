@@ -120,6 +120,7 @@ pub(all) struct DifferenceMagnitude {
   raster_changed_pixel_fraction : Double?
   raster_rgba8_rmse : Double?
   raster_linear_premultiplied_rgba_rmse : Double?
+  intrinsic_raster : IntrinsicRasterMagnitude?
   transform_effect : TransformEffectMagnitude?
 }
 pub impl ToJson for DifferenceMagnitude
@@ -152,6 +153,18 @@ pub(all) struct FeatureCoverage {
   computed_appearance : String
   rendered_evidence : String
   diagnostic_ids : Array[String]
+} derive(ToJson)
+
+pub(all) struct IntrinsicRasterMagnitude {
+  before_width : Int
+  before_height : Int
+  after_width : Int
+  after_height : Int
+  compared_pixels : Int?
+  changed_pixels : Int?
+  changed_pixel_fraction : Double?
+  rgba8_rmse : Double?
+  linear_premultiplied_rgba_rmse : Double?
 } derive(ToJson)
 
 pub(all) struct PresenceMagnitude {

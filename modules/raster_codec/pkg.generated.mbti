@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff-raster-codec"
+
+// Values
+pub fn decode_jpeg_bounded(Bytes, max_dimension~ : Int, max_pixels~ : Int) -> ImageData raise DecodeError
+
+pub fn decode_png_bounded(Bytes, max_dimension~ : Int, max_pixels~ : Int) -> ImageData raise DecodeError
+
+// Errors
+pub(all) suberror DecodeError {
+  InvalidSignature(String)
+  InvalidChunkCrc(String)
+  MissingChunk(String)
+  UnsupportedFeature(String)
+  CorruptData(String)
+  DecodeLimitExceeded(String)
+}
+pub impl Show for DecodeError
+
+// Types and methods
+pub(all) struct ImageData {
+  width : Int
+  height : Int
+  data : Bytes
+} derive(Eq)
+
+// Type aliases
+
+// Traits

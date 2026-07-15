@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-release-dependencies/1",
-  "last_verified": "2026-07-14",
+  "last_verified": "2026-07-15",
   "dependencies": [
     {
       "name": "Milky2018/xml",
@@ -51,6 +51,14 @@
       "packaged_license_file": true
     },
     {
+      "name": "Milky2018/svgdiff-raster-codec",
+      "version": "0.1.0",
+      "relationship": "direct local workspace module",
+      "repository": "https://github.com/Milky2018/svgdiff",
+      "license": "Apache-2.0",
+      "packaged_license_file": true
+    },
+    {
       "name": "mizchi/image",
       "version": "0.1.2",
       "relationship": "transitive through mizchi/pixelmatch",
@@ -60,8 +68,8 @@
     },
     {
       "name": "mizchi/zlib",
-      "version": "0.4.0",
-      "relationship": "transitive through mizchi/image",
+      "version": "0.4.6",
+      "relationship": "transitive through mizchi/image and Milky2018/svgdiff-raster-codec",
       "repository": "https://github.com/mizchi/zlib.mbt",
       "license": "Apache-2.0",
       "packaged_license_file": true

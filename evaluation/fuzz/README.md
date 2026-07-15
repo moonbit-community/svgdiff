@@ -26,7 +26,7 @@ Scale exploration with another seed and case count:
 ```sh
 moon build --target native --release cmd/svgdiff
 python3 evaluation/fuzz/run.py \
-  --cli _build/native/release/build/cmd/svgdiff/svgdiff.exe \
+  --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --seed 123456 --cases 1000 --output /tmp/svgdiff-fuzz.json
 ```
 
@@ -34,7 +34,7 @@ Replay one failure exactly with the seed, configured count, and case index print
 
 ```sh
 python3 evaluation/fuzz/run.py \
-  --cli _build/native/release/build/cmd/svgdiff/svgdiff.exe \
+  --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --seed 123456 --cases 1000 --case-index 217 \
   --output /tmp/svgdiff-fuzz-case-217.json
 ```

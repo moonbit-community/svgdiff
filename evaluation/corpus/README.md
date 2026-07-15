@@ -14,7 +14,7 @@ This directory contains hand-authored, standalone SVG pairs used as stable input
 - `cases/<case-id>/before.svg` and `after.svg` are immutable input artifacts once benchmark results cite that case ID.
 - Later ground-truth items should add versioned annotations alongside the manifest rather than encoding human answers in filenames or SVG metadata.
 
-The corpus covers equivalent authored spelling, a subtle continuous geometry delta, a salient paint change, structural insertion, a referenced-resource change, a zero-contribution insertion, guarded path geometry findings, and a complete parent-group transform change with cumulative-matrix plus typed translation evidence.
+The corpus covers equivalent authored spelling, a subtle continuous geometry delta, a salient paint change, structural insertion, a referenced-resource change, a zero-contribution insertion, guarded path geometry findings, a complete parent-group transform change with cumulative-matrix plus typed translation evidence, and a decoded embedded-raster content change whose final compositing remains unavailable.
 
 ## Integrity check
 

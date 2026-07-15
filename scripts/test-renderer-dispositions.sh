@@ -2,7 +2,7 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-cli="$root/_build/native/release/build/cmd/svgdiff/svgdiff.exe"
+cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 tmp=${TMPDIR:-/tmp}/svgdiff-renderer-dispositions-$$
 mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT

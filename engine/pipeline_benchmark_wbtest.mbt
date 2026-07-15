@@ -67,8 +67,8 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
   benchmark.bench(name="parse_admission", () => {
     let before_limit = source_limit(before, "before", limits)
     let after_limit = source_limit(after, "after", limits)
-    let before_preflight = preflight_source(before, profile, "before")
-    let after_preflight = preflight_source(after, profile, "after")
+    let before_preflight = preflight_source(before, profile, "before", limits)
+    let after_preflight = preflight_source(after, profile, "after", limits)
     let before_document = @svg.parse_svg_document(
       normalize_renderer_input(before),
     )

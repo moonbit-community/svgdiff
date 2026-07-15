@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.5.2` and schema `1.22` contract
+Status: current module `0.5.3` and schema `1.23` contract
 
 Last verified: 2026-07-15
 
@@ -17,6 +17,11 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | References | Each SVG independently | 100,000 | Every `href` attribute plus every case-insensitive `url(` token in attribute values |
 | Materialized reference graph edges | Each SVG independently | 1,000,000 | Reference-edge copies propagated across containing ID scopes; checked before appending the first excess edge |
 | Expanded elements | Each SVG independently | 1,000,000 | Conservative transitive authored-element upper bound across all accepted local `<use>` edges |
+| Embedded data-URL bytes | Each `image` locator | 6,291,456 | ASCII data-URL source characters before payload decoding |
+| Embedded raster bytes | Each admitted PNG or JPEG | 4,194,304 | Decoded resource-file bytes before image decoding |
+| Embedded raster dimensions | Each admitted PNG or JPEG | 8,192 per axis | Validated intrinsic width and height before normalized RGBA8 allocation |
+| Embedded raster pixels | Each image and cumulatively per SVG | 16,777,216 | Validated intrinsic width times height; cumulative total counts every admitted image occurrence |
+| PNG decompression output | Each admitted PNG | Exact validated scanline length | Filter bytes plus encoded scanline bytes derived from IHDR dimensions, bit depth, and color type |
 | Raster dimensions | Comparison Profile | 8,192 per axis and 16,777,216 total pixels | Positive viewport width, height, and their product before any render |
 | Difference Regions | Whole report | 65,536 | Connected pixel regions and event-attached computed or pixel regions |
 | Report bytes | Each built-in JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
@@ -37,7 +42,7 @@ Normalized segment sequence alignment uses at most 65,536 dynamic-programming ce
 
 ## Failure semantics
 
-The engine checks raster dimensions before rendering, input bytes before parsing, XML structure and local-reference expansion while consuming bounded event streams, regions while extracting and attaching them, and report bytes at the serialization boundary. The exact inclusive boundary is accepted; the first unit beyond it is rejected.
+The engine checks raster dimensions before rendering, input bytes before parsing, XML structure and local-reference expansion while consuming bounded event streams, embedded data-URL and decoded-file bytes before image decoding, intrinsic dimensions and pixels before normalized RGBA8 allocation, cumulative image pixels while scanning each source, PNG decompression against its exact validated scanline length, regions while extracting and attaching them, and report bytes at the serialization boundary. The exact inclusive boundary is accepted; the first unit beyond it is rejected.
 
 An exceeded ordinary budget in the production table, including the materialized reference-graph edge budget, returns a small schema-valid report with:
 
@@ -50,7 +55,7 @@ An exceeded ordinary budget in the production table, including the materialized 
 
 The empty inventories are not truncated evidence and cannot support an equality conclusion. A caller must surface the Diagnostics and stop semantic interpretation. If both inputs independently fail a source budget, the bounded failure report may identify both; scanning stops at the first structural overrun within each input.
 
-Malformed XML remains `svg_parse_failed`, not a resource failure, unless an earlier resource boundary is crossed first. Invalid or excessive viewport dimensions use the same resource failure because the renderer is never invoked outside the accepted raster boundary.
+Malformed XML remains `svg_parse_failed`, not a resource failure, unless an earlier resource boundary is crossed first. Invalid image syntax, MIME/signature mismatch, or decoder failure remains partial `embedded_raster_data_invalid`; those conditions are not relabeled as resource exhaustion. Invalid or excessive viewport dimensions use the same resource failure because the renderer is never invoked outside the accepted raster boundary.
 
 ## Boundary and non-goals
 
@@ -60,4 +65,4 @@ The public [`compare_with_control`](library-api.md) operation adds cooperative c
 
 ## Executable evidence
 
-[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for every dimension, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report and exit-status behavior.
+[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report and exit-status behavior.

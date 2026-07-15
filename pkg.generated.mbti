@@ -50,6 +50,8 @@ pub using @engine {type DomainOrdering}
 
 pub using @engine {type FeatureCoverage}
 
+pub using @engine {type IntrinsicRasterMagnitude}
+
 pub using @engine {type PresenceMagnitude}
 
 pub using @engine {type RenderedEvidence}

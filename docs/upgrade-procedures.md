@@ -2,7 +2,7 @@
 
 Status: current maintenance procedure
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 Renderer, parser, metric, schema, and ordering-policy versions influence the meaning of a report. They must not be upgraded as isolated dependency edits. This document defines the evidence and synchronized changes required before an upgrade may be merged.
 
@@ -11,11 +11,12 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 | Component | Current identity | Contract surface |
 | --- | --- | --- |
 | SVG scene and canonical renderer | `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
-| Renderer conformance profile | `svgdiff-renderer-conformance-profile/19` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
+| Renderer conformance profile | `svgdiff-renderer-conformance-profile/20` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
 | Authored XML parser | `Milky2018/xml@0.4.0` | well-formedness, namespaces, entity behavior, UTF-16 Source Spans |
 | Baseline pixel comparison | `mizchi/pixelmatch@0.6.1` | connected pixel-mask regions and renderer comparison support |
+| Embedded raster codec | `Milky2018/svgdiff-raster-codec@0.1.0` plus `mizchi/zlib@0.4.6` | admitted PNG/JPEG bytes, dimensions, normalized RGBA8 pixels, and intrinsic magnitude inputs |
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
-| JSON Schema | `1.22` | every serialized field, enum, null/absence rule, and top-level invariant |
+| JSON Schema | `1.23` | every serialized field, enum, null/absence rule, and top-level invariant |
 | Same-domain ordering | `v2_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 
 The source of dependency versions is `moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json). The [compatibility and versioning contract](versioning.md) decides which identity each consumer-visible change must increment.
@@ -103,6 +104,19 @@ The regression sources are [`source_adapter_wbtest.mbt`](../engine/source_adapte
 
 Parser permissiveness must never silently widen. A newly accepted malformed input requires an explicit correctness decision or a project-side rejection guard.
 
+## Embedded raster codec upgrade
+
+Use this procedure for the project-owned raster codec, its zlib dependency, or a newly admitted embedded image format.
+
+- Preserve the no-I/O policy: only caller-supplied bytes may reach the decoder, and MIME plus signature validation must precede decoding.
+- Prove exact and one-past behavior for source bytes, decoded bytes, dimensions, per-image pixels, cumulative pixels, and format-specific decompression output before accepting wider inputs.
+- Re-run PNG and JPEG identity, malformed-input, compact-hash, intrinsic-magnitude, insertion/deletion, and mixed-scene final-evidence tests.
+- Treat changes to normalized RGBA8 pixels, accepted format variants, failure classification, or intrinsic metric inputs as report semantics requiring Schema and compatibility review.
+- Re-run Chromium image fixtures and renderer dispositions. Decoding success cannot remove `renderer_embedded_raster_unavailable`; only a separately reviewed compositor and conformance claim can do that.
+- Package and validate the codec archive independently, then compile the root archive against it. Publish the codec version before any root module that declares it.
+
+The codec is a resource decoder, not the production SVG renderer. Its intrinsic pixels must never be substituted into `RenderedEvidence` without placement, clipping, interpolation, stacking, opacity, and compositing semantics.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.
@@ -128,7 +142,7 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Every released Schema, currently `1.0` through `1.22`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
+Every released Schema, currently `1.0` through `1.23`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
 
 ### Procedure
 

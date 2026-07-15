@@ -85,6 +85,19 @@
           "bounds": { "x": 3.0, "y": 4.0, "width": 9.0, "height": 5.0 }
         }
       ]
+    },
+    {
+      "case_id": "embedded-raster-change",
+      "localization_status": "localizable",
+      "reason": "The image content change is confined to the unchanged image placement bounds.",
+      "regions": [
+        {
+          "id": "region-ref:embedded-raster-change:image",
+          "reference_kind": "exact_painted_bounds",
+          "comparison_rule": "intersection_over_union",
+          "bounds": { "x": 2.0, "y": 2.0, "width": 12.0, "height": 12.0 }
+        }
+      ]
     }
   ]
 }

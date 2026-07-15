@@ -134,6 +134,7 @@ fn difference_magnitude(
       Some(rendered) => Some(rendered.linear_premultiplied_rgba_rmse)
       None => None
     },
+    intrinsic_raster: difference.magnitude.intrinsic_raster,
     transform_effect: difference.magnitude.transform_effect,
   }
 }
@@ -171,7 +172,16 @@ fn ordering_for_magnitude(
       push_measurement(components, magnitude.raster_changed_pixel_fraction)
     }
     _ =>
-      if domain.find("geometry.") == Some(0) {
+      if domain == "resource.image.content" {
+        match magnitude.intrinsic_raster {
+          Some(value) => {
+            push_measurement(components, value.linear_premultiplied_rgba_rmse)
+            push_measurement(components, value.rgba8_rmse)
+            push_measurement(components, value.changed_pixel_fraction)
+          }
+          None => ()
+        }
+      } else if domain.find("geometry.") == Some(0) {
         push_measurement(components, magnitude.geometry_displacement_css_px)
         push_measurement(components, magnitude.geometry_viewport_fraction)
         push_measurement(components, magnitude.raster_changed_pixel_fraction)

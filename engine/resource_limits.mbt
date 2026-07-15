@@ -11,6 +11,10 @@ priv struct ResourceLimits {
   max_references : Int
   max_reference_graph_edges : Int
   max_expanded_elements : Int
+  max_embedded_data_uri_bytes : Int
+  max_embedded_data_bytes : Int
+  max_embedded_raster_dimension : Int
+  max_embedded_raster_pixels : Int
   max_raster_dimension : Int
   max_raster_pixels : Int
   max_regions : Int
@@ -27,6 +31,10 @@ fn default_resource_limits() -> ResourceLimits {
     max_references: 100_000,
     max_reference_graph_edges: 1_000_000,
     max_expanded_elements: 1_000_000,
+    max_embedded_data_uri_bytes: 6_291_456,
+    max_embedded_data_bytes: 4_194_304,
+    max_embedded_raster_dimension: 8_192,
+    max_embedded_raster_pixels: 16_777_216,
     max_raster_dimension: 8_192,
     max_raster_pixels: 16_777_216,
     max_regions: 65_536,
@@ -122,7 +130,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "1.22",
+    schema_version: "1.23",
     analysis_status: "failed",
     coverage_matrix,
     renderer_capability_gaps: [],
@@ -269,6 +277,18 @@ fn source_limit(
     diagnostic => diagnostic
   }
   match structure {
+    Some(diagnostic) => return Some(diagnostic)
+    None => ()
+  }
+  let embedded_raster = try
+    embedded_raster_source_limit(input, source_role, limits)
+  catch {
+    // Malformed XML remains owned by the ordinary parser preflight.
+    _ => None
+  } noraise {
+    diagnostic => diagnostic
+  }
+  match embedded_raster {
     Some(diagnostic) => return Some(diagnostic)
     None => ()
   }

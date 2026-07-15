@@ -155,6 +155,25 @@
           ]
         }
       ]
+    },
+    {
+      "case_id": "embedded-raster-change",
+      "reference_summary": "The embedded image changes from solid red to solid blue while keeping the same placement.",
+      "main_visual_changes": [
+        {
+          "id": "main:embedded-raster-change:content",
+          "description": "The 12 by 12 embedded raster changes from red to blue without moving or resizing.",
+          "relative_importance": {
+            "rank": 1,
+            "tier": "high",
+            "rationale": "Every intrinsic pixel and the full placed image area changes between two strongly contrasting colors."
+          },
+          "acceptable_alternative_descriptions": [
+            "The embedded image is recolored from red to blue.",
+            "The central raster keeps its bounds but all decoded pixels change color."
+          ]
+        }
+      ]
     }
   ]
 }

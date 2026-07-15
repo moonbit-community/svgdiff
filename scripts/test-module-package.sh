@@ -5,6 +5,8 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 tmp=${TMPDIR:-/tmp}/svgdiff-module-package-$$
 version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/moon.mod")
 archive="$root/_build/publish/Milky2018-svgdiff-$version.zip"
+codec_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/modules/raster_codec/moon.mod")
+codec_archive="$root/_build/publish/Milky2018-svgdiff-raster-codec-$codec_version.zip"
 mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -12,6 +14,13 @@ cd "$root"
 moon package --list >/dev/null 2>&1
 test -f "$archive"
 unzip -Z1 "$archive" | sed '/\/$/d' >"$tmp/package-list.txt"
+
+(
+  cd modules/raster_codec
+  moon package --list >/dev/null 2>&1
+)
+test -f "$codec_archive"
+unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
@@ -40,16 +49,29 @@ while IFS= read -r path; do
   esac
 done <"$tmp/package-list.txt"
 
+while IFS= read -r path; do
+  case "$path" in
+    LICENSE | README.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | jpeg_decode.mbt | jpeg_tables.mbt | png_color.mbt | png_decode.mbt | png_filter.mbt | types.mbt)
+      ;;
+    *)
+      printf 'Raster codec package contains an unexpected path: %s\n' "$path" >&2
+      exit 1
+      ;;
+  esac
+done <"$tmp/codec-package-list.txt"
+
 for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 
 unzip -q "$archive" -d "$tmp/svgdiff"
+unzip -q "$codec_archive" -d "$tmp/svgdiff-raster-codec"
 mkdir -p "$tmp/consumer"
 
 cat >"$tmp/moon.work" <<EOF
 members = [
   "svgdiff",
+  "svgdiff-raster-codec",
   "consumer",
 ]
 EOF
@@ -84,7 +106,7 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "1.22" else { abort("wrong schema") }
+  guard report.schema_version == "1.23" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
 }

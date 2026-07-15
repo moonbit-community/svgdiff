@@ -30,6 +30,8 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
     "renderer_non_scaling_stroke_unproven" =>
       Some(("raster.non_scaling_stroke", "guarded"))
     "renderer_marker_raster_unproven" => Some(("raster.marker", "guarded"))
+    "renderer_embedded_raster_unavailable" =>
+      Some(("raster.embedded_images", "unavailable"))
     "group_opacity_compositing_unsupported" =>
       Some(("compositing.group_opacity", "unavailable"))
     _ => None

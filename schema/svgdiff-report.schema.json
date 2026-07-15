@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.22",
-  "title": "SVG Diff Structured Report 1.22",
+  "$id": "https://example.invalid/svgdiff/schema/1.23",
+  "title": "SVG Diff Structured Report 1.23",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.22" },
+    "schema_version": { "const": "1.23" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -192,7 +192,8 @@
             "property_distance",
             "structural_rule",
             "unmatched",
-            "group_identity_or_singleton"
+            "group_identity_or_singleton",
+            "embedded_image_source_order_v1"
           ]
         },
         "selected_score": { "$ref": "#/$defs/nullableNumber" },
@@ -339,6 +340,42 @@
         }
       ]
     },
+    "intrinsicRasterMagnitude": {
+      "type": "object",
+      "required": [
+        "before_width",
+        "before_height",
+        "after_width",
+        "after_height",
+        "compared_pixels",
+        "changed_pixels",
+        "changed_pixel_fraction",
+        "rgba8_rmse",
+        "linear_premultiplied_rgba_rmse"
+      ],
+      "properties": {
+        "before_width": { "type": "integer", "minimum": 1 },
+        "before_height": { "type": "integer", "minimum": 1 },
+        "after_width": { "type": "integer", "minimum": 1 },
+        "after_height": { "type": "integer", "minimum": 1 },
+        "compared_pixels": {
+          "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }]
+        },
+        "changed_pixels": {
+          "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }]
+        },
+        "changed_pixel_fraction": { "$ref": "#/$defs/nullableNumber" },
+        "rgba8_rmse": { "$ref": "#/$defs/nullableNumber" },
+        "linear_premultiplied_rgba_rmse": { "$ref": "#/$defs/nullableNumber" }
+      },
+      "additionalProperties": false
+    },
+    "nullableIntrinsicRasterMagnitude": {
+      "anyOf": [
+        { "$ref": "#/$defs/intrinsicRasterMagnitude" },
+        { "type": "null" }
+      ]
+    },
     "magnitude": {
       "type": "object",
       "required": [
@@ -350,10 +387,14 @@
         "presence_painted_viewport_fraction",
         "raster_changed_pixel_fraction",
         "raster_rgba8_rmse",
-        "raster_linear_premultiplied_rgba_rmse"
+        "raster_linear_premultiplied_rgba_rmse",
+        "intrinsic_raster"
       ],
       "properties": {
-        "transform_effect": { "$ref": "#/$defs/transformEffect" }
+        "transform_effect": { "$ref": "#/$defs/transformEffect" },
+        "intrinsic_raster": {
+          "$ref": "#/$defs/nullableIntrinsicRasterMagnitude"
+        }
       },
       "additionalProperties": { "$ref": "#/$defs/nullableNumber" }
     },

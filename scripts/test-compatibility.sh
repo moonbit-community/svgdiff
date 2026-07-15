@@ -3,7 +3,7 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 tmp=${TMPDIR:-/tmp}/svgdiff-compatibility-$$
-cli="$root/_build/native/release/build/cmd/svgdiff/svgdiff.exe"
+cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -15,7 +15,7 @@ cmp "$tmp/first.json" "$tmp/second.json"
 jq -e '
   .schema_version == "svgdiff-compatibility-results/1" and
   .consumer_policy_id == "svgdiff-consumer-compatibility/1" and
-  ([.cases[] | select(.decision == "accepted")] | length) == 29 and
+  ([.cases[] | select(.decision == "accepted")] | length) == 30 and
   ([.cases[] | select(.decision == "rejected")] | length) == 4
 ' "$tmp/first.json" >/dev/null
 

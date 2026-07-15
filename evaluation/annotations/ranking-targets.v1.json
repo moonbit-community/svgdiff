@@ -62,6 +62,15 @@
         "diff:alignment:0:transform:cumulative",
         "diff:alignment:0:transform:effect:translation"
       ]]
+    },
+    {
+      "case_id": "embedded-raster-change",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:alignment:image:0"],
+      "accepted_top_atomic_difference_id_sets": [[
+        "diff:alignment:image:0:href",
+        "diff:alignment:image:0:decoded_content"
+      ]]
     }
   ]
 }

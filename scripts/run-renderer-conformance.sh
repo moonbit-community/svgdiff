@@ -4,7 +4,7 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 tmp=${TMPDIR:-/tmp}/svgdiff-renderer-conformance-$$
 oracle="$tmp/oracle"
-adapter="$root/_build/native/release/build/evaluation/renderer_adapter/renderer_adapter.exe"
+adapter="$root/_build/native/release/build/Milky2018/svgdiff/evaluation/renderer_adapter/renderer_adapter.exe"
 trap 'rm -rf "$tmp"' EXIT
 
 if [ "$#" -ne 1 ]; then

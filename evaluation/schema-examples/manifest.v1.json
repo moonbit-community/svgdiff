@@ -94,6 +94,25 @@
       }
     },
     {
+      "id": "embedded-raster-change",
+      "before": "evaluation/schema-examples/cases/embedded-raster-change/before.svg",
+      "after": "evaluation/schema-examples/cases/embedded-raster-change/after.svg",
+      "output": "schema/examples/embedded-raster-change.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["resource.image.source", "resource.image.content"],
+        "computed_relations": ["different", "different"],
+        "diagnostic_codes": [
+          "renderer_embedded_raster_unavailable",
+          "renderer_embedded_raster_unavailable"
+        ],
+        "magnitude_checks": [
+          { "domain": "resource.image.content", "field": "magnitude.intrinsic_raster.changed_pixel_fraction", "op": "eq", "value": 1 },
+          { "domain": "resource.image.content", "field": "magnitude.intrinsic_raster.linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "radial-gradient-change",
       "before": "evaluation/schema-examples/cases/radial-gradient-change/before.svg",
       "after": "evaluation/schema-examples/cases/radial-gradient-change/after.svg",

@@ -94,6 +94,13 @@
           "rationale": "No leaf geometry or paint declaration changes; the parent transform moves the aligned rectangle."
         }
       ]
+    },
+    {
+      "case_id": "embedded-raster-change",
+      "evaluation_status": "not_applicable",
+      "reason": "The decoded intrinsic cause is controlled, but final image compositing remains renderer-limited so the Cause Envelope is not established.",
+      "reference_region_ids": [],
+      "actual_causes": []
     }
   ]
 }

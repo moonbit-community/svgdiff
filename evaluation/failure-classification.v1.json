@@ -16,7 +16,8 @@
         "renderer_stroke_join_raster_unproven",
         "renderer_stroke_dash_raster_unproven",
         "renderer_non_scaling_stroke_unproven",
-        "renderer_marker_raster_unproven"
+        "renderer_marker_raster_unproven",
+        "renderer_embedded_raster_unavailable"
       ],
       "prefix": []
     },
@@ -34,6 +35,7 @@
         "css_variable_expansion_limit",
         "css_variable_syntax_unsupported",
         "duplicate_source_subject_id",
+        "embedded_raster_variant_unsupported",
         "font_analysis_deferred",
         "gradient_color_interpolation_unsupported",
         "gradient_dynamic_content_unsupported",

@@ -1,7 +1,19 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/19",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/20",
   "cases": [
+    {
+      "id": "embedded-raster-png",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_embedded_raster_unavailable",
+      "reason": "The pinned renderer does not composite admitted PNG image resources; production retains intrinsic decoded evidence and guards final-canvas rendering."
+    },
+    {
+      "id": "embedded-raster-jpeg",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_embedded_raster_unavailable",
+      "reason": "The pinned renderer does not composite admitted JPEG image resources; production retains intrinsic decoded evidence and guards final-canvas rendering."
+    },
     {
       "id": "use-nested-transform",
       "disposition": "diagnostic",

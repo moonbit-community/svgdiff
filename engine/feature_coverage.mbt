@@ -124,6 +124,33 @@ fn add_source_subject_coverage(
 }
 
 ///|
+fn add_embedded_image_subject_coverage(
+  matrix : Array[FeatureCoverage],
+  report : StructuredReport,
+  subject : EmbeddedImageSubject,
+) -> Unit {
+  let diagnostics = coverage_diagnostics_for_subject(
+    report,
+    subject.subject_id,
+    "image",
+  )
+  add_feature_coverage(matrix, {
+    feature_id: "subject.image",
+    subject_id: subject.subject_id,
+    source_semantics: coverage_status_for_layer(
+      diagnostics, "source_semantics", "covered",
+    ),
+    computed_appearance: coverage_status_for_layer(
+      diagnostics, "computed_appearance", "covered",
+    ),
+    rendered_evidence: coverage_status_for_layer(
+      diagnostics, "rendered_evidence", "covered",
+    ),
+    diagnostic_ids: coverage_diagnostic_ids(diagnostics),
+  })
+}
+
+///|
 fn difference_subject_id(
   report : StructuredReport,
   difference : AtomicDifference,
@@ -163,6 +190,26 @@ fn add_difference_coverage(
   let diagnostics = coverage_diagnostics_for_subject(
     report, subject_id, subject_id,
   )
+  match difference.subject_alignment_id {
+    Some(alignment_id) =>
+      for alignment in report.subject_alignments {
+        if alignment.id != alignment_id {
+          continue
+        }
+        let aligned_subject_ids = [
+          for reference in alignment.before + alignment.after => {
+            coverage_reference_subject_id(reference)
+          }
+        ]
+        for diagnostic in report.diagnostics {
+          if aligned_subject_ids.contains(diagnostic.subject_id) &&
+            !diagnostics.any(current => current.id == diagnostic.id) {
+            diagnostics.push(diagnostic)
+          }
+        }
+      }
+    None => ()
+  }
   for diagnostic in report.diagnostics {
     if difference.computed_relation.diagnostic_ids.contains(diagnostic.id) &&
       !diagnostics.any(current => current.id == diagnostic.id) {
@@ -246,6 +293,7 @@ fn attach_feature_coverage(
   report : StructuredReport,
   before_svg : String,
   after_svg : String,
+  limits : ResourceLimits,
 ) -> StructuredReport {
   if report.analysis_status == "failed" {
     return report
@@ -277,6 +325,26 @@ fn attach_feature_coverage(
   }
   for subject in after_subjects {
     add_source_subject_coverage(matrix, report, subject)
+  }
+  let before_images = extract_embedded_image_subjects_or_raise(
+    before_svg,
+    report.profile,
+    limits,
+  ) catch {
+    _ => []
+  }
+  let after_images = extract_embedded_image_subjects_or_raise(
+    after_svg,
+    report.profile,
+    limits,
+  ) catch {
+    _ => []
+  }
+  for subject in before_images {
+    add_embedded_image_subject_coverage(matrix, report, subject)
+  }
+  for subject in after_images {
+    add_embedded_image_subject_coverage(matrix, report, subject)
   }
   for difference in report.atomic_differences {
     add_difference_coverage(matrix, report, difference)

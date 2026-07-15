@@ -1394,6 +1394,10 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
+  let report = attach_embedded_image_differences(
+    report, before_svg, after_svg, combined_alignments, limits,
+  )
+  comparison_guard.checkpoint()
   let report = attach_unused_definition_differences(
     report, before_svg, after_svg,
   )
@@ -1404,12 +1408,7 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = match
     attach_difference_regions(
-      report,
-      before_svg,
-      after_svg,
-      combined_alignments,
-      limits.max_regions,
-      comparison_guard,
+      report, before_svg, after_svg, combined_alignments, limits, comparison_guard,
     ) {
     RegionsAttached(report) => report
     AttachmentRegionLimitExceeded =>
@@ -1422,7 +1421,7 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_difference_magnitudes(report)
   comparison_guard.checkpoint()
-  let report = attach_feature_coverage(report, before_svg, after_svg)
+  let report = attach_feature_coverage(report, before_svg, after_svg, limits)
   comparison_guard.checkpoint()
   let report = enforce_coverage_proof(report, before_svg, after_svg)
   comparison_guard.checkpoint()

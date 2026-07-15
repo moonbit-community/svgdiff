@@ -2,7 +2,7 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-adapter="$root/_build/native/release/build/evaluation/renderer_adapter/renderer_adapter.exe"
+adapter="$root/_build/native/release/build/Milky2018/svgdiff/evaluation/renderer_adapter/renderer_adapter.exe"
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 OUTPUT_JSON" >&2

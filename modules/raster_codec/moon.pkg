@@ -1,0 +1,6 @@
+import {
+  "mizchi/zlib",
+  "moonbitlang/core/math",
+}
+
+supported_targets = "+native"

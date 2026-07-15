@@ -2,9 +2,9 @@
 
 Status: current maintenance ledger
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.22`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.23`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -16,14 +16,15 @@ This ledger records the licenses shipped with the currently resolved packages, t
 | `moonbitlang/async` | Direct module dependency | `0.19.1` | Apache-2.0 | Yes |
 | `moonbitlang/x` | Direct module dependency | `0.4.40` | Apache-2.0 | No |
 | `moonbitlang/quickcheck` | Direct module dependency retained by `moon info` | `0.14.0` | Apache-2.0 | Yes |
+| `Milky2018/svgdiff-raster-codec` | Direct local workspace module; bounded admitted PNG/JPEG subset decoding | `0.1.0` | Apache-2.0 | Project-owned source and LICENSE |
 | `mizchi/image` | Transitive through `pixelmatch` | `0.1.2` | Apache-2.0 | No |
-| `mizchi/zlib` | Transitive through `image` | `0.4.0` | Apache-2.0 | Yes |
+| `mizchi/zlib` | Transitive through `image` and the raster-codec module | `0.4.6` | Apache-2.0 | Yes |
 
-Evidence comes from the resolved `.mooncakes` manifests and packaged LICENSE files on 2026-07-14. The root project declares Apache-2.0 and includes its own [`LICENSE`](../LICENSE).
+Evidence comes from `moon tree`, the resolved `.mooncakes` manifests, the local workspace module, and packaged LICENSE files on 2026-07-15. The root project declares Apache-2.0 and includes its own [`LICENSE`](../LICENSE).
 
-All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all eight resolved packages. This is transparent packaging evidence, not a legal opinion.
+All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all nine resolved packages. This is transparent packaging evidence, not a legal opinion.
 
-`mizchi/canvas@0.9.0` and its `mizchi/image@0.4.2` dependency were used only in an experiment. They are not part of the production dependency graph above.
+`mizchi/canvas@0.9.0` and its `mizchi/image@0.4.2` dependency were used only in an experiment. They are not part of the production dependency graph above. The project-owned raster-codec module is derived from the Apache-2.0 production decoder sources in `mizchi/image@0.1.2`; its narrow bounded API and attribution are documented in [`modules/raster_codec/README.mbt.md`](../modules/raster_codec/README.mbt.md).
 
 ## Current security boundary
 
@@ -33,6 +34,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 - Namespace-aware UTF-16 Source Spans allow parse failures and authored facts to be localized without reparsing untrusted text through a second XML implementation.
 - Unsupported SVG elements, attributes, CSS, resources, and dynamic behavior reduce analysis coverage through Diagnostics rather than being executed or treated as equality.
 - The comparison engine performs no implicit network fetches.
+- Embedded raster loading admits only an explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data-URL subset, validates MIME, signatures, decoder progress, scan/table bounds, and unsupported pixel-affecting variants, bounds source bytes, decoded bytes, dimensions, pixels, cumulative pixels, and PNG decompression output, and never reads a locator as a path. Serialized reports retain hashes and Source Spans rather than payloads.
 - Fixed [comparison resource limits](resource-limits.md) bound UTF-8 input bytes, XML elements and nesting, path-data work, references, raster dimensions, Difference Regions, and built-in JSON output. An overrun returns a bounded failed report rather than a truncated inventory.
 - The project-owned [local-reference guard](reference-safety.md) rejects cycles and saturates transitive `<use>` expansion before the pinned renderer can clone the graph.
 
@@ -53,7 +55,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 ## Known security gaps
 
-Schema `1.22` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.23` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;
@@ -70,7 +72,7 @@ These gaps do not permit false complete analysis, and fixed limits plus local-re
 | Item | Live upstream status on 2026-07-14 | Project impact | Current safe behavior |
 | --- | --- | --- | --- |
 | [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Open, ready for review; the pinned `0.2.1` package does not contain the change | The raw dependency can resolve conflicting presentation and inline declarations in XML attribute order | Normalize complete supported overlaps in a private renderer-input copy; retain `renderer_style_precedence_unresolved` only when a safe rewrite is unproven |
-| [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Blocks the evaluated `mizchi/canvas` path and contributes to `moon doc` dependency-test failure | Keep canvas out of production; do not patch the dependency cache |
+| [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Direct `mizchi/image` dependencies fail while compiling packaged upstream tests, but the decoder implementation remains usable | Keep canvas and direct image dependencies out of production; maintain the narrow attributed workspace codec without patching the dependency cache |
 | `moonbitlang/x@0.4.40` `Rational[Int64]` lacks `Debug` in dependency `assert_eq` tests | No matching open upstream PR found in the 2026-07-14 check | `moon doc` fails while checking transitive dependency tests | Use `moon ide doc` and `moon info`; project check, tests, and CLI remain green |
 
 Deterministic font analysis is a deferred product capability, not an upstream blocker. It remains tracked separately because the font environment and shaping contract require a design decision before implementation.

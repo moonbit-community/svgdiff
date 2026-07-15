@@ -180,18 +180,45 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
         magnitude = difference.get("magnitude")
         if not isinstance(magnitude, dict) or not set(magnitude_fields) <= set(
             magnitude
-        ) or set(magnitude) - set(magnitude_fields) > {"transform_effect"}:
+        ) or set(magnitude) - set(magnitude_fields) > {
+            "transform_effect",
+            "intrinsic_raster",
+        }:
             raise ValueError(
                 f"{case['id']}: {difference['id']} lost the raw magnitude vector"
             )
         if any(
             value is not None and type(value) not in {int, float}
             for name, value in magnitude.items()
-            if name != "transform_effect"
+            if name not in {"transform_effect", "intrinsic_raster"}
         ):
             raise ValueError(
                 f"{case['id']}: {difference['id']} has a nonnumeric raw magnitude"
             )
+        intrinsic = magnitude.get("intrinsic_raster")
+        if intrinsic is not None:
+            intrinsic_fields = {
+                "before_width",
+                "before_height",
+                "after_width",
+                "after_height",
+                "compared_pixels",
+                "changed_pixels",
+                "changed_pixel_fraction",
+                "rgba8_rmse",
+                "linear_premultiplied_rgba_rmse",
+            }
+            if not isinstance(intrinsic, dict) or set(intrinsic) != intrinsic_fields:
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has an invalid intrinsic raster magnitude"
+                )
+            if any(
+                value is not None and type(value) not in {int, float}
+                for value in intrinsic.values()
+            ):
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has a nonnumeric intrinsic raster magnitude"
+                )
         domain = difference["domain"]
         effect = magnitude.get("transform_effect")
         transform_components = {
@@ -219,6 +246,16 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
                     expected_components.append(value)
             if magnitude["raster_changed_pixel_fraction"] is not None:
                 expected_components.append(magnitude["raster_changed_pixel_fraction"])
+        elif domain == "resource.image.content" and intrinsic is not None:
+            expected_components = [
+                intrinsic[field]
+                for field in (
+                    "linear_premultiplied_rgba_rmse",
+                    "rgba8_rmse",
+                    "changed_pixel_fraction",
+                )
+                if intrinsic[field] is not None
+            ]
         elif domain.startswith("geometry."):
             source_fields = (
                 "geometry_displacement_css_px",
@@ -242,7 +279,7 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
                 "raster_linear_premultiplied_rgba_rmse",
                 "raster_rgba8_rmse",
             )
-        if domain not in transform_components:
+        if domain not in transform_components and domain != "resource.image.content":
             expected_components = [
                 magnitude[field]
                 for field in source_fields
@@ -268,7 +305,11 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
         "confidence",
         "confidence_status",
     }
-    assessed_score_kinds = {"exact_visual_signature", "property_distance"}
+    assessed_score_kinds = {
+        "exact_visual_signature",
+        "property_distance",
+        "embedded_image_source_order_v1",
+    }
     unassessed_score_kinds = {
         "structural_rule",
         "unmatched",

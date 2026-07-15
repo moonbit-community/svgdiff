@@ -208,6 +208,22 @@ fn alignment_bounds(
 }
 
 ///|
+fn embedded_image_alignment_bounds(
+  alignment : SubjectAlignment,
+  before : Array[EmbeddedImageSubject],
+  after : Array[EmbeddedImageSubject],
+) -> CssBounds? {
+  union_bounds(
+    embedded_image_subject_for_reference(before, alignment.before)
+    .map(embedded_image_subject_bounds)
+    .unwrap_or(None),
+    embedded_image_subject_for_reference(after, alignment.after)
+    .map(embedded_image_subject_bounds)
+    .unwrap_or(None),
+  )
+}
+
+///|
 fn pixels_differ(before : @svg.Image, after : @svg.Image, index : Int) -> Bool {
   let left = before.pixels[index]
   let right = after.pixels[index]
@@ -793,7 +809,7 @@ fn attach_difference_regions(
   before_svg : String,
   after_svg : String,
   alignments : Array[SubjectAlignment],
-  max_regions : Int,
+  limits : ResourceLimits,
   comparison_guard : ComparisonGuard,
 ) -> DifferenceRegionAttachment raise ComparisonInterrupted {
   comparison_guard.checkpoint()
@@ -806,6 +822,20 @@ fn attach_difference_regions(
   let after = extract_source_subjects_with_profile_or_raise(
     after_svg,
     report.profile,
+  ) catch {
+    _ => []
+  }
+  let before_images = extract_embedded_image_subjects_or_raise(
+    before_svg,
+    report.profile,
+    limits,
+  ) catch {
+    _ => []
+  }
+  let after_images = extract_embedded_image_subjects_or_raise(
+    after_svg,
+    report.profile,
+    limits,
   ) catch {
     _ => []
   }
@@ -837,7 +867,8 @@ fn attach_difference_regions(
   }
   let pixel_regions = match rendered_images {
     Some((before_image, after_image)) =>
-      match pixel_difference_regions(before_image, after_image, max_regions) {
+      match
+        pixel_difference_regions(before_image, after_image, limits.max_regions) {
         Regions(regions) => regions
         RegionLimitExceeded => return AttachmentRegionLimitExceeded
       }
@@ -851,6 +882,10 @@ fn attach_difference_regions(
       Some(bounds) => Some(bounds)
       None =>
         match alignment_for_event(event, alignments) {
+          Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
+            embedded_image_alignment_bounds(
+              alignment, before_images, after_images,
+            )
           Some(alignment) => alignment_bounds(alignment, before, after)
           None => None
         }
@@ -861,7 +896,7 @@ fn attach_difference_regions(
         Some(bounds) =>
           for region in pixel_regions {
             if regions_intersect(region, bounds) {
-              if attached_region_count >= max_regions {
+              if attached_region_count >= limits.max_regions {
                 return AttachmentRegionLimitExceeded
               }
               regions.push(region)
@@ -870,7 +905,7 @@ fn attach_difference_regions(
           }
         None =>
           for region in pixel_regions {
-            if attached_region_count >= max_regions {
+            if attached_region_count >= limits.max_regions {
               return AttachmentRegionLimitExceeded
             }
             regions.push(region)
@@ -880,7 +915,7 @@ fn attach_difference_regions(
     } else {
       match bounds {
         Some(bounds) => {
-          if attached_region_count >= max_regions {
+          if attached_region_count >= limits.max_regions {
             return AttachmentRegionLimitExceeded
           }
           regions.push(

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.22",
+  "schema_version": "1.23",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -127,7 +127,7 @@
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
     "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/19"
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/20"
   },
   "subject_alignments": [
     {
@@ -241,7 +241,8 @@
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.28125,
         "raster_rgba8_rmse": 0.375,
-        "raster_linear_premultiplied_rgba_rmse": 0.375
+        "raster_linear_premultiplied_rgba_rmse": 0.375,
+        "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
@@ -279,7 +280,8 @@
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.28125,
         "raster_rgba8_rmse": 0.375,
-        "raster_linear_premultiplied_rgba_rmse": 0.375
+        "raster_linear_premultiplied_rgba_rmse": 0.375,
+        "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
@@ -338,7 +340,8 @@
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.28125,
         "raster_rgba8_rmse": 0.375,
-        "raster_linear_premultiplied_rgba_rmse": 0.375
+        "raster_linear_premultiplied_rgba_rmse": 0.375,
+        "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",

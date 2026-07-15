@@ -134,7 +134,7 @@ fi
 bundle="$output_root/svgdiff-$module_version-$target_os-$target_arch"
 
 moon build --target native --release cmd/svgdiff >/dev/null
-binary="$root/_build/native/release/build/cmd/svgdiff/svgdiff.exe"
+binary="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 if [ ! -f "$binary" ]; then
   printf 'Release binary was not produced at %s\n' "$binary" >&2
   exit 1
