@@ -70,6 +70,31 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
                 f"{case['id']}: {check['field']}={actual_value!r} does not "
                 f"satisfy {check['op']} {expected_value!r}"
             )
+    if "instance_ids" in expected:
+        instance_ids = []
+        for alignment in report["subject_alignments"]:
+            for reference in alignment["before"] + alignment["after"]:
+                context = reference.get("instance_context")
+                if context is not None:
+                    instance_ids.append(context["instance_id"])
+        if sorted(set(instance_ids)) != expected["instance_ids"]:
+            raise ValueError(
+                f"{case['id']}: expected instance IDs={expected['instance_ids']!r}, "
+                f"got {sorted(set(instance_ids))!r}"
+            )
+    if "changed_fact_affected_subject_ids" in expected:
+        affected = sorted(
+            {
+                subject_id
+                for fact in report["changed_facts"]
+                for subject_id in fact["affected_subject_ids"]
+            }
+        )
+        if affected != expected["changed_fact_affected_subject_ids"]:
+            raise ValueError(
+                f"{case['id']}: expected affected subjects="
+                f"{expected['changed_fact_affected_subject_ids']!r}, got {affected!r}"
+            )
 
 
 def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
@@ -250,6 +275,13 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
         "group_identity_or_singleton",
     }
     for index, alignment in enumerate(report["subject_alignments"]):
+        if any(
+            "instance_context" not in reference
+            for reference in alignment["before"] + alignment["after"]
+        ):
+            raise ValueError(
+                f"{case['id']}: current producer omitted instance context"
+            )
         evidence = alignment.get("evidence")
         if not isinstance(evidence, dict) or not required <= set(evidence):
             raise ValueError(
@@ -448,6 +480,15 @@ def main() -> None:
     ]
     expect_schema_rejection(
         incomplete_alignment_evidence, schema, "incomplete alignment evidence"
+    )
+    missing_instance_context_field = copy.deepcopy(reports["use-definition-change"])
+    del missing_instance_context_field["subject_alignments"][0]["before"][0][
+        "instance_context"
+    ]["definition_subject_id"]
+    expect_schema_rejection(
+        missing_instance_context_field,
+        schema,
+        "incomplete present instance context",
     )
     invalid_diagnostic_role = copy.deepcopy(reports["tiny-numeric-geometry"])
     invalid_diagnostic_role["diagnostics"][0]["source_locations"][0][

@@ -18,6 +18,10 @@ test "current renderer diagnostics expose stable capability gaps" {
       "raster.affine_transform", "guarded",
     ),
     (
+      "<svg width='16' height='16'><defs><rect id='shape' width='3' height='2'/></defs><use id='placed' href='#shape' x='3' y='4' transform='scale(2)'/></svg>",
+      "raster.use_transform_placement", "guarded",
+    ),
+    (
       "<svg width='16' height='16' viewBox='0 0 10 10'><rect id='box' width='8' height='8' fill='red'/></svg>",
       "raster.viewport_mapping", "guarded",
     ),

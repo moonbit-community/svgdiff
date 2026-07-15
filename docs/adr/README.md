@@ -66,6 +66,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0060](0060-resolve-static-patterns-as-resource-and-consumer-semantics.md) | Accepted, implemented for the admitted static same-document child slice | Resolve pattern tile, viewport, template, and child semantics separately from every consumer and guarded raster evidence. |
 | [0061](0061-select-svg-paint-fallbacks-before-resource-mediation.md) | Accepted, implemented for static same-document paint URLs | Select valid resources, local fallback paint, or no paint before resource fan-out while retaining authored declarations. |
 | [0062](0062-resolve-inherited-paint-order-and-winding-rules.md) | Accepted, implemented for the admitted static shape slice | Resolve inherited paint order and winding rules by active operation while guarding deferred clip-path evaluation. |
+| [0063](0063-separate-use-instances-from-authored-definitions.md) | Accepted, implemented for the admitted static same-document slice | Keep authored definition identity separate from deterministic rendered use-instance paths. |
 
 ## CLI and distribution decisions
 

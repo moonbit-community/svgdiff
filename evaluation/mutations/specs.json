@@ -465,6 +465,20 @@
       "after_value": "<rect id='box' x='2' y='2' width='8' height='8' fill='red' clip-rule='evenodd'/>",
       "expected_changed_fact": { "subject_kind": "rect", "source_property": "clip-rule", "report_property": "clip-rule", "before_declared_value": "nonzero", "after_declared_value": "evenodd", "affected_subject_ids": ["box"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-use-definition-fill",
+      "template": "templates/use-definition-fill.svg.tmpl",
+      "before_value": "red", "after_value": "blue",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "fill", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["instance/a/tile", "instance/b/tile"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-use-placement-x",
+      "template": "templates/use-placement-x.svg.tmpl",
+      "before_value": "2", "after_value": "5",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "x", "report_property": "x", "before_declared_value": "2", "after_declared_value": "5", "affected_subject_ids": ["instance/placed/tile"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     }
   ]
 }

@@ -106,6 +106,12 @@
     { "id": "clip-rule-inherited", "source": "evaluation/renderer-conformance/fixtures/clip-rule-inherited.svg", "width": 16, "height": 16, "category": "clipping", "coverage_claim": "guarded", "canonical_equivalent_id": "clip-rule-inherited-canonical" },
     { "id": "clip-rule-inherited-canonical", "source": "evaluation/renderer-conformance/fixtures/clip-rule-inherited-canonical.svg", "width": 16, "height": 16, "category": "clipping", "coverage_claim": "guarded" },
     { "id": "fill-rule-nonzero", "source": "evaluation/renderer-conformance/fixtures/fill-rule-nonzero.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
-    { "id": "fill-rule-evenodd", "source": "evaluation/renderer-conformance/fixtures/fill-rule-evenodd.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" }
+    { "id": "fill-rule-evenodd", "source": "evaluation/renderer-conformance/fixtures/fill-rule-evenodd.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "use-shape-instances", "source": "evaluation/renderer-conformance/fixtures/use-shape-instances.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "use-group-inheritance", "source": "evaluation/renderer-conformance/fixtures/use-group-inheritance.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "use-symbol-viewport", "source": "evaluation/renderer-conformance/fixtures/use-symbol-viewport.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "use-nested-transform", "source": "evaluation/renderer-conformance/fixtures/use-nested-transform.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "use-nested", "source": "evaluation/renderer-conformance/fixtures/use-nested.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
+    { "id": "use-transform", "source": "evaluation/renderer-conformance/fixtures/use-transform.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
   ]
 }

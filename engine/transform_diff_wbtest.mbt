@@ -313,11 +313,9 @@ test "nested groups and viewports accumulate root to element" {
 }
 
 ///|
-test "resource-container ancestry participates in cumulative transforms" {
+test "uninstantiated definition ancestry produces no rendered subject" {
   let source = "<svg><defs transform='translate(2 3)'><g transform='scale(2)'><rect id='resource-shape' width='1' height='1'/></g></defs></svg>"
-  let subject = extract_source_subjects_or_raise(source)[0]
-  assert_eq(subject.cumulative_transform.signature(), "matrix(2,0,0,2,2,3)")
-  assert_eq(subject.transform_chain.length(), 4)
+  assert_true(extract_source_subjects_or_raise(source).is_empty())
 }
 
 ///|

@@ -53,6 +53,8 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     "svg"
     | "g"
     | "defs"
+    | "symbol"
+    | "use"
     | "pattern"
     | "clipPath"
     | "linearGradient"
@@ -218,7 +220,8 @@ fn add_fill_source_element(
   let index = elements.length()
   let resource_content = match parent_index {
     Some(parent) =>
-      elements[parent].resource_content || elements[parent].kind == "pattern"
+      elements[parent].resource_content ||
+      structural_definition_container(elements[parent].kind)
     None => false
   }
   elements.push({
@@ -233,7 +236,16 @@ fn add_fill_source_element(
   })
   if fill_entity_kind(kind) {
     all_entity_subject_ids.push(subject_id)
-    if !resource_content {
+    let mut clip_path_content = false
+    let mut ancestor = parent_index
+    while ancestor is Some(parent) {
+      if elements[parent].kind == "clipPath" {
+        clip_path_content = true
+        break
+      }
+      ancestor = elements[parent].parent_index
+    }
+    if !resource_content || clip_path_content {
       rect_subject_ids.push(subject_id)
     }
   }
@@ -1106,6 +1118,21 @@ fn computed_visual_facts_for_subject(
 }
 
 ///|
+fn resolved_visual_facts_for_subject(
+  hierarchy : FillHierarchy,
+  subject_id : String,
+) -> Array[ResolvedVisualFact] {
+  let facts : Array[ResolvedVisualFact] = []
+  for property in resolved_visual_properties() {
+    match resolved_visual_for_subject(hierarchy, subject_id, property) {
+      Some(fact) => facts.push(fact)
+      None => ()
+    }
+  }
+  facts
+}
+
+///|
 fn renderer_computed_override_facts_for_subject(
   hierarchy : FillHierarchy,
   subject_id : String,
@@ -1721,7 +1748,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.20",
+    schema_version: "1.21",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

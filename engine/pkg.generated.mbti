@@ -228,10 +228,17 @@ pub(all) struct SubjectAlignment {
   evidence : AlignmentEvidence
 } derive(ToJson)
 
+pub(all) struct SubjectInstanceContext {
+  instance_id : String
+  definition_subject_id : String
+  use_path : Array[String]
+} derive(ToJson)
+
 pub(all) struct SubjectReference {
   source_index : Int
   kind : String
   authored_id : String?
+  instance_context : SubjectInstanceContext?
 }
 pub impl ToJson for SubjectReference
 

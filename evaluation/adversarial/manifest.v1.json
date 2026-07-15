@@ -72,6 +72,13 @@
       "after": "evaluation/adversarial/cases/reference-expansion-binary-dag/after.svg",
       "viewport": { "width": 16, "height": 16 },
       "expected_exit_status": 1
+    },
+    {
+      "id": "use-missing-target-self-comparison",
+      "failure_mode": "use_invalid_reference",
+      "before": "evaluation/adversarial/cases/use-missing-target-self-comparison/before.svg",
+      "after": "evaluation/adversarial/cases/use-missing-target-self-comparison/after.svg",
+      "viewport": { "width": 16, "height": 16 }
     }
   ]
 }

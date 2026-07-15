@@ -367,6 +367,21 @@
       }
     },
     {
+      "id": "use-definition-change",
+      "before": "evaluation/schema-examples/cases/use-definition-change/before.svg",
+      "after": "evaluation/schema-examples/cases/use-definition-change/after.svg",
+      "output": "schema/examples/use-definition-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["paint.fill", "paint.fill"],
+        "computed_relations": ["different", "different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [],
+        "instance_ids": ["instance/a/tile", "instance/b/tile"],
+        "changed_fact_affected_subject_ids": ["instance/a/tile", "instance/b/tile"]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

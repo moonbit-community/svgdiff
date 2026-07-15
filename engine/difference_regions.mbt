@@ -165,7 +165,8 @@ fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
     None => None
   }
   let painted_geometry = match geometry_bounds {
-    Some(bounds) if !subject.stroke_active => Some(bounds)
+    Some(bounds) if !subject.stroke_active =>
+      Some(transform_bounds(bounds, subject.cumulative_transform))
     Some(bounds) if subject.stroke_non_scaling =>
       Some(
         inflate_bounds(

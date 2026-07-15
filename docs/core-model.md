@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.20`
+Status: current model for Structured Report schema `1.21`
 
 Last verified: 2026-07-15
 
@@ -27,21 +27,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.20
+  -> Structured Report 1.21
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.20` records:
+Schema `1.21` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
 - `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/17`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/18`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -124,9 +124,9 @@ The array does not enumerate capabilities unused by the inputs. An empty array t
 
 ### Subject Reference and Subject Alignment
 
-A `SubjectReference` identifies a report subject by source index, SVG kind, and optional authored ID. Authored IDs and source order are evidence, not authoritative cross-document identity.
+A `SubjectReference` identifies a report subject by source index, SVG kind, optional authored ID, and optional `SubjectInstanceContext`. A direct subject has null instance context. A subject rendered through `use` records a deterministic instance ID, its unchanged definition subject ID, and the outer-to-inner use-host path. Authored IDs and source order remain evidence rather than authoritative cross-document identity; instance paths establish placement identity without manufacturing cloned source declarations.
 
-A `SubjectAlignment` relates sets of before and after subjects. Its relation may express correspondence, insertion, deletion, split, or merge. The current analyzer implements basic set-to-set alignment for its supported shape subset; broader many-to-many matching remains roadmap work.
+A `SubjectAlignment` relates sets of before and after subjects. Its relation may express correspondence, insertion, deletion, split, or merge. Reused subjects first align by exact instance path and kind; direct subjects use the ordinary shape rules. The current analyzer implements basic set-to-set alignment for its supported shape subset; broader many-to-many matching remains roadmap work.
 
 Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). Schema `1.1` adds optional selection `evidence`, and current producers always emit its score kind, nullable selected score, local candidate counts, and `unique`, `tied`, or `not_assessed` ambiguity. `confidence` remains null with `confidence_status: "not_calibrated"`. The selected pairing is repeatable, but local uniqueness does not imply authoritative identity or global assignment uniqueness.
 
@@ -184,7 +184,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.20` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.21` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -200,11 +200,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.20` top-level object contains exactly these conceptual sections:
+The schema `1.21` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.20",
+  "schema_version": "1.21",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -236,7 +236,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.20
+## Not implemented in schema 1.21
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -246,7 +246,7 @@ The following concepts are intentional future work rather than hidden current fi
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
 - caller-supplied resource bundles, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
-- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, masks, clipping, blending, and reuse;
+- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, masks, clipping, blending, arbitrary structural reordering, symbol overflow clipping, and external or dynamic reuse;
 - cross-subject Visual Event aggregation.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).

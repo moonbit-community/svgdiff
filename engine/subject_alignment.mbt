@@ -6,6 +6,7 @@ priv struct SourceSubject {
   kind : String
   values : Array[(String, String)]
   facts : Array[DeclaredVisualFact]
+  resolved_visual_facts : Array[ResolvedVisualFact]
   geometry_invalid_facts : Array[DeclaredVisualFact]
   geometry_complete : Bool
   fillable_interior : Bool
@@ -73,12 +74,14 @@ fn subject_from_element(
   hierarchy_signature : String,
   transform_chain : Array[SourceTransformSite],
   computed_visual_facts : Array[DeclaredVisualFact],
+  resolved_visual_facts : Array[ResolvedVisualFact],
   inherited_marker_facts : Array[DeclaredVisualFact],
   viewport : ViewportContext,
   profile : ComparisonProfile,
   resource_owner_id : String?,
   clip_path_owner_id : String?,
   source_offset : Int,
+  instance_context : SubjectInstanceContext?,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let candidates : Array[CssCascadeCandidate] = []
@@ -207,12 +210,18 @@ fn subject_from_element(
     signature = "\{signature}|path=\{path_segments_signature(path_segments)}|path-complete=\{path_data_complete}"
   }
   {
-    reference: { source_index, kind: element.name.local_name, authored_id },
+    reference: {
+      source_index,
+      kind: element.name.local_name,
+      authored_id,
+      instance_context,
+    },
     signature,
     hierarchy_signature,
     kind: element.name.local_name,
     values,
     facts,
+    resolved_visual_facts,
     geometry_invalid_facts: geometry.invalid_facts,
     geometry_complete: geometry.complete,
     fillable_interior: geometry.fillable_interior,
@@ -331,7 +340,7 @@ fn joined_hierarchy_signature(stack : Array[String]) -> String {
 }
 
 ///|
-fn extract_source_subjects_internal_or_raise(
+fn extract_source_subjects_streaming_internal_or_raise(
   input : String,
   profile : ComparisonProfile,
   include_pattern_children : Bool,
@@ -415,6 +424,12 @@ fn extract_source_subjects_internal_or_raise(
               computed_visual_facts_for_subject(computed_hierarchy, subject_id)
             None => []
           }
+          let resolved_visual_facts = match
+            computed_hierarchy.all_entity_subject_ids.get(subjects.length()) {
+            Some(subject_id) =>
+              resolved_visual_facts_for_subject(computed_hierarchy, subject_id)
+            None => []
+          }
           subjects.push(
             subject_from_element(
               input,
@@ -427,6 +442,7 @@ fn extract_source_subjects_internal_or_raise(
               joined_hierarchy_signature(hierarchy),
               transforms.copy(),
               computed_visual_facts,
+              resolved_visual_facts,
               inherited_markers.last().unwrap_or([]),
               viewport_contexts
               .last()
@@ -438,6 +454,7 @@ fn extract_source_subjects_internal_or_raise(
               pattern_owners.last(),
               clip_path_owners.last(),
               event.span.start.offset,
+              None,
             ),
           )
         }
@@ -460,6 +477,12 @@ fn extract_source_subjects_internal_or_raise(
               computed_visual_facts_for_subject(computed_hierarchy, subject_id)
             None => []
           }
+          let resolved_visual_facts = match
+            computed_hierarchy.all_entity_subject_ids.get(subjects.length()) {
+            Some(subject_id) =>
+              resolved_visual_facts_for_subject(computed_hierarchy, subject_id)
+            None => []
+          }
           subjects.push(
             subject_from_element(
               input,
@@ -472,6 +495,7 @@ fn extract_source_subjects_internal_or_raise(
               joined_hierarchy_signature(hierarchy),
               transform_chain,
               computed_visual_facts,
+              resolved_visual_facts,
               inherited_markers.last().unwrap_or([]),
               viewport_contexts
               .last()
@@ -483,6 +507,7 @@ fn extract_source_subjects_internal_or_raise(
               pattern_owners.last(),
               clip_path_owners.last(),
               event.span.start.offset,
+              None,
             ),
           )
         }
@@ -518,6 +543,142 @@ fn extract_source_subjects_internal_or_raise(
       for subject in resolved if subject.resource_owner_id is None => subject
     ]
   }
+}
+
+///|
+fn source_subject_from_rendered_plan(
+  input : String,
+  profile : ComparisonProfile,
+  css_document : CssStaticDocument,
+  document : StructuralDocument,
+  plan : RenderedSubjectPlan,
+  source_index : Int,
+) -> SourceSubject {
+  let computed_hierarchy = rendered_plan_fill_hierarchy(
+    input, css_document, document, plan,
+  )
+  let computed_visual_facts = computed_visual_facts_for_subject(
+    computed_hierarchy,
+    plan.definition_subject_id,
+  )
+  let resolved_visual_facts = resolved_visual_facts_for_subject(
+    computed_hierarchy,
+    plan.definition_subject_id,
+  )
+  let transforms : Array[SourceTransformSite] = []
+  let hierarchy : Array[String] = []
+  let mut inherited_markers : Array[DeclaredVisualFact] = []
+  let mut viewport : ViewportContext = {
+    width: profile.viewport_width.to_double(),
+    height: profile.viewport_height.to_double(),
+  }
+  let mut first_node = true
+  let mut previous_node_index : Int? = None
+  for node_index in plan.rendered_ancestry {
+    let node = document.nodes[node_index]
+    let stylesheet_match = css_stylesheet_match_for_source(
+      css_document,
+      node.source_offset,
+    )
+    let site = if node.kind == "use" {
+      source_use_transform_site(input, node, node_index, profile, viewport)
+    } else if (node.kind == "symbol" || node.kind == "svg") &&
+      previous_node_index
+      .map(index => document.nodes[index].kind == "use")
+      .unwrap_or(false) {
+      let use_node = document.nodes[previous_node_index.unwrap()]
+      let result = source_instanced_viewport_site(
+        input, use_node, node, node_index, profile, viewport,
+      )
+      viewport = result.1
+      result.0
+    } else {
+      let (site, child_viewport) = source_transform_site_with_viewport(
+        input,
+        node.element,
+        node_index,
+        profile,
+        if first_node {
+          None
+        } else {
+          Some(viewport)
+        },
+      )
+      match child_viewport {
+        Some(value) => viewport = value
+        None => ()
+      }
+      site
+    }
+    first_node = false
+    previous_node_index = Some(node_index)
+    transforms.push(site)
+    if node.kind == "svg" ||
+      node.kind == "g" ||
+      node.kind == "symbol" ||
+      node.kind == "use" {
+      hierarchy.push(
+        hierarchy_element_signature(input, node.element, stylesheet_match),
+      )
+      inherited_markers = marker_inherited_facts_for_element(
+        input,
+        node.element,
+        stylesheet_match,
+        inherited_markers,
+      )
+    }
+  }
+  let source_node = document.nodes[plan.source_node_index]
+  subject_from_element(
+    input,
+    source_node.element,
+    css_stylesheet_match_for_source(css_document, source_node.source_offset),
+    source_index,
+    joined_hierarchy_signature(hierarchy),
+    transforms,
+    computed_visual_facts,
+    resolved_visual_facts,
+    inherited_markers,
+    viewport,
+    profile,
+    None,
+    None,
+    source_node.source_offset,
+    match plan.instance_id {
+      Some(instance_id) =>
+        Some({
+          instance_id,
+          definition_subject_id: plan.definition_subject_id,
+          use_path: plan.use_path,
+        })
+      None => None
+    },
+  )
+}
+
+///|
+fn extract_source_subjects_internal_or_raise(
+  input : String,
+  profile : ComparisonProfile,
+  include_pattern_children : Bool,
+) -> Array[SourceSubject] raise {
+  if include_pattern_children {
+    return extract_source_subjects_streaming_internal_or_raise(
+      input, profile, true,
+    )
+  }
+  let css_document = parse_static_css_document_or_raise(input)
+  let document = extract_structural_document_or_raise(input)
+  let plans = rendered_subject_plans(document)
+  let subjects : Array[SourceSubject] = []
+  for index, plan in plans {
+    subjects.push(
+      source_subject_from_rendered_plan(
+        input, profile, css_document, document, plan, index,
+      ),
+    )
+  }
+  resolve_marker_subjects_or_raise(input, subjects, profile)
 }
 
 ///|
@@ -853,6 +1014,35 @@ fn align_source_subjects_with_guard(
   let alignments : Array[SubjectAlignment] = []
   let before_used = Array::make(before.length(), false)
   let after_used = Array::make(after.length(), false)
+  for before_index, before_subject in before {
+    comparison_guard.checkpoint()
+    guard before_subject.reference.instance_context is Some(before_instance) else {
+      continue
+    }
+    for after_index, after_subject in after {
+      if after_used[after_index] || before_subject.kind != after_subject.kind {
+        continue
+      }
+      guard after_subject.reference.instance_context is Some(after_instance) else {
+        continue
+      }
+      if before_instance.use_path == after_instance.use_path {
+        before_used[before_index] = true
+        after_used[after_index] = true
+        alignments.push(
+          make_alignment(
+            alignments.length(),
+            "correspondence",
+            [before_subject],
+            [after_subject],
+            "use_instance_path",
+            alignment_evidence("structural_rule", None, 0, 0, "not_assessed"),
+          ),
+        )
+        break
+      }
+    }
+  }
   for before_index, before_subject in before {
     comparison_guard.checkpoint()
     if before_used[before_index] {
@@ -1191,6 +1381,10 @@ fn finish_report(
   let report = attach_pattern_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
+  let report = attach_unused_definition_differences(
+    report, before_svg, after_svg,
+  )
   comparison_guard.checkpoint()
   let report = match
     attach_difference_regions(

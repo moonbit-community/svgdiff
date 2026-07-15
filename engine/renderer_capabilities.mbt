@@ -13,6 +13,8 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
       Some(("raster.fractional_opacity", "guarded"))
     "renderer_transform_raster_unproven" =>
       Some(("raster.affine_transform", "guarded"))
+    "renderer_use_transform_raster_unproven" =>
+      Some(("raster.use_transform_placement", "guarded"))
     "renderer_viewport_raster_unproven" =>
       Some(("raster.viewport_mapping", "guarded"))
     "renderer_curved_shape_raster_unproven" =>

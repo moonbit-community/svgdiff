@@ -17,6 +17,7 @@ EXPECTED_MODES = {
     "magnitude_ordering",
     "reference_cycle",
     "reference_expansion",
+    "use_invalid_reference",
 }
 
 
@@ -66,7 +67,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.20":
+    if report.get("schema_version") != "1.21":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -272,6 +273,25 @@ def validate_reference_expansion(report: dict) -> None:
         raise ValueError("reference expansion failure exposed a partial inventory")
 
 
+def validate_use_invalid_reference(report: dict) -> None:
+    if report["analysis_status"] != "partial":
+        raise ValueError("missing use target produced complete analysis")
+    if diagnostic_codes(report) != {
+        "analysis_coverage_unproven",
+        "use_target_missing",
+    }:
+        raise ValueError("missing use target lost its stable Diagnostic")
+    if report["atomic_differences"] or report["events"]:
+        raise ValueError("missing use target invented a visual difference")
+    locations = [
+        location
+        for diagnostic in report["diagnostics"]
+        for location in diagnostic["source_locations"]
+    ]
+    if {location["source_role"] for location in locations} != {"before", "after"}:
+        raise ValueError("missing use target Diagnostic lost source-role locations")
+
+
 def main() -> None:
     args = parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
@@ -307,6 +327,7 @@ def main() -> None:
         "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),
         "reference_cycle": lambda _case, report: validate_reference_cycle(report),
         "reference_expansion": lambda _case, report: validate_reference_expansion(report),
+        "use_invalid_reference": lambda _case, report: validate_use_invalid_reference(report),
     }
     for case in cases:
         report, report_sha256 = run_case(args.cli, case)

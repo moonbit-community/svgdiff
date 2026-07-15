@@ -117,7 +117,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ### Structure, reuse, and resources
 
-- [ ] **P0** Model `<g>`, `<defs>`, `<symbol>`, and `<use>` without losing instance-versus-definition identity.
+- [x] **P0** Model `<g>`, `<defs>`, `<symbol>`, and `<use>` without losing instance-versus-definition identity.
 - [ ] **P0** Report structural changes that alter computed appearance, stacking, inheritance, or resource resolution.
 - [ ] **P0** Build a resource dependency graph for gradients, patterns, markers, clips, masks, filters, symbols, and images.
 - [ ] **P1** Implement embedded raster-image and data-URI resources under a declared resource policy.

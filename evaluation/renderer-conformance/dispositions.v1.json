@@ -1,7 +1,19 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/17",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/18",
   "cases": [
+    {
+      "id": "use-nested-transform",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_use_transform_raster_unproven",
+      "reason": "The pinned renderer composes a transformed use host with its supplemental x and y translation differently from Chromium; nested expansion itself is exact."
+    },
+    {
+      "id": "use-transform",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_use_transform_raster_unproven",
+      "reason": "The pinned renderer diverges when a use host combines an authored transform with nonzero supplemental x or y translation."
+    },
     {
       "id": "subtle-geometry-after",
       "disposition": "diagnostic",

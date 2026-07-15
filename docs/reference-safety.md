@@ -1,6 +1,6 @@
 # Local Reference Safety
 
-Status: current module `0.4.14` and schema `1.20` admission contract
+Status: current module `0.5.0` and schema `1.21` admission contract
 
 Last verified: 2026-07-14
 
@@ -24,6 +24,8 @@ References found under an ID-bearing element are attached to every containing ID
 Ancestor propagation could otherwise multiply the 100,000 source-reference budget by the maximum nesting depth. The graph therefore admits at most 1,000,000 materialized owner-edge instances. It checks the boundary before appending an edge and returns source-located `resource_limit_exceeded` with subject `reference_graph_edges.before` or `.after` at the first excess. This fail-closed bound keeps the conservative completeness rule from becoming its own memory-exhaustion path.
 
 This completeness claim is relative to the accepted grammar above and the current static-input boundary. Stylesheet text, dynamic script or animation references, external resources, and unsupported reference syntaxes are not silently executed by the analyzer or renderer and remain outside this guard's claim.
+
+The structural instance model reuses this admitted graph. It does not perform a second permissive lookup: only acyclic bounded same-document `use` edges can create rendered-subject plans. Missing, external, and wrong-kind targets remain partial with located `use_*` Diagnostics; accepted cycles and expansion overflow remain failed admission results.
 
 ## Cycle rejection
 

@@ -68,6 +68,8 @@ pub using @engine {type StructuredReport}
 
 pub using @engine {type SubjectAlignment}
 
+pub using @engine {type SubjectInstanceContext}
+
 pub using @engine {type SubjectReference}
 
 pub using @engine {type TransformEffectMagnitude}

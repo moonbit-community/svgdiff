@@ -42,7 +42,13 @@ fn find_coverage_row(
 
 ///|
 fn coverage_reference_subject_id(reference : SubjectReference) -> String {
-  reference.authored_id.unwrap_or("\{reference.kind}:\{reference.source_index}")
+  match reference.instance_context {
+    Some(context) => context.instance_id
+    None =>
+      reference.authored_id.unwrap_or(
+        "\{reference.kind}:\{reference.source_index}",
+      )
+  }
 }
 
 ///|

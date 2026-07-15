@@ -3,14 +3,25 @@ fn source_subject_fact(
   subject : SourceSubject,
   property : String,
 ) -> DeclaredVisualFact? {
-  declared_fact_in_array(subject.facts, property)
+  match declared_fact_in_array(subject.facts, property) {
+    Some(fact) => Some(fact)
+    None if subject.reference.instance_context is Some(_) =>
+      source_subject_resolution(subject, property).bind(resolution => {
+        resolution.declaration
+      })
+    None => None
+  }
 }
 
 ///|
 fn source_subject_id(subject : SourceSubject) -> String {
-  subject.reference.authored_id.unwrap_or(
-    "\{subject.kind}:\{subject.reference.source_index}",
-  )
+  match subject.reference.instance_context {
+    Some(context) => context.instance_id
+    None =>
+      subject.reference.authored_id.unwrap_or(
+        "\{subject.kind}:\{subject.reference.source_index}",
+      )
+  }
 }
 
 ///|
@@ -679,6 +690,97 @@ fn alignment_subject_ids(
 }
 
 ///|
+fn source_subject_resolution(
+  subject : SourceSubject,
+  property : String,
+) -> ResolvedVisualFact? {
+  for fact in subject.resolved_visual_facts {
+    if fact.property == property {
+      return Some({ ..fact, subject_id: source_subject_id(subject) })
+    }
+  }
+  None
+}
+
+///|
+fn instance_changed_fact_owner(
+  before : SourceSubject,
+  after : SourceSubject,
+  property : String,
+) -> String? {
+  if before.reference.instance_context is None &&
+    after.reference.instance_context is None {
+    return None
+  }
+  let before_owner = source_subject_resolution(before, property).bind(fact => {
+    fact.declaration_owner_id
+  })
+  let after_owner = source_subject_resolution(after, property).bind(fact => {
+    fact.declaration_owner_id
+  })
+  match (before_owner, after_owner) {
+    (Some(before_owner), Some(after_owner)) if before_owner == after_owner =>
+      Some(before_owner)
+    (Some(owner), None) | (None, Some(owner)) => Some(owner)
+    _ => None
+  }
+}
+
+///|
+fn append_or_merge_changed_fact(
+  changed_facts : Array[ChangedFact],
+  id : String,
+  subject_id : String,
+  property : String,
+  before : DeclaredVisualFact?,
+  after : DeclaredVisualFact?,
+  affected_subject_ids : Array[String],
+) -> Unit {
+  for index, fact in changed_facts {
+    if fact.id == id {
+      let affected = fact.affected_subject_ids.copy()
+      for affected_id in affected_subject_ids {
+        if !affected.contains(affected_id) {
+          affected.push(affected_id)
+        }
+      }
+      affected.sort()
+      changed_facts[index] = { ..fact, affected_subject_ids: affected }
+      return
+    }
+  }
+  changed_facts.push({
+    id,
+    subject_id,
+    property,
+    before,
+    after,
+    affected_subject_ids,
+  })
+}
+
+///|
+fn append_source_resolution_pair(
+  resolutions : Array[SourceResolutionPair],
+  subject : SourceSubject,
+  other : SourceSubject,
+  property : String,
+) -> Unit {
+  let subject_id = source_subject_id(subject)
+  if resolutions.any(pair => {
+      pair.subject_id == subject_id && pair.property == property
+    }) {
+    return
+  }
+  resolutions.push({
+    subject_id,
+    property,
+    before: source_subject_resolution(subject, property),
+    after: source_subject_resolution(other, property),
+  })
+}
+
+///|
 fn subjects_for_references(
   subjects : Array[SourceSubject],
   references : Array[SubjectReference],
@@ -751,6 +853,8 @@ fn generic_basic_shape_report(
   }
   let needs_generic = before.length() > 1 ||
     after.length() > 1 ||
+    before.any(subject => subject.reference.instance_context is Some(_)) ||
+    after.any(subject => subject.reference.instance_context is Some(_)) ||
     before.any(subject => subject.kind != "rect") ||
     after.any(subject => subject.kind != "rect") ||
     single_rect_special_change
@@ -758,6 +862,7 @@ fn generic_basic_shape_report(
     return None
   }
   let changed_facts : Array[ChangedFact] = []
+  let source_resolutions : Array[SourceResolutionPair] = []
   let differences : Array[AtomicDifference] = []
   let events : Array[VisualEvent] = []
   let path_boundary_budget = PathBoundaryBudget::new()
@@ -780,21 +885,32 @@ fn generic_basic_shape_report(
           if !declared_fact_changed(before_fact, after_fact) {
             continue
           }
-          let fact_id = "fact:\{alignment.id}:\{property}"
+          let changed_owner = instance_changed_fact_owner(
+            before_subject, after_subject, property,
+          )
+          let fact_id = match changed_owner {
+            Some(owner) => "fact:source:\{owner}:\{property}"
+            None => "fact:\{alignment.id}:\{property}"
+          }
           let difference_id = "diff:\{alignment.id}:\{property}"
           let relation = generic_relation(
             property, before_subject, after_subject, before_fact, after_fact,
           )
-          changed_facts.push({
-            id: fact_id,
-            subject_id: alignment.id,
+          append_or_merge_changed_fact(
+            changed_facts,
+            fact_id,
+            changed_owner.unwrap_or(alignment.id),
             property,
-            before: before_fact,
-            after: after_fact,
-            affected_subject_ids: alignment_subject_ids([before_subject], [
-              after_subject,
-            ]),
-          })
+            before_fact,
+            after_fact,
+            alignment_subject_ids([before_subject], [after_subject]),
+          )
+          if before_subject.reference.instance_context is Some(_) ||
+            after_subject.reference.instance_context is Some(_) {
+            append_source_resolution_pair(
+              source_resolutions, before_subject, after_subject, property,
+            )
+          }
           let evidence_layers : Array[String] = ["source_semantics"]
           if relation.status == "different" {
             evidence_layers.push("computed_appearance")
@@ -941,14 +1057,14 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.20",
+    schema_version: "1.21",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],
     profile,
     subject_alignments: alignments,
     changed_facts,
-    source_resolutions: [],
+    source_resolutions,
     atomic_differences: differences,
     events,
     diagnostics: [],

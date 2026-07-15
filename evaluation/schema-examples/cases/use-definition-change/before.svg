@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <defs><rect id="tile" width="4" height="4" fill="red"/></defs>
+  <use id="a" href="#tile" x="2" y="2"/>
+  <use id="b" href="#tile" x="10" y="10"/>
+</svg>

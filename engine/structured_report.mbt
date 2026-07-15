@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.20` API accepts caller-provided viewport dimensions and
+/// The root schema `1.21` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.20` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.21` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -25,7 +25,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
     renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/17",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/18",
   }
 }
 
@@ -342,11 +342,23 @@ pub(all) struct SourceResolutionPair {
 } derive(ToJson)
 
 ///|
+/// Placement identity for a subject rendered through one or more `use` hosts.
+///
+/// The corresponding authored definition keeps its own identity and Source
+/// Spans; `instance_id` identifies only this rendered outcome.
+pub(all) struct SubjectInstanceContext {
+  instance_id : String
+  definition_subject_id : String
+  use_path : Array[String]
+} derive(ToJson)
+
+///|
 /// Report-local reference to one visual subject in an input SVG.
 pub(all) struct SubjectReference {
   source_index : Int
   kind : String
   authored_id : String?
+  instance_context : SubjectInstanceContext?
 }
 
 ///|
@@ -355,6 +367,7 @@ pub impl ToJson for SubjectReference with fn to_json(self) {
     "source_index": self.source_index,
     "kind": self.kind,
     "authored_id": nullable_report_value(self.authored_id),
+    "instance_context": nullable_report_value(self.instance_context),
   }
 }
 
@@ -655,7 +668,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.20` result of one SVG comparison.
+/// Complete schema `1.21` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -674,13 +687,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.20` JSON.
+/// Serialize this report as indented schema `1.21` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.20` JSON.
+/// Serialize this report as whitespace-free schema `1.21` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -709,6 +722,8 @@ fn known_source_element(kind : String) -> Bool {
     | "polyline"
     | "polygon"
     | "defs"
+    | "symbol"
+    | "use"
     | "linearGradient"
     | "radialGradient"
     | "pattern"
@@ -722,6 +737,11 @@ fn known_source_element(kind : String) -> Bool {
     | "style" => true
     _ => false
   }
+}
+
+///|
+fn group_opacity_container(kind : String) -> Bool {
+  kind == "svg" || kind == "g" || kind == "symbol" || kind == "use"
 }
 
 ///|
@@ -764,6 +784,19 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
       name == "viewBox" ||
       name == "preserveAspectRatio" ||
       name == "xmlns"
+    "symbol" =>
+      name == "x" ||
+      name == "y" ||
+      name == "width" ||
+      name == "height" ||
+      name == "viewBox" ||
+      name == "preserveAspectRatio"
+    "use" =>
+      name == "x" ||
+      name == "y" ||
+      name == "width" ||
+      name == "height" ||
+      name == "href"
     "rect" =>
       name == "x" ||
       name == "y" ||
@@ -1072,14 +1105,14 @@ fn preflight_source_or_raise(
                 paint_references.push((name, id, attribute_span))
               _ => ()
             }
-            if (kind == "svg" || kind == "g") && name == "opacity" {
+            if group_opacity_container(kind) && name == "opacity" {
               group_opacity_spans.push(attribute_span)
             }
             if geometry_source_property(kind, name) &&
               contains_fractional_number(attribute.value) {
               fractional_geometry_properties.push((name, attribute_span))
             }
-            if !(name == "opacity" && (kind == "svg" || kind == "g")) &&
+            if !(name == "opacity" && group_opacity_container(kind)) &&
               contains_fractional_paint_alpha(name, attribute.value) {
               fractional_leaf_opacity_spans.push(attribute_span)
             }
@@ -1174,7 +1207,7 @@ fn preflight_source_or_raise(
             Some(attribute) => {
               let style = inline_style_facts(input, attribute)
               for fact in style.facts {
-                if (kind == "svg" || kind == "g") && fact.property == "opacity" {
+                if group_opacity_container(kind) && fact.property == "opacity" {
                   let id = "diagnostic:group-opacity-compositing-unsupported:\{subject_id}"
                   merge_diagnostic_into(diagnostics, {
                     ..unlocated_diagnostic(
@@ -1205,8 +1238,7 @@ fn preflight_source_or_raise(
                     ],
                   })
                 }
-                if !(fact.property == "opacity" &&
-                  (kind == "svg" || kind == "g")) &&
+                if !(fact.property == "opacity" && group_opacity_container(kind)) &&
                   contains_fractional_paint_alpha(
                     fact.property,
                     fact.declared_value,
@@ -1278,7 +1310,7 @@ fn preflight_source_or_raise(
           )
           for candidate in stylesheet_match.candidates {
             let fact = candidate.declaration
-            if (kind == "svg" || kind == "g") && fact.property == "opacity" {
+            if group_opacity_container(kind) && fact.property == "opacity" {
               merge_diagnostic_into(diagnostics, {
                 ..unlocated_diagnostic(
                   "diagnostic:group-opacity-compositing-unsupported:{subject_id}",
@@ -1307,7 +1339,7 @@ fn preflight_source_or_raise(
                 ],
               })
             }
-            if !(fact.property == "opacity" && (kind == "svg" || kind == "g")) &&
+            if !(fact.property == "opacity" && group_opacity_container(kind)) &&
               contains_fractional_paint_alpha(
                 fact.property,
                 fact.declared_value,
@@ -1356,6 +1388,7 @@ fn preflight_source_or_raise(
   append_viewport_preflight_diagnostics(
     input, profile, source_role, diagnostics,
   )
+  append_use_structure_diagnostics(input, profile, source_role, diagnostics)
   append_marker_resource_diagnostics(input, profile, source_role, diagnostics)
   let visual_subjects = extract_source_subjects_with_profile_or_raise(
     input, profile,
@@ -1442,7 +1475,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.20",
+    schema_version: "1.21",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1687,7 +1720,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.20",
+        schema_version: "1.21",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1767,7 +1800,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.20",
+        schema_version: "1.21",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1817,7 +1850,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.20",
+        schema_version: "1.21",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1926,6 +1959,38 @@ fn compare_without_resource_limits(
   comparison_guard.checkpoint()
   match documents {
     (Some(before_document), Some(after_document)) => {
+      let no_rendered_subjects = try
+        extract_source_subjects_with_profile_or_raise(before_svg, profile).is_empty() &&
+        extract_source_subjects_with_profile_or_raise(after_svg, profile).is_empty()
+      catch {
+        _ => false
+      }
+      if no_rendered_subjects &&
+        preflight_diagnostics.is_empty() &&
+        (empty_rendered_scene_supported(before_svg) catch { _ => false }) &&
+        (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
+        return finish_report(
+          {
+            schema_version: "1.21",
+            analysis_status: "complete",
+            coverage_matrix: [],
+            renderer_capability_gaps: [],
+            profile,
+            subject_alignments: [],
+            changed_facts: [],
+            source_resolutions: [],
+            atomic_differences: [],
+            events: [],
+            diagnostics: [],
+          },
+          preflight_diagnostics,
+          subject_alignments,
+          before_svg,
+          after_svg,
+          limits,
+          comparison_guard,
+        )
+      }
       match
         generic_basic_shape_report(
           before_svg, after_svg, before_document, after_document, profile, subject_alignments,
@@ -1965,7 +2030,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.20",
+              schema_version: "1.21",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

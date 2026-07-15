@@ -203,6 +203,16 @@
     },
     {
       "report_schema_version": "1.20",
+      "status": "legacy",
+      "schema": "schema/svgdiff-report-1.20.schema.json",
+      "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
+      "canonical_examples": "evaluation/schema-examples/manifest.1.20.json",
+      "compatibility_case_ids": [
+        "legacy-schema-1.20"
+      ]
+    },
+    {
+      "report_schema_version": "1.21",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
@@ -211,6 +221,7 @@
         "current-schema-and-policy",
         "previous-renderer-identities",
         "optional-alignment-evidence-absent",
+        "optional-instance-context-absent",
         "optional-diagnostic-source-locations-absent",
         "legacy-optional-fields-absent",
         "unknown-additive-top-level-field"

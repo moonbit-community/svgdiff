@@ -98,6 +98,7 @@ fn attach_group_opacity_differences(
           source_index: before_group.source_index,
           kind: before_group.kind,
           authored_id: Some(before_group.subject_id),
+          instance_context: None,
         },
       ],
       after: [
@@ -105,6 +106,7 @@ fn attach_group_opacity_differences(
           source_index: after_group.source_index,
           kind: after_group.kind,
           authored_id: Some(after_group.subject_id),
+          instance_context: None,
         },
       ],
       basis: "group_identity_or_singleton",
