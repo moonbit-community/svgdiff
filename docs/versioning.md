@@ -10,9 +10,10 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.4` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.24` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.24` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.5` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.25` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.25` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/20` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
@@ -84,6 +85,8 @@ Module `0.5.3` admits explicitly typed 8-bit non-interlaced PNG and single-scan 
 
 Module `0.5.4` adds `ResourceBundle`, `ResourceBundleEntry`, `compare_with_resources`, and `compare_with_control_and_resources`, plus repeatable before/after CLI resource triplets. Bundle locators are exact opaque keys and only explicit PNG/JPEG bytes reach the existing bounded decoder; the engine never reads paths or fetches URLs. Missing entries, invalid bundle configuration, and bundle budgets add stable Diagnostic conditions, advancing Structured Report schema to `1.24`. The report shape, intrinsic metric meaning, renderer identity, conformance profile `/20`, and v2 ordering policy remain unchanged.
 
+Module `0.5.5` adds the independent `audit_nonvisual_metadata` API and its `SourceAudit*` records under source-audit schema `1.0`. Ordinary visual comparison now preserves outer SVG `title`, `desc`, and `metadata` structure while masking their inner content at equal UTF-16 length, so foreign metadata vocabulary, resource-looking descendants, and hidden shapes no longer fabricate visual subjects, reference cycles, or unsupported-feature Diagnostics. Retiring those Diagnostic conditions advances Structured Report schema to `1.25`; its fields, renderer identity, conformance profile `/20`, intrinsic metrics, and v2 ordering policy remain unchanged.
+
 ## Structured Report schema versions
 
 `schema_version` uses `MAJOR.MINOR`, not the module SemVer.
@@ -95,6 +98,8 @@ Module `0.5.4` adds `ResourceBundle`, `ResourceBundleEntry`, `compare_with_resou
 The optional fields historically added while schema `1.0` was being established remain part of `1.0`; this rule applies to changes after this contract was accepted. Consumers must reject unknown schema identities before semantic interpretation unless an explicit compatibility policy and migration test accepts them. “Additive” describes migration risk, not permission to silently retain an old producer identity.
 
 Every released schema identity has one entry in the [released Schema registry](../schema/registry.v1.json), a checked-in Schema, canonical examples, compatibility fixtures, and an explicit accept, migrate, or reject decision. Module and schema versions move independently: a new library helper need not change the report schema, while a schema change requires the appropriate module release but does not copy the module version number.
+
+The source-audit schema is a separate contract and is not a Structured Report registry entry. Its `audit_schema_version` must change whenever a consumer could misread source-audit fields, path identity, value normalization, null meaning, provenance, status, or Diagnostic behavior. A source-audit version change does not by itself change Structured Report schema, renderer conformance, or ordering identity.
 
 ## Diagnostic compatibility
 

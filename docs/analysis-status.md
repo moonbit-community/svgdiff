@@ -1,6 +1,6 @@
 # Analysis Status Contract
 
-Status: current schema `1.24` caller contract
+Status: current schema `1.25` caller contract
 
 Last verified: 2026-07-15
 
@@ -31,7 +31,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.24`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.25`'s implemented support contract under the recorded Comparison Profile.
 
 It does not support any of these stronger statements:
 
@@ -39,6 +39,8 @@ It does not support any of these stronger statements:
 - the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource environment, background, browser, or future interaction state;
 - the SVGs would remain equivalent after the support contract expands;
 - nonvisual metadata is identical.
+
+The independent `SourceAuditReport.analysis_status` is not this field and does not compose into Structured Report coverage. A malformed source audit can fail independently; a complete visual report can coexist with nonvisual source-audit differences.
 
 A complete report may contain Atomic Differences with zero rendered magnitude. `complete` means the analysis claim is covered, not that every semantic difference changes a pixel.
 

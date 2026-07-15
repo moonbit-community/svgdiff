@@ -1,0 +1,47 @@
+{
+  "audit_schema_version": "1.0",
+  "analysis_status": "complete",
+  "differences": [
+    {
+      "id": "source-audit:0",
+      "kind": "attribute",
+      "path": "/svg[1]",
+      "name": "data-build",
+      "before": {
+        "kind": "attribute",
+        "path": "/svg[1]",
+        "name": "data-build",
+        "authored_value": "a",
+        "source_span": { "start_offset": 17, "end_offset": 18 }
+      },
+      "after": {
+        "kind": "attribute",
+        "path": "/svg[1]",
+        "name": "data-build",
+        "authored_value": "b",
+        "source_span": { "start_offset": 17, "end_offset": 18 }
+      }
+    },
+    {
+      "id": "source-audit:1",
+      "kind": "element_content",
+      "path": "/svg[1]/title[1]",
+      "name": "title",
+      "before": {
+        "kind": "element_content",
+        "path": "/svg[1]/title[1]",
+        "name": "title",
+        "authored_value": "Before",
+        "source_span": { "start_offset": 27, "end_offset": 33 }
+      },
+      "after": {
+        "kind": "element_content",
+        "path": "/svg[1]/title[1]",
+        "name": "title",
+        "authored_value": "After",
+        "source_span": { "start_offset": 27, "end_offset": 32 }
+      }
+    }
+  ],
+  "diagnostics": []
+}

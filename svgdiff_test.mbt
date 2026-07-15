@@ -11,15 +11,44 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.24")
+  assert_eq(report.schema_version, "1.25")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.24", "events": [_], .. } => ()
+    { "schema_version": "1.25", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.24", "events": [_], .. } => ()
+    { "schema_version": "1.25", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
+  }
+}
+
+///|
+test "root package keeps nonvisual source audit separate" {
+  let before = "<svg data-build='a'><title>Before</title><rect width='8' height='8'/></svg>"
+  let after = "<svg data-build='b'><title>After</title><rect width='8' height='8'/></svg>"
+  let comparison = @svgdiff.compare(
+    before,
+    after,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  assert_eq(comparison.analysis_status, "complete")
+  assert_true(comparison.atomic_differences.is_empty())
+  assert_true(!comparison.to_compact_json_string().contains("source-audit"))
+  let audit : @svgdiff.SourceAuditReport = @svgdiff.audit_nonvisual_metadata(
+    before, after,
+  )
+  assert_eq(audit.audit_schema_version, "1.0")
+  assert_eq(audit.analysis_status, "complete")
+  assert_eq(audit.differences.length(), 2)
+  match @json.parse(audit.to_json_string()) {
+    {
+      "audit_schema_version": "1.0",
+      "analysis_status": "complete",
+      "differences": [_, _],
+      ..
+    } => ()
+    _ => fail("source-only audit did not serialize through the root seam")
   }
 }
 

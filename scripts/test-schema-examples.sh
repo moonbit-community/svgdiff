@@ -9,4 +9,5 @@ cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 test -x "$cli"
 python3 evaluation/schema-examples/validate.py --cli "$cli"
 python3 evaluation/schema-examples/validate.py --cli "$cli"
+python3 evaluation/source-audit/validate.py
 printf 'Schema examples: deterministic production regeneration: ok\n'

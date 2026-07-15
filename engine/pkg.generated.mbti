@@ -6,6 +6,8 @@ import {
 }
 
 // Values
+pub fn audit_nonvisual_metadata(String, String) -> SourceAuditReport
+
 pub fn compare(String, String, ComparisonProfile) -> StructuredReport
 
 pub fn compare_with_control(String, String, ComparisonProfile, ComparisonControl) -> StructuredReport raise ComparisonInterrupted
@@ -223,6 +225,38 @@ pub(all) struct ResourceBundleEntry {
   media_type : String
   bytes : Bytes
 }
+
+pub(all) struct SourceAuditDiagnostic {
+  code : String
+  source_role : String
+  source_span : ReportSourceSpan?
+} derive(ToJson)
+
+pub(all) struct SourceAuditDifference {
+  id : String
+  kind : String
+  path : String
+  name : String
+  before : SourceAuditFact?
+  after : SourceAuditFact?
+} derive(ToJson)
+
+pub(all) struct SourceAuditFact {
+  kind : String
+  path : String
+  name : String
+  authored_value : String
+  source_span : ReportSourceSpan
+} derive(ToJson)
+
+pub(all) struct SourceAuditReport {
+  audit_schema_version : String
+  analysis_status : String
+  differences : Array[SourceAuditDifference]
+  diagnostics : Array[SourceAuditDiagnostic]
+} derive(ToJson)
+pub fn SourceAuditReport::to_compact_json_string(Self) -> String
+pub fn SourceAuditReport::to_json_string(Self) -> String
 
 pub(all) struct SourceResolutionPair {
   subject_id : String

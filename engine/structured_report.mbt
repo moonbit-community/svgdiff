@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.24` API accepts caller-provided viewport dimensions and
+/// The root schema `1.25` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.24` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.25` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -685,7 +685,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.24` result of one SVG comparison.
+/// Complete schema `1.25` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -704,13 +704,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.24` JSON.
+/// Serialize this report as indented schema `1.25` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.24` JSON.
+/// Serialize this report as whitespace-free schema `1.25` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1512,7 +1512,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.24",
+    schema_version: "1.25",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1757,7 +1757,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.24",
+        schema_version: "1.25",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1837,7 +1837,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.24",
+        schema_version: "1.25",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1887,7 +1887,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.24",
+        schema_version: "1.25",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2019,7 +2019,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.24",
+            schema_version: "1.25",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2059,7 +2059,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.24",
+            schema_version: "1.25",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2119,7 +2119,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.24",
+              schema_version: "1.25",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

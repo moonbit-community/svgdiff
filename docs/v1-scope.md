@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.24` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.25` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -42,6 +42,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - authored structure for `svg`, `g`, `defs`, `symbol`, and `use`; direct exclusion of definition content; deterministic instance paths for acyclic same-document reuse of supported shapes, groups, SVG viewports, symbols, and nested uses; use-host inheritance; definition-owner fan-out; supplemental `x`/`y` translation; and `svg`/`symbol` instance viewport mapping from use width and height;
 - one private typed source-level dependency graph across gradients, patterns, markers, clips, masks, filters, symbols, images, use instances, URL-bearing attributes, and static stylesheet text, with exact reference spans, locator states, duplicate-ID-conservative forward/reverse traversal, cycle rejection, and transitive use-expansion accounting;
 - one cross-family [resource outcome policy](resource-outcome-policy.md) that independently classifies locator state, expected target kind, semantic validity, graph safety, and activity: deterministic missing-paint fallback remains complete, unresolved or invalid semantics remain partial with precise evidence, every accepted local cycle fails even when unused, unused SVG definitions remain source-visible, and unused caller-bundle payload content is not decoded or compared;
+- nonvisual inner content of SVG `title`, `desc`, and `metadata` excluded from visual subjects, coverage Diagnostics, reference cycles, Atomic Differences, events, and magnitudes while preserving outer structural/CSS consequences; the separate [source-only audit](source-audit.md) inventories exact descriptive content and unprefixed `aria-*`/`data-*` attributes;
 - bounded 8-bit non-interlaced PNG and single-scan baseline JPEG data-URL parsing and decoding for `image`, including base64 and percent encodings, MIME/signature validation, compact encoded and normalized-pixel hashes, intrinsic dimensions, deterministic image alignment, source-equivalent encodings, content and placement differences, insertion/deletion, intrinsic raster magnitudes, and conservative placed bounds; unsupported PNG chunk/color/transparency variants, unsupported JPEG sampling/scans, and final image compositing remain separately unavailable;
 - formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
 - supported presentation attributes, inline-style declaration lists, and matched static stylesheet rules, including selector specificity, source order, duplicate properties, `!important`, and private renderer normalization of the selected winners;
@@ -130,7 +131,7 @@ V1 does not completely analyze:
 - exact contribution weights, minimal root causes, or cross-subject event synthesis;
 - browser-to-browser or renderer-to-renderer equality claims.
 
-Pure nonvisual metadata such as accessibility descriptions and custom data attributes is outside visual Atomic Difference enumeration, although it remains present in the input source.
+Pure nonvisual metadata such as accessibility descriptions and custom data attributes is outside visual Atomic Difference enumeration. Outermost descriptive content is masked only inside the visual pipeline, while the original source remains available to the explicit [nonvisual source audit](source-audit.md). If an outer element or metadata attribute participates in a supported CSS selector, the resulting visual consequence remains reportable in its ordinary visual domain.
 
 ## Coverage behavior
 

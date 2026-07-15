@@ -136,7 +136,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "1.24",
+    schema_version: "1.25",
     analysis_status: "failed",
     coverage_matrix,
     renderer_capability_gaps: [],
@@ -270,10 +270,11 @@ fn source_limit(
   source_role : String,
   bundle : ResourceBundle,
   limits : ResourceLimits,
-) -> Diagnostic? {
+) -> (Diagnostic?, String) {
   if utf8_byte_length_exceeds(input, limits.max_input_bytes) {
-    return Some(
-      resource_limit_diagnostic("input_bytes", Some(source_role), None),
+    return (
+      Some(resource_limit_diagnostic("input_bytes", Some(source_role), None)),
+      input,
     )
   }
   let structure = try source_structure_limit(input, source_role, limits) catch {
@@ -284,11 +285,12 @@ fn source_limit(
     diagnostic => diagnostic
   }
   match structure {
-    Some(diagnostic) => return Some(diagnostic)
+    Some(diagnostic) => return (Some(diagnostic), input)
     None => ()
   }
+  let semantic_input = visual_semantic_input(input)
   let embedded_raster = try
-    embedded_raster_source_limit(input, source_role, bundle, limits)
+    embedded_raster_source_limit(semantic_input, source_role, bundle, limits)
   catch {
     // Malformed XML remains owned by the ordinary parser preflight.
     _ => None
@@ -296,15 +298,18 @@ fn source_limit(
     diagnostic => diagnostic
   }
   match embedded_raster {
-    Some(diagnostic) => return Some(diagnostic)
+    Some(diagnostic) => return (Some(diagnostic), semantic_input)
     None => ()
   }
-  try reference_safety_diagnostic(input, source_role, limits) catch {
+  let reference = try
+    reference_safety_diagnostic(semantic_input, source_role, limits)
+  catch {
     // Malformed XML remains owned by the ordinary parser preflight.
     _ => None
   } noraise {
     diagnostic => diagnostic
   }
+  (reference, semantic_input)
 }
 
 ///|
@@ -373,12 +378,24 @@ fn compare_with_resource_limits_controlled(
     return failed_resource_report(profile, diagnostics)
   }
   comparison_guard.checkpoint()
-  match source_limit(before_svg, "before", resources.before, limits) {
+  let (before_limit, before_semantic_input) = source_limit(
+    before_svg,
+    "before",
+    resources.before,
+    limits,
+  )
+  match before_limit {
     Some(diagnostic) => diagnostics.push(diagnostic)
     None => ()
   }
   comparison_guard.checkpoint()
-  match source_limit(after_svg, "after", resources.after, limits) {
+  let (after_limit, after_semantic_input) = source_limit(
+    after_svg,
+    "after",
+    resources.after,
+    limits,
+  )
+  match after_limit {
     Some(diagnostic) => diagnostics.push(diagnostic)
     None => ()
   }
@@ -387,7 +404,7 @@ fn compare_with_resource_limits_controlled(
     return failed_resource_report(profile, diagnostics)
   }
   let report = compare_without_resource_limits(
-    before_svg, after_svg, profile, limits, resources, comparison_guard,
+    before_semantic_input, after_semantic_input, profile, limits, resources, comparison_guard,
   )
   comparison_guard.checkpoint()
   let report = enforce_output_resource_limits(report, limits)

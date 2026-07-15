@@ -10,7 +10,7 @@ Last verified: 2026-07-15
 
 ## Current state
 
-The repository contains a production comparison engine for a bounded deterministic static-SVG subset, Structured Report schema `1.24`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine. Current support includes authored and used geometry, transforms and viewports, the static author cascade and inheritance, solid paint, gradients, patterns, paint fallbacks and rules, structural/use-instance semantics, a typed resource graph, and bounded PNG/JPEG image evidence from data URLs or exact caller-supplied bundles. Unsupported compositing, effects, fonts, dynamic behavior, nested SVG images, and final raster-image composition remain explicitly guarded or deferred.
+The repository contains a production comparison engine for a bounded deterministic static-SVG subset, Structured Report schema `1.25`, a native CLI, an optional self-contained HTML presentation, and a separate nonvisual source-audit API. It is not a general SVG or browser-equivalence engine. Current support includes authored and used geometry, transforms and viewports, the static author cascade and inheritance, solid paint, gradients, patterns, paint fallbacks and rules, structural/use-instance semantics, a typed resource graph, bounded PNG/JPEG image evidence from data URLs or exact caller-supplied bundles, and explicit auditing of descriptive content plus accessibility/custom-data attributes without mixing them into visual Atomic Differences. Unsupported compositing, effects, fonts, dynamic behavior, nested SVG images, and final raster-image composition remain explicitly guarded or deferred.
 
 The engine deliberately reports three evidence layers separately:
 

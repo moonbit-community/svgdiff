@@ -129,6 +129,19 @@
       }
     },
     {
+      "id": "nonvisual-metadata-equivalent",
+      "before": "evaluation/schema-examples/cases/nonvisual-metadata-equivalent/before.svg",
+      "after": "evaluation/schema-examples/cases/nonvisual-metadata-equivalent/after.svg",
+      "output": "schema/examples/nonvisual-metadata-equivalent.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": [],
+        "computed_relations": [],
+        "diagnostic_codes": [],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "radial-gradient-change",
       "before": "evaluation/schema-examples/cases/radial-gradient-change/before.svg",
       "after": "evaluation/schema-examples/cases/radial-gradient-change/after.svg",

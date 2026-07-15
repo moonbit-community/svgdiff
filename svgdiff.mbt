@@ -24,6 +24,10 @@ pub using @engine {
   type ReportSourceSpan,
   type ResolvedVisualFact,
   type SourceResolutionPair,
+  type SourceAuditDiagnostic,
+  type SourceAuditDifference,
+  type SourceAuditFact,
+  type SourceAuditReport,
   type StructuredReport,
   type SubjectAlignment,
   type SubjectInstanceContext,
@@ -35,6 +39,19 @@ pub using @engine {
   type TransformSkewMagnitude,
   type TransformTranslationMagnitude,
   type VisualEvent,
+}
+
+///|
+/// Audit nonvisual metadata without adding it to visual Atomic Differences.
+///
+/// This independent source-only operation inventories exact authored content
+/// inside SVG `title`, `desc`, and `metadata` elements plus unprefixed
+/// `aria-*` and `data-*` attributes. It never changes comparison results.
+pub fn audit_nonvisual_metadata(
+  before_svg : String,
+  after_svg : String,
+) -> SourceAuditReport {
+  @engine.audit_nonvisual_metadata(before_svg, after_svg)
 }
 
 ///|
@@ -57,7 +74,7 @@ pub fn compare_with_resources(
   let report = @engine.compare_with_resources(
     before_svg, after_svg, canonical_profile, before_resources, after_resources,
   )
-  { ..report, schema_version: "1.24" }
+  { ..report, schema_version: "1.25" }
 }
 
 ///|
@@ -68,7 +85,7 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.24` profile.
+/// Compare two deterministic static SVG sources under one schema `1.25` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width` and `profile.viewport_height` and pins
@@ -90,7 +107,7 @@ pub fn compare(
     viewport_height: profile.viewport_height,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.24" }
+  { ..report, schema_version: "1.25" }
 }
 
 ///|
@@ -119,7 +136,7 @@ pub fn compare_with_control(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.24" }
+    report => { ..report, schema_version: "1.25" }
   }
 }
 
@@ -148,6 +165,6 @@ pub fn compare_with_control_and_resources(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.24" }
+    report => { ..report, schema_version: "1.25" }
   }
 }

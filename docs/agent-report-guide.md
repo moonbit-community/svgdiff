@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.24` interpretation guide
+Status: current schema `1.25` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -25,6 +25,8 @@ Read the report in this order:
 13. `changed_facts` and source spans: recover authored provenance when needed.
 
 Never start by counting `atomic_differences`. A partial report with zero differences is not equality, while a complete report may contain a source distinction with zero visual effect.
+
+Do not search Structured Report for pure accessibility descriptions, RDF payloads, or custom-data changes. They are deliberately outside visual Atomic Differences. If the caller separately supplies a `SourceAuditReport`, describe it as a source-only audit and do not merge its records into Visual Events, magnitudes, regions, or main visual changes. A selector-mediated consequence from `data-*`, `aria-*`, or an outer descriptive element remains an ordinary visual property difference and should be reported from Structured Report.
 
 Treat `coverage_matrix` itself as the complete coverage summary. Group or filter its rows by `subject_id`, `feature_id`, or evidence-layer state when answering a question; do not infer a second summary from events, differences, or Diagnostic code names.
 
@@ -96,7 +98,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.24` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.25` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

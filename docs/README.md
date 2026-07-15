@@ -24,6 +24,7 @@ This directory separates the current product contract from future plans and hist
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
 | Which fixed budgets bound one comparison? | [`resource-limits.md`](resource-limits.md) |
 | How are missing, cyclic, invalid, and unused resources classified? | [`resource-outcome-policy.md`](resource-outcome-policy.md) |
+| How are nonvisual metadata changes audited without polluting visual differences? | [`source-audit.md`](source-audit.md) and [ADR 0069](adr/0069-separate-nonvisual-source-audit-from-visual-diff.md) |
 | How are resource dependencies, local cycles, and explosive `<use>` DAGs modeled? | [`reference-safety.md`](reference-safety.md) and [resource graph research](research/svg-resource-dependency-graph.md) |
 | How are explicit local raster resources supplied without implicit I/O? | [`library-api.md`](library-api.md), [`resource-limits.md`](resource-limits.md), and [bundle policy research](research/local-resource-bundle-policy.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
@@ -62,7 +63,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.24`.
+- The stable report schema is `1.25`.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
 - The CLI lives in `cmd/svgdiff`, can emit JSON plus an optional self-contained HTML presentation, and reads non-data-URL raster bytes only from explicit before/after resource triplets.
 - The implemented analyzer covers a deliberately bounded deterministic static-SVG subset, including complete source/computed semantics for static same-document linear/radial gradients, patterns over the admitted basic-shape child slice, deterministic same-document use instances with separate definition and placement identity, and consequence-aware ancestry, instance-resolution, and stacking relationships.

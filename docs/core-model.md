@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.24`
+Status: current model for Structured Report schema `1.25`
 
 Last verified: 2026-07-15
 
@@ -28,14 +28,14 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.24
+  -> Structured Report 1.25
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.24` records:
+Schema `1.25` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -75,6 +75,8 @@ Source Semantics describes supported authored visual declarations after formatti
 - half-open source offsets.
 
 Attribute order, quote style, tag-closing style, entity spelling, declaration whitespace, and source-offset movement alone do not create Atomic Differences. A change in normalized visual declaration or declaration origin may create a source-level difference even when computed and rendered results remain equal. Cascade, inheritance, computed-value resolution, shorthand expansion, and private renderer normalization never rewrite a fact's authored value, declared value, origin, or half-open UTF-16 Source Span; resolution mode, declaration owner, and inheritance depth carry computed state separately.
+
+Pure nonvisual metadata is not a fourth visual evidence layer. Inner SVG `title`, `desc`, and `metadata` content is excluded from visual semantic input without moving outer Source Spans; unconsumed `aria-*` and `data-*` changes likewise create no Atomic Difference. A supported selector can still turn an outer element or metadata attribute into a real visual cause, in which case the computed property consequence uses its ordinary visual domain. The independent [Nonvisual Source Audit](source-audit.md) inventories the exact authored metadata facts and never appears inside Structured Report.
 
 Path source adaptation is renderer-independent. The engine strictly consumes every path command and repeated parameter group, expands relative, horizontal/vertical, and smooth shorthand into absolute Move, Line, Cubic, Quadratic, Arc, and Close segments, and retains each segment's exact authored slice plus half-open UTF-16 span. One-to-one path comparison aligns those normalized segments and emits every differing command, parameter, insertion, or deletion. Exact numeric deltas remain independent of raster quantization; command-family or relative/absolute spelling changes that normalize to the same segment are computed-equivalent source differences. When the fixed observation budget permits, `geometry_displacement_css_px` records the symmetric maximum nearest alpha-boundary pixel-center distance from isolated rendering. Path reports remain partial because this observation does not establish continuous geometric Hausdorff distance, transformed-path boundary measurement, complete stroke and paint semantics, or accepted path renderer conformance.
 
@@ -171,7 +173,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.24` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.25` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 `DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v2 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
@@ -194,7 +196,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.24` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.25` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -210,11 +212,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.24` top-level object contains exactly these conceptual sections:
+The schema `1.25` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.24",
+  "schema_version": "1.25",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -246,7 +248,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.24
+## Not implemented in schema 1.25
 
 The following concepts are intentional future work rather than hidden current fields:
 

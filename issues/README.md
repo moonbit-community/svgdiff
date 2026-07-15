@@ -128,6 +128,7 @@ graph TD
   ISS_110["ISS-110: Implement bounded embedded raster-image resources"]
   ISS_111["ISS-111: Implement explicit local raster resource bundles"]
   ISS_112["ISS-112: Define resource outcome behavior"]
+  ISS_113["ISS-113: Separate nonvisual metadata from visual differences"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -334,6 +335,7 @@ graph TD
   ISS_109 --> ISS_110
   ISS_110 --> ISS_111
   ISS_111 --> ISS_112
+  ISS_112 --> ISS_113
 ```
 
 ## Warnings

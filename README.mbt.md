@@ -63,7 +63,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.4` with `moon add Milky2018/svgdiff@0.5.4` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.5` with `moon add Milky2018/svgdiff@0.5.5` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -74,7 +74,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.24`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/20`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.25`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/20`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
@@ -109,7 +109,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.24")
+  assert_eq(report.schema_version, "1.25")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -133,6 +133,25 @@ test "partial analysis does not imply equality" {
 }
 ```
 
+Pure nonvisual metadata stays outside visual Atomic Differences. Audit it only when the caller explicitly needs source governance:
+
+```mbt check
+///|
+test "audit nonvisual metadata separately" {
+  let before = "<svg data-build='a'><title>Before</title><rect width='8' height='8'/></svg>"
+  let after = "<svg data-build='b'><title>After</title><rect width='8' height='8'/></svg>"
+  let visual = @svgdiff.compare(
+    before,
+    after,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  assert_true(visual.atomic_differences.is_empty())
+  let audit = @svgdiff.audit_nonvisual_metadata(before, after)
+  assert_eq(audit.audit_schema_version, "1.0")
+  assert_eq(audit.differences.length(), 2)
+}
+```
+
 ### Serialize or render the result
 
 ```mbt check
@@ -148,7 +167,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.24\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.25\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))

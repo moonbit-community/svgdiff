@@ -7,6 +7,8 @@ import {
 }
 
 // Values
+pub fn audit_nonvisual_metadata(String, String) -> @engine.SourceAuditReport
+
 pub fn compare(String, String, @engine.ComparisonProfile) -> @engine.StructuredReport
 
 pub fn compare_with_control(String, String, @engine.ComparisonProfile, @engine.ComparisonControl) -> @engine.StructuredReport raise ComparisonInterrupted
@@ -71,6 +73,14 @@ pub using @engine {type ResolvedVisualFact}
 pub using @engine {type ResourceBundle}
 
 pub using @engine {type ResourceBundleEntry}
+
+pub using @engine {type SourceAuditDiagnostic}
+
+pub using @engine {type SourceAuditDifference}
+
+pub using @engine {type SourceAuditFact}
+
+pub using @engine {type SourceAuditReport}
 
 pub using @engine {type SourceResolutionPair}
 
