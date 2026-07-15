@@ -546,10 +546,12 @@ fn subjects_for_references(
 ) -> Array[SourceSubject] {
   let selected : Array[SourceSubject] = []
   for reference in references {
-    match subjects.get(reference.source_index) {
-      Some(subject) if subject.kind == reference.kind => selected.push(subject)
-      None => ()
-      _ => ()
+    for subject in subjects {
+      if subject.reference.source_index == reference.source_index &&
+        subject.reference.kind == reference.kind {
+        selected.push(subject)
+        break
+      }
     }
   }
   selected
@@ -794,7 +796,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.17",
+    schema_version: "1.18",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

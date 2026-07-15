@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.17` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.18` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -23,7 +23,7 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
 | Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/14`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/15`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -50,6 +50,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - strict deterministic sRGB solid colors across CSS Color 3 hexadecimal, RGB(A), HSL(A), extended named colors, `transparent`, and admitted alpha-hex syntax; canonical computed channels remain separate from exact authored spelling and Source Span;
 - number-or-percentage `opacity`, inherited `fill-opacity` and `stroke-opacity`, and non-inherited `stop-opacity`, with `[0,1]` clamping, continuous numeric deltas, and effective leaf or stop alpha multiplication;
 - static same-document linear and radial gradients, including recursive `href` and `xlink:href` template inheritance, all child stops, clamped monotonic offsets, sRGB stop colors and opacity, `gradientUnits`, `spreadMethod`, `gradientTransform`, default and explicit geometry, object-bounding-box and user-space consumer coordinates, degenerate paint modes, exact resource-component differences, and fill/stroke fan-out to every consumer;
+- static same-document patterns over the admitted basic-shape child slice, including recursive `href` and `xlink:href` inheritance, tile and content units, `patternTransform`, `viewBox` and `preserveAspectRatio`, zero/empty paint modes, referencing-host inheritance, child geometry/paint/transform signatures, exact resource-component differences, and fill/stroke fan-out to every consumer;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
 - exact continuous parameter deltas independent of raster quantization;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
@@ -70,6 +71,8 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Wide-gamut or out-of-profile color functions | Exact authored value and Source Span | Profile conversion is deferred; `color_profile_unsupported` prevents clipping or substitution into sRGB. |
 | Malformed solid color or opacity syntax | Exact authored value and Source Span | `solid_color_syntax_unsupported` or `opacity_syntax_unsupported` prevents invalid values from silently becoming black, transparent, or another numeric value. |
 | Referenced linear or radial gradient rasterization | Complete static source/computed resource semantics, every fill/stroke consumer outcome, conservative localization, and a pinned-renderer measurement | All six focused browser fixtures diverge from the pinned raster; `renderer_gradient_raster_unproven` limits only Rendered Evidence. |
+| Referenced pattern rasterization | Complete admitted static source/computed resource semantics, every fill/stroke consumer outcome, and a pinned-renderer measurement | Six focused browser fixtures remain guarded by `renderer_pattern_raster_unproven`, which limits only Rendered Evidence. |
+| Pattern content outside the admitted static child slice | Exact authored declarations, Source Spans, and every independently resolved tile, viewport, template, child, or consumer fact | Dynamic content, arbitrary child resources, visible overflow, malformed coordinates, external or cyclic references, and unavailable object bounds retain precise `pattern_*` Diagnostics instead of false equality. |
 | Invalid or unresolved gradient semantics | Exact authored declarations, Source Spans, and every independently resolved resource or consumer fact | Dedicated Diagnostics distinguish external/invalid references, cycles, dynamic content, malformed offsets/lengths/units/spread/transforms, missing object bounds, and non-sRGB interpolation instead of treating all paint servers as one gap. |
 | Conflicting presentation attribute and inline style with incomplete or unsupported inline syntax | Independently supported Source Semantics | The private adapter cannot prove a safe renderer rewrite; `renderer_style_precedence_unresolved` blocks complete computed/rendered claims. |
 | Selector or stylesheet syntax outside the admitted static grammar | Any independently parsed selector, declaration, authored value, and Source Span evidence | `css_cascade_unsupported` prevents unsupported applicability from being approximated as matching or not matching. |
@@ -90,12 +93,11 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Invalid or unsupported marker semantics | Exact authored declaration and Source Span where available | `marker_semantics_unsupported` or `marker_resource_semantics_unsupported` prevents false equality for missing, wrong-kind, external, malformed, unsupported-unit, visible-overflow, or otherwise unresolved marker input. |
 | Marker rasterization | Independently modeled placement and conservative marker regions | All six Chromium fixtures diverge from the pinned renderer, including percentage lengths and zero-size behavior; `renderer_marker_raster_unproven` limits Rendered Evidence. |
 | Malformed transform syntax | The exact authored declaration and source span | `transform_syntax_unsupported` prevents source, computed, and rendered completeness. |
-| `patternTransform` | Authored transform-list and resource-local matrix differences | Pattern units, inheritance, references, and paint behavior remain unresolved under `resource_transform_semantics_unsupported`; `gradientTransform` is fully interpreted in the static gradient slice. |
 | Unsupported element, attribute, paint value, or resource use | Any independently supported evidence | Coverage is explicitly unproven for the affected layers. Deterministic [property tests](unsupported-input-properties.md) prevent unchanged unsupported inputs from becoming complete equality. |
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
-Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, viewport, referenced-gradient rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
+Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, viewport, referenced-gradient rasterization, referenced-pattern rasterization, and group compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
 
 ## Unsupported or deferred
 

@@ -1,6 +1,6 @@
 # SVG Gradient Semantics Research
 
-Status: implementation reference for schema `1.17`
+Status: implementation reference for schema `1.18`
 
 Last verified: 2026-07-15
 

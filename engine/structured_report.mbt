@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.17` API accepts caller-provided viewport dimensions and
+/// The root schema `1.18` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.17` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.18` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -25,7 +25,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
     renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/14",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/15",
   }
 }
 
@@ -655,7 +655,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.17` result of one SVG comparison.
+/// Complete schema `1.18` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -674,13 +674,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.17` JSON.
+/// Serialize this report as indented schema `1.18` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.17` JSON.
+/// Serialize this report as whitespace-free schema `1.18` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -711,6 +711,7 @@ fn known_source_element(kind : String) -> Bool {
     | "defs"
     | "linearGradient"
     | "radialGradient"
+    | "pattern"
     | "marker"
     | "stop"
     | "text"
@@ -790,6 +791,18 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
       name == "gradientTransform" ||
       name == "spreadMethod" ||
       name == "href"
+    "pattern" =>
+      name == "x" ||
+      name == "y" ||
+      name == "width" ||
+      name == "height" ||
+      name == "patternUnits" ||
+      name == "patternContentUnits" ||
+      name == "patternTransform" ||
+      name == "viewBox" ||
+      name == "preserveAspectRatio" ||
+      name == "href" ||
+      name == "overflow"
     "marker" =>
       name == "markerUnits" ||
       name == "markerWidth" ||
@@ -981,20 +994,6 @@ fn append_transform_preflight_diagnostics(
       }
       _ => ()
     }
-    if name == "patternTransform" {
-      let id = "diagnostic:resource-transform-semantics-unsupported:\{subject_id}:\{name}"
-      merge_diagnostic_into(
-        diagnostics,
-        located_diagnostic(
-          id,
-          "resource_transform_semantics_unsupported",
-          subject_id,
-          ["computed_appearance", "rendered_evidence"],
-          source_role,
-          attribute.span,
-        ),
-      )
-    }
   }
 }
 
@@ -1017,7 +1016,8 @@ fn preflight_source_or_raise(
       ),
     )
   }
-  let paint_server_ids : Array[String] = []
+  let gradient_ids : Array[String] = []
+  let pattern_ids : Array[String] = []
   let paint_server_references : Array[
     (String, String, String, ReportSourceSpan),
   ] = []
@@ -1106,7 +1106,10 @@ fn preflight_source_or_raise(
           }
           if (kind == "linearGradient" || kind == "radialGradient") &&
             subject_id != kind {
-            paint_server_ids.push(subject_id)
+            gradient_ids.push(subject_id)
+          }
+          if kind == "pattern" && subject_id != kind {
+            pattern_ids.push(subject_id)
           }
           for reference in paint_references {
             let (property, id, span) = reference
@@ -1359,7 +1362,7 @@ fn preflight_source_or_raise(
   append_stroke_renderer_diagnostics(visual_subjects, source_role, diagnostics)
   for reference in paint_server_references {
     let (subject_id, property, server_id, span) = reference
-    if !paint_server_ids.contains(server_id) {
+    if !gradient_ids.contains(server_id) && !pattern_ids.contains(server_id) {
       let id = "diagnostic:paint-value-semantics-unsupported:\{subject_id}:\{property}"
       merge_diagnostic_into(diagnostics, {
         ..unlocated_diagnostic(
@@ -1370,12 +1373,23 @@ fn preflight_source_or_raise(
         ),
         source_locations: [diagnostic_location(source_role, span)],
       })
-    } else {
+    } else if gradient_ids.contains(server_id) {
       let id = "diagnostic:renderer-gradient-raster-unproven:\{subject_id}:\{property}"
       merge_diagnostic_into(diagnostics, {
         ..unlocated_diagnostic(
           id,
           "renderer_gradient_raster_unproven",
+          subject_id,
+          ["rendered_evidence"],
+        ),
+        source_locations: [diagnostic_location(source_role, span)],
+      })
+    } else {
+      let id = "diagnostic:renderer-pattern-raster-unproven:\{subject_id}:\{property}"
+      merge_diagnostic_into(diagnostics, {
+        ..unlocated_diagnostic(
+          id,
+          "renderer_pattern_raster_unproven",
           subject_id,
           ["rendered_evidence"],
         ),
@@ -1430,7 +1444,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.17",
+    schema_version: "1.18",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1675,7 +1689,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.17",
+        schema_version: "1.18",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1755,7 +1769,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.17",
+        schema_version: "1.18",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1805,7 +1819,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.17",
+        schema_version: "1.18",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1953,7 +1967,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.17",
+              schema_version: "1.18",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

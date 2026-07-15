@@ -28,6 +28,8 @@ priv struct SourceSubject {
   cumulative_transform : AffineTransform
   transform_complete : Bool
   viewport : ViewportContext
+  resource_owner_id : String?
+  source_offset : Int
 }
 
 ///|
@@ -73,6 +75,8 @@ fn subject_from_element(
   inherited_marker_facts : Array[DeclaredVisualFact],
   viewport : ViewportContext,
   profile : ComparisonProfile,
+  resource_owner_id : String?,
+  source_offset : Int,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
   let candidates : Array[CssCascadeCandidate] = []
@@ -236,6 +240,8 @@ fn subject_from_element(
     cumulative_transform,
     transform_complete,
     viewport,
+    resource_owner_id,
+    source_offset,
   }
 }
 
@@ -322,9 +328,10 @@ fn joined_hierarchy_signature(stack : Array[String]) -> String {
 }
 
 ///|
-fn extract_source_subjects_with_profile_or_raise(
+fn extract_source_subjects_internal_or_raise(
   input : String,
   profile : ComparisonProfile,
+  include_pattern_children : Bool,
 ) -> Array[SourceSubject] raise {
   let css_document = parse_static_css_document_or_raise(input)
   let computed_hierarchy = extract_fill_hierarchy_or_raise(input)
@@ -336,6 +343,7 @@ fn extract_source_subjects_with_profile_or_raise(
   let inherited_markers : Array[Array[DeclaredVisualFact]] = []
   let mut node_index = 0
   let mut marker_depth = 0
+  let pattern_owners : Array[String] = []
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -349,6 +357,13 @@ fn extract_source_subjects_with_profile_or_raise(
         transforms.push(transform)
         if kind == "marker" {
           marker_depth += 1
+        }
+        if kind == "pattern" {
+          pattern_owners.push(
+            authored_subject_id(element).unwrap_or(
+              generated_subject_id("pattern", event.span.start.offset),
+            ),
+          )
         }
         if kind == "svg" || kind == "g" {
           let stylesheet_match = css_stylesheet_match_for_source(
@@ -384,7 +399,7 @@ fn extract_source_subjects_with_profile_or_raise(
         }
         if visual_subject_kind(kind) && marker_depth == 0 {
           let computed_visual_facts = match
-            computed_hierarchy.rect_subject_ids.get(subjects.length()) {
+            computed_hierarchy.all_entity_subject_ids.get(subjects.length()) {
             Some(subject_id) =>
               computed_visual_facts_for_subject(computed_hierarchy, subject_id)
             None => []
@@ -409,6 +424,8 @@ fn extract_source_subjects_with_profile_or_raise(
                 height: profile.viewport_height.to_double(),
               }),
               profile,
+              pattern_owners.last(),
+              event.span.start.offset,
             ),
           )
         }
@@ -426,7 +443,7 @@ fn extract_source_subjects_with_profile_or_raise(
         node_index += 1
         if visual_subject_kind(element.name.local_name) && marker_depth == 0 {
           let computed_visual_facts = match
-            computed_hierarchy.rect_subject_ids.get(subjects.length()) {
+            computed_hierarchy.all_entity_subject_ids.get(subjects.length()) {
             Some(subject_id) =>
               computed_visual_facts_for_subject(computed_hierarchy, subject_id)
             None => []
@@ -451,6 +468,8 @@ fn extract_source_subjects_with_profile_or_raise(
                 height: profile.viewport_height.to_double(),
               }),
               profile,
+              pattern_owners.last(),
+              event.span.start.offset,
             ),
           )
         }
@@ -459,6 +478,9 @@ fn extract_source_subjects_with_profile_or_raise(
         ignore(transforms.pop())
         if name.local_name == "marker" {
           marker_depth -= 1
+        }
+        if name.local_name == "pattern" {
+          ignore(pattern_owners.pop())
         }
         if name.local_name == "svg" || name.local_name == "g" {
           ignore(hierarchy.pop())
@@ -472,7 +494,34 @@ fn extract_source_subjects_with_profile_or_raise(
       _ => ()
     }
   }
-  resolve_marker_subjects_or_raise(input, subjects, profile)
+  let resolved = resolve_marker_subjects_or_raise(input, subjects, profile)
+  if include_pattern_children {
+    resolved
+  } else {
+    [
+      for subject in resolved if subject.resource_owner_id is None => subject
+    ]
+  }
+}
+
+///|
+fn extract_source_subjects_with_profile_or_raise(
+  input : String,
+  profile : ComparisonProfile,
+) -> Array[SourceSubject] raise {
+  extract_source_subjects_internal_or_raise(input, profile, false)
+}
+
+///|
+fn extract_pattern_child_subjects_with_profile_or_raise(
+  input : String,
+  profile : ComparisonProfile,
+) -> Array[SourceSubject] raise {
+  [
+    for
+      subject in extract_source_subjects_internal_or_raise(input, profile, true) if subject.resource_owner_id
+    is Some(_) => subject
+  ]
 }
 
 ///|
@@ -1121,11 +1170,9 @@ fn finish_report(
     report, before_svg, after_svg, combined_alignments,
   )
   comparison_guard.checkpoint()
-  let report = attach_resource_transform_differences(
-    report, before_svg, after_svg,
-  )
-  comparison_guard.checkpoint()
   let report = attach_gradient_differences(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
+  let report = attach_pattern_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()

@@ -42,19 +42,6 @@ priv struct SourceTransformSite {
 }
 
 ///|
-priv struct ResourceTransformSubject {
-  node_index : Int
-  kind : String
-  subject_id : String
-  authored_id : String?
-  property : String
-  fact : DeclaredVisualFact?
-  normalized_signature : String
-  matrix : AffineTransform
-  complete : Bool
-}
-
-///|
 fn AffineTransform::identity() -> AffineTransform {
   { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: 0.0, f: 0.0 }
 }
@@ -511,95 +498,4 @@ fn cumulative_transform(
     }
   }
   (matrix, complete, has_transform)
-}
-
-///|
-fn resource_transform_property(kind : String) -> String? {
-  match kind {
-    "linearGradient" | "radialGradient" => Some("gradientTransform")
-    "pattern" => Some("patternTransform")
-    _ => None
-  }
-}
-
-///|
-fn resource_transform_subject(
-  input : String,
-  element : @xml.NamespaceElement,
-  node_index : Int,
-) -> ResourceTransformSubject? {
-  let property = match resource_transform_property(element.name.local_name) {
-    Some(property) => property
-    None => return None
-  }
-  let authored_id = authored_subject_id(element)
-  let subject_id = authored_id.unwrap_or(
-    generated_subject_id(element.name.local_name, node_index),
-  )
-  for attribute in element.attributes {
-    if attribute.name.local_name == property {
-      let fact = presentation_fact(input, property, attribute)
-      return Some(
-        match parse_transform_list(attribute.value) {
-          ValidTransformList(normalized) =>
-            {
-              node_index,
-              kind: element.name.local_name,
-              subject_id,
-              authored_id,
-              property,
-              fact: Some(fact),
-              normalized_signature: normalized.signature,
-              matrix: normalized.matrix,
-              complete: true,
-            }
-          InvalidTransformList =>
-            {
-              node_index,
-              kind: element.name.local_name,
-              subject_id,
-              authored_id,
-              property,
-              fact: Some(fact),
-              normalized_signature: "",
-              matrix: AffineTransform::identity(),
-              complete: false,
-            }
-        },
-      )
-    }
-  }
-  Some({
-    node_index,
-    kind: element.name.local_name,
-    subject_id,
-    authored_id,
-    property,
-    fact: None,
-    normalized_signature: "",
-    matrix: AffineTransform::identity(),
-    complete: true,
-  })
-}
-
-///|
-fn extract_resource_transforms_or_raise(
-  input : String,
-) -> Array[ResourceTransformSubject] raise {
-  let resources : Array[ResourceTransformSubject] = []
-  let mut node_index = 0
-  let reader = @xml.NamespaceReader::from_string(input)
-  for event in reader.read_events_until_eof() {
-    match event.kind {
-      Start(element) | Empty(element) => {
-        match resource_transform_subject(input, element, node_index) {
-          Some(resource) => resources.push(resource)
-          None => ()
-        }
-        node_index += 1
-      }
-      _ => ()
-    }
-  }
-  resources
 }

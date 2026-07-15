@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/14",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/15",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -331,6 +331,36 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_fractional_opacity_unproven",
       "reason": "The canonical inherited effective alpha differs from Chromium by one premultiplied RGBA8 level and remains guarded."
+    },
+    {
+      "id": "pattern-object-bbox",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_pattern_raster_unproven",
+      "reason": "The pinned and browser renderers differ for an object-bounding-box pattern tile and content mapping."
+    },
+    {
+      "id": "pattern-content-object-bbox",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_pattern_raster_unproven",
+      "reason": "The pinned and browser renderers differ when pattern content uses object-bounding-box coordinates."
+    },
+    {
+      "id": "pattern-viewbox",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_pattern_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a pattern content viewBox mapping."
+    },
+    {
+      "id": "pattern-transform",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_pattern_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a transformed pattern tile."
+    },
+    {
+      "id": "pattern-template-inheritance",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_pattern_raster_unproven",
+      "reason": "The pinned and browser renderers differ for recursive same-document pattern template inheritance."
     }
   ]
 }

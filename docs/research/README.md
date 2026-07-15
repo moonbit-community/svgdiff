@@ -13,5 +13,6 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [Historical structured-report prototype verdict](structured-report-prototype.md) | 2026-07-13 to 2026-07-14 | Records the prototype findings later promoted into `engine`. |
 | [Deterministic SVG solid color and opacity](css-color-opacity.md) | 2026-07-15 | Fixes the normative sRGB and opacity boundary, records the MoonBit dependency audit, and reports Chromium conformance evidence. |
 | [SVG gradient semantics](svg-gradient-semantics.md) | 2026-07-15 | Fixes the static same-document gradient boundary and records the browser-conformance guard. |
+| [SVG pattern semantics](svg-pattern-semantics.md) | 2026-07-15 | Fixes the admitted static same-document pattern boundary and records its coordinate, template, child, and raster-conformance semantics. |
 
 Research should be amended only to correct factual errors or to add an explicitly dated follow-up. Changes to current product policy belong in an ADR and the current contract documents.

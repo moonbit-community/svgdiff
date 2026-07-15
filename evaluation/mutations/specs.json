@@ -9,7 +9,7 @@
       "stroke-dasharray", "stroke-dashoffset", "vector-effect",
       "marker-end", "markerUnits", "markerWidth", "refX", "orient",
       "opacity", "transform", "viewBox", "color", "--paint",
-      "gradientUnits", "gradientTransform", "stop-color"
+      "gradientUnits", "gradientTransform", "stop-color", "patternUnits", "patternTransform"
     ]
   },
   "cases": [
@@ -408,6 +408,30 @@
       "before_value": "<defs><radialGradient id='g'><stop stop-color='red'/><stop offset='1' stop-color='blue'/></radialGradient></defs><circle id='box' cx='8' cy='8' r='5' fill='url(#g)'/>",
       "after_value": "<defs><radialGradient id='g'><stop stop-color='green'/><stop offset='1' stop-color='blue'/></radialGradient></defs><circle id='box' cx='8' cy='8' r='5' fill='url(#g)'/>",
       "expected_changed_fact": { "subject_kind": "circle", "source_property": "stop-color", "report_property": "stop:0:color", "before_declared_value": "red", "after_declared_value": "green", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-pattern-units",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><pattern id='p' patternUnits='objectBoundingBox' width='.5' height='.5'><rect id='dot' width='2' height='2' fill='red'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
+      "after_value": "<defs><pattern id='p' patternUnits='userSpaceOnUse' width='.5' height='.5'><rect id='dot' width='2' height='2' fill='red'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "patternUnits", "report_property": "patternUnits", "before_declared_value": "objectBoundingBox", "after_declared_value": "userSpaceOnUse", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-pattern-transform",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><pattern id='p' patternUnits='userSpaceOnUse' width='4' height='4' patternTransform='translate(1)'><rect id='dot' width='2' height='4' fill='red'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
+      "after_value": "<defs><pattern id='p' patternUnits='userSpaceOnUse' width='4' height='4' patternTransform='translate(3)'><rect id='dot' width='2' height='4' fill='red'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "patternTransform", "report_property": "patternTransform", "before_declared_value": "translate(1)", "after_declared_value": "translate(3)", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-pattern-child-fill",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><pattern id='p' patternUnits='userSpaceOnUse' width='4' height='4'><rect id='dot' width='2' height='4' fill='red'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
+      "after_value": "<defs><pattern id='p' patternUnits='userSpaceOnUse' width='4' height='4'><rect id='dot' width='2' height='4' fill='blue'/></pattern></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#p)'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "child:dot:fill", "before_declared_value": "red", "after_declared_value": "blue", "affected_subject_ids": ["box"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     }
   ]

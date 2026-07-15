@@ -5,12 +5,14 @@ priv struct FillSourceElement {
   source_offset : Int
   parent_index : Int?
   visual_declarations : Array[DeclaredVisualFact]
+  resource_content : Bool
 }
 
 ///|
 priv struct FillHierarchy {
   elements : Array[FillSourceElement]
   rect_subject_ids : Array[String]
+  all_entity_subject_ids : Array[String]
   coverage_codes : Array[String]
   mut has_inherited_visual : Bool
 }
@@ -21,6 +23,7 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     "svg"
     | "g"
     | "defs"
+    | "pattern"
     | "linearGradient"
     | "radialGradient"
     | "stop"
@@ -158,6 +161,7 @@ fn add_fill_source_element(
   parent_index : Int?,
   elements : Array[FillSourceElement],
   rect_subject_ids : Array[String],
+  all_entity_subject_ids : Array[String],
   coverage_codes : Array[String],
   svg_count : Int,
   group_count : Int,
@@ -179,6 +183,11 @@ fn add_fill_source_element(
     }
   }
   let index = elements.length()
+  let resource_content = match parent_index {
+    Some(parent) =>
+      elements[parent].resource_content || elements[parent].kind == "pattern"
+    None => false
+  }
   elements.push({
     subject_id,
     kind,
@@ -187,9 +196,13 @@ fn add_fill_source_element(
     visual_declarations: visual_declarations_from_element(
       input, element, stylesheet_match, coverage_codes,
     ),
+    resource_content,
   })
   if fill_entity_kind(kind) {
-    rect_subject_ids.push(subject_id)
+    all_entity_subject_ids.push(subject_id)
+    if !resource_content {
+      rect_subject_ids.push(subject_id)
+    }
   }
   index
 }
@@ -1013,6 +1026,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   let reader = @xml.NamespaceReader::from_string(input)
   let elements : Array[FillSourceElement] = []
   let rect_subject_ids : Array[String] = []
+  let all_entity_subject_ids : Array[String] = []
   let coverage_codes : Array[String] = []
   let stack : Array[Int] = []
   let mut svg_count = 0
@@ -1039,6 +1053,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
             parent_index,
             elements,
             rect_subject_ids,
+            all_entity_subject_ids,
             coverage_codes,
             svg_count,
             group_count,
@@ -1067,6 +1082,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
               stack.last(),
               elements,
               rect_subject_ids,
+              all_entity_subject_ids,
               coverage_codes,
               svg_count,
               group_count,
@@ -1094,6 +1110,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   let hierarchy = {
     elements,
     rect_subject_ids,
+    all_entity_subject_ids,
     coverage_codes,
     has_inherited_visual: false,
   }
@@ -1528,7 +1545,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.17",
+    schema_version: "1.18",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

@@ -20,13 +20,13 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 - unsupported attributes across every currently supported basic shape;
 - invalid or non-positive `viewBox`, invalid `preserveAspectRatio`, and environment-dependent or arithmetic viewport lengths; valid unitless, CSS absolute-unit, percentage, static viewport-relative, meet, slice, none, root, and nested viewport mappings have moved to focused complete-path tests;
 - unsupported CSS declarations and selector/stylesheet syntax outside the admitted static grammar; type, universal, ID, class, attribute presence/equality, compound, list, and four structural combinators have moved to focused complete-path and mutation tests;
-- unresolved paint values and paint servers;
+- unresolved paint values and paint servers outside the admitted static gradient and pattern slices;
 - group/root compositing and effect inputs.
-- malformed transform lists and guarded gradient/pattern resource transforms;
+- malformed transform lists and invalid gradient or pattern resource transforms;
 - invalid and unsupported basic-shape geometry, including negative radii, malformed or odd point lists, and environment-dependent or arithmetic lengths;
 - invalid or unsupported stroke geometry, including negative widths or miter limits, invalid cap/join keywords, negative or malformed dash lists, environment-dependent or arithmetic lengths, and unsupported vector effects;
 - invalid or unsupported marker attachments and resources, including missing, wrong-kind, external, malformed, environment-dependent lengths, negative sizes, invalid orientations, unresolved reference points, and visible overflow;
-- renderer-conformance guards for fractional geometry, rounded rectangles, polygons, active stroke outlines/joins/dashes/non-scaling-stroke, markers, fractional leaf opacity, general affine transforms outside the integer axis slice, and the narrow referenced-gradient slice.
+- renderer-conformance guards for fractional geometry, rounded rectangles, polygons, active stroke outlines/joins/dashes/non-scaling-stroke, markers, fractional leaf opacity, general affine transforms outside the integer axis slice, and referenced gradient or pattern rasterization.
 
 Every generated case also asserts that the report contains Diagnostics and at least one limited or failed coverage cell. The generator is intentionally small and reviewable; adding a supported feature requires removing or narrowing its old unsupported generator only in the same change that adds complete-path mutation coverage.
 

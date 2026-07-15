@@ -20,4 +20,4 @@ Keep `renderer_gradient_raster_unproven` until browser conformance demonstrates 
 
 Text-only agents can enumerate all modeled gradient causes, quantify every changed component, and connect one resource change to all consumers without image access. Static source and computed semantics can be complete even when Rendered Evidence is limited. Six browser fixtures establish that the current dependency still differs on linear/radial units, transforms, templates, and multi-stop opacity, so this decision does not claim raster equivalence.
 
-Patterns, external resource bundles, animation or script mutation, non-sRGB interpolation, and exact gradient rasterization remain future work.
+External resource bundles, animation or script mutation, non-sRGB interpolation, and exact gradient rasterization remain future work. Static pattern semantics were subsequently admitted by [ADR 0060](0060-resolve-static-patterns-as-resource-and-consumer-semantics.md).

@@ -328,6 +328,19 @@
       }
     },
     {
+      "id": "resource-pattern-change",
+      "before": "evaluation/schema-examples/cases/resource-pattern-change/before.svg",
+      "after": "evaluation/schema-examples/cases/resource-pattern-change/after.svg",
+      "output": "schema/examples/resource-pattern-change.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["resource.pattern.child.fill", "resource.pattern.child.computed_signature", "paint.fill"],
+        "computed_relations": ["different", "different", "different"],
+        "diagnostic_codes": ["renderer_pattern_raster_unproven"],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

@@ -88,6 +88,12 @@
     { "id": "inherited-paint-opacity", "source": "evaluation/renderer-conformance/fixtures/inherited-paint-opacity.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "guarded", "canonical_equivalent_id": "inherited-paint-opacity-canonical" },
     { "id": "inherited-paint-opacity-canonical", "source": "evaluation/renderer-conformance/fixtures/inherited-paint-opacity-canonical.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "guarded" },
     { "id": "clamped-opacity", "source": "evaluation/renderer-conformance/fixtures/clamped-opacity.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "supported", "canonical_equivalent_id": "clamped-opacity-canonical" },
-    { "id": "clamped-opacity-canonical", "source": "evaluation/renderer-conformance/fixtures/clamped-opacity-canonical.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "supported" }
+    { "id": "clamped-opacity-canonical", "source": "evaluation/renderer-conformance/fixtures/clamped-opacity-canonical.svg", "width": 16, "height": 16, "category": "alpha", "coverage_claim": "supported" },
+    { "id": "pattern-object-bbox", "source": "evaluation/renderer-conformance/fixtures/pattern-object-bbox.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "pattern-user-space", "source": "evaluation/renderer-conformance/fixtures/pattern-user-space.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "pattern-content-object-bbox", "source": "evaluation/renderer-conformance/fixtures/pattern-content-object-bbox.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "pattern-viewbox", "source": "evaluation/renderer-conformance/fixtures/pattern-viewbox.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "pattern-transform", "source": "evaluation/renderer-conformance/fixtures/pattern-transform.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "pattern-template-inheritance", "source": "evaluation/renderer-conformance/fixtures/pattern-template-inheritance.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" }
   ]
 }

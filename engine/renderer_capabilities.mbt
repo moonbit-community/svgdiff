@@ -7,6 +7,8 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
       Some(("raster.fractional_geometry", "guarded"))
     "renderer_gradient_raster_unproven" =>
       Some(("raster.referenced_gradient", "guarded"))
+    "renderer_pattern_raster_unproven" =>
+      Some(("raster.referenced_pattern", "guarded"))
     "renderer_fractional_opacity_unproven" =>
       Some(("raster.fractional_opacity", "guarded"))
     "renderer_transform_raster_unproven" =>

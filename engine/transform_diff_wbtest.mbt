@@ -426,21 +426,20 @@ test "anonymous gradient transform differences pair by resource ordinal" {
 }
 
 ///|
-test "pattern transform is retained while pattern semantics remain unsupported" {
+test "pattern transform has complete resource-local semantics" {
   let before = "<svg><defs><pattern id='tile' patternTransform='scale(1)'/></defs></svg>"
   let after = "<svg><defs><pattern id='tile' patternTransform='scale(2)'/></defs></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
   assert_true(
     report.atomic_differences.any(difference => {
-      difference.domain == "resource.transform.matrix" &&
-      difference.source_before == "matrix(1,0,0,1,0,0)" &&
-      difference.source_after == "matrix(2,0,0,2,0,0)"
+      difference.domain == "resource.pattern.transform.list" &&
+      difference.source_before == "scale(1)" &&
+      difference.source_after == "scale(2)"
     }),
   )
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "unsupported_visual_subject" &&
-      diagnostic.subject_id == "pattern"
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "unsupported_visual_subject"
     }),
   )
   assert_true(

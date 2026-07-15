@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <defs>
+    <pattern id="tile" patternUnits="userSpaceOnUse" width="4" height="4">
+      <rect id="dot" width="2" height="4" fill="blue"/>
+    </pattern>
+  </defs>
+  <rect id="box" x="2" y="2" width="12" height="12" fill="url(#tile)"/>
+</svg>

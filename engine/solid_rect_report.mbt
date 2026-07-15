@@ -146,7 +146,7 @@ fn rect_coverage_report(
   let subject_id = "rect:0"
   let diagnostic_id = "diagnostic:\{code}:\{subject_id}"
   {
-    schema_version: "1.17",
+    schema_version: "1.18",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],
@@ -291,7 +291,7 @@ fn compare_rect_declared_facts(
     })
   }
   {
-    schema_version: "1.17",
+    schema_version: "1.18",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
@@ -317,6 +317,29 @@ fn solid_rect_change_report(
   after_document : @svg.SVGDocument,
   profile : ComparisonProfile,
 ) -> StructuredReport? {
+  match
+    (
+      extract_pattern_document(before_svg, profile),
+      extract_pattern_document(after_svg, profile),
+    ) {
+    (Some(before), Some(after)) if !before.patterns.is_empty() ||
+      !after.patterns.is_empty() => return None
+    _ => ()
+  }
+  let before_subjects = extract_source_subjects_with_profile_or_raise(
+    before_svg, profile,
+  ) catch {
+    _ => return None
+  }
+  let after_subjects = extract_source_subjects_with_profile_or_raise(
+    after_svg, profile,
+  ) catch {
+    _ => return None
+  }
+  guard before_subjects is [{ kind: "rect", .. }] &&
+    after_subjects is [{ kind: "rect", .. }] else {
+    return None
+  }
   match
     (
       extract_rect_declared_facts(before_svg),

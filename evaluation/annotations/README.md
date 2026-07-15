@@ -42,7 +42,7 @@ sh scripts/test-region-annotations.sh
 
 ## Actual-cause labels
 
-`actual-causes.v1.json` admits only controlled cases with rendered outcomes and sufficient coverage for Cause Envelope recall evaluation. Actual causes use semantic fact locators instead of report-local IDs. Fractional geometry and referenced-gradient cases remain excluded while renderer conformance prevents a complete Cause Envelope guarantee.
+`actual-causes.v1.json` admits only controlled cases with rendered outcomes and sufficient coverage for Cause Envelope recall evaluation. Actual causes use semantic fact locators instead of report-local IDs. Fractional geometry and referenced gradient or pattern cases remain excluded while renderer conformance prevents a complete Cause Envelope guarantee.
 
 Equivalent, zero-contribution, renderer-guarded, and unsupported cases are explicitly `not_applicable`. Validate corpus coverage and reference integrity with:
 
