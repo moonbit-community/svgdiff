@@ -57,6 +57,7 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     | "use"
     | "pattern"
     | "clipPath"
+    | "mask"
     | "linearGradient"
     | "radialGradient"
     | "stop"
@@ -106,7 +107,7 @@ fn inherited_visual_properties() -> Array[String] {
     "color", "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
     "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
     "stroke-dashoffset", "marker-start", "marker-mid", "marker-end", "paint-order",
-    "clip-rule",
+    "clip-rule", "color-interpolation",
   ]
 }
 
@@ -118,7 +119,7 @@ fn resolved_visual_properties() -> Array[String] {
     "stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin",
     "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
     "opacity", "marker", "marker-start", "marker-mid", "marker-end", "paint-order",
-    "clip-rule", "clip-path",
+    "clip-rule", "clip-path", "mask", "mask-mode", "mask-type", "color-interpolation",
   ]
 }
 
@@ -279,6 +280,10 @@ fn initial_visual_value(property : String) -> String {
     "stroke-dashoffset" => "0"
     "fill-rule" | "clip-rule" => "nonzero"
     "clip-path" => "none"
+    "mask" => "none"
+    "mask-mode" => "match-source"
+    "mask-type" => "luminance"
+    "color-interpolation" => "srgb"
     "paint-order" => "fill stroke markers"
     "vector-effect" => "none"
     "marker-start" | "marker-mid" | "marker-end" => "none"
@@ -647,6 +652,17 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
         ClipInvalid => false
         _ => true
       }
+    "mask" =>
+      match parse_mask_reference(value) {
+        MaskInvalid => false
+        _ => true
+      }
+    "mask-mode" =>
+      normalized == "alpha" ||
+      normalized == "luminance" ||
+      normalized == "match-source"
+    "mask-type" => normalized == "alpha" || normalized == "luminance"
+    "color-interpolation" => normalized == "srgb" || normalized == "linearrgb"
     _ => false
   }
 }
@@ -811,6 +827,40 @@ fn canonical_computed_visual_value(
           push_unique(hierarchy.coverage_codes, "clip_path_reference_invalid")
           (value, false)
         }
+      }
+    "mask" =>
+      match parse_mask_reference(source) {
+        MaskNone => ("none", true)
+        MaskLocal(id) => ("url(#\{id})", true)
+        MaskExternal => (source.trim().to_owned(), true)
+        MaskInvalid => {
+          push_unique(hierarchy.coverage_codes, "mask_reference_invalid")
+          (value, false)
+        }
+      }
+    "mask-mode" =>
+      if value == "alpha" || value == "luminance" || value == "match-source" {
+        (value, true)
+      } else {
+        push_unique(hierarchy.coverage_codes, "mask_mode_invalid")
+        (value, false)
+      }
+    "mask-type" =>
+      if value == "alpha" || value == "luminance" {
+        (value, true)
+      } else {
+        push_unique(hierarchy.coverage_codes, "mask_type_invalid")
+        (value, false)
+      }
+    "color-interpolation" =>
+      if value == "srgb" || value == "linearrgb" {
+        (value, true)
+      } else {
+        push_unique(
+          hierarchy.coverage_codes,
+          "mask_color_interpolation_invalid",
+        )
+        (value, false)
       }
     _ => (source, true)
   }
@@ -1763,7 +1813,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.27",
+    schema_version: "1.28",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

@@ -1,7 +1,16 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/22",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/23",
   "cases": [
+    {
+      "id": "mask-container",
+      "disposition": "compositor",
+      "compositor_id": "static-mask-compositor@1",
+      "validation_before": "evaluation/renderer-conformance/fixtures/mask-container.svg",
+      "validation_after": "evaluation/renderer-conformance/fixtures/mask-container-more-opaque.svg",
+      "validation_domain": "resource.mask.alpha",
+      "reason": "The raw renderer differs from Chromium by one premultiplied channel level; the product isolates the container and mask surfaces before multiplying alpha."
+    },
     {
       "id": "embedded-raster-png",
       "disposition": "diagnostic",

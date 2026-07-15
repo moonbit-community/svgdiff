@@ -55,6 +55,10 @@ fn supported_rect_property(property : String) -> Bool {
     | "paint-order"
     | "clip-rule"
     | "clip-path"
+    | "mask"
+    | "mask-mode"
+    | "mask-type"
+    | "color-interpolation"
     | "opacity" => true
     _ => false
   }
@@ -80,9 +84,23 @@ fn css_custom_property_name(property : String) -> Bool {
 
 ///|
 fn supported_css_declaration_property(property : String) -> Bool {
-  supported_rect_property(property.to_lower()) ||
-  property.to_lower() == "stop-color" ||
-  property.to_lower() == "stop-opacity" ||
+  let normalized = property.to_lower()
+  supported_rect_property(normalized) ||
+  normalized == "stop-color" ||
+  normalized == "stop-opacity" ||
+  normalized == "mask-image" ||
+  normalized == "mask-position" ||
+  normalized == "mask-size" ||
+  normalized == "mask-repeat" ||
+  normalized == "mask-origin" ||
+  normalized == "mask-clip" ||
+  normalized == "mask-composite" ||
+  normalized == "mask-border-source" ||
+  normalized == "mask-border-mode" ||
+  normalized == "mask-border-slice" ||
+  normalized == "mask-border-width" ||
+  normalized == "mask-border-outset" ||
+  normalized == "mask-border-repeat" ||
   css_custom_property_name(property)
 }
 

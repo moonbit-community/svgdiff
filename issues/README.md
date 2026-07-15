@@ -131,6 +131,7 @@ graph TD
   ISS_113["ISS-113: Separate nonvisual metadata from visual differences"]
   ISS_114["ISS-114: Implement isolated group opacity compositing"]
   ISS_115["ISS-115: Implement deterministic clipping and effect bounds"]
+  ISS_116["ISS-116: Implement deterministic alpha and luminance masking"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -340,6 +341,7 @@ graph TD
   ISS_112 --> ISS_113
   ISS_113 --> ISS_114
   ISS_114 --> ISS_115
+  ISS_115 --> ISS_116
 ```
 
 ## Warnings

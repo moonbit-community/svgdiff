@@ -32,8 +32,8 @@ fn assert_unsupported_never_proves_equality(source : String) -> Unit raise {
 ///|
 test "unsupported element families never produce complete equality" {
   let elements = [
-    "<image href='data:image/png;base64,'/>", "<use href='#shape'/>", "<mask id='mask'><rect width='4' height='4'/></mask>",
-    "<filter id='filter'/>", "<foreignObject width='4' height='4'/>", "<animate attributeName='x' values='0;1'/>",
+    "<image href='data:image/png;base64,'/>", "<use href='#shape'/>", "<filter id='filter'/>",
+    "<foreignObject width='4' height='4'/>", "<animate attributeName='x' values='0;1'/>",
     "<set attributeName='fill' to='red'/>", "<animateTransform attributeName='transform'/>",
     "<script>void 0</script>",
   ]
@@ -48,7 +48,7 @@ test "unsupported element families never produce complete equality" {
 ///|
 test "unsupported attribute families never produce complete equality" {
   let attributes = [
-    "clip-path='url(#clip)'", "mask='url(#mask)'", "filter='url(#filter)'", "mix-blend-mode='multiply'",
+    "clip-path='url(#clip)'", "filter='url(#filter)'", "mix-blend-mode='multiply'",
   ]
   let shape_starts = [
     "<rect width='8' height='8'", "<circle cx='4' cy='4' r='3'", "<ellipse cx='4' cy='4' rx='3' ry='2'",

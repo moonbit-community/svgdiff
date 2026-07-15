@@ -850,7 +850,8 @@ fn structural_resource_content(
       kind == "radialGradient" ||
       kind == "pattern" ||
       kind == "marker" ||
-      kind == "clipPath" {
+      kind == "clipPath" ||
+      kind == "mask" {
       return true
     }
     current = document.nodes[index].parent_index

@@ -28,6 +28,15 @@ ADMITTED_CLIP_CASES = {
     "clip-container",
 }
 
+ADMITTED_MASK_CASES = {
+    "mask-alpha",
+    "mask-luminance",
+    "mask-object-bbox",
+    "mask-container",
+    "mask-mode-alpha",
+    "mask-transform",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -76,7 +85,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/22"
+    expected_profile = "svgdiff-renderer-conformance-profile/23"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:
@@ -176,7 +185,8 @@ def main() -> None:
             differences = [
                 difference
                 for difference in report.get("atomic_differences", [])
-                if difference.get("domain") == "compositing.opacity"
+                if difference.get("domain")
+                == mapping.get("validation_domain", "compositing.opacity")
             ]
             if report.get("analysis_status") != "complete" or len(differences) != 1:
                 raise ValueError(f"compositor validation comparison failed: {case_id}")
@@ -243,6 +253,31 @@ def main() -> None:
             f"admitted clip fixtures are not all exact and supported: "
             f"{sorted(ADMITTED_CLIP_CASES - exact_clip_cases)}"
         )
+
+    admitted_mask_cases = {
+        case["id"]
+        for case in baseline["cases"]
+        if case["coverage_claim"] == "supported"
+        and case["id"] in ADMITTED_MASK_CASES
+    }
+    if admitted_mask_cases != ADMITTED_MASK_CASES:
+        raise ValueError(
+            f"admitted mask fixtures are not all supported: "
+            f"{sorted(ADMITTED_MASK_CASES - admitted_mask_cases)}"
+        )
+    for case_id in sorted(ADMITTED_MASK_CASES):
+        source = (ROOT / fixtures[case_id]["source"]).resolve()
+        report = compare_source(args.cli, source)
+        mask_guards = sorted(
+            diagnostic["code"]
+            for diagnostic in report.get("diagnostics", [])
+            if diagnostic["code"].startswith("mask_")
+        )
+        if report.get("analysis_status") != "complete" or mask_guards:
+            raise ValueError(
+                f"admitted mask case lost complete coverage: "
+                f"{case_id} {mask_guards}"
+            )
 
     print(
         f"Renderer dispositions: {len(divergent)} divergences disposed "

@@ -37,6 +37,13 @@ priv struct SourceSubject {
   clip_complete : Bool
   clip_effect_bounds : CssBounds?
   clip_issue_codes : Array[String]
+  mask_owner_id : String?
+  mask_resource_id : String?
+  mask_mode : String?
+  mask_outcome : String?
+  mask_complete : Bool
+  mask_effect_bounds : CssBounds?
+  mask_issue_codes : Array[String]
   source_offset : Int
 }
 
@@ -56,7 +63,7 @@ fn alignment_property_order() -> Array[String] {
     "points", "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
     "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
     "stroke-dashoffset", "vector-effect", "marker", "marker-start", "marker-mid",
-    "marker-end", "paint-order", "clip-rule", "opacity", "clip-path",
+    "marker-end", "paint-order", "clip-rule", "opacity", "clip-path", "mask", "mask-mode",
   ]
 }
 
@@ -267,6 +274,13 @@ fn subject_from_element(
     clip_complete: true,
     clip_effect_bounds: None,
     clip_issue_codes: [],
+    mask_owner_id: None,
+    mask_resource_id: None,
+    mask_mode: None,
+    mask_outcome: None,
+    mask_complete: true,
+    mask_effect_bounds: None,
+    mask_issue_codes: [],
     source_offset,
   }
 }
@@ -715,10 +729,14 @@ fn extract_source_subjects_internal_or_raise(
   profile : ComparisonProfile,
   include_pattern_children : Bool,
 ) -> Array[SourceSubject] raise {
-  resolve_clip_subjects_or_raise(
+  resolve_mask_subjects_or_raise(
     input,
-    extract_source_subjects_without_clip_internal_or_raise(
-      input, profile, include_pattern_children,
+    resolve_clip_subjects_or_raise(
+      input,
+      extract_source_subjects_without_clip_internal_or_raise(
+        input, profile, include_pattern_children,
+      ),
+      profile,
     ),
     profile,
   )
@@ -1425,6 +1443,8 @@ fn finish_report(
   let report = attach_pattern_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_clip_path_differences(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
+  let report = attach_mask_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()

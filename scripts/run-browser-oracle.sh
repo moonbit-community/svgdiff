@@ -4,14 +4,25 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 manifest="$root/evaluation/browser-oracle/manifest.json"
 playwright_version=${SVGDIFF_PLAYWRIGHT_CLI_VERSION:-0.1.17}
+playwright_cli_bin=${SVGDIFF_PLAYWRIGHT_CLI_BIN:-}
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 OUTPUT_DIRECTORY" >&2
   exit 2
 fi
-if ! command -v npx >/dev/null 2>&1; then
+if [ -z "$playwright_cli_bin" ] && ! command -v npx >/dev/null 2>&1; then
   echo "Browser oracle requires npx from Node.js/npm" >&2
   exit 2
+fi
+if [ -n "$playwright_cli_bin" ]; then
+  if [ ! -x "$playwright_cli_bin" ]; then
+    echo "Browser oracle CLI override is not executable: $playwright_cli_bin" >&2
+    exit 2
+  fi
+  if [ "$("$playwright_cli_bin" --version)" != "$playwright_version" ]; then
+    echo "Browser oracle CLI override must be version $playwright_version" >&2
+    exit 2
+  fi
 fi
 
 output=$1
@@ -28,6 +39,10 @@ log="$work/playwright.log"
 session="svgdiff-browser-oracle-$$"
 
 pw() {
+  if [ -n "$playwright_cli_bin" ]; then
+    "$playwright_cli_bin" --session "$session" "$@"
+    return
+  fi
   npx --yes --package "@playwright/cli@$playwright_version" \
     playwright-cli --session "$session" "$@"
 }

@@ -119,6 +119,12 @@
     { "id": "embedded-raster-png", "source": "evaluation/renderer-conformance/fixtures/embedded-raster-png.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
     { "id": "embedded-raster-jpeg", "source": "evaluation/renderer-conformance/fixtures/embedded-raster-jpeg.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
     { "id": "structural-stacking-before", "source": "evaluation/renderer-conformance/fixtures/structural-stacking-before.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
-    { "id": "structural-stacking-after", "source": "evaluation/renderer-conformance/fixtures/structural-stacking-after.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
+    { "id": "structural-stacking-after", "source": "evaluation/renderer-conformance/fixtures/structural-stacking-after.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "mask-alpha", "source": "evaluation/renderer-conformance/fixtures/mask-alpha.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "mask-luminance", "source": "evaluation/renderer-conformance/fixtures/mask-luminance.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "mask-object-bbox", "source": "evaluation/renderer-conformance/fixtures/mask-object-bbox.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "mask-container", "source": "evaluation/renderer-conformance/fixtures/mask-container.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "mask-mode-alpha", "source": "evaluation/renderer-conformance/fixtures/mask-mode-alpha.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" },
+    { "id": "mask-transform", "source": "evaluation/renderer-conformance/fixtures/mask-transform.svg", "width": 16, "height": 16, "category": "compositing", "coverage_claim": "supported" }
   ]
 }

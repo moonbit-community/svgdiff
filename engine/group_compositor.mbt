@@ -4,8 +4,14 @@ fn group_compositor_container(node : @svg.SVGNode) -> Bool {
 }
 
 ///|
+fn group_compositor_atomic_container(node : @svg.SVGNode) -> Bool {
+  group_compositor_container(node) && node.mask_id is Some(_)
+}
+
+///|
 fn group_compositor_active(node : @svg.SVGNode) -> Bool {
-  if group_compositor_container(node) && node.opacity != 1.0 {
+  if group_compositor_atomic_container(node) ||
+    (group_compositor_container(node) && node.opacity != 1.0) {
     return true
   }
   node.children.any(group_compositor_active)
@@ -133,6 +139,110 @@ fn group_compositor_branch_root(
 }
 
 ///|
+fn group_compositor_transform_branch_root(
+  ancestors : Array[@svg.SVGNode],
+  leaf : @svg.SVGNode,
+) -> @svg.SVGNode {
+  let mut branch = leaf
+  let mut index = ancestors.length() - 1
+  while index >= 0 {
+    branch = {
+      ..ancestors[index],
+      opacity: 1.0,
+      mask_id: None,
+      clip_path_id: None,
+      children: [branch],
+    }
+    index -= 1
+  }
+  branch
+}
+
+///|
+fn group_compositor_cumulative_transform(
+  ancestors : Array[@svg.SVGNode],
+  node : @svg.SVGNode,
+) -> @svg.Transform {
+  let mut transform = @svg.Transform::identity()
+  for ancestor in ancestors {
+    transform = transform.multiply(ancestor.transform)
+  }
+  transform.multiply(node.transform)
+}
+
+///|
+fn group_compositor_clear_outside_bounds(
+  image : @svg.Image,
+  bounds : @svg.BoundingBox,
+) -> Unit {
+  for y in 0..<image.height {
+    for x in 0..<image.width {
+      let px = x.to_double() + 0.5
+      let py = y.to_double() + 0.5
+      if px < bounds.min_x ||
+        px >= bounds.max_x ||
+        py < bounds.min_y ||
+        py >= bounds.max_y {
+        image.pixels[y * image.width + x] = @svg.Color::transparent()
+      }
+    }
+  }
+}
+
+///|
+fn group_compositor_render_masked_container(
+  document : @svg.SVGDocument,
+  ancestors : Array[@svg.SVGNode],
+  container : @svg.SVGNode,
+  width : Int,
+  height : Int,
+) -> @svg.Image {
+  guard container.mask_id is Some(mask_id) &&
+    document.masks.get(mask_id) is Some(mask) else {
+    return group_compositor_render_leaf(
+      document, ancestors, container, width, height,
+    )
+  }
+  let local_container = {
+    ..container,
+    transform: @svg.Transform::identity(),
+    opacity: 1.0,
+    mask_id: None,
+    clip_path_id: None,
+  }
+  let local_bounds = @svg.Scene::new(local_container).get_bounds()
+  let target = group_compositor_render_leaf(
+    document,
+    ancestors,
+    { ..container, opacity: 1.0, mask_id: None },
+    width,
+    height,
+  )
+  let mask_root = {
+    ..container,
+    opacity: 1.0,
+    mask_id: None,
+    clip_path_id: None,
+    children: mask.content,
+  }
+  let mask_image = @svg.render_svg_document_to_image(
+    {
+      ..document,
+      root: group_compositor_transform_branch_root(ancestors, mask_root),
+    },
+    width,
+    height,
+  )
+  let region = group_compositor_cumulative_transform(ancestors, container).apply_bbox(
+    mask.get_mask_bounds(local_bounds),
+  )
+  group_compositor_clear_outside_bounds(mask_image, region)
+  let masked = @svg.apply_mask_to_image(target, mask_image, mask.mask_type)
+  group_compositor_apply_opacity(masked, container.opacity)
+  masked
+}
+
+///|
 fn group_compositor_render_leaf(
   document : @svg.SVGDocument,
   ancestors : Array[@svg.SVGNode],
@@ -159,7 +269,11 @@ fn group_compositor_render_container(
   let child_ancestors = ancestors.copy()
   child_ancestors.push(container)
   for child in group_compositor_children(container) {
-    let child_image = if group_compositor_container(child) {
+    let child_image = if group_compositor_atomic_container(child) {
+      group_compositor_render_masked_container(
+        document, child_ancestors, child, width, height,
+      )
+    } else if group_compositor_container(child) {
       group_compositor_render_container(
         document, child_ancestors, child, width, height,
       )
@@ -183,7 +297,15 @@ fn render_product_document_to_image(
   if !group_compositor_active(document.root) {
     return @svg.render_svg_document_to_image(document, width, height)
   }
-  if group_compositor_container(document.root) {
+  if group_compositor_atomic_container(document.root) {
+    group_compositor_render_masked_container(
+      document,
+      [],
+      document.root,
+      width,
+      height,
+    )
+  } else if group_compositor_container(document.root) {
     group_compositor_render_container(
       document,
       [],

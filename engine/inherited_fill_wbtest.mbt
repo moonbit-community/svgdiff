@@ -89,7 +89,7 @@ test "undeclared fill resolves to the SVG initial value" {
 
 ///|
 test "every admitted ordinary inherited property uses the nearest ancestor" {
-  let source = "<svg id='root' color='green' fill='red' fill-opacity='0.5' fill-rule='evenodd' stroke='black' stroke-opacity='0.75' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)' paint-order='stroke fill' clip-rule='evenodd'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
+  let source = "<svg id='root' color='green' color-interpolation='sRGB' fill='red' fill-opacity='0.5' fill-rule='evenodd' stroke='black' stroke-opacity='0.75' stroke-width='2' stroke-linecap='round' stroke-linejoin='bevel' stroke-miterlimit='3' stroke-dasharray='2 1' stroke-dashoffset='4' marker-start='url(#start)' marker-mid='url(#mid)' marker-end='url(#end)' paint-order='stroke fill' clip-rule='evenodd'><g id='near' stroke-width='5'><path id='edge' d='M0 0 L8 8'/></g></svg>"
   match extract_fill_hierarchy(source) {
     ParsedFillHierarchy(hierarchy) =>
       for property in inherited_visual_properties() {

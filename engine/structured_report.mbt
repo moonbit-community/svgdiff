@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.27` API accepts caller-provided viewport dimensions and
+/// The root schema `1.28` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.27` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.28` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -24,8 +24,8 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     comparison_dpr: 1.0,
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
-    renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/22",
+    renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/23",
   }
 }
 
@@ -685,7 +685,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.27` result of one SVG comparison.
+/// Complete schema `1.28` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -704,13 +704,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.27` JSON.
+/// Serialize this report as indented schema `1.28` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.27` JSON.
+/// Serialize this report as whitespace-free schema `1.28` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -745,6 +745,7 @@ fn known_source_element(kind : String) -> Bool {
     | "radialGradient"
     | "pattern"
     | "clipPath"
+    | "mask"
     | "marker"
     | "image"
     | "stop"
@@ -791,6 +792,17 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
     name == "paint-order" ||
     name == "clip-rule" ||
     name == "clip-path" ||
+    name == "mask" ||
+    name == "mask-mode" ||
+    name == "mask-type" ||
+    name == "mask-image" ||
+    name == "mask-position" ||
+    name == "mask-size" ||
+    name == "mask-repeat" ||
+    name == "mask-origin" ||
+    name == "mask-clip" ||
+    name == "mask-composite" ||
+    name.has_prefix("mask-border") ||
     name == "opacity" {
     return true
   }
@@ -867,6 +879,13 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
       name == "href" ||
       name == "overflow"
     "clipPath" => name == "clipPathUnits"
+    "mask" =>
+      name == "maskUnits" ||
+      name == "maskContentUnits" ||
+      name == "x" ||
+      name == "y" ||
+      name == "width" ||
+      name == "height"
     "marker" =>
       name == "markerUnits" ||
       name == "markerWidth" ||
@@ -897,6 +916,52 @@ fn unsupported_visual_value_code(property : String, value : String) -> String? {
   let normalized = trimmed.to_lower()
   if css_wide_keyword(normalized) || normalized.find("var(") is Some(_) {
     return None
+  }
+  if property.has_prefix("mask-border") {
+    return Some("mask_border_unsupported")
+  }
+  if property == "mask-image" {
+    return Some("mask_image_unsupported")
+  }
+  if property == "mask-position" ||
+    property == "mask-size" ||
+    property == "mask-repeat" ||
+    property == "mask-origin" ||
+    property == "mask-clip" ||
+    property == "mask-composite" {
+    return Some("mask_layer_subproperty_unsupported")
+  }
+  if property == "mask" {
+    if normalized.find("gradient(") is Some(_) ||
+      normalized.has_prefix("image(") ||
+      normalized.has_prefix("image-set(") ||
+      normalized.has_prefix("cross-fade(") {
+      return Some("mask_image_unsupported")
+    }
+    if normalized.find(",") is Some(_) {
+      return Some("mask_multiple_layers_unsupported")
+    }
+    return match parse_mask_reference(trimmed) {
+      MaskNone | MaskLocal(_) => None
+      MaskExternal => Some("mask_external_reference_unsupported")
+      MaskInvalid => Some("mask_reference_invalid")
+    }
+  }
+  if property == "mask-mode" {
+    return if normalized == "match-source" ||
+      normalized == "alpha" ||
+      normalized == "luminance" {
+      None
+    } else {
+      Some("mask_mode_invalid")
+    }
+  }
+  if property == "mask-type" {
+    return if normalized == "alpha" || normalized == "luminance" {
+      None
+    } else {
+      Some("mask_type_invalid")
+    }
   }
   if property == "opacity" ||
     property == "fill-opacity" ||
@@ -1068,6 +1133,33 @@ fn object_bbox_clip_child_offsets(
       offsets.push(offset)
     }
   }
+  let masks = extract_mask_semantic_document_or_raise(input, profile) catch {
+    _ => return offsets
+  }
+  for resource in masks.resources {
+    if resource.complete &&
+      resource.content_units == "objectBoundingBox" &&
+      resource.rect_source_offset is Some(offset) {
+      offsets.push(offset)
+    }
+  }
+  offsets
+}
+
+///|
+fn admitted_mask_content_offsets(
+  input : String,
+  profile : ComparisonProfile,
+) -> Array[Int] {
+  let document = extract_mask_semantic_document_or_raise(input, profile) catch {
+    _ => return []
+  }
+  let offsets : Array[Int] = []
+  for resource in document.resources {
+    if resource.complete && resource.rect_source_offset is Some(offset) {
+      offsets.push(offset)
+    }
+  }
   offsets
 }
 
@@ -1104,6 +1196,7 @@ fn preflight_source_or_raise(
     (String, String, String, ReportSourceSpan),
   ] = []
   let object_bbox_clip_offsets = object_bbox_clip_child_offsets(input, profile)
+  let mask_content_offsets = admitted_mask_content_offsets(input, profile)
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -1164,6 +1257,7 @@ fn preflight_source_or_raise(
               fractional_geometry_properties.push((name, attribute_span))
             }
             if !(name == "opacity" && group_opacity_container(kind)) &&
+              !mask_content_offsets.contains(event.span.start.offset) &&
               contains_fractional_paint_alpha(name, attribute.value) {
               fractional_leaf_opacity_spans.push(attribute_span)
             }
@@ -1251,6 +1345,7 @@ fn preflight_source_or_raise(
                   })
                 }
                 if !(fact.property == "opacity" && group_opacity_container(kind)) &&
+                  !mask_content_offsets.contains(event.span.start.offset) &&
                   contains_fractional_paint_alpha(
                     fact.property,
                     fact.declared_value,
@@ -1338,6 +1433,7 @@ fn preflight_source_or_raise(
               })
             }
             if !(fact.property == "opacity" && group_opacity_container(kind)) &&
+              !mask_content_offsets.contains(event.span.start.offset) &&
               contains_fractional_paint_alpha(
                 fact.property,
                 fact.declared_value,
@@ -1397,6 +1493,7 @@ fn preflight_source_or_raise(
   append_stroke_geometry_diagnostics(visual_subjects, source_role, diagnostics)
   append_marker_geometry_diagnostics(visual_subjects, source_role, diagnostics)
   append_clip_path_diagnostics(input, profile, source_role, diagnostics)
+  append_mask_diagnostics(input, profile, source_role, diagnostics)
   append_basic_shape_renderer_diagnostics(
     visual_subjects, source_role, diagnostics,
   )
@@ -1478,7 +1575,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.27",
+    schema_version: "1.28",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1723,7 +1820,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.27",
+        schema_version: "1.28",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1803,7 +1900,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.27",
+        schema_version: "1.28",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1853,7 +1950,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.27",
+        schema_version: "1.28",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1985,7 +2082,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.27",
+            schema_version: "1.28",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2025,7 +2122,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.27",
+            schema_version: "1.28",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2085,7 +2182,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.27",
+              schema_version: "1.28",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

@@ -1195,15 +1195,75 @@
       "id": "structural-stacking-after",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "mask-alpha",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "mask-luminance",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "mask-object-bbox",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.421875,
+      "changed_pixels": 108,
+      "comparison": "divergent",
+      "coverage_claim": "supported",
+      "id": "mask-container",
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.001801095399
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "mask-mode-alpha",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "compositing",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "mask-transform",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/22",
-  "fixture_source_set_sha256": "1bf65fad60eb8471a17e7860c227361cf92d27f903fea1348b4732bbdcb58261",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/23",
+  "fixture_source_set_sha256": "a7b830b4cf850caf9da6b6f356eb28879a36f3b083c442d49068722671c7fde8",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 119,
+    "cases": 125,
     "categories": {
       "alpha": {
         "cases": 9,
@@ -1216,9 +1276,9 @@
         "exact": 4
       },
       "compositing": {
-        "cases": 1,
-        "divergent": 1,
-        "exact": 0
+        "cases": 7,
+        "divergent": 2,
+        "exact": 5
       },
       "geometry": {
         "cases": 54,
@@ -1231,10 +1291,10 @@
         "exact": 23
       }
     },
-    "divergent": 67,
-    "exact": 52,
+    "divergent": 68,
+    "exact": 57,
     "exploratory": 0,
     "guarded": 56,
-    "supported": 63
+    "supported": 69
   }
 }

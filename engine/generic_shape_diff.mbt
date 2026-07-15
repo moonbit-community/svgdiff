@@ -47,6 +47,8 @@ fn generic_property_domain(property : String) -> String {
     "paint-order" => "paint.order"
     "clip-rule" => "clipping.rule"
     "clip-path" => "clipping.path"
+    "mask" => "masking.attachment"
+    "mask-mode" => "masking.mode"
     "opacity" => "paint.opacity"
     _ => "document.unsupported"
   }
@@ -91,6 +93,8 @@ fn generic_default_value(property : String) -> String? {
     "marker" | "marker-start" | "marker-mid" | "marker-end" => Some("none")
     "paint-order" => Some("fill stroke markers")
     "clip-path" => Some("none")
+    "mask" => Some("none")
+    "mask-mode" => Some("match-source")
     _ => None
   }
 }
@@ -121,6 +125,7 @@ fn generic_computed_string(property : String, source : String) -> String {
         None => value
       }
     "clip-path" => canonical_clip_path_reference(value).unwrap_or(value)
+    "mask" => canonical_mask_reference(value).unwrap_or(value)
     _ => value
   }
 }
@@ -560,6 +565,39 @@ fn generic_relation(
           diagnostic_ids: ids,
         }
       }
+      if (property == "mask" || property == "mask-mode") &&
+        (!before_subject.mask_complete || !after_subject.mask_complete) {
+        let ids : Array[String] = []
+        for subject in [before_subject, after_subject] {
+          for code in subject.mask_issue_codes {
+            push_unique(ids, "diagnostic:\{code}:\{source_subject_id(subject)}")
+          }
+        }
+        ids.sort()
+        return {
+          status: "indeterminate",
+          reason_code: "mask_coverage_partial",
+          missing_side: None,
+          diagnostic_ids: ids,
+        }
+      }
+      if property == "mask" &&
+        !equivalent &&
+        (
+          before_subject.mask_outcome
+          .map(value => value.has_prefix("transparent_black_"))
+          .unwrap_or(false) ||
+          after_subject.mask_outcome
+          .map(value => value.has_prefix("transparent_black_"))
+          .unwrap_or(false)
+        ) {
+        return {
+          status: "different",
+          reason_code: "transparent_black_mask_outcome_changed",
+          missing_side: None,
+          diagnostic_ids: [],
+        }
+      }
       {
         status: if equivalent {
           "equivalent"
@@ -860,6 +898,7 @@ fn generic_basic_shape_report(
       let properties = [
         "rx", "ry", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "marker",
         "marker-start", "marker-mid", "marker-end", "paint-order", "clip-rule", "clip-path",
+        "mask", "mask-mode",
       ]
       for property in alignment_property_order() {
         if stroke_geometry_property(property) {
@@ -896,6 +935,10 @@ fn generic_basic_shape_report(
     source_has_clip_resources(after_svg, profile) ||
     before.any(subject => subject.clip_resource_id is Some(_)) ||
     after.any(subject => subject.clip_resource_id is Some(_)) ||
+    source_has_mask_resources(before_svg, profile) ||
+    source_has_mask_resources(after_svg, profile) ||
+    before.any(subject => subject.mask_resource_id is Some(_)) ||
+    after.any(subject => subject.mask_resource_id is Some(_)) ||
     before.any(subject => subject.reference.instance_context is Some(_)) ||
     after.any(subject => subject.reference.instance_context is Some(_)) ||
     before.any(subject => subject.kind != "rect") ||
@@ -950,7 +993,9 @@ fn generic_basic_shape_report(
           )
           if before_subject.reference.instance_context is Some(_) ||
             after_subject.reference.instance_context is Some(_) ||
-            property == "clip-path" {
+            property == "clip-path" ||
+            property == "mask" ||
+            property == "mask-mode" {
             append_source_resolution_pair(
               source_resolutions, before_subject, after_subject, property,
             )
@@ -1101,7 +1146,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.27",
+    schema_version: "1.28",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

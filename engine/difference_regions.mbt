@@ -201,6 +201,12 @@ fn source_subject_unclipped_bounds(subject : SourceSubject) -> CssBounds? {
 
 ///|
 fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
+  match subject.mask_effect_bounds {
+    Some(bounds) => return Some(bounds)
+    None if subject.mask_complete && subject.mask_resource_id is Some(_) =>
+      return None
+    _ => ()
+  }
   match subject.clip_effect_bounds {
     Some(bounds) => Some(bounds)
     None if subject.clip_complete && subject.clip_resource_id is Some(_) => None
@@ -619,6 +625,67 @@ fn clip_resource_event_bounds(
 }
 
 ///|
+fn mask_resource_event_bounds(
+  event : VisualEvent,
+  report : StructuredReport,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> CssBounds? {
+  let keys : Array[String] = []
+  for difference_id in event.atomic_difference_ids {
+    for difference in report.atomic_differences {
+      if difference.id == difference_id &&
+        difference.domain.has_prefix("resource.mask.") {
+        push_unique(keys, event.primary_subject_id)
+      }
+    }
+  }
+  if keys.is_empty() {
+    return None
+  }
+  let mut bounds : CssBounds? = None
+  for subject in before + after {
+    match subject.mask_resource_id {
+      Some(id) if keys.contains(id) =>
+        bounds = union_bounds(
+          bounds,
+          match subject.mask_effect_bounds {
+            Some(bounds) => Some(bounds)
+            None if subject.mask_complete => None
+            None => source_subject_bounds(subject)
+          },
+        )
+      _ => ()
+    }
+  }
+  bounds
+}
+
+///|
+fn mask_host_event_bounds(
+  event : VisualEvent,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> CssBounds? {
+  if !event.id.has_prefix("event:mask-host:") {
+    return None
+  }
+  let affected_subject_ids : Array[String] = []
+  for subject in before + after {
+    if subject.mask_owner_id == Some(event.primary_subject_id) {
+      push_unique(affected_subject_ids, source_subject_id(subject))
+    }
+  }
+  let mut bounds : CssBounds? = None
+  for subject in before + after {
+    if affected_subject_ids.contains(source_subject_id(subject)) {
+      bounds = union_bounds(bounds, source_subject_bounds(subject))
+    }
+  }
+  bounds
+}
+
+///|
 fn escape_xml_attribute(value : String) -> String {
   value
   .replace_all(old="&", new="&amp;")
@@ -1004,16 +1071,28 @@ fn attach_difference_regions(
         match clip_resource_event_bounds(event, report, before, after) {
           Some(bounds) => Some(bounds)
           None =>
-            match marker_resource_bounds_for_event(event, before, after) {
+            match mask_resource_event_bounds(event, report, before, after) {
               Some(bounds) => Some(bounds)
               None =>
-                match alignment_for_event(event, alignments) {
-                  Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
-                    embedded_image_alignment_bounds(
-                      alignment, before_images, after_images,
-                    )
-                  Some(alignment) => alignment_bounds(alignment, before, after)
-                  None => None
+                match mask_host_event_bounds(event, before, after) {
+                  Some(bounds) => Some(bounds)
+                  None =>
+                    match
+                      marker_resource_bounds_for_event(event, before, after) {
+                      Some(bounds) => Some(bounds)
+                      None =>
+                        match alignment_for_event(event, alignments) {
+                          Some(alignment) if alignment.id.has_prefix(
+                              "alignment:image:",
+                            ) =>
+                            embedded_image_alignment_bounds(
+                              alignment, before_images, after_images,
+                            )
+                          Some(alignment) =>
+                            alignment_bounds(alignment, before, after)
+                          None => None
+                        }
+                    }
                 }
             }
         }

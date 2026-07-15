@@ -75,6 +75,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0069](0069-separate-nonvisual-source-audit-from-visual-diff.md) | Accepted, implemented for descriptive content and metadata attributes | Keep nonvisual source facts out of visual differences and expose an independent audit. |
 | [0070](0070-own-isolated-container-opacity-compositing.md) | Accepted, implemented for static `svg`/`g`/`symbol`/`use` opacity | Complete ordered child layers before applying container opacity once, while retaining conservative source-over causes. |
 | [0071](0071-resolve-static-rectangular-clips-and-effect-bounds.md) | Accepted, implemented for the admitted static rectangle slice | Separate host attachments from clip resources, preserve consumer fan-out, and localize complete outcomes with conservative effect bounds. |
+| [0072](0072-own-static-alpha-and-luminance-mask-semantics.md) | Accepted, implemented for the admitted static rectangle slice | Resolve alpha/luminance mask transfer, deterministic transparent-black outcomes, isolated container application, and conservative effect bounds. |
 
 ## CLI and distribution decisions
 

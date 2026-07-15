@@ -508,6 +508,266 @@ fn normalize_renderer_group_opacity(input : String) -> String {
 }
 
 ///|
+fn renderer_mask_type_edit(
+  input : String,
+  element : @xml.NamespaceElement,
+  span : @xml.SourceSpan,
+  value : String,
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  match renderer_attribute(element, "mask-type") {
+    Some(attribute) =>
+      edits.push({
+        start_offset: attribute.value_span.start.offset,
+        end_offset: attribute.value_span.end.offset,
+        replacement: value,
+      })
+    None => {
+      let offset = renderer_element_insert_offset(input, span)
+      edits.push({
+        start_offset: offset,
+        end_offset: offset,
+        replacement: " mask-type=\"\{value}\"",
+      })
+    }
+  }
+}
+
+///|
+fn renderer_mask_region_edits(
+  input : String,
+  element : @xml.NamespaceElement,
+  span : @xml.SourceSpan,
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  let additions : Array[String] = []
+  for
+    entry in [
+      ("x", "-10%"),
+      ("y", "-10%"),
+      ("width", "120%"),
+      ("height", "120%"),
+    ] {
+    if renderer_attribute(element, entry.0) is None {
+      additions.push(" \{entry.0}=\"\{entry.1}\"")
+    }
+  }
+  if !additions.is_empty() {
+    let offset = renderer_element_insert_offset(input, span)
+    edits.push({
+      start_offset: offset,
+      end_offset: offset,
+      replacement: additions.join(""),
+    })
+  }
+}
+
+///|
+fn renderer_effective_mask_mode(
+  subjects : Array[SourceSubject],
+  resource_id : String,
+) -> String? {
+  let mut result : String? = None
+  for subject in subjects {
+    if subject.mask_resource_id != Some(resource_id) ||
+      subject.mask_mode is None {
+      continue
+    }
+    let mode = subject.mask_mode.unwrap()
+    match result {
+      None => result = Some(mode)
+      Some(current) if current == mode => ()
+      Some(_) => return None
+    }
+  }
+  result
+}
+
+///|
+fn renderer_mask_resource_at_content_offset(
+  document : MaskSemanticDocument,
+  offset : Int,
+) -> MaskRectResource? {
+  for resource in document.resources {
+    if resource.rect_source_offset == Some(offset) {
+      return Some(resource)
+    }
+  }
+  None
+}
+
+///|
+fn renderer_mask_content_style_edit(
+  input : String,
+  element : @xml.NamespaceElement,
+  span : @xml.SourceSpan,
+  resource : MaskRectResource,
+  edits : Array[RendererValueEdit],
+) -> Unit {
+  let alpha_byte = (resource.content_alpha * 255.0 + 0.5)
+    .floor()
+    .to_int()
+    .max(0)
+    .min(255)
+  let renderer_alpha = if alpha_byte == 255 {
+    1.0
+  } else {
+    (alpha_byte.to_double() + 0.25) / 255.0
+  }
+  let facts : Array[DeclaredVisualFact] = []
+  match renderer_attribute(element, "style") {
+    Some(attribute) => {
+      let style = inline_style_facts(input, attribute)
+      if !style.complete {
+        return
+      }
+      facts.push_iter(style.facts.iter())
+    }
+    None => ()
+  }
+  for
+    entry in [
+      (
+        "fill",
+        "rgb(\{resource.color_red},\{resource.color_green},\{resource.color_blue})",
+      ),
+      ("fill-opacity", renderer_alpha.to_string()),
+      ("opacity", "1"),
+      ("stroke", "none"),
+    ] {
+    upsert_declared_fact(facts, {
+      ..resource.presence_fact,
+      property: entry.0,
+      declared_value: entry.1,
+    })
+  }
+  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
+  let replacement = escape_renderer_attribute_value(
+    canonical_renderer_inline_style(facts),
+  )
+  match renderer_attribute(element, "style") {
+    Some(attribute) =>
+      edits.push({
+        start_offset: attribute.value_span.start.offset,
+        end_offset: attribute.value_span.end.offset,
+        replacement,
+      })
+    None => {
+      let offset = renderer_element_insert_offset(input, span)
+      edits.push({
+        start_offset: offset,
+        end_offset: offset,
+        replacement: " style=\"\{replacement}\"",
+      })
+    }
+  }
+}
+
+///|
+fn normalize_renderer_mask_semantics(
+  input : String,
+  profile : ComparisonProfile,
+) -> String {
+  let document = extract_mask_semantic_document_or_raise(input, profile) catch {
+    _ => return input
+  }
+  let reader = @xml.NamespaceReader::from_string(input)
+  let events = reader.read_events_until_eof() catch { _ => return input }
+  let edits : Array[RendererValueEdit] = []
+  let subjects = extract_source_subjects_with_profile_or_raise(input, profile) catch {
+    _ => []
+  }
+  let mut hierarchy_index = 0
+  for event in events {
+    match event.kind {
+      Start(element) | Empty(element) => {
+        let kind = element.name.local_name
+        if fill_hierarchy_kind(kind) {
+          match document.hierarchy.elements.get(hierarchy_index) {
+            Some(source_element) => {
+              match
+                renderer_mask_resource_at_content_offset(
+                  document,
+                  event.span.start.offset,
+                ) {
+                Some(resource) if resource.complete =>
+                  renderer_mask_content_style_edit(
+                    input,
+                    element,
+                    event.span,
+                    resource,
+                    edits,
+                  )
+                _ => ()
+              }
+              if kind == "mask" {
+                renderer_mask_region_edits(input, element, event.span, edits)
+                let resource_id = authored_subject_id(element)
+                match
+                  computed_visual_for_subject(
+                    document.hierarchy,
+                    source_element.subject_id,
+                    "mask-type",
+                  ) {
+                  Some(resolution) if resolution.complete =>
+                    renderer_mask_type_edit(
+                      input,
+                      element,
+                      event.span,
+                      resource_id
+                      .bind(id => renderer_effective_mask_mode(subjects, id))
+                      .unwrap_or(resolution.reported.resolved_value),
+                      edits,
+                    )
+                  _ => ()
+                }
+              }
+              match
+                computed_visual_for_subject(
+                  document.hierarchy,
+                  source_element.subject_id,
+                  "mask",
+                ) {
+                Some(resolution) if resolution.complete =>
+                  match
+                    parse_mask_reference(resolution.reported.resolved_value) {
+                    MaskLocal(id) if mask_resource_for_id(document, id) is None ||
+                      mask_resource_for_id(document, id)
+                      .map(resource => {
+                        resource.region_width.value <= 0.0 ||
+                        resource.region_height.value <= 0.0 ||
+                        resource.child_count == 0
+                      })
+                      .unwrap_or(false) =>
+                      match resolution.reported.declaration {
+                        Some(declaration) =>
+                          renderer_group_opacity_style_edit(
+                            input,
+                            element,
+                            event.span,
+                            "0",
+                            declaration,
+                            edits,
+                          )
+                        None => ()
+                      }
+                    _ => ()
+                  }
+                _ => ()
+              }
+            }
+            None => ()
+          }
+          hierarchy_index += 1
+        }
+      }
+      _ => ()
+    }
+  }
+  apply_renderer_value_edits(input, edits)
+}
+
+///|
 fn apply_renderer_value_edits(
   input : String,
   edits : Array[RendererValueEdit],
@@ -771,6 +1031,7 @@ fn normalize_renderer_shape_geometry_with_profile(
   let edits : Array[RendererValueEdit] = []
   let viewport_contexts : Array[ViewportContext] = []
   let object_bbox_clip_stack : Array[Bool] = []
+  let object_bbox_mask_stack : Array[Bool] = []
   let mut node_index = 0
   for event in events {
     match event.kind {
@@ -778,6 +1039,13 @@ fn normalize_renderer_shape_geometry_with_profile(
         if element.name.local_name == "clipPath" {
           object_bbox_clip_stack.push(
             renderer_attribute(element, "clipPathUnits")
+            .map(attribute => attribute.value.trim() == "objectBoundingBox")
+            .unwrap_or(false),
+          )
+        }
+        if element.name.local_name == "mask" {
+          object_bbox_mask_stack.push(
+            renderer_attribute(element, "maskContentUnits")
             .map(attribute => attribute.value.trim() == "objectBoundingBox")
             .unwrap_or(false),
           )
@@ -795,8 +1063,12 @@ fn normalize_renderer_shape_geometry_with_profile(
             None => ()
           }
         }
-        if !object_bbox_clip_stack.last().unwrap_or(false) ||
-          element.name.local_name == "clipPath" {
+        if (
+            !object_bbox_clip_stack.last().unwrap_or(false) &&
+            !object_bbox_mask_stack.last().unwrap_or(false)
+          ) ||
+          element.name.local_name == "clipPath" ||
+          element.name.local_name == "mask" {
           renderer_shape_geometry_edits(
             input,
             event.span,
@@ -814,7 +1086,8 @@ fn normalize_renderer_shape_geometry_with_profile(
         node_index += 1
       }
       Empty(element) => {
-        if !object_bbox_clip_stack.last().unwrap_or(false) {
+        if !object_bbox_clip_stack.last().unwrap_or(false) &&
+          !object_bbox_mask_stack.last().unwrap_or(false) {
           renderer_shape_geometry_edits(
             input,
             event.span,
@@ -837,6 +1110,9 @@ fn normalize_renderer_shape_geometry_with_profile(
         }
         if name.local_name == "clipPath" {
           ignore(object_bbox_clip_stack.pop())
+        }
+        if name.local_name == "mask" {
+          ignore(object_bbox_mask_stack.pop())
         }
       }
       _ => ()
@@ -981,8 +1257,11 @@ fn normalize_renderer_input_with_profile(
     normalize_renderer_stroke_geometry_with_profile(
       normalize_renderer_context_lengths_with_profile(
         normalize_renderer_group_opacity(
-          normalize_renderer_ordinary_inheritance(
-            normalize_renderer_style_precedence(input),
+          normalize_renderer_mask_semantics(
+            normalize_renderer_ordinary_inheritance(
+              normalize_renderer_style_precedence(input),
+            ),
+            profile,
           ),
         ),
         profile,
@@ -999,8 +1278,11 @@ fn normalize_renderer_input(input : String) -> String {
     normalize_renderer_stroke_geometry(
       normalize_renderer_context_lengths_with_profile(
         normalize_renderer_group_opacity(
-          normalize_renderer_ordinary_inheritance(
-            normalize_renderer_style_precedence(input),
+          normalize_renderer_mask_semantics(
+            normalize_renderer_ordinary_inheritance(
+              normalize_renderer_style_precedence(input),
+            ),
+            ComparisonProfile::v1_default(),
           ),
         ),
         ComparisonProfile::v1_default(),
