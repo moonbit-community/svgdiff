@@ -55,7 +55,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.4.10` with `moon add Milky2018/svgdiff@0.4.10` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.4.11` with `moon add Milky2018/svgdiff@0.4.11` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -64,7 +64,9 @@ compare(before_svg, after_svg, comparison_profile) -> StructuredReport
 compare_with_control(before_svg, after_svg, comparison_profile, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.16`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/13`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.17`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/14`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+
+Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -85,7 +87,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.16")
+  assert_eq(report.schema_version, "1.17")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -124,7 +126,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.16\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.17\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))

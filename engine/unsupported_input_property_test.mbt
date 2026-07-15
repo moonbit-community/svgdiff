@@ -33,8 +33,8 @@ fn assert_unsupported_never_proves_equality(source : String) -> Unit raise {
 test "unsupported element families never produce complete equality" {
   let elements = [
     "<path d='M0 0 L8 8'/>", "<image href='data:image/png;base64,'/>", "<use href='#shape'/>",
-    "<symbol id='shape'><rect width='4' height='4'/></symbol>", "<radialGradient id='paint'/>",
-    "<pattern id='paint'/>", "<marker id='mark'/>", "<clipPath id='clip'><rect width='4' height='4'/></clipPath>",
+    "<symbol id='shape'><rect width='4' height='4'/></symbol>", "<pattern id='paint'/>",
+    "<marker id='mark'/>", "<clipPath id='clip'><rect width='4' height='4'/></clipPath>",
     "<mask id='mask'><rect width='4' height='4'/></mask>", "<filter id='filter'/>",
     "<foreignObject width='4' height='4'/>", "<animate attributeName='x' values='0;1'/>",
     "<set attributeName='fill' to='red'/>", "<animateTransform attributeName='transform'/>",
@@ -187,8 +187,7 @@ test "unproven renderer conformance families never prove equality" {
 test "unsupported transform boundaries never prove equality" {
   for
     content in [
-      "<rect id='box' width='8' height='8' transform='translate(1,)'/>", "<defs><linearGradient id='gradient' gradientTransform='translate(1)'/></defs>",
-      "<defs><pattern id='tile' patternTransform='scale(2)'/></defs>",
+      "<rect id='box' width='8' height='8' transform='translate(1,)'/>", "<defs><pattern id='tile' patternTransform='scale(2)'/></defs>",
     ] {
     assert_unsupported_never_proves_equality(unsupported_document(content))
   }

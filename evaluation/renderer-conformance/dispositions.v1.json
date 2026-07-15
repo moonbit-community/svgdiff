@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/13",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/14",
   "cases": [
     {
       "id": "subtle-geometry-after",
@@ -19,6 +19,42 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_gradient_raster_unproven",
       "reason": "The pinned and browser gradient interpolation samples differ across the painted rectangle."
+    },
+    {
+      "id": "gradient-linear-object-bbox",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a multi-stop object-bounding-box linear gradient with reflected spread."
+    },
+    {
+      "id": "gradient-linear-user-space",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a transformed repeating linear gradient in user space."
+    },
+    {
+      "id": "gradient-radial-object-bbox",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser renderers differ for an object-bounding-box radial gradient with focal radius and reflected spread."
+    },
+    {
+      "id": "gradient-radial-user-space",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a transformed radial gradient in user space."
+    },
+    {
+      "id": "gradient-template-inheritance",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a referenced gradient whose cloned stops inherit currentColor from the host."
+    },
+    {
+      "id": "gradient-multi-stop-opacity",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_gradient_raster_unproven",
+      "reason": "The pinned and browser renderers differ for a four-stop gradient with stop opacity."
     },
     {
       "id": "leaf-alpha",

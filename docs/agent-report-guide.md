@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.16` interpretation guide
+Status: current schema `1.17` interpretation guide
 
 Last verified: 2026-07-14
 
@@ -48,6 +48,8 @@ One Changed Fact may appear through different Atomic Differences in several even
 
 Resource and entity differences may share an event only when the resource has that sole mediated entity outcome in the current report. An unreferenced resource difference can have its own zero-rendered event. Do not infer an arbitrary entity owner for future resource fan-out or duplicate one Atomic Difference across events.
 
+For gradients, distinguish three levels. `resource.gradient.*` domains describe the paint server itself: geometry, units, spread method, transform, and every stop. `paint.fill` or `paint.stroke` describes the computed consequence on a particular consumer. Changed Facts identify the authored gradient or template declaration and list every affected consumer ID. A direct gradient and an inherited template chain may therefore differ at the source level while producing equivalent computed paint; conversely, one resource fact may mediate several entity events. Never report one stop edit once per consumer as though it were several authored edits, and never treat `renderer_gradient_raster_unproven` as uncertainty about the already resolved static gradient parameters—it constrains only Rendered Evidence.
+
 ## Interpreting one Atomic Difference
 
 Use the independent dimensions rather than collapsing them into one label:
@@ -84,7 +86,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.16` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.17` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

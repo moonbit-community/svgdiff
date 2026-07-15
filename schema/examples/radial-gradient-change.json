@@ -1,0 +1,769 @@
+{
+  "schema_version": "1.17",
+  "analysis_status": "partial",
+  "coverage_matrix": [
+    {
+      "feature_id": "property.r",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "property.cx",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "property.cy",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "subject.circle",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "domain.paint.fill",
+      "subject_id": "dot",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.gradient.geometry.cx",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.gradient.spread_method",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.gradient.transform.list",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_gradient_raster_unproven",
+      "subject_id": "dot",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.gradient.stop.stop_color",
+      "subject_id": "dot",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    },
+    {
+      "feature_id": "guard.renderer_curved_shape_raster_unproven",
+      "subject_id": "dot",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.gradient.transform.effective_matrix",
+      "subject_id": "dot",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "covered",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot",
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [
+    {
+      "capability_id": "raster.curved_shapes",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-curved-shape-raster-unproven:dot"
+      ]
+    },
+    {
+      "capability_id": "raster.referenced_gradient",
+      "support_status": "guarded",
+      "diagnostic_ids": [
+        "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+      ]
+    }
+  ],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/14"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "circle",
+          "authored_id": "dot"
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "circle",
+          "authored_id": "dot"
+        }
+      ],
+      "basis": "exact_visual_signature",
+      "evidence": {
+        "score_kind": "exact_visual_signature",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:gradient:paint:cx",
+      "subject_id": "paint",
+      "property": "cx",
+      "before": {
+        "property": "cx",
+        "authored_value": "7",
+        "declared_value": "7",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 139,
+          "end_offset": 140
+        }
+      },
+      "after": {
+        "property": "cx",
+        "authored_value": "9",
+        "declared_value": "9",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 139,
+          "end_offset": 140
+        }
+      },
+      "affected_subject_ids": [
+        "dot"
+      ]
+    },
+    {
+      "id": "fact:gradient:paint:spreadMethod",
+      "subject_id": "paint",
+      "property": "spreadMethod",
+      "before": {
+        "property": "spreadMethod",
+        "authored_value": "pad",
+        "declared_value": "pad",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 190,
+          "end_offset": 193
+        }
+      },
+      "after": {
+        "property": "spreadMethod",
+        "authored_value": "reflect",
+        "declared_value": "reflect",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 190,
+          "end_offset": 197
+        }
+      },
+      "affected_subject_ids": [
+        "dot"
+      ]
+    },
+    {
+      "id": "fact:gradient:paint:gradientTransform",
+      "subject_id": "paint",
+      "property": "gradientTransform",
+      "before": {
+        "property": "gradientTransform",
+        "authored_value": "translate(0)",
+        "declared_value": "translate(0)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 214,
+          "end_offset": 226
+        }
+      },
+      "after": {
+        "property": "gradientTransform",
+        "authored_value": "translate(1)",
+        "declared_value": "translate(1)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 218,
+          "end_offset": 230
+        }
+      },
+      "affected_subject_ids": [
+        "dot"
+      ]
+    },
+    {
+      "id": "fact:gradient:paint:stop:0:color",
+      "subject_id": "paint",
+      "property": "stop:0:color",
+      "before": {
+        "property": "stop-color",
+        "authored_value": "red",
+        "declared_value": "red",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 264,
+          "end_offset": 267
+        }
+      },
+      "after": {
+        "property": "stop-color",
+        "authored_value": "green",
+        "declared_value": "green",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 268,
+          "end_offset": 273
+        }
+      },
+      "affected_subject_ids": [
+        "dot"
+      ]
+    }
+  ],
+  "source_resolutions": [],
+  "atomic_differences": [
+    {
+      "id": "diff:gradient:paint:cx",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.gradient.geometry.cx",
+      "source_before": "7",
+      "source_after": "9",
+      "source_fact_before": {
+        "property": "cx",
+        "authored_value": "7",
+        "declared_value": "7",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 139,
+          "end_offset": 140
+        }
+      },
+      "source_fact_after": {
+        "property": "cx",
+        "authored_value": "9",
+        "declared_value": "9",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 139,
+          "end_offset": 140
+        }
+      },
+      "changed_fact_ids": [
+        "fact:gradient:paint:cx"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_gradient_components_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": 2,
+        "parameter_signed_user_units": 2,
+        "symmetric_relative": 0.25,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.44140625,
+        "raster_rgba8_rmse": 0.3314029582723032,
+        "raster_linear_premultiplied_rgba_rmse": 0.3327207547345181
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.44140625,
+          0.3327207547345181,
+          0.3314029582723032
+        ]
+      }
+    },
+    {
+      "id": "diff:gradient:paint:spreadMethod",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.gradient.spread_method",
+      "source_before": "pad",
+      "source_after": "reflect",
+      "source_fact_before": {
+        "property": "spreadMethod",
+        "authored_value": "pad",
+        "declared_value": "pad",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 190,
+          "end_offset": 193
+        }
+      },
+      "source_fact_after": {
+        "property": "spreadMethod",
+        "authored_value": "reflect",
+        "declared_value": "reflect",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 190,
+          "end_offset": 197
+        }
+      },
+      "changed_fact_ids": [
+        "fact:gradient:paint:spreadMethod"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_gradient_components_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.44140625,
+        "raster_rgba8_rmse": 0.3314029582723032,
+        "raster_linear_premultiplied_rgba_rmse": 0.3327207547345181
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.44140625,
+          0.3327207547345181,
+          0.3314029582723032
+        ]
+      }
+    },
+    {
+      "id": "diff:gradient:paint:gradientTransform",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.gradient.transform.list",
+      "source_before": "translate(0)",
+      "source_after": "translate(1)",
+      "source_fact_before": {
+        "property": "gradientTransform",
+        "authored_value": "translate(0)",
+        "declared_value": "translate(0)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 214,
+          "end_offset": 226
+        }
+      },
+      "source_fact_after": {
+        "property": "gradientTransform",
+        "authored_value": "translate(1)",
+        "declared_value": "translate(1)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 218,
+          "end_offset": 230
+        }
+      },
+      "changed_fact_ids": [
+        "fact:gradient:paint:gradientTransform"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_gradient_components_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.44140625,
+        "raster_rgba8_rmse": 0.3314029582723032,
+        "raster_linear_premultiplied_rgba_rmse": 0.3327207547345181
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.44140625,
+          0.3327207547345181,
+          0.3314029582723032
+        ]
+      }
+    },
+    {
+      "id": "diff:gradient:paint:effective-coordinate-matrix",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.gradient.transform.effective_matrix",
+      "source_before": "matrix(1,0,0,1,0,0)",
+      "source_after": "matrix(1,0,0,1,1,0)",
+      "changed_fact_ids": [
+        "fact:gradient:paint:cx",
+        "fact:gradient:paint:spreadMethod",
+        "fact:gradient:paint:gradientTransform"
+      ],
+      "evidence_layers": [
+        "computed_appearance"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_gradient_components_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.44140625,
+        "raster_rgba8_rmse": 0.3314029582723032,
+        "raster_linear_premultiplied_rgba_rmse": 0.3327207547345181
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.44140625,
+          0.3327207547345181,
+          0.3314029582723032
+        ]
+      }
+    },
+    {
+      "id": "diff:gradient:paint:stop:0:color",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.gradient.stop.stop_color",
+      "source_before": "red",
+      "source_after": "green",
+      "source_fact_before": {
+        "property": "stop-color",
+        "authored_value": "red",
+        "declared_value": "red",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 264,
+          "end_offset": 267
+        }
+      },
+      "source_fact_after": {
+        "property": "stop-color",
+        "authored_value": "green",
+        "declared_value": "green",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 268,
+          "end_offset": 273
+        }
+      },
+      "changed_fact_ids": [
+        "fact:gradient:paint:stop:0:color"
+      ],
+      "evidence_layers": [
+        "source_semantics",
+        "computed_appearance"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_gradient_components_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.44140625,
+        "raster_rgba8_rmse": 0.3314029582723032,
+        "raster_linear_premultiplied_rgba_rmse": 0.3327207547345181
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.44140625,
+          0.3327207547345181,
+          0.3314029582723032
+        ]
+      }
+    },
+    {
+      "id": "diff:alignment:0:fill:gradient",
+      "subject_role": "entity",
+      "subject_alignment_id": "alignment:0",
+      "domain": "paint.fill",
+      "source_before": "url(#paint)",
+      "source_after": "url(#paint)",
+      "source_fact_before": {
+        "property": "fill",
+        "authored_value": "url(#paint)",
+        "declared_value": "url(#paint)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 391,
+          "end_offset": 402
+        }
+      },
+      "source_fact_after": {
+        "property": "fill",
+        "authored_value": "url(#paint)",
+        "declared_value": "url(#paint)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 397,
+          "end_offset": 408
+        }
+      },
+      "changed_fact_ids": [
+        "fact:gradient:paint:cx",
+        "fact:gradient:paint:spreadMethod",
+        "fact:gradient:paint:gradientTransform",
+        "fact:gradient:paint:stop:0:color"
+      ],
+      "evidence_layers": [
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "computed_relation": {
+        "status": "different",
+        "reason_code": "resolved_gradient_paints_differ",
+        "diagnostic_ids": []
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": 0.44140625,
+        "raster_rgba8_rmse": 0.3314029582723032,
+        "raster_linear_premultiplied_rgba_rmse": 0.3327207547345181
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": [
+          0.3327207547345181,
+          0.3314029582723032,
+          0.44140625
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:alignment:0:fill:gradient",
+      "primary_subject_id": "dot",
+      "atomic_difference_ids": [
+        "diff:gradient:paint:cx",
+        "diff:gradient:paint:spreadMethod",
+        "diff:gradient:paint:gradientTransform",
+        "diff:gradient:paint:effective-coordinate-matrix",
+        "diff:gradient:paint:stop:0:color",
+        "diff:alignment:0:fill:gradient"
+      ],
+      "rendered_outcome": {
+        "status": "computed",
+        "magnitude": {
+          "changed_pixels": 113,
+          "changed_pixel_fraction": 0.44140625,
+          "rgba8_rmse": 0.3314029582723032,
+          "linear_premultiplied_rgba_rmse": 0.3327207547345181
+        }
+      },
+      "difference_regions": [
+        {
+          "id": "region:pixel:0",
+          "source": "pixel_mask",
+          "pixel_x": 2,
+          "pixel_y": 2,
+          "pixel_width": 13,
+          "pixel_height": 13,
+          "css_x": 2,
+          "css_y": 2,
+          "css_width": 13,
+          "css_height": 13,
+          "changed_pixels": 113,
+          "viewport_fraction": 0.44140625,
+          "cause_envelope": {
+            "guarantee": "not_established",
+            "coverage": "partial",
+            "fallback_scope": "comparison",
+            "candidate_changed_fact_ids": [
+              "fact:gradient:paint:cx",
+              "fact:gradient:paint:spreadMethod",
+              "fact:gradient:paint:gradientTransform",
+              "fact:gradient:paint:stop:0:color"
+            ],
+            "diagnostic_ids": [
+              "diagnostic:renderer-curved-shape-raster-unproven:dot",
+              "diagnostic:renderer-gradient-raster-unproven:dot:fill"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic:renderer-curved-shape-raster-unproven:dot",
+      "code": "renderer_curved_shape_raster_unproven",
+      "subject_id": "dot",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 382,
+            "end_offset": 383
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 388,
+            "end_offset": 389
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:renderer-gradient-raster-unproven:dot:fill",
+      "code": "renderer_gradient_raster_unproven",
+      "subject_id": "dot",
+      "affected_evidence_layers": [
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 385,
+            "end_offset": 403
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 391,
+            "end_offset": 409
+          }
+        }
+      ]
+    }
+  ]
+}

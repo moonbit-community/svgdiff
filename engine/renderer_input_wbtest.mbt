@@ -174,12 +174,6 @@ test "computed solid paint includes color paint and leaf alpha factors" {
 }
 
 ///|
-test "computed gradient stop multiplies color and stop opacity" {
-  let source = "<svg><defs><linearGradient id='gradient'><stop stop-color='rgba(255,0,0,0.5)' stop-opacity='25%'/></linearGradient></defs></svg>"
-  assert_eq(effective_first_gradient_stop(source), Some("rgba(255,0,0,0.125)"))
-}
-
-///|
 test "renderer input resolves and clamps rounded shape radii" {
   let implicit = "<svg width='10' height='6'><rect width='10' height='6' rx='8'/></svg>"
   let explicit = "<svg width='10' height='6'><rect width='10' height='6' rx='5' ry='3'/></svg>"

@@ -2,6 +2,7 @@
 priv struct FillSourceElement {
   subject_id : String
   kind : String
+  source_offset : Int
   parent_index : Int?
   visual_declarations : Array[DeclaredVisualFact]
 }
@@ -21,6 +22,7 @@ fn fill_hierarchy_kind(kind : String) -> Bool {
     | "g"
     | "defs"
     | "linearGradient"
+    | "radialGradient"
     | "stop"
     | "rect"
     | "circle"
@@ -142,13 +144,6 @@ fn visual_declarations_from_element(
     let value = fact.declared_value.to_lower()
     if value == "revert-layer" {
       push_unique(coverage_codes, "css_revert_layer_unsupported")
-    } else if fact.property == "fill" || fact.property == "stroke" {
-      if value.find("url(") is Some(_) {
-        push_unique(
-          coverage_codes,
-          "\{fact.property}_value_semantics_unsupported",
-        )
-      }
     }
   }
   declarations
@@ -158,6 +153,7 @@ fn visual_declarations_from_element(
 fn add_fill_source_element(
   input : String,
   element : @xml.NamespaceElement,
+  source_offset : Int,
   stylesheet_match : CssStylesheetMatch,
   parent_index : Int?,
   elements : Array[FillSourceElement],
@@ -186,6 +182,7 @@ fn add_fill_source_element(
   elements.push({
     subject_id,
     kind,
+    source_offset,
     parent_index,
     visual_declarations: visual_declarations_from_element(
       input, element, stylesheet_match, coverage_codes,
@@ -503,6 +500,10 @@ fn substituted_paint_value_valid(property : String, value : String) -> Bool {
   if property != "color" && normalized == "none" {
     return true
   }
+  if (property == "fill" || property == "stroke") &&
+    paint_server_reference(normalized) is Some(_) {
+    return true
+  }
   match @css_color.parse_solid_color(normalized) {
     Resolved(_) | CurrentColor | SystemColor(_) => true
     Invalid => false
@@ -589,6 +590,8 @@ fn canonical_computed_visual_value(
   let value = source.trim().to_owned().to_lower()
   match property {
     "fill" | "stroke" if value == "none" => ("none", true)
+    "fill" | "stroke" if paint_server_reference(value) is Some(_) =>
+      (value, true)
     "color" | "fill" | "stroke" | "stop-color" =>
       match @css_color.parse_solid_color(value) {
         Resolved(color) => (color.signature(), true)
@@ -1028,6 +1031,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
           let index = add_fill_source_element(
             input,
             element,
+            event.span.start.offset,
             css_stylesheet_match_for_source(
               css_document,
               event.span.start.offset,
@@ -1055,6 +1059,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
             add_fill_source_element(
               input,
               element,
+              event.span.start.offset,
               css_stylesheet_match_for_source(
                 css_document,
                 event.span.start.offset,
@@ -1523,7 +1528,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.16",
+    schema_version: "1.17",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
@@ -1603,75 +1608,4 @@ fn hierarchy_has_scene_computed_value_semantics(
     }
   }
   false
-}
-
-///|
-fn first_hierarchy_subject_id(
-  hierarchy : FillHierarchy,
-  kind : String,
-) -> String? {
-  for element in hierarchy.elements {
-    if element.kind == kind {
-      return Some(element.subject_id)
-    }
-  }
-  None
-}
-
-///|
-fn gradient_style_changed_facts(
-  before_svg : String,
-  after_svg : String,
-) -> Array[ChangedFact] {
-  guard extract_fill_hierarchy(before_svg) is ParsedFillHierarchy(before) else {
-    return []
-  }
-  guard extract_fill_hierarchy(after_svg) is ParsedFillHierarchy(after) else {
-    return []
-  }
-  let before_stop = first_hierarchy_subject_id(before, "stop")
-  let after_stop = first_hierarchy_subject_id(after, "stop")
-  [
-    for fact in compare_changed_visual_facts(before, after) if before_stop
-    .map(id => fact.affected_subject_ids.contains(id))
-    .unwrap_or(false) ||
-    after_stop
-    .map(id => fact.affected_subject_ids.contains(id))
-    .unwrap_or(false) => fact
-  ]
-}
-
-///|
-fn resolved_first_gradient_stop(
-  svg : String,
-  property : String,
-) -> ResolvedVisualFact? {
-  guard extract_fill_hierarchy(svg) is ParsedFillHierarchy(hierarchy) else {
-    return None
-  }
-  guard first_hierarchy_subject_id(hierarchy, "stop") is Some(stop_id) else {
-    return None
-  }
-  resolved_visual_for_subject(hierarchy, stop_id, property)
-}
-
-///|
-fn effective_first_gradient_stop(svg : String) -> String? {
-  guard resolved_first_gradient_stop(svg, "stop-color")
-    is Some(color_resolution) else {
-    return None
-  }
-  guard @css_color.parse_solid_color(color_resolution.resolved_value)
-    is Resolved(color) else {
-    return Some(color_resolution.resolved_value)
-  }
-  guard resolved_first_gradient_stop(svg, "stop-opacity")
-    is Some(opacity_resolution) else {
-    return Some(color.signature())
-  }
-  guard @css_color.parse_alpha_value(opacity_resolution.resolved_value)
-    is Some(opacity) else {
-    return Some(color.signature())
-  }
-  Some({ ..color, alpha: color.alpha * opacity }.signature())
 }

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.16",
+  "schema_version": "1.17",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -81,20 +81,20 @@
       ]
     },
     {
-      "feature_id": "domain.resource.gradient.stop_color",
+      "feature_id": "guard.renderer_gradient_raster_unproven",
       "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "not_applicable",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
         "diagnostic:renderer-gradient-raster-unproven:box:fill"
       ]
     },
     {
-      "feature_id": "guard.renderer_gradient_raster_unproven",
+      "feature_id": "domain.resource.gradient.stop.stop_color",
       "subject_id": "box",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "not_applicable",
+      "source_semantics": "covered",
+      "computed_appearance": "covered",
       "rendered_evidence": "limited",
       "diagnostic_ids": [
         "diagnostic:renderer-gradient-raster-unproven:box:fill"
@@ -117,7 +117,7 @@
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
     "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/13"
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/14"
   },
   "subject_alignments": [
     {
@@ -151,9 +151,9 @@
   ],
   "changed_facts": [
     {
-      "id": "changed:source:stop:2:stop-color",
-      "subject_id": "stop:2",
-      "property": "stop-color",
+      "id": "fact:gradient:gradient:stop:0:color",
+      "subject_id": "gradient",
+      "property": "stop:0:color",
       "before": {
         "property": "stop-color",
         "authored_value": "red",
@@ -175,7 +175,6 @@
         }
       },
       "affected_subject_ids": [
-        "stop:2",
         "box"
       ]
     }
@@ -183,10 +182,10 @@
   "source_resolutions": [],
   "atomic_differences": [
     {
-      "id": "diff:resource:gradient:stop:0",
+      "id": "diff:gradient:gradient:stop:0:color",
       "subject_role": "resource",
       "subject_alignment_id": null,
-      "domain": "resource.gradient.stop_color",
+      "domain": "resource.gradient.stop.stop_color",
       "source_before": "red",
       "source_after": "green",
       "source_fact_before": {
@@ -210,7 +209,7 @@
         }
       },
       "changed_fact_ids": [
-        "changed:source:stop:2:stop-color"
+        "fact:gradient:gradient:stop:0:color"
       ],
       "evidence_layers": [
         "source_semantics",
@@ -218,7 +217,7 @@
       ],
       "computed_relation": {
         "status": "different",
-        "reason_code": "resolved_gradient_stops_differ",
+        "reason_code": "resolved_gradient_components_differ",
         "diagnostic_ids": []
       },
       "magnitude": {
@@ -242,21 +241,42 @@
       }
     },
     {
-      "id": "diff:entity:box:fill",
+      "id": "diff:alignment:0:fill:gradient",
       "subject_role": "entity",
       "subject_alignment_id": "alignment:0",
       "domain": "paint.fill",
       "source_before": "url(#gradient)",
       "source_after": "url(#gradient)",
+      "source_fact_before": {
+        "property": "fill",
+        "authored_value": "url(#gradient)",
+        "declared_value": "url(#gradient)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 303,
+          "end_offset": 317
+        }
+      },
+      "source_fact_after": {
+        "property": "fill",
+        "authored_value": "url(#gradient)",
+        "declared_value": "url(#gradient)",
+        "origin": "presentation_attribute",
+        "source_span": {
+          "start_offset": 305,
+          "end_offset": 319
+        }
+      },
       "changed_fact_ids": [
-        "changed:source:stop:2:stop-color"
+        "fact:gradient:gradient:stop:0:color"
       ],
       "evidence_layers": [
-        "computed_appearance"
+        "computed_appearance",
+        "rendered_evidence"
       ],
       "computed_relation": {
         "status": "different",
-        "reason_code": "resolved_paints_differ",
+        "reason_code": "resolved_gradient_paints_differ",
         "diagnostic_ids": []
       },
       "magnitude": {
@@ -282,11 +302,11 @@
   ],
   "events": [
     {
-      "id": "event:box",
+      "id": "event:alignment:0:fill:gradient",
       "primary_subject_id": "box",
       "atomic_difference_ids": [
-        "diff:resource:gradient:stop:0",
-        "diff:entity:box:fill"
+        "diff:gradient:gradient:stop:0:color",
+        "diff:alignment:0:fill:gradient"
       ],
       "rendered_outcome": {
         "status": "computed",
@@ -316,7 +336,7 @@
             "coverage": "partial",
             "fallback_scope": "comparison",
             "candidate_changed_fact_ids": [
-              "changed:source:stop:2:stop-color"
+              "fact:gradient:gradient:stop:0:color"
             ],
             "diagnostic_ids": [
               "diagnostic:renderer-gradient-raster-unproven:box:fill"

@@ -27,6 +27,7 @@ priv struct SourceSubject {
   transform_chain : Array[SourceTransformSite]
   cumulative_transform : AffineTransform
   transform_complete : Bool
+  viewport : ViewportContext
 }
 
 ///|
@@ -234,6 +235,7 @@ fn subject_from_element(
     transform_chain,
     cumulative_transform,
     transform_complete,
+    viewport,
   }
 }
 
@@ -1122,6 +1124,8 @@ fn finish_report(
   let report = attach_resource_transform_differences(
     report, before_svg, after_svg,
   )
+  comparison_guard.checkpoint()
+  let report = attach_gradient_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()

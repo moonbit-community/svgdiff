@@ -110,7 +110,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Implement `inherit`, `initial`, `unset`, `revert`, `currentColor`, and CSS custom properties where they affect supported SVG values.
 - [x] **P0** Preserve declaration origin and Source Span provenance through cascade resolution.
 - [x] **P1** Implement complete solid-color syntax and opacity semantics.
-- [ ] **P1** Implement full linear and radial gradient semantics, including all stops, offsets, opacity, units, spread methods, transforms, inheritance, and references.
+- [x] **P1** Implement full linear and radial gradient semantics, including all stops, offsets, opacity, units, spread methods, transforms, inheritance, and references.
 - [ ] **P1** Implement patterns and their coordinate, transform, viewport, and reference semantics.
 - [ ] **P1** Implement paint fallback lists and missing-paint-server behavior.
 - [ ] **P1** Implement `paint-order`, fill rules, clip rules, and inherited paint dependencies.

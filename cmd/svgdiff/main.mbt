@@ -34,7 +34,7 @@ fn help_text() -> String {
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.4.10\nengine: 0.4.10\nschema: 1.16\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/13\nordering-policy: v2_domain_lexicographic"
+  "svgdiff 0.4.11\nengine: 0.4.11\nschema: 1.17\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/14\nordering-policy: v2_domain_lexicographic"
 }
 
 ///|

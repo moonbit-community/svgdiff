@@ -85,11 +85,39 @@
       "output": "schema/examples/resource-gradient-change.json",
       "expected": {
         "analysis_status": "partial",
-        "domains": ["resource.gradient.stop_color", "paint.fill"],
+        "domains": ["resource.gradient.stop.stop_color", "paint.fill"],
         "computed_relations": ["different", "different"],
         "diagnostic_codes": ["renderer_gradient_raster_unproven"],
         "magnitude_checks": [
-          { "domain": "resource.gradient.stop_color", "field": "magnitude.raster_linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 }
+          { "domain": "resource.gradient.stop.stop_color", "field": "magnitude.raster_linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
+      "id": "radial-gradient-change",
+      "before": "evaluation/schema-examples/cases/radial-gradient-change/before.svg",
+      "after": "evaluation/schema-examples/cases/radial-gradient-change/after.svg",
+      "output": "schema/examples/radial-gradient-change.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": [
+          "resource.gradient.geometry.cx",
+          "resource.gradient.spread_method",
+          "resource.gradient.transform.list",
+          "resource.gradient.transform.effective_matrix",
+          "resource.gradient.stop.stop_color",
+          "paint.fill"
+        ],
+        "computed_relations": [
+          "different", "different", "different", "different", "different", "different"
+        ],
+        "diagnostic_codes": [
+          "renderer_curved_shape_raster_unproven",
+          "renderer_gradient_raster_unproven"
+        ],
+        "magnitude_checks": [
+          { "domain": "resource.gradient.geometry.cx", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 2 },
+          { "domain": "paint.fill", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
         ]
       }
     },

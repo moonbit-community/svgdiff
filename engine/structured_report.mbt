@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.16` API accepts caller-provided viewport dimensions and
+/// The root schema `1.17` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.16` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.17` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -25,7 +25,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     color_interpretation: "srgb",
     raster_representation: "linear_srgb_premultiplied_rgba_f64",
     renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/13",
+    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/14",
   }
 }
 
@@ -655,7 +655,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.16` result of one SVG comparison.
+/// Complete schema `1.17` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -674,13 +674,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.16` JSON.
+/// Serialize this report as indented schema `1.17` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.16` JSON.
+/// Serialize this report as whitespace-free schema `1.17` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -710,6 +710,7 @@ fn known_source_element(kind : String) -> Bool {
     | "polygon"
     | "defs"
     | "linearGradient"
+    | "radialGradient"
     | "marker"
     | "stop"
     | "text"
@@ -730,6 +731,7 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
     name == "style" ||
     name == "transform" ||
     name == "color" ||
+    name == "color-interpolation" ||
     name == "fill" ||
     name == "fill-opacity" ||
     name == "stroke" ||
@@ -775,6 +777,18 @@ fn known_source_attribute(kind : String, name : String) -> Bool {
       name == "y2" ||
       name == "gradientUnits" ||
       name == "gradientTransform" ||
+      name == "spreadMethod" ||
+      name == "href"
+    "radialGradient" =>
+      name == "cx" ||
+      name == "cy" ||
+      name == "r" ||
+      name == "fx" ||
+      name == "fy" ||
+      name == "fr" ||
+      name == "gradientUnits" ||
+      name == "gradientTransform" ||
+      name == "spreadMethod" ||
       name == "href"
     "marker" =>
       name == "markerUnits" ||
@@ -917,59 +931,6 @@ fn contains_fractional_paint_alpha(property : String, value : String) -> Bool {
 }
 
 ///|
-fn gradient_unsupported_signature_or_raise(input : String) -> String raise {
-  let reader = @xml.NamespaceReader::from_string(input)
-  let mut signature = ""
-  let mut in_gradient = false
-  let mut stop_index = 0
-  for event in reader.read_events_until_eof() {
-    match event.kind {
-      Start(element) if element.name.local_name == "linearGradient" => {
-        in_gradient = true
-        stop_index = 0
-        let attributes : Array[String] = []
-        for attribute in element.attributes {
-          attributes.push(
-            "\{attribute.name.local_name}=\{attribute.value.trim()}",
-          )
-        }
-        attributes.sort()
-        signature += "gradient"
-        for attribute in attributes {
-          signature += "[\{attribute}]"
-        }
-      }
-      Start(element) | Empty(element) if in_gradient &&
-        element.name.local_name == "stop" => {
-        let attributes : Array[String] = []
-        for attribute in element.attributes {
-          if stop_index > 0 ||
-            (
-              attribute.name.local_name != "stop-color" &&
-              attribute.name.local_name != "stop-opacity"
-            ) {
-            attributes.push(
-              "\{attribute.name.local_name}=\{attribute.value.trim()}",
-            )
-          }
-        }
-        attributes.sort()
-        signature += "stop:\{stop_index}"
-        for attribute in attributes {
-          signature += "[\{attribute}]"
-        }
-        stop_index += 1
-      }
-      Start(element) if in_gradient =>
-        signature += "child:\{element.name.local_name}"
-      End(name) if name.local_name == "linearGradient" => in_gradient = false
-      _ => ()
-    }
-  }
-  signature
-}
-
-///|
 fn preflight_element_subject_id(element : @xml.NamespaceElement) -> String {
   authored_subject_id(element).unwrap_or(element.name.local_name)
 }
@@ -1020,7 +981,7 @@ fn append_transform_preflight_diagnostics(
       }
       _ => ()
     }
-    if name == "gradientTransform" || name == "patternTransform" {
+    if name == "patternTransform" {
       let id = "diagnostic:resource-transform-semantics-unsupported:\{subject_id}:\{name}"
       merge_diagnostic_into(
         diagnostics,
@@ -1143,7 +1104,8 @@ fn preflight_source_or_raise(
               )
             }
           }
-          if kind == "linearGradient" && subject_id != kind {
+          if (kind == "linearGradient" || kind == "radialGradient") &&
+            subject_id != kind {
             paint_server_ids.push(subject_id)
           }
           for reference in paint_references {
@@ -1409,36 +1371,16 @@ fn preflight_source_or_raise(
         source_locations: [diagnostic_location(source_role, span)],
       })
     } else {
-      let proven_gradient_slice = paint_server_ids.length() == 1 &&
-        server_id == "gradient" &&
-        subject_id == "box" &&
-        property == "fill" &&
-        visual_subjects.length() == 1 &&
-        visual_subjects[0].kind == "rect" &&
-        visual_subjects[0].reference.authored_id == Some("box")
-      if !proven_gradient_slice {
-        let id = "diagnostic:paint-server-analysis-unsupported:\{subject_id}:\{property}"
-        merge_diagnostic_into(diagnostics, {
-          ..unlocated_diagnostic(
-            id,
-            "paint_server_analysis_unsupported",
-            subject_id,
-            ["source_semantics", "computed_appearance", "rendered_evidence"],
-          ),
-          source_locations: [diagnostic_location(source_role, span)],
-        })
-      } else {
-        let id = "diagnostic:renderer-gradient-raster-unproven:\{subject_id}:\{property}"
-        merge_diagnostic_into(diagnostics, {
-          ..unlocated_diagnostic(
-            id,
-            "renderer_gradient_raster_unproven",
-            subject_id,
-            ["rendered_evidence"],
-          ),
-          source_locations: [diagnostic_location(source_role, span)],
-        })
-      }
+      let id = "diagnostic:renderer-gradient-raster-unproven:\{subject_id}:\{property}"
+      merge_diagnostic_into(diagnostics, {
+        ..unlocated_diagnostic(
+          id,
+          "renderer_gradient_raster_unproven",
+          subject_id,
+          ["rendered_evidence"],
+        ),
+        source_locations: [diagnostic_location(source_role, span)],
+      })
     }
   }
   diagnostics
@@ -1488,7 +1430,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.16",
+    schema_version: "1.17",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1552,46 +1494,6 @@ fn source_slice(input : String, span : @xml.SourceSpan) -> String {
 }
 
 ///|
-fn source_attribute_value_or_raise(
-  input : String,
-  element_name : String,
-  attribute_name : String,
-) -> String? raise {
-  let reader = @xml.NamespaceReader::from_string(input)
-  for event in reader.read_events_until_eof() {
-    match event.kind {
-      Start(element) | Empty(element) =>
-        if element.name.local_name == element_name {
-          for attribute in element.attributes {
-            if attribute.name.qualified_name == attribute_name ||
-              attribute.name.local_name == attribute_name {
-              return Some(source_slice(input, attribute.value_span))
-            }
-          }
-          return None
-        }
-      _ => ()
-    }
-  }
-  None
-}
-
-///|
-fn source_attribute_value(
-  input : String,
-  element_name : String,
-  attribute_name : String,
-) -> String? {
-  try
-    source_attribute_value_or_raise(input, element_name, attribute_name)
-  catch {
-    _ => None
-  } noraise {
-    value => value
-  }
-}
-
-///|
 fn source_text_content_or_raise(input : String) -> String? raise {
   let reader = @xml.NamespaceReader::from_string(input)
   let mut in_text = false
@@ -1626,12 +1528,6 @@ fn source_text_content(input : String) -> String? {
   } noraise {
     value => value
   }
-}
-
-///|
-fn has_subject(document : @svg.SVGDocument, id : String) -> Bool {
-  let scene = @svg.Scene::new(document.root)
-  scene.find_node(id) is Some(_)
 }
 
 ///|
@@ -1779,7 +1675,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.16",
+        schema_version: "1.17",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1859,7 +1755,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.16",
+        schema_version: "1.17",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1909,7 +1805,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.16",
+        schema_version: "1.17",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1958,214 +1854,6 @@ fn presence_change_report(
 }
 
 ///|
-fn gradient_stop_resource_difference(
-  before_svg : String,
-  after_svg : String,
-  property : String,
-  id : String,
-  domain : String,
-  changed_fact_ids : Array[String],
-) -> AtomicDifference? {
-  let before = resolved_first_gradient_stop(before_svg, property)
-  let after = resolved_first_gradient_stop(after_svg, property)
-  if !resolution_source_changed(before, after) {
-    return None
-  }
-  match (before, after) {
-    (Some(before), Some(after)) => {
-      let equivalent = before.resolved_value == after.resolved_value
-      fn source_value(
-        svg : String,
-        property : String,
-        resolution : ResolvedVisualFact,
-      ) -> String {
-        match resolution.declaration {
-          Some(declaration) if declaration.origin == "presentation_attribute" =>
-            source_attribute_value(svg, "stop", property).unwrap_or(
-              declaration.declared_value,
-            )
-          Some(declaration) => declaration.declared_value
-          None => resolution.resolved_value
-        }
-      }
-      Some({
-        id,
-        subject_role: "resource",
-        subject_alignment_id: None,
-        domain,
-        source_before: source_value(before_svg, property, before),
-        source_after: source_value(after_svg, property, after),
-        source_fact_before: before.declaration,
-        source_fact_after: after.declaration,
-        changed_fact_ids,
-        evidence_layers: ["source_semantics", "computed_appearance"],
-        computed_relation: {
-          status: if equivalent {
-            "equivalent"
-          } else {
-            "different"
-          },
-          reason_code: if equivalent {
-            "same_resolved_gradient_stop"
-          } else {
-            "resolved_gradient_stops_differ"
-          },
-          missing_side: None,
-          diagnostic_ids: [],
-        },
-        parameter_delta_css_px: None,
-        presence_magnitude: None,
-        magnitude: if property == "stop-opacity" {
-          match
-            (
-              @css_color.parse_alpha_value(before.resolved_value),
-              @css_color.parse_alpha_value(after.resolved_value),
-            ) {
-            (Some(before), Some(after)) => {
-              let delta = after - before
-              {
-                ..empty_difference_magnitude(),
-                parameter_abs_user_units: Some(delta.abs()),
-                parameter_signed_user_units: Some(delta),
-                symmetric_relative: Some(
-                  symmetric_relative_delta(before, after),
-                ),
-              }
-            }
-            _ => empty_difference_magnitude()
-          }
-        } else {
-          empty_difference_magnitude()
-        },
-        domain_ordering: empty_domain_ordering(),
-      })
-    }
-    _ => None
-  }
-}
-
-///|
-fn gradient_change_report(
-  before_svg : String,
-  after_svg : String,
-  before_document : @svg.SVGDocument,
-  after_document : @svg.SVGDocument,
-  profile : ComparisonProfile,
-) -> StructuredReport? {
-  let gradient_changed_facts = gradient_style_changed_facts(
-    before_svg, after_svg,
-  )
-  let changed_fact_ids = [ for fact in gradient_changed_facts => fact.id ]
-  let resource_differences : Array[AtomicDifference] = []
-  match
-    gradient_stop_resource_difference(
-      before_svg, after_svg, "stop-color", "diff:resource:gradient:stop:0", "resource.gradient.stop_color",
-      changed_fact_ids,
-    ) {
-    Some(difference) => resource_differences.push(difference)
-    None => ()
-  }
-  match
-    gradient_stop_resource_difference(
-      before_svg, after_svg, "stop-opacity", "diff:resource:gradient:stop-opacity:0",
-      "resource.gradient.stop_opacity", changed_fact_ids,
-    ) {
-    Some(difference) => resource_differences.push(difference)
-    None => ()
-  }
-  if resource_differences.is_empty() {
-    return None
-  }
-  let before_stop = effective_first_gradient_stop(before_svg)
-  let after_stop = effective_first_gradient_stop(after_svg)
-  let rendered = rendered_difference(before_document, after_document, profile)
-  let resource_ids = [ for difference in resource_differences => difference.id ]
-  if !has_subject(before_document, "box") && !has_subject(after_document, "box") {
-    return Some({
-      schema_version: "1.16",
-      analysis_status: "complete",
-      coverage_matrix: [],
-      renderer_capability_gaps: [],
-      profile,
-      subject_alignments: [],
-      changed_facts: gradient_changed_facts,
-      source_resolutions: [],
-      atomic_differences: resource_differences,
-      events: [
-        {
-          id: "event:gradient",
-          primary_subject_id: "gradient",
-          atomic_difference_ids: resource_ids,
-          rendered_outcome: computed_rendered_evidence(rendered),
-          difference_regions: [],
-        },
-      ],
-      diagnostics: [],
-    })
-  }
-  for fact in gradient_changed_facts {
-    if !fact.affected_subject_ids.contains("box") {
-      fact.affected_subject_ids.push("box")
-    }
-  }
-  let entity_id = "diff:entity:box:fill"
-  let entity_difference : AtomicDifference = {
-    id: entity_id,
-    subject_role: "entity",
-    subject_alignment_id: None,
-    domain: "paint.fill",
-    source_before: "url(#gradient)",
-    source_after: "url(#gradient)",
-    source_fact_before: None,
-    source_fact_after: None,
-    changed_fact_ids,
-    evidence_layers: ["computed_appearance"],
-    computed_relation: {
-      status: if before_stop == after_stop {
-        "equivalent"
-      } else {
-        "different"
-      },
-      reason_code: if before_stop == after_stop {
-        "same_resolved_paint"
-      } else {
-        "resolved_paints_differ"
-      },
-      missing_side: None,
-      diagnostic_ids: [],
-    },
-    parameter_delta_css_px: None,
-    presence_magnitude: None,
-    magnitude: empty_difference_magnitude(),
-    domain_ordering: empty_domain_ordering(),
-  }
-  let event_ids = resource_ids.copy()
-  event_ids.push(entity_id)
-  resource_differences.push(entity_difference)
-  Some({
-    schema_version: "1.16",
-    analysis_status: "complete",
-    coverage_matrix: [],
-    renderer_capability_gaps: [],
-    profile,
-    subject_alignments: [],
-    changed_facts: gradient_changed_facts,
-    source_resolutions: [],
-    atomic_differences: resource_differences,
-    events: [
-      {
-        id: "event:box",
-        primary_subject_id: "box",
-        atomic_difference_ids: event_ids,
-        rendered_outcome: computed_rendered_evidence(rendered),
-        difference_regions: [],
-      },
-    ],
-    diagnostics: [],
-  })
-}
-
-///|
 fn compare_without_resource_limits(
   before_svg : String,
   after_svg : String,
@@ -2202,32 +1890,6 @@ fn compare_without_resource_limits(
     (SourcePartial(diagnostics), _) | (_, SourcePartial(diagnostics)) =>
       preflight_diagnostics.push_iter(diagnostics.iter())
     _ => ()
-  }
-  comparison_guard.checkpoint()
-  let before_gradient_signature = gradient_unsupported_signature_or_raise(
-    before_svg,
-  ) catch {
-    _ => ""
-  }
-  let after_gradient_signature = gradient_unsupported_signature_or_raise(
-    after_svg,
-  ) catch {
-    _ => ""
-  }
-  comparison_guard.checkpoint()
-  if before_gradient_signature != after_gradient_signature {
-    merge_diagnostic_into(preflight_diagnostics, {
-      id: "diagnostic:gradient-semantics-unsupported:document",
-      code: "gradient_semantics_unsupported",
-      subject_id: "document",
-      affected_evidence_layers: [
-        "source_semantics", "computed_appearance", "rendered_evidence",
-      ],
-      source_locations: element_diagnostic_locations(
-        before_svg, "before", "linearGradient",
-      ) +
-      element_diagnostic_locations(after_svg, "after", "linearGradient"),
-    })
   }
   let subject_alignments = subject_alignments_for_sources_with_guard(
     before_svg, after_svg, comparison_guard,
@@ -2280,17 +1942,6 @@ fn compare_without_resource_limits(
         None => ()
       }
       match
-        gradient_change_report(
-          before_svg, after_svg, before_document, after_document, profile,
-        ) {
-        Some(report) =>
-          return finish_report(
-            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, comparison_guard,
-          )
-        None => ()
-      }
-      match
         solid_rect_change_report(
           before_svg, after_svg, before_document, after_document, profile,
         ) {
@@ -2302,7 +1953,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.16",
+              schema_version: "1.17",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

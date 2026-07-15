@@ -506,7 +506,7 @@ test "unsupported local paint values reduce coverage" {
 }
 
 ///|
-test "gradient references outside the proven slice reduce coverage" {
+test "gradient references use computed gradient semantics" {
   let before = shape_svg(
     "<defs><linearGradient id='paint'><stop offset='0' stop-color='red'/></linearGradient></defs><circle id='dot' cx='8' cy='8' r='3' fill='url(#paint)'/>",
   )
@@ -520,8 +520,19 @@ test "gradient references outside the proven slice reduce coverage" {
   )
   assert_eq(report.analysis_status, "partial")
   assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "resource.gradient.stop.stop_color" &&
+      difference.computed_relation.status == "different"
+    }),
+  )
+  assert_true(
     report.diagnostics.any(diagnostic => {
-      diagnostic.code == "paint_server_analysis_unsupported"
+      diagnostic.code == "renderer_gradient_raster_unproven"
+    }),
+  )
+  assert_true(
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "paint_server_analysis_unsupported"
     }),
   )
 }

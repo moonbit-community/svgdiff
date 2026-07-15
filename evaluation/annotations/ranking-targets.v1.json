@@ -30,9 +30,12 @@
     {
       "case_id": "resource-gradient-stop-change",
       "evaluation_status": "scorable",
-      "accepted_top_event_ids": ["event:box"],
+      "accepted_top_event_ids": ["event:alignment:0:fill:gradient"],
       "accepted_top_atomic_difference_id_sets": [
-        ["diff:resource:gradient:stop:0", "diff:entity:box:fill"]
+        [
+          "diff:gradient:gradient:stop:0:color",
+          "diff:alignment:0:fill:gradient"
+        ]
       ]
     },
     {

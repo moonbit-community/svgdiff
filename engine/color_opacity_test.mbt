@@ -113,7 +113,7 @@ test "gradient stop color and opacity retain separate numeric evidence" {
   )
   let stop_opacity = [
     for difference in report.atomic_differences if difference.domain ==
-    "resource.gradient.stop_opacity" => difference
+    "resource.gradient.stop.stop_opacity" => difference
   ]
   let entity = [
     for difference in report.atomic_differences if difference.domain ==

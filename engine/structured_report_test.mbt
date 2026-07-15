@@ -138,9 +138,9 @@ test "resource changes and entity outcomes share one rendered event" {
   )
   assert_eq(report.atomic_differences.length(), 2)
   let resource_difference = report.atomic_differences[0]
-  assert_eq(resource_difference.id, "diff:resource:gradient:stop:0")
+  assert_eq(resource_difference.id, "diff:gradient:gradient:stop:0:color")
   assert_eq(resource_difference.subject_role, "resource")
-  assert_eq(resource_difference.domain, "resource.gradient.stop_color")
+  assert_eq(resource_difference.domain, "resource.gradient.stop.stop_color")
   assert_eq(resource_difference.source_before, "red")
   assert_eq(resource_difference.source_after, "green")
   assert_eq(resource_difference.evidence_layers, [
@@ -148,18 +148,20 @@ test "resource changes and entity outcomes share one rendered event" {
   ])
   assert_eq(resource_difference.computed_relation.status, "different")
   let entity_difference = report.atomic_differences[1]
-  assert_eq(entity_difference.id, "diff:entity:box:fill")
+  assert_eq(entity_difference.id, "diff:alignment:0:fill:gradient")
   assert_eq(entity_difference.subject_role, "entity")
   assert_eq(entity_difference.domain, "paint.fill")
   assert_eq(entity_difference.source_before, "url(#gradient)")
   assert_eq(entity_difference.source_after, "url(#gradient)")
-  assert_eq(entity_difference.evidence_layers, ["computed_appearance"])
+  assert_eq(entity_difference.evidence_layers, [
+    "computed_appearance", "rendered_evidence",
+  ])
   assert_eq(entity_difference.computed_relation.status, "different")
   assert_eq(report.events.length(), 1)
   let event = report.events[0]
   assert_eq(event.primary_subject_id, "box")
   assert_eq(event.atomic_difference_ids, [
-    "diff:resource:gradient:stop:0", "diff:entity:box:fill",
+    "diff:gradient:gradient:stop:0:color", "diff:alignment:0:fill:gradient",
   ])
   match event.rendered_outcome.magnitude {
     Some(magnitude) => assert_true(magnitude.changed_pixels > 0)
@@ -197,7 +199,7 @@ test "fractional leaf opacity retains numeric evidence behind a renderer guard" 
 }
 
 ///|
-test "gradient semantics beyond the first stop are coverage guarded" {
+test "gradient semantics report changes beyond the first stop" {
   let before = gradient_rect_svg("red")
   let after = before.replace_all(
     old="stop-color=\"blue\"",
@@ -208,16 +210,21 @@ test "gradient semantics beyond the first stop are coverage guarded" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "gradient_semantics_unsupported"
+    report.atomic_differences.any(difference => {
+      difference.domain == "resource.gradient.stop.stop_color" &&
+      difference.computed_relation.status == "different"
+    }),
+  )
+  assert_true(
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "gradient_semantics_unsupported"
     }),
   )
 }
 
 ///|
-test "paired gradient stop semantics are coverage guarded" {
+test "paired gradient stop semantics are individually reportable" {
   let before = "<svg width=\"16\" height=\"16\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"gradient\"><stop offset=\"0\" stop-color=\"red\"></stop><stop offset=\"1\" stop-color=\"blue\" stop-opacity=\"1\"></stop></linearGradient></defs><rect id=\"box\" x=\"2\" y=\"2\" width=\"8\" height=\"8\" fill=\"url(#gradient)\"/></svg>"
   for
     after in [
@@ -230,10 +237,14 @@ test "paired gradient stop semantics are coverage guarded" {
       after,
       @engine.ComparisonProfile::v1_default(),
     )
-    assert_eq(report.analysis_status, "partial")
     assert_true(
-      report.diagnostics.any(diagnostic => {
-        diagnostic.code == "gradient_semantics_unsupported"
+      report.atomic_differences.any(difference => {
+        difference.domain.has_prefix("resource.gradient.stop.")
+      }),
+    )
+    assert_true(
+      report.diagnostics.all(diagnostic => {
+        diagnostic.code != "gradient_semantics_unsupported"
       }),
     )
   }
@@ -281,16 +292,16 @@ test "unreferenced resource changes remain reportable without entity outcomes" {
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
   let difference = report.atomic_differences[0]
-  assert_eq(difference.id, "diff:resource:gradient:stop:0")
+  assert_eq(difference.id, "diff:gradient:gradient:stop:0:color")
   assert_eq(difference.subject_role, "resource")
-  assert_eq(difference.domain, "resource.gradient.stop_color")
+  assert_eq(difference.domain, "resource.gradient.stop.stop_color")
   assert_eq(difference.evidence_layers, [
     "source_semantics", "computed_appearance",
   ])
   assert_eq(report.events.length(), 1)
   assert_eq(report.events[0].primary_subject_id, "gradient")
   assert_eq(report.events[0].atomic_difference_ids, [
-    "diff:resource:gradient:stop:0",
+    "diff:gradient:gradient:stop:0:color",
   ])
   match report.events[0].rendered_outcome.magnitude {
     Some(magnitude) => assert_eq(magnitude.changed_pixels, 0)
@@ -335,7 +346,7 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.16",
+      "schema_version": "1.17",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -419,7 +430,7 @@ test "compact JSON preserves the complete structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "1.16",
+      "schema_version": "1.17",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],

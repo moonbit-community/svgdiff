@@ -1,0 +1,10 @@
+<svg width="16" height="16" color="green" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="base" x2="75%" spreadMethod="repeat">
+      <stop offset="0" stop-color="currentColor"/>
+      <stop offset="1" stop-color="blue"/>
+    </linearGradient>
+    <linearGradient id="paint" href="#base" color="red" gradientTransform="translate(0.1 0)"/>
+  </defs>
+  <rect x="2" y="2" width="12" height="12" fill="url(#paint)"/>
+</svg>

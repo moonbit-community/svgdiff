@@ -364,43 +364,41 @@ test "different malformed transform declarations remain source reportable" {
 }
 
 ///|
-test "resource transform syntax remains reportable behind its coverage guard" {
+test "gradient transform syntax remains source-visible and computed-equivalent" {
   let before = "<svg><defs><linearGradient id='paint' gradientTransform='translate(1)'><stop offset='0' stop-color='red'/></linearGradient></defs></svg>"
   let after = "<svg><defs><linearGradient id='paint' gradientTransform='matrix(1 0 0 1 1 0)'><stop offset='0' stop-color='red'/></linearGradient></defs></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
   let differences = [
-    for difference in report.atomic_differences if difference.domain.find(
-      "resource.transform.",
-    ) ==
-    Some(0) => difference
+    for difference in report.atomic_differences if difference.domain ==
+    "resource.gradient.transform.list" => difference
   ]
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_eq(differences.length(), 1)
   assert_eq(differences[0].subject_role, "resource")
   assert_eq(differences[0].computed_relation.status, "equivalent")
   assert_eq(differences[0].changed_fact_ids.length(), 1)
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "resource_transform_semantics_unsupported" &&
-      diagnostic.subject_id == "paint" &&
-      diagnostic.source_locations.length() == 2
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "resource_transform_semantics_unsupported"
     }),
   )
 }
 
 ///|
-test "resource transform matrix changes remain numeric but not scored" {
+test "gradient transform matrix changes retain authored and effective forms" {
   let before = "<svg><defs><linearGradient id='paint' gradientTransform='translate(1)'/></defs></svg>"
   let after = "<svg><defs><linearGradient id='paint' gradientTransform='translate(3)'/></defs></svg>"
   let differences = [
     for
-      difference in compare(before, after, ComparisonProfile::v1_default()).atomic_differences if difference.domain.find(
-      "resource.transform.",
-    ) ==
-    Some(0) => difference
+      difference in compare(before, after, ComparisonProfile::v1_default()).atomic_differences if difference.domain.has_prefix(
+      "resource.gradient.transform.",
+    ) => difference
   ]
   assert_eq(differences.length(), 2)
-  assert_eq(differences[1].domain, "resource.transform.matrix")
+  assert_eq(
+    differences[1].domain,
+    "resource.gradient.transform.effective_matrix",
+  )
   assert_eq(differences[1].source_before, "matrix(1,0,0,1,1,0)")
   assert_eq(differences[1].source_after, "matrix(1,0,0,1,3,0)")
   assert_true(differences[1].parameter_delta_css_px is None)
@@ -408,11 +406,11 @@ test "resource transform matrix changes remain numeric but not scored" {
 }
 
 ///|
-test "anonymous resource transform differences retain their coverage guard" {
+test "anonymous gradient transform differences pair by resource ordinal" {
   let before = "<svg><defs><linearGradient gradientTransform='translate(1)'/></defs></svg>"
   let after = "<svg><defs><linearGradient gradientTransform='translate(2)'/></defs></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_true(
     report.diagnostics.all(diagnostic => {
       diagnostic.code != "coverage_proof_incomplete"
@@ -420,8 +418,9 @@ test "anonymous resource transform differences retain their coverage guard" {
   )
   assert_true(
     report.atomic_differences.any(difference => {
-      difference.domain == "resource.transform.matrix" &&
-      !difference.computed_relation.diagnostic_ids.is_empty()
+      difference.domain == "resource.gradient.transform.effective_matrix" &&
+      difference.computed_relation.status == "different" &&
+      difference.computed_relation.diagnostic_ids.is_empty()
     }),
   )
 }
@@ -452,21 +451,20 @@ test "pattern transform is retained while pattern semantics remain unsupported" 
 }
 
 ///|
-test "radial gradient transform remains reportable behind resource guards" {
+test "radial gradient transform has complete effective matrix semantics" {
   let before = "<svg><defs><radialGradient id='paint' gradientTransform='translate(1)'/></defs></svg>"
   let after = "<svg><defs><radialGradient id='paint' gradientTransform='translate(2)'/></defs></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
   assert_true(
     report.atomic_differences.any(difference => {
-      difference.domain == "resource.transform.matrix" &&
+      difference.domain == "resource.gradient.transform.effective_matrix" &&
       difference.source_before == "matrix(1,0,0,1,1,0)" &&
       difference.source_after == "matrix(1,0,0,1,2,0)"
     }),
   )
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "resource_transform_semantics_unsupported" &&
-      diagnostic.subject_id == "paint"
+    report.diagnostics.all(diagnostic => {
+      diagnostic.code != "resource_transform_semantics_unsupported"
     }),
   )
 }

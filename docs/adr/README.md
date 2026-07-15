@@ -62,6 +62,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0056](0056-resolve-css-computed-values-as-dependencies.md) | Accepted, implemented for supported SVG values | Resolve CSS-wide keywords, custom-property substitution, and currentColor as computed dependencies without rewriting source facts. |
 | [0057](0057-keep-declaration-provenance-immutable.md) | Accepted, implemented for supported author declarations | Keep cascade-winner origin and Source Span immutable through inheritance and computed-value resolution. |
 | [0058](0058-own-deterministic-solid-color-resolution.md) | Accepted, implemented for deterministic sRGB solid paint | Own strict solid-color and paint-opacity computed values while preserving authored facts and future profile boundaries. |
+| [0059](0059-resolve-static-gradients-before-raster-conformance.md) | Accepted, implemented for static same-document sRGB gradients | Resolve complete gradient resources and every consumer independently from guarded raster conformance. |
 
 ## CLI and distribution decisions
 

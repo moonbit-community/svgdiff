@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.16`
+Status: current model for Structured Report schema `1.17`
 
 Last verified: 2026-07-15
 
@@ -27,21 +27,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.16
+  -> Structured Report 1.17
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.16` records:
+Schema `1.17` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
 - `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/13`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/14`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -75,7 +75,7 @@ Attribute order, quote style, tag-closing style, entity spelling, declaration wh
 
 Path source adaptation is renderer-independent. The engine strictly consumes every path command and repeated parameter group, expands relative, horizontal/vertical, and smooth shorthand into absolute Move, Line, Cubic, Quadratic, Arc, and Close segments, and retains each segment's exact authored slice plus half-open UTF-16 span. One-to-one path comparison aligns those normalized segments and emits every differing command, parameter, insertion, or deletion. Exact numeric deltas remain independent of raster quantization; command-family or relative/absolute spelling changes that normalize to the same segment are computed-equivalent source differences. When the fixed observation budget permits, `geometry_displacement_css_px` records the symmetric maximum nearest alpha-boundary pixel-center distance from isolated rendering. Path reports remain partial because this observation does not establish continuous geometric Hausdorff distance, transformed-path boundary measurement, complete stroke and paint semantics, or accepted path renderer conformance.
 
-SVG transform adaptation is likewise renderer-independent. A strict parser consumes `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`, preserves normalized authored function structure, and post-multiplies matrices in authored order. Each leaf subject retains the root-to-leaf transform chain and exact cumulative affine matrix across entities, groups, resource containers, and nested `svg` elements. `geometry.transform.list` reports authored-list changes, including matrix-equivalent rewrites; `geometry.transform.cumulative_matrix` reports a changed leaf coordinate mapping. The engine independently decomposes the before and after cumulative matrices into canonical translation, rotation, signed X/Y scale, and X-skew components, then emits one typed effect difference for every changed component. This avoids treating raw affine coefficients as a visual magnitude. A singular linear transform has no unique finite decomposition, so its exact six coefficients and determinant are retained under `geometry.transform.residual_matrix` instead. Resource-local gradient and pattern transforms use parallel source/computed records but remain guarded until resource units, references, and paint semantics are complete.
+SVG transform adaptation is likewise renderer-independent. A strict parser consumes `matrix`, `translate`, `scale`, `rotate`, `skewX`, and `skewY`, preserves normalized authored function structure, and post-multiplies matrices in authored order. Each leaf subject retains the root-to-leaf transform chain and exact cumulative affine matrix across entities, groups, resource containers, and nested `svg` elements. `geometry.transform.list` reports authored-list changes, including matrix-equivalent rewrites; `geometry.transform.cumulative_matrix` reports a changed leaf coordinate mapping. The engine independently decomposes the before and after cumulative matrices into canonical translation, rotation, signed scale, and skew components, then emits one typed effect difference for every changed component. This avoids treating raw affine coefficients as a visual magnitude. A singular linear transform has no unique finite decomposition, so its exact six coefficients and determinant are retained under `geometry.transform.residual_matrix` instead. Pattern resource transforms remain guarded; gradient transforms are resolved below as part of the complete static paint-server model.
 
 SVG viewport adaptation interleaves with that transform chain. The root `svg` maps its `viewBox` into the profile's explicit common viewport; authored root `width` and `height` remain intrinsic declaration facts and do not independently resize before and after canvases. Each nested `svg` resolves unitless and CSS absolute lengths, nearest-viewport percentages, or initial-profile `vw`/`vh`/`vmin`/`vmax` values for `x`, `y`, `width`, and `height`, then establishes a child coordinate basis from its `viewBox` when present. `document.viewport` identifies a changed declaration, while the existing cumulative-matrix and typed transform-effect domains identify every affected aligned leaf mapping. Equivalent normalized declarations and ignored `preserveAspectRatio` without a `viewBox` remain source-visible but computed-equivalent.
 
@@ -86,6 +86,8 @@ Basic-shape adaptation resolves a separate canonical used-geometry record while 
 Computed Appearance records the supported resolved fact for a subject. `ResolvedVisualFact` includes the resolved value, resolution mode, optional declaration owner, winning declaration, and inheritance depth. Ordinary inheritance is applied after cascade for supported inherited properties; non-inherited properties remain local or initial. CSS-wide keywords then select inherited or initial behavior, author-origin `revert` follows ordinary defaulting in the author-only profile, bounded `var()` substitution resolves case-sensitive inherited custom properties, and supported paint consumers resolve `currentColor` from the same element's computed `color`. Missing variables, cycles, and invalid substituted property values follow CSS invalid-at-computed-value behavior and make the consuming declaration act as `unset`. Effective leaf inputs and dependency edges retain original declaration provenance and never create synthetic leaf-owned Changed Facts.
 
 Deterministic solid paint resolves CSS Color 3 syntax into canonical straight-alpha sRGB. `opacity`, `fill-opacity`, `stroke-opacity`, and `stop-opacity` resolve number or percentage syntax to clamped continuous values. Effective fill and stroke alpha multiplies color alpha, the corresponding paint opacity, and leaf element opacity; effective gradient-stop alpha multiplies stop-color alpha and stop opacity. Group/root opacity is not folded into descendants because it remains an isolated compositing operation. Environment-dependent system colors and out-of-profile color functions stay indeterminate behind distinct Diagnostics.
+
+Static same-document gradients are a resource graph plus consumer-specific computed paint. The graph resolves linear and radial geometry, `gradientUnits`, `spreadMethod`, `gradientTransform`, every child stop, and recursive `href`/`xlink:href` template inheritance, including cross-kind chains and the SVG child-set replacement rule. Stop offsets are parsed as numbers or percentages, clamped to `[0,1]`, and made monotonically nondecreasing in document order. Each resource retains authored/template provenance; each fill or stroke consumer then resolves object-bounding-box or user-space coordinates and an effective coordinate matrix. Resource differences and downstream `paint.fill` or `paint.stroke` outcomes remain separate, so one resource edit can fan out to every consumer while an unreferenced resource edit remains resource-only. Zero-stop, one-stop, degenerate linear, and degenerate radial cases have explicit computed paint modes. External references, dynamic content, malformed geometry, missing target bounds, and non-sRGB interpolation are guarded rather than approximated.
 
 `ComputedRelation` describes the relationship between the before and after facts:
 
@@ -139,7 +141,7 @@ An `AtomicDifference` is the smallest independently reportable supported change.
 - domain-appropriate Difference Magnitude;
 - a versioned Domain Ordering tuple.
 
-Current emitted domains include `presence.insertion`, `presence.deletion`, `geometry.*`, `paint.*`, `compositing.opacity`, `resource.gradient.stop_color`, `text.content`, and `document.structure` where the supported analyzers apply. The exact emitted subdomain is part of the report contract; the broader future taxonomy remains roadmap work.
+Current emitted domains include `presence.insertion`, `presence.deletion`, `geometry.*`, `paint.*`, `compositing.opacity`, `resource.gradient.geometry.*`, `resource.gradient.units`, `resource.gradient.spread_method`, `resource.gradient.transform.*`, `resource.gradient.stop.*`, `text.content`, and `document.structure` where the supported analyzers apply. The exact emitted subdomain is part of the report contract; the broader future taxonomy remains roadmap work.
 
 ### Difference Magnitude
 
@@ -176,7 +178,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.16` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.17` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -192,11 +194,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.16` top-level object contains exactly these conceptual sections:
+The schema `1.17` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.16",
+  "schema_version": "1.17",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -228,7 +230,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.16
+## Not implemented in schema 1.17
 
 The following concepts are intentional future work rather than hidden current fields:
 

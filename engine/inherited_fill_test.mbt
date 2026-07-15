@@ -199,7 +199,7 @@ test "structured report JSON exposes inherited fill provenance" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.16",
+      "schema_version": "1.17",
       "source_resolutions": [
         {
           "subject_id": "box",
@@ -480,7 +480,7 @@ test "custom properties and currentColor reach admitted gradient stop colors" {
   )
   let resource = [
     for difference in report.atomic_differences if difference.domain ==
-    "resource.gradient.stop_color" => difference
+    "resource.gradient.stop.stop_color" => difference
   ]
   assert_eq(resource.length(), 1)
   assert_eq(resource[0].computed_relation.status, "different")

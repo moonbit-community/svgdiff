@@ -93,6 +93,10 @@ fn attach_resource_transform_differences(
   let events = report.events.copy()
   for pair in resource_transform_pairs(before, after) {
     let (before_resource, after_resource) = pair
+    if before_resource.kind == "linearGradient" ||
+      before_resource.kind == "radialGradient" {
+      continue
+    }
     if !resource_transform_declaration_changed(before_resource, after_resource) {
       continue
     }

@@ -8,7 +8,8 @@
       "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
       "stroke-dasharray", "stroke-dashoffset", "vector-effect",
       "marker-end", "markerUnits", "markerWidth", "refX", "orient",
-      "opacity", "transform", "viewBox", "color", "--paint"
+      "opacity", "transform", "viewBox", "color", "--paint",
+      "gradientUnits", "gradientTransform", "stop-color"
     ]
   },
   "cases": [
@@ -384,6 +385,30 @@
       "before_value": "inherit", "after_value": "red",
       "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "fill", "before_declared_value": "inherit", "after_declared_value": "red", "affected_subject_ids": ["box"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-gradient-units",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><linearGradient id='g' gradientUnits='objectBoundingBox'><stop stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#g)'/>",
+      "after_value": "<defs><linearGradient id='g' gradientUnits='userSpaceOnUse'><stop stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#g)'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "gradientUnits", "report_property": "gradientUnits", "before_declared_value": "objectBoundingBox", "after_declared_value": "userSpaceOnUse", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-gradient-transform",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><linearGradient id='g' gradientTransform='translate(1)'><stop stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#g)'/>",
+      "after_value": "<defs><linearGradient id='g' gradientTransform='translate(3)'><stop stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='2' width='8' height='8' fill='url(#g)'/>",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "gradientTransform", "report_property": "gradientTransform", "before_declared_value": "translate(1)", "after_declared_value": "translate(3)", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
+    },
+    {
+      "id": "mutate-gradient-stop-color",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<defs><radialGradient id='g'><stop stop-color='red'/><stop offset='1' stop-color='blue'/></radialGradient></defs><circle id='box' cx='8' cy='8' r='5' fill='url(#g)'/>",
+      "after_value": "<defs><radialGradient id='g'><stop stop-color='green'/><stop offset='1' stop-color='blue'/></radialGradient></defs><circle id='box' cx='8' cy='8' r='5' fill='url(#g)'/>",
+      "expected_changed_fact": { "subject_kind": "circle", "source_property": "stop-color", "report_property": "stop:0:color", "before_declared_value": "red", "after_declared_value": "green", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "partial"
     }
   ]
 }
