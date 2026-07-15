@@ -23,6 +23,13 @@
       "viewport": { "width": 16, "height": 16 }
     },
     {
+      "id": "false-equality-stacking-order",
+      "failure_mode": "structural_false_equality",
+      "before": "evaluation/adversarial/cases/false-equality-stacking-order/before.svg",
+      "after": "evaluation/adversarial/cases/false-equality-stacking-order/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
       "id": "wrong-alignment-source-reorder",
       "failure_mode": "wrong_alignment",
       "before": "evaluation/adversarial/cases/wrong-alignment-source-reorder/before.svg",

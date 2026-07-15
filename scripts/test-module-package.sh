@@ -84,7 +84,7 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "1.21" else { abort("wrong schema") }
+  guard report.schema_version == "1.22" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
 }

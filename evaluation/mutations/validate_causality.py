@@ -25,6 +25,13 @@ def matching_changed_facts(
         after = fact.get("after")
         if fact["property"] != expected["report_property"]:
             continue
+        if expected.get("fact_form") == "structural_relationship":
+            if before is not None or after is not None:
+                continue
+            if fact["affected_subject_ids"] != expected["affected_subject_ids"]:
+                continue
+            matches.append(fact)
+            continue
         if before is None or after is None:
             continue
         if before["property"] != expected["source_property"]:
@@ -81,10 +88,13 @@ def reversed_case(case: dict[str, Any]) -> dict[str, Any]:
     result = copy.deepcopy(case)
     result["id"] = f"{case['id']}:reverse"
     expected = result["expected_changed_fact"]
-    expected["before_declared_value"], expected["after_declared_value"] = (
-        expected["after_declared_value"],
-        expected["before_declared_value"],
-    )
+    if expected.get("fact_form") == "structural_relationship":
+        expected["affected_subject_ids"].reverse()
+    else:
+        expected["before_declared_value"], expected["after_declared_value"] = (
+            expected["after_declared_value"],
+            expected["before_declared_value"],
+        )
     return result
 
 

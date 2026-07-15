@@ -14,7 +14,7 @@ python3 evaluation/adversarial/validate.py --cli "$cli" --output "$tmp/second.js
 cmp "$tmp/first.json" "$tmp/second.json"
 jq -e '
   .schema_version == "svgdiff-adversarial-results/1" and
-  (.cases | length) == 9 and
+  (.cases | length) == 10 and
   all(.cases[]; .status == "passed")
 ' "$tmp/first.json" >/dev/null
 

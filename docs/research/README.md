@@ -17,5 +17,6 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [SVG paint fallbacks](svg-paint-fallbacks.md) | 2026-07-15 | Fixes the URL fallback grammar, missing and wrong-kind target behavior, local-reference boundary, and renderer ownership. |
 | [SVG paint order and winding rules](svg-paint-order-and-winding-rules.md) | 2026-07-15 | Fixes inherited `paint-order`, `fill-rule`, and `clip-rule`, active-operation normalization, and the clip-path boundary. |
 | [SVG structure and use semantics](svg-structure-and-use-semantics.md) | 2026-07-15 | Fixes direct-versus-definition rendering, use-instance identity, inheritance, viewport placement, reference admission, and renderer guards. |
+| [Structural impact semantics](structural-impact-semantics.md) | 2026-07-15 | Fixes consequence-aware ancestry, instance-resolution, stacking, and conservative causal attribution. |
 
 Research should be amended only to correct factual errors or to add an explicitly dated follow-up. Changes to current product policy belong in an ADR and the current contract documents.

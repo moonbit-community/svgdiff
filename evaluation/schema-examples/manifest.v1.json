@@ -382,6 +382,21 @@
       }
     },
     {
+      "id": "structural-stacking-order",
+      "before": "evaluation/schema-examples/cases/structural-stacking-order/before.svg",
+      "after": "evaluation/schema-examples/cases/structural-stacking-order/after.svg",
+      "output": "schema/examples/structural-stacking-order.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["document.structure.stacking_order"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "document.structure.stacking_order", "field": "magnitude.raster_changed_pixel_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

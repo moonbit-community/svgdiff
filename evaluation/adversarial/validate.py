@@ -12,6 +12,7 @@ EXPECTED_MODES = {
     "false_complete",
     "viewport_false_complete",
     "false_equality",
+    "structural_false_equality",
     "wrong_alignment",
     "attribution_leakage",
     "magnitude_ordering",
@@ -67,7 +68,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.21":
+    if report.get("schema_version") != "1.22":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -153,6 +154,42 @@ def validate_wrong_alignment(report: dict) -> None:
     }
     if pairs != {(0, 1), (1, 0)}:
         raise ValueError(f"unlabelled subjects aligned by source order: {sorted(pairs)}")
+
+
+def validate_structural_false_equality(report: dict) -> None:
+    if report["analysis_status"] != "complete" or report["diagnostics"]:
+        raise ValueError("admitted stacking change did not remain complete")
+    differences = report["atomic_differences"]
+    if len(differences) != 1:
+        raise ValueError("stacking change was lost or fragmented")
+    difference = differences[0]
+    if (
+        difference["domain"] != "document.structure.stacking_order"
+        or difference["computed_relation"]["status"] != "different"
+        or difference["magnitude"]["raster_changed_pixel_fraction"] <= 0
+    ):
+        raise ValueError("stacking difference lost semantic or numeric evidence")
+    if len(difference["changed_fact_ids"]) != 1:
+        raise ValueError("stacking difference lost its relationship fact")
+    fact_id = difference["changed_fact_ids"][0]
+    if not any(
+        fact["id"] == fact_id
+        and fact["property"] == "structure.stacking_order"
+        and fact["affected_subject_ids"] == ["red", "blue"]
+        for fact in report["changed_facts"]
+    ):
+        raise ValueError("stacking relationship fact is incomplete")
+    regions = [
+        region
+        for event in report["events"]
+        for region in event["difference_regions"]
+    ]
+    if not regions or any(
+        region["cause_envelope"]["guarantee"] != "sound_overapproximation"
+        or fact_id not in region["cause_envelope"]["candidate_changed_fact_ids"]
+        for region in regions
+    ):
+        raise ValueError("stacking fact is absent from a complete Cause Envelope")
 
 
 def validate_attribution_leakage(case: dict, report: dict) -> None:
@@ -322,6 +359,7 @@ def main() -> None:
         "false_complete": lambda case, report: validate_false_complete(case, report),
         "viewport_false_complete": validate_viewport_false_complete,
         "false_equality": lambda case, report: validate_false_equality(case, report),
+        "structural_false_equality": lambda _case, report: validate_structural_false_equality(report),
         "wrong_alignment": lambda _case, report: validate_wrong_alignment(report),
         "attribution_leakage": validate_attribution_leakage,
         "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),

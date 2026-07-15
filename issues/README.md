@@ -123,6 +123,7 @@ graph TD
   ISS_105["ISS-105: Resolve paint fallbacks and missing paint servers"]
   ISS_106["ISS-106: Resolve inherited paint order and winding rules"]
   ISS_107["ISS-107: Model structural containers and use instances"]
+  ISS_108["ISS-108: Report consequence-aware structural changes"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -324,6 +325,7 @@ graph TD
   ISS_104 --> ISS_105
   ISS_105 --> ISS_106
   ISS_106 --> ISS_107
+  ISS_107 --> ISS_108
 ```
 
 ## Warnings

@@ -10,11 +10,11 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.21` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.21` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.1` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.22` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.22` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/18` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/19` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -75,6 +75,8 @@ Module `0.4.13` selects the SVG 2 fallback branch for static `fill` and `stroke`
 Module `0.4.14` resolves inherited `paint-order`, `fill-rule`, and `clip-rule` through the existing cascade, computed-value, provenance, dependency, pattern-child, and renderer-input seams. Paint order is expanded and filtered to active operations; inactive or simple-contour winding-rule changes remain equivalent; clip-path children retain owners and guarded semantics without claiming complete clipping. The private computed-value normalizer advances to `@3`; eight Chromium fixtures expand the baseline to 106 cases with 43 exact and 63 divergent observations and advance renderer conformance to `/17`. The expanded behavior plus new syntax and clipping-boundary Diagnostics advance Structured Report schema to `1.20`; public report fields and v2 ordering tuples remain unchanged.
 
 Module `0.5.0` separates authored definition identity from rendered use-instance identity for admitted `g`, `defs`, `symbol`, and same-document `use` structure. Definition-owned facts fan out through deterministic nested instance paths; use-host inheritance, transforms, supplemental translation, and symbol or SVG instance viewports reuse the existing semantic seams. Optional `SubjectReference.instance_context` advances Structured Report schema to `1.21`; current producers always emit it, while compatible legacy-shaped reports may omit it. Six Chromium fixtures expand the baseline to 112 cases with 47 exact and 65 divergent observations; two transformed-use divergences allocate `renderer_use_transform_raster_unproven` and advance conformance to `/18`. Ordering tuples and production renderer identity remain unchanged.
+
+Module `0.5.1` adds consequence-aware structural attribution over the admitted rendering tree. Effective reparenting and use-resolution changes receive structural relationship facts only when they produce an existing computed consequence; potentially overlapping aligned subjects whose draw order is inverted receive a stacking relationship fact only when final rendered pixels change. These new `document.structure.*` meanings advance Structured Report schema to `1.22`. Two exact Chromium stacking fixtures expand the baseline to 114 cases with 49 exact and 65 divergent observations and advance conformance to `/19`. Public report fields, production renderer identity, Diagnostics, and v2 ordering tuples remain unchanged.
 
 ## Structured Report schema versions
 

@@ -10,7 +10,7 @@
       "marker-end", "markerUnits", "markerWidth", "refX", "orient",
       "opacity", "transform", "viewBox", "color", "--paint",
       "gradientUnits", "gradientTransform", "stop-color", "patternUnits", "patternTransform",
-      "paint-order", "fill-rule", "clip-rule"
+      "paint-order", "fill-rule", "clip-rule", "structure.stacking_order"
     ]
   },
   "cases": [
@@ -478,6 +478,14 @@
       "template": "templates/use-placement-x.svg.tmpl",
       "before_value": "2", "after_value": "5",
       "expected_changed_fact": { "subject_kind": "rect", "source_property": "x", "report_property": "x", "before_declared_value": "2", "after_declared_value": "5", "affected_subject_ids": ["instance/placed/tile"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
+      "id": "mutate-active-stacking-order",
+      "template": "templates/shape.svg.tmpl",
+      "before_value": "<rect id='red' width='12' height='12' fill='red'/><rect id='blue' x='4' y='4' width='12' height='12' fill='blue'/>",
+      "after_value": "<rect id='blue' x='4' y='4' width='12' height='12' fill='blue'/><rect id='red' width='12' height='12' fill='red'/>",
+      "expected_changed_fact": { "fact_form": "structural_relationship", "subject_kind": "rect", "source_property": "structure.stacking_order", "report_property": "structure.stacking_order", "affected_subject_ids": ["red", "blue"] },
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     }
   ]

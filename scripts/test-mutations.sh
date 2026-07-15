@@ -19,9 +19,9 @@ test "$first_hashes" = "$second_hashes"
 manifest="$first/generated-manifest.json"
 jq -e '
   .schema_version == "svgdiff-generated-mutations/1" and
-  (.cases | length == 58) and
+  (.cases | length == 59) and
   (.coverage_contract.subject_kinds | sort) == ["circle", "ellipse", "line", "polygon", "polyline", "rect"] and
-  (.coverage_contract.source_properties | sort) == ["--paint", "clip-rule", "color", "cx", "cy", "fill", "fill-opacity", "fill-rule", "gradientTransform", "gradientUnits", "height", "marker-end", "markerUnits", "markerWidth", "opacity", "orient", "paint-order", "patternTransform", "patternUnits", "points", "r", "refX", "rx", "ry", "stop-color", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "transform", "vector-effect", "viewBox", "width", "x", "x1", "x2", "y", "y1", "y2"] and
+  (.coverage_contract.source_properties | sort) == ["--paint", "clip-rule", "color", "cx", "cy", "fill", "fill-opacity", "fill-rule", "gradientTransform", "gradientUnits", "height", "marker-end", "markerUnits", "markerWidth", "opacity", "orient", "paint-order", "patternTransform", "patternUnits", "points", "r", "refX", "rx", "ry", "stop-color", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "structure.stacking_order", "transform", "vector-effect", "viewBox", "width", "x", "x1", "x2", "y", "y1", "y2"] and
   ([.cases[].expected_changed_fact.subject_kind] | unique | sort) == (.coverage_contract.subject_kinds | sort) and
   ([.cases[].expected_changed_fact.source_property] | unique | sort) == (.coverage_contract.source_properties | sort) and
   ([.cases[].id] | length == (unique | length))
@@ -49,11 +49,15 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
         ) and
         any($report[0].changed_facts[];
           .property == $expected.report_property and
-          .before.property == $expected.source_property and
-          .after.property == $expected.source_property and
-          .before.declared_value == $expected.before_declared_value and
-          .after.declared_value == $expected.after_declared_value and
-          .affected_subject_ids == $expected.affected_subject_ids
+          .affected_subject_ids == $expected.affected_subject_ids and
+          (if $expected.fact_form == "structural_relationship" then
+            .before == null and .after == null
+          else
+            .before.property == $expected.source_property and
+            .after.property == $expected.source_property and
+            .before.declared_value == $expected.before_declared_value and
+            .after.declared_value == $expected.after_declared_value
+          end)
         )
       )
     ' >/dev/null; then
@@ -66,4 +70,4 @@ python3 evaluation/mutations/validate_causality.py \
   --manifest "$manifest" \
   --reports "$tmp"
 
-printf 'Mutation cases: %s, subject kinds: 6, source properties: 43, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"
+printf 'Mutation cases: %s, subject kinds: 6, source properties: 44, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"

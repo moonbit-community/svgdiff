@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.21`
+Status: current model for Structured Report schema `1.22`
 
 Last verified: 2026-07-15
 
@@ -27,21 +27,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.21
+  -> Structured Report 1.22
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.21` records:
+Schema `1.22` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
 - `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/18`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/19`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -95,6 +95,8 @@ Paint URL fallback selection precedes gradient or pattern mediation. The engine 
 
 Paint order and winding rules are resolved after the same cascade and dependency stages. `paint-order` appends omitted operations in normal order and compares only the subject's active fill, stroke, and marker subsequence. `fill-rule` is inactive without fill and equivalent across admitted single simple contours; potentially self-intersecting point or path geometry retains `nonzero` or `evenodd`. `clip-rule` is inactive outside `clipPath`; inside it, the rule retains its inherited owner and affected child, while deferred clip resource construction and host application make the relation guarded rather than falsely complete. Pattern child signatures apply the same active-operation normalization.
 
+Structural relationships are reported only through admitted consequences. An aligned subject whose effective parent path or use-instance resolution changes receives a structural relationship fact when an existing computed property, cumulative transform, viewport, or resource-mediated outcome differs. Pairwise draw-order inversions receive `document.structure.stacking_order` when the subjects' conservative painted bounds may overlap and the final raster changes. Disjoint and zero-raster reorders remain absent. These facts are conservative cause candidates rather than exact contribution weights.
+
 `ComputedRelation` describes the relationship between the before and after facts:
 
 - `equivalent`: supported facts resolve to the same visual value;
@@ -132,7 +134,7 @@ Equally plausible current matches use the deterministic [v1 Subject Alignment ti
 
 ### Changed Fact
 
-A `ChangedFact` stores one supported authored change and the subject IDs it may affect. Atomic Differences refer to Changed Fact IDs so a shared inherited declaration or resource change does not need to be duplicated for each outcome.
+A `ChangedFact` stores one supported authored change or evaluated structural relationship and the subject IDs it may affect. Atomic Differences refer to Changed Fact IDs so a shared inherited declaration, resource change, or structural cause does not need to be duplicated for each outcome. Relationship facts have no fabricated declaration or Source Span.
 
 ### Atomic Difference
 
@@ -147,7 +149,7 @@ An `AtomicDifference` is the smallest independently reportable supported change.
 - domain-appropriate Difference Magnitude;
 - a versioned Domain Ordering tuple.
 
-Current emitted domains include `presence.insertion`, `presence.deletion`, `geometry.*`, `paint.*`, `compositing.opacity`, `resource.gradient.*`, `resource.pattern.geometry.*`, `resource.pattern.units`, `resource.pattern.content_units`, `resource.pattern.transform.*`, `resource.pattern.viewport.*`, `resource.pattern.reference`, `resource.pattern.child.*`, `text.content`, and `document.structure` where the supported analyzers apply. The exact emitted subdomain is part of the report contract; the broader future taxonomy remains roadmap work.
+Current emitted domains include `presence.insertion`, `presence.deletion`, `geometry.*`, `paint.*`, `compositing.opacity`, `resource.gradient.*`, `resource.pattern.geometry.*`, `resource.pattern.units`, `resource.pattern.content_units`, `resource.pattern.transform.*`, `resource.pattern.viewport.*`, `resource.pattern.reference`, `resource.pattern.child.*`, `text.content`, `document.structure`, `document.structure.ancestry`, `document.structure.resource_resolution`, and `document.structure.stacking_order` where the supported analyzers apply. The exact emitted subdomain is part of the report contract; the broader future taxonomy remains roadmap work.
 
 ### Difference Magnitude
 
@@ -184,15 +186,15 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.21` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.22` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
-Current v1 events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
+Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
 Changed Facts express causal fan-out rather than event ownership. One Changed Fact may be referenced by distinct Atomic Differences in several events when an inherited declaration or shared resource affects several subjects. Conversely, several Changed Facts may feed the Atomic Differences in one event. This preserves one report identity for every independently reportable distinction without confusing an authored cause with its outcomes.
 
 A resource difference may share one entity event when that entity is its sole mediated outcome. An unreferenced resource change uses its own resource event. Future resource changes with several independent entity outcomes must use a separate resource event and shared Changed Fact references until the project accepts a versioned contextual-event link; assigning the resource Atomic Difference to one arbitrary entity or duplicating it across events is forbidden.
 
-Separate primary alignments remain separate events even when they overlap or are adjacent, share hierarchy, Changed Facts, or resources, or appear visually coherent. These relationships may support Agent explanation, but none is current event identity. Cross-subject outcome grouping, separately aligned resource synthesis, and semantic theme detection remain future work. The governing ownership and fan-out decision is [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md); [ADR 0041](adr/0041-defer-cross-subject-event-aggregation.md) requires a measured report-only Agent failure plus a deterministic, traceable, versioned grouping and evaluation policy before this boundary can reopen.
+Separate primary alignments remain separate outcome events even when they overlap or are adjacent, share hierarchy, Changed Facts, or resources, or appear visually coherent. A document-level stacking relationship records an evaluated pair; it does not merge either leaf's other outcomes. Cross-subject outcome grouping, separately aligned resource synthesis, and semantic theme detection remain future work. The governing ownership and fan-out decision is [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md); [ADR 0041](adr/0041-defer-cross-subject-event-aggregation.md) requires a measured report-only Agent failure plus a deterministic, traceable, versioned grouping and evaluation policy before that separate boundary can reopen. [ADR 0064](adr/0064-report-only-consequence-aware-structural-relationships.md) defines the relationship-event exception.
 
 ### Diagnostic
 
@@ -200,11 +202,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.21` top-level object contains exactly these conceptual sections:
+The schema `1.22` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.21",
+  "schema_version": "1.22",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -236,7 +238,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.21
+## Not implemented in schema 1.22
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -246,7 +248,7 @@ The following concepts are intentional future work rather than hidden current fi
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
 - caller-supplied resource bundles, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
-- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, masks, clipping, blending, arbitrary structural reordering, symbol overflow clipping, and external or dynamic reuse;
+- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, masks, clipping, blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
 - cross-subject Visual Event aggregation.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).

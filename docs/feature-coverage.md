@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.21` coverage map
+Status: current schema `1.22` coverage map
 
 Last verified: 2026-07-15
 
@@ -13,7 +13,7 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.21`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `1.22`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
@@ -39,7 +39,7 @@ Feature IDs use five current namespaces:
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 | `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.21` engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.22` engine always emits it.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -69,6 +69,7 @@ The matrix is validated by the [Coverage Proof Obligations](coverage-proof-oblig
 | Local marker attachments, length-aware resource viewport/reference properties, path vertices, automatic orientation, and clipped instance envelopes | Source, computed placement, and conservative bounds; child paint and rendered evidence remain guarded | `marker_content_semantics_unsupported` and `renderer_marker_raster_unproven` remain independent | [`length_data_wbtest.mbt`](../engine/length_data_wbtest.mbt): containing-viewport and initial-viewport marker length contexts; [`marker_geometry_wbtest.mbt`](../engine/marker_geometry_wbtest.mbt): provenance, defaults, invalid values, paths, orientations, units, viewport mapping, transforms, and bounds; [`marker_diff_wbtest.mbt`](../engine/marker_diff_wbtest.mbt): typed attachment/resource differences, unused resources, localization, and guards |
 | Equivalent deterministic solid-color spelling | Source distinction, canonical straight-alpha sRGB relation, effective alpha multiplication, measured zero rendered response | None | [`color_opacity_test.mbt`](../engine/color_opacity_test.mbt): CSS Color 3 equivalent forms and effective alpha; Chromium HSL and alpha canonical pairs |
 | Subject correspondence, insertion, deletion, split, and merge for supported shapes | Source and computed alignment evidence, local ambiguity, and explicit uncalibrated confidence status | None | [`alignment_test.mbt`](../engine/alignment_test.mbt): unique, exact-duplicate tie, equal-distance tie, structural, unmatched, and merge cases |
+| Consequence-aware ancestry, use-resolution, and stacking relationships | Parent or instance relationship Changed Facts linked to admitted computed outcomes; every potentially overlapping draw-order inversion with nonzero final raster evidence; numeric magnitudes and conservative Cause Envelopes | Source-only tree auditing, exact pair contribution, unsupported effects, and the unified resource graph remain deferred | [`structural_diff_wbtest.mbt`](../engine/structural_diff_wbtest.mbt): inheritance, transforms, use targets, active stacking, disjoint/equivalent controls, ID renames, magnitudes, regions, and envelopes; mutation actual-cause property; adversarial structural false-equality case; two exact Chromium stacking fixtures |
 | One-owner Visual Events with Changed Fact fan-out | Agent grouping, outcome localization, and causal traceability | None | [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt): several differences per aligned-subject event; [`inherited_fill_test.mbt`](../engine/inherited_fill_test.mbt): one Changed Fact across two independently owned events; [`validate.py`](../evaluation/determinism/validate.py): exact one-event membership for every Atomic Difference |
 | Exact parameter and geometry magnitude | Computed magnitude remains continuous and separate from guarded renderer observations | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): `tiny geometry changes retain continuous magnitude independent of pixels` |
 | Presence footprint and isolated painted coverage | Computed footprint and rendered measurements | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): insertion/deletion and isolated coverage tests |

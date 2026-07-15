@@ -256,6 +256,71 @@ fn rendered_subject_plans(
 }
 
 ///|
+fn structural_same_kind_ordinal(
+  document : StructuralDocument,
+  node_index : Int,
+) -> Int {
+  let node = document.nodes[node_index]
+  let mut ordinal = 0
+  match node.parent_index {
+    Some(parent_index) =>
+      for sibling_index in document.nodes[parent_index].children {
+        if sibling_index == node_index {
+          break
+        }
+        if document.nodes[sibling_index].kind == node.kind {
+          ordinal += 1
+        }
+      }
+    None =>
+      for sibling_index, sibling in document.nodes {
+        if sibling_index == node_index {
+          break
+        }
+        if sibling.parent_index is None && sibling.kind == node.kind {
+          ordinal += 1
+        }
+      }
+  }
+  ordinal
+}
+
+///|
+fn structural_path_segment(
+  document : StructuralDocument,
+  node_index : Int,
+) -> String {
+  let node = document.nodes[node_index]
+  "\{node.kind}[\{structural_same_kind_ordinal(document, node_index)}]"
+}
+
+///|
+fn structural_parent_path_signature(
+  document : StructuralDocument,
+  plan : RenderedSubjectPlan,
+) -> String {
+  let segments : Array[String] = []
+  let parent_count = plan.rendered_ancestry.length() - 1
+  for index in 0..<parent_count {
+    segments.push(
+      structural_path_segment(document, plan.rendered_ancestry[index]),
+    )
+  }
+  segments.join("/")
+}
+
+///|
+fn rendered_plan_instance_resolution_signature(
+  plan : RenderedSubjectPlan,
+) -> String {
+  if plan.use_path.is_empty() {
+    "direct"
+  } else {
+    "definition=\{plan.definition_subject_id};depth=\{plan.use_path.length()}"
+  }
+}
+
+///|
 fn rendered_plan_fill_hierarchy(
   input : String,
   css_document : CssStaticDocument,

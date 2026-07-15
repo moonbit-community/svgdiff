@@ -112,6 +112,8 @@
     { "id": "use-symbol-viewport", "source": "evaluation/renderer-conformance/fixtures/use-symbol-viewport.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
     { "id": "use-nested-transform", "source": "evaluation/renderer-conformance/fixtures/use-nested-transform.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
     { "id": "use-nested", "source": "evaluation/renderer-conformance/fixtures/use-nested.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "supported" },
-    { "id": "use-transform", "source": "evaluation/renderer-conformance/fixtures/use-transform.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" }
+    { "id": "use-transform", "source": "evaluation/renderer-conformance/fixtures/use-transform.svg", "width": 16, "height": 16, "category": "geometry", "coverage_claim": "guarded" },
+    { "id": "structural-stacking-before", "source": "evaluation/renderer-conformance/fixtures/structural-stacking-before.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "structural-stacking-after", "source": "evaluation/renderer-conformance/fixtures/structural-stacking-after.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
   ]
 }

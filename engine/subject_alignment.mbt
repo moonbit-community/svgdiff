@@ -3,6 +3,8 @@ priv struct SourceSubject {
   reference : SubjectReference
   signature : String
   hierarchy_signature : String
+  structural_parent_path_signature : String
+  instance_resolution_signature : String
   kind : String
   values : Array[(String, String)]
   facts : Array[DeclaredVisualFact]
@@ -72,6 +74,8 @@ fn subject_from_element(
   stylesheet_match : CssStylesheetMatch,
   source_index : Int,
   hierarchy_signature : String,
+  structural_parent_path_signature : String,
+  instance_resolution_signature : String,
   transform_chain : Array[SourceTransformSite],
   computed_visual_facts : Array[DeclaredVisualFact],
   resolved_visual_facts : Array[ResolvedVisualFact],
@@ -218,6 +222,8 @@ fn subject_from_element(
     },
     signature,
     hierarchy_signature,
+    structural_parent_path_signature,
+    instance_resolution_signature,
     kind: element.name.local_name,
     values,
     facts,
@@ -440,6 +446,8 @@ fn extract_source_subjects_streaming_internal_or_raise(
               ),
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
+              "",
+              "",
               transforms.copy(),
               computed_visual_facts,
               resolved_visual_facts,
@@ -493,6 +501,8 @@ fn extract_source_subjects_streaming_internal_or_raise(
               ),
               subjects.length(),
               joined_hierarchy_signature(hierarchy),
+              "",
+              "",
               transform_chain,
               computed_visual_facts,
               resolved_visual_facts,
@@ -635,6 +645,8 @@ fn source_subject_from_rendered_plan(
     css_stylesheet_match_for_source(css_document, source_node.source_offset),
     source_index,
     joined_hierarchy_signature(hierarchy),
+    structural_parent_path_signature(document, plan),
+    rendered_plan_instance_resolution_signature(plan),
     transforms,
     computed_visual_facts,
     resolved_visual_facts,
@@ -1384,6 +1396,10 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_unused_definition_differences(
     report, before_svg, after_svg,
+  )
+  comparison_guard.checkpoint()
+  let report = attach_structural_differences(
+    report, before_svg, after_svg, combined_alignments,
   )
   comparison_guard.checkpoint()
   let report = match
