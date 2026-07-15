@@ -64,6 +64,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0058](0058-own-deterministic-solid-color-resolution.md) | Accepted, implemented for deterministic sRGB solid paint | Own strict solid-color and paint-opacity computed values while preserving authored facts and future profile boundaries. |
 | [0059](0059-resolve-static-gradients-before-raster-conformance.md) | Accepted, implemented for static same-document sRGB gradients | Resolve complete gradient resources and every consumer independently from guarded raster conformance. |
 | [0060](0060-resolve-static-patterns-as-resource-and-consumer-semantics.md) | Accepted, implemented for the admitted static same-document child slice | Resolve pattern tile, viewport, template, and child semantics separately from every consumer and guarded raster evidence. |
+| [0061](0061-select-svg-paint-fallbacks-before-resource-mediation.md) | Accepted, implemented for static same-document paint URLs | Select valid resources, local fallback paint, or no paint before resource fan-out while retaining authored declarations. |
 
 ## CLI and distribution decisions
 

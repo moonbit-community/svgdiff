@@ -586,6 +586,12 @@ fn generic_basic_shape_report(
           properties.push(property)
         }
       }
+      source_subject_fact(before_subject, "fill")
+      .map(fact => paint_value_uses_url(fact.declared_value))
+      .unwrap_or(false) ||
+      source_subject_fact(after_subject, "fill")
+      .map(fact => paint_value_uses_url(fact.declared_value))
+      .unwrap_or(false) ||
       properties.any(property => {
         declared_fact_changed(
           source_subject_fact(before_subject, property),
@@ -796,7 +802,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.18",
+    schema_version: "1.19",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

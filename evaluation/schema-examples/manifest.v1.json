@@ -341,6 +341,19 @@
       }
     },
     {
+      "id": "paint-fallback-change",
+      "before": "evaluation/schema-examples/cases/paint-fallback-change/before.svg",
+      "after": "evaluation/schema-examples/cases/paint-fallback-change/after.svg",
+      "output": "schema/examples/paint-fallback-change.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["paint.fill"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",

@@ -94,6 +94,10 @@
     { "id": "pattern-content-object-bbox", "source": "evaluation/renderer-conformance/fixtures/pattern-content-object-bbox.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
     { "id": "pattern-viewbox", "source": "evaluation/renderer-conformance/fixtures/pattern-viewbox.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
     { "id": "pattern-transform", "source": "evaluation/renderer-conformance/fixtures/pattern-transform.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
-    { "id": "pattern-template-inheritance", "source": "evaluation/renderer-conformance/fixtures/pattern-template-inheritance.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" }
+    { "id": "pattern-template-inheritance", "source": "evaluation/renderer-conformance/fixtures/pattern-template-inheritance.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "guarded" },
+    { "id": "paint-fallback-missing", "source": "evaluation/renderer-conformance/fixtures/paint-fallback-missing.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "paint-fallback-missing-canonical" },
+    { "id": "paint-fallback-missing-canonical", "source": "evaluation/renderer-conformance/fixtures/paint-fallback-missing-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" },
+    { "id": "paint-fallback-none", "source": "evaluation/renderer-conformance/fixtures/paint-fallback-none.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported", "canonical_equivalent_id": "paint-fallback-none-canonical" },
+    { "id": "paint-fallback-none-canonical", "source": "evaluation/renderer-conformance/fixtures/paint-fallback-none-canonical.svg", "width": 16, "height": 16, "category": "paint", "coverage_claim": "supported" }
   ]
 }

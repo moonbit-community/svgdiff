@@ -9,12 +9,42 @@ priv struct FillSourceElement {
 }
 
 ///|
+priv struct PaintServerTarget {
+  id : String
+  kind : String
+}
+
+///|
 priv struct FillHierarchy {
   elements : Array[FillSourceElement]
+  paint_server_targets : Array[PaintServerTarget]
   rect_subject_ids : Array[String]
   all_entity_subject_ids : Array[String]
   coverage_codes : Array[String]
   mut has_inherited_visual : Bool
+}
+
+///|
+fn record_paint_server_target(
+  element : @xml.NamespaceElement,
+  targets : Array[PaintServerTarget],
+) -> Unit {
+  match authored_subject_id(element) {
+    Some(id) => targets.push({ id, kind: element.name.local_name })
+    None => ()
+  }
+}
+
+///|
+fn valid_local_paint_server(hierarchy : FillHierarchy, id : String) -> Bool {
+  hierarchy.paint_server_targets.any(target => {
+    target.id == id &&
+    (
+      target.kind == "linearGradient" ||
+      target.kind == "radialGradient" ||
+      target.kind == "pattern"
+    )
+  })
 }
 
 ///|
@@ -509,15 +539,17 @@ fn computed_fact_from_resolution(
 
 ///|
 fn substituted_paint_value_valid(property : String, value : String) -> Bool {
-  let normalized = value.trim().to_owned().to_lower()
-  if property != "color" && normalized == "none" {
-    return true
+  if property == "fill" || property == "stroke" {
+    return match parse_paint_value(value) {
+      NoPaint
+      | SolidPaint(_)
+      | LocalPaintServer(_, _)
+      | ExternalPaintServer
+      | ContextPaint => true
+      InvalidPaint => false
+    }
   }
-  if (property == "fill" || property == "stroke") &&
-    paint_server_reference(normalized) is Some(_) {
-    return true
-  }
-  match @css_color.parse_solid_color(normalized) {
+  match @css_color.parse_solid_color(value.trim().to_owned()) {
     Resolved(_) | CurrentColor | SystemColor(_) => true
     Invalid => false
   }
@@ -595,6 +627,97 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
 }
 
 ///|
+priv struct CanonicalPaintValue {
+  value : String
+  complete : Bool
+  uses_current_color : Bool
+}
+
+///|
+fn paint_color_issue_code(value : String) -> String {
+  let normalized = value.trim().to_owned().to_lower()
+  if normalized.has_prefix("lab(") ||
+    normalized.has_prefix("lch(") ||
+    normalized.has_prefix("oklab(") ||
+    normalized.has_prefix("oklch(") ||
+    normalized.has_prefix("color(") ||
+    normalized.has_prefix("hwb(") {
+    "color_profile_unsupported"
+  } else {
+    "solid_color_syntax_unsupported"
+  }
+}
+
+///|
+fn canonical_paint_color(
+  hierarchy : FillHierarchy,
+  value : String,
+) -> CanonicalPaintValue {
+  match @css_color.parse_solid_color(value) {
+    Resolved(color) =>
+      { value: color.signature(), complete: true, uses_current_color: false }
+    CurrentColor =>
+      { value: "currentcolor", complete: true, uses_current_color: true }
+    SystemColor(_) => {
+      push_unique(
+        hierarchy.coverage_codes,
+        "system_color_environment_unsupported",
+      )
+      { value, complete: false, uses_current_color: false }
+    }
+    Invalid => {
+      push_unique(hierarchy.coverage_codes, paint_color_issue_code(value))
+      { value, complete: false, uses_current_color: false }
+    }
+  }
+}
+
+///|
+fn canonical_paint_fallback(
+  hierarchy : FillHierarchy,
+  fallback : PaintFallbackValue?,
+) -> CanonicalPaintValue {
+  match fallback {
+    None | Some(PaintFallbackNone) =>
+      { value: "none", complete: true, uses_current_color: false }
+    Some(PaintFallbackColor(value)) => canonical_paint_color(hierarchy, value)
+  }
+}
+
+///|
+fn canonical_paint_value(
+  hierarchy : FillHierarchy,
+  source : String,
+) -> CanonicalPaintValue {
+  match parse_paint_value(source) {
+    NoPaint => { value: "none", complete: true, uses_current_color: false }
+    SolidPaint(value) => canonical_paint_color(hierarchy, value)
+    LocalPaintServer(id, fallback) =>
+      if valid_local_paint_server(hierarchy, id) {
+        { value: "url(#\{id})", complete: true, uses_current_color: false }
+      } else {
+        canonical_paint_fallback(hierarchy, fallback)
+      }
+    ExternalPaintServer | ContextPaint => {
+      push_unique(hierarchy.coverage_codes, "paint_value_semantics_unsupported")
+      { value: source, complete: false, uses_current_color: false }
+    }
+    InvalidPaint => {
+      let normalized = source.trim().to_owned()
+      push_unique(
+        hierarchy.coverage_codes,
+        if ascii_url_start(normalized, 0) {
+          "paint_value_semantics_unsupported"
+        } else {
+          paint_color_issue_code(normalized)
+        },
+      )
+      { value: source, complete: false, uses_current_color: false }
+    }
+  }
+}
+
+///|
 fn canonical_computed_visual_value(
   hierarchy : FillHierarchy,
   property : String,
@@ -602,10 +725,7 @@ fn canonical_computed_visual_value(
 ) -> (String, Bool) {
   let value = source.trim().to_owned().to_lower()
   match property {
-    "fill" | "stroke" if value == "none" => ("none", true)
-    "fill" | "stroke" if paint_server_reference(value) is Some(_) =>
-      (value, true)
-    "color" | "fill" | "stroke" | "stop-color" =>
+    "color" | "stop-color" =>
       match @css_color.parse_solid_color(value) {
         Resolved(color) => (color.signature(), true)
         CurrentColor => (value, false)
@@ -833,10 +953,7 @@ fn computed_visual_for_index(
           hierarchy, index, property, declaration, "inherit", dependencies,
         )
       }
-      if (
-          property == "fill" || property == "stroke" || property == "stop-color"
-        ) &&
-        keyword == "currentcolor" {
+      if property == "stop-color" && keyword == "currentcolor" {
         let color = computed_visual_for_index(hierarchy, index, "color")
         append_style_dependencies(dependencies, color.dependencies)
         let resolved = color.reported.resolved_value
@@ -863,6 +980,38 @@ fn computed_visual_for_index(
         return explicit_defaulted_visual(
           hierarchy, index, property, declaration, "unset", dependencies,
         )
+      }
+      if property == "fill" || property == "stroke" {
+        let paint = canonical_paint_value(hierarchy, value)
+        let mut resolved = paint.value
+        let mut paint_complete = paint.complete
+        let resolution = if paint.uses_current_color {
+          let color = computed_visual_for_index(hierarchy, index, "color")
+          append_style_dependencies(dependencies, color.dependencies)
+          resolved = color.reported.resolved_value
+          paint_complete = paint_complete && color.complete
+          "current_color"
+        } else {
+          "local"
+        }
+        return {
+          reported: {
+            subject_id: element.subject_id,
+            property,
+            resolved_value: resolved,
+            resolution,
+            declaration_owner_id: Some(element.subject_id),
+            declaration: Some(declaration),
+            inheritance_depth: 0,
+          },
+          computed_fact: computed_fact_from_resolution(
+            property,
+            resolved,
+            Some(declaration),
+          ),
+          dependencies,
+          complete: complete && paint_complete,
+        }
       }
       let canonical = canonical_computed_visual_value(
         hierarchy, property, value,
@@ -1025,6 +1174,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   let css_document = parse_static_css_document_or_raise(input)
   let reader = @xml.NamespaceReader::from_string(input)
   let elements : Array[FillSourceElement] = []
+  let paint_server_targets : Array[PaintServerTarget] = []
   let rect_subject_ids : Array[String] = []
   let all_entity_subject_ids : Array[String] = []
   let coverage_codes : Array[String] = []
@@ -1036,6 +1186,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   for event in reader.read_events_until_eof() {
     match event.kind {
       Start(element) => {
+        record_paint_server_target(element, paint_server_targets)
         let kind = element.name.local_name
         if kind == "marker" {
           marker_depth += 1
@@ -1068,6 +1219,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
         }
       }
       Empty(element) => {
+        record_paint_server_target(element, paint_server_targets)
         let kind = element.name.local_name
         if marker_depth == 0 && fill_hierarchy_kind(kind) {
           ignore(
@@ -1109,6 +1261,7 @@ fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   }
   let hierarchy = {
     elements,
+    paint_server_targets,
     rect_subject_ids,
     all_entity_subject_ids,
     coverage_codes,
@@ -1545,7 +1698,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.18",
+    schema_version: "1.19",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
@@ -1604,6 +1757,7 @@ fn hierarchy_has_scene_computed_value_semantics(
       match computed_visual_for_subject(hierarchy, subject_id, property) {
         Some(resolution) => {
           if resolution.dependencies.any(dependency => {
+              dependency.property == "color" ||
               css_custom_property_name(dependency.property)
             }) {
             return true

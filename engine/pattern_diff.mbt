@@ -693,27 +693,43 @@ fn append_pattern_entity_differences(
       continue
     }
     for property in ["fill", "stroke"] {
-      guard paint_server_reference(
-          subject_value(before_subject, property).unwrap_or(""),
-        )
+      let before_fact = source_subject_fact(before_subject, property)
+      let after_fact = source_subject_fact(after_subject, property)
+      guard authored_paint_server_reference(before_subject, property)
         is Some(before_id) else {
         continue
       }
-      guard paint_server_reference(
-          subject_value(after_subject, property).unwrap_or(""),
-        )
+      guard authored_paint_server_reference(after_subject, property)
         is Some(after_id) else {
         continue
       }
       let before_pattern = match
-        resolve_pattern_by_id(before_document, before_id, Some(before_subject)) {
-        PatternResolved(pattern) => Some(pattern)
-        PatternUnavailable => None
+        paint_server_reference(
+          subject_value(before_subject, property).unwrap_or(""),
+        ) {
+        Some(active_id) if active_id == before_id =>
+          match
+            resolve_pattern_by_id(
+              before_document,
+              before_id,
+              Some(before_subject),
+            ) {
+            PatternResolved(pattern) => Some(pattern)
+            PatternUnavailable => None
+          }
+        _ => None
       }
       let after_pattern = match
-        resolve_pattern_by_id(after_document, after_id, Some(after_subject)) {
-        PatternResolved(pattern) => Some(pattern)
-        PatternUnavailable => None
+        paint_server_reference(
+          subject_value(after_subject, property).unwrap_or(""),
+        ) {
+        Some(active_id) if active_id == after_id =>
+          match
+            resolve_pattern_by_id(after_document, after_id, Some(after_subject)) {
+            PatternResolved(pattern) => Some(pattern)
+            PatternUnavailable => None
+          }
+        _ => None
       }
       if before_pattern is None && after_pattern is None {
         continue
@@ -735,12 +751,18 @@ fn append_pattern_entity_differences(
       }
       let before_signature = before_pattern
         .map(pattern => pattern.signature())
-        .unwrap_or("absent")
+        .unwrap_or(
+          generic_effective_paint(before_subject, property, before_fact).unwrap_or(
+            "none",
+          ),
+        )
       let after_signature = after_pattern
         .map(pattern => pattern.signature())
-        .unwrap_or("absent")
-      let before_fact = source_subject_fact(before_subject, property)
-      let after_fact = source_subject_fact(after_subject, property)
+        .unwrap_or(
+          generic_effective_paint(after_subject, property, after_fact).unwrap_or(
+            "none",
+          ),
+        )
       let changed_fact_ids = resource_fact_ids.copy()
       if declared_fact_changed(before_fact, after_fact) {
         let consumer_property = if property == "fill" {
@@ -802,14 +824,17 @@ fn append_pattern_entity_differences(
       )
       let complete = before_pattern
         .map(pattern => pattern.complete)
-        .unwrap_or(false) &&
-        after_pattern.map(pattern => pattern.complete).unwrap_or(false)
-      let missing_side = if before_pattern is None {
-        Some("before")
-      } else if after_pattern is None {
-        Some("after")
-      } else {
-        None
+        .unwrap_or(true) &&
+        after_pattern.map(pattern => pattern.complete).unwrap_or(true)
+      let evidence_layers : Array[String] = []
+      if declared_fact_changed(before_fact, after_fact) {
+        evidence_layers.push("source_semantics")
+      }
+      if complete && before_signature != after_signature {
+        evidence_layers.push("computed_appearance")
+      }
+      if rendered.status == "computed" {
+        evidence_layers.push("rendered_evidence")
       }
       let difference : AtomicDifference = {
         id: difference_id,
@@ -821,41 +846,29 @@ fn append_pattern_entity_differences(
         source_fact_before: before_fact,
         source_fact_after: after_fact,
         changed_fact_ids,
-        evidence_layers: ["computed_appearance", "rendered_evidence"],
-        computed_relation: match missing_side {
-          Some(side) =>
-            {
-              status: "not_applicable",
-              reason_code: if side == "before" {
-                "before_pattern_resource_absent"
-              } else {
-                "after_pattern_resource_absent"
-              },
-              missing_side: Some(side),
-              diagnostic_ids: [],
-            }
-          None if complete =>
-            {
-              status: if before_signature == after_signature {
-                "equivalent"
-              } else {
-                "different"
-              },
-              reason_code: if before_signature == after_signature {
-                "same_resolved_pattern_paint"
-              } else {
-                "resolved_pattern_paints_differ"
-              },
-              missing_side: None,
-              diagnostic_ids: [],
-            }
-          None =>
-            {
-              status: "indeterminate",
-              reason_code: "pattern_semantics_incomplete",
-              missing_side: None,
-              diagnostic_ids,
-            }
+        evidence_layers,
+        computed_relation: if complete {
+          {
+            status: if before_signature == after_signature {
+              "equivalent"
+            } else {
+              "different"
+            },
+            reason_code: if before_signature == after_signature {
+              "same_resolved_pattern_paint"
+            } else {
+              "resolved_pattern_paints_differ"
+            },
+            missing_side: None,
+            diagnostic_ids: [],
+          }
+        } else {
+          {
+            status: "indeterminate",
+            reason_code: "pattern_semantics_incomplete",
+            missing_side: None,
+            diagnostic_ids,
+          }
         },
         parameter_delta_css_px: None,
         presence_magnitude: None,

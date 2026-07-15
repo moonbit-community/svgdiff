@@ -152,6 +152,19 @@ test "renderer input materializes currentColor and custom-property consumers" {
 }
 
 ///|
+test "renderer input materializes the selected paint fallback branch" {
+  let missing = "<svg color='red'><rect id='box' width='4' height='4' fill='url(#missing) currentColor'/></svg>"
+  let normalized_missing = normalize_renderer_input(missing)
+  assert_true(normalized_missing.find("fill:#ff0000") is Some(_))
+  let valid = "<svg><defs><linearGradient id='g'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='4' height='4' fill='url(#g) blue'/></svg>"
+  let normalized_valid = normalize_renderer_input(valid)
+  assert_true(normalized_valid.find("fill:url(#g)") is Some(_))
+  let absent = "<svg><rect id='box' width='4' height='4' fill='url(#missing)'/></svg>"
+  let normalized_absent = normalize_renderer_input(absent)
+  assert_true(normalized_absent.find("fill:none") is Some(_))
+}
+
+///|
 test "renderer input separates sRGB channels and multiplies paint alpha" {
   let source = "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='hsla(120,100%,50%,25%)' fill-opacity='50%'/></svg>"
   let normalized = normalize_renderer_input(source)

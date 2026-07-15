@@ -945,15 +945,55 @@
       "id": "pattern-template-inheritance",
       "max_channel_delta": 255,
       "premultiplied_rgba8_rmse": 0.427687580679
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "paint-fallback-missing",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "paint-fallback-missing-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "paint-fallback-none",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "paint",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "paint-fallback-none-canonical",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/15",
-  "fixture_source_set_sha256": "7a3d3f6357a3d4c3e4d6481ca6daf54283eacc26e49d0ecc156e8eaa4f1e38b9",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/16",
+  "fixture_source_set_sha256": "4208358f20f76654bd912525c94ecc602e91fe38190b0724a01aed661b6bfc8d",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 94,
+    "cases": 98,
     "categories": {
       "alpha": {
         "cases": 9,
@@ -976,15 +1016,15 @@
         "exact": 18
       },
       "paint": {
-        "cases": 34,
+        "cases": 38,
         "divergent": 21,
-        "exact": 13
+        "exact": 17
       }
     },
     "divergent": 58,
-    "exact": 36,
+    "exact": 40,
     "exploratory": 2,
     "guarded": 46,
-    "supported": 46
+    "supported": 50
   }
 }

@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.18` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.19` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -22,8 +22,8 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | DPR | Fixed to `1.0`. |
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
-| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@1+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/15`. |
+| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@2+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/16`. |
 | Background | Transparent canvas only; no perceptual background option. |
 | Resources | No caller-supplied resource bundle and no implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -51,6 +51,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - number-or-percentage `opacity`, inherited `fill-opacity` and `stroke-opacity`, and non-inherited `stop-opacity`, with `[0,1]` clamping, continuous numeric deltas, and effective leaf or stop alpha multiplication;
 - static same-document linear and radial gradients, including recursive `href` and `xlink:href` template inheritance, all child stops, clamped monotonic offsets, sRGB stop colors and opacity, `gradientUnits`, `spreadMethod`, `gradientTransform`, default and explicit geometry, object-bounding-box and user-space consumer coordinates, degenerate paint modes, exact resource-component differences, and fill/stroke fan-out to every consumer;
 - static same-document patterns over the admitted basic-shape child slice, including recursive `href` and `xlink:href` inheritance, tile and content units, `patternTransform`, `viewBox` and `preserveAspectRatio`, zero/empty paint modes, referencing-host inheritance, child geometry/paint/transform signatures, exact resource-component differences, and fill/stroke fan-out to every consumer;
+- SVG 2 paint-server URL fallbacks for `fill` and `stroke`: valid same-document gradients and patterns select the resource, missing or wrong-kind local targets select an optional supported solid color, `currentColor`, or `none`, and an absent fallback resolves to no paint; inactive fallbacks retain source facts without computed dependencies;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
 - exact continuous parameter deltas independent of raster quantization;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;

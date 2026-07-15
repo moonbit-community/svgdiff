@@ -146,7 +146,7 @@ fn rect_coverage_report(
   let subject_id = "rect:0"
   let diagnostic_id = "diagnostic:\{code}:\{subject_id}"
   {
-    schema_version: "1.18",
+    schema_version: "1.19",
     analysis_status: "partial",
     coverage_matrix: [],
     renderer_capability_gaps: [],
@@ -291,7 +291,7 @@ fn compare_rect_declared_facts(
     })
   }
   {
-    schema_version: "1.18",
+    schema_version: "1.19",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
@@ -335,6 +335,18 @@ fn solid_rect_change_report(
     after_svg, profile,
   ) catch {
     _ => return None
+  }
+  if before_subjects.any(subject => {
+      source_subject_fact(subject, "fill")
+      .map(fact => paint_value_uses_url(fact.declared_value))
+      .unwrap_or(false)
+    }) ||
+    after_subjects.any(subject => {
+      source_subject_fact(subject, "fill")
+      .map(fact => paint_value_uses_url(fact.declared_value))
+      .unwrap_or(false)
+    }) {
+    return None
   }
   guard before_subjects is [{ kind: "rect", .. }] &&
     after_subjects is [{ kind: "rect", .. }] else {

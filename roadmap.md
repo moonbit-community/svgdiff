@@ -112,7 +112,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P1** Implement complete solid-color syntax and opacity semantics.
 - [x] **P1** Implement full linear and radial gradient semantics, including all stops, offsets, opacity, units, spread methods, transforms, inheritance, and references.
 - [x] **P1** Implement patterns and their coordinate, transform, viewport, and reference semantics.
-- [ ] **P1** Implement paint fallback lists and missing-paint-server behavior.
+- [x] **P1** Implement paint fallback lists and missing-paint-server behavior.
 - [ ] **P1** Implement `paint-order`, fill rules, clip rules, and inherited paint dependencies.
 
 ### Structure, reuse, and resources

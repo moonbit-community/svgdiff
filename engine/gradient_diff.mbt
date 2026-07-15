@@ -857,28 +857,49 @@ fn append_gradient_entity_differences(
       continue
     }
     for property in ["fill", "stroke"] {
-      let before_value = subject_value(before_subject, property).unwrap_or("")
-      let after_value = subject_value(after_subject, property).unwrap_or("")
-      guard paint_server_reference(before_value) is Some(before_id) else {
+      let source_fact_before = source_subject_fact(before_subject, property)
+      let source_fact_after = source_subject_fact(after_subject, property)
+      guard authored_paint_server_reference(before_subject, property)
+        is Some(before_id) else {
         continue
       }
-      guard paint_server_reference(after_value) is Some(after_id) else {
+      guard authored_paint_server_reference(after_subject, property)
+        is Some(after_id) else {
         continue
       }
-      guard resolve_gradient_by_id(
-          before_document,
-          before_id,
-          Some(before_subject),
-        )
-        is GradientResolved(before_gradient) else {
-        continue
+      let before_gradient = match
+        paint_server_reference(
+          subject_value(before_subject, property).unwrap_or(""),
+        ) {
+        Some(active_id) if active_id == before_id =>
+          match
+            resolve_gradient_by_id(
+              before_document,
+              before_id,
+              Some(before_subject),
+            ) {
+            GradientResolved(gradient) => Some(gradient)
+            GradientUnavailable => None
+          }
+        _ => None
       }
-      guard resolve_gradient_by_id(
-          after_document,
-          after_id,
-          Some(after_subject),
-        )
-        is GradientResolved(after_gradient) else {
+      let after_gradient = match
+        paint_server_reference(
+          subject_value(after_subject, property).unwrap_or(""),
+        ) {
+        Some(active_id) if active_id == after_id =>
+          match
+            resolve_gradient_by_id(
+              after_document,
+              after_id,
+              Some(after_subject),
+            ) {
+            GradientResolved(gradient) => Some(gradient)
+            GradientUnavailable => None
+          }
+        _ => None
+      }
+      if before_gradient is None && after_gradient is None {
         continue
       }
       let before_group = gradient_group_for_id(groups, before_id)
@@ -903,10 +924,20 @@ fn append_gradient_entity_differences(
           }
         }
       }
-      let before_signature = before_gradient.signature()
-      let after_signature = after_gradient.signature()
-      let source_fact_before = source_subject_fact(before_subject, property)
-      let source_fact_after = source_subject_fact(after_subject, property)
+      let before_signature = before_gradient
+        .map(gradient => gradient.signature())
+        .unwrap_or(
+          generic_effective_paint(before_subject, property, source_fact_before).unwrap_or(
+            "none",
+          ),
+        )
+      let after_signature = after_gradient
+        .map(gradient => gradient.signature())
+        .unwrap_or(
+          generic_effective_paint(after_subject, property, source_fact_after).unwrap_or(
+            "none",
+          ),
+        )
       let source_changed = declared_fact_changed(
         source_fact_before, source_fact_after,
       )
@@ -918,9 +949,13 @@ fn append_gradient_entity_differences(
       let diagnostic_ids = gradient_issue_ids_for_subject(
         before_document,
         after_document,
-        before_gradient.template_chain + after_gradient.template_chain,
+        before_gradient.map(gradient => gradient.template_chain).unwrap_or([]) +
+        after_gradient.map(gradient => gradient.template_chain).unwrap_or([]),
       )
-      let complete = before_gradient.complete && after_gradient.complete
+      let complete = before_gradient
+        .map(gradient => gradient.complete)
+        .unwrap_or(true) &&
+        after_gradient.map(gradient => gradient.complete).unwrap_or(true)
       let relation : ComputedRelation = if complete {
         {
           status: if before_signature == after_signature {

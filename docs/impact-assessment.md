@@ -1,10 +1,10 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: current schema `1.18` contract
+Status: current schema `1.19` contract
 
 Last verified: 2026-07-14
 
-Schema `1.18` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
+Schema `1.19` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
 
 - `AtomicDifference.magnitude` for continuous parameter, relative, device-space, viewport-relative, presence, and raster observations;
 - optional tagged `AtomicDifference.magnitude.transform_effect` for raw translation, rotation, signed-scale, skew, or singular residual-matrix effects;

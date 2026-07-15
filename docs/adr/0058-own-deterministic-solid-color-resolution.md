@@ -20,4 +20,4 @@ At the renderer boundary, `css-color3-opacity-normalizer@1` writes canonical opa
 
 Equivalent authored color spellings can be reported as source differences with one computed value and zero rendered change. Opacity changes retain continuous numeric deltas even when raster evidence is guarded. Invalid color syntax, system colors, and out-of-profile color functions produce separate source-located Diagnostics.
 
-The supported slice does not include system palette selection, CSS Color 4 functional syntax beyond alpha hex, wide-gamut conversion, ICC profiles, perceptual backgrounds, group isolation, paint-server fallback lists, or complete gradient interpolation. Those remain explicit roadmap work.
+The supported slice does not include system palette selection, CSS Color 4 functional syntax beyond alpha hex, wide-gamut conversion, ICC profiles, perceptual backgrounds, group isolation, or complete gradient interpolation. Paint-server URL fallbacks are now resolved separately by [ADR 0061](0061-select-svg-paint-fallbacks-before-resource-mediation.md).

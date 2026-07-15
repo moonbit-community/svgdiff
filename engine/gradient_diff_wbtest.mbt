@@ -111,6 +111,26 @@ test "one changed gradient reaches every fill and stroke consumer" {
 }
 
 ///|
+test "gradient resource insertion replaces the active paint fallback" {
+  let before = "<svg><rect id='box' width='8' height='8' fill='url(#g) red'/></svg>"
+  let after = "<svg><defs><linearGradient id='g'><stop stop-color='blue'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#g) red'/></svg>"
+  let report = gradient_report(before, after)
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "resource.gradient.presence" &&
+      difference.computed_relation.missing_side == Some("before")
+    }),
+  )
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "paint.fill" &&
+      difference.computed_relation.status == "different" &&
+      difference.computed_relation.missing_side is None
+    }),
+  )
+}
+
+///|
 test "invalid gradient semantics are located and indeterminate" {
   let before = "<svg><defs><linearGradient id='a' href='external.svg#g' x2='bad'><stop stop-color='red'/></linearGradient></defs><rect id='box' width='8' height='8' fill='url(#a)'/></svg>"
   let after = before.replace_all(old="x2='bad'", new="x2='worse'")

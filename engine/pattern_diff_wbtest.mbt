@@ -266,8 +266,8 @@ test "pattern resource insertion reaches its existing paint consumer" {
     report.atomic_differences.any(diff => {
       diff.domain == "paint.fill" &&
       diff.subject_alignment_id == Some("alignment:0") &&
-      diff.computed_relation.status == "not_applicable" &&
-      diff.computed_relation.missing_side == Some("before")
+      diff.computed_relation.status == "different" &&
+      diff.computed_relation.missing_side is None
     }),
   )
 }

@@ -488,21 +488,24 @@ test "root svg opacity is preserved as a source difference" {
 }
 
 ///|
-test "unsupported local paint values reduce coverage" {
-  let source = shape_svg(
+test "missing local paint server without fallback computes to no paint" {
+  let before = shape_svg(
     "<rect x='1' y='1' width='8' height='8' fill='url(#gradient)'/>",
   )
+  let after = shape_svg("<rect x='1' y='1' width='8' height='8' fill='none'/>")
   let report = @engine.compare(
-    source,
-    source,
+    before,
+    after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.analysis_status, "partial")
+  assert_eq(report.analysis_status, "complete")
   assert_true(
-    report.diagnostics.any(diagnostic => {
-      diagnostic.code == "paint_value_semantics_unsupported"
+    report.atomic_differences.any(difference => {
+      difference.domain == "paint.fill" &&
+      difference.computed_relation.status == "equivalent"
     }),
   )
+  assert_true(report.diagnostics.is_empty())
 }
 
 ///|

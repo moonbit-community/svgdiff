@@ -53,6 +53,13 @@
       "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
     },
     {
+      "id": "mutate-missing-paint-fallback",
+      "template": "templates/rect-fill.svg.tmpl",
+      "before_value": "url(#missing) red", "after_value": "url(#missing) blue",
+      "expected_changed_fact": { "subject_kind": "rect", "source_property": "fill", "report_property": "fill", "before_declared_value": "url(#missing) red", "after_declared_value": "url(#missing) blue", "affected_subject_ids": ["box"] },
+      "viewport": { "width": 16, "height": 16 }, "expected_analysis_status": "complete"
+    },
+    {
       "id": "mutate-rect-equivalent-color-syntax",
       "template": "templates/rect-fill.svg.tmpl",
       "before_value": "red", "after_value": "hsl(0,100%,50%)",
