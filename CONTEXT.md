@@ -2,7 +2,7 @@
 
 Status: current orientation
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 ## Terminal goal
 
@@ -10,7 +10,7 @@ Last verified: 2026-07-14
 
 ## Current state
 
-The repository contains a production comparison engine for a narrow deterministic static-SVG subset, a stable JSON report schema at version `1.8`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine. The current slice includes canonical unitless used geometry for the six basic shapes, strict SVG transform and viewport parsing, cumulative affine matrices, and typed canonical transform effects. Invalid shape geometry is source-located and cannot produce false equality; rounded-rectangle and polygon rasterization, general affine transforms, non-integer viewport mappings, and resource transforms remain explicitly guarded.
+The repository contains a production comparison engine for a bounded deterministic static-SVG subset, Structured Report schema `1.24`, a native CLI, and an optional self-contained HTML presentation. It is not a general SVG or browser-equivalence engine. Current support includes authored and used geometry, transforms and viewports, the static author cascade and inheritance, solid paint, gradients, patterns, paint fallbacks and rules, structural/use-instance semantics, a typed resource graph, and bounded PNG/JPEG image evidence from data URLs or exact caller-supplied bundles. Unsupported compositing, effects, fonts, dynamic behavior, nested SVG images, and final raster-image composition remain explicitly guarded or deferred.
 
 The engine deliberately reports three evidence layers separately:
 

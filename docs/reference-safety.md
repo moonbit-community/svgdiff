@@ -1,12 +1,12 @@
 # Local Reference Safety
 
-Status: current module `0.5.3` and schema `1.23` admission contract
+Status: current module `0.5.4` and schema `1.24` admission contract
 
 Last verified: 2026-07-15
 
 SVG references can consume far more work than their source size suggests. A definition DAG is acyclic, yet each definition can contain several `<use>` instances of the next definition. If every level repeats the previous level twice, the authored graph grows linearly while renderer instance count grows exponentially. The ordinary element and reference limits bound the source graph, not that transitive cloning cost.
 
-The engine therefore builds one conservative typed resource-dependency graph from the same namespace-aware, already bounded XML event stream before invoking `mizchi/svg`. The graph is both the source-level topology seam for later semantic passes and the admission guard used below; it is not a complete SVG resource resolver.
+The engine therefore builds one conservative typed resource-dependency graph from the same namespace-aware, already bounded XML event stream before invoking `mizchi/svg`. The graph is both the source-level topology seam for later semantic passes and the admission guard used below; it is not a complete SVG resource resolver. Separately supplied raster bundles do not mutate graph topology: an external `image` locator remains an external graph edge, then the image semantic pass may resolve that exact opaque locator against the corresponding before/after bundle.
 
 ## Accepted edge grammar
 

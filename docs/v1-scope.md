@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.23` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.24` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -25,7 +25,7 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1`. |
 | Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/20`. |
 | Background | Transparent canvas only; no perceptual background option. |
-| Resources | Bounded 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs on `image`; no caller-supplied bundle, path loading, or implicit network fetching. |
+| Resources | Bounded 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied `image` bundles; no SVG-authored path loading or implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
 | Fonts | No deterministic font environment or font-dependent completeness claim. |
 
@@ -81,7 +81,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Referenced pattern rasterization | Complete admitted static source/computed resource semantics, every fill/stroke consumer outcome, and a pinned-renderer measurement | Six focused browser fixtures remain guarded by `renderer_pattern_raster_unproven`, which limits only Rendered Evidence. |
 | Pattern content outside the admitted static child slice | Exact authored declarations, Source Spans, and every independently resolved tile, viewport, template, child, or consumer fact | Dynamic content, arbitrary child resources, visible overflow, malformed coordinates, external or cyclic references, and unavailable object bounds retain precise `pattern_*` Diagnostics instead of false equality. |
 | Embedded PNG or JPEG final compositing | Exact locator provenance, compact hashes, decoded RGBA8 content, intrinsic metrics, supported placement facts, and conservative bounds | The pinned renderer does not composite these resources; `renderer_embedded_raster_unavailable` limits Rendered Evidence for the scene. |
-| Invalid, unsupported, external, or nested-SVG image content | Exact locator Source Span and any independently supported placement fact | `embedded_raster_data_invalid`, `embedded_raster_media_type_unsupported`, `external_raster_resource_unsupported`, or image placement/instance Diagnostics prevent false equality; no locator is fetched or read as a path. |
+| Missing, invalid, unsupported, or nested-SVG image content | Exact locator Source Span and any independently supported placement fact | `resource_bundle_entry_missing`, `embedded_raster_data_invalid`, `embedded_raster_media_type_unsupported`, `embedded_raster_variant_unsupported`, or image placement/instance Diagnostics prevent false equality; no locator is fetched or read as a path. |
 | Clip-path resource construction and host application | Exact `clip-rule` declarations, inherited owners, affected clip-path children, Source Spans, and independently supported child geometry | `clip_path_semantics_unsupported` prevents the inherited winding rule from implying complete clipping geometry, host application, bounds, or raster evidence. |
 | Active paint order involving markers | Expanded order and independently supported fill/stroke/marker attachment facts | Marker child paint and compositing remain deferred, so `marker_content_semantics_unsupported` prevents complete ordering claims. |
 | Invalid or unresolved gradient semantics | Exact authored declarations, Source Spans, and every independently resolved resource or consumer fact | Dedicated Diagnostics distinguish external/invalid references, cycles, dynamic content, malformed offsets/lengths/units/spread/transforms, missing object bounds, and non-sRGB interpolation instead of treating all paint servers as one gap. |
@@ -116,13 +116,13 @@ V1 does not completely analyze:
 
 - scripts, event-driven state, or animation timelines;
 - static `foreignObject` through an HTML/CSS layout engine;
-- implicit network resources, local-path loading, or caller-supplied resource bundles;
+- implicit network resources or treating SVG-authored locators as local paths;
 - complete path semantics, including transformed geometry, continuous-curve boundary distance, and browser-conformant stroke and paint evaluation;
 - precise transform-aware bounds and localization beyond the conservative whole-scene outcome regions;
 - automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, or dynamic viewport variants; object-bounding-box coordinates are implemented only for static gradient consumers;
 - CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization;
 - selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system palette selection, or custom-property syntax outside the admitted balanced subset;
-- external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, embedded SVG images, external images, final raster-image compositing, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, external use documents, or dynamic instance-tree behavior;
+- external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, embedded SVG images, unbundled or unsupported external images, final raster-image compositing, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, external use documents, or dynamic instance-tree behavior;
 - complete clip-path resource construction and host application, masking, filters, blending, isolation, and complete group compositing;
 - deterministic fonts, shaping, text layout, and glyph rasterization;
 - perceptual backgrounds, FLIP, SSIM, learned perceptual metrics, and advanced color profiles;

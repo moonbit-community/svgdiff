@@ -2,7 +2,9 @@
 test "CLI parses paths viewport and output" {
   let config = parse_cli([
     "svgdiff", "before.svg", "after.svg", "--width", "32", "--height", "24", "--output",
-    "report.json", "--html", "report.html", "--agent-json",
+    "report.json", "--html", "report.html", "--agent-json", "--before-resource",
+    "asset.png", "image/png", "before.png", "--after-resource", "asset.png", "image/png",
+    "after.png",
   ])
   match config {
     Config(config) => {
@@ -13,6 +15,12 @@ test "CLI parses paths viewport and output" {
       assert_eq(config.output_path, Some("report.json"))
       assert_eq(config.html_path, Some("report.html"))
       assert_true(config.agent_json)
+      assert_eq(config.before_resources.length(), 1)
+      assert_eq(config.before_resources[0].locator, "asset.png")
+      assert_eq(config.before_resources[0].media_type, "image/png")
+      assert_eq(config.before_resources[0].path, "before.png")
+      assert_eq(config.after_resources.length(), 1)
+      assert_eq(config.after_resources[0].path, "after.png")
     }
     Invalid(message) => fail("expected valid CLI configuration: \{message}")
   }
@@ -36,6 +44,18 @@ test "CLI rejects missing and invalid arguments" {
     parse_cli(["svgdiff", "a.svg", "b.svg", "--unknown", "x"]) is Invalid(_),
   )
   assert_true(parse_cli(["svgdiff", "-", "-"]) is Invalid(_))
+  assert_true(
+    parse_cli([
+      "svgdiff", "a.svg", "b.svg", "--before-resource", "asset", "image/png",
+    ])
+    is Invalid(_),
+  )
+  assert_true(
+    parse_cli([
+      "svgdiff", "a.svg", "b.svg", "--before-resource", "asset", "image/png", "-",
+    ])
+    is Invalid(_),
+  )
 }
 
 ///|
@@ -63,6 +83,9 @@ test "CLI help documents options and exit statuses" {
   assert_true(help.contains("--width N"))
   assert_true(help.contains("--height N"))
   assert_true(help.contains("--output FILE"))
+  assert_true(help.contains("--before-resource LOCATOR MEDIA_TYPE FILE"))
+  assert_true(help.contains("--after-resource LOCATOR MEDIA_TYPE FILE"))
+  assert_true(help.contains("read only when named"))
   assert_true(help.contains("--html FILE"))
   assert_true(help.contains("--agent-json"))
   assert_true(help.contains("--help"))
@@ -75,6 +98,6 @@ test "CLI help documents options and exit statuses" {
 test "CLI version exposes every contract identity" {
   assert_eq(
     version_text(),
-    "svgdiff 0.5.3\nengine: 0.5.3\nschema: 1.23\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/20\nordering-policy: v2_domain_lexicographic",
+    "svgdiff 0.5.4\nengine: 0.5.4\nschema: 1.24\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/20\nordering-policy: v2_domain_lexicographic",
   )
 }

@@ -293,6 +293,7 @@ fn attach_feature_coverage(
   report : StructuredReport,
   before_svg : String,
   after_svg : String,
+  resources : ComparisonResourceBundles,
   limits : ResourceLimits,
 ) -> StructuredReport {
   if report.analysis_status == "failed" {
@@ -329,6 +330,7 @@ fn attach_feature_coverage(
   let before_images = extract_embedded_image_subjects_or_raise(
     before_svg,
     report.profile,
+    resources.before,
     limits,
   ) catch {
     _ => []
@@ -336,6 +338,7 @@ fn attach_feature_coverage(
   let after_images = extract_embedded_image_subjects_or_raise(
     after_svg,
     report.profile,
+    resources.after,
     limits,
   ) catch {
     _ => []

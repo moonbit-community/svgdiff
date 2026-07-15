@@ -70,6 +70,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0064](0064-report-only-consequence-aware-structural-relationships.md) | Accepted, implemented for the admitted aligned-subject slice | Report structural relationships only when they have an admitted computed, resolution, or stacking consequence. |
 | [0065](0065-use-one-private-typed-resource-dependency-graph.md) | Accepted, implemented for the bounded static source grammar | Use one private typed graph for resource topology, reachability, cycle safety, and use-expansion accounting. |
 | [0066](0066-decode-embedded-rasters-under-a-bounded-no-io-policy.md) | Accepted, implemented for an explicit PNG/baseline-JPEG subset | Decode bounded embedded rasters into intrinsic evidence without claiming final-canvas rendering. |
+| [0067](0067-resolve-only-explicit-caller-supplied-raster-bundles.md) | Accepted, implemented for PNG/JPEG `image` consumers | Resolve only exact caller-supplied resource bytes and retain a zero-implicit-I/O engine boundary. |
 
 ## CLI and distribution decisions
 

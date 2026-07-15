@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-15
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.23`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.24`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -34,7 +34,7 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 - Namespace-aware UTF-16 Source Spans allow parse failures and authored facts to be localized without reparsing untrusted text through a second XML implementation.
 - Unsupported SVG elements, attributes, CSS, resources, and dynamic behavior reduce analysis coverage through Diagnostics rather than being executed or treated as equality.
 - The comparison engine performs no implicit network fetches.
-- Embedded raster loading admits only an explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data-URL subset, validates MIME, signatures, decoder progress, scan/table bounds, and unsupported pixel-affecting variants, bounds source bytes, decoded bytes, dimensions, pixels, cumulative pixels, and PNG decompression output, and never reads a locator as a path. Serialized reports retain hashes and Source Spans rather than payloads.
+- Embedded raster loading admits only an explicit 8-bit non-interlaced PNG and single-scan baseline JPEG subset from data URLs or caller-supplied exact-match bundles. It validates bundle configuration, MIME, signatures, decoder progress, scan/table bounds, and unsupported pixel-affecting variants; bounds URI bytes, entry count, per-entry and cumulative bytes, dimensions, pixels, cumulative pixels, and PNG decompression output; and never reads a locator as a path. Serialized reports retain hashes and Source Spans rather than payloads or caller file paths.
 - Fixed [comparison resource limits](resource-limits.md) bound UTF-8 input bytes, XML elements and nesting, path-data work, references, raster dimensions, Difference Regions, and built-in JSON output. An overrun returns a bounded failed report rather than a truncated inventory.
 - The project-owned [local-reference guard](reference-safety.md) rejects cycles and saturates transitive `<use>` expansion before the pinned renderer can clone the graph.
 
@@ -49,13 +49,13 @@ All resolved manifests declare Apache-2.0, but three installed package archives 
 
 ### CLI and data access
 
-- The CLI reads only the two paths explicitly supplied by the caller and writes only explicitly requested JSON or HTML paths.
+- The CLI reads the two SVG paths plus only resource files named by repeatable `--before-resource LOCATOR MEDIA_TYPE FILE` or `--after-resource LOCATOR MEDIA_TYPE FILE` triplets, and writes only explicitly requested JSON or HTML paths. A resource path supplies bytes and never becomes locator identity or report evidence.
 - Invalid arguments and file I/O errors exit with status `2`; malformed SVG analysis exits with status `1`.
 - A partial report is returned successfully so Diagnostics remain machine-readable.
 
 ## Known security gaps
 
-Schema `1.23` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.24` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;

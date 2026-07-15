@@ -10,9 +10,9 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.3` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.23` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.23` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.4` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.24` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.24` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/20` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, and Rendered Evidence claims. |
 
@@ -81,6 +81,8 @@ Module `0.5.1` adds consequence-aware structural attribution over the admitted r
 Module `0.5.2` replaces the admission-only boolean reference graph with one private typed source-level graph spanning gradients, patterns, markers, clips, masks, filters, symbols, images, use instances, URL-bearing attributes, and static stylesheet text. Nodes, relationship kinds, locator states, exact reference spans, duplicate-ID-conservative forward/reverse reachability, cycle rejection, and use-expansion accounting now share one topology. A local image-resource cycle reuses the existing `reference_cycle_detected` contract. Public declarations, report fields and meanings, Diagnostic meanings, renderer behavior, conformance profile `/19`, schema `1.22`, and v2 ordering tuples remain unchanged.
 
 Module `0.5.3` admits explicitly typed 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs on `image` under fixed source-byte, decoded-byte, dimension, per-image pixel, cumulative-pixel, and PNG decompression limits. Unsupported pixel-affecting PNG variants and JPEG scan or sampling modes receive `embedded_raster_variant_unsupported` instead of approximate pixels. The module preserves exact locator Source Spans while serializing compact hashes, separates source encoding, decoded RGBA8 content, intrinsic dimensions, placement, and presence, and adds optional `DifferenceMagnitude.intrinsic_raster` with resource-local pixel metrics. That additive field and the image Diagnostic boundary advance Structured Report schema to `1.23`. Two Chromium fixtures prove that the pinned renderer omits admitted PNG and JPEG content, allocating `renderer_embedded_raster_unavailable` and advancing conformance to `/20`; intrinsic metrics are never substituted for final-canvas Rendered Evidence. Public comparison operations and v2 ordering policy identity remain unchanged.
+
+Module `0.5.4` adds `ResourceBundle`, `ResourceBundleEntry`, `compare_with_resources`, and `compare_with_control_and_resources`, plus repeatable before/after CLI resource triplets. Bundle locators are exact opaque keys and only explicit PNG/JPEG bytes reach the existing bounded decoder; the engine never reads paths or fetches URLs. Missing entries, invalid bundle configuration, and bundle budgets add stable Diagnostic conditions, advancing Structured Report schema to `1.24`. The report shape, intrinsic metric meaning, renderer identity, conformance profile `/20`, and v2 ordering policy remain unchanged.
 
 ## Structured Report schema versions
 

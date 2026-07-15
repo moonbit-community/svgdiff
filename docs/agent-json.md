@@ -1,6 +1,6 @@
 # Compact Agent JSON
 
-Status: current schema `1.23` serialization mode
+Status: current schema `1.24` serialization mode
 
 Last verified: 2026-07-14
 
@@ -20,6 +20,6 @@ The retained Comparison Profile includes `renderer_conformance_profile_id`. Cons
 
 The retained `renderer_capability_gaps` array is encountered-input metadata. An empty array is not a global renderer support claim. Every current Subject Alignment also retains its selection `evidence`, including local ambiguity and explicit uncalibrated confidence status.
 
-Schema `1.23` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
+Schema `1.24` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
 
 An agent should still follow the [Text-Only Agent Report Guide](agent-report-guide.md). Any future derived summary, field projection, or importance policy requires its own versioned contract and must remain traceable to this complete evidence.

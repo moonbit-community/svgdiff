@@ -14,8 +14,9 @@ Last verified: 2026-07-14
 | `cat before.svg \| svgdiff - after.svg` | Read the before SVG from stdin. |
 | `cat after.svg \| svgdiff before.svg -` | Read the after SVG from stdin. |
 | `svgdiff - -` | Invalid: one stdin stream cannot supply two independently bounded documents. |
+| `svgdiff before.svg after.svg --before-resource asset.png image/png before.png --after-resource asset.png image/png after.png` | Supply exact-match bytes for `asset.png` independently on each side. |
 
-Missing positional operands never imply stdin. The command reads the complete stream before comparison, then the engine applies the fixed per-source UTF-8 budget before XML parsing. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and CLI cancellation remain future work. Cooperative controls are available only to callers of the MoonBit library.
+Missing positional operands never imply stdin. Resource options are repeatable `LOCATOR MEDIA_TYPE FILE` triplets; their file operand may not be `-`. The CLI reads only those explicitly named resource files, and the engine treats each locator as an opaque key rather than opening it as a path. The command reads the complete SVG stream and explicit resource files before comparison, then the engine applies the fixed source and bundle budgets before XML or image analysis. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and CLI cancellation remain future work. Cooperative controls are available only to callers of the MoonBit library.
 
 ## Outputs
 

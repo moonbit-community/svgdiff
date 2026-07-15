@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.23")
+  assert_eq(report.schema_version, "1.24")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.23", "events": [_], .. } => ()
+    { "schema_version": "1.24", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.23", "events": [_], .. } => ()
+    { "schema_version": "1.24", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -40,6 +40,62 @@ test "root package exposes typed transform magnitudes" {
   match effect {
     TranslationEffect(value) => assert_eq(value.norm_css_px, 2.0)
     _ => fail("root transform effect constructor changed")
+  }
+}
+
+///|
+test "root package exposes explicit resource bundles without implicit loading" {
+  let source = "<svg xmlns='http://www.w3.org/2000/svg'><image href='asset.png'/></svg>"
+  let empty = @svgdiff.ResourceBundle::empty()
+  let report = @svgdiff.compare_with_resources(
+    source,
+    source,
+    @svgdiff.ComparisonProfile::v1_default(),
+    empty,
+    empty,
+  )
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "resource_bundle_entry_missing" &&
+      !diagnostic.source_locations.is_empty()
+    }),
+  )
+  let entry : @svgdiff.ResourceBundleEntry = {
+    locator: "asset.png",
+    media_type: "image/png",
+    bytes: Bytes::default(),
+  }
+  let invalid = @svgdiff.compare_with_resources(
+    source,
+    source,
+    @svgdiff.ComparisonProfile::v1_default(),
+    { entries: [entry] },
+    empty,
+  )
+  assert_true(
+    invalid.diagnostics.any(diagnostic => {
+      diagnostic.code == "embedded_raster_data_invalid"
+    }),
+  )
+}
+
+///|
+test "root controlled resource API preserves typed cancellation" {
+  let source = "<svg xmlns='http://www.w3.org/2000/svg'><image href='asset.png'/></svg>"
+  try
+    @svgdiff.compare_with_control_and_resources(
+      source,
+      source,
+      @svgdiff.ComparisonProfile::v1_default(),
+      @svgdiff.ResourceBundle::empty(),
+      @svgdiff.ResourceBundle::empty(),
+      { should_cancel: () => true, max_elapsed_milliseconds: None },
+    )
+  catch {
+    Cancelled => ()
+    _ => fail("expected cancellation")
+  } noraise {
+    _ => fail("cancelled resource comparison returned a report")
   }
 }
 

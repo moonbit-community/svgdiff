@@ -11,6 +11,10 @@ pub fn compare(String, String, @engine.ComparisonProfile) -> @engine.StructuredR
 
 pub fn compare_with_control(String, String, @engine.ComparisonProfile, @engine.ComparisonControl) -> @engine.StructuredReport raise ComparisonInterrupted
 
+pub fn compare_with_control_and_resources(String, String, @engine.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle, @engine.ComparisonControl) -> @engine.StructuredReport raise ComparisonInterrupted
+
+pub fn compare_with_resources(String, String, @engine.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle) -> @engine.StructuredReport
+
 pub fn render_html_report(String, String, @engine.StructuredReport) -> String
 
 // Errors
@@ -63,6 +67,10 @@ pub using @engine {type RendererCapabilityGap}
 pub using @engine {type ReportSourceSpan}
 
 pub using @engine {type ResolvedVisualFact}
+
+pub using @engine {type ResourceBundle}
+
+pub using @engine {type ResourceBundleEntry}
 
 pub using @engine {type SourceResolutionPair}
 

@@ -809,6 +809,7 @@ fn attach_difference_regions(
   before_svg : String,
   after_svg : String,
   alignments : Array[SubjectAlignment],
+  resources : ComparisonResourceBundles,
   limits : ResourceLimits,
   comparison_guard : ComparisonGuard,
 ) -> DifferenceRegionAttachment raise ComparisonInterrupted {
@@ -828,6 +829,7 @@ fn attach_difference_regions(
   let before_images = extract_embedded_image_subjects_or_raise(
     before_svg,
     report.profile,
+    resources.before,
     limits,
   ) catch {
     _ => []
@@ -835,6 +837,7 @@ fn attach_difference_regions(
   let after_images = extract_embedded_image_subjects_or_raise(
     after_svg,
     report.profile,
+    resources.after,
     limits,
   ) catch {
     _ => []

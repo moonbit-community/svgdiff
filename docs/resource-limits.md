@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.5.3` and schema `1.23` contract
+Status: current module `0.5.4` and schema `1.24` contract
 
 Last verified: 2026-07-15
 
@@ -21,6 +21,9 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | Embedded raster bytes | Each admitted PNG or JPEG | 4,194,304 | Decoded resource-file bytes before image decoding |
 | Embedded raster dimensions | Each admitted PNG or JPEG | 8,192 per axis | Validated intrinsic width and height before normalized RGBA8 allocation |
 | Embedded raster pixels | Each image and cumulatively per SVG | 16,777,216 | Validated intrinsic width times height; cumulative total counts every admitted image occurrence |
+| Resource bundle entries | Each before or after bundle | 1,024 | Ordered caller-supplied locator records validated before source analysis |
+| Resource bundle entry bytes | Each supplied entry | 4,194,304 | Caller-supplied bytes before signature validation or image decoding |
+| Resource bundle bytes | Each before or after bundle | 16,777,216 | Sum of every supplied entry, including entries not referenced by the SVG |
 | PNG decompression output | Each admitted PNG | Exact validated scanline length | Filter bytes plus encoded scanline bytes derived from IHDR dimensions, bit depth, and color type |
 | Raster dimensions | Comparison Profile | 8,192 per axis and 16,777,216 total pixels | Positive viewport width, height, and their product before any render |
 | Difference Regions | Whole report | 65,536 | Connected pixel regions and event-attached computed or pixel regions |
@@ -65,4 +68,4 @@ The public [`compare_with_control`](library-api.md) operation adds cooperative c
 
 ## Executable evidence
 
-[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report and exit-status behavior.
+[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt) covers bundle entry-count, per-entry-byte, cumulative-byte, configuration, and decoder boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report, explicit resource-file, and exit-status behavior.

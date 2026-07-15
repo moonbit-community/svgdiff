@@ -1,5 +1,6 @@
 ///|
 priv struct DecodedEmbeddedRaster {
+  source_kind : String
   media_type : String
   encoding : String
   encoded_bytes : Int
@@ -16,7 +17,7 @@ priv enum EmbeddedRasterDecodeResult {
   EmbeddedRasterUnsupported(String)
   EmbeddedRasterInvalid(String)
   EmbeddedRasterLimitExceeded(String)
-  EmbeddedRasterExternal
+  EmbeddedRasterBundleMissing
 }
 
 ///|
@@ -25,10 +26,62 @@ fn raster_sha256(bytes : Bytes) -> String {
 }
 
 ///|
+fn decode_raster_bytes(
+  bytes : Bytes,
+  media_type : String,
+  source_kind : String,
+  encoding : String,
+  max_bytes : Int,
+  max_dimension : Int,
+  max_pixels : Int,
+) -> EmbeddedRasterDecodeResult {
+  if bytes.length() > max_bytes {
+    return EmbeddedRasterLimitExceeded(
+      if source_kind == "data" {
+        "embedded_raster_data_bytes"
+      } else {
+        "resource_bundle_entry_bytes"
+      },
+    )
+  }
+  let image = try {
+    if media_type == "image/png" {
+      @raster_codec.decode_png_bounded(bytes, max_dimension~, max_pixels~)
+    } else {
+      @raster_codec.decode_jpeg_bounded(bytes, max_dimension~, max_pixels~)
+    }
+  } catch {
+    DecodeLimitExceeded(dimension) =>
+      return EmbeddedRasterLimitExceeded(dimension)
+    InvalidSignature(_) =>
+      return EmbeddedRasterInvalid("embedded_raster_signature_mismatch")
+    UnsupportedFeature(_) =>
+      return EmbeddedRasterUnsupported("embedded_raster_variant_unsupported")
+    _ => return EmbeddedRasterInvalid("embedded_raster_decode_failed")
+  }
+  if image.data.length() != image.width * image.height * 4 {
+    return EmbeddedRasterInvalid("embedded_raster_rgba8_length_invalid")
+  }
+  EmbeddedRasterDecoded({
+    source_kind,
+    media_type,
+    encoding,
+    encoded_bytes: bytes.length(),
+    encoded_sha256: raster_sha256(bytes),
+    width: image.width,
+    height: image.height,
+    rgba8: image.data,
+    rgba8_sha256: raster_sha256(image.data),
+  })
+}
+
+///|
 fn decode_embedded_raster(
   authored : String,
+  bundle : ResourceBundle,
   max_data_uri_bytes : Int,
   max_data_bytes : Int,
+  max_bundle_entry_bytes : Int,
   max_dimension : Int,
   max_pixels : Int,
 ) -> EmbeddedRasterDecodeResult {
@@ -39,53 +92,33 @@ fn decode_embedded_raster(
     return EmbeddedRasterLimitExceeded("embedded_raster_data_uri_bytes")
   }
   match parse_embedded_raster_data_url(source) {
-    NotEmbeddedRasterDataUrl => EmbeddedRasterExternal
+    NotEmbeddedRasterDataUrl =>
+      match resource_bundle_entry(bundle, source) {
+        None => EmbeddedRasterBundleMissing
+        Some(entry) =>
+          decode_raster_bytes(
+            entry.bytes,
+            normalized_bundle_media_type(entry.media_type),
+            "bundle",
+            "caller_supplied",
+            max_bundle_entry_bytes,
+            max_dimension,
+            max_pixels,
+          )
+      }
     EmbeddedRasterDataUrlUnsupported(reason) =>
       EmbeddedRasterUnsupported(reason)
     EmbeddedRasterDataUrlInvalid(reason) => EmbeddedRasterInvalid(reason)
-    EmbeddedRasterDataUrlAccepted(data_url) => {
-      if data_url.bytes.length() > max_data_bytes {
-        return EmbeddedRasterLimitExceeded("embedded_raster_data_bytes")
-      }
-      let image = try {
-        if data_url.media_type == "image/png" {
-          @raster_codec.decode_png_bounded(
-            data_url.bytes,
-            max_dimension~,
-            max_pixels~,
-          )
-        } else {
-          @raster_codec.decode_jpeg_bounded(
-            data_url.bytes,
-            max_dimension~,
-            max_pixels~,
-          )
-        }
-      } catch {
-        DecodeLimitExceeded(dimension) =>
-          return EmbeddedRasterLimitExceeded(dimension)
-        InvalidSignature(_) =>
-          return EmbeddedRasterInvalid("embedded_raster_signature_mismatch")
-        UnsupportedFeature(_) =>
-          return EmbeddedRasterUnsupported(
-            "embedded_raster_variant_unsupported",
-          )
-        _ => return EmbeddedRasterInvalid("embedded_raster_decode_failed")
-      }
-      if image.data.length() != image.width * image.height * 4 {
-        return EmbeddedRasterInvalid("embedded_raster_rgba8_length_invalid")
-      }
-      EmbeddedRasterDecoded({
-        media_type: data_url.media_type,
-        encoding: data_url.encoding,
-        encoded_bytes: data_url.bytes.length(),
-        encoded_sha256: raster_sha256(data_url.bytes),
-        width: image.width,
-        height: image.height,
-        rgba8: image.data,
-        rgba8_sha256: raster_sha256(image.data),
-      })
-    }
+    EmbeddedRasterDataUrlAccepted(data_url) =>
+      decode_raster_bytes(
+        data_url.bytes,
+        data_url.media_type,
+        "data",
+        data_url.encoding,
+        max_data_bytes,
+        max_dimension,
+        max_pixels,
+      )
   }
 }
 
@@ -112,6 +145,7 @@ fn preferred_image_href_attribute(
 fn embedded_raster_source_limit(
   input : String,
   source_role : String,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> Diagnostic? raise {
   let reader = @xml.NamespaceReader::from_string(input)
@@ -125,8 +159,10 @@ fn embedded_raster_source_limit(
         match
           decode_embedded_raster(
             attribute.value,
+            bundle,
             limits.max_embedded_data_uri_bytes,
             limits.max_embedded_data_bytes,
+            limits.max_resource_bundle_entry_bytes,
             limits.max_embedded_raster_dimension,
             limits.max_embedded_raster_pixels,
           ) {

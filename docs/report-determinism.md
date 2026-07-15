@@ -1,10 +1,10 @@
 # Structured Report Determinism and Local Identifiers
 
-Status: current schema `1.23` contract
+Status: current schema `1.24` contract
 
 Last verified: 2026-07-14
 
-For the same executable, exact before and after SVG bytes, and Comparison Profile, `svgdiff` emits the same Structured Report content, array ordering, report-local identifiers, and serialization bytes on repeated runs. Default formatted JSON and compact Agent JSON have different whitespace but decode to exactly the same report evidence.
+For the same executable, exact before and after SVG bytes, exact ordered resource-bundle entries, and Comparison Profile, `svgdiff` emits the same Structured Report content, array ordering, report-local identifiers, and serialization bytes on repeated runs. Default formatted JSON and compact Agent JSON have different whitespace but decode to exactly the same report evidence.
 
 This guarantee is report-local. It does not promise that IDs survive an input edit, profile change, component upgrade, or schema migration. Consumers must not persist a report-local ID as global SVG identity.
 
@@ -46,7 +46,7 @@ Every Atomic Difference belongs to exactly one owning Visual Event. A Changed Fa
 
 ## Source-subject identity boundary
 
-`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.23` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span.
+`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.24` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span.
 
 ## Ordering boundary
 

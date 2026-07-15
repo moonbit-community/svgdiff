@@ -100,11 +100,11 @@ fn embedded_image_attribute_fact(
 fn embedded_image_href_summary(result : EmbeddedRasterDecodeResult) -> String {
   match result {
     EmbeddedRasterDecoded(image) =>
-      "data:\{image.media_type};encoding=\{image.encoding};bytes=\{image.encoded_bytes};encoded_sha256=\{image.encoded_sha256};intrinsic=\{image.width}x\{image.height};rgba8_sha256=\{image.rgba8_sha256}"
+      "\{image.source_kind}:\{image.media_type};encoding=\{image.encoding};bytes=\{image.encoded_bytes};encoded_sha256=\{image.encoded_sha256};intrinsic=\{image.width}x\{image.height};rgba8_sha256=\{image.rgba8_sha256}"
     EmbeddedRasterUnsupported(reason) => "unsupported:\{reason}"
     EmbeddedRasterInvalid(reason) => "invalid:\{reason}"
     EmbeddedRasterLimitExceeded(reason) => "limit_exceeded:\{reason}"
-    EmbeddedRasterExternal => "external_or_local_locator"
+    EmbeddedRasterBundleMissing => "resource_bundle_entry_missing"
   }
 }
 
@@ -239,6 +239,7 @@ fn embedded_image_subject_from_element(
   profile : ComparisonProfile,
   css_document : CssStaticDocument,
   direct_visual : Bool,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> EmbeddedImageSubject {
   let reference : SubjectReference = {
@@ -254,8 +255,10 @@ fn embedded_image_subject_from_element(
     Some(value) =>
       decode_embedded_raster(
         value,
+        bundle,
         limits.max_embedded_data_uri_bytes,
         limits.max_embedded_data_bytes,
+        limits.max_resource_bundle_entry_bytes,
         limits.max_embedded_raster_dimension,
         limits.max_embedded_raster_pixels,
       )
@@ -357,6 +360,7 @@ fn embedded_image_only_scene(input : String) -> Bool raise {
 fn extract_embedded_image_subjects_or_raise(
   input : String,
   profile : ComparisonProfile,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> Array[EmbeddedImageSubject] raise {
   let css_document = parse_static_css_document_or_raise(input)
@@ -402,6 +406,7 @@ fn extract_embedded_image_subjects_or_raise(
               profile,
               css_document,
               definition_depth == 0,
+              bundle,
               limits,
             ),
           )
@@ -439,6 +444,7 @@ fn extract_embedded_image_subjects_or_raise(
               profile,
               css_document,
               definition_depth == 0,
+              bundle,
               limits,
             ),
           )
@@ -618,15 +624,17 @@ fn embedded_image_alignments_for_sources(
   before_svg : String,
   after_svg : String,
   profile : ComparisonProfile,
+  before_bundle : ResourceBundle,
+  after_bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> Array[SubjectAlignment] {
   let before = extract_embedded_image_subjects_or_raise(
-    before_svg, profile, limits,
+    before_svg, profile, before_bundle, limits,
   ) catch {
     _ => return []
   }
   let after = extract_embedded_image_subjects_or_raise(
-    after_svg, profile, limits,
+    after_svg, profile, after_bundle, limits,
   ) catch {
     _ => return []
   }
@@ -665,11 +673,14 @@ fn embedded_image_preflight_diagnostics(
   input : String,
   profile : ComparisonProfile,
   source_role : String,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
   for
-    subject in extract_embedded_image_subjects_or_raise(input, profile, limits) {
+    subject in extract_embedded_image_subjects_or_raise(
+      input, profile, bundle, limits,
+    ) {
     match subject.raster {
       EmbeddedRasterDecoded(_) =>
         diagnostics.push(
@@ -711,12 +722,12 @@ fn embedded_image_preflight_diagnostics(
             ["source_semantics", "computed_appearance", "rendered_evidence"],
           ),
         )
-      EmbeddedRasterExternal =>
+      EmbeddedRasterBundleMissing =>
         diagnostics.push(
           embedded_image_diagnostic(
             source_role,
             subject,
-            "external_raster_resource_unsupported",
+            "resource_bundle_entry_missing",
             ["computed_appearance", "rendered_evidence"],
           ),
         )

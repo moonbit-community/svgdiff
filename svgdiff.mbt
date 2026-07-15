@@ -19,6 +19,8 @@ pub using @engine {
   type RenderedEvidence,
   type RenderedMagnitude,
   type RendererCapabilityGap,
+  type ResourceBundle,
+  type ResourceBundleEntry,
   type ReportSourceSpan,
   type ResolvedVisualFact,
   type SourceResolutionPair,
@@ -36,6 +38,29 @@ pub using @engine {
 }
 
 ///|
+/// Compare with separate explicit resource bundles for the two SVG sources.
+///
+/// Bundle locators are opaque exact-match keys. The engine performs no file or
+/// network I/O and resolves only caller-supplied PNG/JPEG bytes.
+pub fn compare_with_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+) -> StructuredReport {
+  let canonical_profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: profile.viewport_width,
+    viewport_height: profile.viewport_height,
+  }
+  let report = @engine.compare_with_resources(
+    before_svg, after_svg, canonical_profile, before_resources, after_resources,
+  )
+  { ..report, schema_version: "1.24" }
+}
+
+///|
 /// The controlled comparison stopped before a report was established.
 pub(all) suberror ComparisonInterrupted {
   Cancelled
@@ -43,7 +68,7 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.23` profile.
+/// Compare two deterministic static SVG sources under one schema `1.24` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width` and `profile.viewport_height` and pins
@@ -65,7 +90,7 @@ pub fn compare(
     viewport_height: profile.viewport_height,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.23" }
+  { ..report, schema_version: "1.24" }
 }
 
 ///|
@@ -94,6 +119,35 @@ pub fn compare_with_control(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.23" }
+    report => { ..report, schema_version: "1.24" }
+  }
+}
+
+///|
+/// Compare explicit resources with cooperative cancellation and elapsed time.
+pub fn compare_with_control_and_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+  control : ComparisonControl,
+) -> StructuredReport raise ComparisonInterrupted {
+  let canonical_profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: profile.viewport_width,
+    viewport_height: profile.viewport_height,
+  }
+  try
+    @engine.compare_with_control_and_resources(
+      before_svg, after_svg, canonical_profile, before_resources, after_resources,
+      control,
+    )
+  catch {
+    Cancelled => raise Cancelled
+    TimeBudgetExceeded(max_elapsed_milliseconds~) =>
+      raise TimeBudgetExceeded(max_elapsed_milliseconds~)
+  } noraise {
+    report => { ..report, schema_version: "1.24" }
   }
 }

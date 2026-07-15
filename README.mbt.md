@@ -47,6 +47,14 @@ Set the common comparison viewport or write the report to a file:
 moon run --target native cmd/svgdiff -- before.svg after.svg --width 800 --height 600 --output report.json
 ```
 
+Supply raster bytes explicitly when an `image` locator is not a data URL. No SVG-authored path is opened automatically:
+
+```sh
+svgdiff before.svg after.svg \
+  --before-resource assets/photo.png image/png before-photo.png \
+  --after-resource assets/photo.png image/png after-photo.png
+```
+
 Add `--html report.html` to generate a self-contained interactive report with
 side-by-side sandboxed SVG previews, report-defined diff groups, region
 highlighting, and the complete JSON payload.
@@ -55,16 +63,18 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.3` with `moon add Milky2018/svgdiff@0.5.3` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.4` with `moon add Milky2018/svgdiff@0.5.4` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
 ```text
 compare(before_svg, after_svg, comparison_profile) -> StructuredReport
+compare_with_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources) -> StructuredReport
 compare_with_control(before_svg, after_svg, comparison_profile, control) -> StructuredReport raises ComparisonInterrupted
+compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.23`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/20`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.24`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/20`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
@@ -78,7 +88,7 @@ Consequence-aware structure reporting links effective reparenting and use-target
 
 A private typed resource graph now unifies gradient, pattern, marker, clip, mask, filter, symbol, image, use, attribute URL, and static stylesheet dependencies. It retains locator states and exact reference spans, supplies deterministic conservative reachability, and drives the existing cycle and use-expansion safety checks. The complete unchanged graph is not added to Agent JSON; reports continue to expose only relevant resource facts, affected consumers, and Diagnostics.
 
-Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs on `image` are decoded under fixed byte, dimension, pixel, cumulative-pixel, and PNG decompression limits without network or path I/O. Reports distinguish locator spelling, intrinsic dimensions and RGBA8 content, placement, insertion, and deletion; content changes carry resource-local intrinsic raster metrics and conservative bounds. Other valid raster variants remain explicit partial coverage. The pinned renderer does not composite these images, so final-canvas evidence remains unavailable through an explicit capability gap. External bundles, nested SVG images, and clip/mask/filter pixels remain later roadmap work.
+Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied resources on `image` are decoded under fixed byte, dimension, pixel, cumulative-pixel, and PNG decompression limits without network or path I/O. Reports distinguish locator spelling, intrinsic dimensions and RGBA8 content, placement, insertion, and deletion; content changes carry resource-local intrinsic raster metrics and conservative bounds. Other valid raster variants remain explicit partial coverage. The pinned renderer does not composite these images, so final-canvas evidence remains unavailable through an explicit capability gap. Resource types beyond bundled PNG/JPEG images, nested SVG images, and clip/mask/filter pixels remain later roadmap work.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -99,7 +109,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.23")
+  assert_eq(report.schema_version, "1.24")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -138,7 +148,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.23\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.24\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))

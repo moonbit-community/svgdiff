@@ -10,6 +10,10 @@ pub fn compare(String, String, ComparisonProfile) -> StructuredReport
 
 pub fn compare_with_control(String, String, ComparisonProfile, ComparisonControl) -> StructuredReport raise ComparisonInterrupted
 
+pub fn compare_with_control_and_resources(String, String, ComparisonProfile, ResourceBundle, ResourceBundle, ComparisonControl) -> StructuredReport raise ComparisonInterrupted
+
+pub fn compare_with_resources(String, String, ComparisonProfile, ResourceBundle, ResourceBundle) -> StructuredReport
+
 // Errors
 pub(all) suberror ComparisonInterrupted {
   Cancelled
@@ -208,6 +212,17 @@ pub(all) struct ResolvedVisualFact {
   declaration : DeclaredVisualFact?
   inheritance_depth : Int
 } derive(ToJson)
+
+pub(all) struct ResourceBundle {
+  entries : Array[ResourceBundleEntry]
+}
+pub fn ResourceBundle::empty() -> Self
+
+pub(all) struct ResourceBundleEntry {
+  locator : String
+  media_type : String
+  bytes : Bytes
+}
 
 pub(all) struct SourceResolutionPair {
   subject_id : String

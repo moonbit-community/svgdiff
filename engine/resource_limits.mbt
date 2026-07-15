@@ -15,6 +15,9 @@ priv struct ResourceLimits {
   max_embedded_data_bytes : Int
   max_embedded_raster_dimension : Int
   max_embedded_raster_pixels : Int
+  max_resource_bundle_entries : Int
+  max_resource_bundle_entry_bytes : Int
+  max_resource_bundle_bytes : Int
   max_raster_dimension : Int
   max_raster_pixels : Int
   max_regions : Int
@@ -35,6 +38,9 @@ fn default_resource_limits() -> ResourceLimits {
     max_embedded_data_bytes: 4_194_304,
     max_embedded_raster_dimension: 8_192,
     max_embedded_raster_pixels: 16_777_216,
+    max_resource_bundle_entries: 1_024,
+    max_resource_bundle_entry_bytes: 4_194_304,
+    max_resource_bundle_bytes: 16_777_216,
     max_raster_dimension: 8_192,
     max_raster_pixels: 16_777_216,
     max_regions: 65_536,
@@ -130,7 +136,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "1.23",
+    schema_version: "1.24",
     analysis_status: "failed",
     coverage_matrix,
     renderer_capability_gaps: [],
@@ -262,6 +268,7 @@ fn raster_limit(
 fn source_limit(
   input : String,
   source_role : String,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> Diagnostic? {
   if utf8_byte_length_exceeds(input, limits.max_input_bytes) {
@@ -281,7 +288,7 @@ fn source_limit(
     None => ()
   }
   let embedded_raster = try
-    embedded_raster_source_limit(input, source_role, limits)
+    embedded_raster_source_limit(input, source_role, bundle, limits)
   catch {
     // Malformed XML remains owned by the ordinary parser preflight.
     _ => None
@@ -344,6 +351,7 @@ fn compare_with_resource_limits_controlled(
   after_svg : String,
   profile : ComparisonProfile,
   limits : ResourceLimits,
+  resources : ComparisonResourceBundles,
   comparison_guard : ComparisonGuard,
 ) -> StructuredReport raise ComparisonInterrupted {
   comparison_guard.checkpoint()
@@ -353,12 +361,24 @@ fn compare_with_resource_limits_controlled(
   }
   comparison_guard.checkpoint()
   let diagnostics : Array[Diagnostic] = []
-  match source_limit(before_svg, "before", limits) {
+  match validate_resource_bundle(resources.before, "before", limits) {
+    Some(diagnostic) => diagnostics.push(diagnostic)
+    None => ()
+  }
+  match validate_resource_bundle(resources.after, "after", limits) {
+    Some(diagnostic) => diagnostics.push(diagnostic)
+    None => ()
+  }
+  if !diagnostics.is_empty() {
+    return failed_resource_report(profile, diagnostics)
+  }
+  comparison_guard.checkpoint()
+  match source_limit(before_svg, "before", resources.before, limits) {
     Some(diagnostic) => diagnostics.push(diagnostic)
     None => ()
   }
   comparison_guard.checkpoint()
-  match source_limit(after_svg, "after", limits) {
+  match source_limit(after_svg, "after", resources.after, limits) {
     Some(diagnostic) => diagnostics.push(diagnostic)
     None => ()
   }
@@ -367,7 +387,7 @@ fn compare_with_resource_limits_controlled(
     return failed_resource_report(profile, diagnostics)
   }
   let report = compare_without_resource_limits(
-    before_svg, after_svg, profile, limits, comparison_guard,
+    before_svg, after_svg, profile, limits, resources, comparison_guard,
   )
   comparison_guard.checkpoint()
   let report = enforce_output_resource_limits(report, limits)
@@ -388,6 +408,7 @@ fn compare_with_resource_limits(
       after_svg,
       profile,
       limits,
+      ComparisonResourceBundles::empty(),
       ComparisonGuard::new(ComparisonControl::unlimited()),
     )
   catch {

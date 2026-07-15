@@ -17,7 +17,7 @@ fi
 
 moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
 options=$(sed -n '/^Options:/,/^$/s/^  \(--[a-z-]*\).*/\1/p' "$tmp/help.txt")
-test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 7
+test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 9
 for option in $options; do
   grep -q -- "$option" "$tmp/help.txt"
   grep -q -- "$option" completions/svgdiff.bash
@@ -39,6 +39,18 @@ SVGDIFF_COMPLETION_TMP="$tmp" bash -c '
   cd "$SVGDIFF_COMPLETION_TMP"
   COMP_WORDS=(svgdiff be)
   COMP_CWORD=1
+  _svgdiff
+  test "${COMPREPLY[*]}" = "before.svg"
+'
+SVGDIFF_COMPLETION_TMP="$tmp" bash -c '
+  source completions/svgdiff.bash
+  cd "$SVGDIFF_COMPLETION_TMP"
+  COMP_WORDS=(svgdiff before.svg after.svg --before-resource asset.png image/)
+  COMP_CWORD=5
+  _svgdiff
+  test "${COMPREPLY[*]}" = "image/png image/jpeg"
+  COMP_WORDS=(svgdiff before.svg after.svg --before-resource asset.png image/png be)
+  COMP_CWORD=6
   _svgdiff
   test "${COMPREPLY[*]}" = "before.svg"
 '

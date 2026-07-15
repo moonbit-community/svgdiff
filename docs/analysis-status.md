@@ -1,8 +1,8 @@
 # Analysis Status Contract
 
-Status: current schema `1.23` caller contract
+Status: current schema `1.24` caller contract
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 `analysis_status` summarizes the report's per-feature, per-evidence-layer `coverage_matrix` under the recorded Comparison Profile. It does not describe whether the SVGs are equal, how many differences exist, or how visually important a difference is.
 
@@ -16,7 +16,7 @@ Last verified: 2026-07-14
 
 Invalid CLI arguments and file I/O failures are not analysis results and exit with status `2` without producing a valid Structured Report. The stable process-level mapping is defined in the [CLI Exit-Code Contract](cli-exit-codes.md).
 
-Likewise, the embedding-only [`compare_with_control`](library-api.md) operation raises the `Cancelled` or `TimeBudgetExceeded` case of `ComparisonInterrupted` and returns no report. Interruption is request control flow, not `analysis_status = "failed"`, because no complete evidence inventory was established. The ordinary comparison and CLI status table are unchanged.
+Likewise, the embedding-only [`compare_with_control`](library-api.md) and `compare_with_control_and_resources` operations raise the `Cancelled` or `TimeBudgetExceeded` case of `ComparisonInterrupted` and return no report. Interruption is request control flow, not `analysis_status = "failed"`, because no complete evidence inventory was established. The ordinary comparison and CLI status table are unchanged.
 
 ## `complete`
 
@@ -31,7 +31,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.23`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.24`'s implemented support contract under the recorded Comparison Profile.
 
 It does not support any of these stronger statements:
 
@@ -64,7 +64,7 @@ Consumers may use the supported differences, magnitudes, regions, and candidates
 
 ## `failed`
 
-A `failed` report means the engine could not establish a usable semantic comparison. Malformed XML produces `svg_parse_failed` with the parser's source-role-qualified UTF-16 span. Crossing a fixed [comparison resource limit](resource-limits.md) produces `resource_limit_exceeded`; its subject identifies the dimension, and source-local structural limits retain the first offending span. A cyclic or explosively expanding accepted local-reference graph instead produces `reference_cycle_detected` or `reference_expansion_limit_exceeded` with the establishing reference spans.
+A `failed` report means the engine could not establish a usable semantic comparison. Malformed XML produces `svg_parse_failed` with the parser's source-role-qualified UTF-16 span. Invalid caller resource-bundle configuration produces `resource_bundle_invalid` before SVG comparison. Crossing a fixed [comparison resource limit](resource-limits.md) produces `resource_limit_exceeded`; its subject identifies the dimension, and source-local structural limits retain the first offending span. A cyclic or explosively expanding accepted local-reference graph instead produces `reference_cycle_detected` or `reference_expansion_limit_exceeded` with the establishing reference spans.
 
 The report still has the schema's required top-level fields so callers can parse it uniformly, but its difference arrays must not be interpreted as evidence of equality or absence. Callers should surface the Diagnostics and stop semantic interpretation. The CLI returns status `1`.
 

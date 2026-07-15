@@ -614,11 +614,13 @@ fn attach_embedded_image_differences(
   before_svg : String,
   after_svg : String,
   alignments : Array[SubjectAlignment],
+  resources : ComparisonResourceBundles,
   limits : ResourceLimits,
 ) -> StructuredReport {
   let before = extract_embedded_image_subjects_or_raise(
     before_svg,
     report.profile,
+    resources.before,
     limits,
   ) catch {
     _ => return report
@@ -626,6 +628,7 @@ fn attach_embedded_image_differences(
   let after = extract_embedded_image_subjects_or_raise(
     after_svg,
     report.profile,
+    resources.after,
     limits,
   ) catch {
     _ => return report

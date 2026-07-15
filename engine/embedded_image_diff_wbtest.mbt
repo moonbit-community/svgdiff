@@ -164,7 +164,7 @@ test "invalid and external embedded image sources are explicit" {
   )
   assert_true(
     external.diagnostics.any(diagnostic => {
-      diagnostic.code == "external_raster_resource_unsupported"
+      diagnostic.code == "resource_bundle_entry_missing"
     }),
   )
   let signature = compare(

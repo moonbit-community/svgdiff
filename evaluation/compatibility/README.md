@@ -10,17 +10,18 @@ Last verified: 2026-07-15
 
 This corpus generates one real current report through the production CLI and applies versioned, reviewable mutations to its schema, renderer, renderer-conformance, and ordering identities. Run `sh scripts/test-compatibility.sh`; every case is consumer-classified and validated against the [released Schema registry](../../schema/registry.v1.json) twice, and the versioned results must be byte-identical.
 
-The current policy accepts schemas `1.0` through `1.23`, legacy ordering policy `v1_domain_lexicographic`, current policy `v2_domain_lexicographic`, the raw historical `mizchi/svg@0.2.1` renderer identity, all eleven production renderer identities, and conformance profiles `/1` through `/20`. Current producers emit `1.23` with bounded static selector matching, the author cascade seam, ordinary inheritance, computed CSS values, deterministic solid colors, paint opacity, SVG 2 paint URL fallback selection, inherited paint order and winding rules, complete static linear/radial gradient semantics, admitted static pattern semantics, authored-unit used values, marker placement and viewport semantics, canonical stroke and basic-shape geometry, typed transform effects, deterministic same-document use-instance identity, consequence-aware structural relationships, a private typed cross-resource dependency graph, bounded embedded PNG/JPEG resource evidence, and v2 transform-specific tuples. Explicit legacy migration cases restore the renderer and conformance identities emitted with each old schema and remove fields introduced after each identity, proving that the archived Schemas remain readable. The policy also accepts previous renderer identities under the current shape, optional-field omissions with explicit legacy handling, and an unknown additive top-level field under a recognized identity. It rejects unknown schema, renderer, and renderer-conformance identities before interpreting their evidence and rejects unknown ordering policies before using their component vectors. The current Schema treats renderer identities as non-empty opaque strings; acceptance belongs to this policy rather than the report-shape contract.
+The current policy accepts schemas `1.0` through `1.24`, legacy ordering policy `v1_domain_lexicographic`, current policy `v2_domain_lexicographic`, the raw historical `mizchi/svg@0.2.1` renderer identity, all eleven production renderer identities, and conformance profiles `/1` through `/20`. Current producers emit `1.24` with bounded static selector matching, the author cascade seam, ordinary inheritance, computed CSS values, deterministic solid colors, paint opacity, SVG 2 paint URL fallback selection, inherited paint order and winding rules, complete static linear/radial gradient semantics, admitted static pattern semantics, authored-unit used values, marker placement and viewport semantics, canonical stroke and basic-shape geometry, typed transform effects, deterministic same-document use-instance identity, consequence-aware structural relationships, a private typed cross-resource dependency graph, bounded embedded or explicitly bundled PNG/JPEG resource evidence, and v2 transform-specific tuples. Explicit legacy migration cases restore the renderer and conformance identities emitted with each old schema and remove fields introduced after each identity, proving that the archived Schemas remain readable. The policy also accepts previous renderer identities under the current shape, optional-field omissions with explicit legacy handling, and an unknown additive top-level field under a recognized identity. It rejects unknown schema, renderer, and renderer-conformance identities before interpreting their evidence and rejects unknown ordering policies before using their component vectors. The current Schema treats renderer identities as non-empty opaque strings; acceptance belongs to this policy rather than the report-shape contract.
 
-The registry retains Schemas `1.0` through `1.22` as legacy and names Schema `1.23` as current. Each entry names its checked-in Schema, accepted ordering policy, canonical-example manifest, and migration cases. The shared project validator audits the complete assertion vocabulary used by every Schema and rejects unknown future keywords. It is not advertised as a general-purpose JSON Schema implementation.
+The registry retains Schemas `1.0` through `1.23` as legacy and names Schema `1.24` as current. Each entry names its checked-in Schema, accepted ordering policy, canonical-example manifest, and migration cases. The shared project validator audits the complete assertion vocabulary used by every Schema and rejects unknown future keywords. It is not advertised as a general-purpose JSON Schema implementation.
 
-No schema `2.0` or ordering policy v3 migration is implemented; those values are deliberately unknown test inputs. An unknown declared Schema must fail every released Schema, and an unknown ordering policy under `1.23` must fail the current policy constraint before ranking.
+No schema `2.0` or ordering policy v3 migration is implemented; those values are deliberately unknown test inputs. An unknown declared Schema must fail every released Schema, and an unknown ordering policy under `1.24` must fail the current policy constraint before ranking.
 
 ## Cases
 
 | Case | Consumer decision | Schema validation |
 | --- | --- | --- |
-| Current schema and policy | Accept as current. | Valid `1.23`. |
+| Current schema and policy | Accept as current. | Valid `1.24`. |
+| Legacy `1.23` before caller-supplied resource bundles | Accept through the registered legacy migration. | Valid `1.23`. |
 | Legacy `1.22` without intrinsic raster magnitude | Accept through the registered legacy migration. | Valid `1.22`. |
 | Legacy `1.21` with conformance profile `/18` | Accept through the registered legacy migration. | Valid `1.21`. |
 | Legacy `1.20` with conformance profile `/17` | Accept through the registered legacy migration. | Valid `1.20`. |
@@ -42,13 +43,13 @@ No schema `2.0` or ordering policy v3 migration is implemented; those values are
 | Legacy `1.5` with v1 ordering | Accept through the registered legacy migration. | Valid `1.5`. |
 | Legacy `1.6` with conformance profile `/3` | Accept through the registered legacy migration. | Valid `1.6`. |
 | Legacy `1.7` with the style-precedence renderer and conformance profile `/4` | Accept through the registered legacy migration. | Valid `1.7`. |
-| Optional alignment evidence absent | Accept with uncertainty evidence unreported. | Valid `1.23`. |
-| Optional instance context absent | Accept with direct-versus-instance context unreported by the legacy-shaped producer. | Valid `1.23`. |
-| Optional Diagnostic source locations absent | Accept with locations unreported. | Valid `1.23`. |
-| Legacy optional fields absent | Accept with explicit legacy handling. | Valid `1.23`. |
-| Unknown additive top-level field under declared `1.23` | Accept while ignoring the unknown field. | Valid `1.23`. |
-| Previous renderer and conformance identities | Accept as a known current-shape report. | Valid `1.23`. |
+| Optional alignment evidence absent | Accept with uncertainty evidence unreported. | Valid `1.24`. |
+| Optional instance context absent | Accept with direct-versus-instance context unreported by the legacy-shaped producer. | Valid `1.24`. |
+| Optional Diagnostic source locations absent | Accept with locations unreported. | Valid `1.24`. |
+| Legacy optional fields absent | Accept with explicit legacy handling. | Valid `1.24`. |
+| Unknown additive top-level field under declared `1.24` | Accept while ignoring the unknown field. | Valid `1.24`. |
+| Previous renderer and conformance identities | Accept as a known current-shape report. | Valid `1.24`. |
 | Unknown schema version | Reject before interpretation. | Invalid under every released Schema. |
-| Unknown renderer identity | Reject before rendered interpretation. | Structurally valid `1.23`. |
-| Unknown renderer conformance profile | Reject before rendered interpretation. | Structurally valid `1.23`. |
-| Unknown ordering policy | Reject before ranking. | Invalid `1.23`. |
+| Unknown renderer identity | Reject before rendered interpretation. | Structurally valid `1.24`. |
+| Unknown renderer conformance profile | Reject before rendered interpretation. | Structurally valid `1.24`. |
+| Unknown ordering policy | Reject before ranking. | Invalid `1.24`. |

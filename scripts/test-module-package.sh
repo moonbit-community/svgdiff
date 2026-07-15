@@ -106,9 +106,28 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "1.23" else { abort("wrong schema") }
+  guard report.schema_version == "1.24" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
+  let resource_svg = "<svg xmlns='http://www.w3.org/2000/svg'><image href='asset.png'/></svg>"
+  let bundled = @svgdiff.compare_with_resources(
+    resource_svg,
+    resource_svg,
+    @svgdiff.ComparisonProfile::v1_default(),
+    {
+      entries: [
+        {
+          locator: "asset.png",
+          media_type: "image/png",
+          bytes: Bytes::default(),
+        },
+      ],
+    },
+    @svgdiff.ResourceBundle::empty(),
+  )
+  guard bundled.analysis_status == "partial" else {
+    abort("resource bundle API unavailable")
+  }
 }
 EOF
 

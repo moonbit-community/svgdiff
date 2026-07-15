@@ -65,10 +65,15 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
   let after_image = @svg.render_svg_document_to_image(after_document, 128, 128)
   let report = compare(before, after, profile)
   benchmark.bench(name="parse_admission", () => {
-    let before_limit = source_limit(before, "before", limits)
-    let after_limit = source_limit(after, "after", limits)
-    let before_preflight = preflight_source(before, profile, "before", limits)
-    let after_preflight = preflight_source(after, profile, "after", limits)
+    let empty_resources = ResourceBundle::empty()
+    let before_limit = source_limit(before, "before", empty_resources, limits)
+    let after_limit = source_limit(after, "after", empty_resources, limits)
+    let before_preflight = preflight_source(
+      before, profile, "before", empty_resources, limits,
+    )
+    let after_preflight = preflight_source(
+      after, profile, "after", empty_resources, limits,
+    )
     let before_document = @svg.parse_svg_document(
       normalize_renderer_input(before),
     )

@@ -126,6 +126,7 @@ graph TD
   ISS_108["ISS-108: Report consequence-aware structural changes"]
   ISS_109["ISS-109: Build the unified resource dependency graph"]
   ISS_110["ISS-110: Implement bounded embedded raster-image resources"]
+  ISS_111["ISS-111: Implement explicit local raster resource bundles"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -330,6 +331,7 @@ graph TD
   ISS_107 --> ISS_108
   ISS_108 --> ISS_109
   ISS_109 --> ISS_110
+  ISS_110 --> ISS_111
 ```
 
 ## Warnings

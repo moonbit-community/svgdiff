@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.23`
+Status: current model for Structured Report schema `1.24`
 
 Last verified: 2026-07-15
 
@@ -28,14 +28,14 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.23
+  -> Structured Report 1.24
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.23` records:
+Schema `1.24` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -58,7 +58,9 @@ The stroke used-geometry normalizer resolves length-aware width, dash arrays, an
 
 Marker adaptation is renderer-independent. The engine retains authored `marker` shorthand and longhand facts, resolves supported local fragment references, and extracts canonical length-aware `markerUnits`, viewport size, reference point, orientation, `viewBox`, `preserveAspectRatio`, and hidden overflow facts. Each admitted shape is converted to its SVG equivalent path vertices; start, mid, and end roles preserve closed-subpath duplication and zero-length direction search. Automatic orientation uses segment tangents and mid-vertex bisectors, while `auto-start-reverse` reverses only start instances. Placement, orientation, stroke-width or user-space units, viewport mapping, reference offset, and subject transforms produce a conservative clipped marker viewport envelope. Resource changes use `resource.marker.*` domains and attribute every referenced instance through `affected_subject_ids`. Marker child paint, cascade/inheritance, context paint, environment-dependent lengths or visible overflow, external references, and pinned-renderer pixels remain explicitly guarded.
 
-Intrinsic viewport derivation, resource bundles, fonts, perceptual backgrounds, alternate DPRs, wide-gamut profiles, and cross-renderer profiles are not part of the implemented v1 profile. Accepted target decisions for some of these capabilities remain recorded in ADRs and the roadmap.
+Intrinsic viewport derivation, fonts, perceptual backgrounds, alternate DPRs, wide-gamut profiles, and cross-renderer profiles are not part of the implemented v1 profile. Accepted target decisions for some of these capabilities remain recorded in ADRs and the roadmap.
+
+Explicit resource bundles are inputs to comparison rather than ambient profile state. Before and after each receive an ordered set of opaque locator, MIME, and byte entries. Exact locator matching can resolve admitted PNG/JPEG `image` resources; no base URL, filesystem path, redirect, or network environment participates. The report retains authored locator Source Spans and compact content hashes but never serializes supplied bytes or CLI resource-file paths.
 
 ## Evidence layers
 
@@ -169,7 +171,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.23` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.24` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 `DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v2 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
@@ -192,7 +194,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.23` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.24` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -208,11 +210,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.23` top-level object contains exactly these conceptual sections:
+The schema `1.24` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.23",
+  "schema_version": "1.24",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -244,7 +246,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.23
+## Not implemented in schema 1.24
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -253,7 +255,7 @@ The following concepts are intentional future work rather than hidden current fi
 - exact per-pixel Contribution Index or minimal root-cause set;
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
-- caller-supplied resource bundles, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
+- resource bundles beyond admitted PNG/JPEG `image` consumers, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
 - complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filters, masks, clipping, blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
 - cross-subject Visual Event aggregation.
 

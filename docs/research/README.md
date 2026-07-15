@@ -20,5 +20,6 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [Structural impact semantics](structural-impact-semantics.md) | 2026-07-15 | Fixes consequence-aware ancestry, instance-resolution, stacking, and conservative causal attribution. |
 | [SVG resource dependency graph](svg-resource-dependency-graph.md) | 2026-07-15 | Records typed nodes, reference edges, locator states, traversal, safety reuse, and report projection. |
 | [Embedded raster resource policy](embedded-raster-resource-policy.md) | 2026-07-15 | Fixes the admitted PNG/JPEG data-URL subset, bounded decoder boundary, intrinsic metrics, no-I/O rule, and renderer gap. |
+| [Explicit local resource bundle policy](local-resource-bundle-policy.md) | 2026-07-15 | Fixes opaque exact locator matching, separate before/after bundles, bundle budgets, explicit CLI acquisition, and the zero-implicit-I/O boundary. |
 
 Research should be amended only to correct factual errors or to add an explicitly dated follow-up. Changes to current product policy belong in an ADR and the current contract documents.

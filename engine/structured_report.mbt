@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.23` API accepts caller-provided viewport dimensions and
+/// The root schema `1.24` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.23` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.24` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -685,7 +685,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.23` result of one SVG comparison.
+/// Complete schema `1.24` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -704,13 +704,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.23` JSON.
+/// Serialize this report as indented schema `1.24` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.23` JSON.
+/// Serialize this report as whitespace-free schema `1.24` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1056,12 +1056,13 @@ fn preflight_source_or_raise(
   input : String,
   profile : ComparisonProfile,
   source_role : String,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> Array[Diagnostic] raise {
   let diagnostics : Array[Diagnostic] = []
   for
     diagnostic in embedded_image_preflight_diagnostics(
-      input, profile, source_role, limits,
+      input, profile, source_role, bundle, limits,
     ) {
     merge_diagnostic_into(diagnostics, diagnostic)
   }
@@ -1468,9 +1469,12 @@ fn preflight_source(
   input : String,
   profile : ComparisonProfile,
   source_role : String,
+  bundle : ResourceBundle,
   limits : ResourceLimits,
 ) -> SourcePreflight {
-  try preflight_source_or_raise(input, profile, source_role, limits) catch {
+  try
+    preflight_source_or_raise(input, profile, source_role, bundle, limits)
+  catch {
     @xml.At(error=_, span~) =>
       SourceFailed(
         located_diagnostic(
@@ -1508,7 +1512,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.23",
+    schema_version: "1.24",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1753,7 +1757,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.23",
+        schema_version: "1.24",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1833,7 +1837,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.23",
+        schema_version: "1.24",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1883,7 +1887,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.23",
+        schema_version: "1.24",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1937,14 +1941,15 @@ fn compare_without_resource_limits(
   after_svg : String,
   profile : ComparisonProfile,
   limits : ResourceLimits,
+  resources : ComparisonResourceBundles,
   comparison_guard : ComparisonGuard,
 ) -> StructuredReport raise ComparisonInterrupted {
   comparison_guard.checkpoint()
   let preflight_diagnostics : Array[Diagnostic] = []
   match
     (
-      preflight_source(before_svg, profile, "before", limits),
-      preflight_source(after_svg, profile, "after", limits),
+      preflight_source(before_svg, profile, "before", resources.before, limits),
+      preflight_source(after_svg, profile, "after", resources.after, limits),
     ) {
     (SourceFailed(before), SourceFailed(after)) => {
       let diagnostics = [before]
@@ -1974,7 +1979,12 @@ fn compare_without_resource_limits(
   )
   subject_alignments.push_iter(
     embedded_image_alignments_for_sources(
-      before_svg, after_svg, profile, limits,
+      before_svg,
+      after_svg,
+      profile,
+      resources.before,
+      resources.after,
+      limits,
     ).iter(),
   )
   comparison_guard.checkpoint()
@@ -1982,7 +1992,7 @@ fn compare_without_resource_limits(
     Some(report) =>
       return finish_report(
         report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-        limits, comparison_guard,
+        limits, resources, comparison_guard,
       )
     None => ()
   }
@@ -2009,7 +2019,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.23",
+            schema_version: "1.24",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2026,6 +2036,7 @@ fn compare_without_resource_limits(
           before_svg,
           after_svg,
           limits,
+          resources,
           comparison_guard,
         )
       }
@@ -2048,7 +2059,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.23",
+            schema_version: "1.24",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2065,6 +2076,7 @@ fn compare_without_resource_limits(
           before_svg,
           after_svg,
           limits,
+          resources,
           comparison_guard,
         )
       }
@@ -2075,7 +2087,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, comparison_guard,
+            limits, resources, comparison_guard,
           )
         None => ()
       }
@@ -2083,7 +2095,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, comparison_guard,
+            limits, resources, comparison_guard,
           )
         None => ()
       }
@@ -2091,7 +2103,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, comparison_guard,
+            limits, resources, comparison_guard,
           )
         None => ()
       }
@@ -2102,12 +2114,12 @@ fn compare_without_resource_limits(
         Some(report) =>
           finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, comparison_guard,
+            limits, resources, comparison_guard,
           )
         None =>
           finish_report(
             {
-              schema_version: "1.23",
+              schema_version: "1.24",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],
@@ -2134,6 +2146,7 @@ fn compare_without_resource_limits(
             before_svg,
             after_svg,
             limits,
+            resources,
             comparison_guard,
           )
       }
@@ -2165,6 +2178,31 @@ pub fn compare(
 }
 
 ///|
+/// Compare with separate caller-supplied resource bundles for both sources.
+pub fn compare_with_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+) -> StructuredReport {
+  try
+    compare_with_resource_limits_controlled(
+      before_svg,
+      after_svg,
+      profile,
+      default_resource_limits(),
+      { before: before_resources, after: after_resources },
+      ComparisonGuard::new(ComparisonControl::unlimited()),
+    )
+  catch {
+    _ => abort("unlimited comparison was interrupted")
+  } noraise {
+    report => report
+  }
+}
+
+///|
 /// Compare with cooperative cancellation and elapsed-time interruption.
 pub fn compare_with_control(
   before_svg : String,
@@ -2177,6 +2215,27 @@ pub fn compare_with_control(
     after_svg,
     profile,
     default_resource_limits(),
+    ComparisonResourceBundles::empty(),
+    ComparisonGuard::new(control),
+  )
+}
+
+///|
+/// Compare explicit resources with cooperative interruption controls.
+pub fn compare_with_control_and_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+  control : ComparisonControl,
+) -> StructuredReport raise ComparisonInterrupted {
+  compare_with_resource_limits_controlled(
+    before_svg,
+    after_svg,
+    profile,
+    default_resource_limits(),
+    { before: before_resources, after: after_resources },
     ComparisonGuard::new(control),
   )
 }

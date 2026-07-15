@@ -113,6 +113,22 @@
       }
     },
     {
+      "id": "resource-bundle-missing",
+      "before": "evaluation/schema-examples/cases/resource-bundle-missing/before.svg",
+      "after": "evaluation/schema-examples/cases/resource-bundle-missing/after.svg",
+      "output": "schema/examples/resource-bundle-missing.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": [],
+        "computed_relations": [],
+        "diagnostic_codes": [
+          "resource_bundle_entry_missing",
+          "resource_bundle_entry_missing"
+        ],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "radial-gradient-change",
       "before": "evaluation/schema-examples/cases/radial-gradient-change/before.svg",
       "after": "evaluation/schema-examples/cases/radial-gradient-change/after.svg",
