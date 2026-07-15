@@ -32,6 +32,19 @@ fn renderer_capability_for_diagnostic(code : String) -> (String, String)? {
     "renderer_marker_raster_unproven" => Some(("raster.marker", "guarded"))
     "renderer_embedded_raster_unavailable" =>
       Some(("raster.embedded_images", "unavailable"))
+    "clip_path_content_unsupported"
+    | "clip_path_dynamic_unsupported"
+    | "clip_path_nested_reference_unsupported"
+    | "clip_path_instance_unsupported"
+    | "clip_path_units_invalid"
+    | "clip_path_transform_unproven"
+    | "clip_path_geometry_unsupported"
+    | "clip_path_object_bbox_container_unsupported"
+    | "clip_path_effect_bounds_unavailable"
+    | "clip_path_target_kind_unsupported"
+    | "clip_path_target_missing"
+    | "clip_path_external_reference_unsupported"
+    | "clip_path_reference_invalid" => Some(("raster.clip_path", "guarded"))
     _ => None
   }
 }

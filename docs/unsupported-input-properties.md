@@ -21,7 +21,8 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 - invalid or non-positive `viewBox`, invalid `preserveAspectRatio`, and environment-dependent or arithmetic viewport lengths; valid unitless, CSS absolute-unit, percentage, static viewport-relative, meet, slice, none, root, and nested viewport mappings have moved to focused complete-path tests;
 - unsupported CSS declarations and selector/stylesheet syntax outside the admitted static grammar; type, universal, ID, class, attribute presence/equality, compound, list, and four structural combinators have moved to focused complete-path and mutation tests;
 - external or context paint, malformed fallback syntax, and paint outside the admitted solid, static-gradient, static-pattern, and local URL-fallback slices; missing and wrong-kind same-document paint targets now use deterministic fallback or no-paint semantics;
-- malformed `paint-order`, `fill-rule`, or `clip-rule`; valid inherited declarations now use active-operation and winding-rule semantics, while actual clip-path construction remains guarded;
+- malformed `paint-order`, `fill-rule`, or `clip-rule`; valid inherited declarations use active-operation and winding-rule semantics, while rectangular clip construction is admitted separately and other contours retain precise clip Diagnostics;
+- clip-path locators or resources outside one static local non-rounded rectangle with admitted units and transforms, including external, missing, wrong-kind, invalid, nested, dynamic, multi-child, curved, use-instance, or unavailable-bound cases;
 - missing, external, wrong-kind, unsupported-length, or invalid-viewport `use` instances; valid bounded same-document shape, group, SVG, symbol, and nested-use targets have moved to focused complete-path tests;
 - group/root compositing and effect inputs.
 - malformed transform lists and invalid gradient or pattern resource transforms;

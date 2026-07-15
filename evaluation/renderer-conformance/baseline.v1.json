@@ -201,8 +201,38 @@
       "changed_pixel_fraction": 0.0,
       "changed_pixels": 0,
       "comparison": "exact",
-      "coverage_claim": "exploratory",
+      "coverage_claim": "supported",
       "id": "clip-path",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "clipping",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "clip-object-bbox",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "clipping",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "clip-transform",
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
+    },
+    {
+      "category": "clipping",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
+      "coverage_claim": "supported",
+      "id": "clip-container",
       "max_channel_delta": 0,
       "premultiplied_rgba8_rmse": 0.0
     },
@@ -1167,13 +1197,13 @@
       "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/21",
-  "fixture_source_set_sha256": "a435fbdf142a0d6490adddc14dac2bd80b8c3a1bc8d391ea73d7ebf2873a36b7",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/22",
+  "fixture_source_set_sha256": "1bf65fad60eb8471a17e7860c227361cf92d27f903fea1348b4732bbdcb58261",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "mizchi/svg@0.2.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
-    "cases": 116,
+    "cases": 119,
     "categories": {
       "alpha": {
         "cases": 9,
@@ -1181,9 +1211,9 @@
         "exact": 4
       },
       "clipping": {
-        "cases": 3,
+        "cases": 6,
         "divergent": 2,
-        "exact": 1
+        "exact": 4
       },
       "compositing": {
         "cases": 1,
@@ -1202,9 +1232,9 @@
       }
     },
     "divergent": 67,
-    "exact": 49,
-    "exploratory": 1,
+    "exact": 52,
+    "exploratory": 0,
     "guarded": 56,
-    "supported": 59
+    "supported": 63
   }
 }

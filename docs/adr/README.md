@@ -65,7 +65,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0059](0059-resolve-static-gradients-before-raster-conformance.md) | Accepted, implemented for static same-document sRGB gradients | Resolve complete gradient resources and every consumer independently from guarded raster conformance. |
 | [0060](0060-resolve-static-patterns-as-resource-and-consumer-semantics.md) | Accepted, implemented for the admitted static same-document child slice | Resolve pattern tile, viewport, template, and child semantics separately from every consumer and guarded raster evidence. |
 | [0061](0061-select-svg-paint-fallbacks-before-resource-mediation.md) | Accepted, implemented for static same-document paint URLs | Select valid resources, local fallback paint, or no paint before resource fan-out while retaining authored declarations. |
-| [0062](0062-resolve-inherited-paint-order-and-winding-rules.md) | Accepted, implemented for the admitted static shape slice | Resolve inherited paint order and winding rules by active operation while guarding deferred clip-path evaluation. |
+| [0062](0062-resolve-inherited-paint-order-and-winding-rules.md) | Accepted, implemented for the admitted static shape slice | Resolve inherited paint order and winding rules by active operation; ADR 0071 later admits the rectangular clip subset. |
 | [0063](0063-separate-use-instances-from-authored-definitions.md) | Accepted, implemented for the admitted static same-document slice | Keep authored definition identity separate from deterministic rendered use-instance paths. |
 | [0064](0064-report-only-consequence-aware-structural-relationships.md) | Accepted, implemented for the admitted aligned-subject slice | Report structural relationships only when they have an admitted computed, resolution, or stacking consequence. |
 | [0065](0065-use-one-private-typed-resource-dependency-graph.md) | Accepted, implemented for the bounded static source grammar | Use one private typed graph for resource topology, reachability, cycle safety, and use-expansion accounting. |
@@ -74,6 +74,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0068](0068-classify-resource-outcomes-on-independent-axes.md) | Accepted, implemented across the current resource families | Classify locator, target-kind, semantic-validity, graph-safety, and activity outcomes without erasing family-specific evidence. |
 | [0069](0069-separate-nonvisual-source-audit-from-visual-diff.md) | Accepted, implemented for descriptive content and metadata attributes | Keep nonvisual source facts out of visual differences and expose an independent audit. |
 | [0070](0070-own-isolated-container-opacity-compositing.md) | Accepted, implemented for static `svg`/`g`/`symbol`/`use` opacity | Complete ordered child layers before applying container opacity once, while retaining conservative source-over causes. |
+| [0071](0071-resolve-static-rectangular-clips-and-effect-bounds.md) | Accepted, implemented for the admitted static rectangle slice | Separate host attachments from clip resources, preserve consumer fan-out, and localize complete outcomes with conservative effect bounds. |
 
 ## CLI and distribution decisions
 

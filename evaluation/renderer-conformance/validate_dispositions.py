@@ -21,6 +21,13 @@ NEW_CONFORMANCE_CODES = {
     "renderer_marker_raster_unproven",
 }
 
+ADMITTED_CLIP_CASES = {
+    "clip-path",
+    "clip-object-bbox",
+    "clip-transform",
+    "clip-container",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -69,7 +76,7 @@ def main() -> None:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     dispositions = json.loads(args.dispositions.read_text(encoding="utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    expected_profile = "svgdiff-renderer-conformance-profile/21"
+    expected_profile = "svgdiff-renderer-conformance-profile/22"
     baseline_profile = baseline.get("conformance_profile_id")
     disposition_profile = dispositions.get("conformance_profile_id")
     if baseline_profile != expected_profile:
@@ -218,6 +225,24 @@ def main() -> None:
                 f"exact supported case acquired a conformance guard: "
                 f"{case['id']} {sorted(unexpected)}"
             )
+        if case["id"] in ADMITTED_CLIP_CASES:
+            clip_guards = sorted(code for code in emitted if code.startswith("clip_path_"))
+            if report.get("analysis_status") != "complete" or clip_guards:
+                raise ValueError(
+                    f"admitted clip case lost complete coverage: "
+                    f"{case['id']} {clip_guards}"
+                )
+
+    exact_clip_cases = {
+        case["id"]
+        for case in exact_supported
+        if case["id"] in ADMITTED_CLIP_CASES
+    }
+    if exact_clip_cases != ADMITTED_CLIP_CASES:
+        raise ValueError(
+            f"admitted clip fixtures are not all exact and supported: "
+            f"{sorted(ADMITTED_CLIP_CASES - exact_clip_cases)}"
+        )
 
     print(
         f"Renderer dispositions: {len(divergent)} divergences disposed "

@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/21",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/22",
   "cases": [
     {
       "id": "embedded-raster-png",
@@ -397,14 +397,14 @@
     {
       "id": "clip-rule-inherited",
       "disposition": "diagnostic",
-      "diagnostic_code": "clip_path_semantics_unsupported",
-      "reason": "The inherited rule is resolved for the clip-path child, while clip resource construction and host application remain deferred."
+      "diagnostic_code": "clip_path_content_unsupported",
+      "reason": "The inherited rule is resolved for the polygon clip child, while the admitted complete clip slice is restricted to one non-rounded rectangle."
     },
     {
       "id": "clip-rule-inherited-canonical",
       "disposition": "diagnostic",
-      "diagnostic_code": "clip_path_semantics_unsupported",
-      "reason": "The canonical child rule still requires the deferred clip resource construction and host-application semantics."
+      "diagnostic_code": "clip_path_content_unsupported",
+      "reason": "The canonical polygon child remains outside the admitted one-rectangle clip resource semantics."
     },
     {
       "id": "fill-rule-nonzero",

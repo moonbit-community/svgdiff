@@ -46,6 +46,7 @@ fn generic_property_domain(property : String) -> String {
       "geometry.marker_attachment"
     "paint-order" => "paint.order"
     "clip-rule" => "clipping.rule"
+    "clip-path" => "clipping.path"
     "opacity" => "paint.opacity"
     _ => "document.unsupported"
   }
@@ -89,6 +90,7 @@ fn generic_default_value(property : String) -> String? {
     "vector-effect" => Some("none")
     "marker" | "marker-start" | "marker-mid" | "marker-end" => Some("none")
     "paint-order" => Some("fill stroke markers")
+    "clip-path" => Some("none")
     _ => None
   }
 }
@@ -118,6 +120,7 @@ fn generic_computed_string(property : String, source : String) -> String {
         Some(alpha) => alpha.to_string()
         None => value
       }
+    "clip-path" => canonical_clip_path_reference(value).unwrap_or(value)
     _ => value
   }
 }
@@ -497,6 +500,21 @@ fn generic_relation(
       }
       if property == "clip-rule" &&
         !equivalent &&
+        before_subject.kind == "rect" &&
+        after_subject.kind == "rect" &&
+        before_subject.clip_path_owner_id is Some(_) &&
+        after_subject.clip_path_owner_id is Some(_) &&
+        before_subject.clip_complete &&
+        after_subject.clip_complete {
+        return {
+          status: "equivalent",
+          reason_code: "same_simple_clip_contour",
+          missing_side: None,
+          diagnostic_ids: [],
+        }
+      }
+      if property == "clip-rule" &&
+        !equivalent &&
         (
           before_subject.clip_path_owner_id is Some(_) ||
           after_subject.clip_path_owner_id is Some(_)
@@ -504,19 +522,40 @@ fn generic_relation(
         let ids : Array[String] = []
         for subject in [before_subject, after_subject] {
           match subject.clip_path_owner_id {
-            Some(owner) => {
-              let id = "diagnostic:clip-path-semantics-unsupported:\{owner}"
-              if !ids.contains(id) {
-                ids.push(id)
+            Some(owner) =>
+              if subject.clip_issue_codes.is_empty() {
+                push_unique(
+                  ids,
+                  "diagnostic:clip_path_content_unsupported:\{owner}",
+                )
+              } else {
+                for code in subject.clip_issue_codes {
+                  push_unique(ids, "diagnostic:\{code}:\{owner}")
+                }
               }
-            }
             None => ()
           }
         }
         ids.sort()
         return {
           status: "indeterminate",
-          reason_code: "clip_path_semantics_unsupported",
+          reason_code: "clip_resource_coverage_partial",
+          missing_side: None,
+          diagnostic_ids: ids,
+        }
+      }
+      if property == "clip-path" &&
+        (!before_subject.clip_complete || !after_subject.clip_complete) {
+        let ids : Array[String] = []
+        for subject in [before_subject, after_subject] {
+          for code in subject.clip_issue_codes {
+            push_unique(ids, "diagnostic:\{code}:\{source_subject_id(subject)}")
+          }
+        }
+        ids.sort()
+        return {
+          status: "indeterminate",
+          reason_code: "clip_path_coverage_partial",
           missing_side: None,
           diagnostic_ids: ids,
         }
@@ -820,7 +859,7 @@ fn generic_basic_shape_report(
       after_subject.kind == "rect" => {
       let properties = [
         "rx", "ry", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "marker",
-        "marker-start", "marker-mid", "marker-end", "paint-order", "clip-rule",
+        "marker-start", "marker-mid", "marker-end", "paint-order", "clip-rule", "clip-path",
       ]
       for property in alignment_property_order() {
         if stroke_geometry_property(property) {
@@ -853,6 +892,10 @@ fn generic_basic_shape_report(
   }
   let needs_generic = before.length() > 1 ||
     after.length() > 1 ||
+    source_has_clip_resources(before_svg, profile) ||
+    source_has_clip_resources(after_svg, profile) ||
+    before.any(subject => subject.clip_resource_id is Some(_)) ||
+    after.any(subject => subject.clip_resource_id is Some(_)) ||
     before.any(subject => subject.reference.instance_context is Some(_)) ||
     after.any(subject => subject.reference.instance_context is Some(_)) ||
     before.any(subject => subject.kind != "rect") ||
@@ -906,7 +949,8 @@ fn generic_basic_shape_report(
             alignment_subject_ids([before_subject], [after_subject]),
           )
           if before_subject.reference.instance_context is Some(_) ||
-            after_subject.reference.instance_context is Some(_) {
+            after_subject.reference.instance_context is Some(_) ||
+            property == "clip-path" {
             append_source_resolution_pair(
               source_resolutions, before_subject, after_subject, property,
             )
@@ -1057,7 +1101,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.26",
+    schema_version: "1.27",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

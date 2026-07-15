@@ -118,7 +118,7 @@ fn resolved_visual_properties() -> Array[String] {
     "stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin",
     "stroke-miterlimit", "stroke-dasharray", "stroke-dashoffset", "vector-effect",
     "opacity", "marker", "marker-start", "marker-mid", "marker-end", "paint-order",
-    "clip-rule",
+    "clip-rule", "clip-path",
   ]
 }
 
@@ -278,6 +278,7 @@ fn initial_visual_value(property : String) -> String {
     "stroke-dasharray" => "none"
     "stroke-dashoffset" => "0"
     "fill-rule" | "clip-rule" => "nonzero"
+    "clip-path" => "none"
     "paint-order" => "fill stroke markers"
     "vector-effect" => "none"
     "marker-start" | "marker-mid" | "marker-end" => "none"
@@ -641,6 +642,11 @@ fn substituted_visual_value_valid(property : String, value : String) -> Bool {
       normalized == "none" || canonical_marker_reference(normalized) is Some(_)
     "paint-order" | "fill-rule" | "clip-rule" =>
       paint_rule_value_valid(property, normalized)
+    "clip-path" =>
+      match parse_clip_path_reference(value) {
+        ClipInvalid => false
+        _ => true
+      }
     _ => false
   }
 }
@@ -796,6 +802,16 @@ fn canonical_computed_visual_value(
           (value, false)
         }
       }
+    "clip-path" =>
+      match parse_clip_path_reference(source) {
+        ClipNone => ("none", true)
+        ClipLocal(id) => ("url(#\{id})", true)
+        ClipExternal => (source.trim().to_owned(), true)
+        ClipInvalid => {
+          push_unique(hierarchy.coverage_codes, "clip_path_reference_invalid")
+          (value, false)
+        }
+      }
     _ => (source, true)
   }
 }
@@ -938,12 +954,11 @@ fn computed_visual_for_index(
       let dependencies = [{ owner_id: element.subject_id, property }]
       let had_variable = declaration.declared_value.to_lower().find("var(")
         is Some(_)
-      let substitution = substitute_css_variables(
-        hierarchy,
-        index,
-        declaration.declared_value,
-        [],
-      )
+      let substitution = if had_variable {
+        substitute_css_variables(hierarchy, index, declaration.declared_value, [])
+      } else {
+        Substituted(declaration.declared_value, [])
+      }
       let (value, complete) = match substitution {
         Substituted(value, referenced) => {
           append_style_dependencies(dependencies, referenced)
@@ -1523,13 +1538,13 @@ fn inherited_fill_report_from_hierarchies(
   after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport {
-  let before_subjects = extract_source_subjects_with_profile_or_raise(
-    before_svg, profile,
+  let before_subjects = extract_source_subjects_internal_or_raise(
+    before_svg, profile, true,
   ) catch {
     _ => []
   }
-  let after_subjects = extract_source_subjects_with_profile_or_raise(
-    after_svg, profile,
+  let after_subjects = extract_source_subjects_internal_or_raise(
+    after_svg, profile, true,
   ) catch {
     _ => []
   }
@@ -1748,7 +1763,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.26",
+    schema_version: "1.27",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.26`
+Status: current model for Structured Report schema `1.27`
 
 Last verified: 2026-07-15
 
@@ -28,21 +28,21 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.26
+  -> Structured Report 1.27
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.26` records:
+Schema `1.27` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
 - `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/21`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/22`.
 
 The root `compare` function currently preserves only the caller-supplied viewport dimensions and canonicalizes the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16` and accepts explicit positive dimensions through `--width` and `--height`.
 
@@ -98,7 +98,9 @@ Static same-document patterns use the same resource-versus-consumer separation. 
 
 Paint URL fallback selection precedes gradient or pattern mediation. The engine parses one `<url> [none | <color>]?` value after cascade and custom-property substitution, resolves same-document target existence and kind, and selects either the valid resource, the optional fallback, or deterministic no paint. Active fallback colors use the ordinary sRGB, `currentColor`, paint-opacity, and leaf-opacity model. Inactive fallbacks retain authored facts but add no dependencies. External target validity, context paint, malformed syntax, unsupported profiles, and multi-layer paint remain guarded.
 
-Paint order and winding rules are resolved after the same cascade and dependency stages. `paint-order` appends omitted operations in normal order and compares only the subject's active fill, stroke, and marker subsequence. `fill-rule` is inactive without fill and equivalent across admitted single simple contours; potentially self-intersecting point or path geometry retains `nonzero` or `evenodd`. `clip-rule` is inactive outside `clipPath`; inside it, the rule retains its inherited owner and affected child, while deferred clip resource construction and host application make the relation guarded rather than falsely complete. Pattern child signatures apply the same active-operation normalization.
+Paint order and winding rules are resolved after the same cascade and dependency stages. `paint-order` appends omitted operations in normal order and compares only the subject's active fill, stroke, and marker subsequence. `fill-rule` is inactive without fill and equivalent across admitted single simple contours; potentially self-intersecting point or path geometry retains `nonzero` or `evenodd`. `clip-rule` is inactive outside `clipPath`; inside the admitted one-rectangle clip it is equivalent across `nonzero` and `evenodd`, while more general contours retain the inherited owner, affected child, and a precise content guard. Pattern child signatures apply the same active-operation normalization.
+
+Static rectangular clipping separates the non-inherited host attachment from the referenced resource. The host `clip-path` resolves presentation, inline, and static stylesheet declarations, CSS-wide values, custom-property dependencies, and one local fragment. The resource records presence, `clipPathUnits`, clip/child transforms, rectangle geometry, clip rule, and every active consumer. For `userSpaceOnUse` or unitless numeric `objectBoundingBox` coordinates under deterministic axis transforms, each rendered leaf retains a before-side or after-side conservative effect bound equal to its unclipped painted bound intersected with the transformed rectangle. An empty intersection is a proven zero contribution, not missing evidence. A shared resource event uses the union of all nonempty before/after consumer bounds; unsupported bounds fall back conservatively and revoke causal completeness through a Diagnostic. These rectangles localize where clipping can matter but are not contributor masks or exact curved clip coverage.
 
 Structural relationships are reported only through admitted consequences. An aligned subject whose effective parent path or use-instance resolution changes receives a structural relationship fact when an existing computed property, cumulative transform, viewport, or resource-mediated outcome differs. Pairwise draw-order inversions receive `document.structure.stacking_order` when the subjects' conservative painted bounds may overlap and the final raster changes. Disjoint and zero-raster reorders remain absent. These facts are conservative cause candidates rather than exact contribution weights.
 
@@ -175,7 +177,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.26` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.27` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 `DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v2 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
@@ -198,13 +200,13 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.26` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.27` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
 Changed Facts express causal fan-out rather than event ownership. One Changed Fact may be referenced by distinct Atomic Differences in several events when an inherited declaration or shared resource affects several subjects. Conversely, several Changed Facts may feed the Atomic Differences in one event. This preserves one report identity for every independently reportable distinction without confusing an authored cause with its outcomes.
 
-A resource difference may share one entity event when that entity is its sole mediated outcome. An unreferenced resource change uses its own resource event. Future resource changes with several independent entity outcomes must use a separate resource event and shared Changed Fact references until the project accepts a versioned contextual-event link; assigning the resource Atomic Difference to one arbitrary entity or duplicating it across events is forbidden.
+A resource difference may share one entity event when that entity is its sole mediated outcome. An unreferenced or shared clip-resource change uses its own resource event, while its Changed Facts enumerate every consumer. Other future resource changes with several independent entity outcomes must use a separate resource event and shared Changed Fact references until the project accepts a versioned contextual-event link; assigning the resource Atomic Difference to one arbitrary entity or duplicating it across events is forbidden.
 
 Separate primary alignments remain separate outcome events even when they overlap or are adjacent, share hierarchy, Changed Facts, or resources, or appear visually coherent. A document-level stacking relationship records an evaluated pair; it does not merge either leaf's other outcomes. Cross-subject outcome grouping, separately aligned resource synthesis, and semantic theme detection remain future work. The governing ownership and fan-out decision is [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md); [ADR 0041](adr/0041-defer-cross-subject-event-aggregation.md) requires a measured report-only Agent failure plus a deterministic, traceable, versioned grouping and evaluation policy before that separate boundary can reopen. [ADR 0064](adr/0064-report-only-consequence-aware-structural-relationships.md) defines the relationship-event exception.
 
@@ -214,11 +216,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.26` top-level object contains exactly these conceptual sections:
+The schema `1.27` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.26",
+  "schema_version": "1.27",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -250,7 +252,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.26
+## Not implemented in schema 1.27
 
 The following concepts are intentional future work rather than hidden current fields:
 

@@ -17,3 +17,5 @@ Apply the same active-operation normalization to pattern child computed signatur
 ## Consequences
 
 Equivalent spellings, inactive operation reorderings, simple-contour fill-rule changes, and ordinary `clip-rule` declarations can now remain source-visible without becoming false visual differences. Active paint-order changes and winding-rule changes on potentially self-intersecting geometry remain reportable with continuous domain-specific evidence and existing renderer guards. Inherited owners, custom-property dependencies, pattern consumers, and clip-path children remain attributable. Complete clip-path evaluation is explicitly deferred rather than approximated.
+
+[ADR 0071](0071-resolve-static-rectangular-clips-and-effect-bounds.md) subsequently admits one static non-rounded rectangle clip and retains this guard for more general contours.

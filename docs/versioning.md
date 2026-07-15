@@ -10,12 +10,12 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.6` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.26` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.26` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.7` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.27` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.27` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/21` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/22` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -88,6 +88,8 @@ Module `0.5.4` adds `ResourceBundle`, `ResourceBundleEntry`, `compare_with_resou
 Module `0.5.5` adds the independent `audit_nonvisual_metadata` API and its `SourceAudit*` records under source-audit schema `1.0`. Ordinary visual comparison now preserves outer SVG `title`, `desc`, and `metadata` structure while masking their inner content at equal UTF-16 length, so foreign metadata vocabulary, resource-looking descendants, and hidden shapes no longer fabricate visual subjects, reference cycles, or unsupported-feature Diagnostics. Retiring those Diagnostic conditions advances Structured Report schema to `1.25`; its fields, renderer identity, conformance profile `/20`, intrinsic metrics, and v2 ordering policy remain unchanged.
 
 Module `0.5.6` resolves non-inherited number/percentage opacity on static `svg`, `g`, `symbol`, and `use` containers through the existing cascade and computed-value model, then renders ordered children into isolated transparent layers before applying opacity once and source-over compositing. Exact RGBA8 tests cover overlap, nesting, backdrop, transforms, sibling order, and symbol instances; group regions use descendant bounds and source-over Cause Envelopes retain conservative backdrop facts. The production renderer identity adds `isolated-group-compositor@1`, the raw group-opacity divergence receives an executable compositor disposition, and conformance advances to `/21`. Retiring `group_opacity_compositing_unsupported` and admitting complete `compositing.opacity` outcomes advance Structured Report schema to `1.26`; public report fields and v2 ordering tuples remain unchanged.
+
+Module `0.5.7` resolves non-inherited `clip-path` through the static cascade and local-resource model, admits one non-rounded rectangle in user-space or object-bounding-box units, computes per-side conservative effect bounds, and reports resource presence, units, transforms, geometry, and consumer fan-out. Exact Chromium fixtures cover leaf, container, object-bounding-box, and deterministic transformed clips; unsupported clip content, locators, instance attachment, dynamic behavior, and unavailable bounds retain source-located Diagnostics. The raw fixture set expands to 119 cases with 52 exact and 67 divergent observations and advances conformance to `/22`; Structured Report schema advances to `1.27`, while the production renderer identity and public report fields remain unchanged.
 
 ## Structured Report schema versions
 

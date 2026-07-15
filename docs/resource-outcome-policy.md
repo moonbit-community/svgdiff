@@ -1,6 +1,6 @@
 # Resource Outcome Policy
 
-Status: current contract for schema `1.26`
+Status: current contract for schema `1.27`
 
 Last verified: 2026-07-15
 
@@ -64,5 +64,5 @@ A text-only Agent must not infer resource meaning from the absence of an Atomic 
 - Precise graph states and reachability: [`resource_dependency_graph_wbtest.mbt`](../engine/resource_dependency_graph_wbtest.mbt)
 - Paint fallback selection: [`paint_fallback_wbtest.mbt`](../engine/paint_fallback_wbtest.mbt)
 - Structural reuse failures and unused definitions: [`structure_semantics_wbtest.mbt`](../engine/structure_semantics_wbtest.mbt)
-- Invalid gradient, pattern, marker, and raster boundaries: [`gradient_diff_wbtest.mbt`](../engine/gradient_diff_wbtest.mbt), [`pattern_semantics_wbtest.mbt`](../engine/pattern_semantics_wbtest.mbt), [`marker_geometry_wbtest.mbt`](../engine/marker_geometry_wbtest.mbt), and [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt)
+- Invalid gradient, pattern, clip, marker, and raster boundaries: [`gradient_diff_wbtest.mbt`](../engine/gradient_diff_wbtest.mbt), [`pattern_semantics_wbtest.mbt`](../engine/pattern_semantics_wbtest.mbt), [`clip_semantics_wbtest.mbt`](../engine/clip_semantics_wbtest.mbt), [`marker_geometry_wbtest.mbt`](../engine/marker_geometry_wbtest.mbt), and [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt)
 - Bundle configuration and lazy content validation: [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt)

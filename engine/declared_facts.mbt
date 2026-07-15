@@ -54,6 +54,7 @@ fn supported_rect_property(property : String) -> Bool {
     | "marker-end"
     | "paint-order"
     | "clip-rule"
+    | "clip-path"
     | "opacity" => true
     _ => false
   }

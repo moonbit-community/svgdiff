@@ -128,7 +128,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 ### Compositing and effects
 
 - [x] **P0** Implement group opacity as an isolated compositing operation rather than inherited leaf opacity.
-- [ ] **P0** Implement clipping with exact or conservative effect bounds.
+- [x] **P0** Implement clipping with exact or conservative effect bounds.
 - [ ] **P0** Implement masking, including luminance/alpha mask semantics and resource units.
 - [ ] **P1** Implement filter primitive graphs, filter regions, intermediate surfaces, and conservative expansion bounds.
 - [ ] **P1** Implement blending modes, isolation, and stacking/compositing dependencies.

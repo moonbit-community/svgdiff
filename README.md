@@ -63,7 +63,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.6` with `moon add Milky2018/svgdiff@0.5.6` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.7` with `moon add Milky2018/svgdiff@0.5.7` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -74,7 +74,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.26`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/21`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.27`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/22`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
@@ -82,7 +82,7 @@ Static same-document patterns over the admitted basic-shape child slice use the 
 
 `fill` and `stroke` also implement the SVG 2 URL fallback grammar. A valid same-document gradient or pattern wins; a missing or wrong-kind local target selects its optional solid color, `currentColor`, or `none` fallback, and an absent fallback deterministically means no paint. Inactive fallbacks remain source-visible without creating computed dependencies, while external target validity stays guarded.
 
-Inherited `paint-order`, `fill-rule`, and `clip-rule` are resolved through the same cascade and dependency model. Paint order is compared by its active operation sequence, fill rules collapse when the fill is inactive or the contour is provably simple, and clip rules outside `clipPath` are inactive. Clip-path construction and host application remain explicitly guarded until the later clipping milestone.
+Inherited `paint-order`, `fill-rule`, and `clip-rule` are resolved through the same cascade and dependency model. Paint order is compared by its active operation sequence, fill rules collapse when the fill is inactive or the contour is provably simple, and clip rules outside `clipPath` are inactive. Non-inherited `clip-path` now resolves presentation, inline, and static stylesheet declarations plus CSS-wide values and custom properties. One local static non-rounded rectangle clip is complete-eligible in `userSpaceOnUse` or numeric `objectBoundingBox` coordinates, with deterministic axis transforms, leaf or ordinary container application, per-consumer fan-out, and conservative effect bounds; other clip content and locators remain source-located Diagnostics.
 
 Admitted `g`, `defs`, `symbol`, and same-document `use` structure preserves authored definition identity separately from each rendered placement. Reports expose deterministic nested instance paths, keep definition-owned declarations and Source Spans, fan one change out to every affected instance, and resolve use-host inheritance plus symbol or SVG instance viewports. External or invalid references remain diagnosed, and the measured transform-plus-translation renderer divergence remains guarded.
 
@@ -111,7 +111,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.26")
+  assert_eq(report.schema_version, "1.27")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -169,7 +169,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.26\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.27\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))

@@ -33,6 +33,10 @@ priv struct SourceSubject {
   viewport : ViewportContext
   resource_owner_id : String?
   clip_path_owner_id : String?
+  clip_resource_id : String?
+  clip_complete : Bool
+  clip_effect_bounds : CssBounds?
+  clip_issue_codes : Array[String]
   source_offset : Int
 }
 
@@ -52,7 +56,7 @@ fn alignment_property_order() -> Array[String] {
     "points", "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
     "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
     "stroke-dashoffset", "vector-effect", "marker", "marker-start", "marker-mid",
-    "marker-end", "paint-order", "clip-rule", "opacity",
+    "marker-end", "paint-order", "clip-rule", "opacity", "clip-path",
   ]
 }
 
@@ -259,6 +263,10 @@ fn subject_from_element(
     viewport,
     resource_owner_id,
     clip_path_owner_id,
+    clip_resource_id: None,
+    clip_complete: true,
+    clip_effect_bounds: None,
+    clip_issue_codes: [],
     source_offset,
   }
 }
@@ -669,7 +677,7 @@ fn source_subject_from_rendered_plan(
 }
 
 ///|
-fn extract_source_subjects_internal_or_raise(
+fn extract_source_subjects_without_clip_internal_or_raise(
   input : String,
   profile : ComparisonProfile,
   include_pattern_children : Bool,
@@ -691,6 +699,29 @@ fn extract_source_subjects_internal_or_raise(
     )
   }
   resolve_marker_subjects_or_raise(input, subjects, profile)
+}
+
+///|
+fn extract_source_subjects_without_clip_or_raise(
+  input : String,
+  profile : ComparisonProfile,
+) -> Array[SourceSubject] raise {
+  extract_source_subjects_without_clip_internal_or_raise(input, profile, false)
+}
+
+///|
+fn extract_source_subjects_internal_or_raise(
+  input : String,
+  profile : ComparisonProfile,
+  include_pattern_children : Bool,
+) -> Array[SourceSubject] raise {
+  resolve_clip_subjects_or_raise(
+    input,
+    extract_source_subjects_without_clip_internal_or_raise(
+      input, profile, include_pattern_children,
+    ),
+    profile,
+  )
 }
 
 ///|
@@ -1392,6 +1423,8 @@ fn finish_report(
   let report = attach_gradient_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_pattern_differences(report, before_svg, after_svg)
+  comparison_guard.checkpoint()
+  let report = attach_clip_path_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()

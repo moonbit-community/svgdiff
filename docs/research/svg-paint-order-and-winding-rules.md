@@ -20,7 +20,7 @@ svgdiff resolves all three properties after cascade, ordinary inheritance, CSS-w
 
 `fill-rule` is normalized to an inactive value when no fill operation contributes and to one simple-contour value for admitted rectangles, circles, and ellipses. Point or path contours retain `nonzero` or `evenodd`; point-shape and path raster evidence remains subject to its existing guard.
 
-`clip-rule` is inactive outside a `clipPath`. Inside a `clipPath`, the rule and its inherited owner are retained, but the result remains partial because clip resource construction, host application, clipping bounds, and raster conformance belong to the later clipping roadmap item. This avoids both silently ignoring a real rule change and prematurely claiming complete clipping semantics.
+`clip-rule` is inactive outside a `clipPath`. Inside a `clipPath`, the rule and its inherited owner are retained. This research originally left resource construction, host application, bounds, and raster conformance to a later milestone; [ADR 0071](../adr/0071-resolve-static-rectangular-clips-and-effect-bounds.md) now admits the one-rectangle subset and keeps more general contours partial. This avoids both silently ignoring a real rule change and claiming complete general clipping semantics.
 
 ## Renderer ownership
 

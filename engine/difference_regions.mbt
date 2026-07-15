@@ -34,6 +34,19 @@ fn union_bounds(left : CssBounds?, right : CssBounds?) -> CssBounds? {
 }
 
 ///|
+fn intersect_bounds(left : CssBounds, right : CssBounds) -> CssBounds? {
+  let min_x = left.x.max(right.x)
+  let min_y = left.y.max(right.y)
+  let max_x = (left.x + left.width).min(right.x + right.width)
+  let max_y = (left.y + left.height).min(right.y + right.height)
+  if max_x <= min_x || max_y <= min_y {
+    None
+  } else {
+    Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+  }
+}
+
+///|
 fn bounds_number(subject : SourceSubject, property : String) -> Double? {
   parse_alignment_number(subject_value(subject, property))
 }
@@ -159,7 +172,7 @@ fn source_subject_geometry_bounds(subject : SourceSubject) -> CssBounds? {
 }
 
 ///|
-fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
+fn source_subject_unclipped_bounds(subject : SourceSubject) -> CssBounds? {
   let geometry_bounds = match source_subject_geometry_bounds(subject) {
     Some(bounds) => Some(bounds)
     None => None
@@ -184,6 +197,16 @@ fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
     None => None
   }
   union_bounds(painted_geometry, marker_subject_bounds(subject))
+}
+
+///|
+fn source_subject_bounds(subject : SourceSubject) -> CssBounds? {
+  match subject.clip_effect_bounds {
+    Some(bounds) => Some(bounds)
+    None if subject.clip_complete && subject.clip_resource_id is Some(_) => None
+    None if subject.clip_complete => source_subject_unclipped_bounds(subject)
+    None => source_subject_unclipped_bounds(subject)
+  }
 }
 
 ///|
@@ -556,6 +579,43 @@ fn group_opacity_event_bounds(
     }
   }
   subjects_bounds(subjects)
+}
+
+///|
+fn clip_resource_event_bounds(
+  event : VisualEvent,
+  report : StructuredReport,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> CssBounds? {
+  let keys : Array[String] = []
+  for difference_id in event.atomic_difference_ids {
+    for difference in report.atomic_differences {
+      if difference.id == difference_id &&
+        difference.domain.has_prefix("resource.clip.") {
+        push_unique(keys, event.primary_subject_id)
+      }
+    }
+  }
+  if keys.is_empty() {
+    return None
+  }
+  let mut bounds : CssBounds? = None
+  for subject in before + after {
+    match subject.clip_resource_id {
+      Some(id) if keys.contains(id) =>
+        bounds = union_bounds(
+          bounds,
+          match subject.clip_effect_bounds {
+            Some(bounds) => Some(bounds)
+            None if subject.clip_complete => None
+            None => source_subject_unclipped_bounds(subject)
+          },
+        )
+      _ => ()
+    }
+  }
+  bounds
 }
 
 ///|
@@ -941,16 +1001,20 @@ fn attach_difference_regions(
       group_opacity_event_bounds(event, report, before, after) {
       Some(bounds) => Some(bounds)
       None =>
-        match marker_resource_bounds_for_event(event, before, after) {
+        match clip_resource_event_bounds(event, report, before, after) {
           Some(bounds) => Some(bounds)
           None =>
-            match alignment_for_event(event, alignments) {
-              Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
-                embedded_image_alignment_bounds(
-                  alignment, before_images, after_images,
-                )
-              Some(alignment) => alignment_bounds(alignment, before, after)
-              None => None
+            match marker_resource_bounds_for_event(event, before, after) {
+              Some(bounds) => Some(bounds)
+              None =>
+                match alignment_for_event(event, alignments) {
+                  Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
+                    embedded_image_alignment_bounds(
+                      alignment, before_images, after_images,
+                    )
+                  Some(alignment) => alignment_bounds(alignment, before, after)
+                  None => None
+                }
             }
         }
     }

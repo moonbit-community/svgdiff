@@ -112,7 +112,7 @@ test "fill-rule changes a potentially self-intersecting polygon" {
 }
 
 ///|
-test "clip-rule is inactive outside clipPath and guarded inside it" {
+test "clip-rule is inactive outside clipPath and guarded in unsupported content" {
   let outside_before = "<svg><rect id='box' width='8' height='8' clip-rule='nonzero'/></svg>"
   let outside_after = outside_before.replace_all(
     old="clip-rule='nonzero'",
@@ -142,7 +142,7 @@ test "clip-rule is inactive outside clipPath and guarded inside it" {
   assert_eq(inside.analysis_status, "partial")
   assert_true(
     inside.diagnostics.any(diagnostic => {
-      diagnostic.code == "clip_path_semantics_unsupported" &&
+      diagnostic.code == "clip_path_content_unsupported" &&
       !diagnostic.source_locations.is_empty()
     }),
   )

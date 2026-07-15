@@ -770,10 +770,18 @@ fn normalize_renderer_shape_geometry_with_profile(
   let events = reader.read_events_until_eof() catch { _ => return input }
   let edits : Array[RendererValueEdit] = []
   let viewport_contexts : Array[ViewportContext] = []
+  let object_bbox_clip_stack : Array[Bool] = []
   let mut node_index = 0
   for event in events {
     match event.kind {
       Start(element) => {
+        if element.name.local_name == "clipPath" {
+          object_bbox_clip_stack.push(
+            renderer_attribute(element, "clipPathUnits")
+            .map(attribute => attribute.value.trim() == "objectBoundingBox")
+            .unwrap_or(false),
+          )
+        }
         if element.name.local_name == "svg" {
           let (_, child_viewport) = source_transform_site_with_viewport(
             input,
@@ -787,38 +795,50 @@ fn normalize_renderer_shape_geometry_with_profile(
             None => ()
           }
         }
-        renderer_shape_geometry_edits(
-          input,
-          event.span,
-          element,
-          edits,
-          viewport_contexts
-          .last()
-          .unwrap_or({
-            width: profile.viewport_width.to_double(),
-            height: profile.viewport_height.to_double(),
-          }),
-          profile,
-        )
+        if !object_bbox_clip_stack.last().unwrap_or(false) ||
+          element.name.local_name == "clipPath" {
+          renderer_shape_geometry_edits(
+            input,
+            event.span,
+            element,
+            edits,
+            viewport_contexts
+            .last()
+            .unwrap_or({
+              width: profile.viewport_width.to_double(),
+              height: profile.viewport_height.to_double(),
+            }),
+            profile,
+          )
+        }
         node_index += 1
       }
       Empty(element) => {
-        renderer_shape_geometry_edits(
-          input,
-          event.span,
-          element,
-          edits,
-          viewport_contexts
-          .last()
-          .unwrap_or({
-            width: profile.viewport_width.to_double(),
-            height: profile.viewport_height.to_double(),
-          }),
-          profile,
-        )
+        if !object_bbox_clip_stack.last().unwrap_or(false) {
+          renderer_shape_geometry_edits(
+            input,
+            event.span,
+            element,
+            edits,
+            viewport_contexts
+            .last()
+            .unwrap_or({
+              width: profile.viewport_width.to_double(),
+              height: profile.viewport_height.to_double(),
+            }),
+            profile,
+          )
+        }
         node_index += 1
       }
-      End(name) if name.local_name == "svg" => ignore(viewport_contexts.pop())
+      End(name) => {
+        if name.local_name == "svg" {
+          ignore(viewport_contexts.pop())
+        }
+        if name.local_name == "clipPath" {
+          ignore(object_bbox_clip_stack.pop())
+        }
+      }
       _ => ()
     }
   }
