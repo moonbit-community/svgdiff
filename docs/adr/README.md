@@ -79,6 +79,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0073](0073-own-bounded-static-filter-offset-graphs.md) | Accepted, implemented for bounded direct static `feOffset` graphs | Resolve ordered graph inputs and results, execute distinct clipped intermediates, report continuous offsets and fan-out, and propagate conservative effect bounds. |
 | [0074](0074-own-bounded-static-blending-and-isolation.md) | Accepted, implemented for bounded binary-alpha blending | Resolve categorical blend and isolation properties, composite ordered backdrops, preserve conservative causes, and guard continuous-alpha or effect interactions. |
 | [0075](0075-preserve-unsupported-filter-primitives-as-opaque-source-subtrees.md) | Accepted, implemented for unsupported direct filter primitives | Preserve complete position-aligned source subtrees without claiming computed or rendered semantics. |
+| [0076](0076-separate-structural-and-rendered-subject-alignment.md) | Accepted, implemented for source-structural subjects | Keep shape geometry alignment separate while aligning groups, text, use hosts, and visual resource definitions with explicit uncertainty. |
 
 ## CLI and distribution decisions
 

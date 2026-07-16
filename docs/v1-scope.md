@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.31` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.32` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -47,7 +47,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - formatting normalization for attribute order, quoting, tag closing, entity spelling, and supported inline declaration whitespace;
 - supported presentation attributes, inline-style declaration lists, and matched static stylesheet rules, including selector specificity, source order, duplicate properties, `!important`, and private renderer normalization of the selected winners;
 - basic shape subjects with canonical used geometry from unitless, CSS absolute-unit, SVG percentage, and admitted viewport-relative lengths: `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon`, including omitted defaults, rectangle `auto` dimensions, zero-size numeric geometry, rectangle and ellipse radius propagation, rectangle radius clamping, number-only point-list normalization, line no-interior semantics, and polyline/polygon fill closure semantics;
-- basic subject correspondence, insertion, deletion, split, and merge relationships for the supported shape inventory;
+- normalized subject correspondence, insertion, deletion, split, and merge relationships for the supported shape/path inventory; exact rendered instance-path correspondence for admitted `use` leaves; and a separate source-structural correspondence/insertion/deletion inventory for groups, text subjects, use hosts, symbols, gradients, patterns, markers, clips, masks, and filters with explicit authored-ID, structural-path, or stable-order evidence and ambiguity;
 - supported geometry facts for those shapes, plus fill, stroke paint, canonical length-aware stroke width, dash arrays and dash offsets, caps, joins, miter limits, `vector-effect`, and opacity facts where implemented by the analyzer; active stroke rasterization remains separately guarded;
 - local `marker`, `marker-start`, `marker-mid`, and `marker-end` attachment facts plus canonical length-aware marker viewport/reference properties, SVG path vertex roles, automatic orientation, instance transforms, and conservative clipped viewport envelopes; marker child paint and rasterization remain separately guarded;
 - ordinary inheritance for supported `fill`, `fill-rule`, `stroke`, stroke-width/cap/join/miter/dash properties, marker longhands, `paint-order`, `clip-rule`, and mask `color-interpolation` across admitted `svg`/`g` ancestry and into relevant resource children, plus explicitly non-inherited `clip-path`, `mask`, `mask-mode`, `mask-type`, and `filter`, including nearest-owner or initial-value resolution, owner-level Changed Facts, leaf consequences, computed relations, and renderer-input materialization;
@@ -75,7 +75,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 
 | Feature | Evidence retained | Why the result is partial |
 | --- | --- | --- |
-| Text content | Source-level `text.content` difference | Font loading, shaping, layout, and glyph raster evidence are deferred. |
+| Text content | Source-level `text.content` difference linked to a source-structural text Subject Alignment | Font loading, shaping, layout, runs, glyph correspondence, and glyph raster evidence are deferred. |
 | Use transform combined with nonzero supplemental translation | Source-owned transform and placement facts, instance identity, cumulative geometry, and conservative localization | The pinned renderer composes this combination differently from Chromium; `renderer_use_transform_raster_unproven` limits Rendered Evidence. |
 | Invalid or unresolved use instance | Preferred authored reference, exact Source Span, and any independently admitted definition facts | Missing, external, wrong-kind, unsupported-length, or invalid viewport inputs retain specific `use_*` or viewport Diagnostics instead of implying equality. |
 | Fractional basic-shape geometry | Exact authored and computed numeric differences plus a pinned-renderer measurement | Chromium shows that the pinned renderer can quantize browser-invisible subpixel movement into full pixel changes; `renderer_fractional_geometry_unproven` limits Rendered Evidence. |

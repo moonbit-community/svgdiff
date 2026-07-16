@@ -1,7 +1,23 @@
 {
-  "schema_version": "1.31",
+  "schema_version": "1.32",
   "analysis_status": "complete",
   "coverage_matrix": [
+    {
+      "feature_id": "subject.use",
+      "subject_id": "a",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.use",
+      "subject_id": "b",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
     {
       "feature_id": "document.xml",
       "subject_id": "document",
@@ -182,6 +198,66 @@
         "candidate_count": 0,
         "equal_score_candidate_count": 0,
         "ambiguity": "not_assessed",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    },
+    {
+      "id": "alignment:2",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 131,
+          "kind": "use",
+          "authored_id": "a",
+          "instance_context": null
+        }
+      ],
+      "after": [
+        {
+          "source_index": 132,
+          "kind": "use",
+          "authored_id": "a",
+          "instance_context": null
+        }
+      ],
+      "basis": "structural_authored_id",
+      "evidence": {
+        "score_kind": "structural_authored_id",
+        "selected_score": null,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    },
+    {
+      "id": "alignment:3",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 172,
+          "kind": "use",
+          "authored_id": "b",
+          "instance_context": null
+        }
+      ],
+      "after": [
+        {
+          "source_index": 173,
+          "kind": "use",
+          "authored_id": "b",
+          "instance_context": null
+        }
+      ],
+      "basis": "structural_authored_id",
+      "evidence": {
+        "score_kind": "structural_authored_id",
+        "selected_score": null,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
         "confidence": null,
         "confidence_status": "not_calibrated"
       }

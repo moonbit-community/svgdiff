@@ -4,7 +4,13 @@ Status: current v1 policy
 
 Last verified: 2026-07-14
 
-Subject Alignment minimizes supported visual-property distance within compatible subject kinds after exact visual-signature matching and the current split/merge rules. When more than one accepted pairing has the same evidence and cost, v1 chooses one deterministically so identical inputs produce stable report order and IDs.
+Rendered-shape Subject Alignment minimizes supported visual-property distance within compatible subject kinds after exact visual-signature matching and the current split/merge rules. Source-structural alignment uses a separate deterministic rule chain for groups, text, use hosts, and visual resource definitions. When more than one accepted pairing has the same evidence and cost, v1 chooses one deterministically so identical inputs produce stable report order and IDs.
+
+## Source-structural subjects
+
+Structural subjects pair only within the same SVG kind. The engine first selects the first unused after subject with the same non-empty authored ID, then the first unused subject with the same structural path, then pairs remaining same-kind subjects in source order. Remaining endpoints become insertion or deletion alignments. The bases are `structural_authored_id`, `structural_path`, `stable_kind_order`, and `unmatched_structural_subject`.
+
+Authored IDs, structural paths, and source order are correspondence hints, not identity proof. Repeated candidates report the larger compatible endpoint count as both `candidate_count` and `equal_score_candidate_count`; more than one is `tied`. The stable-order fallback deliberately exposes the limitation addressed by later transform-aware, rendered-geometry-aware, and repeated-subject work.
 
 ## Exact visual-signature ties
 

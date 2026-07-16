@@ -1,7 +1,15 @@
 {
-  "schema_version": "1.31",
+  "schema_version": "1.32",
   "analysis_status": "complete",
   "coverage_matrix": [
+    {
+      "feature_id": "subject.g",
+      "subject_id": "g:129",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
     {
       "feature_id": "document.xml",
       "subject_id": "document",
@@ -88,6 +96,29 @@
         "candidate_count": 1,
         "equal_score_candidate_count": 1,
         "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    },
+    {
+      "id": "alignment:1",
+      "relation": "deletion",
+      "before": [
+        {
+          "source_index": 129,
+          "kind": "g",
+          "authored_id": null,
+          "instance_context": null
+        }
+      ],
+      "after": [],
+      "basis": "unmatched_structural_subject",
+      "evidence": {
+        "score_kind": "unmatched",
+        "selected_score": null,
+        "candidate_count": 0,
+        "equal_score_candidate_count": 0,
+        "ambiguity": "not_assessed",
         "confidence": null,
         "confidence_status": "not_calibrated"
       }

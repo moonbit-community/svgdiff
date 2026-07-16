@@ -27,7 +27,7 @@ priv struct RenderedSubjectPlan {
 
 ///|
 fn structural_source_kind(kind : String) -> Bool {
-  fill_hierarchy_kind(kind) || kind == "marker"
+  fill_hierarchy_kind(kind) || kind == "marker" || kind == "text"
 }
 
 ///|

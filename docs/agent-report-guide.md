@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.31` interpretation guide
+Status: current schema `1.32` interpretation guide
 
 Last verified: 2026-07-15
 
@@ -41,6 +41,8 @@ For each referenced Subject Alignment, read `evidence` before describing the ali
 - `not_assessed` means the applicable structural or unmatched rule did not assess comparable alternatives.
 
 Local uniqueness is not proof of authored identity or global assignment uniqueness. A deterministic tie-break is not confidence. Current reports therefore use `confidence: null` with `confidence_status: "not_calibrated"`; never derive a probability from candidate counts. Because `evidence` is additive and optional in Schema `1.1`, absence means uncertainty evidence was not reported and must not be rewritten as `unique`.
+
+Schema `1.32` contains both rendered-shape and source-structural alignments. `use_instance_path`, visual signatures, and property distance concern rendered leaf subjects. `structural_authored_id`, `structural_path`, and `stable_kind_order` concern groups, text, use hosts, or visual resource definitions and are weaker source correspondence hints. A text alignment does not remove `font_analysis_deferred`; a resource-definition alignment does not authorize attaching resource Atomic Differences or claiming mediated visual equality.
 
 ## Events and shared causes
 
@@ -110,7 +112,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.31` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.32` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

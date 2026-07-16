@@ -48,12 +48,86 @@ priv struct SourceSubject {
 }
 
 ///|
+priv struct StructuralAlignmentSubject {
+  reference : SubjectReference
+  path_signature : String
+}
+
+///|
 fn visual_subject_kind(kind : String) -> Bool {
   match kind {
     "rect" | "circle" | "ellipse" | "line" | "polyline" | "polygon" | "path" =>
       true
     _ => false
   }
+}
+
+///|
+fn structural_alignment_kind(kind : String) -> Bool {
+  match kind {
+    "g"
+    | "text"
+    | "use"
+    | "symbol"
+    | "linearGradient"
+    | "radialGradient"
+    | "pattern"
+    | "marker"
+    | "clipPath"
+    | "mask"
+    | "filter" => true
+    _ => false
+  }
+}
+
+///|
+fn source_structural_alignment_basis(basis : String) -> Bool {
+  basis == "structural_authored_id" ||
+  basis == "structural_path" ||
+  basis == "stable_kind_order" ||
+  basis == "unmatched_structural_subject"
+}
+
+///|
+fn structural_node_path_signature(
+  document : StructuralDocument,
+  node_index : Int,
+) -> String {
+  let segment = structural_path_segment(document, node_index)
+  match document.nodes[node_index].parent_index {
+    Some(parent_index) => {
+      let parent = structural_node_path_signature(document, parent_index)
+      if parent == "" {
+        segment
+      } else {
+        "\{parent}/\{segment}"
+      }
+    }
+    None => segment
+  }
+}
+
+///|
+fn structural_alignment_subjects(
+  document : StructuralDocument,
+) -> Array[StructuralAlignmentSubject] {
+  let subjects : Array[StructuralAlignmentSubject] = []
+  for node_index, node in document.nodes {
+    if !structural_alignment_kind(node.kind) {
+      continue
+    }
+    let authored_id = authored_subject_id(node.element)
+    subjects.push({
+      reference: {
+        source_index: node.source_offset,
+        kind: node.kind,
+        authored_id,
+        instance_context: None,
+      },
+      path_signature: structural_node_path_signature(document, node_index),
+    })
+  }
+  subjects
 }
 
 ///|
@@ -922,6 +996,220 @@ fn alignment_evidence(
 }
 
 ///|
+fn make_structural_alignment(
+  index : Int,
+  relation : String,
+  before : Array[StructuralAlignmentSubject],
+  after : Array[StructuralAlignmentSubject],
+  basis : String,
+  evidence : AlignmentEvidence,
+) -> SubjectAlignment {
+  {
+    id: "alignment:\{index}",
+    relation,
+    before: [
+      for subject in before => subject.reference
+    ],
+    after: [
+      for subject in after => subject.reference
+    ],
+    basis,
+    evidence,
+  }
+}
+
+///|
+fn structural_selection_evidence(
+  score_kind : String,
+  candidate_count : Int,
+) -> AlignmentEvidence {
+  alignment_evidence(
+    score_kind,
+    None,
+    candidate_count,
+    candidate_count,
+    if candidate_count == 1 {
+      "unique"
+    } else {
+      "tied"
+    },
+  )
+}
+
+///|
+fn align_structural_subjects_with_guard(
+  before : Array[StructuralAlignmentSubject],
+  after : Array[StructuralAlignmentSubject],
+  start_index : Int,
+  comparison_guard : ComparisonGuard,
+) -> Array[SubjectAlignment] raise ComparisonInterrupted {
+  let alignments : Array[SubjectAlignment] = []
+  let before_used = Array::make(before.length(), false)
+  let after_used = Array::make(after.length(), false)
+  for before_index, before_subject in before {
+    comparison_guard.checkpoint()
+    guard before_subject.reference.authored_id is Some(authored_id) else {
+      continue
+    }
+    let candidates : Array[Int] = []
+    for after_index, after_subject in after {
+      if !after_used[after_index] &&
+        after_subject.reference.kind == before_subject.reference.kind &&
+        after_subject.reference.authored_id == Some(authored_id) {
+        candidates.push(after_index)
+      }
+    }
+    if candidates.is_empty() {
+      continue
+    }
+    let after_index = candidates[0]
+    let mut before_count = 0
+    let mut after_count = 0
+    for subject in before {
+      if subject.reference.kind == before_subject.reference.kind &&
+        subject.reference.authored_id == Some(authored_id) {
+        before_count += 1
+      }
+    }
+    for subject in after {
+      if subject.reference.kind == before_subject.reference.kind &&
+        subject.reference.authored_id == Some(authored_id) {
+        after_count += 1
+      }
+    }
+    let candidate_count = if before_count > after_count {
+      before_count
+    } else {
+      after_count
+    }
+    before_used[before_index] = true
+    after_used[after_index] = true
+    alignments.push(
+      make_structural_alignment(
+        start_index + alignments.length(),
+        "correspondence",
+        [before_subject],
+        [after[after_index]],
+        "structural_authored_id",
+        structural_selection_evidence("structural_authored_id", candidate_count),
+      ),
+    )
+  }
+  for before_index, before_subject in before {
+    comparison_guard.checkpoint()
+    if before_used[before_index] {
+      continue
+    }
+    let candidates : Array[Int] = []
+    for after_index, after_subject in after {
+      if !after_used[after_index] &&
+        after_subject.reference.kind == before_subject.reference.kind &&
+        after_subject.path_signature == before_subject.path_signature {
+        candidates.push(after_index)
+      }
+    }
+    if candidates.is_empty() {
+      continue
+    }
+    let after_index = candidates[0]
+    before_used[before_index] = true
+    after_used[after_index] = true
+    alignments.push(
+      make_structural_alignment(
+        start_index + alignments.length(),
+        "correspondence",
+        [before_subject],
+        [after[after_index]],
+        "structural_path",
+        structural_selection_evidence("structural_path", candidates.length()),
+      ),
+    )
+  }
+  let unmatched_kinds : Array[String] = []
+  for index, subject in before {
+    if !before_used[index] && !unmatched_kinds.contains(subject.reference.kind) {
+      unmatched_kinds.push(subject.reference.kind)
+    }
+  }
+  for index, subject in after {
+    if !after_used[index] && !unmatched_kinds.contains(subject.reference.kind) {
+      unmatched_kinds.push(subject.reference.kind)
+    }
+  }
+  unmatched_kinds.sort()
+  for kind in unmatched_kinds {
+    comparison_guard.checkpoint()
+    let before_indices : Array[Int] = []
+    let after_indices : Array[Int] = []
+    for index, subject in before {
+      if !before_used[index] && subject.reference.kind == kind {
+        before_indices.push(index)
+      }
+    }
+    for index, subject in after {
+      if !after_used[index] && subject.reference.kind == kind {
+        after_indices.push(index)
+      }
+    }
+    let pair_count = if before_indices.length() < after_indices.length() {
+      before_indices.length()
+    } else {
+      after_indices.length()
+    }
+    let candidate_count = if before_indices.length() > after_indices.length() {
+      before_indices.length()
+    } else {
+      after_indices.length()
+    }
+    for pair_index in 0..<pair_count {
+      let before_index = before_indices[pair_index]
+      let after_index = after_indices[pair_index]
+      before_used[before_index] = true
+      after_used[after_index] = true
+      alignments.push(
+        make_structural_alignment(
+          start_index + alignments.length(),
+          "correspondence",
+          [before[before_index]],
+          [after[after_index]],
+          "stable_kind_order",
+          structural_selection_evidence("stable_kind_order", candidate_count),
+        ),
+      )
+    }
+  }
+  for index, subject in before {
+    if !before_used[index] {
+      alignments.push(
+        make_structural_alignment(
+          start_index + alignments.length(),
+          "deletion",
+          [subject],
+          [],
+          "unmatched_structural_subject",
+          alignment_evidence("unmatched", None, 0, 0, "not_assessed"),
+        ),
+      )
+    }
+  }
+  for index, subject in after {
+    if !after_used[index] {
+      alignments.push(
+        make_structural_alignment(
+          start_index + alignments.length(),
+          "insertion",
+          [],
+          [subject],
+          "unmatched_structural_subject",
+          alignment_evidence("unmatched", None, 0, 0, "not_assessed"),
+        ),
+      )
+    }
+  }
+  alignments
+}
+
+///|
 fn subject_distance(left : SourceSubject, right : SourceSubject) -> Double {
   let mut distance = if left.hierarchy_signature == right.hierarchy_signature {
     0.0
@@ -1341,11 +1629,17 @@ fn subject_alignments_for_sources_with_guard(
   after_svg : String,
   comparison_guard : ComparisonGuard,
 ) -> Array[SubjectAlignment] raise ComparisonInterrupted {
-  let subjects = try
+  let inventories = try
     Some(
       (
         extract_source_subjects_or_raise(before_svg),
         extract_source_subjects_or_raise(after_svg),
+        structural_alignment_subjects(
+          extract_structural_document_or_raise(before_svg),
+        ),
+        structural_alignment_subjects(
+          extract_structural_document_or_raise(after_svg),
+        ),
       ),
     )
   catch {
@@ -1353,9 +1647,21 @@ fn subject_alignments_for_sources_with_guard(
   } noraise {
     value => value
   }
-  match subjects {
-    Some((before, after)) =>
-      align_source_subjects_with_guard(before, after, comparison_guard)
+  match inventories {
+    Some((before, after, before_structural, after_structural)) => {
+      let alignments = align_source_subjects_with_guard(
+        before, after, comparison_guard,
+      )
+      alignments.push_iter(
+        align_structural_subjects_with_guard(
+          before_structural,
+          after_structural,
+          alignments.length(),
+          comparison_guard,
+        ).iter(),
+      )
+      alignments
+    }
     None => []
   }
 }
@@ -1436,11 +1742,16 @@ fn finish_report(
   let combined_alignments = alignments.copy()
   combined_alignments.push_iter(extra_alignments.iter())
   combined_alignments.push_iter(blend_alignments.iter())
+  let rendered_alignments = [
+    for alignment in combined_alignments if !source_structural_alignment_basis(
+      alignment.basis,
+    ) => alignment
+  ]
   comparison_guard.checkpoint()
   let report = attach_subject_alignments(report, combined_alignments)
   comparison_guard.checkpoint()
   let report = attach_transform_differences(
-    report, before_svg, after_svg, combined_alignments,
+    report, before_svg, after_svg, rendered_alignments,
   )
   comparison_guard.checkpoint()
   let report = attach_gradient_differences(report, before_svg, after_svg)
@@ -1456,7 +1767,7 @@ fn finish_report(
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_embedded_image_differences(
-    report, before_svg, after_svg, combined_alignments, resources, limits,
+    report, before_svg, after_svg, rendered_alignments, resources, limits,
   )
   comparison_guard.checkpoint()
   let report = attach_unused_definition_differences(
@@ -1464,12 +1775,12 @@ fn finish_report(
   )
   comparison_guard.checkpoint()
   let report = attach_structural_differences(
-    report, before_svg, after_svg, combined_alignments,
+    report, before_svg, after_svg, rendered_alignments,
   )
   comparison_guard.checkpoint()
   let report = match
     attach_difference_regions(
-      report, before_svg, after_svg, combined_alignments, resources, limits, comparison_guard,
+      report, before_svg, after_svg, rendered_alignments, resources, limits, comparison_guard,
     ) {
     RegionsAttached(report) => report
     AttachmentRegionLimitExceeded =>

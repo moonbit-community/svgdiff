@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.31",
+  "schema_version": "1.32",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -69,6 +69,14 @@
       "diagnostic_ids": [
         "diagnostic:renderer-pattern-raster-unproven:box:fill"
       ]
+    },
+    {
+      "feature_id": "subject.pattern",
+      "subject_id": "tile",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
     },
     {
       "feature_id": "domain.paint.fill",
@@ -153,6 +161,36 @@
       "evidence": {
         "score_kind": "exact_visual_signature",
         "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    },
+    {
+      "id": "alignment:1",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 77,
+          "kind": "pattern",
+          "authored_id": "tile",
+          "instance_context": null
+        }
+      ],
+      "after": [
+        {
+          "source_index": 77,
+          "kind": "pattern",
+          "authored_id": "tile",
+          "instance_context": null
+        }
+      ],
+      "basis": "structural_authored_id",
+      "evidence": {
+        "score_kind": "structural_authored_id",
+        "selected_score": null,
         "candidate_count": 1,
         "equal_score_candidate_count": 1,
         "ambiguity": "unique",

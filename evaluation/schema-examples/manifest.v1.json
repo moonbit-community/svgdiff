@@ -2,6 +2,19 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "text-source-alignment",
+      "before": "evaluation/schema-examples/cases/text-source-alignment/before.svg",
+      "after": "evaluation/schema-examples/cases/text-source-alignment/after.svg",
+      "output": "schema/examples/text-source-alignment.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["text.content"],
+        "computed_relations": ["indeterminate"],
+        "diagnostic_codes": ["font_analysis_deferred"],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "unsupported-filter-primitive-change",
       "before": "evaluation/schema-examples/cases/unsupported-filter-primitive-change/before.svg",
       "after": "evaluation/schema-examples/cases/unsupported-filter-primitive-change/after.svg",

@@ -310,6 +310,11 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
         "property_distance",
         "embedded_image_source_order_v1",
     }
+    candidate_only_score_kinds = {
+        "structural_authored_id",
+        "structural_path",
+        "stable_kind_order",
+    }
     unassessed_score_kinds = {
         "structural_rule",
         "unmatched",
@@ -364,6 +369,23 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
             if ambiguity not in {"unique", "tied"}:
                 raise ValueError(
                     f"{case['id']}: alignment {index} lost assessed ambiguity"
+                )
+        elif score_kind in candidate_only_score_kinds:
+            if evidence["selected_score"] is not None:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} invents a numeric structural score"
+                )
+            if ambiguity == "unique" and equal_count != 1:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} has inconsistent structural uniqueness"
+                )
+            if ambiguity == "tied" and equal_count < 2:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} has inconsistent structural tie evidence"
+                )
+            if ambiguity not in {"unique", "tied"}:
+                raise ValueError(
+                    f"{case['id']}: alignment {index} lost structural ambiguity"
                 )
         elif score_kind in unassessed_score_kinds:
             if (

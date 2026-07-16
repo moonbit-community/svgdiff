@@ -251,3 +251,150 @@ test "a visual merge is represented set to set and serialized" {
     _ => fail("expected serialized set-to-set alignment")
   }
 }
+
+///|
+test "path and group inventories align without shifting shape IDs" {
+  let before = alignment_svg(
+    "<g id='layer'><path id='curve' d='M 1 1 L 9 9' fill='none' stroke='red'/></g>",
+  )
+  let after = alignment_svg(
+    "<g id='layer'><path id='curve' d='M1,1L9,9' fill='none' stroke='red'/></g>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.id == "alignment:0" &&
+      alignment.before[0].kind == "path" &&
+      alignment.basis == "exact_visual_signature"
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.id == "alignment:1" &&
+      alignment.before[0].kind == "g" &&
+      alignment.basis == "structural_authored_id"
+    }),
+  )
+}
+
+///|
+test "text alignment owns source differences without claiming font evidence" {
+  let before = alignment_svg(
+    "<text id='label' x='1' y='12' font-family='Unresolved Font'>A</text>",
+  )
+  let after = alignment_svg(
+    "<text id='label' x='1' y='12' font-family='Unresolved Font'>B</text>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  guard report.subject_alignments[0] is alignment else {
+    fail("expected text alignment")
+  }
+  assert_eq(alignment.before[0].kind, "text")
+  assert_eq(alignment.basis, "structural_authored_id")
+  assert_eq(alignment.evidence.ambiguity, "unique")
+  assert_true(alignment.evidence.confidence is None)
+  guard report.atomic_differences[0] is difference else {
+    fail("expected text difference")
+  }
+  assert_eq(difference.subject_alignment_id, Some(alignment.id))
+  assert_eq(difference.computed_relation.status, "indeterminate")
+  assert_eq(report.analysis_status, "partial")
+}
+
+///|
+test "use hosts and their rendered leaf instances remain distinct" {
+  let source = alignment_svg(
+    "<defs><g id='tile'><rect id='shape' x='1' y='1' width='4' height='4'/></g></defs><use id='placement' href='#tile' x='2'/>",
+  )
+  let report = @engine.compare(
+    source,
+    source,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.basis == "use_instance_path" &&
+      alignment.before[0].kind == "rect" &&
+      alignment.before[0].instance_context is Some(_)
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.basis == "structural_authored_id" &&
+      alignment.before[0].kind == "use" &&
+      alignment.before[0].authored_id == Some("placement") &&
+      alignment.before[0].instance_context is None
+    }),
+  )
+}
+
+///|
+test "resource definitions align without claiming resource attribution" {
+  let before = alignment_svg(
+    "<defs><linearGradient id='paint'><stop offset='0' stop-color='red'/></linearGradient></defs><rect id='box' width='10' height='10' fill='url(#paint)'/>",
+  )
+  let after = alignment_svg(
+    "<defs><linearGradient id='paint'><stop offset='0' stop-color='blue'/></linearGradient></defs><rect id='box' width='10' height='10' fill='url(#paint)'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before.any(reference => {
+        reference.kind == "linearGradient" &&
+        reference.authored_id == Some("paint")
+      }) &&
+      alignment.basis == "structural_authored_id"
+    }),
+  )
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.subject_role == "resource" &&
+      difference.subject_alignment_id is None
+    }),
+  )
+}
+
+///|
+test "repeated structural subjects expose stable-order ambiguity" {
+  let before = alignment_svg("<defs><g/><g/><filter id='removed'/></defs>")
+  let after = alignment_svg("<symbol><g/><g/></symbol>")
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before.length() == 1 &&
+      alignment.before[0].kind == "g" &&
+      alignment.basis == "stable_kind_order" &&
+      alignment.evidence.candidate_count == 2 &&
+      alignment.evidence.equal_score_candidate_count == 2 &&
+      alignment.evidence.ambiguity == "tied"
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.relation == "insertion" &&
+      alignment.after.any(reference => reference.kind == "symbol")
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.relation == "deletion" &&
+      alignment.before.any(reference => reference.kind == "filter")
+    }),
+  )
+}
