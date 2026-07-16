@@ -2,6 +2,13 @@
   "schema_version": "svgdiff-adversarial-corpus/1",
   "cases": [
     {
+      "id": "false-pair-identity-repeated-subjects",
+      "failure_mode": "false_pair_identity",
+      "before": "evaluation/schema-examples/cases/repeated-subject-equivalence-class/before.svg",
+      "after": "evaluation/schema-examples/cases/repeated-subject-equivalence-class/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
       "id": "false-complete-unchanged-transform",
       "failure_mode": "false_complete",
       "before": "evaluation/adversarial/cases/false-complete-unchanged-transform/before.svg",

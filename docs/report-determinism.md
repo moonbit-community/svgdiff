@@ -1,6 +1,6 @@
 # Structured Report Determinism and Local Identifiers
 
-Status: current schema `1.33` contract
+Status: current schema `1.34` contract
 
 Last verified: 2026-07-15
 
@@ -46,12 +46,12 @@ Every Atomic Difference belongs to exactly one owning Visual Event. A Changed Fa
 
 ## Source-subject identity boundary
 
-`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.33` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span. An opaque filter primitive subject is derived from its filter resource subject plus zero-based direct-child position; insertion may therefore shift later labels and conservatively produce additional differences.
+`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.34` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span. An opaque filter primitive subject is derived from its filter resource subject plus zero-based direct-child position; insertion may therefore shift later labels and conservatively produce additional differences.
 
 ## Ordering boundary
 
 Repeated identical comparisons preserve every emitted array order. Same-domain difference ordering additionally follows [`v2_domain_lexicographic`](domain-ordering.md). This contract does not invent semantic ordering for JSON object members, cross-domain importance, or source subjects that the current alignment model cannot distinguish.
 
-Rendered shape alignments are emitted first. Exact candidates use a stable visual, hierarchy, cumulative-transform, and conservative-bounds signature; remaining same-kind candidates are stably sorted by that signature and source index before the deterministic Hungarian assignment minimizes `rendered_geometry_feature_distance_v1`. Equal costs retain the first candidate in that order, and selected pairs emit by before then after source index. Source-structural alignments follow in authored traversal order: authored-ID matches, structural-path matches, stable same-kind matches in sorted kind order, deletions, then insertions. Every tied fallback remains explicitly tied and uncalibrated.
+Rendered shape alignments are emitted first. Equal-cardinality repeated exact visual and reportable source-semantic signatures emit one equivalence-class alignment with endpoints in source traversal order but no pairwise positional meaning. Remaining same-kind candidates are stably sorted by their visual, hierarchy, cumulative-transform, and conservative-bounds signature and source index before the deterministic Hungarian assignment minimizes `rendered_geometry_feature_distance_v1`. Equal costs retain the first candidate in that order, and selected pairs emit by before then after source index. Source-structural alignments follow in authored traversal order: recursive semantic-signature classes, authored-ID matches, structural-path matches, stable same-kind matches in sorted kind order, deletions, then insertions. Every tied class or fallback remains explicitly tied and uncalibrated.
 
 The executable gate is the [determinism evaluation](../evaluation/determinism/README.md). It uses independent release-CLI processes, both JSON modes, a non-default viewport, multi-event output, partial reports, negative integrity controls, and exact bundle comparison across the supported platform matrix.

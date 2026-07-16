@@ -363,4 +363,3 @@ pub(all) struct VisualEvent {
 // Type aliases
 
 // Traits
-

@@ -141,7 +141,7 @@ test "changed subjects use global rather than greedy minimum cost" {
 }
 
 ///|
-test "duplicate exact signatures tie-break by source index" {
+test "duplicate exact signatures form one set-to-set equivalence class" {
   let before = alignment_svg(
     "<rect id='before-a' x='2' y='2' width='4' height='4' fill='red'/><rect id='before-b' x='2' y='2' width='4' height='4' fill='red'/>",
   )
@@ -153,22 +153,52 @@ test "duplicate exact signatures tie-break by source index" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  let pairs = [
-    for alignment in report.subject_alignments if alignment.basis ==
-    "exact_visual_signature" => {
-      (alignment.before[0].source_index, alignment.after[0].source_index)
-    }
+  assert_eq(report.subject_alignments.length(), 1)
+  let alignment = report.subject_alignments[0]
+  assert_eq(alignment.basis, "exact_visual_equivalence_class")
+  assert_eq(alignment.before.length(), 2)
+  assert_eq(alignment.after.length(), 2)
+  assert_eq(alignment.evidence.score_kind, "exact_visual_signature")
+  assert_true(alignment.evidence.selected_score == Some(0.0))
+  assert_eq(alignment.evidence.candidate_count, 2)
+  assert_eq(alignment.evidence.equal_score_candidate_count, 2)
+  assert_eq(alignment.evidence.ambiguity, "tied")
+  assert_true(alignment.evidence.confidence is None)
+  assert_eq(alignment.evidence.confidence_status, "not_calibrated")
+  assert_true(report.atomic_differences.is_empty())
+  assert_true(report.events.is_empty())
+}
+
+///|
+test "repeated visual equivalents retain source-semantic differences" {
+  let before = alignment_svg(
+    "<rect x='2' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='red'/>",
+  )
+  let after = alignment_svg(
+    "<rect x='2' y='2' width='4' height='4' fill='#ff0000'/><rect x='2' y='2' width='4' height='4' fill='#ff0000'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.all(alignment => {
+      alignment.basis != "exact_visual_equivalence_class"
+    }),
+  )
+  let fill_differences = [
+    for difference in report.atomic_differences if difference.domain ==
+    "paint.fill" => difference
   ]
-  assert_eq(pairs, [(0, 0), (1, 1)])
-  for alignment in report.subject_alignments {
-    assert_eq(alignment.evidence.score_kind, "exact_visual_signature")
-    assert_true(alignment.evidence.selected_score == Some(0.0))
-    assert_eq(alignment.evidence.candidate_count, 2)
-    assert_eq(alignment.evidence.equal_score_candidate_count, 2)
-    assert_eq(alignment.evidence.ambiguity, "tied")
-    assert_true(alignment.evidence.confidence is None)
-    assert_eq(alignment.evidence.confidence_status, "not_calibrated")
-  }
+  assert_eq(fill_differences.length(), 2)
+  assert_true(
+    fill_differences.all(difference => {
+      difference.source_before == "red" &&
+      difference.source_after == "#ff0000" &&
+      difference.computed_relation.status == "equivalent"
+    }),
+  )
 }
 
 ///|
@@ -335,7 +365,7 @@ test "use hosts and their rendered leaf instances remain distinct" {
   )
   assert_true(
     report.subject_alignments.any(alignment => {
-      alignment.basis == "structural_authored_id" &&
+      alignment.basis == "structural_semantic_signature" &&
       alignment.before[0].kind == "use" &&
       alignment.before[0].authored_id == Some("placement") &&
       alignment.before[0].instance_context is None
@@ -374,7 +404,7 @@ test "resource definitions align without claiming resource attribution" {
 }
 
 ///|
-test "repeated structural subjects expose stable-order ambiguity" {
+test "repeated structural subjects form one semantic equivalence class" {
   let before = alignment_svg("<defs><g/><g/><filter id='removed'/></defs>")
   let after = alignment_svg("<symbol><g/><g/></symbol>")
   let report = @engine.compare(
@@ -384,9 +414,10 @@ test "repeated structural subjects expose stable-order ambiguity" {
   )
   assert_true(
     report.subject_alignments.any(alignment => {
-      alignment.before.length() == 1 &&
+      alignment.before.length() == 2 &&
+      alignment.after.length() == 2 &&
       alignment.before[0].kind == "g" &&
-      alignment.basis == "stable_kind_order" &&
+      alignment.basis == "structural_semantic_signature" &&
       alignment.evidence.candidate_count == 2 &&
       alignment.evidence.equal_score_candidate_count == 2 &&
       alignment.evidence.ambiguity == "tied"
@@ -402,6 +433,58 @@ test "repeated structural subjects expose stable-order ambiguity" {
     report.subject_alignments.any(alignment => {
       alignment.relation == "deletion" &&
       alignment.before.any(reference => reference.kind == "filter")
+    }),
+  )
+}
+
+///|
+test "structural semantic signatures match reordered groups without IDs or order" {
+  let before = alignment_svg(
+    "<g aria-label='ignored' fill='red'><rect x='1' width='2' height='2'/></g><g fill='blue'><rect x='10' width='2' height='2'/></g>",
+  )
+  let after = alignment_svg(
+    "<g fill='blue'><rect height='2' width='2' x='10'/></g><g data-note='ignored' fill='red'><rect height='2' x='1' width='2'/></g>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let groups = [
+    for alignment in report.subject_alignments if alignment.before.length() == 1 &&
+    alignment.after.length() == 1 &&
+    alignment.before[0].kind == "g" => alignment
+  ]
+  assert_eq(groups.length(), 2)
+  assert_true(
+    groups.all(alignment => {
+      alignment.basis == "structural_semantic_signature" &&
+      alignment.evidence.ambiguity == "unique"
+    }),
+  )
+  assert_true(
+    groups[0].before[0].source_index < groups[1].before[0].source_index &&
+    groups[0].after[0].source_index > groups[1].after[0].source_index,
+  )
+}
+
+///|
+test "structural semantic signatures preserve child order" {
+  let before = alignment_svg(
+    "<g id='layer'><rect fill='red'/><rect fill='blue'/></g>",
+  )
+  let after = alignment_svg(
+    "<g id='layer'><rect fill='blue'/><rect fill='red'/></g>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].kind == "g" &&
+      alignment.basis == "structural_authored_id"
     }),
   )
 }

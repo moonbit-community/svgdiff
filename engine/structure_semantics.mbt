@@ -6,6 +6,7 @@ priv struct StructuralSourceNode {
   parent_index : Int?
   children : Array[Int]
   element : @xml.NamespaceElement
+  direct_text : String
   definition_content : Bool
   href_fact : DeclaredVisualFact?
 }
@@ -91,6 +92,7 @@ fn add_structural_source_node(
     parent_index,
     children: [],
     element,
+    direct_text: "",
     definition_content,
     href_fact: structural_href_fact(input, element),
   })
@@ -151,6 +153,17 @@ fn extract_structural_document_or_raise(
           )
         }
       End(_) => ignore(stack.pop())
+      Text(_) | CData(_) =>
+        match stack.last() {
+          Some(Some(index)) if nodes[index].kind == "text" => {
+            let node = nodes[index]
+            nodes[index] = {
+              ..node,
+              direct_text: node.direct_text + source_slice(input, event.span),
+            }
+          }
+          _ => ()
+        }
       _ => ()
     }
   }

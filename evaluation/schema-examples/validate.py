@@ -109,6 +109,23 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
                 f"{case['id']}: expected authored alignment pairs="
                 f"{expected['alignment_authored_pairs']!r}, got {pairs!r}"
             )
+    if "alignment_cardinalities" in expected:
+        cardinalities = sorted(
+            [
+                [
+                    alignment["basis"],
+                    len(alignment["before"]),
+                    len(alignment["after"]),
+                    alignment["evidence"]["score_kind"],
+                ]
+                for alignment in report["subject_alignments"]
+            ]
+        )
+        if cardinalities != expected["alignment_cardinalities"]:
+            raise ValueError(
+                f"{case['id']}: expected alignment cardinalities="
+                f"{expected['alignment_cardinalities']!r}, got {cardinalities!r}"
+            )
 
 
 def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
@@ -326,6 +343,7 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
         "embedded_image_source_order_v1",
     }
     candidate_only_score_kinds = {
+        "structural_semantic_signature",
         "structural_authored_id",
         "structural_path",
         "stable_kind_order",

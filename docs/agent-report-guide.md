@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.33` interpretation guide
+Status: current schema `1.34` interpretation guide
 
 Last verified: 2026-07-15
 
@@ -42,7 +42,7 @@ For each referenced Subject Alignment, read `evidence` before describing the ali
 
 Local uniqueness is not proof of authored identity or global assignment uniqueness. A deterministic tie-break is not confidence. Current reports therefore use `confidence: null` with `confidence_status: "not_calibrated"`; never derive a probability from candidate counts. Because `evidence` is additive and optional in Schema `1.1`, absence means uncertainty evidence was not reported and must not be rewritten as `unique`.
 
-Schema `1.33` contains both rendered-shape and source-structural alignments. `use_instance_path`, transform- and bounds-aware visual signatures, and `rendered_geometry_feature_distance_v1` concern rendered leaf subjects. The feature score is a bounded, dimensionless candidate-selection cost; a lower value means only that the selected same-kind endpoints were closer under this versioned geometry/appearance/hierarchy/path policy. Do not report it as visual magnitude, rendered equality, perceptual distance, calibrated confidence, or a cross-report comparable quality score. `structural_authored_id`, `structural_path`, and `stable_kind_order` concern groups, text, use hosts, or visual resource definitions and are weaker source correspondence hints. A text alignment does not remove `font_analysis_deferred`; a resource-definition alignment does not authorize attaching resource Atomic Differences or claiming mediated visual equality.
+Schema `1.34` contains both rendered-shape and source-structural alignments. `use_instance_path`, transform- and bounds-aware visual signatures, and `rendered_geometry_feature_distance_v1` concern rendered leaf subjects. The feature score is a bounded, dimensionless candidate-selection cost; a lower value means only that the selected same-kind endpoints were closer under this versioned geometry/appearance/hierarchy/path policy. `exact_visual_equivalence_class` and a multi-endpoint `structural_semantic_signature` are sets, not ordered pairs: never zip `before` and `after`, and do not claim that matching array positions identify the same object. `structural_authored_id`, `structural_path`, and `stable_kind_order` are weaker source correspondence hints for changed structural subjects. Do not report any alignment evidence as visual magnitude, rendered equality, perceptual distance, calibrated confidence, or a cross-report comparable quality score. A text alignment does not remove `font_analysis_deferred`; a resource-definition alignment does not authorize attaching resource Atomic Differences or claiming mediated visual equality.
 
 ## Events and shared causes
 
@@ -112,7 +112,7 @@ Magnitude fields are evidence, not severity labels:
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.33` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.34` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

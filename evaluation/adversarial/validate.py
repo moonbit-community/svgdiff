@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_MODES = {
     "false_complete",
+    "false_pair_identity",
     "viewport_false_complete",
     "false_equality",
     "structural_false_equality",
@@ -70,7 +71,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.33":
+    if report.get("schema_version") != "1.34":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -156,6 +157,28 @@ def validate_wrong_alignment(report: dict) -> None:
     }
     if pairs != {(0, 1), (1, 0)}:
         raise ValueError(f"unlabelled subjects aligned by source order: {sorted(pairs)}")
+
+
+def validate_false_pair_identity(report: dict) -> None:
+    if report["analysis_status"] != "complete" or report["atomic_differences"]:
+        raise ValueError("repeated equivalent subjects changed visual equality")
+    classes = {
+        alignment["basis"]: alignment
+        for alignment in report["subject_alignments"]
+    }
+    for basis in (
+        "exact_visual_equivalence_class",
+        "structural_semantic_signature",
+    ):
+        alignment = classes.get(basis)
+        if (
+            alignment is None
+            or len(alignment["before"]) != 2
+            or len(alignment["after"]) != 2
+            or alignment["evidence"]["ambiguity"] != "tied"
+            or alignment["evidence"]["confidence"] is not None
+        ):
+            raise ValueError(f"{basis} fabricated pairwise repeated-subject identity")
 
 
 def validate_structural_false_equality(report: dict) -> None:
@@ -359,6 +382,7 @@ def main() -> None:
     results = []
     validators = {
         "false_complete": lambda case, report: validate_false_complete(case, report),
+        "false_pair_identity": lambda _case, report: validate_false_pair_identity(report),
         "viewport_false_complete": validate_viewport_false_complete,
         "false_equality": lambda case, report: validate_false_equality(case, report),
         "structural_false_equality": lambda _case, report: validate_structural_false_equality(report),

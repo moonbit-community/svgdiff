@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.33` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.34` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -133,7 +133,7 @@ V1 does not completely analyze:
 - general clip or mask geometry, percentages in `objectBoundingBox` clips, clip or mask references on use hosts, nested clip/mask resources, CSS image and multi-layer masks, mask-border, visual execution of filter primitives beyond direct static `feOffset`, CSS filter functions, filter templates or primitive subregions, transformed/fractional/dynamic/reused filter application, continuous-alpha or antialiased blending, container blend modes, blend attachment on instances, and blend interactions with transforms, opacity, clip, mask, or filter effects;
 - deterministic fonts, shaping, text layout, and glyph rasterization;
 - perceptual backgrounds, FLIP, SSIM, learned perceptual metrics, and advanced color profiles;
-- exact contribution weights, minimal root causes, or cross-subject event synthesis;
+- unequal-cardinality or mixed-change repeated-subject equivalence classes, exact contribution weights, minimal root causes, or cross-subject event synthesis;
 - browser-to-browser or renderer-to-renderer equality claims.
 
 Pure nonvisual metadata such as accessibility descriptions and custom data attributes is outside visual Atomic Difference enumeration. Outermost descriptive content is masked only inside the visual pipeline, while the original source remains available to the explicit [nonvisual source audit](source-audit.md). If an outer element or metadata attribute participates in a supported CSS selector, the resulting visual consequence remains reportable in its ordinary visual domain.

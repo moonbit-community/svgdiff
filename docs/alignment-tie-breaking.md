@@ -8,15 +8,15 @@ Rendered-shape Subject Alignment minimizes a bounded device-space feature distan
 
 ## Source-structural subjects
 
-Structural subjects pair only within the same SVG kind. The engine first selects the first unused after subject with the same non-empty authored ID, then the first unused subject with the same structural path, then pairs remaining same-kind subjects in source order. Remaining endpoints become insertion or deletion alignments. The bases are `structural_authored_id`, `structural_path`, `stable_kind_order`, and `unmatched_structural_subject`.
+Structural subjects pair only within the same SVG kind. The engine first groups an equal-cardinality class with the same recursive semantic signature. That signature ignores the subject's own authored ID, sibling ordinal, attribute order, unprefixed `aria-*`/`data-*`, and namespace declaration spelling while preserving SVG kind, other attributes, direct text for text subjects, and ordered child signatures. Remaining subjects select the first unused after subject with the same non-empty authored ID, then the same structural path, then stable same-kind source order. Remaining endpoints become insertion or deletion alignments. The bases are `structural_semantic_signature`, `structural_authored_id`, `structural_path`, `stable_kind_order`, and `unmatched_structural_subject`.
 
-Authored IDs, structural paths, and source order are correspondence hints, not identity proof. Repeated candidates report the larger compatible endpoint count as both `candidate_count` and `equal_score_candidate_count`; more than one is `tied`. The stable-order fallback deliberately exposes the limitation addressed by later structural repeated-subject work; rendered-leaf feature scoring does not silently change this separate source inventory.
+An equal semantic class retains every endpoint in one set alignment. A one-member class is locally `unique`; a larger class is `tied` with its cardinality in both candidate counts. Authored IDs, structural paths, and source order remain weaker correspondence hints, not identity proof. Unequal-cardinality and mixed-change clusters can still reach those fallbacks until broader many-to-many invariants are accepted.
 
 ## Exact visual-signature ties
 
-The engine visits before subjects in source index order. For each subject it selects the first unused after subject, also in source index order, whose kind, hierarchy signature, normalized supported visual-property signature, cumulative-transform completeness and matrix, and conservative device-space painted-bounds signature are identical. Authored `id` values are not part of this signature and do not override the visual tie.
+The engine visits before subjects in source index order and identifies unused after subjects whose kind, hierarchy signature, normalized supported visual-property signature, cumulative-transform completeness and matrix, and conservative device-space painted-bounds signature are identical. Authored `id` values are not part of this signature and do not override the visual evidence.
 
-Thus two visually indistinguishable duplicate subjects pair by `(before source_index, after source_index)` in ascending order even if their authored IDs suggest a different pairing. This is deterministic provenance, not authoritative cross-document identity.
+When the same exact visual signature and the same currently reportable declaration, path-command, and transform-chain source semantics occur more than once with equal cardinality on both sides, the engine emits one `exact_visual_equivalence_class` alignment containing all endpoints. The source-semantic guard keeps visually equivalent authoring differences in ordinary one-to-one alignments where Atomic Differences can report them. Array order is deterministic source provenance only: consumers must not zip the arrays or infer pairwise correspondence. A one-member exact class retains the ordinary `exact_visual_signature` basis. Unequal-cardinality classes retain the current deterministic fallback so insertions, deletions, and changed subjects are not silently collapsed.
 
 ## Equal minimum-cost ties
 
@@ -27,13 +27,14 @@ The feature score is the arithmetic mean of independently available values in `[
 The tie-break inputs are therefore:
 
 1. compatible subject kind;
-2. normalized visual, hierarchy, cumulative-transform, and bounds signature in MoonBit shortlex order;
-3. source index within identical signatures;
-4. first stable candidate within an equal-cost assignment.
+2. exact repeated equivalence-class extraction where cardinalities agree;
+3. normalized visual, hierarchy, cumulative-transform, and bounds signature in MoonBit shortlex order;
+4. source index within unresolved signatures;
+5. first stable candidate within an equal-cost assignment.
 
 ## Selection evidence
 
-Schema `1.1` adds an optional `evidence` record to each Subject Alignment; current producers always emit it. `score_kind` identifies the selection rule, `selected_score` retains its numeric result when the rule has one, `candidate_count` records the local candidate set, and `equal_score_candidate_count` records candidates with the selected local score. Exact-signature evidence conservatively uses the larger count of indistinguishable before or after endpoints, so duplicate subjects on either side remain visibly tied. `rendered_geometry_feature_distance_v1` evidence counts compatible endpoints on the opposite side of the selected assignment row. Its selected score is bounded and dimensionless, but it is only a versioned correspondence cost: consumers must not interpret it as a Difference Magnitude, perceptual distance, probability, or equality threshold.
+Schema `1.1` adds an optional `evidence` record to each Subject Alignment; current producers always emit it. `score_kind` identifies the selection rule, `selected_score` retains its numeric result when the rule has one, `candidate_count` records the local candidate set, and `equal_score_candidate_count` records candidates with the selected local score. Exact rendered equivalence classes retain score zero and their full cardinality. `structural_semantic_signature` is candidate-only exact source-semantic evidence with a null score. `rendered_geometry_feature_distance_v1` evidence counts compatible endpoints on the opposite side of the selected assignment row. Its selected score is bounded and dimensionless, but it is only a versioned correspondence cost: consumers must not interpret it as a Difference Magnitude, perceptual distance, probability, or equality threshold.
 
 `ambiguity` has three values:
 
@@ -47,4 +48,4 @@ These counts are local evidence, not an enumeration of every globally optimal as
 
 A selected alignment is never made certain merely because it is deterministic. Current producers serialize `confidence: null` and `confidence_status: "not_calibrated"`; no probability or calibration corpus exists. Agents may rely on repeatability and report the local ambiguity, but must not turn `unique` into identity proof, turn `tied` into equality, or invent confidence from candidate counts. Absence of `evidence` in a compatible report means the producer did not report uncertainty evidence, not that the match was unique.
 
-The [report determinism gate](../evaluation/determinism/README.md) checks repeated process-level output. Alignment integration tests separately fix exact-duplicate and equal-cost pair membership, evidence counts, ambiguity status, and null confidence.
+The [report determinism gate](../evaluation/determinism/README.md) checks repeated process-level output. Alignment integration tests separately fix exact-duplicate class membership, semantic structural matching, equal-cost pair membership, evidence counts, ambiguity status, and null confidence.

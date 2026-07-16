@@ -51,6 +51,7 @@ priv struct SourceSubject {
 priv struct StructuralAlignmentSubject {
   reference : SubjectReference
   path_signature : String
+  semantic_signature : String
 }
 
 ///|
@@ -82,6 +83,7 @@ fn structural_alignment_kind(kind : String) -> Bool {
 
 ///|
 fn source_structural_alignment_basis(basis : String) -> Bool {
+  basis == "structural_semantic_signature" ||
   basis == "structural_authored_id" ||
   basis == "structural_path" ||
   basis == "stable_kind_order" ||
@@ -108,6 +110,52 @@ fn structural_node_path_signature(
 }
 
 ///|
+fn structural_signature_attribute(
+  attribute : @xml.NamespaceAttribute,
+) -> String? {
+  let local_name = attribute.name.local_name
+  let unprefixed = attribute.name.prefix is None
+  if (unprefixed && local_name == "id") ||
+    (unprefixed && local_name.has_prefix("aria-")) ||
+    (unprefixed && local_name.has_prefix("data-")) ||
+    local_name == "xmlns" ||
+    attribute.name.prefix == Some("xmlns") {
+    return None
+  }
+  let expanded_name = match attribute.name.namespace_uri {
+    Some(namespace_uri) => "{\{namespace_uri}}\{local_name}"
+    None => local_name
+  }
+  let value = attribute.value.trim()
+  Some("\{expanded_name.length()}:\{expanded_name}\{value.length()}:\{value}")
+}
+
+///|
+fn structural_node_semantic_signature(
+  document : StructuralDocument,
+  node_index : Int,
+) -> String {
+  let node = document.nodes[node_index]
+  let attributes : Array[String] = []
+  for attribute in node.element.attributes {
+    match structural_signature_attribute(attribute) {
+      Some(signature) => attributes.push(signature)
+      None => ()
+    }
+  }
+  attributes.sort()
+  let children = [
+    for child in node.children => {
+      structural_node_semantic_signature(document, child)
+    }
+  ]
+  let text = if node.kind == "text" { node.direct_text } else { "" }
+  let attribute_signature = attributes.join("|")
+  let child_signature = children.join("|")
+  "kind:\{node.kind.length()}:\{node.kind}|attrs:\{attribute_signature}|text:\{text.length()}:\{text}|children:\{child_signature}"
+}
+
+///|
 fn structural_alignment_subjects(
   document : StructuralDocument,
 ) -> Array[StructuralAlignmentSubject] {
@@ -125,6 +173,9 @@ fn structural_alignment_subjects(
         instance_context: None,
       },
       path_signature: structural_node_path_signature(document, node_index),
+      semantic_signature: structural_node_semantic_signature(
+        document, node_index,
+      ),
     })
   }
   subjects
@@ -184,6 +235,57 @@ fn exact_subject_alignment_signature(subject : SourceSubject) -> String {
     "transform-incomplete"
   }
   "\{subject.signature}|alignment-transform=\{transform}|alignment-\{alignment_bounds_signature(subject)}"
+}
+
+///|
+fn alignment_declared_fact_signature(fact : DeclaredVisualFact?) -> String {
+  match fact {
+    Some(fact) => {
+      let value = fact.declared_value
+      let origin = fact.origin
+      "present:\{value.length()}:\{value}:\{origin.length()}:\{origin}"
+    }
+    None => "absent"
+  }
+}
+
+///|
+fn alignment_transform_chain_signature(subject : SourceSubject) -> String {
+  let sites : Array[String] = []
+  for site in subject.transform_chain {
+    let viewport_facts = [
+      for fact in site.viewport_facts => {
+        "\{fact.property}=\{alignment_declared_fact_signature(Some(fact))}"
+      }
+    ]
+    viewport_facts.sort()
+    sites.push(
+      "\{site.kind}:\{site.complete}:\{site.normalized_signature}:\{alignment_declared_fact_signature(site.fact)}:viewport=\{viewport_facts.join("|")}",
+    )
+  }
+  sites.join(";")
+}
+
+///|
+fn alignment_path_source_signature(subject : SourceSubject) -> String {
+  let segments : Array[String] = []
+  for segment in subject.path_segments {
+    segments.push(
+      "\{segment.authored_command}:\{normalized_path_segment_signature(segment.normalized)}",
+    )
+  }
+  segments.join(";")
+}
+
+///|
+fn repeated_subject_equivalence_signature(subject : SourceSubject) -> String {
+  let facts : Array[String] = []
+  for property in alignment_property_order() {
+    facts.push(
+      "\{property}=\{alignment_declared_fact_signature(source_subject_fact(subject, property))}",
+    )
+  }
+  "\{exact_subject_alignment_signature(subject)}|source-facts=\{facts.join("|")}|source-path=\{alignment_path_source_signature(subject)}|source-transform=\{alignment_transform_chain_signature(subject)}"
 }
 
 ///|
@@ -1351,6 +1453,58 @@ fn align_structural_subjects_with_guard(
   let after_used = Array::make(after.length(), false)
   for before_index, before_subject in before {
     comparison_guard.checkpoint()
+    if before_used[before_index] {
+      continue
+    }
+    let before_candidates : Array[Int] = []
+    let after_candidates : Array[Int] = []
+    for index, subject in before {
+      if !before_used[index] &&
+        subject.reference.kind == before_subject.reference.kind &&
+        subject.semantic_signature == before_subject.semantic_signature {
+        before_candidates.push(index)
+      }
+    }
+    for index, subject in after {
+      if !after_used[index] &&
+        subject.reference.kind == before_subject.reference.kind &&
+        subject.semantic_signature == before_subject.semantic_signature {
+        after_candidates.push(index)
+      }
+    }
+    if after_candidates.is_empty() ||
+      before_candidates.length() != after_candidates.length() {
+      continue
+    }
+    let before_class : Array[StructuralAlignmentSubject] = []
+    let after_class : Array[StructuralAlignmentSubject] = []
+    for index in before_candidates {
+      before_used[index] = true
+      before_class.push(before[index])
+    }
+    for index in after_candidates {
+      after_used[index] = true
+      after_class.push(after[index])
+    }
+    alignments.push(
+      make_structural_alignment(
+        start_index + alignments.length(),
+        "correspondence",
+        before_class,
+        after_class,
+        "structural_semantic_signature",
+        structural_selection_evidence(
+          "structural_semantic_signature",
+          before_candidates.length(),
+        ),
+      ),
+    )
+  }
+  for before_index, before_subject in before {
+    comparison_guard.checkpoint()
+    if before_used[before_index] {
+      continue
+    }
     guard before_subject.reference.authored_id is Some(authored_id) else {
       continue
     }
@@ -1687,6 +1841,51 @@ fn align_source_subjects_with_guard(
   for before_index, before_subject in before {
     comparison_guard.checkpoint()
     if before_used[before_index] {
+      continue
+    }
+    let signature = repeated_subject_equivalence_signature(before_subject)
+    let before_candidates : Array[Int] = []
+    let after_candidates : Array[Int] = []
+    for index, subject in before {
+      if !before_used[index] &&
+        repeated_subject_equivalence_signature(subject) == signature {
+        before_candidates.push(index)
+      }
+    }
+    for index, subject in after {
+      if !after_used[index] &&
+        repeated_subject_equivalence_signature(subject) == signature {
+        after_candidates.push(index)
+      }
+    }
+    if before_candidates.length() > 1 &&
+      before_candidates.length() == after_candidates.length() {
+      let before_class : Array[SourceSubject] = []
+      let after_class : Array[SourceSubject] = []
+      for index in before_candidates {
+        before_used[index] = true
+        before_class.push(before[index])
+      }
+      for index in after_candidates {
+        after_used[index] = true
+        after_class.push(after[index])
+      }
+      alignments.push(
+        make_alignment(
+          alignments.length(),
+          "correspondence",
+          before_class,
+          after_class,
+          "exact_visual_equivalence_class",
+          alignment_evidence(
+            "exact_visual_signature",
+            Some(0.0),
+            before_candidates.length(),
+            before_candidates.length(),
+            "tied",
+          ),
+        ),
+      )
       continue
     }
     let candidates = [

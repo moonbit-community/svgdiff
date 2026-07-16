@@ -1097,6 +1097,7 @@ fn generic_basic_shape_report(
         })
         alignment_difference_ids.push(difference_id)
       }
+      _ if alignment.basis == "exact_visual_equivalence_class" => ()
       _ => {
         let fact_id = "fact:\{alignment.id}:structure"
         let difference_id = "diff:\{alignment.id}:structure"
@@ -1146,7 +1147,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.33",
+    schema_version: "1.34",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

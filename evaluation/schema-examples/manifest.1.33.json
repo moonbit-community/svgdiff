@@ -1,0 +1,18 @@
+{
+  "schema_version": "svgdiff-schema-examples/1",
+  "cases": [
+    {
+      "id": "transform-aware-alignment",
+      "before": "evaluation/schema-examples/cases/transform-aware-alignment/before.svg",
+      "after": "evaluation/schema-examples/cases/transform-aware-alignment/after.svg",
+      "output": "schema/examples/legacy-1.33-transform-aware-alignment.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": [],
+        "computed_relations": [],
+        "diagnostic_codes": [],
+        "magnitude_checks": []
+      }
+    }
+  ]
+}

@@ -383,7 +383,7 @@ test "unused definitions remain source visible without rendered subjects" {
   assert_eq(unchanged.analysis_status, "complete")
   assert_true(
     unchanged.subject_alignments.any(alignment => {
-      alignment.basis == "structural_authored_id" &&
+      alignment.basis == "structural_semantic_signature" &&
       alignment.before[0].kind == "g"
     }),
   )

@@ -81,6 +81,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0075](0075-preserve-unsupported-filter-primitives-as-opaque-source-subtrees.md) | Accepted, implemented for unsupported direct filter primitives | Preserve complete position-aligned source subtrees without claiming computed or rendered semantics. |
 | [0076](0076-separate-structural-and-rendered-subject-alignment.md) | Accepted, implemented for source-structural subjects | Keep shape geometry alignment separate while aligning groups, text, use hosts, and visual resource definitions with explicit uncertainty. |
 | [0077](0077-use-device-space-feature-distance-for-rendered-subject-alignment.md) | Accepted, implemented for rendered leaf subjects | Use transform- and conservative-painted-bounds-aware exact signatures plus a bounded device-space correspondence feature without treating its score as visual magnitude or confidence. |
+| [0078](0078-represent-exact-repeated-subjects-as-equivalence-classes.md) | Accepted, implemented for equal-cardinality exact classes | Preserve indistinguishable rendered and structural repeats as set-to-set classes without manufacturing pairwise source-order identity. |
 
 ## CLI and distribution decisions
 

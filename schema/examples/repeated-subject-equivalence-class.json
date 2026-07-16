@@ -3,8 +3,24 @@
   "analysis_status": "complete",
   "coverage_matrix": [
     {
+      "feature_id": "subject.g",
+      "subject_id": "g:66",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.g",
+      "subject_id": "g:127",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
       "feature_id": "property.x",
-      "subject_id": "after-left",
+      "subject_id": "rect:0",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -12,23 +28,7 @@
     },
     {
       "feature_id": "property.x",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.x",
-      "subject_id": "before-left",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.x",
-      "subject_id": "before-right",
+      "subject_id": "rect:1",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -36,7 +36,7 @@
     },
     {
       "feature_id": "property.y",
-      "subject_id": "after-left",
+      "subject_id": "rect:0",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -44,23 +44,7 @@
     },
     {
       "feature_id": "property.y",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.y",
-      "subject_id": "before-left",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.y",
-      "subject_id": "before-right",
+      "subject_id": "rect:1",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -76,7 +60,7 @@
     },
     {
       "feature_id": "subject.rect",
-      "subject_id": "after-left",
+      "subject_id": "rect:0",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -84,23 +68,7 @@
     },
     {
       "feature_id": "subject.rect",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.rect",
-      "subject_id": "before-left",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.rect",
-      "subject_id": "before-right",
+      "subject_id": "rect:1",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -108,7 +76,7 @@
     },
     {
       "feature_id": "property.fill",
-      "subject_id": "after-left",
+      "subject_id": "rect:0",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -116,23 +84,7 @@
     },
     {
       "feature_id": "property.fill",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.fill",
-      "subject_id": "before-left",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.fill",
-      "subject_id": "before-right",
+      "subject_id": "rect:1",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -140,7 +92,7 @@
     },
     {
       "feature_id": "property.width",
-      "subject_id": "after-left",
+      "subject_id": "rect:0",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -148,23 +100,7 @@
     },
     {
       "feature_id": "property.width",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.width",
-      "subject_id": "before-left",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.width",
-      "subject_id": "before-right",
+      "subject_id": "rect:1",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -172,7 +108,7 @@
     },
     {
       "feature_id": "property.height",
-      "subject_id": "after-left",
+      "subject_id": "rect:0",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -180,39 +116,7 @@
     },
     {
       "feature_id": "property.height",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.height",
-      "subject_id": "before-left",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.height",
-      "subject_id": "before-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.transform",
-      "subject_id": "after-right",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.transform",
-      "subject_id": "before-right",
+      "subject_id": "rect:1",
       "source_semantics": "covered",
       "computed_appearance": "covered",
       "rendered_evidence": "covered",
@@ -237,25 +141,37 @@
         {
           "source_index": 0,
           "kind": "rect",
-          "authored_id": "before-left",
+          "authored_id": null,
+          "instance_context": null
+        },
+        {
+          "source_index": 1,
+          "kind": "rect",
+          "authored_id": null,
           "instance_context": null
         }
       ],
       "after": [
         {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": null,
+          "instance_context": null
+        },
+        {
           "source_index": 1,
           "kind": "rect",
-          "authored_id": "after-left",
+          "authored_id": null,
           "instance_context": null
         }
       ],
-      "basis": "exact_visual_signature",
+      "basis": "exact_visual_equivalence_class",
       "evidence": {
         "score_kind": "exact_visual_signature",
         "selected_score": 0,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
+        "candidate_count": 2,
+        "equal_score_candidate_count": 2,
+        "ambiguity": "tied",
         "confidence": null,
         "confidence_status": "not_calibrated"
       }
@@ -265,27 +181,39 @@
       "relation": "correspondence",
       "before": [
         {
-          "source_index": 1,
-          "kind": "rect",
-          "authored_id": "before-right",
+          "source_index": 66,
+          "kind": "g",
+          "authored_id": null,
+          "instance_context": null
+        },
+        {
+          "source_index": 127,
+          "kind": "g",
+          "authored_id": null,
           "instance_context": null
         }
       ],
       "after": [
         {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "after-right",
+          "source_index": 66,
+          "kind": "g",
+          "authored_id": null,
+          "instance_context": null
+        },
+        {
+          "source_index": 127,
+          "kind": "g",
+          "authored_id": null,
           "instance_context": null
         }
       ],
-      "basis": "exact_visual_signature",
+      "basis": "structural_semantic_signature",
       "evidence": {
-        "score_kind": "exact_visual_signature",
-        "selected_score": 0,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
+        "score_kind": "structural_semantic_signature",
+        "selected_score": null,
+        "candidate_count": 2,
+        "equal_score_candidate_count": 2,
+        "ambiguity": "tied",
         "confidence": null,
         "confidence_status": "not_calibrated"
       }
