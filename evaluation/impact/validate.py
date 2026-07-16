@@ -105,6 +105,18 @@ def main() -> None:
             for group in impact["frontier_groups"]
             for difference_id in group["atomic_difference_ids"]
         }
+        event_ids = {event["id"] for event in report["events"]}
+        difference_ids = {
+            difference["id"] for difference in report["atomic_differences"]
+        }
+        if impact["candidate_event_count"] != len(event_ids):
+            raise ValueError(
+                f"{case['id']}: Impact candidate count differs from full event inventory"
+            )
+        if not frontier_event_ids <= event_ids:
+            raise ValueError(f"{case['id']}: unresolved frontier event reference")
+        if not frontier_difference_ids <= difference_ids:
+            raise ValueError(f"{case['id']}: unresolved frontier difference reference")
         if target["evaluation_status"] == "not_applicable":
             not_applicable += 1
             if frontier_event_ids or frontier_difference_ids:

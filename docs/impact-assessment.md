@@ -6,6 +6,8 @@ Last verified: 2026-07-16
 
 Schema `1.43` retains every raw measurement and adds one required top-level `ImpactAssessment`. The assessment identifies the current main Visual Events without replacing the evidence that produced them. It is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
 
+This required assessment is the machine-readable main-event summary for the Agent-oriented Structured Report. The complete `events` and `atomic_differences` arrays remain authoritative inventories; no second summary surface is defined.
+
 ## Authoritative measurement surface
 
 The Structured Report retains:

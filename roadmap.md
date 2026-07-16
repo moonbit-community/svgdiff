@@ -183,7 +183,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ## Phase 7: Agent-oriented Structured Report
 
-- [ ] **P0** Add a machine-readable summary of the highest-impact Visual Events while retaining the full difference inventory.
+- [x] **P0** Add a machine-readable summary of the highest-impact Visual Events while retaining the full difference inventory through required `ImpactAssessment` and complete event/difference arrays.
 - [ ] **P0** Make formatting-only, computed-equivalent, rendered-zero, subtle, salient, partial, and failed outcomes easy to distinguish without external heuristics.
 - [x] **P0** Add explicit coverage summaries by subject, feature, and evidence layer.
 - [ ] **P0** Add explicit confidence and ambiguity fields where the engine makes an uncertain alignment or interpretation.
@@ -272,6 +272,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-16 | Impact calibration v1 | Completed the reproducible calibration study, rejected production labels and total ordering from insufficient evidence, and retained an explicit prerequisite-bound recalibration item plus the M3 calibrated-Impact gate. |
 | 2026-07-16 | SSIM/MS-SSIM diagnostic evaluation | Accepted versioned QA-only structural observations; rejected report, equality, localization, severity, and Impact meanings after scale, coverage, availability, and human-order failures. |
 | 2026-07-16 | Query-conditioned semantic concerns | Retained context-free Impact, required dominated concern matches to remain recoverable from the complete inventory, and rejected source- or magnitude-derived semantic priority. |
+| 2026-07-16 | Phase 7 main-event summary reconciliation | Confirmed required `ImpactAssessment` already satisfies the machine-readable summary item and added direct full-inventory and reference-closure regression checks. |
 
 ## Milestone gates
 

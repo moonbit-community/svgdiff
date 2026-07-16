@@ -151,6 +151,7 @@ graph TD
   ISS_133["ISS-133: Calibrate Impact thresholds and ordering on human labels"]
   ISS_134["ISS-134: Evaluate SSIM and MS-SSIM as QA-only structural diagnostics"]
   ISS_135["ISS-135: Define query-conditioned handling for spatially small semantic concerns"]
+  ISS_136["ISS-136: Reconcile the implemented machine-readable main-event summary"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -380,6 +381,7 @@ graph TD
   ISS_132 --> ISS_133
   ISS_133 --> ISS_134
   ISS_133 --> ISS_135
+  ISS_132 --> ISS_136
 ```
 
 ## Warnings
