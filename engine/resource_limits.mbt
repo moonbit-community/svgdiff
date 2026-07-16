@@ -21,6 +21,8 @@ priv struct ResourceLimits {
   max_raster_dimension : Int
   max_raster_pixels : Int
   max_regions : Int
+  max_perceptual_map_pixels : Int
+  max_perceptual_flip_samples : Int
   max_report_bytes : Int
 }
 
@@ -44,6 +46,8 @@ fn default_resource_limits() -> ResourceLimits {
     max_raster_dimension: 8_192,
     max_raster_pixels: 16_777_216,
     max_regions: 65_536,
+    max_perceptual_map_pixels: 1_048_576,
+    max_perceptual_flip_samples: 268_435_456,
     max_report_bytes: 33_554_432,
   }
 }
@@ -136,7 +140,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "1.40",
+    schema_version: "1.41",
     analysis_status: "failed",
     coverage_matrix,
     renderer_capability_gaps: [],

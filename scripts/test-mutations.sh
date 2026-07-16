@@ -37,11 +37,13 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   moon run --target native cmd/svgdiff -- \
     "$first/$before" "$first/$after" \
     --width "$width" --height "$height" \
-    --perceptual-background white >"$tmp/$id-report.json"
+    --perceptual-background white \
+    --flip-pixels-per-degree 20 >"$tmp/$id-report.json"
   moon run --target native cmd/svgdiff -- \
     "$first/$after" "$first/$before" \
     --width "$width" --height "$height" \
-    --perceptual-background white >"$tmp/$id-reverse-report.json"
+    --perceptual-background white \
+    --flip-pixels-per-degree 20 >"$tmp/$id-reverse-report.json"
 
   if ! printf '%s' "$case_json" | jq -e --slurpfile report "$tmp/$id-report.json" '
       ($report[0].analysis_status == .expected_analysis_status) and

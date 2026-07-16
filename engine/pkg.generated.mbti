@@ -86,6 +86,7 @@ pub(all) struct ComparisonProfile {
   renderer_id : String
   renderer_conformance_profile_id : String
   perceptual_background : PerceptualBackground?
+  flip_viewing_conditions : FlipViewingConditions?
 }
 pub fn ComparisonProfile::v1_default() -> Self
 pub impl ToJson for ComparisonProfile
@@ -168,6 +169,12 @@ pub(all) struct FeatureCoverage {
   diagnostic_ids : Array[String]
 } derive(ToJson)
 
+pub struct FlipViewingConditions {
+  pixels_per_degree : Double
+} derive(Eq, ToJson)
+pub fn FlipViewingConditions::from_pixels_per_degree(Double) -> Self?
+pub fn FlipViewingConditions::pixels_per_degree(Self) -> Double
+
 pub(all) struct IntrinsicRasterMagnitude {
   before_width : Int
   before_height : Int
@@ -220,6 +227,23 @@ pub(all) struct PerceptualColorMagnitude {
   mean_delta_e_ok : Double
 } derive(Eq, ToJson)
 
+pub(all) struct PerceptualFlipEvidence {
+  status : String
+  reason_code : String?
+  map : PerceptualFlipMap?
+} derive(Eq, ToJson)
+
+pub(all) struct PerceptualFlipMap {
+  method_id : String
+  pixel_x : Int
+  pixel_y : Int
+  pixel_width : Int
+  pixel_height : Int
+  encoding : String
+  quantization_step : Double
+  values_base64 : String
+} derive(Eq, ToJson)
+
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int
   bounds_area_css_px2 : Double
@@ -233,6 +257,7 @@ pub(all) struct RenderedEvidence {
   reason_code : String?
   magnitude : RenderedMagnitude?
   perceptual_color : PerceptualColorEvidence
+  perceptual_flip : PerceptualFlipEvidence
 } derive(ToJson)
 
 pub(all) struct RenderedMagnitude {

@@ -22,7 +22,8 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
       "$root/evaluation/corpus/$before" \
       "$root/evaluation/corpus/$after" \
       --width "$width" --height "$height" \
-      --perceptual-background white >"$reports/$id.json"
+      --perceptual-background white \
+      --flip-pixels-per-degree 20 >"$reports/$id.json"
   else
     moon run --target native cmd/svgdiff -- \
       "$root/evaluation/corpus/$before" \
@@ -40,6 +41,8 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
   any(.[].report.profile.perceptual_background; . == null) and
   any(.[].report.profile.perceptual_background;
     . == {"red": 255, "green": 255, "blue": 255}) and
+  any(.[].report.profile.flip_viewing_conditions;
+    . == {"pixels_per_degree": 20}) and
   any(.[].report.events[].rendered_outcome.perceptual_color;
     .status == "computed" and
     .magnitude.method_id ==
@@ -49,11 +52,19 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
   any(.[].report.events[].rendered_outcome.perceptual_color;
     .status == "not_computed" and
     .reason_code == "perceptual_background_absent") and
+  any(.[].report.events[].rendered_outcome.perceptual_flip;
+    .status == "computed" and
+    .map.method_id == "nvlabs_ldr_flip/v1.7-b475eb4b" and
+    .map.encoding == "uint16_be_base64" and
+    (.map.values_base64 | length) > 0) and
+  any(.[].report.events[].rendered_outcome.perceptual_flip;
+    .status == "not_computed" and
+    .reason_code == "flip_not_requested") and
   all(.[];
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "1.40") and
+    (.report.schema_version == "1.41") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and

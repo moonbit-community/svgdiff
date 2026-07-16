@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.5.20` and schema `1.40` contract
+Status: current module `0.5.21` and schema `1.41` contract
 
 Last verified: 2026-07-16
 
@@ -27,6 +27,8 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | PNG decompression output | Each admitted PNG | Exact validated scanline length | Filter bytes plus encoded scanline bytes derived from IHDR dimensions, bit depth, and color type |
 | Raster dimensions | Comparison Profile | 8,192 per axis and 16,777,216 total pixels | Positive viewport width, height, and their product before any render |
 | Difference Regions | Whole report | 65,536 | Connected pixel regions and event-attached computed or pixel regions |
+| LDR-FLIP map pixels | Whole report | 1,048,576 | Serialized event-map samples across every computed FLIP event |
+| LDR-FLIP filter samples | Whole report | 268,435,456 | Spatial and feature kernel-sample visits over event context images |
 | Report bytes | Each built-in JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
 
 The admitted filter executor additionally caps each graph at 256 direct primitives and aggregate primitive-surface work at 16,777,216 viewport pixels per source. Crossing either bound produces partial `filter_graph_budget_exceeded` evidence rather than executing an unbounded graph; exact filter source facts remain present. This is a feature-admission guard, not a failed whole-comparison resource report.
@@ -34,6 +36,8 @@ The admitted filter executor additionally caps each graph at 256 direct primitiv
 Opaque unsupported filter primitives add no second retained subtree string during semantic extraction: the internal record keeps only bounded input offsets, position, type, and subject identity. Exact subtree text is sliced when a Diagnostic or changed report fact requires it, then remains subject to the ordinary 8 MiB per-input and 32 MiB serialized-report limits. Malformed XML cannot yield a completed subtree record and follows the existing `svg_parse_failed` path.
 
 The admitted blend compositor additionally caps each source at 64 active blend or isolation surfaces and 67,108,864 aggregate viewport-surface pixels. The exact inclusive boundary is accepted. Crossing either bound produces partial `blend_surface_budget_exceeded` evidence while retaining exact declarations, resolved keywords, stacking order, and conservative affected subjects; it does not emit a truncated render or a failed whole-comparison resource report.
+
+Optional LDR-FLIP uses aggregate output and convolution-work budgets. Before computing an event map, the engine reserves its complete serialized response area and its spatial-plus-feature filter work over the required context image. If either reservation would exceed the remaining report budget, that event emits `not_computed/perceptual_map_budget_exceeded`. Raw Rendered Evidence, DeltaEOK, Difference Regions, equality, Diagnostics, Cause Envelopes, coverage, and ordering remain unchanged; this condition is not a failed whole-comparison resource report.
 
 Path-data units deliberately form a conservative lexical work budget, not a segment count or a geometry metric. Exact normalized segment comparison occurs only after this admission bound succeeds. Reference counting bounds reference-bearing source size; the separate [local-reference safety contract](reference-safety.md) rejects cycles and bounds transitive `<use>` expansion.
 
@@ -74,4 +78,4 @@ The public [`compare_with_control`](library-api.md) operation adds cooperative c
 
 ## Executable evidence
 
-[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt) covers bundle entry-count, per-entry-byte, cumulative-byte, configuration, and decoder boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report, explicit resource-file, and exit-status behavior.
+[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`perceptual_flip_wbtest.mbt`](../engine/perceptual_flip_wbtest.mbt) covers event-local FLIP budget exhaustion and independence from other evidence. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt) covers bundle entry-count, per-entry-byte, cumulative-byte, configuration, and decoder boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report, explicit resource-file, and exit-status behavior.

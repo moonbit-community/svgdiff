@@ -4,6 +4,7 @@ complete -c svgdiff -n 'test (count (commandline -opc)) -le 2' -a '-' -d 'Read o
 complete -c svgdiff -l width -r -d 'Comparison viewport width in CSS pixels'
 complete -c svgdiff -l height -r -d 'Comparison viewport height in CSS pixels'
 complete -c svgdiff -l perceptual-background -r -d 'Record one explicit opaque deterministic sRGB background'
+complete -c svgdiff -l flip-pixels-per-degree -r -d 'Request LDR-FLIP with supported pixels per degree'
 complete -c svgdiff -l before-resource -r -d 'Supply LOCATOR MEDIA_TYPE FILE for the before SVG'
 complete -c svgdiff -l after-resource -r -d 'Supply LOCATOR MEDIA_TYPE FILE for the after SVG'
 complete -c svgdiff -l output -r -F -d 'Write Structured Report JSON to a file'

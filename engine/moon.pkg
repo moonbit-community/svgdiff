@@ -9,6 +9,7 @@ import {
   "moonbitlang/x/crypto",
   "moonbitlang/core/json",
   "moonbitlang/core/bench",
+  "moonbitlang/core/double",
   "moonbitlang/core/math",
   "moonbitlang/core/string",
 }

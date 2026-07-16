@@ -38,7 +38,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0009](0009-scope-initial-correctness-to-deterministic-static-svg.md) | Accepted | Scope the initial correctness claim to deterministic static SVG. |
 | [0010](0010-guarantee-causal-completeness-with-conservative-provenance.md) | Accepted, implemented for the supported slice | Guarantee causal completeness through conservative provenance. |
 | [0021](0021-use-one-resolved-comparison-viewport.md) | Refined by 0048; explicit viewport dimensions and SVG-internal mappings are implemented | Compare both inputs under one resolved viewport. |
-| [0022](0022-separate-raw-raster-evidence-from-perceptual-background.md) | Accepted; profile input implemented, compositing pending | Separate raw raster evidence from a perceptual background. |
+| [0022](0022-separate-raw-raster-evidence-from-perceptual-background.md) | Accepted, implemented for DeltaEOK and optional LDR-FLIP | Separate raw raster evidence from a perceptual background. |
 | [0023](0023-default-the-comparison-dpr-to-one.md) | Accepted, implemented as a fixed v1 value | Default Comparison DPR to one. |
 | [0024](0024-use-srgb-semantics-and-linear-srgb-raster-math.md) | Accepted, implemented for the v1 raster metrics | Use sRGB semantics and linear-sRGB premultiplied raster math. |
 | [0027](0027-represent-authored-visual-declarations-as-facts.md) | Accepted, implemented for supported properties | Represent authored visual declarations as facts. |
@@ -87,8 +87,9 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0081](0081-separate-exact-parameter-scales-from-rendered-outcomes.md) | Accepted, implemented | Preserve exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales without substituting boundary, raster, or severity evidence. |
 | [0082](0082-report-symmetric-painted-boundary-distributions.md) | Accepted, implemented | Report symmetric nearest-boundary mean, nearest-rank p95, maximum, and sampling support without conflating coverage, color, or importance. |
 | [0083](0083-report-symmetric-alpha-coverage-difference.md) | Accepted, implemented | Report alpha-only absolute and union coverage areas plus a symmetric normalized fraction without conflating color or importance. |
-| [0084](0084-record-an-explicit-opaque-srgb-perceptual-background.md) | Accepted | Record one optional normalized opaque sRGB background without changing transparent-canvas raw evidence. |
+| [0084](0084-record-an-explicit-opaque-srgb-perceptual-background.md) | Accepted, implemented | Record one optional normalized opaque sRGB background without changing transparent-canvas raw evidence. |
 | [0085](0085-measure-event-local-deltaeok-after-explicit-background-compositing.md) | Accepted, implemented | Measure event-local DeltaEOK only after exact shared-background compositing. |
+| [0086](0086-expose-optional-event-local-ldr-flip-maps.md) | Accepted, implemented | Expose explicitly requested event-local LDR-FLIP maps without pooling or importance claims. |
 
 ## CLI and distribution decisions
 

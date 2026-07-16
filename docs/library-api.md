@@ -1,18 +1,18 @@
 # MoonBit Library API
 
-Status: current public interface for module version `0.5.20`
+Status: current public interface for module version `0.5.21`
 
 Last verified: 2026-07-16
 
-Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.40` comparison conditions.
+Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.41` comparison conditions.
 
 Install the published native module with:
 
 ```sh
-moon add Milky2018/svgdiff@0.5.20
+moon add Milky2018/svgdiff@0.5.21
 ```
 
-The root registry archive contains only the root, `engine`, and internal `css_color` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.0` before root `0.5.20`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
+The root registry archive contains only the root, `engine`, and internal `css_color` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.0` before root `0.5.21`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
 
 Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
 
@@ -30,6 +30,8 @@ PerceptualBackground::parse_srgb(String) -> PerceptualBackground?
 PerceptualBackground::red() -> Int
 PerceptualBackground::green() -> Int
 PerceptualBackground::blue() -> Int
+FlipViewingConditions::from_pixels_per_degree(Double) -> FlipViewingConditions?
+FlipViewingConditions::pixels_per_degree() -> Double
 StructuredReport::to_json_string() -> String
 StructuredReport::to_compact_json_string() -> String
 SourceAuditReport::to_json_string() -> String
@@ -40,24 +42,24 @@ SourceAuditReport::to_compact_json_string() -> String
 
 `audit_nonvisual_metadata` is deliberately separate from comparison. It inventories exact authored inner content for outermost SVG `title`, `desc`, and `metadata` elements plus unprefixed `aria-*` and `data-*` attributes. It returns `SourceAuditReport` under independent audit schema `1.0`; its records never appear in Structured Report, Agent JSON, Visual Events, magnitudes, or regions. See the [Nonvisual Source Audit](source-audit.md) and its separate [JSON Schema](../schema/svgdiff-source-audit.schema.json).
 
-Both JSON methods serialize schema `1.40`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
+Both JSON methods serialize schema `1.41`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value.
 
-Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.5.20`.
+Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.5.21`.
 
 `ComparisonControl` contains `should_cancel: () -> Bool` and `max_elapsed_milliseconds: Int?`; `ComparisonControl::unlimited()` disables both controls. A true predicate raises `Cancelled`. A nonpositive time budget expires at the first checkpoint, and a positive budget raises `TimeBudgetExceeded(max_elapsed_milliseconds=...)` once elapsed time reaches it. Cancellation is checked first when both conditions hold.
 
-An interruption returns no Structured Report: callers must handle `ComparisonInterrupted` as request control flow rather than infer evidence from missing arrays. Checks occur before and after admission, alignment work, per-event region work, report-finishing stages, and built-in serialization enforcement. Third-party XML parsing and SVG rendering are synchronous and cannot be preempted, so elapsed-time expiry is observed at the next checkpoint and is not a hard real-time deadline. The ordinary `compare` and CLI behavior remain unchanged; current reports use Schema `1.40` and its Diagnostic catalog.
+An interruption returns no Structured Report: callers must handle `ComparisonInterrupted` as request control flow rather than infer evidence from missing arrays. Checks occur before and after admission, alignment work, per-event region work, report-finishing stages, and built-in serialization enforcement. Third-party XML parsing and SVG rendering are synchronous and cannot be preempted, so elapsed-time expiry is observed at the next checkpoint and is not a hard real-time deadline. The ordinary `compare` and CLI behavior remain unchanged; current reports use Schema `1.41` and its Diagnostic catalog.
 
 ## Public report types
 
 | Area | Types |
 | --- | --- |
-| Profile, control, resources, and result | `ComparisonProfile`, `PerceptualBackground`, `ComparisonControl`, `ComparisonInterrupted`, `ResourceBundle`, `ResourceBundleEntry`, `StructuredReport`, `FeatureCoverage`, `RendererCapabilityGap`, `Diagnostic`, `DiagnosticSourceLocation` |
+| Profile, control, resources, and result | `ComparisonProfile`, `PerceptualBackground`, `FlipViewingConditions`, `ComparisonControl`, `ComparisonInterrupted`, `ResourceBundle`, `ResourceBundleEntry`, `StructuredReport`, `FeatureCoverage`, `RendererCapabilityGap`, `Diagnostic`, `DiagnosticSourceLocation` |
 | Optional nonvisual source audit | `SourceAuditReport`, `SourceAuditDifference`, `SourceAuditFact`, `SourceAuditDiagnostic` |
 | Subjects and alignment | `SubjectReference`, `SubjectInstanceContext`, `AlignmentEvidence`, `SubjectAlignment` |
 | Source and computed facts | `ReportSourceSpan`, `DeclaredVisualFact`, `ResolvedVisualFact`, `SourceResolutionPair`, `ChangedFact`, `ComputedRelation` |
 | Differences and grouping | `AtomicDifference`, `VisualEvent` |
-| Magnitude and ordering | `DifferenceMagnitude`, `PaintedBoundaryDisplacementMagnitude`, `PaintedCoverageDifferenceMagnitude`, `PresenceMagnitude`, `IntrinsicRasterMagnitude`, `TransformEffectMagnitude` and its five component records, `RenderedEvidence`, `RenderedMagnitude`, `PerceptualColorEvidence`, `PerceptualColorMagnitude`, `DomainOrdering` |
+| Magnitude and ordering | `DifferenceMagnitude`, `PaintedBoundaryDisplacementMagnitude`, `PaintedCoverageDifferenceMagnitude`, `PresenceMagnitude`, `IntrinsicRasterMagnitude`, `TransformEffectMagnitude` and its five component records, `RenderedEvidence`, `RenderedMagnitude`, `PerceptualColorEvidence`, `PerceptualColorMagnitude`, `PerceptualFlipEvidence`, `PerceptualFlipMap`, `DomainOrdering` |
 | Localization and causality | `DifferenceRegion`, `CauseEnvelope` |
 
 All are project-owned serializable records. Parser, SVG scene, image, pixelmatch, and filesystem dependency types do not cross the public seam.
@@ -69,7 +71,7 @@ All are project-owned serializable records. Parser, SVG scene, image, pixelmatch
 Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as the executable source of library usage. The essential sequence is:
 
 1. start from `ComparisonProfile::v1_default`;
-2. set the common viewport dimensions if the `16 x 16` default is not appropriate, and optionally set a parsed opaque sRGB Perceptual Background for event-local DeltaEOK;
+2. set the common viewport dimensions if the `16 x 16` default is not appropriate, optionally set a parsed opaque sRGB Perceptual Background for event-local DeltaEOK, and optionally add invariant-checked FLIP Viewing Conditions for an event-local LDR-FLIP map;
 3. call `compare` with the two complete SVG source strings, or `compare_with_resources` with explicitly acquired before/after PNG/JPEG bytes;
 4. inspect `analysis_status` and Diagnostics;
 5. interpret events and Atomic Differences;
@@ -78,9 +80,9 @@ Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as t
 
 `DiagnosticSourceLocation.source_role` is `before` or `after`; its `source_span` uses half-open UTF-16 offsets into that exact input. Current producers always emit `Diagnostic.source_locations`. The field is optional in JSON for legacy compatibility, where absence means “not reported”; an emitted empty array means the Diagnostic is comparison-global or derived and has no non-fabricated source anchor.
 
-The root API preserves viewport width, viewport height, and `perceptual_background`, and canonicalizes every other profile field. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.40`. The optional background enables the separately versioned event-local DeltaEOK channel without affecting transparent-canvas raw rendering.
+The root API preserves viewport width, viewport height, `perceptual_background`, and `flip_viewing_conditions`, and canonicalizes every other profile field. Construct Viewing Conditions with `FlipViewingConditions::from_pixels_per_degree`; only finite values in `[1, 4096]` are accepted. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.41`. The optional background enables event-local DeltaEOK, and background plus Viewing Conditions enable event-local LDR-FLIP, without affecting transparent-canvas raw rendering.
 
-The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/25"`. This ID versions accepted renderer claims and guards independently from both report schema `1.40` and the production `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1` renderer identity.
+The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/25"`. This ID versions accepted renderer claims and guards independently from both report schema `1.41` and the production `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1` renderer identity.
 
 ## Generated documentation
 

@@ -1239,6 +1239,8 @@ fn attach_difference_regions(
   }
   let events : Array[VisualEvent] = []
   let mut attached_region_count = 0
+  let mut perceptual_map_pixels = 0
+  let mut perceptual_flip_samples = 0
   for event in report.events {
     comparison_guard.checkpoint()
     let bounds = match
@@ -1353,9 +1355,50 @@ fn attach_difference_regions(
           }
         }
     }
+    let perceptual_flip = match report.profile.flip_viewing_conditions {
+      None => not_computed_perceptual_flip_evidence("flip_not_requested")
+      Some(viewing) =>
+        match report.profile.perceptual_background {
+          None =>
+            not_computed_perceptual_flip_evidence(
+              "perceptual_background_absent",
+            )
+          Some(background) =>
+            if rendered_outcome.status != "computed" {
+              not_computed_perceptual_flip_evidence(
+                "rendered_evidence_unavailable",
+              )
+            } else {
+              match rendered_images {
+                Some((before_image, after_image)) => {
+                  let computation = event_local_perceptual_flip_evidence(
+                    before_image,
+                    after_image,
+                    regions,
+                    background,
+                    viewing,
+                    limits.max_perceptual_map_pixels - perceptual_map_pixels,
+                    limits.max_perceptual_flip_samples - perceptual_flip_samples,
+                  )
+                  perceptual_map_pixels += computation.output_pixels
+                  perceptual_flip_samples += computation.convolution_samples
+                  computation.evidence
+                }
+                None =>
+                  not_computed_perceptual_flip_evidence(
+                    "rendered_evidence_unavailable",
+                  )
+              }
+            }
+        }
+    }
     events.push({
       ..event,
-      rendered_outcome: { ..rendered_outcome, perceptual_color, },
+      rendered_outcome: {
+        ..rendered_outcome,
+        perceptual_color,
+        perceptual_flip,
+      },
       difference_regions: regions,
     })
   }

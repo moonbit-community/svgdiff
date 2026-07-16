@@ -40,7 +40,7 @@ Masking is not a resource-limit bypass. Whole-source input size, XML element, ne
 
 `SourceAuditReport` has its own `audit_schema_version`, `analysis_status`, `differences`, and `diagnostics`. Schema `1.0` permits `complete` and `failed`. If either input is malformed, the audit is `failed`, has no partial difference inventory, and returns one `svg_parse_failed` Diagnostic per malformed side with `before` or `after` and an available parser span.
 
-`SourceAuditReport::to_json_string` and `to_compact_json_string` serialize the same evidence. The independent [source-audit JSON Schema](../schema/svgdiff-source-audit.schema.json) and [canonical example](../schema/examples/nonvisual-source-audit.json) do not change Structured Report schema `1.40`. No source-audit field is ever injected into Structured Report or compact Agent JSON.
+`SourceAuditReport::to_json_string` and `to_compact_json_string` serialize the same evidence. The independent [source-audit JSON Schema](../schema/svgdiff-source-audit.schema.json) and [canonical example](../schema/examples/nonvisual-source-audit.json) do not change Structured Report schema `1.41`. No source-audit field is ever injected into Structured Report or compact Agent JSON.
 
 ## Executable enforcement
 

@@ -145,6 +145,7 @@ graph TD
   ISS_127["ISS-127: Add symmetric painted-coverage difference measurements"]
   ISS_128["ISS-128: Add an explicit Perceptual Background to the Comparison Profile"]
   ISS_129["ISS-129: Add event-local DeltaEOK color measurements"]
+  ISS_130["ISS-130: Add optional event-local LDR-FLIP maps"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -368,6 +369,7 @@ graph TD
   ISS_126 --> ISS_127
   ISS_127 --> ISS_128
   ISS_128 --> ISS_129
+  ISS_129 --> ISS_130
 ```
 
 ## Warnings

@@ -34,11 +34,39 @@ pub fn PerceptualBackground::blue(self : PerceptualBackground) -> Int {
 }
 
 ///|
+/// Explicit LDR-FLIP viewing conditions with a bounded filter domain.
+pub struct FlipViewingConditions {
+  pixels_per_degree : Double
+} derive(ToJson, Eq)
+
+///|
+/// Construct supported LDR-FLIP viewing conditions.
+pub fn FlipViewingConditions::from_pixels_per_degree(
+  pixels_per_degree : Double,
+) -> FlipViewingConditions? {
+  if pixels_per_degree.is_nan() ||
+    pixels_per_degree.is_inf() ||
+    pixels_per_degree < 1.0 ||
+    pixels_per_degree > 4096.0 {
+    None
+  } else {
+    Some({ pixels_per_degree, })
+  }
+}
+
+///|
+pub fn FlipViewingConditions::pixels_per_degree(
+  self : FlipViewingConditions,
+) -> Double {
+  self.pixels_per_degree
+}
+
+///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.40` API accepts caller-provided viewport dimensions and
-/// Perceptual Background, and canonicalizes the remaining fields to
-/// `v1_default`.
+/// The root schema `1.41` API accepts caller-provided viewport dimensions,
+/// Perceptual Background, and FLIP Viewing Conditions, and canonicalizes the
+/// remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
   viewport_height : Int
@@ -48,6 +76,7 @@ pub(all) struct ComparisonProfile {
   renderer_id : String
   renderer_conformance_profile_id : String
   perceptual_background : PerceptualBackground?
+  flip_viewing_conditions : FlipViewingConditions?
 }
 
 ///|
@@ -63,14 +92,18 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
   fields["perceptual_background"] = nullable_report_value(
     self.perceptual_background,
   )
+  fields["flip_viewing_conditions"] = nullable_report_value(
+    self.flip_viewing_conditions,
+  )
   Json::object(fields)
 }
 
 ///|
-/// Return the fixed schema `1.40` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.41` profile with a `16 x 16` viewport.
 ///
-/// Callers may copy the record with different positive viewport dimensions or
-/// an explicitly parsed Perceptual Background.
+/// Callers may copy the record with different positive viewport dimensions,
+/// an explicitly parsed Perceptual Background, or invariant-checked FLIP
+/// Viewing Conditions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
   {
     viewport_width: 16,
@@ -81,6 +114,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     renderer_id: "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
     renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/25",
     perceptual_background: None,
+    flip_viewing_conditions: None,
   }
 }
 
@@ -136,6 +170,27 @@ pub(all) struct PerceptualColorEvidence {
 } derive(ToJson, Eq)
 
 ///|
+/// Deterministic quantized event-local LDR-FLIP map.
+pub(all) struct PerceptualFlipMap {
+  method_id : String
+  pixel_x : Int
+  pixel_y : Int
+  pixel_width : Int
+  pixel_height : Int
+  encoding : String
+  quantization_step : Double
+  values_base64 : String
+} derive(ToJson, Eq)
+
+///|
+/// Availability and optional event-local LDR-FLIP map.
+pub(all) struct PerceptualFlipEvidence {
+  status : String
+  reason_code : String?
+  map : PerceptualFlipMap?
+} derive(ToJson, Eq)
+
+///|
 /// Availability and optional magnitude of canonical rendered evidence.
 ///
 /// A computed zero magnitude is distinct from `not_computed`.
@@ -144,6 +199,7 @@ pub(all) struct RenderedEvidence {
   reason_code : String?
   magnitude : RenderedMagnitude?
   perceptual_color : PerceptualColorEvidence
+  perceptual_flip : PerceptualFlipEvidence
 } derive(ToJson)
 
 ///|
@@ -805,7 +861,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.40` result of one SVG comparison.
+/// Complete schema `1.41` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -824,13 +880,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.40` JSON.
+/// Serialize this report as indented schema `1.41` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.40` JSON.
+/// Serialize this report as whitespace-free schema `1.41` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1717,7 +1773,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.40",
+    schema_version: "1.41",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1958,6 +2014,7 @@ fn computed_rendered_evidence(
     perceptual_color: not_computed_perceptual_color_evidence(
       "perceptual_background_absent",
     ),
+    perceptual_flip: not_computed_perceptual_flip_evidence("flip_not_requested"),
   }
 }
 
@@ -1970,6 +2027,7 @@ fn not_computed_rendered_evidence(reason_code : String) -> RenderedEvidence {
     perceptual_color: not_computed_perceptual_color_evidence(
       "rendered_evidence_unavailable",
     ),
+    perceptual_flip: not_computed_perceptual_flip_evidence("flip_not_requested"),
   }
 }
 
@@ -1988,6 +2046,20 @@ fn not_computed_perceptual_color_evidence(
 }
 
 ///|
+fn computed_perceptual_flip_evidence(
+  map : PerceptualFlipMap,
+) -> PerceptualFlipEvidence {
+  { status: "computed", reason_code: None, map: Some(map) }
+}
+
+///|
+fn not_computed_perceptual_flip_evidence(
+  reason_code : String,
+) -> PerceptualFlipEvidence {
+  { status: "not_computed", reason_code: Some(reason_code), map: None }
+}
+
+///|
 fn deferred_font_report(
   before_svg : String,
   after_svg : String,
@@ -1998,7 +2070,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.40",
+        schema_version: "1.41",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2078,7 +2150,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.40",
+        schema_version: "1.41",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2128,7 +2200,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.40",
+        schema_version: "1.41",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2265,7 +2337,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.40",
+            schema_version: "1.41",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2305,7 +2377,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.40",
+            schema_version: "1.41",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2365,7 +2437,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.40",
+              schema_version: "1.41",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

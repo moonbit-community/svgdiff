@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.41",
-  "title": "SVG Diff Structured Report 1.41",
+  "$id": "https://example.invalid/svgdiff/schema/1.40",
+  "title": "SVG Diff Structured Report 1.40",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.41" },
+    "schema_version": { "const": "1.40" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -34,8 +34,7 @@
         "color_interpretation",
         "raster_representation",
         "renderer_id",
-        "perceptual_background",
-        "flip_viewing_conditions"
+        "perceptual_background"
       ],
       "properties": {
         "viewport_width": { "type": "integer", "minimum": 1 },
@@ -52,9 +51,6 @@
         },
         "perceptual_background": {
           "$ref": "#/$defs/nullablePerceptualBackground"
-        },
-        "flip_viewing_conditions": {
-          "$ref": "#/$defs/nullableFlipViewingConditions"
         }
       }
     },
@@ -97,24 +93,6 @@
         { "type": "null" }
       ]
     },
-    "flipViewingConditions": {
-      "type": "object",
-      "required": ["pixels_per_degree"],
-      "properties": {
-        "pixels_per_degree": {
-          "type": "number",
-          "minimum": 1,
-          "maximum": 4096
-        }
-      },
-      "additionalProperties": false
-    },
-    "nullableFlipViewingConditions": {
-      "anyOf": [
-        { "$ref": "#/$defs/flipViewingConditions" },
-        { "type": "null" }
-      ]
-    },
     "perceptualColorMagnitude": {
       "type": "object",
       "required": ["method_id", "sample_count", "mean_delta_e_ok"],
@@ -138,57 +116,6 @@
       "anyOf": [
         {
           "required": ["status", "magnitude"],
-          "properties": { "status": { "const": "computed" } }
-        },
-        {
-          "required": ["status", "reason_code"],
-          "properties": { "status": { "const": "not_computed" } }
-        }
-      ],
-      "additionalProperties": false
-    },
-    "perceptualFlipMap": {
-      "type": "object",
-      "required": [
-        "method_id",
-        "pixel_x",
-        "pixel_y",
-        "pixel_width",
-        "pixel_height",
-        "encoding",
-        "quantization_step",
-        "values_base64"
-      ],
-      "properties": {
-        "method_id": { "const": "nvlabs_ldr_flip/v1.7-b475eb4b" },
-        "pixel_x": { "type": "integer", "minimum": 0 },
-        "pixel_y": { "type": "integer", "minimum": 0 },
-        "pixel_width": { "type": "integer", "minimum": 0 },
-        "pixel_height": { "type": "integer", "minimum": 0 },
-        "encoding": { "const": "uint16_be_base64" },
-        "quantization_step": { "const": 0.000015259021896696422 },
-        "values_base64": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-    "perceptualFlipEvidence": {
-      "type": "object",
-      "required": ["status"],
-      "properties": {
-        "status": { "enum": ["computed", "not_computed"] },
-        "reason_code": {
-          "enum": [
-            "flip_not_requested",
-            "perceptual_background_absent",
-            "rendered_evidence_unavailable",
-            "perceptual_map_budget_exceeded"
-          ]
-        },
-        "map": { "$ref": "#/$defs/perceptualFlipMap" }
-      },
-      "anyOf": [
-        {
-          "required": ["status", "map"],
           "properties": { "status": { "const": "computed" } }
         },
         {
@@ -667,13 +594,10 @@
         "atomic_difference_ids": { "type": "array", "items": { "type": "string" } },
         "rendered_outcome": {
           "type": "object",
-          "required": ["perceptual_color", "perceptual_flip"],
+          "required": ["perceptual_color"],
           "properties": {
             "perceptual_color": {
               "$ref": "#/$defs/perceptualColorEvidence"
-            },
-            "perceptual_flip": {
-              "$ref": "#/$defs/perceptualFlipEvidence"
             }
           }
         },

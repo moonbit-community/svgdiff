@@ -21,7 +21,13 @@
       "categories": ["changed", "non-default-viewport"],
       "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
       "after": "evaluation/corpus/cases/salient-fill-change/after.svg",
-      "viewport": { "width": 32, "height": 24 }
+      "viewport": { "width": 32, "height": 24 },
+      "cli_args": [
+        "--perceptual-background",
+        "white",
+        "--flip-pixels-per-degree",
+        "20"
+      ]
     },
     {
       "id": "subject-insertion",

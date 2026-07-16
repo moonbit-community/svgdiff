@@ -7,6 +7,7 @@ _svgdiff() {
     '--width[comparison viewport width in CSS pixels]:positive integer:' \
     '--height[comparison viewport height in CSS pixels]:positive integer:' \
     '--perceptual-background[record one explicit opaque deterministic sRGB background]:color:' \
+    '--flip-pixels-per-degree[request LDR-FLIP with supported pixels per degree]:pixels per degree:' \
     '*--before-resource[supply one before-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
     '*--after-resource[supply one after-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
     '--output[write Structured Report JSON to a file]:JSON file:_files' \

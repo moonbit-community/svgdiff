@@ -14,12 +14,15 @@ pub using @engine {
   type DifferenceRegion,
   type DomainOrdering,
   type FeatureCoverage,
+  type FlipViewingConditions,
   type IntrinsicRasterMagnitude,
   type PaintedBoundaryDisplacementMagnitude,
   type PaintedCoverageDifferenceMagnitude,
   type PerceptualBackground,
   type PerceptualColorEvidence,
   type PerceptualColorMagnitude,
+  type PerceptualFlipEvidence,
+  type PerceptualFlipMap,
   type PresenceMagnitude,
   type RenderedEvidence,
   type RenderedMagnitude,
@@ -76,11 +79,12 @@ pub fn compare_with_resources(
     viewport_width: profile.viewport_width,
     viewport_height: profile.viewport_height,
     perceptual_background: profile.perceptual_background,
+    flip_viewing_conditions: profile.flip_viewing_conditions,
   }
   let report = @engine.compare_with_resources(
     before_svg, after_svg, canonical_profile, before_resources, after_resources,
   )
-  { ..report, schema_version: "1.40" }
+  { ..report, schema_version: "1.41" }
 }
 
 ///|
@@ -91,14 +95,15 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.40` profile.
+/// Compare two deterministic static SVG sources under one schema `1.41` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
-/// preserves `profile.viewport_width`, `profile.viewport_height`, and the
-/// optional Perceptual Background, and pins DPR, color interpretation, raster
-/// representation, renderer identity, and renderer conformance profile to the
-/// v1 defaults. Unsupported semantics produce Diagnostics and reduce
-/// `analysis_status` instead of being treated as equality.
+/// preserves `profile.viewport_width`, `profile.viewport_height`, the optional
+/// Perceptual Background, and optional FLIP Viewing Conditions, and pins DPR,
+/// color interpretation, raster representation, renderer identity, and
+/// renderer conformance profile to the v1 defaults. Unsupported semantics
+/// produce Diagnostics and reduce `analysis_status` instead of being treated
+/// as equality.
 ///
 /// Inspect `analysis_status` before using an empty `atomic_differences` array as
 /// a profile-scoped equality conclusion.
@@ -112,9 +117,10 @@ pub fn compare(
     viewport_width: profile.viewport_width,
     viewport_height: profile.viewport_height,
     perceptual_background: profile.perceptual_background,
+    flip_viewing_conditions: profile.flip_viewing_conditions,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.40" }
+  { ..report, schema_version: "1.41" }
 }
 
 ///|
@@ -134,6 +140,7 @@ pub fn compare_with_control(
     viewport_width: profile.viewport_width,
     viewport_height: profile.viewport_height,
     perceptual_background: profile.perceptual_background,
+    flip_viewing_conditions: profile.flip_viewing_conditions,
   }
   try
     @engine.compare_with_control(
@@ -144,7 +151,7 @@ pub fn compare_with_control(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.40" }
+    report => { ..report, schema_version: "1.41" }
   }
 }
 
@@ -163,6 +170,7 @@ pub fn compare_with_control_and_resources(
     viewport_width: profile.viewport_width,
     viewport_height: profile.viewport_height,
     perceptual_background: profile.perceptual_background,
+    flip_viewing_conditions: profile.flip_viewing_conditions,
   }
   try
     @engine.compare_with_control_and_resources(
@@ -174,6 +182,6 @@ pub fn compare_with_control_and_resources(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.40" }
+    report => { ..report, schema_version: "1.41" }
   }
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import base64
 import copy
 import json
 from pathlib import Path
@@ -135,6 +136,52 @@ def validate_perceptual_color(report: dict[str, Any]) -> list[dict[str, Any]]:
             or magnitude["mean_delta_e_ok"] < 0
         ):
             raise ValueError(f"{event['id']}: invalid perceptual color evidence")
+        computed.append(event)
+    return computed
+
+
+def validate_perceptual_flip(report: dict[str, Any]) -> list[dict[str, Any]]:
+    if report["profile"]["flip_viewing_conditions"] != {
+        "pixels_per_degree": 20
+    }:
+        raise ValueError("mutation report lost FLIP Viewing Conditions")
+    computed = []
+    viewport_width = report["profile"]["viewport_width"]
+    viewport_height = report["profile"]["viewport_height"]
+    for event in report["events"]:
+        rendered = event["rendered_outcome"]
+        evidence = rendered["perceptual_flip"]
+        if rendered["status"] != "computed":
+            if evidence != {
+                "status": "not_computed",
+                "reason_code": "rendered_evidence_unavailable",
+            }:
+                raise ValueError(f"{event['id']}: invalid unavailable FLIP")
+            continue
+        flip_map = evidence.get("map")
+        if (
+            evidence.get("status") != "computed"
+            or flip_map is None
+            or flip_map["method_id"] != "nvlabs_ldr_flip/v1.7-b475eb4b"
+            or flip_map["encoding"] != "uint16_be_base64"
+            or flip_map["quantization_step"] != 1 / 65535
+            or min(
+                flip_map["pixel_x"],
+                flip_map["pixel_y"],
+                flip_map["pixel_width"],
+                flip_map["pixel_height"],
+            )
+            < 0
+            or flip_map["pixel_x"] + flip_map["pixel_width"] > viewport_width
+            or flip_map["pixel_y"] + flip_map["pixel_height"] > viewport_height
+        ):
+            raise ValueError(f"{event['id']}: invalid FLIP metadata")
+        try:
+            values = base64.b64decode(flip_map["values_base64"], validate=True)
+        except ValueError as error:
+            raise ValueError(f"{event['id']}: invalid FLIP base64") from error
+        if len(values) != 2 * flip_map["pixel_width"] * flip_map["pixel_height"]:
+            raise ValueError(f"{event['id']}: invalid FLIP sample count")
         computed.append(event)
     return computed
 
@@ -294,6 +341,13 @@ def main() -> None:
     ]
     if not perceptual_events:
         raise ValueError("mutation surface produced no perceptual observations")
+    flip_events = [
+        event
+        for report in reports.values()
+        for event in validate_perceptual_flip(report)
+    ]
+    if not flip_events:
+        raise ValueError("mutation surface produced no FLIP observations")
     for case in cases:
         forward = {
             event["id"]: event
@@ -445,14 +499,29 @@ def main() -> None:
     else:
         raise ValueError("mutation property accepted invalid perceptual color")
 
+    invalid_flip_report = copy.deepcopy(
+        next(report for report in reports.values() if validate_perceptual_flip(report))
+    )
+    invalid_flip = validate_perceptual_flip(invalid_flip_report)[0]
+    invalid_flip["rendered_outcome"]["perceptual_flip"]["map"][
+        "values_base64"
+    ] = "AA=="
+    try:
+        validate_perceptual_flip(invalid_flip_report)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted invalid FLIP samples")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
         f"{complete_regions} complete regions, "
         f"{len(boundary_differences)} boundary observations, "
         f"{len(coverage_differences)} coverage observations, "
-        f"{len(perceptual_events)} perceptual observations, "
-        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, and invalid-perceptual negative controls: ok"
+        f"{len(perceptual_events)} perceptual-color observations, "
+        f"{len(flip_events)} FLIP observations, "
+        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, invalid-perceptual-color, and invalid-FLIP negative controls: ok"
     )
 
 

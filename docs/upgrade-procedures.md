@@ -16,7 +16,9 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 | Baseline pixel comparison | `mizchi/pixelmatch@0.6.1` | connected pixel-mask regions and renderer comparison support |
 | Embedded raster codec | `Milky2018/svgdiff-raster-codec@0.1.0` plus `mizchi/zlib@0.4.6` | admitted PNG/JPEG bytes, dimensions, normalized RGBA8 pixels, and intrinsic magnitude inputs |
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
-| JSON Schema | `1.40` | every serialized field, enum, null/absence rule, and top-level invariant |
+| Perceptual color metric | `delta_e_ok_changed_pixels_after_linear_srgb_background/v1` | event-local changed-pixel sample count and arithmetic mean DeltaEOK |
+| Perceptual spatial metric | `nvlabs_ldr_flip/v1.7-b475eb4b` | event-local LDR-FLIP maps, response bounds, quantization, and Viewing Conditions |
+| JSON Schema | `1.41` | every serialized field, enum, null/absence rule, and top-level invariant |
 | Nonvisual source-audit schema | `1.0` | source-only fact identity, paths, values, provenance, status, and parse failures |
 | Same-domain ordering | `v2_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 
@@ -143,7 +145,7 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Every released Schema, currently `1.0` through `1.40`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
+Every released Schema, currently `1.0` through `1.41`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
 
 The independent source-audit schema follows the same discipline but is not entered in the Structured Report registry. Validate [`svgdiff-source-audit.schema.json`](../schema/svgdiff-source-audit.schema.json), its canonical example, and the public `SourceAudit*` interface whenever audit identity, paths, values, spans, status, or failures change.
 

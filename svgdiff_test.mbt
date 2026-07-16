@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.40")
+  assert_eq(report.schema_version, "1.41")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.40", "events": [_], .. } => ()
+    { "schema_version": "1.41", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.40", "events": [_], .. } => ()
+    { "schema_version": "1.41", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -295,6 +295,73 @@ test "root package exposes event-local perceptual color evidence" {
   assert_eq(
     without_background.events[0].rendered_outcome.perceptual_color.reason_code,
     Some("perceptual_background_absent"),
+  )
+}
+
+///|
+test "root package exposes optional event-local LDR-FLIP maps" {
+  assert_true(
+    @svgdiff.FlipViewingConditions::from_pixels_per_degree(0.0) is None,
+  )
+  assert_true(
+    @svgdiff.FlipViewingConditions::from_pixels_per_degree(4097.0) is None,
+  )
+  guard @svgdiff.FlipViewingConditions::from_pixels_per_degree(20.0)
+    is Some(viewing) else {
+    fail("expected supported FLIP Viewing Conditions")
+  }
+  assert_eq(viewing.pixels_per_degree(), 20.0)
+  guard @svgdiff.PerceptualBackground::parse_srgb("white") is Some(background) else {
+    fail("expected an opaque deterministic sRGB background")
+  }
+  let before = "<svg width='16' height='16'><rect id='box' x='8' y='8' width='1' height='1' fill='red'/></svg>"
+  let after = before.replace(old="red", new="blue")
+  let profile = {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    perceptual_background: Some(background),
+  }
+  let without_flip = @svgdiff.compare(before, after, profile)
+  assert_eq(
+    without_flip.events[0].rendered_outcome.perceptual_flip.reason_code,
+    Some("flip_not_requested"),
+  )
+  let report = @svgdiff.compare(before, after, {
+    ..profile,
+    flip_viewing_conditions: Some(viewing),
+  })
+  guard report.profile.flip_viewing_conditions is Some(recorded) else {
+    fail("expected FLIP Viewing Conditions in the report profile")
+  }
+  assert_eq(recorded.pixels_per_degree(), 20.0)
+  guard report.events[0].rendered_outcome.perceptual_flip.map is Some(map) else {
+    fail("expected event-local FLIP map")
+  }
+  assert_eq(map.method_id, "nvlabs_ldr_flip/v1.7-b475eb4b")
+  assert_eq(map.pixel_x, 2)
+  assert_eq(map.pixel_y, 2)
+  assert_eq(map.pixel_width, 13)
+  assert_eq(map.pixel_height, 13)
+  assert_eq(map.encoding, "uint16_be_base64")
+  assert_eq(map.quantization_step, 1.0 / 65535.0)
+  assert_true(!map.values_base64.is_empty())
+  let events : Array[@svgdiff.VisualEvent] = []
+  for index, event in report.events {
+    events.push({
+      ..event,
+      rendered_outcome: {
+        ..event.rendered_outcome,
+        perceptual_flip: without_flip.events[index].rendered_outcome.perceptual_flip,
+      },
+    })
+  }
+  let without_flip_profile = {
+    ..report,
+    profile: { ..report.profile, flip_viewing_conditions: None },
+    events,
+  }
+  assert_eq(
+    without_flip_profile.to_compact_json_string(),
+    without_flip.to_compact_json_string(),
   )
 }
 

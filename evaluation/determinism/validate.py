@@ -55,6 +55,7 @@ def run_report(cli: Path, case: dict[str, Any], compact: bool) -> bytes:
         str(case["viewport"]["width"]),
         "--height",
         str(case["viewport"]["height"]),
+        *case.get("cli_args", []),
     ]
     if compact:
         command.append("--agent-json")

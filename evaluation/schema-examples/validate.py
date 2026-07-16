@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+import base64
 import copy
+import hashlib
 import json
 import math
 import subprocess
@@ -62,6 +64,13 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             f"{case['id']}: unexpected Perceptual Background "
             f"{report['profile']['perceptual_background']!r}"
         )
+    if report["profile"]["flip_viewing_conditions"] != expected.get(
+        "flip_viewing_conditions"
+    ):
+        raise ValueError(
+            f"{case['id']}: unexpected FLIP Viewing Conditions "
+            f"{report['profile']['flip_viewing_conditions']!r}"
+        )
     expected_perceptual = expected.get("perceptual_color")
     if expected_perceptual is None:
         for event in report["events"]:
@@ -101,6 +110,63 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
                     f"{case['id']}: expected perceptual {field}="
                     f"{expected_perceptual[field]!r}, got {magnitude[field]!r}"
                 )
+    expected_flip = expected.get("perceptual_flip")
+    if expected_flip is None:
+        for event in report["events"]:
+            evidence = event["rendered_outcome"]["perceptual_flip"]
+            if evidence != {
+                "status": "not_computed",
+                "reason_code": "flip_not_requested",
+            }:
+                raise ValueError(
+                    f"{case['id']}: unexpected unrequested FLIP evidence "
+                    f"{evidence!r}"
+                )
+    else:
+        event = next(
+            (
+                candidate
+                for candidate in report["events"]
+                if candidate["id"] == expected_flip["event_id"]
+            ),
+            None,
+        )
+        if event is None:
+            raise ValueError(
+                f"{case['id']}: missing FLIP event {expected_flip['event_id']}"
+            )
+        evidence = event["rendered_outcome"]["perceptual_flip"]
+        flip_map = evidence.get("map")
+        if evidence.get("status") != "computed" or flip_map is None:
+            raise ValueError(
+                f"{case['id']}: expected computed FLIP evidence, got {evidence!r}"
+            )
+        for field in (
+            "method_id",
+            "pixel_x",
+            "pixel_y",
+            "pixel_width",
+            "pixel_height",
+            "encoding",
+            "quantization_step",
+        ):
+            if flip_map[field] != expected_flip[field]:
+                raise ValueError(
+                    f"{case['id']}: expected FLIP {field}="
+                    f"{expected_flip[field]!r}, got {flip_map[field]!r}"
+                )
+        encoded = base64.b64decode(flip_map["values_base64"], validate=True)
+        if len(encoded) != expected_flip["encoded_bytes"]:
+            raise ValueError(
+                f"{case['id']}: expected {expected_flip['encoded_bytes']} "
+                f"FLIP bytes, got {len(encoded)}"
+            )
+        digest = hashlib.sha256(encoded).hexdigest()
+        if digest != expected_flip["values_sha256"]:
+            raise ValueError(
+                f"{case['id']}: expected FLIP SHA-256 "
+                f"{expected_flip['values_sha256']}, got {digest}"
+            )
     by_domain = {item["domain"]: item for item in differences}
     for check in expected["magnitude_checks"]:
         if check["domain"] not in by_domain:
@@ -774,6 +840,18 @@ def main() -> None:
     expect_schema_rejection(
         invalid_background, schema, "out-of-range Perceptual Background"
     )
+    missing_flip_viewing = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_flip_viewing["profile"]["flip_viewing_conditions"]
+    expect_schema_rejection(
+        missing_flip_viewing, schema, "missing FLIP Viewing Conditions state"
+    )
+    invalid_flip_viewing = copy.deepcopy(reports["salient-fill-change"])
+    invalid_flip_viewing["profile"]["flip_viewing_conditions"][
+        "pixels_per_degree"
+    ] = 4097
+    expect_schema_rejection(
+        invalid_flip_viewing, schema, "out-of-range FLIP pixels per degree"
+    )
     missing_perceptual = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_perceptual["events"][0]["rendered_outcome"]["perceptual_color"]
     expect_schema_rejection(
@@ -786,6 +864,16 @@ def main() -> None:
     expect_schema_rejection(
         invalid_perceptual, schema, "negative perceptual color magnitude"
     )
+    missing_flip = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_flip["events"][0]["rendered_outcome"]["perceptual_flip"]
+    expect_schema_rejection(
+        missing_flip, schema, "missing perceptual FLIP evidence"
+    )
+    invalid_flip = copy.deepcopy(reports["salient-fill-change"])
+    invalid_flip["events"][0]["rendered_outcome"]["perceptual_flip"]["map"][
+        "encoding"
+    ] = "float32_base64"
+    expect_schema_rejection(invalid_flip, schema, "unknown FLIP map encoding")
     wrong_nullable_type = copy.deepcopy(reports["equivalent-color-spelling"])
     wrong_nullable_type["atomic_differences"][0]["magnitude"][
         "parameter_abs_user_units"
