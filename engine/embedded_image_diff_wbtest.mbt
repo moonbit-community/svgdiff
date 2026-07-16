@@ -88,6 +88,17 @@ test "decoded embedded PNG content reports intrinsic pixel magnitude" {
   guard difference_in_domain(report, "resource.image.content") is Some(content) else {
     fail("expected decoded image content difference")
   }
+  assert_eq(content.subject_role, "resource")
+  assert_eq(content.subject_alignment_id, Some("alignment:image-resource:0"))
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.id == "alignment:image:0" && alignment.subject_role == "entity"
+    }) &&
+    report.subject_alignments.any(alignment => {
+      alignment.id == "alignment:image-resource:0" &&
+      alignment.subject_role == "resource"
+    }),
+  )
   assert_eq(content.computed_relation.status, "different")
   guard content.magnitude.intrinsic_raster is Some(magnitude) else {
     fail("expected intrinsic raster magnitude")
@@ -241,6 +252,15 @@ test "embedded image identity, insertion, and deletion are deterministic" {
     fail("expected embedded image insertion")
   }
   assert_eq(added.subject_alignment_id, Some("alignment:image:0"))
+  guard difference_in_domain(insertion, "resource.image.presence")
+    is Some(resource_added) else {
+    fail("expected embedded image resource insertion")
+  }
+  assert_eq(resource_added.subject_role, "resource")
+  assert_eq(
+    resource_added.subject_alignment_id,
+    Some("alignment:image-resource:0"),
+  )
   assert_true(
     !insertion.diagnostics.any(diagnostic => {
       diagnostic.code == "analysis_coverage_unproven"
@@ -251,6 +271,14 @@ test "embedded image identity, insertion, and deletion are deterministic" {
     fail("expected embedded image deletion")
   }
   assert_eq(removed.subject_alignment_id, Some("alignment:image:0"))
+  guard difference_in_domain(deletion, "resource.image.presence")
+    is Some(resource_removed) else {
+    fail("expected embedded image resource deletion")
+  }
+  assert_eq(
+    resource_removed.subject_alignment_id,
+    Some("alignment:image-resource:0"),
+  )
   assert_true(
     !deletion.diagnostics.any(diagnostic => {
       diagnostic.code == "analysis_coverage_unproven"

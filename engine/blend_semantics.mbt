@@ -955,6 +955,7 @@ fn attach_blend_differences(
     let alignment_id = "alignment:compositing:\{owner_id}"
     alignments.push({
       id: alignment_id,
+      subject_role: "entity",
       relation: "correspondence",
       before: [
         {

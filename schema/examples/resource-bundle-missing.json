@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.34",
+  "schema_version": "1.35",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -46,6 +46,7 @@
   "subject_alignments": [
     {
       "id": "alignment:image:0",
+      "subject_role": "entity",
       "relation": "correspondence",
       "before": [
         {
@@ -64,6 +65,37 @@
         }
       ],
       "basis": "unique_authored_id",
+      "evidence": {
+        "score_kind": "embedded_image_source_order_v1",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    },
+    {
+      "id": "alignment:image-resource:0",
+      "subject_role": "resource",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "image",
+          "authored_id": "photo",
+          "instance_context": null
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "image",
+          "authored_id": "photo",
+          "instance_context": null
+        }
+      ],
+      "basis": "resource_unique_authored_id",
       "evidence": {
         "score_kind": "embedded_image_source_order_v1",
         "selected_score": 0,

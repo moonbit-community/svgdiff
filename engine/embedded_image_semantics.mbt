@@ -507,6 +507,7 @@ fn embedded_image_alignment(
 ) -> SubjectAlignment {
   {
     id: "alignment:image:\{index}",
+    subject_role: "entity",
     relation,
     before: before.map(subject => [subject.reference]).unwrap_or([]),
     after: after.map(subject => [subject.reference]).unwrap_or([]),
@@ -615,6 +616,23 @@ fn embedded_image_alignments(
         ),
       )
     }
+  }
+  let entity_alignments = alignments.copy()
+  for alignment in entity_alignments {
+    alignments.push({
+      ..alignment,
+      id: alignment.id.replace_all(
+        old="alignment:image:",
+        new="alignment:image-resource:",
+      ),
+      subject_role: "resource",
+      basis: match alignment.basis {
+        "unique_authored_id" => "resource_unique_authored_id"
+        "stable_image_source_order" => "resource_stable_image_source_order"
+        "unmatched_image_subject" => "unmatched_image_resource"
+        basis => basis
+      },
+    })
   }
   alignments
 }

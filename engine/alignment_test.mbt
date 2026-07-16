@@ -374,7 +374,7 @@ test "use hosts and their rendered leaf instances remain distinct" {
 }
 
 ///|
-test "resource definitions align without claiming resource attribution" {
+test "resource definitions align independently and retain resource attribution" {
   let before = alignment_svg(
     "<defs><linearGradient id='paint'><stop offset='0' stop-color='red'/></linearGradient></defs><rect id='box' width='10' height='10' fill='url(#paint)'/>",
   )
@@ -392,13 +392,24 @@ test "resource definitions align without claiming resource attribution" {
         reference.kind == "linearGradient" &&
         reference.authored_id == Some("paint")
       }) &&
-      alignment.basis == "structural_authored_id"
+      alignment.subject_role == "resource" &&
+      alignment.basis == "resource_authored_id"
+    }),
+  )
+  assert_true(
+    report.atomic_differences
+    .filter(difference => difference.subject_role == "resource")
+    .all(difference => {
+      difference.subject_alignment_id is Some(alignment_id) &&
+      report.subject_alignments.any(alignment => {
+        alignment.id == alignment_id && alignment.subject_role == "resource"
+      })
     }),
   )
   assert_true(
     report.atomic_differences.any(difference => {
       difference.subject_role == "resource" &&
-      difference.subject_alignment_id is None
+      difference.subject_alignment_id is Some(_)
     }),
   )
 }

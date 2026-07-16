@@ -71,13 +71,31 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.34":
+    if report.get("schema_version") != "1.35":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
 
 def diagnostic_codes(report: dict) -> set[str]:
     return {diagnostic["code"] for diagnostic in report["diagnostics"]}
+
+
+def validate_alignment_roles(report: dict) -> None:
+    alignments = {
+        alignment["id"]: alignment for alignment in report["subject_alignments"]
+    }
+    if any(
+        alignment.get("subject_role") not in {"entity", "resource"}
+        for alignment in alignments.values()
+    ):
+        raise ValueError("Subject Alignment lost its entity/resource role")
+    if any(
+        difference.get("subject_alignment_id") not in alignments
+        or alignments[difference["subject_alignment_id"]]["subject_role"] != "resource"
+        for difference in report["atomic_differences"]
+        if difference.get("subject_role") == "resource"
+    ):
+        raise ValueError("resource Atomic Difference lost its resource alignment")
 
 
 def source_set_hash(cases: list[dict]) -> str:
@@ -397,6 +415,7 @@ def main() -> None:
     }
     for case in cases:
         report, report_sha256 = run_case(args.cli, case)
+        validate_alignment_roles(report)
         validators[case["failure_mode"]](case, report)
         results.append(
             {

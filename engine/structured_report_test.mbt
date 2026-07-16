@@ -346,7 +346,7 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.34",
+      "schema_version": "1.35",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -412,8 +412,16 @@ test "required unavailable report fields serialize as JSON null" {
     @engine.ComparisonProfile::v1_default(),
   )
   match @json.parse(resource_report.to_json_string()) {
-    { "atomic_differences": [{ "subject_alignment_id": Null, .. }], .. } => ()
-    _ => fail("an unaligned difference must serialize its subject as null")
+    {
+      "subject_alignments": [
+        { "id": String(alignment_id), "subject_role": "resource", .. },
+      ],
+      "atomic_differences": [
+        { "subject_alignment_id": String(difference_alignment_id), .. },
+      ],
+      ..
+    } => assert_eq(alignment_id, difference_alignment_id)
+    _ => fail("a resource difference must serialize its resource alignment")
   }
 }
 
@@ -430,7 +438,7 @@ test "compact JSON preserves the complete structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "1.34",
+      "schema_version": "1.35",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],

@@ -224,6 +224,7 @@
         "domains": ["resource.gradient.stop.stop_color", "paint.fill"],
         "computed_relations": ["different", "different"],
         "diagnostic_codes": ["renderer_gradient_raster_unproven"],
+        "alignment_roles": ["entity", "resource"],
         "magnitude_checks": [
           { "domain": "resource.gradient.stop.stop_color", "field": "magnitude.raster_linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 }
         ]
@@ -242,6 +243,7 @@
           "renderer_embedded_raster_unavailable",
           "renderer_embedded_raster_unavailable"
         ],
+        "alignment_roles": ["entity", "resource"],
         "magnitude_checks": [
           { "domain": "resource.image.content", "field": "magnitude.intrinsic_raster.changed_pixel_fraction", "op": "eq", "value": 1 },
           { "domain": "resource.image.content", "field": "magnitude.intrinsic_raster.linear_premultiplied_rgba_rmse", "op": "gt", "value": 0 }

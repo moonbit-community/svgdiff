@@ -283,6 +283,7 @@ pub fn StructuredReport::to_json_string(Self) -> String
 
 pub(all) struct SubjectAlignment {
   id : String
+  subject_role : String
   relation : String
   before : Array[SubjectReference]
   after : Array[SubjectReference]

@@ -207,6 +207,19 @@ fn embedded_image_transform_signature(transform : AffineTransform) -> String {
 }
 
 ///|
+fn embedded_image_resource_alignment_id(alignment : SubjectAlignment) -> String {
+  alignment.id.replace_all(
+    old="alignment:image:",
+    new="alignment:image-resource:",
+  )
+}
+
+///|
+fn embedded_image_resource_domain(domain : String) -> Bool {
+  domain.has_prefix("resource.image.")
+}
+
+///|
 fn append_embedded_image_difference(
   report : StructuredReport,
   alignment : SubjectAlignment,
@@ -222,11 +235,17 @@ fn append_embedded_image_difference(
   magnitude : DifferenceMagnitude,
   difference_ids : Array[String],
 ) -> Unit {
-  let fact_id = "fact:\{alignment.id}:\{property}"
-  let difference_id = "diff:\{alignment.id}:\{property}"
+  let resource_difference = embedded_image_resource_domain(domain)
+  let difference_alignment_id = if resource_difference {
+    embedded_image_resource_alignment_id(alignment)
+  } else {
+    alignment.id
+  }
+  let fact_id = "fact:\{difference_alignment_id}:\{property}"
+  let difference_id = "diff:\{difference_alignment_id}:\{property}"
   report.changed_facts.push({
     id: fact_id,
-    subject_id: alignment.id,
+    subject_id: difference_alignment_id,
     property,
     before: before_fact,
     after: after_fact,
@@ -241,8 +260,12 @@ fn append_embedded_image_difference(
   }
   report.atomic_differences.push({
     id: difference_id,
-    subject_role: "entity",
-    subject_alignment_id: Some(alignment.id),
+    subject_role: if resource_difference {
+      "resource"
+    } else {
+      "entity"
+    },
+    subject_alignment_id: Some(difference_alignment_id),
     domain,
     source_before,
     source_after,
@@ -605,7 +628,52 @@ fn append_embedded_image_presence(
     magnitude: empty_difference_magnitude(),
     domain_ordering: empty_domain_ordering(),
   })
-  [difference_id]
+  let resource_alignment_id = embedded_image_resource_alignment_id(alignment)
+  let resource_fact_id = "fact:\{resource_alignment_id}:presence"
+  let resource_difference_id = "diff:\{resource_alignment_id}:presence"
+  report.changed_facts.push({
+    id: resource_fact_id,
+    subject_id: resource_alignment_id,
+    property: "presence",
+    before: embedded_image_compact_href_fact(before),
+    after: embedded_image_compact_href_fact(after),
+    affected_subject_ids: embedded_image_subject_ids(before, after),
+  })
+  report.atomic_differences.push({
+    id: resource_difference_id,
+    subject_role: "resource",
+    subject_alignment_id: Some(resource_alignment_id),
+    domain: "resource.image.presence",
+    source_before: if insertion {
+      ""
+    } else {
+      "present"
+    },
+    source_after: if insertion {
+      "present"
+    } else {
+      ""
+    },
+    source_fact_before: embedded_image_compact_href_fact(before),
+    source_fact_after: embedded_image_compact_href_fact(after),
+    changed_fact_ids: [resource_fact_id],
+    evidence_layers: ["source_semantics", "computed_appearance"],
+    computed_relation: {
+      status: "not_applicable",
+      reason_code: if insertion {
+        "before_resource_absent"
+      } else {
+        "after_resource_absent"
+      },
+      missing_side: Some(if insertion { "before" } else { "after" }),
+      diagnostic_ids: embedded_image_diagnostic_ids(report, before, after),
+    },
+    parameter_delta_css_px: None,
+    presence_magnitude: None,
+    magnitude: empty_difference_magnitude(),
+    domain_ordering: empty_domain_ordering(),
+  })
+  [difference_id, resource_difference_id]
 }
 
 ///|

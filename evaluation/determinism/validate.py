@@ -111,6 +111,14 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
         owners[identifier] = kind
         ids_by_kind.setdefault(kind, set()).add(identifier)
 
+    alignments_by_id = {
+        alignment["id"]: alignment for alignment in report["subject_alignments"]
+    }
+    if any(
+        alignment.get("subject_role") not in {"entity", "resource"}
+        for alignment in alignments_by_id.values()
+    ):
+        raise ValueError("every Subject Alignment must declare a valid role")
     alignment_ids = ids_by_kind.get("subject_alignment", set())
     fact_ids = ids_by_kind.get("changed_fact", set())
     difference_ids = ids_by_kind.get("atomic_difference", set())
@@ -122,6 +130,13 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
         if alignment_id is not None:
             require_reference_list(
                 owner, "subject_alignment_id", [alignment_id], alignment_ids
+            )
+        if difference.get("subject_role") == "resource" and (
+            alignment_id is None
+            or alignments_by_id[alignment_id]["subject_role"] != "resource"
+        ):
+            raise ValueError(
+                f"{owner}: resource difference lacks a resource-role alignment"
             )
         require_reference_list(
             owner, "changed_fact_ids", difference["changed_fact_ids"], fact_ids
@@ -378,6 +393,21 @@ def main() -> None:
     first_reference = duplicate_reference["events"][0]["atomic_difference_ids"][0]
     duplicate_reference["events"][0]["atomic_difference_ids"].append(first_reference)
     expect_integrity_rejection(duplicate_reference, "duplicate report-local reference")
+    wrong_resource_role = copy.deepcopy(reports["resource-gradient-change"])
+    entity_alignment_id = next(
+        alignment["id"]
+        for alignment in wrong_resource_role["subject_alignments"]
+        if alignment["subject_role"] == "entity"
+    )
+    resource_difference = next(
+        difference
+        for difference in wrong_resource_role["atomic_differences"]
+        if difference["subject_role"] == "resource"
+    )
+    resource_difference["subject_alignment_id"] = entity_alignment_id
+    expect_integrity_rejection(
+        wrong_resource_role, "resource difference references an entity alignment"
+    )
     incomplete_fallback = copy.deepcopy(reports["resource-gradient-change"])
     del incomplete_fallback["events"][0]["difference_regions"][0][
         "cause_envelope"
@@ -411,6 +441,7 @@ def main() -> None:
             "duplicate_report_local_id",
             "dangling_report_local_reference",
             "duplicate_report_local_reference",
+            "resource_alignment_role_mismatch",
             "incomplete_revoked_cause_envelope",
             "cross_event_cause_contamination",
         ],

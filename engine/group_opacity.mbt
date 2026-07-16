@@ -173,6 +173,7 @@ fn attach_group_opacity_differences(
     }
     extra_alignments.push({
       id: alignment_id,
+      subject_role: "entity",
       relation: "correspondence",
       before: [
         {

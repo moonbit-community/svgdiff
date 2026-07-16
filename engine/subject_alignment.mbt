@@ -84,10 +84,72 @@ fn structural_alignment_kind(kind : String) -> Bool {
 ///|
 fn source_structural_alignment_basis(basis : String) -> Bool {
   basis == "structural_semantic_signature" ||
+  basis == "resource_semantic_signature" ||
   basis == "structural_authored_id" ||
+  basis == "resource_authored_id" ||
   basis == "structural_path" ||
+  basis == "resource_path" ||
   basis == "stable_kind_order" ||
-  basis == "unmatched_structural_subject"
+  basis == "resource_stable_kind_order" ||
+  basis == "resource_unique_authored_id" ||
+  basis == "resource_stable_image_source_order" ||
+  basis == "unmatched_structural_subject" ||
+  basis == "unmatched_visual_resource" ||
+  basis == "unmatched_image_resource"
+}
+
+///|
+fn visual_resource_alignment_kind(kind : String) -> Bool {
+  match kind {
+    "symbol"
+    | "linearGradient"
+    | "radialGradient"
+    | "pattern"
+    | "marker"
+    | "clipPath"
+    | "mask"
+    | "filter" => true
+    _ => false
+  }
+}
+
+///|
+fn structural_alignment_role(
+  before : Array[StructuralAlignmentSubject],
+  after : Array[StructuralAlignmentSubject],
+) -> String {
+  let kind = match before {
+    [subject, ..] => subject.reference.kind
+    [] => after[0].reference.kind
+  }
+  if visual_resource_alignment_kind(kind) {
+    "resource"
+  } else {
+    "entity"
+  }
+}
+
+///|
+fn resource_alignment_basis(basis : String) -> String {
+  match basis {
+    "structural_semantic_signature" => "resource_semantic_signature"
+    "structural_authored_id" => "resource_authored_id"
+    "structural_path" => "resource_path"
+    "stable_kind_order" => "resource_stable_kind_order"
+    "unmatched_structural_subject" => "unmatched_visual_resource"
+    _ => basis
+  }
+}
+
+///|
+fn resource_alignment_score_kind(score_kind : String) -> String {
+  match score_kind {
+    "structural_semantic_signature" => "resource_semantic_signature"
+    "structural_authored_id" => "resource_authored_id"
+    "structural_path" => "resource_path"
+    "stable_kind_order" => "resource_stable_kind_order"
+    _ => score_kind
+  }
 }
 
 ///|
@@ -1373,6 +1435,7 @@ fn make_alignment(
 ) -> SubjectAlignment {
   {
     id: "alignment:\{index}",
+    subject_role: "entity",
     relation,
     before: alignment_refs(before),
     after: alignment_refs(after),
@@ -1409,8 +1472,10 @@ fn make_structural_alignment(
   basis : String,
   evidence : AlignmentEvidence,
 ) -> SubjectAlignment {
+  let subject_role = structural_alignment_role(before, after)
   {
     id: "alignment:\{index}",
+    subject_role,
     relation,
     before: [
       for subject in before => subject.reference
@@ -1418,8 +1483,19 @@ fn make_structural_alignment(
     after: [
       for subject in after => subject.reference
     ],
-    basis,
-    evidence,
+    basis: if subject_role == "resource" {
+      resource_alignment_basis(basis)
+    } else {
+      basis
+    },
+    evidence: if subject_role == "resource" {
+      {
+        ..evidence,
+        score_kind: resource_alignment_score_kind(evidence.score_kind),
+      }
+    } else {
+      evidence
+    },
   }
 }
 
@@ -2263,12 +2339,14 @@ fn finish_report(
   let report = attach_marker_resource_differences(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_embedded_image_differences(
-    report, before_svg, after_svg, rendered_alignments, resources, limits,
+    report, before_svg, after_svg, combined_alignments, resources, limits,
   )
   comparison_guard.checkpoint()
   let report = attach_unused_definition_differences(
     report, before_svg, after_svg,
   )
+  comparison_guard.checkpoint()
+  let report = attach_resource_alignment_ids(report)
   comparison_guard.checkpoint()
   let report = attach_structural_differences(
     report, before_svg, after_svg, rendered_alignments,

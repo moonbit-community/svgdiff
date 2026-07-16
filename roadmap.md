@@ -142,7 +142,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Record alignment evidence, ambiguity, and confidence without converting uncertainty into equality.
 - [x] **P1** Validate one-to-one, insertion, deletion, split, merge, and many-to-many reorganizations on the benchmark corpus.
 - [x] **P1** Define stable deterministic tie-breaking for equally plausible alignments.
-- [ ] **P1** Align Visual Resources separately from Visual Entities while preserving mediated outcomes.
+- [x] **P1** Align Visual Resources separately from Visual Entities while preserving mediated outcomes.
 - [x] **P1** Define when one source change creates multiple visual outcomes and when several changes form one Visual Event.
 - [x] **Decision** Decide whether and how to aggregate Visual Events across Primary Subject Alignments by space, hierarchy, shared resources, or outcome coherence.
 - [ ] **Deferred** Implement cross-subject event aggregation only after its exact invariants and evaluation criteria are accepted.

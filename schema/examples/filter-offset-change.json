@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.34",
+  "schema_version": "1.35",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -88,6 +88,7 @@
   "subject_alignments": [
     {
       "id": "alignment:0",
+      "subject_role": "entity",
       "relation": "correspondence",
       "before": [
         {
@@ -118,6 +119,7 @@
     },
     {
       "id": "alignment:1",
+      "subject_role": "resource",
       "relation": "correspondence",
       "before": [
         {
@@ -135,9 +137,9 @@
           "instance_context": null
         }
       ],
-      "basis": "structural_semantic_signature",
+      "basis": "resource_semantic_signature",
       "evidence": {
-        "score_kind": "structural_semantic_signature",
+        "score_kind": "resource_semantic_signature",
         "selected_score": null,
         "candidate_count": 1,
         "equal_score_candidate_count": 1,
@@ -182,7 +184,7 @@
     {
       "id": "diff:filter:shift:primitive:0:dx",
       "subject_role": "resource",
-      "subject_alignment_id": null,
+      "subject_alignment_id": "alignment:1",
       "domain": "resource.filter.primitive.offset",
       "source_before": "1",
       "source_after": "3",

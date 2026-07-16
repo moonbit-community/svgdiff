@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.34",
+  "schema_version": "1.35",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -182,6 +182,7 @@
   "subject_alignments": [
     {
       "id": "alignment:0",
+      "subject_role": "entity",
       "relation": "correspondence",
       "before": [
         {
@@ -212,6 +213,7 @@
     },
     {
       "id": "alignment:1",
+      "subject_role": "resource",
       "relation": "correspondence",
       "before": [
         {
@@ -229,9 +231,9 @@
           "instance_context": null
         }
       ],
-      "basis": "structural_authored_id",
+      "basis": "resource_authored_id",
       "evidence": {
-        "score_kind": "structural_authored_id",
+        "score_kind": "resource_authored_id",
         "selected_score": null,
         "candidate_count": 1,
         "equal_score_candidate_count": 1,
@@ -276,7 +278,7 @@
     {
       "id": "diff:marker-resource:2:2:markerWidth",
       "subject_role": "resource",
-      "subject_alignment_id": null,
+      "subject_alignment_id": "alignment:1",
       "domain": "resource.marker.viewport_size",
       "source_before": "3",
       "source_after": "3",

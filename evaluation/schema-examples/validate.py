@@ -126,6 +126,15 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
                 f"{case['id']}: expected alignment cardinalities="
                 f"{expected['alignment_cardinalities']!r}, got {cardinalities!r}"
             )
+    if "alignment_roles" in expected:
+        roles = sorted(
+            {alignment["subject_role"] for alignment in report["subject_alignments"]}
+        )
+        if roles != expected["alignment_roles"]:
+            raise ValueError(
+                f"{case['id']}: expected alignment roles="
+                f"{expected['alignment_roles']!r}, got {roles!r}"
+            )
 
 
 def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
@@ -347,13 +356,29 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
         "structural_authored_id",
         "structural_path",
         "stable_kind_order",
+        "resource_semantic_signature",
+        "resource_authored_id",
+        "resource_path",
+        "resource_stable_kind_order",
     }
     unassessed_score_kinds = {
         "structural_rule",
         "unmatched",
         "group_identity_or_singleton",
     }
+    alignments_by_id = {}
     for index, alignment in enumerate(report["subject_alignments"]):
+        role = alignment.get("subject_role")
+        if role not in {"entity", "resource"}:
+            raise ValueError(
+                f"{case['id']}: alignment {index} has invalid subject role"
+            )
+        alignment_id = alignment.get("id")
+        if not isinstance(alignment_id, str) or alignment_id in alignments_by_id:
+            raise ValueError(
+                f"{case['id']}: alignment {index} has invalid or duplicate ID"
+            )
+        alignments_by_id[alignment_id] = alignment
         if any(
             "instance_context" not in reference
             for reference in alignment["before"] + alignment["after"]
@@ -433,6 +458,15 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
         else:
             raise ValueError(
                 f"{case['id']}: alignment {index} has unknown score kind {score_kind!r}"
+            )
+    for index, difference in enumerate(report["atomic_differences"]):
+        if difference.get("subject_role") != "resource":
+            continue
+        alignment_id = difference.get("subject_alignment_id")
+        alignment = alignments_by_id.get(alignment_id)
+        if alignment is None or alignment["subject_role"] != "resource":
+            raise ValueError(
+                f"{case['id']}: resource difference {index} lacks its resource alignment"
             )
 
 
@@ -576,6 +610,11 @@ def main() -> None:
     ]
     expect_schema_rejection(
         incomplete_alignment_evidence, schema, "incomplete alignment evidence"
+    )
+    missing_alignment_role = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_alignment_role["subject_alignments"][0]["subject_role"]
+    expect_schema_rejection(
+        missing_alignment_role, schema, "missing Subject Alignment role"
     )
     missing_instance_context_field = copy.deepcopy(reports["use-definition-change"])
     del missing_instance_context_field["subject_alignments"][0]["before"][0][

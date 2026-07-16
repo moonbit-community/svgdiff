@@ -4,11 +4,17 @@ Status: current v1 policy
 
 Last verified: 2026-07-15
 
-Rendered-shape Subject Alignment minimizes a bounded device-space feature distance within compatible subject kinds after exact visual-signature matching and the current split/merge rules. Source-structural alignment uses a separate deterministic rule chain for groups, text, use hosts, and visual resource definitions. When more than one accepted pairing has the same evidence and cost, v1 chooses one deterministically so identical inputs produce stable report order and IDs.
+Rendered-entity Subject Alignment minimizes a bounded device-space feature distance within compatible subject kinds after exact visual-signature matching and the current split/merge rules. Source-structural entity alignment and Visual Resource alignment use separate deterministic rule chains. When more than one accepted pairing has the same evidence and cost, v1 chooses one deterministically so identical inputs produce stable report order and IDs.
 
 ## Source-structural subjects
 
-Structural subjects pair only within the same SVG kind. The engine first groups an equal-cardinality class with the same recursive semantic signature. That signature ignores the subject's own authored ID, sibling ordinal, attribute order, unprefixed `aria-*`/`data-*`, and namespace declaration spelling while preserving SVG kind, other attributes, direct text for text subjects, and ordered child signatures. Remaining subjects select the first unused after subject with the same non-empty authored ID, then the same structural path, then stable same-kind source order. Remaining endpoints become insertion or deletion alignments. The bases are `structural_semantic_signature`, `structural_authored_id`, `structural_path`, `stable_kind_order`, and `unmatched_structural_subject`.
+Structural entity subjects pair only within the same SVG kind. The engine first groups an equal-cardinality class with the same recursive semantic signature. That signature ignores the subject's own authored ID, sibling ordinal, attribute order, unprefixed `aria-*`/`data-*`, and namespace declaration spelling while preserving SVG kind, other attributes, direct text for text subjects, and ordered child signatures. Remaining subjects select the first unused after subject with the same non-empty authored ID, then the same structural path, then stable same-kind source order. Remaining endpoints become insertion or deletion alignments. The bases are `structural_semantic_signature`, `structural_authored_id`, `structural_path`, `stable_kind_order`, and `unmatched_structural_subject`.
+
+## Visual Resources
+
+Symbols, gradients, patterns, markers, clip paths, masks, and filters reuse the recursive source-semantic matching algorithm but emit resource-role alignments and the distinct bases `resource_semantic_signature`, `resource_authored_id`, `resource_path`, `resource_stable_kind_order`, and `unmatched_visual_resource`. This vocabulary prevents an Agent from mistaking a definition for a placed entity. A resource child difference resolves to its containing resource alignment through the Changed Fact owner and resource family. Embedded image content uses `resource_unique_authored_id`, `resource_stable_image_source_order`, or `unmatched_image_resource`; its independent placement alignment retains the entity role.
+
+Resource alignment is correspondence evidence only. It neither proves that resource consumers are equal nor replaces entity alignments and outcomes mediated by the resource.
 
 An equal semantic class retains every endpoint in one set alignment. A one-member class is locally `unique`; a larger class is `tied` with its cardinality in both candidate counts. Authored IDs, structural paths, and source order remain weaker correspondence hints, not identity proof. Unequal-cardinality and mixed-change clusters can still reach those fallbacks until broader many-to-many invariants are accepted.
 
