@@ -148,6 +148,7 @@ graph TD
   ISS_130["ISS-130: Add optional event-local LDR-FLIP maps"]
   ISS_131["ISS-131: Preserve separate event-local FLIP statistics"]
   ISS_132["ISS-132: Define a versioned main-difference Impact Assessment policy"]
+  ISS_133["ISS-133: Calibrate Impact thresholds and ordering on human labels"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -374,6 +375,7 @@ graph TD
   ISS_129 --> ISS_130
   ISS_130 --> ISS_131
   ISS_131 --> ISS_132
+  ISS_132 --> ISS_133
 ```
 
 ## Warnings

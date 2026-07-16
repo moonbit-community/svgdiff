@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-16
 
-This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, Schema `1.39` records an optional explicit opaque sRGB Perceptual Background, Schema `1.40` adds event-local changed-pixel mean DeltaEOK, Schema `1.41` adds optional event-local LDR-FLIP maps under explicit pixels-per-degree Viewing Conditions, Schema `1.42` adds separately pooled canvas, selected-event, response-tail, maximum, and explicit-threshold-area statistics, and Schema `1.43` adds an uncalibrated Pareto frontier over common event-rendered magnitude fields. Continuous vector correspondence and calibrated Impact Assessment remain roadmap work.
+This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, Schema `1.39` records an optional explicit opaque sRGB Perceptual Background, Schema `1.40` adds event-local changed-pixel mean DeltaEOK, Schema `1.41` adds optional event-local LDR-FLIP maps under explicit pixels-per-degree Viewing Conditions, Schema `1.42` adds separately pooled canvas, selected-event, response-tail, maximum, and explicit-threshold-area statistics, and Schema `1.43` adds an uncalibrated Pareto frontier over common event-rendered magnitude fields. Continuous vector correspondence and a supportable calibrated Impact Assessment remain roadmap work.
 
 ## Conclusion
 
@@ -107,3 +107,11 @@ Prefer lexicographic ordering by Domain-relevant measurements over adding incomm
 ## Recommendation
 
 Adopt a layered `Difference Magnitude` abstraction with exact parameter/device-space measurements, painted-boundary and coverage measurements, raw raster/color evidence, and FLIP as the default spatial perceptual map under one Comparison Profile. Schema `1.41` implements that map boundary, Schema `1.42` adds explicitly named pooling directly from the unquantized internal map, and Schema `1.43` exposes a traceable two-dimensional main-event frontier without weights or labels. Treat SSIM/MS-SSIM, LPIPS, and alternate-scale rerendering as development diagnostics. Calibrate severity thresholds on a curated SVG corpus with human labels before claiming that any composite score represents "major visual difference."
+
+## 2026-07-16 calibration follow-up
+
+The first versioned calibration study evaluated changed-pixel fraction, linear premultiplied-RGBA RMSE, FLIP canvas mean, and a two-field lexicographic total order against the current thirteen-case corpus. It rejected every production candidate. The labels have no recorded independent reviewer agreement, only one event occupies the `low` tier, one `high` event lacks rendered inputs, and the twelve scorable cases contain no multi-event ranking pair.
+
+Changed-pixel fraction can perfectly separate the eleven measured events when fitted and tested on the same data, but leave-one-case-out evaluation predicts only ten of twelve labeled events and gets nine correct. RMSE and FLIP canvas mean have overlapping or inverted tier ranges, so monotonic four-tier cutpoints are not trainable. The existing Pareto frontier recalls the accepted top target in all twelve scorable cases, but that result establishes only frontier inclusion, not a total order or tier calibration.
+
+Therefore the evidence supports retaining `event_rendered_pareto/v1` as `not_calibrated`, not emitting `none`/`low`/`medium`/`high` or `subtle`/`major`, and repeating calibration only after the prerequisites recorded in the [evaluation artifact](../../evaluation/impact-calibration/README.md) are met.

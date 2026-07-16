@@ -2,7 +2,7 @@
 
 Status: living post-v1 roadmap
 
-Last reviewed: 2026-07-15
+Last reviewed: 2026-07-16
 
 This roadmap records remaining work between the current deterministic static-SVG implementation and the terminal product goal:
 
@@ -156,7 +156,8 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Implement FLIP as an optional event-local perceptual map with all viewing parameters recorded.
 - [x] **P0** Preserve canvas, event-region, p95, maximum, and area-above-threshold perceptual statistics separately.
 - [x] **P0** Define a versioned Impact Assessment policy for identifying the main visual differences across domains.
-- [ ] **P0** Calibrate impact thresholds and ordering rules on the human-labeled corpus before assigning labels such as subtle or major.
+- [x] **P0** Run a reproducible Impact threshold and ordering calibration study on the human-labeled corpus before assigning labels such as subtle or major; the v1 study rejected every production candidate.
+- [ ] **Deferred** Re-run Impact calibration and publish a new calibrated policy only after independent reviewer agreement, ranked multi-event cases, broader tier coverage, complete policy inputs, and profile sensitivity evidence exist.
 - [x] **P0** Keep the raw score vector authoritative beneath every policy-dependent Impact Assessment and across legacy reports where one is unavailable.
 - [x] **P1** Add DeltaEOK or CIEDE2000 under an explicitly declared perceptual background.
 - [ ] **P1** Evaluate SSIM/MS-SSIM only as secondary structural diagnostics.
@@ -268,6 +269,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | Date | Review point | Result |
 | --- | --- | --- |
 | 2026-07-14 | Pre-M1 baseline | Retained every unchecked capability; established the rejection ledger from accepted ADRs. |
+| 2026-07-16 | Impact calibration v1 | Completed the reproducible calibration study, rejected production labels and total ordering from insufficient evidence, and retained an explicit prerequisite-bound recalibration item plus the M3 calibrated-Impact gate. |
 
 ## Milestone gates
 

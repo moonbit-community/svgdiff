@@ -30,7 +30,9 @@ These labels validate the report model. They are not visual main-change answers 
 - an ordinal manual tier and rationale;
 - acceptable alternative descriptions that should receive equivalent semantic credit.
 
-The current file is an initial single-pass manual reference set. The tiers `none`, `low`, `medium`, and `high` are human-oriented judgments for these cases, not an engine metric, a universal cross-domain scalar, or a release threshold. Raw report magnitudes remain authoritative evidence, and later benchmark work must state how these labels are scored and may add independent reviewer agreement without rewriting the versioned labels.
+The current file is an initial single-pass manual reference set. The tiers `none`, `low`, `medium`, and `high` are human-oriented judgments for these cases, not an engine metric, a universal cross-domain scalar, or a release threshold. Raw report magnitudes remain authoritative evidence.
+
+The versioned [Impact calibration evaluation](../impact-calibration/README.md) joins these labels to production event measurements without exposing them to the report or Agent harness. Its v1 result rejects production thresholds and total ordering: there is no recorded independent reviewer agreement, only one `low` event, one `high` event lacks rendered inputs, and no scorable case contains multiple ranked events. Future review may add agreement and new versioned cases without rewriting these labels.
 
 Equivalent spelling and zero-contribution cases intentionally retain semantic edit descriptions with `none` visual importance. Unsupported cases describe the human-reference visual change even when the current engine correctly returns only partial analysis.
 

@@ -2,7 +2,7 @@
 
 Status: current maintenance policy
 
-Last reviewed: 2026-07-14
+Last reviewed: 2026-07-16
 
 This document prevents roadmap cleanup from erasing product intent. It defines when [`roadmap.md`](../roadmap.md) must be reviewed and records product shapes that the project has intentionally rejected.
 
@@ -45,7 +45,8 @@ These entries describe exact rejected forms. They do not reject adjacent capabil
 | Pixel-only comparison as proof of equality or the sole magnitude oracle | All complete analyses | A raster cannot explain authored equivalence or subpixel computed changes, and it cannot establish causal attribution by itself. Preserve Source Semantics, Computed Appearance, and Rendered Evidence separately. | [ADR 0004](adr/0004-record-differences-at-three-evidence-layers.md), [ADR 0006](adr/0006-use-render-observations-as-visible-change-evidence.md) | None for complete analysis; additional renderers may add evidence under explicit profiles. |
 | Implicit scripts, network resources, animation state, or platform state inside the deterministic static profile | Deterministic static profile only | Undeclared state makes comparison irreproducible. Encountering it reduces coverage; separately pinned dynamic or resource profiles remain open roadmap decisions. | [ADR 0009](adr/0009-scope-initial-correctness-to-deterministic-static-svg.md) | An accepted ADR defines a separate deterministic profile with all state and resources declared. |
 | Alternate-scale diagnostic rerenders in canonical Difference Magnitude | Canonical Structured Report | Magnified samples can exaggerate tiny changes and duplicate continuous computed geometry evidence. They remain renderer-conformance QA. | [ADR 0013](adr/0013-keep-diagnostic-rerendering-outside-the-report.md) | A separately versioned diagnostic artifact is justified without changing canonical magnitude semantics. |
+| Production Impact tiers or a total event order calibrated from the single-pass v1 corpus | Schema `1.43` reports and the current thirteen-case evaluation corpus | The corpus has no recorded independent reviewer agreement, only one `low` event, one `high` target without policy inputs, and no ranked multi-event pair. Retain the traceable uncalibrated `event_rendered_pareto/v1` frontier and its raw inputs. | [ADR 0089](adr/0089-reject-impact-calibration-from-the-v1-corpus.md), [calibration results](../evaluation/impact-calibration/results.v1.json) | Independent blinded agreement, ranked multi-event cases, broader tier and boundary coverage, complete policy inputs, and profile sensitivity evidence are versioned and pass the declared release gates. |
 
 ## Baseline review
 
-The 2026-07-14 pre-M1 review retained every unchecked roadmap capability. No planned, deferred, or decision item was removed. The ledger above consolidates already accepted ADR constraints so future reviews have an explicit baseline.
+The 2026-07-14 pre-M1 review retained every unchecked roadmap capability. No planned, deferred, or decision item was removed. The 2026-07-16 Impact review completed the current-corpus study while preserving recalibration as explicit deferred work and leaving the M3 calibrated-Impact gate open.

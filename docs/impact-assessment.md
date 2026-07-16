@@ -50,7 +50,7 @@ Each `frontier_group` lists its Visual Event IDs and the complete Atomic Differe
 
 Every dominated event has exactly one `domination_witness`. The witness names the first event under that same shortlex order among all events that dominate it and records rule `both_rendered_metrics_no_less_and_one_greater`. The witness explains exclusion from the frontier; it is not a claim that the chosen dominator is the only or closest cause.
 
-The assessment declares `calibration_status: "not_calibrated"`. Corpus tiers such as `none`, `low`, `medium`, and `high` remain hidden evaluation labels and do not enter production reports. The next roadmap item may define calibrated thresholds or ordering, but it must allocate a new policy identity rather than changing this policy in place.
+The assessment declares `calibration_status: "not_calibrated"`. Corpus tiers such as `none`, `low`, `medium`, and `high` remain hidden evaluation labels and do not enter production reports. The first versioned [calibration study](../evaluation/impact-calibration/README.md) rejected all evaluated production threshold and total-order candidates. A later retry may define calibrated thresholds or ordering only after its recorded evidence prerequisites are met, and it must allocate a new policy identity rather than changing this policy in place.
 
 ## Agent procedure
 
@@ -69,4 +69,4 @@ Any future Impact Assessment remains additive and derived. It must retain every 
 
 A calibrated policy must additionally identify its calibration corpus, label version, metric versions, required Comparison Profile fields, thresholds or learned parameters, and deterministic tie behavior. Changing candidate selection, inputs, normalization, dominance, missing-value behavior, grouping, witness selection, thresholds, labels, weights, or ordering requires a new policy ID under the [versioning contract](versioning.md#impact-assessment-policy-compatibility).
 
-[ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) rejects a universal cross-domain scalar, and [ADR 0088](adr/0088-define-an-uncalibrated-event-impact-frontier.md) defines the current structured frontier.
+[ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) rejects a universal cross-domain scalar, [ADR 0088](adr/0088-define-an-uncalibrated-event-impact-frontier.md) defines the current structured frontier, and [ADR 0089](adr/0089-reject-impact-calibration-from-the-v1-corpus.md) records why the current labels cannot yet justify a calibrated production policy.
