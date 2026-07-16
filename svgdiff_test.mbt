@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.37")
+  assert_eq(report.schema_version, "1.38")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.37", "events": [_], .. } => ()
+    { "schema_version": "1.38", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.37", "events": [_], .. } => ()
+    { "schema_version": "1.38", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -46,6 +46,18 @@ test "root comparison exposes exact parameter scales" {
       assert_true(boundary.p95_css_px <= boundary.max_css_px)
     }
     None => fail("expected painted-boundary displacement evidence")
+  }
+  match magnitude.painted_coverage_difference {
+    Some(coverage) => {
+      assert_eq(coverage.method_id, "symmetric_alpha_coverage_l1_over_union/v1")
+      assert_true(coverage.before_coverage_css_px2 >= 0.0)
+      assert_true(coverage.after_coverage_css_px2 >= 0.0)
+      assert_true(
+        coverage.absolute_difference_css_px2 <= coverage.union_coverage_css_px2,
+      )
+      assert_true(coverage.fraction >= 0.0 && coverage.fraction <= 1.0)
+    }
+    None => fail("expected painted-coverage evidence")
   }
 }
 

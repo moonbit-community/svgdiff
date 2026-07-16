@@ -1,8 +1,8 @@
 # Local Reference Safety
 
-Status: current module `0.5.17` and schema `1.37` admission contract
+Status: current module `0.5.18` and schema `1.38` admission contract
 
-Last verified: 2026-07-15
+Last verified: 2026-07-16
 
 SVG references can consume far more work than their source size suggests. A definition DAG is acyclic, yet each definition can contain several `<use>` instances of the next definition. If every level repeats the previous level twice, the authored graph grows linearly while renderer instance count grows exponentially. The ordinary element and reference limits bound the source graph, not that transitive cloning cost.
 

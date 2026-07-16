@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-13
 
-This note surveys available metrics and target design. Schema `1.36` implements the exact scalar parameter layer and Schema `1.37` adds the pinned-raster symmetric nearest-boundary mean, nearest-rank p95, and maximum distribution documented in [`../core-model.md`](../core-model.md). Continuous vector correspondence, coverage difference, perceptual color, FLIP, and calibrated Impact Assessment remain roadmap work.
+This note surveys available metrics and target design. Schema `1.36` implements the exact scalar parameter layer, Schema `1.37` adds the pinned-raster symmetric nearest-boundary distribution, and Schema `1.38` adds the alpha-only symmetric coverage difference documented in [`../core-model.md`](../core-model.md). Continuous vector correspondence, perceptual color, FLIP, and calibrated Impact Assessment remain roadmap work.
 
 ## Conclusion
 
@@ -24,14 +24,14 @@ This layer therefore needs no opaque similarity algorithm. For a displacement `d
 
 When two entities do not share comparable parameters, compare their painted geometry. Hausdorff distance is a mature contour-distance mechanism. OpenCV exposes both L1/L2 contour Hausdorff distance and a ranked partial Hausdorff variant; the latter reduces the domination of the ordinary maximum by a single outlier ([OpenCV `HausdorffDistanceExtractor`](https://docs.opencv.org/3.4/d0/de1/classcv_1_1HausdorffDistanceExtractor.html)).
 
-SVG Diff Schema `1.37` samples pinned-raster alpha-support boundaries in device space and reports the symmetric nearest-boundary arithmetic mean, nearest-rank p95, maximum, and per-side sample counts after DPR normalization. This is a deterministic partial-Hausdorff-style observation for cases without pointwise correspondence; it loses direction and can match the wrong repeated contour. Continuous vector correspondence remains future work. Complement it with a bounded soft coverage difference:
+SVG Diff Schema `1.37` samples pinned-raster alpha-support boundaries in device space and reports the symmetric nearest-boundary arithmetic mean, nearest-rank p95, maximum, and per-side sample counts after DPR normalization. This is a deterministic partial-Hausdorff-style observation for cases without pointwise correspondence; it loses direction and can match the wrong repeated contour. Continuous vector correspondence remains future work. Schema `1.38` complements it with a bounded soft coverage difference:
 
 ```text
 coverage_difference = sum(abs(coverage_before - coverage_after))
                     / sum(max(coverage_before, coverage_after))
 ```
 
-This is `0` for equal coverage and `1` for disjoint coverage. Boundary displacement explains how far an edge moved; coverage difference explains how much painted area changed. Neither measures color or salience.
+Schema `1.38` implements this over isolated pinned-renderer RGBA8 alpha, retaining each side's coverage, absolute difference, and union in CSS square pixels beside the normalized fraction. This is `0` for equal coverage and `1` for disjoint coverage. Boundary displacement explains how far an edge moved; coverage difference explains how much painted area changed. Neither measures color or salience.
 
 ### 3. Pixel energy and perceptual color difference
 

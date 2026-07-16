@@ -63,7 +63,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.17` with `moon add Milky2018/svgdiff@0.5.17` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.18` with `moon add Milky2018/svgdiff@0.5.18` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -74,9 +74,11 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.37`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.38`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
-Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted entity geometry can additionally retain a bounded symmetric painted-boundary displacement distribution with per-side sample counts and mean, p95, and maximum CSS-pixel distances. These parameter and boundary measurements remain independent from analytic geometry and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
+Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
+
+The two isolated-paint observations reuse one bounded before/after render pair per alignment. Boundary evidence records before/after sample counts plus mean, nearest-rank p95, and maximum CSS-pixel distance. Coverage evidence records before/after alpha area, absolute alpha difference, maximum-alpha union, and their ratio. Equal alpha coverage is zero even when RGB color changes; null means the isolated observation was unavailable, not measured zero.
 
 Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
@@ -117,7 +119,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.37")
+  assert_eq(report.schema_version, "1.38")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -175,7 +177,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.37\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.38\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
@@ -193,7 +195,7 @@ The CLI option `--agent-json` emits the same schema and evidence without formatt
 - role-typed set-to-set alignment for Visual Entities and Visual Resources: rendered shapes and guarded paths use transform- and conservative-painted-bounds-aware exact signatures plus bounded device-space feature distance, repeated exact subjects retain equivalence classes, `use` instances retain rendered paths, groups/text/use hosts use source-structural entity alignment, and visual definitions plus intrinsic image content use independent resource alignments referenced by every resource Atomic Difference;
 - geometry, exact normalized path parameter and topology, fill, stroke paint, canonical length-aware stroke width/caps/joins/miter limits/dashes/dash offsets/vector effects, local marker attachments and length-aware resource viewport/orientation properties, leaf and isolated container opacity, static alpha/luminance masks, bounded static `feOffset` graphs, opaque unsupported-filter source subtrees, opaque binary-alpha blend modes and isolation, insertion, deletion, and consequence-aware ancestry, instance-resolution, and stacking differences;
 - root and nested SVG viewport declarations, nearest-viewport percentage resolution, and exact cumulative coordinate mappings under one explicit common Comparison Viewport;
-- exact continuous parameter magnitudes, symmetric painted-boundary displacement distributions, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
+- exact continuous parameter magnitudes, symmetric painted-boundary displacement distributions, alpha-only painted-coverage differences, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
 
 Current Diagnostics also emit `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span, and source-anchored limitations merge all applicable locations under one stable Diagnostic ID. An empty array is reserved for comparison-global or derived conditions; legacy reports may omit the optional JSON field.

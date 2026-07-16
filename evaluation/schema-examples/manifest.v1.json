@@ -201,7 +201,12 @@
           { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.after_sample_count", "op": "eq", "value": 1 },
           { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.mean_css_px", "op": "eq", "value": 2 },
           { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.p95_css_px", "op": "eq", "value": 2 },
-          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.max_css_px", "op": "eq", "value": 2 }
+          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.max_css_px", "op": "eq", "value": 2 },
+          { "domain": "geometry.position", "field": "magnitude.painted_coverage_difference.before_coverage_css_px2", "op": "eq", "value": 1 },
+          { "domain": "geometry.position", "field": "magnitude.painted_coverage_difference.after_coverage_css_px2", "op": "eq", "value": 1 },
+          { "domain": "geometry.position", "field": "magnitude.painted_coverage_difference.absolute_difference_css_px2", "op": "eq", "value": 2 },
+          { "domain": "geometry.position", "field": "magnitude.painted_coverage_difference.union_coverage_css_px2", "op": "eq", "value": 2 },
+          { "domain": "geometry.position", "field": "magnitude.painted_coverage_difference.fraction", "op": "eq", "value": 1 }
         ]
       }
     },

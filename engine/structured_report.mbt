@@ -1,7 +1,7 @@
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.37` API accepts caller-provided viewport dimensions and
+/// The root schema `1.38` API accepts caller-provided viewport dimensions and
 /// canonicalizes the remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -14,7 +14,7 @@ pub(all) struct ComparisonProfile {
 } derive(ToJson)
 
 ///|
-/// Return the fixed schema `1.37` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.38` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
@@ -236,6 +236,17 @@ pub(all) struct PaintedBoundaryDisplacementMagnitude {
 } derive(ToJson, Eq)
 
 ///|
+/// Symmetric alpha-only isolated painted-coverage comparison.
+pub(all) struct PaintedCoverageDifferenceMagnitude {
+  method_id : String
+  before_coverage_css_px2 : Double
+  after_coverage_css_px2 : Double
+  absolute_difference_css_px2 : Double
+  union_coverage_css_px2 : Double
+  fraction : Double
+} derive(ToJson, Eq)
+
+///|
 /// Domain-appropriate magnitude vector for one Atomic Difference.
 ///
 /// Optional components that were not computed serialize as null rather than zero.
@@ -248,6 +259,7 @@ pub(all) struct DifferenceMagnitude {
   parameter_entity_fraction : Double?
   geometry_displacement_css_px : Double?
   painted_boundary_displacement : PaintedBoundaryDisplacementMagnitude?
+  painted_coverage_difference : PaintedCoverageDifferenceMagnitude?
   geometry_viewport_fraction : Double?
   presence_painted_viewport_fraction : Double?
   raster_changed_pixel_fraction : Double?
@@ -290,6 +302,9 @@ pub impl ToJson for DifferenceMagnitude with fn to_json(self) {
   fields["painted_boundary_displacement"] = nullable_report_value(
     self.painted_boundary_displacement,
   )
+  fields["painted_coverage_difference"] = nullable_report_value(
+    self.painted_coverage_difference,
+  )
   fields["geometry_viewport_fraction"] = nullable_report_value(
     self.geometry_viewport_fraction,
   )
@@ -329,6 +344,7 @@ fn empty_difference_magnitude() -> DifferenceMagnitude {
     parameter_entity_fraction: None,
     geometry_displacement_css_px: None,
     painted_boundary_displacement: None,
+    painted_coverage_difference: None,
     geometry_viewport_fraction: None,
     presence_painted_viewport_fraction: None,
     raster_changed_pixel_fraction: None,
@@ -717,7 +733,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.37` result of one SVG comparison.
+/// Complete schema `1.38` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -736,13 +752,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.37` JSON.
+/// Serialize this report as indented schema `1.38` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.37` JSON.
+/// Serialize this report as whitespace-free schema `1.38` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1629,7 +1645,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.37",
+    schema_version: "1.38",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1882,7 +1898,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.37",
+        schema_version: "1.38",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -1962,7 +1978,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.37",
+        schema_version: "1.38",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2012,7 +2028,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.37",
+        schema_version: "1.38",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2149,7 +2165,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.37",
+            schema_version: "1.38",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2189,7 +2205,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.37",
+            schema_version: "1.38",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2249,7 +2265,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.37",
+              schema_version: "1.38",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

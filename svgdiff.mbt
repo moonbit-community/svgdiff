@@ -15,6 +15,8 @@ pub using @engine {
   type DomainOrdering,
   type FeatureCoverage,
   type IntrinsicRasterMagnitude,
+  type PaintedBoundaryDisplacementMagnitude,
+  type PaintedCoverageDifferenceMagnitude,
   type PresenceMagnitude,
   type RenderedEvidence,
   type RenderedMagnitude,
@@ -74,7 +76,7 @@ pub fn compare_with_resources(
   let report = @engine.compare_with_resources(
     before_svg, after_svg, canonical_profile, before_resources, after_resources,
   )
-  { ..report, schema_version: "1.37" }
+  { ..report, schema_version: "1.38" }
 }
 
 ///|
@@ -85,7 +87,7 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.37` profile.
+/// Compare two deterministic static SVG sources under one schema `1.38` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width` and `profile.viewport_height` and pins
@@ -107,7 +109,7 @@ pub fn compare(
     viewport_height: profile.viewport_height,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.37" }
+  { ..report, schema_version: "1.38" }
 }
 
 ///|
@@ -136,7 +138,7 @@ pub fn compare_with_control(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.37" }
+    report => { ..report, schema_version: "1.38" }
   }
 }
 
@@ -165,6 +167,6 @@ pub fn compare_with_control_and_resources(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.37" }
+    report => { ..report, schema_version: "1.38" }
   }
 }

@@ -125,6 +125,7 @@ pub(all) struct DifferenceMagnitude {
   parameter_entity_fraction : Double?
   geometry_displacement_css_px : Double?
   painted_boundary_displacement : PaintedBoundaryDisplacementMagnitude?
+  painted_coverage_difference : PaintedCoverageDifferenceMagnitude?
   geometry_viewport_fraction : Double?
   presence_painted_viewport_fraction : Double?
   raster_changed_pixel_fraction : Double?
@@ -184,6 +185,15 @@ pub(all) struct PaintedBoundaryDisplacementMagnitude {
   mean_css_px : Double
   p95_css_px : Double
   max_css_px : Double
+} derive(Eq, ToJson)
+
+pub(all) struct PaintedCoverageDifferenceMagnitude {
+  method_id : String
+  before_coverage_css_px2 : Double
+  after_coverage_css_px2 : Double
+  absolute_difference_css_px2 : Double
+  union_coverage_css_px2 : Double
+  fraction : Double
 } derive(Eq, ToJson)
 
 pub(all) struct PresenceMagnitude {

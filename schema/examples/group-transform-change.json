@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.37",
+  "schema_version": "1.38",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -253,6 +253,14 @@
           "p95_css_px": 4,
           "max_css_px": 4
         },
+        "painted_coverage_difference": {
+          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
+          "before_coverage_css_px2": 25,
+          "after_coverage_css_px2": 25,
+          "absolute_difference_css_px2": 40,
+          "union_coverage_css_px2": 45,
+          "fraction": 0.8888888888888888
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.15625,
@@ -302,6 +310,14 @@
           "p95_css_px": 4,
           "max_css_px": 4
         },
+        "painted_coverage_difference": {
+          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
+          "before_coverage_css_px2": 25,
+          "after_coverage_css_px2": 25,
+          "absolute_difference_css_px2": 40,
+          "union_coverage_css_px2": 45,
+          "fraction": 0.8888888888888888
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.15625,
@@ -350,6 +366,14 @@
           "mean_css_px": 2,
           "p95_css_px": 4,
           "max_css_px": 4
+        },
+        "painted_coverage_difference": {
+          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
+          "before_coverage_css_px2": 25,
+          "after_coverage_css_px2": 25,
+          "absolute_difference_css_px2": 40,
+          "union_coverage_css_px2": 45,
+          "fraction": 0.8888888888888888
         },
         "geometry_viewport_fraction": 0.17677669529663687,
         "presence_painted_viewport_fraction": null,

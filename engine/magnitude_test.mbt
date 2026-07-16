@@ -44,6 +44,15 @@ test "basic geometry exposes a painted-boundary distribution" {
   assert_eq(boundary.mean_css_px, 2.0)
   assert_eq(boundary.p95_css_px, 2.0)
   assert_eq(boundary.max_css_px, 2.0)
+  guard difference.magnitude.painted_coverage_difference is Some(coverage) else {
+    fail("expected a painted-coverage difference")
+  }
+  assert_eq(coverage.method_id, "symmetric_alpha_coverage_l1_over_union/v1")
+  assert_eq(coverage.before_coverage_css_px2, 1.0)
+  assert_eq(coverage.after_coverage_css_px2, 1.0)
+  assert_eq(coverage.absolute_difference_css_px2, 2.0)
+  assert_eq(coverage.union_coverage_css_px2, 2.0)
+  assert_eq(coverage.fraction, 1.0)
   assert_true(difference.evidence_layers.contains("rendered_evidence"))
 }
 
@@ -71,6 +80,22 @@ test "one aligned boundary observation is shared by related geometry differences
   assert_eq(first.mean_css_px, second.mean_css_px)
   assert_eq(first.p95_css_px, second.p95_css_px)
   assert_eq(first.max_css_px, second.max_css_px)
+  guard (
+      geometry[0].magnitude.painted_coverage_difference,
+      geometry[1].magnitude.painted_coverage_difference,
+    )
+    is (Some(first_coverage), Some(second_coverage)) else {
+    fail("expected shared painted-coverage observations")
+  }
+  assert_eq(
+    first_coverage.before_coverage_css_px2,
+    second_coverage.before_coverage_css_px2,
+  )
+  assert_eq(
+    first_coverage.after_coverage_css_px2,
+    second_coverage.after_coverage_css_px2,
+  )
+  assert_eq(first_coverage.fraction, second_coverage.fraction)
 }
 
 ///|
@@ -84,6 +109,26 @@ test "resource-backed paint keeps isolated boundary distribution unavailable" {
       difference.domain == "geometry.position"
     })[0]
   assert_true(position.magnitude.painted_boundary_displacement is None)
+  assert_true(position.magnitude.painted_coverage_difference is None)
+}
+
+///|
+test "solid color changes retain measured zero painted-coverage difference" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><rect id='box' x='1' y='1' width='4' height='4' fill='red'/></svg>",
+    "<svg width='16' height='16'><rect id='box' x='1' y='1' width='4' height='4' fill='blue'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let difference = report.atomic_differences[0]
+  assert_eq(difference.domain, "paint.fill")
+  guard difference.magnitude.painted_coverage_difference is Some(coverage) else {
+    fail("expected alpha-only coverage evidence")
+  }
+  assert_eq(coverage.before_coverage_css_px2, 16.0)
+  assert_eq(coverage.after_coverage_css_px2, 16.0)
+  assert_eq(coverage.absolute_difference_css_px2, 0.0)
+  assert_eq(coverage.union_coverage_css_px2, 16.0)
+  assert_eq(coverage.fraction, 0.0)
 }
 
 ///|
@@ -199,6 +244,9 @@ test "paint and presence expose domain appropriate numeric evidence" {
   assert_true(
     presence.atomic_differences[0].magnitude.painted_boundary_displacement
     is None,
+  )
+  assert_true(
+    presence.atomic_differences[0].magnitude.painted_coverage_difference is None,
   )
 }
 

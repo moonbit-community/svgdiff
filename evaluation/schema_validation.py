@@ -13,6 +13,7 @@ SCHEMA_KEYWORDS = {
     "const",
     "enum",
     "minimum",
+    "maximum",
     "minLength",
     "minItems",
     "maxItems",
@@ -146,6 +147,13 @@ def validate_instance(
         and value < schema["minimum"]
     ):
         raise ValueError(f"{path}: number is below minimum")
+    if (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and "maximum" in schema
+        and value > schema["maximum"]
+    ):
+        raise ValueError(f"{path}: number is above maximum")
 
 
 def schema_accepts(

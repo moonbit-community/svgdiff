@@ -71,7 +71,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.37":
+    if report.get("schema_version") != "1.38":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -168,18 +168,32 @@ def validate_false_equality(case: dict, report: dict) -> None:
             "max_css_px"
         ]
         != difference["magnitude"]["geometry_displacement_css_px"]
-        or not (
-            0
-            <= difference["magnitude"]["painted_boundary_displacement"][
-                "mean_css_px"
-            ]
-            <= difference["magnitude"]["painted_boundary_displacement"][
-                "p95_css_px"
-            ]
-            <= difference["magnitude"]["painted_boundary_displacement"][
-                "max_css_px"
-            ]
-        )
+        or not 0
+        <= difference["magnitude"]["painted_boundary_displacement"][
+            "mean_css_px"
+        ]
+        <= difference["magnitude"]["painted_boundary_displacement"][
+            "max_css_px"
+        ]
+        or not 0
+        <= difference["magnitude"]["painted_boundary_displacement"][
+            "p95_css_px"
+        ]
+        <= difference["magnitude"]["painted_boundary_displacement"][
+            "max_css_px"
+        ]
+        or difference["magnitude"]["painted_coverage_difference"] is None
+        or difference["magnitude"]["painted_coverage_difference"]["method_id"]
+        != "symmetric_alpha_coverage_l1_over_union/v1"
+        or difference["magnitude"]["painted_coverage_difference"][
+            "absolute_difference_css_px2"
+        ]
+        > difference["magnitude"]["painted_coverage_difference"][
+            "union_coverage_css_px2"
+        ]
+        or not 0
+        <= difference["magnitude"]["painted_coverage_difference"]["fraction"]
+        <= 1
         for difference in differences
     ):
         raise ValueError("false-equality path findings lost exact or boundary evidence")

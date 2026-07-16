@@ -81,6 +81,65 @@ test "painted boundary distribution distinguishes both-empty from one-empty" {
 }
 
 ///|
+test "painted coverage difference uses alpha only and normalizes CSS area" {
+  let before = @svg.Image::new(2, 1)
+  let after = @svg.Image::new(2, 1)
+  before.set_pixel(0, 0, @svg.Color::rgba(255, 0, 0, 255))
+  before.set_pixel(1, 0, @svg.Color::rgba(0, 0, 255, 128))
+  after.set_pixel(0, 0, @svg.Color::rgba(0, 255, 0, 255))
+  after.set_pixel(1, 0, @svg.Color::rgba(0, 0, 0, 64))
+  guard painted_coverage_difference(before, after, 2.0) is Some(coverage) else {
+    fail("expected a painted-coverage difference")
+  }
+  assert_eq(coverage.method_id, "symmetric_alpha_coverage_l1_over_union/v1")
+  assert_eq(coverage.before_coverage_css_px2, 383.0 / 255.0 / 4.0)
+  assert_eq(coverage.after_coverage_css_px2, 319.0 / 255.0 / 4.0)
+  assert_eq(coverage.absolute_difference_css_px2, 64.0 / 255.0 / 4.0)
+  assert_eq(coverage.union_coverage_css_px2, 383.0 / 255.0 / 4.0)
+  assert_eq(coverage.fraction, 64.0 / 383.0)
+  guard painted_coverage_difference(after, before, 2.0) is Some(reverse) else {
+    fail("expected a reversed painted-coverage difference")
+  }
+  assert_eq(reverse.before_coverage_css_px2, coverage.after_coverage_css_px2)
+  assert_eq(reverse.after_coverage_css_px2, coverage.before_coverage_css_px2)
+  assert_eq(
+    reverse.absolute_difference_css_px2,
+    coverage.absolute_difference_css_px2,
+  )
+  assert_eq(reverse.union_coverage_css_px2, coverage.union_coverage_css_px2)
+  assert_eq(reverse.fraction, coverage.fraction)
+}
+
+///|
+test "painted coverage difference distinguishes equal empty and disjoint support" {
+  let empty = @svg.Image::new(2, 1)
+  let before = @svg.Image::new(2, 1)
+  let after = @svg.Image::new(2, 1)
+  before.set_pixel(0, 0, @svg.Color::rgb(255, 0, 0))
+  after.set_pixel(1, 0, @svg.Color::rgb(0, 255, 0))
+  guard painted_coverage_difference(empty, empty, 1.0) is Some(equal) else {
+    fail("expected measured empty coverage equality")
+  }
+  assert_eq(equal.before_coverage_css_px2, 0.0)
+  assert_eq(equal.after_coverage_css_px2, 0.0)
+  assert_eq(equal.absolute_difference_css_px2, 0.0)
+  assert_eq(equal.union_coverage_css_px2, 0.0)
+  assert_eq(equal.fraction, 0.0)
+  guard painted_coverage_difference(before, after, 1.0) is Some(disjoint) else {
+    fail("expected disjoint coverage evidence")
+  }
+  assert_eq(disjoint.before_coverage_css_px2, 1.0)
+  assert_eq(disjoint.after_coverage_css_px2, 1.0)
+  assert_eq(disjoint.absolute_difference_css_px2, 2.0)
+  assert_eq(disjoint.union_coverage_css_px2, 2.0)
+  assert_eq(disjoint.fraction, 1.0)
+  guard painted_coverage_difference(before, empty, 1.0) is Some(one_empty) else {
+    fail("expected one-empty coverage evidence")
+  }
+  assert_eq(one_empty.fraction, 1.0)
+}
+
+///|
 test "polygon bounds use the canonical point sequence" {
   let source = "<svg width='20' height='20'><polygon points='1 2,8 2,5 7'/></svg>"
   let subjects = extract_source_subjects_with_profile_or_raise(

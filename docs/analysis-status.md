@@ -1,8 +1,8 @@
 # Analysis Status Contract
 
-Status: current schema `1.37` caller contract
+Status: current schema `1.38` caller contract
 
-Last verified: 2026-07-15
+Last verified: 2026-07-16
 
 `analysis_status` summarizes the report's per-feature, per-evidence-layer `coverage_matrix` under the recorded Comparison Profile. It does not describe whether the SVGs are equal, how many differences exist, or how visually important a difference is.
 
@@ -31,7 +31,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.37`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.38`'s implemented support contract under the recorded Comparison Profile.
 
 It does not support any of these stronger statements:
 
@@ -64,7 +64,7 @@ A partial report does not permit an equality conclusion, even when:
 
 Consumers may use the supported differences, magnitudes, regions, and candidates that are present, but must qualify any summary with the Diagnostics that constrain it. The CLI returns status `0` because partial analysis is a successfully produced result, not a process failure.
 
-An unsupported direct filter primitive demonstrates this rule: schema `1.37` emits its complete position-aligned subtree as a source-only Atomic Difference and names affected consumers, while leaving computed relation indeterminate, magnitude empty, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
+An unsupported direct filter primitive demonstrates this rule: schema `1.38` emits its complete position-aligned subtree as a source-only Atomic Difference and names affected consumers, while leaving computed relation indeterminate, magnitude empty, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
 
 ## `failed`
 

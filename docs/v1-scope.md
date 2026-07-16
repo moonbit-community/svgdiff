@@ -2,9 +2,9 @@
 
 Status: implementation-aligned contract
 
-Last verified: 2026-07-15
+Last verified: 2026-07-16
 
-This document states what schema `1.37` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.38` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -66,6 +66,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
 - exact continuous scalar parameter deltas in canonical local user units, CSS pixels under complete cumulative mappings, Comparison Viewport-diagonal fractions, and entity-relative fractions when nonzero per-side conservative bounds exist, all independent of raster quantization;
 - bounded two-sided isolated alpha-boundary displacement distributions for admitted entity geometry, with versioned method identity, per-side sample counts, and mean, nearest-rank p95, and maximum CSS-pixel distances;
+- symmetric alpha-only painted-coverage differences for admitted two-sided entity changes, retaining per-side coverage, absolute difference, and union in CSS square pixels plus their bounded ratio, independent of RGB color;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
 - connected pixel-mask Difference Regions and conservative computed-bounds fallback regions;
@@ -98,7 +99,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Cascade layers or `revert-layer` | Independently supported authored declarations and Source Spans | `css_revert_layer_unsupported` prevents author-only `revert` semantics from being misapplied across unmodeled layers. |
 | Variable syntax outside the admitted balanced component-text subset | Independently supported declarations, dependencies, and Source Spans | `css_variable_syntax_unsupported` prevents excluded strings, escapes, comments, malformed `var()`, or invalid custom-property names from being approximated. |
 | Excessive custom-property expansion | Independently supported declarations, dependencies, and Source Spans | `css_variable_expansion_limit` bounds recursion and output size rather than returning a truncated computed value. |
-| Path geometry | Strict normalized segment inventory with authored Source Spans, geometry-aware one-to-one correspondence, exact normalized command/parameter/topology differences, continuous parameter deltas, and a bounded isolated alpha-boundary maximum-distance observation | Transformed-path boundary measurement, continuous-curve boundary distance, complete stroke and paint semantics, and accepted path renderer conformance are not implemented; `unsupported_visual_subject` continues to limit computed/rendered claims. |
+| Path geometry | Strict normalized segment inventory with authored Source Spans, geometry-aware one-to-one correspondence, exact normalized command/parameter/topology differences, continuous parameter deltas, and bounded isolated alpha-boundary and alpha-coverage observations | Transformed-path boundary measurement, continuous-curve boundary distance, complete stroke and paint semantics, and accepted path renderer conformance are not implemented; `unsupported_visual_subject` continues to limit computed/rendered claims. |
 | General affine transform rasterization | Exact authored transform-list and cumulative-matrix differences plus a pinned-renderer measurement | Only integer axis-aligned matrices, translations, scales, and quadrant rotations have accepted browser fixtures; `renderer_transform_raster_unproven` limits other affine Rendered Evidence. |
 | Non-integer viewport mapping | Exact viewport declarations, resolved cumulative matrices, typed transform effects, and a pinned-renderer measurement | Root and nested `none`, meet, slice, and integer-axis mappings have exact browser fixtures; `renderer_viewport_raster_unproven` limits other viewport Rendered Evidence. |
 | Invalid, non-positive, or unsupported-unit viewport declaration | Exact authored declaration and Source Span when available | `viewport_semantics_unsupported` prevents a complete coordinate mapping. |
@@ -125,7 +126,7 @@ V1 does not completely analyze:
 - scripts, event-driven state, or animation timelines;
 - static `foreignObject` through an HTML/CSS layout engine;
 - implicit network resources or treating SVG-authored locators as local paths;
-- complete path semantics, including exact arc/continuous-curve bounds and continuous boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only, while the current bounded isolated alpha-boundary distribution remains a raster observation;
+- complete path semantics, including exact arc/continuous-curve bounds and continuous boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only, while the current bounded isolated alpha-boundary and coverage measurements remain raster observations;
 - precise transform-aware bounds and localization beyond the conservative painted bounds used for correspondence and admitted effect slices or the conservative whole-scene outcome regions;
 - automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, or dynamic viewport variants; object-bounding-box coordinates are implemented only for static gradient consumers and admitted numeric rectangular clip or mask coordinates;
 - CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization beyond bounded correspondence features;

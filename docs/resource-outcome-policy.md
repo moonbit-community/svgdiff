@@ -1,8 +1,8 @@
 # Resource Outcome Policy
 
-Status: current contract for schema `1.37`
+Status: current contract for schema `1.38`
 
-Last verified: 2026-07-15
+Last verified: 2026-07-16
 
 This document defines how the comparison classifies missing, cyclic, invalid, and unused resources. It is a cross-family decision policy, not a replacement for the precise gradient, pattern, marker, use, image, clip, mask, or filter analyzers.
 

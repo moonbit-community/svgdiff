@@ -218,6 +218,7 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
         "parameter_entity_fraction",
         "geometry_displacement_css_px",
         "painted_boundary_displacement",
+        "painted_coverage_difference",
         "geometry_viewport_fraction",
         "presence_painted_viewport_fraction",
         "raster_changed_pixel_fraction",
@@ -243,6 +244,7 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
                 "transform_effect",
                 "intrinsic_raster",
                 "painted_boundary_displacement",
+                "painted_coverage_difference",
             }
         ):
             raise ValueError(
@@ -306,10 +308,56 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
                 or not 0 <= p95 <= maximum
                 or difference["subject_role"] != "entity"
                 or not difference["domain"].startswith("geometry.")
-                or "rendered_evidence" not in difference["evidence_layers"]
+                or (
+                    maximum > 0
+                    and "rendered_evidence" not in difference["evidence_layers"]
+                )
             ):
                 raise ValueError(
                     f"{case['id']}: {difference['id']} has inconsistent boundary evidence"
+                )
+        coverage = magnitude["painted_coverage_difference"]
+        if coverage is not None:
+            coverage_fields = {
+                "method_id",
+                "before_coverage_css_px2",
+                "after_coverage_css_px2",
+                "absolute_difference_css_px2",
+                "union_coverage_css_px2",
+                "fraction",
+            }
+            if not isinstance(coverage, dict) or set(coverage) != coverage_fields:
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has invalid coverage evidence"
+                )
+            before_coverage = coverage["before_coverage_css_px2"]
+            after_coverage = coverage["after_coverage_css_px2"]
+            absolute = coverage["absolute_difference_css_px2"]
+            union = coverage["union_coverage_css_px2"]
+            fraction = coverage["fraction"]
+            values = (before_coverage, after_coverage, absolute, union, fraction)
+            if (
+                coverage["method_id"]
+                != "symmetric_alpha_coverage_l1_over_union/v1"
+                or any(type(value) not in {int, float} for value in values)
+                or any(value < 0 for value in values)
+                or absolute > union
+                or fraction > 1
+        or difference["subject_role"] != "entity"
+        or difference["computed_relation"]["status"] != "different"
+        or difference["domain"].startswith("presence.")
+                or difference["domain"] == "presence"
+                or (fraction > 0 and "rendered_evidence" not in difference["evidence_layers"])
+            ):
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has inconsistent coverage evidence"
+                )
+            expected_fraction = 0 if union == 0 else absolute / union
+            if not math.isclose(
+                fraction, expected_fraction, rel_tol=1e-12, abs_tol=1e-15
+            ):
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has inconsistent coverage fraction"
                 )
         intrinsic = magnitude.get("intrinsic_raster")
         if intrinsic is not None:
@@ -724,6 +772,45 @@ def main() -> None:
     else:
         raise ValueError(
             "semantic validation accepted inconsistent boundary distribution"
+        )
+    missing_coverage_difference = copy.deepcopy(
+        reports["painted-boundary-distribution"]
+    )
+    del missing_coverage_difference["atomic_differences"][0]["magnitude"][
+        "painted_coverage_difference"
+    ]
+    expect_schema_rejection(
+        missing_coverage_difference,
+        schema,
+        "missing painted-coverage difference field",
+    )
+    out_of_range_coverage = copy.deepcopy(
+        reports["painted-boundary-distribution"]
+    )
+    out_of_range_coverage["atomic_differences"][0]["magnitude"][
+        "painted_coverage_difference"
+    ]["fraction"] = 2
+    expect_schema_rejection(
+        out_of_range_coverage,
+        schema,
+        "out-of-range painted-coverage fraction",
+    )
+    inconsistent_coverage_difference = copy.deepcopy(
+        reports["painted-boundary-distribution"]
+    )
+    inconsistent_coverage_difference["atomic_differences"][0]["magnitude"][
+        "painted_coverage_difference"
+    ]["fraction"] = 0.25
+    try:
+        assert_raw_magnitude_authority(
+            {"id": "inconsistent-painted-coverage-difference"},
+            inconsistent_coverage_difference,
+        )
+    except ValueError:
+        pass
+    else:
+        raise ValueError(
+            "semantic validation accepted inconsistent painted coverage"
         )
     wrong_nullable_fact = copy.deepcopy(reports["subject-insertion"])
     wrong_nullable_fact["changed_facts"][0]["before"] = 7

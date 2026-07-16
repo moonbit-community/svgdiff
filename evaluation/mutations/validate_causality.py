@@ -66,11 +66,44 @@ def validate_boundary_distribution(difference: dict[str, Any]) -> bool:
         or not 0 <= p95 <= maximum
         or difference["subject_role"] != "entity"
         or not difference["domain"].startswith("geometry.")
-        or "rendered_evidence" not in difference["evidence_layers"]
+        or (
+            maximum > 0
+            and "rendered_evidence" not in difference["evidence_layers"]
+        )
     ):
         raise ValueError(
             f"{difference['id']}: invalid painted-boundary distribution"
         )
+    return True
+
+
+def validate_coverage_difference(difference: dict[str, Any]) -> bool:
+    coverage = difference["magnitude"]["painted_coverage_difference"]
+    if coverage is None:
+        return False
+    before = coverage["before_coverage_css_px2"]
+    after = coverage["after_coverage_css_px2"]
+    absolute = coverage["absolute_difference_css_px2"]
+    union = coverage["union_coverage_css_px2"]
+    fraction = coverage["fraction"]
+    expected_fraction = 0 if union == 0 else absolute / union
+    if (
+        coverage["method_id"]
+        != "symmetric_alpha_coverage_l1_over_union/v1"
+        or min(before, after, absolute, union, fraction) < 0
+        or absolute > union
+        or fraction > 1
+        or abs(fraction - expected_fraction) > 1e-12
+        or difference["subject_role"] != "entity"
+        or difference["computed_relation"]["status"] != "different"
+        or difference["domain"].startswith("presence.")
+        or difference["domain"] == "presence"
+        or (
+            fraction > 0
+            and "rendered_evidence" not in difference["evidence_layers"]
+        )
+    ):
+        raise ValueError(f"{difference['id']}: invalid painted coverage")
     return True
 
 
@@ -214,6 +247,14 @@ def main() -> None:
     ]
     if not boundary_differences:
         raise ValueError("mutation surface produced no boundary distributions")
+    coverage_differences = [
+        difference
+        for report in reports.values()
+        for difference in report["atomic_differences"]
+        if validate_coverage_difference(difference)
+    ]
+    if not coverage_differences:
+        raise ValueError("mutation surface produced no coverage observations")
 
     negative_case = next(
         case
@@ -297,12 +338,37 @@ def main() -> None:
     else:
         raise ValueError("mutation property accepted an invalid boundary distribution")
 
+    invalid_coverage_report = copy.deepcopy(
+        next(
+            report
+            for report in reports.values()
+            if any(
+                difference["magnitude"]["painted_coverage_difference"]
+                is not None
+                for difference in report["atomic_differences"]
+            )
+        )
+    )
+    invalid_coverage = next(
+        difference
+        for difference in invalid_coverage_report["atomic_differences"]
+        if difference["magnitude"]["painted_coverage_difference"] is not None
+    )
+    invalid_coverage["magnitude"]["painted_coverage_difference"]["fraction"] = 2
+    try:
+        validate_coverage_difference(invalid_coverage)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted invalid painted coverage")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
         f"{complete_regions} complete regions, "
         f"{len(boundary_differences)} boundary observations, "
-        "missing-cause, missing-parameter-scale, and invalid-boundary negative controls: ok"
+        f"{len(coverage_differences)} coverage observations, "
+        "missing-cause, missing-parameter-scale, invalid-boundary, and invalid-coverage negative controls: ok"
     )
 
 

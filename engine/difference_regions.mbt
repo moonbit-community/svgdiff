@@ -978,7 +978,9 @@ fn painted_boundary_displacement_distribution(
 ) -> PaintedBoundaryDisplacementMagnitude? {
   if before.width != after.width ||
     before.height != after.height ||
-    comparison_dpr <= 0.0 {
+    comparison_dpr <= 0.0 ||
+    comparison_dpr.is_nan() ||
+    comparison_dpr.is_inf() {
     return None
   }
   let before_count = painted_boundary_count(before)
@@ -1016,11 +1018,57 @@ fn painted_boundary_displacement_distribution(
 }
 
 ///|
-fn isolated_subjects_painted_boundary_displacement_distribution(
+fn painted_coverage_difference(
+  before : @svg.Image,
+  after : @svg.Image,
+  comparison_dpr : Double,
+) -> PaintedCoverageDifferenceMagnitude? {
+  if before.width != after.width ||
+    before.height != after.height ||
+    comparison_dpr <= 0.0 ||
+    comparison_dpr.is_nan() ||
+    comparison_dpr.is_inf() {
+    return None
+  }
+  let mut before_coverage = 0.0
+  let mut after_coverage = 0.0
+  let mut absolute_difference = 0.0
+  let mut union_coverage = 0.0
+  for index in 0..<before.pixels.length() {
+    let before_alpha = before.pixels[index].a.to_double() / 255.0
+    let after_alpha = after.pixels[index].a.to_double() / 255.0
+    before_coverage += before_alpha
+    after_coverage += after_alpha
+    absolute_difference += (before_alpha - after_alpha).abs()
+    union_coverage += before_alpha.max(after_alpha)
+  }
+  let css_pixel_area = comparison_dpr * comparison_dpr
+  Some({
+    method_id: "symmetric_alpha_coverage_l1_over_union/v1",
+    before_coverage_css_px2: before_coverage / css_pixel_area,
+    after_coverage_css_px2: after_coverage / css_pixel_area,
+    absolute_difference_css_px2: absolute_difference / css_pixel_area,
+    union_coverage_css_px2: union_coverage / css_pixel_area,
+    fraction: if union_coverage == 0.0 {
+      0.0
+    } else {
+      absolute_difference / union_coverage
+    },
+  })
+}
+
+///|
+priv struct IsolatedPaintMeasurements {
+  boundary_displacement : PaintedBoundaryDisplacementMagnitude?
+  coverage_difference : PaintedCoverageDifferenceMagnitude
+}
+
+///|
+fn isolated_subjects_painted_measurements(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
   profile : ComparisonProfile,
-) -> PaintedBoundaryDisplacementMagnitude? {
+) -> IsolatedPaintMeasurements? {
   let images = match
     (
       isolated_subjects_image(before, profile),
@@ -1034,24 +1082,22 @@ fn isolated_subjects_painted_boundary_displacement_distribution(
     before_image.height != after_image.height {
     return None
   }
-  painted_boundary_displacement_distribution(
-    before_image,
-    after_image,
-    profile.comparison_dpr,
-  )
-}
-
-///|
-fn isolated_painted_boundary_displacement_distribution(
-  before : SourceSubject,
-  after : SourceSubject,
-  profile : ComparisonProfile,
-) -> PaintedBoundaryDisplacementMagnitude? {
-  isolated_subjects_painted_boundary_displacement_distribution(
-    [before],
-    [after],
-    profile,
-  )
+  guard painted_coverage_difference(
+      before_image,
+      after_image,
+      profile.comparison_dpr,
+    )
+    is Some(coverage_difference) else {
+    return None
+  }
+  Some({
+    boundary_displacement: painted_boundary_displacement_distribution(
+      before_image,
+      after_image,
+      profile.comparison_dpr,
+    ),
+    coverage_difference,
+  })
 }
 
 ///|

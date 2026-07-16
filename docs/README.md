@@ -2,7 +2,7 @@
 
 Status: current documentation map
 
-Last verified: 2026-07-14
+Last verified: 2026-07-16
 
 This directory separates the current product contract from future plans and historical evidence. When two documents appear to disagree, use the authority order below instead of inferring which file is newer.
 
@@ -63,7 +63,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.37`.
+- The stable report schema is `1.38`.
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
 - The CLI lives in `cmd/svgdiff`, can emit JSON plus an optional self-contained HTML presentation, and reads non-data-URL raster bytes only from explicit before/after resource triplets.

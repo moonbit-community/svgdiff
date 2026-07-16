@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.37",
+  "schema_version": "1.38",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -199,6 +199,14 @@
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
         "painted_boundary_displacement": null,
+        "painted_coverage_difference": {
+          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
+          "before_coverage_css_px2": 144,
+          "after_coverage_css_px2": 144,
+          "absolute_difference_css_px2": 0,
+          "union_coverage_css_px2": 144,
+          "fraction": 0
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.5625,

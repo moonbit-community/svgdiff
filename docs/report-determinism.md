@@ -1,8 +1,8 @@
 # Structured Report Determinism and Local Identifiers
 
-Status: current schema `1.37` contract
+Status: current schema `1.38` contract
 
-Last verified: 2026-07-15
+Last verified: 2026-07-16
 
 For the same executable, exact before and after SVG bytes, exact ordered resource-bundle entries, and Comparison Profile, `svgdiff` emits the same Structured Report content, array ordering, report-local identifiers, and serialization bytes on repeated runs. Default formatted JSON and compact Agent JSON have different whitespace but decode to exactly the same report evidence.
 
@@ -46,7 +46,7 @@ Every Atomic Difference belongs to exactly one owning Visual Event. A Changed Fa
 
 ## Source-subject identity boundary
 
-`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.37` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span. An opaque filter primitive subject is derived from its filter resource subject plus zero-based direct-child position; insertion may therefore shift later labels and conservatively produce additional differences.
+`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.38` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span. An opaque filter primitive subject is derived from its filter resource subject plus zero-based direct-child position; insertion may therefore shift later labels and conservatively produce additional differences.
 
 ## Ordering boundary
 

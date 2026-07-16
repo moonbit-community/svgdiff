@@ -119,14 +119,16 @@ test "painted path boundary uses symmetric maximum pixel distance" {
   let after = "<svg width='16' height='16'><path d='M3 1H7V5H3Z'/></svg>"
   let before_subjects = extract_source_subjects_or_raise(before)
   let after_subjects = extract_source_subjects_or_raise(after)
-  assert_eq(
-    isolated_painted_boundary_displacement_distribution(
-      before_subjects[0],
-      after_subjects[0],
+  guard isolated_subjects_painted_measurements(
+      [before_subjects[0]],
+      [after_subjects[0]],
       ComparisonProfile::v1_default(),
-    ).map(distribution => distribution.max_css_px),
-    Some(2.0),
-  )
+    )
+    is Some(measurements) &&
+    measurements.boundary_displacement is Some(distribution) else {
+    fail("expected isolated path measurements")
+  }
+  assert_eq(distribution.max_css_px, 2.0)
   let report = compare(before, after, ComparisonProfile::v1_default())
   assert_true(
     path_domain_differences(report).all(difference => {
@@ -134,7 +136,11 @@ test "painted path boundary uses symmetric maximum pixel distance" {
       difference.magnitude.painted_boundary_displacement.map(distribution => {
         distribution.max_css_px
       }) ==
-      Some(2.0)
+      Some(2.0) &&
+      difference.magnitude.painted_coverage_difference.map(coverage => {
+        coverage.fraction
+      }) ==
+      Some(4.0 / 7.0)
     }),
   )
 }
@@ -151,18 +157,25 @@ test "painted path boundary distinguishes zero from unavailable" {
       "<svg><path d='M2 1H6V5H2Z' fill='black'/></svg>",
     )[0]
   let profile = ComparisonProfile::v1_default()
-  assert_eq(
-    isolated_painted_boundary_displacement_distribution(
-      empty_before, empty_after, profile,
-    ).map(distribution => distribution.max_css_px),
-    Some(0.0),
-  )
-  assert_true(
-    isolated_painted_boundary_displacement_distribution(
-      empty_before, painted, profile,
+  guard isolated_subjects_painted_measurements(
+      [empty_before],
+      [empty_after],
+      profile,
     )
-    is None,
-  )
+    is Some(empty_measurements) &&
+    empty_measurements.boundary_displacement is Some(empty_distribution) else {
+    fail("expected empty path measurements")
+  }
+  assert_eq(empty_distribution.max_css_px, 0.0)
+  guard isolated_subjects_painted_measurements(
+      [empty_before],
+      [painted],
+      profile,
+    )
+    is Some(one_empty_measurements) else {
+    fail("expected one-empty coverage measurements")
+  }
+  assert_true(one_empty_measurements.boundary_displacement is None)
 }
 
 ///|

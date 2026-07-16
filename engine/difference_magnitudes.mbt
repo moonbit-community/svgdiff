@@ -330,20 +330,20 @@ fn entity_parameter_scales(
 }
 
 ///|
-priv struct PaintedBoundaryCacheEntry {
+priv struct IsolatedPaintCacheEntry {
   alignment_id : String
-  distribution : PaintedBoundaryDisplacementMagnitude?
+  measurements : IsolatedPaintMeasurements?
 }
 
 ///|
-priv struct PaintedBoundaryMeasurementCache {
+priv struct IsolatedPaintMeasurementCache {
   mut comparisons : Int
   mut raster_pixels : Int
-  entries : Array[PaintedBoundaryCacheEntry]
+  entries : Array[IsolatedPaintCacheEntry]
 }
 
 ///|
-fn PaintedBoundaryMeasurementCache::new() -> PaintedBoundaryMeasurementCache {
+fn IsolatedPaintMeasurementCache::new() -> IsolatedPaintMeasurementCache {
   { comparisons: 0, raster_pixels: 0, entries: [] }
 }
 
@@ -380,21 +380,21 @@ fn boundary_isolation_supported(subject : SourceSubject) -> Bool {
 }
 
 ///|
-fn PaintedBoundaryMeasurementCache::measure(
-  self : PaintedBoundaryMeasurementCache,
+fn IsolatedPaintMeasurementCache::measure(
+  self : IsolatedPaintMeasurementCache,
   alignment_id : String,
   before : Array[SourceSubject],
   after : Array[SourceSubject],
   profile : ComparisonProfile,
-) -> PaintedBoundaryDisplacementMagnitude? {
+) -> IsolatedPaintMeasurements? {
   for entry in self.entries {
     if entry.alignment_id == alignment_id {
-      return entry.distribution
+      return entry.measurements
     }
   }
   let pixels = profile.viewport_width * profile.viewport_height
   let work_pixels = pixels * 2
-  let distribution = if before.is_empty() ||
+  let measurements = if before.is_empty() ||
     after.is_empty() ||
     !before.all(boundary_isolation_supported) ||
     !after.all(boundary_isolation_supported) ||
@@ -405,28 +405,24 @@ fn PaintedBoundaryMeasurementCache::measure(
   } else {
     self.comparisons += 1
     self.raster_pixels += work_pixels
-    isolated_subjects_painted_boundary_displacement_distribution(
-      before, after, profile,
-    )
+    isolated_subjects_painted_measurements(before, after, profile)
   }
-  self.entries.push({ alignment_id, distribution })
-  distribution
+  self.entries.push({ alignment_id, measurements })
+  measurements
 }
 
 ///|
-fn painted_boundary_distribution_for_difference(
+fn isolated_paint_measurements_for_difference(
   report : StructuredReport,
   difference : AtomicDifference,
   before_subjects : Array[SourceSubject],
   after_subjects : Array[SourceSubject],
-  cache : PaintedBoundaryMeasurementCache,
-) -> PaintedBoundaryDisplacementMagnitude? {
-  match difference.magnitude.painted_boundary_displacement {
-    Some(distribution) => return Some(distribution)
-    None => ()
-  }
+  cache : IsolatedPaintMeasurementCache,
+) -> IsolatedPaintMeasurements? {
   guard difference.subject_role == "entity" &&
-    difference.domain.find("geometry.") == Some(0) &&
+    difference.computed_relation.status == "different" &&
+    difference.domain.find("presence.") != Some(0) &&
+    difference.domain != "presence" &&
     difference.domain.find("geometry.path.") != Some(0) else {
     return None
   }
@@ -447,7 +443,7 @@ fn difference_magnitude(
   difference : AtomicDifference,
   before_subjects : Array[SourceSubject],
   after_subjects : Array[SourceSubject],
-  boundary_cache : PaintedBoundaryMeasurementCache,
+  isolated_paint_cache : IsolatedPaintMeasurementCache,
 ) -> DifferenceMagnitude {
   let parameter_delta = match difference.parameter_delta_css_px {
     Some(delta) => Some(delta)
@@ -483,9 +479,27 @@ fn difference_magnitude(
   report.profile.viewport_height.to_double() *
   report.profile.viewport_height.to_double()).sqrt()
   let rendered = rendered_magnitude_for_difference(report, difference.id)
-  let painted_boundary_displacement = painted_boundary_distribution_for_difference(
-    report, difference, before_subjects, after_subjects, boundary_cache,
+  let isolated_paint_measurements = isolated_paint_measurements_for_difference(
+    report, difference, before_subjects, after_subjects, isolated_paint_cache,
   )
+  let painted_boundary_displacement = match
+    difference.magnitude.painted_boundary_displacement {
+    Some(distribution) => Some(distribution)
+    None if geometry =>
+      match isolated_paint_measurements {
+        Some(measurements) => measurements.boundary_displacement
+        None => None
+      }
+    None => None
+  }
+  let painted_coverage_difference = match
+    difference.magnitude.painted_coverage_difference {
+    Some(coverage) => Some(coverage)
+    None =>
+      isolated_paint_measurements.map(measurements => {
+        measurements.coverage_difference
+      })
+  }
   let (entity_parameter_css_px, entity_parameter_fraction) = entity_parameter_scales(
     report, difference, parameter_abs, before_subjects, after_subjects,
   )
@@ -527,6 +541,7 @@ fn difference_magnitude(
       None
     },
     painted_boundary_displacement,
+    painted_coverage_difference,
     geometry_viewport_fraction: if geometry {
       let displacement = if transform_translation is Some(_) {
         transform_translation
@@ -683,18 +698,26 @@ fn attach_difference_magnitudes(
   }
   let measured : Array[AtomicDifference] = []
   let domain_order : Array[String] = []
-  let boundary_cache = PaintedBoundaryMeasurementCache::new()
+  let isolated_paint_cache = IsolatedPaintMeasurementCache::new()
   for difference in report.atomic_differences {
     if !domain_order.contains(difference.domain) {
       domain_order.push(difference.domain)
     }
     let magnitude = difference_magnitude(
-      report, difference, before_subjects, after_subjects, boundary_cache,
+      report, difference, before_subjects, after_subjects, isolated_paint_cache,
     )
     let evidence_layers = difference.evidence_layers.copy()
-    if magnitude.painted_boundary_displacement is Some(_) &&
-      !evidence_layers.contains("rendered_evidence") {
-      evidence_layers.push("rendered_evidence")
+    match magnitude.painted_boundary_displacement {
+      Some(boundary) if boundary.max_css_px > 0.0 &&
+        !evidence_layers.contains("rendered_evidence") =>
+        evidence_layers.push("rendered_evidence")
+      _ => ()
+    }
+    match magnitude.painted_coverage_difference {
+      Some(coverage) if coverage.fraction > 0.0 &&
+        !evidence_layers.contains("rendered_evidence") =>
+        evidence_layers.push("rendered_evidence")
+      _ => ()
     }
     measured.push({
       ..difference,
