@@ -107,6 +107,38 @@ def validate_coverage_difference(difference: dict[str, Any]) -> bool:
     return True
 
 
+def validate_perceptual_color(report: dict[str, Any]) -> list[dict[str, Any]]:
+    computed = []
+    for event in report["events"]:
+        rendered = event["rendered_outcome"]
+        evidence = rendered["perceptual_color"]
+        if rendered["status"] != "computed":
+            if evidence != {
+                "status": "not_computed",
+                "reason_code": "rendered_evidence_unavailable",
+            }:
+                raise ValueError(
+                    f"{event['id']}: invalid unavailable perceptual evidence"
+                )
+            continue
+        magnitude = evidence.get("magnitude")
+        rendered_magnitude = rendered.get("magnitude")
+        if (
+            evidence.get("status") != "computed"
+            or magnitude is None
+            or rendered_magnitude is None
+            or magnitude["method_id"]
+            != "delta_e_ok_changed_pixels_after_linear_srgb_background/v1"
+            or magnitude["sample_count"]
+            != rendered_magnitude["changed_pixels"]
+            or magnitude["sample_count"] < 0
+            or magnitude["mean_delta_e_ok"] < 0
+        ):
+            raise ValueError(f"{event['id']}: invalid perceptual color evidence")
+        computed.append(event)
+    return computed
+
+
 SPATIAL_SCALAR_PROPERTIES = {
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
     "x1", "y1", "x2", "y2", "stroke-width", "stroke-dashoffset",
@@ -255,6 +287,39 @@ def main() -> None:
     ]
     if not coverage_differences:
         raise ValueError("mutation surface produced no coverage observations")
+    perceptual_events = [
+        event
+        for report in reports.values()
+        for event in validate_perceptual_color(report)
+    ]
+    if not perceptual_events:
+        raise ValueError("mutation surface produced no perceptual observations")
+    for case in cases:
+        forward = {
+            event["id"]: event
+            for event in validate_perceptual_color(reports[case["id"]])
+        }
+        reverse = {
+            event["id"]: event
+            for event in validate_perceptual_color(
+                reports[f"{case['id']}:reverse"]
+            )
+        }
+        for event_id in forward.keys() & reverse.keys():
+            left = forward[event_id]["rendered_outcome"]["perceptual_color"][
+                "magnitude"
+            ]
+            right = reverse[event_id]["rendered_outcome"]["perceptual_color"][
+                "magnitude"
+            ]
+            if (
+                left["sample_count"] != right["sample_count"]
+                or abs(left["mean_delta_e_ok"] - right["mean_delta_e_ok"])
+                > 1e-12
+            ):
+                raise ValueError(
+                    f"{case['id']}/{event_id}: perceptual reversal changed"
+                )
 
     negative_case = next(
         case
@@ -362,13 +427,32 @@ def main() -> None:
     else:
         raise ValueError("mutation property accepted invalid painted coverage")
 
+    invalid_perceptual_report = copy.deepcopy(
+        next(
+            report
+            for report in reports.values()
+            if validate_perceptual_color(report)
+        )
+    )
+    invalid_perceptual = validate_perceptual_color(invalid_perceptual_report)[0]
+    invalid_perceptual["rendered_outcome"]["perceptual_color"]["magnitude"][
+        "mean_delta_e_ok"
+    ] = -1
+    try:
+        validate_perceptual_color(invalid_perceptual_report)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted invalid perceptual color")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
         f"{complete_regions} complete regions, "
         f"{len(boundary_differences)} boundary observations, "
         f"{len(coverage_differences)} coverage observations, "
-        "missing-cause, missing-parameter-scale, invalid-boundary, and invalid-coverage negative controls: ok"
+        f"{len(perceptual_events)} perceptual observations, "
+        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, and invalid-perceptual negative controls: ok"
     )
 
 

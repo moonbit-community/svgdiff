@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.39")
+  assert_eq(report.schema_version, "1.40")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.39", "events": [_], .. } => ()
+    { "schema_version": "1.40", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.39", "events": [_], .. } => ()
+    { "schema_version": "1.40", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -245,13 +245,56 @@ test "explicit perceptual background is normalized and preserved independently" 
   assert_eq(recorded.green(), 102)
   assert_eq(recorded.blue(), 153)
   assert_eq(with_background.profile.comparison_dpr, 1.0)
+  let events : Array[@svgdiff.VisualEvent] = []
+  for index, event in with_background.events {
+    events.push({
+      ..event,
+      rendered_outcome: {
+        ..event.rendered_outcome,
+        perceptual_color: raw.events[index].rendered_outcome.perceptual_color,
+      },
+    })
+  }
   let without_profile_background = {
     ..with_background,
     profile: { ..with_background.profile, perceptual_background: None },
+    events,
   }
   assert_eq(
     without_profile_background.to_compact_json_string(),
     raw.to_compact_json_string(),
+  )
+}
+
+///|
+test "root package exposes event-local perceptual color evidence" {
+  guard @svgdiff.PerceptualBackground::parse_srgb("white") is Some(background) else {
+    fail("expected an opaque deterministic sRGB background")
+  }
+  let before = "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>"
+  let after = "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>"
+  let report = @svgdiff.compare(before, after, {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    perceptual_background: Some(background),
+  })
+  assert_eq(
+    report.events[0].rendered_outcome.perceptual_color.status,
+    "computed",
+  )
+  guard report.events[0].rendered_outcome.perceptual_color.magnitude
+    is Some(magnitude) else {
+    fail("expected event-local perceptual color evidence")
+  }
+  assert_eq(magnitude.sample_count, 64)
+  assert_true(magnitude.mean_delta_e_ok > 0.0)
+  let without_background = @svgdiff.compare(
+    before,
+    after,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  assert_eq(
+    without_background.events[0].rendered_outcome.perceptual_color.reason_code,
+    Some("perceptual_background_absent"),
   )
 }
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.40",
-  "title": "SVG Diff Structured Report 1.40",
+  "$id": "https://example.invalid/svgdiff/schema/1.39",
+  "title": "SVG Diff Structured Report 1.39",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.40" },
+    "schema_version": { "const": "1.39" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -92,38 +92,6 @@
         { "$ref": "#/$defs/perceptualBackground" },
         { "type": "null" }
       ]
-    },
-    "perceptualColorMagnitude": {
-      "type": "object",
-      "required": ["method_id", "sample_count", "mean_delta_e_ok"],
-      "properties": {
-        "method_id": {
-          "const": "delta_e_ok_changed_pixels_after_linear_srgb_background/v1"
-        },
-        "sample_count": { "type": "integer", "minimum": 0 },
-        "mean_delta_e_ok": { "type": "number", "minimum": 0 }
-      },
-      "additionalProperties": false
-    },
-    "perceptualColorEvidence": {
-      "type": "object",
-      "required": ["status"],
-      "properties": {
-        "status": { "enum": ["computed", "not_computed"] },
-        "reason_code": { "type": "string", "minLength": 1 },
-        "magnitude": { "$ref": "#/$defs/perceptualColorMagnitude" }
-      },
-      "anyOf": [
-        {
-          "required": ["status", "magnitude"],
-          "properties": { "status": { "const": "computed" } }
-        },
-        {
-          "required": ["status", "reason_code"],
-          "properties": { "status": { "const": "not_computed" } }
-        }
-      ],
-      "additionalProperties": false
     },
     "featureCoverage": {
       "type": "object",
@@ -592,15 +560,7 @@
         "id": { "type": "string" },
         "primary_subject_id": { "type": "string" },
         "atomic_difference_ids": { "type": "array", "items": { "type": "string" } },
-        "rendered_outcome": {
-          "type": "object",
-          "required": ["perceptual_color"],
-          "properties": {
-            "perceptual_color": {
-              "$ref": "#/$defs/perceptualColorEvidence"
-            }
-          }
-        },
+        "rendered_outcome": { "type": "object" },
         "difference_regions": { "type": "array", "items": { "$ref": "#/$defs/differenceRegion" } }
       }
     },

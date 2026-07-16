@@ -15,7 +15,7 @@ cmp "$tmp/first.json" "$tmp/second.json"
 jq -e '
   .schema_version == "svgdiff-compatibility-results/1" and
   .consumer_policy_id == "svgdiff-consumer-compatibility/1" and
-  ([.cases[] | select(.decision == "accepted")] | length) == 46 and
+  ([.cases[] | select(.decision == "accepted")] | length) == 47 and
   ([.cases[] | select(.decision == "rejected")] | length) == 4
 ' "$tmp/first.json" >/dev/null
 

@@ -63,8 +63,8 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.39`.
-- The Comparison Profile can record one explicit opaque sRGB8 Perceptual Background while raw rendering remains transparent.
+- The stable report schema is `1.40`.
+- The Comparison Profile can record one explicit opaque sRGB8 Perceptual Background; events then expose changed-pixel mean DeltaEOK while raw rendering remains transparent.
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
 - The CLI lives in `cmd/svgdiff`, can emit JSON plus an optional self-contained HTML presentation, and reads non-data-URL raster bytes only from explicit before/after resource triplets.

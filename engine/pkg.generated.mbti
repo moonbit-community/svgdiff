@@ -208,6 +208,18 @@ pub fn PerceptualBackground::green(Self) -> Int
 pub fn PerceptualBackground::parse_srgb(String) -> Self?
 pub fn PerceptualBackground::red(Self) -> Int
 
+pub(all) struct PerceptualColorEvidence {
+  status : String
+  reason_code : String?
+  magnitude : PerceptualColorMagnitude?
+} derive(Eq, ToJson)
+
+pub(all) struct PerceptualColorMagnitude {
+  method_id : String
+  sample_count : Int
+  mean_delta_e_ok : Double
+} derive(Eq, ToJson)
+
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int
   bounds_area_css_px2 : Double
@@ -220,6 +232,7 @@ pub(all) struct RenderedEvidence {
   status : String
   reason_code : String?
   magnitude : RenderedMagnitude?
+  perceptual_color : PerceptualColorEvidence
 } derive(ToJson)
 
 pub(all) struct RenderedMagnitude {

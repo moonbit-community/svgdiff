@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-13
 
-This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, and Schema `1.39` records an optional explicit opaque sRGB Perceptual Background. Continuous vector correspondence, perceptual color measurement, FLIP, and calibrated Impact Assessment remain roadmap work.
+This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, Schema `1.39` records an optional explicit opaque sRGB Perceptual Background, and Schema `1.40` adds event-local changed-pixel mean DeltaEOK after exact shared-background compositing. Continuous vector correspondence, broader perceptual statistics, FLIP, and calibrated Impact Assessment remain roadmap work.
 
 ## Conclusion
 

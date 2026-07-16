@@ -514,12 +514,7 @@ fn transform_rendered_evidence(
     ) {
     (Some(before), Some(after)) =>
       computed_rendered_evidence(rendered_difference(before, after, profile))
-    _ =>
-      {
-        status: "not_computed",
-        reason_code: Some("transform_syntax_unsupported"),
-        magnitude: None,
-      }
+    _ => not_computed_rendered_evidence("transform_syntax_unsupported")
   }
 }
 

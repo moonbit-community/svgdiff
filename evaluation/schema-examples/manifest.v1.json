@@ -219,6 +219,12 @@
       "expected": {
         "analysis_status": "complete",
         "perceptual_background": { "red": 255, "green": 255, "blue": 255 },
+        "perceptual_color": {
+          "event_id": "event:panel",
+          "method_id": "delta_e_ok_changed_pixels_after_linear_srgb_background/v1",
+          "sample_count": 144,
+          "mean_delta_e_ok": 0.5370898186957613
+        },
         "domains": ["paint.fill"],
         "computed_relations": ["different"],
         "diagnostic_codes": [],

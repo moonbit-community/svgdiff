@@ -152,13 +152,13 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Complete exact parameter magnitudes in authored units, CSS pixels, viewport fractions, and entity-relative scales.
 - [x] **P0** Add painted-boundary displacement distributions with mean, p95, and maximum values.
 - [x] **P0** Add symmetric coverage-difference measurements independent of color.
-- [ ] **P0** Add event-local perceptual color measurements after explicit background compositing.
+- [x] **P0** Add event-local perceptual color measurements after explicit background compositing.
 - [ ] **P0** Implement FLIP as an optional event-local perceptual map with all viewing parameters recorded.
 - [ ] **P0** Preserve canvas, event-region, p95, maximum, and area-above-threshold perceptual statistics separately.
 - [ ] **P0** Define a versioned Impact Assessment policy for identifying the main visual differences across domains.
 - [ ] **P0** Calibrate impact thresholds and ordering rules on the human-labeled corpus before assigning labels such as subtle or major.
 - [x] **P0** Keep the raw score vector authoritative when an Impact Assessment is unavailable or policy-dependent.
-- [ ] **P1** Add DeltaEOK or CIEDE2000 under an explicitly declared perceptual background.
+- [x] **P1** Add DeltaEOK or CIEDE2000 under an explicitly declared perceptual background.
 - [ ] **P1** Evaluate SSIM/MS-SSIM only as secondary structural diagnostics.
 - [ ] **P2** Evaluate LPIPS as an optional experiment, never as an equality oracle.
 - [ ] **P1** Define policy behavior for spatially small but semantically important changes.
@@ -214,8 +214,8 @@ This phase is explicitly recorded but not currently scheduled. It expands [ISS-0
 ## Phase 9: Color, backgrounds, and renderer profiles
 
 - [x] **P1** Add an explicit Perceptual Background to the Comparison Profile.
-- [ ] **P1** Composite both inputs over exactly the same declared background before display-dependent metrics.
-- [ ] **P1** Keep transparent-canvas raw evidence independent from perceptual-background evidence.
+- [x] **P1** Composite both inputs over exactly the same declared background before display-dependent metrics.
+- [x] **P1** Keep transparent-canvas raw evidence independent from perceptual-background evidence.
 - [ ] **P1** Detect embedded ICC, Display-P3, wide-gamut, and HDR content and emit precise coverage diagnostics.
 - [ ] **Decision** Define color-management profiles beyond v1 sRGB.
 - [ ] **Decision** Define whether multiple renderer or browser profiles compare one engine against itself, browsers against each other, or both.

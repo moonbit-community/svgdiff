@@ -88,6 +88,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0082](0082-report-symmetric-painted-boundary-distributions.md) | Accepted, implemented | Report symmetric nearest-boundary mean, nearest-rank p95, maximum, and sampling support without conflating coverage, color, or importance. |
 | [0083](0083-report-symmetric-alpha-coverage-difference.md) | Accepted, implemented | Report alpha-only absolute and union coverage areas plus a symmetric normalized fraction without conflating color or importance. |
 | [0084](0084-record-an-explicit-opaque-srgb-perceptual-background.md) | Accepted | Record one optional normalized opaque sRGB background without changing transparent-canvas raw evidence. |
+| [0085](0085-measure-event-local-deltaeok-after-explicit-background-compositing.md) | Accepted, implemented | Measure event-local DeltaEOK only after exact shared-background compositing. |
 
 ## CLI and distribution decisions
 

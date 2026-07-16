@@ -1332,7 +1332,32 @@ fn attach_difference_regions(
     } else {
       event.rendered_outcome
     }
-    events.push({ ..event, rendered_outcome, difference_regions: regions })
+    let perceptual_color = match report.profile.perceptual_background {
+      None =>
+        not_computed_perceptual_color_evidence("perceptual_background_absent")
+      Some(background) =>
+        if rendered_outcome.status != "computed" {
+          not_computed_perceptual_color_evidence(
+            "rendered_evidence_unavailable",
+          )
+        } else {
+          match rendered_images {
+            Some((before_image, after_image)) =>
+              event_local_perceptual_color_evidence(
+                before_image, after_image, regions, background,
+              )
+            None =>
+              not_computed_perceptual_color_evidence(
+                "rendered_evidence_unavailable",
+              )
+          }
+        }
+    }
+    events.push({
+      ..event,
+      rendered_outcome: { ..rendered_outcome, perceptual_color, },
+      difference_regions: regions,
+    })
   }
   let differences : Array[AtomicDifference] = []
   for difference in report.atomic_differences {

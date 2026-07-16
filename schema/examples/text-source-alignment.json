@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.39",
+  "schema_version": "1.40",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -151,7 +151,11 @@
       ],
       "rendered_outcome": {
         "status": "not_computed",
-        "reason_code": "font_analysis_deferred"
+        "reason_code": "font_analysis_deferred",
+        "perceptual_color": {
+          "status": "not_computed",
+          "reason_code": "perceptual_background_absent"
+        }
       },
       "difference_regions": []
     }

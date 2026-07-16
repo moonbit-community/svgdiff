@@ -36,7 +36,7 @@ pub fn PerceptualBackground::blue(self : PerceptualBackground) -> Int {
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.39` API accepts caller-provided viewport dimensions and
+/// The root schema `1.40` API accepts caller-provided viewport dimensions and
 /// Perceptual Background, and canonicalizes the remaining fields to
 /// `v1_default`.
 pub(all) struct ComparisonProfile {
@@ -67,7 +67,7 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
 }
 
 ///|
-/// Return the fixed schema `1.39` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.40` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions or
 /// an explicitly parsed Perceptual Background.
@@ -120,6 +120,22 @@ pub(all) struct IntrinsicRasterMagnitude {
 } derive(ToJson)
 
 ///|
+/// Event-local displayed-color magnitude after explicit background compositing.
+pub(all) struct PerceptualColorMagnitude {
+  method_id : String
+  sample_count : Int
+  mean_delta_e_ok : Double
+} derive(ToJson, Eq)
+
+///|
+/// Availability and optional event-local perceptual-color magnitude.
+pub(all) struct PerceptualColorEvidence {
+  status : String
+  reason_code : String?
+  magnitude : PerceptualColorMagnitude?
+} derive(ToJson, Eq)
+
+///|
 /// Availability and optional magnitude of canonical rendered evidence.
 ///
 /// A computed zero magnitude is distinct from `not_computed`.
@@ -127,6 +143,7 @@ pub(all) struct RenderedEvidence {
   status : String
   reason_code : String?
   magnitude : RenderedMagnitude?
+  perceptual_color : PerceptualColorEvidence
 } derive(ToJson)
 
 ///|
@@ -788,7 +805,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.39` result of one SVG comparison.
+/// Complete schema `1.40` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -807,13 +824,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.39` JSON.
+/// Serialize this report as indented schema `1.40` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.39` JSON.
+/// Serialize this report as whitespace-free schema `1.40` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1700,7 +1717,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.39",
+    schema_version: "1.40",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -1934,11 +1951,39 @@ fn rendered_image_difference(
 fn computed_rendered_evidence(
   magnitude : RenderedMagnitude,
 ) -> RenderedEvidence {
-  { status: "computed", reason_code: None, magnitude: Some(magnitude) }
+  {
+    status: "computed",
+    reason_code: None,
+    magnitude: Some(magnitude),
+    perceptual_color: not_computed_perceptual_color_evidence(
+      "perceptual_background_absent",
+    ),
+  }
 }
 
 ///|
 fn not_computed_rendered_evidence(reason_code : String) -> RenderedEvidence {
+  {
+    status: "not_computed",
+    reason_code: Some(reason_code),
+    magnitude: None,
+    perceptual_color: not_computed_perceptual_color_evidence(
+      "rendered_evidence_unavailable",
+    ),
+  }
+}
+
+///|
+fn computed_perceptual_color_evidence(
+  magnitude : PerceptualColorMagnitude,
+) -> PerceptualColorEvidence {
+  { status: "computed", reason_code: None, magnitude: Some(magnitude) }
+}
+
+///|
+fn not_computed_perceptual_color_evidence(
+  reason_code : String,
+) -> PerceptualColorEvidence {
   { status: "not_computed", reason_code: Some(reason_code), magnitude: None }
 }
 
@@ -1953,7 +1998,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.39",
+        schema_version: "1.40",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2033,7 +2078,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.39",
+        schema_version: "1.40",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2083,7 +2128,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.39",
+        schema_version: "1.40",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2220,7 +2265,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.39",
+            schema_version: "1.40",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2260,7 +2305,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.39",
+            schema_version: "1.40",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2320,7 +2365,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.39",
+              schema_version: "1.40",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

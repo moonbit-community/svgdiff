@@ -241,11 +241,7 @@ fn marker_resource_relation(
 
 ///|
 fn marker_resource_event_evidence() -> RenderedEvidence {
-  {
-    status: "not_computed",
-    reason_code: Some("renderer_marker_raster_unproven"),
-    magnitude: None,
-  }
+  not_computed_rendered_evidence("renderer_marker_raster_unproven")
 }
 
 ///|

@@ -62,6 +62,45 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             f"{case['id']}: unexpected Perceptual Background "
             f"{report['profile']['perceptual_background']!r}"
         )
+    expected_perceptual = expected.get("perceptual_color")
+    if expected_perceptual is None:
+        for event in report["events"]:
+            evidence = event["rendered_outcome"]["perceptual_color"]
+            if evidence != {
+                "status": "not_computed",
+                "reason_code": "perceptual_background_absent",
+            }:
+                raise ValueError(
+                    f"{case['id']}: unexpected absent-background "
+                    f"perceptual evidence {evidence!r}"
+                )
+    else:
+        event = next(
+            (
+                candidate
+                for candidate in report["events"]
+                if candidate["id"] == expected_perceptual["event_id"]
+            ),
+            None,
+        )
+        if event is None:
+            raise ValueError(
+                f"{case['id']}: missing perceptual event "
+                f"{expected_perceptual['event_id']}"
+            )
+        evidence = event["rendered_outcome"]["perceptual_color"]
+        magnitude = evidence.get("magnitude")
+        if evidence.get("status") != "computed" or magnitude is None:
+            raise ValueError(
+                f"{case['id']}: expected computed perceptual evidence, "
+                f"got {evidence!r}"
+            )
+        for field in ("method_id", "sample_count", "mean_delta_e_ok"):
+            if magnitude[field] != expected_perceptual[field]:
+                raise ValueError(
+                    f"{case['id']}: expected perceptual {field}="
+                    f"{expected_perceptual[field]!r}, got {magnitude[field]!r}"
+                )
     by_domain = {item["domain"]: item for item in differences}
     for check in expected["magnitude_checks"]:
         if check["domain"] not in by_domain:
@@ -734,6 +773,18 @@ def main() -> None:
     invalid_background["profile"]["perceptual_background"]["red"] = 256
     expect_schema_rejection(
         invalid_background, schema, "out-of-range Perceptual Background"
+    )
+    missing_perceptual = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_perceptual["events"][0]["rendered_outcome"]["perceptual_color"]
+    expect_schema_rejection(
+        missing_perceptual, schema, "missing perceptual color evidence"
+    )
+    invalid_perceptual = copy.deepcopy(reports["salient-fill-change"])
+    invalid_perceptual["events"][0]["rendered_outcome"]["perceptual_color"][
+        "magnitude"
+    ]["mean_delta_e_ok"] = -1
+    expect_schema_rejection(
+        invalid_perceptual, schema, "negative perceptual color magnitude"
     )
     wrong_nullable_type = copy.deepcopy(reports["equivalent-color-spelling"])
     wrong_nullable_type["atomic_differences"][0]["magnitude"][

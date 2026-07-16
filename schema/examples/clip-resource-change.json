@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.39",
+  "schema_version": "1.40",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -254,6 +254,10 @@
           "changed_pixel_fraction": 0.5,
           "rgba8_rmse": 0.4977728174356023,
           "linear_premultiplied_rgba_rmse": 0.46575875639599673
+        },
+        "perceptual_color": {
+          "status": "not_computed",
+          "reason_code": "perceptual_background_absent"
         }
       },
       "difference_regions": [

@@ -10,9 +10,9 @@ Last verified: 2026-07-16
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.19` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.39` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.39` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.20` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.40` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.40` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/25` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
@@ -114,6 +114,8 @@ Module `0.5.17` adds required nullable `painted_boundary_displacement` evidence 
 Module `0.5.18` adds required nullable `painted_coverage_difference` evidence to every Difference Magnitude. Measured objects use `symmetric_alpha_coverage_l1_over_union/v1`, retain before/after alpha areas, absolute alpha difference, and alpha union in CSS square pixels, and report their bounded normalized fraction. Boundary and coverage observations reuse one bounded isolated render pair per alignment; unavailable contexts remain null. The required magnitude field advances Structured Report schema to `1.38`; renderer identity, conformance profile `/25`, Diagnostics, ordering policy, and v2 tuples remain unchanged.
 
 Module `0.5.19` adds required nullable `ComparisonProfile.perceptual_background` evidence and the CLI option `--perceptual-background COLOR`. A present value is one normalized opaque sRGB8 color; absent remains explicit JSON null. The root seam preserves this caller input while continuing to pin DPR, color interpretation, raster representation, renderer identity, and conformance identity. The field advances Structured Report schema to `1.39`; transparent-canvas raw rendering, magnitudes, regions, Diagnostics, ordering, renderer identity, and conformance profile remain unchanged.
+
+Module `0.5.20` adds required `RenderedEvidence.perceptual_color` availability evidence. When the profile declares a background and raw event pixels are available, the engine composites both sides over exactly that background in linear sRGB and reports changed-pixel arithmetic mean DeltaEOK plus sample count under a versioned method ID. Missing background and unavailable raw rendering remain distinct not-computed reasons, while zero samples and composited equality are numeric zero. The required evidence state advances Structured Report schema to `1.40`; raw transparent-canvas magnitudes, regions, equality, Diagnostics, causes, renderer identity, conformance profile, and ordering remain unchanged.
 
 ## Structured Report schema versions
 

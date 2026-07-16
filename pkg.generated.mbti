@@ -64,6 +64,10 @@ pub using @engine {type PaintedCoverageDifferenceMagnitude}
 
 pub using @engine {type PerceptualBackground}
 
+pub using @engine {type PerceptualColorEvidence}
+
+pub using @engine {type PerceptualColorMagnitude}
+
 pub using @engine {type PresenceMagnitude}
 
 pub using @engine {type RenderedEvidence}

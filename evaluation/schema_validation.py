@@ -84,13 +84,16 @@ def validate_instance(
 ) -> None:
     if "anyOf" in schema:
         errors = []
+        matched = False
         for child in schema["anyOf"]:
             try:
                 validate_instance(value, child, root, path)
-                return
+                matched = True
+                break
             except ValueError as error:
                 errors.append(str(error))
-        raise ValueError(f"{path}: no anyOf branch matched: {errors}")
+        if not matched:
+            raise ValueError(f"{path}: no anyOf branch matched: {errors}")
     if "$ref" in schema:
         validate_instance(value, resolve_ref(root, schema["$ref"]), root, path)
         return

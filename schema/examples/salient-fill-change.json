@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.39",
+  "schema_version": "1.40",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -243,6 +243,14 @@
           "changed_pixel_fraction": 0.5625,
           "rgba8_rmse": 0.5303300858899106,
           "linear_premultiplied_rgba_rmse": 0.5303300858899106
+        },
+        "perceptual_color": {
+          "status": "computed",
+          "magnitude": {
+            "method_id": "delta_e_ok_changed_pixels_after_linear_srgb_background/v1",
+            "sample_count": 144,
+            "mean_delta_e_ok": 0.5370898186957613
+          }
         }
       },
       "difference_regions": [

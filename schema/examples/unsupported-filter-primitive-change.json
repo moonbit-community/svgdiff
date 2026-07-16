@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.39",
+  "schema_version": "1.40",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -300,7 +300,11 @@
       ],
       "rendered_outcome": {
         "status": "not_computed",
-        "reason_code": "filter_resource_rendered_evidence_unavailable"
+        "reason_code": "filter_resource_rendered_evidence_unavailable",
+        "perceptual_color": {
+          "status": "not_computed",
+          "reason_code": "perceptual_background_absent"
+        }
       },
       "difference_regions": []
     }

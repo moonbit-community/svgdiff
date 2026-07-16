@@ -40,11 +40,20 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
   any(.[].report.profile.perceptual_background; . == null) and
   any(.[].report.profile.perceptual_background;
     . == {"red": 255, "green": 255, "blue": 255}) and
+  any(.[].report.events[].rendered_outcome.perceptual_color;
+    .status == "computed" and
+    .magnitude.method_id ==
+      "delta_e_ok_changed_pixels_after_linear_srgb_background/v1" and
+    .magnitude.sample_count > 0 and
+    .magnitude.mean_delta_e_ok > 0) and
+  any(.[].report.events[].rendered_outcome.perceptual_color;
+    .status == "not_computed" and
+    .reason_code == "perceptual_background_absent") and
   all(.[];
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "1.39") and
+    (.report.schema_version == "1.40") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and
