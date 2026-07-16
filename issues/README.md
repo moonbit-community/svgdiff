@@ -158,6 +158,7 @@ graph TD
   ISS_140["ISS-140: Score text-only magnitude fidelity"]
   ISS_141["ISS-141: Add reconstructable Agent projection JSONL"]
   ISS_142["ISS-142: Add derived Markdown summaries"]
+  ISS_143["ISS-143: Improve HTML evidence inspection"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -410,6 +411,13 @@ graph TD
   ISS_139 --> ISS_142
   ISS_140 --> ISS_142
   ISS_141 --> ISS_142
+  ISS_012 --> ISS_143
+  ISS_024 --> ISS_143
+  ISS_132 --> ISS_143
+  ISS_137 --> ISS_143
+  ISS_138 --> ISS_143
+  ISS_139 --> ISS_143
+  ISS_140 --> ISS_143
 ```
 
 ## Warnings

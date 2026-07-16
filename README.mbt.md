@@ -63,8 +63,11 @@ svgdiff before.svg after.svg \
 ```
 
 Add `--html report.html` to generate a self-contained interactive report with
-side-by-side sandboxed SVG previews, report-defined diff groups, region
-highlighting, and the complete JSON payload.
+side-by-side sandboxed SVG previews, the exact Impact frontier, every Atomic
+Difference, non-null magnitudes, linked events, regions, conservative possible
+causes, Diagnostics, persistent region highlighting, and the complete JSON
+payload. The HTML only presents report evidence; it does not recompute severity,
+visibility, equality, ordering, or causality.
 
 Add `--summary summary.md` to write a deterministic natural-language orientation
 as a separate Markdown file. The Markdown is derived presentation only: it
@@ -75,7 +78,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.25` with `moon add Milky2018/svgdiff@0.5.25` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.26` with `moon add Milky2018/svgdiff@0.5.26` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 

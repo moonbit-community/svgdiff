@@ -1,6 +1,6 @@
 # MoonBit Library API
 
-Status: current public interface for module version `0.5.25`
+Status: current public interface for module version `0.5.26`
 
 Last verified: 2026-07-16
 
@@ -9,10 +9,10 @@ Consumers should import the root package `Milky2018/svgdiff`. The `engine` packa
 Install the published native module with:
 
 ```sh
-moon add Milky2018/svgdiff@0.5.25
+moon add Milky2018/svgdiff@0.5.26
 ```
 
-The root registry archive contains only the root, `engine`, and internal `css_color` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.0` before root `0.5.25`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
+The root registry archive contains only the root, `engine`, and internal `css_color` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.0` before root `0.5.26`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
 
 Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
 
@@ -42,13 +42,13 @@ SourceAuditReport::to_json_string() -> String
 SourceAuditReport::to_compact_json_string() -> String
 ```
 
-`compare` is the unlimited semantic comparison operation. `compare_with_resources` additionally receives separate before and after `ResourceBundle` values, each containing ordered `ResourceBundleEntry { locator, media_type, bytes }` records. Locators are trimmed exact-match opaque keys; the engine does not resolve paths, normalize URLs, or fetch the network. Global bundle configuration and byte budgets apply to every entry, but payload content is decoded only when an SVG `image` selects it; unused bundle bytes are not compared as SVG differences. The complete matrix is the [Resource Outcome Policy](resource-outcome-policy.md). `compare_with_control` and `compare_with_control_and_resources` add cooperative cancellation and an optional elapsed-time budget. `render_html_report` and `render_markdown_summary` are presentations over an existing report and never recompute differences. The Markdown renderer is explicitly non-authoritative; see [Derived Markdown Summary](markdown-summary.md).
+`compare` is the unlimited semantic comparison operation. `compare_with_resources` additionally receives separate before and after `ResourceBundle` values, each containing ordered `ResourceBundleEntry { locator, media_type, bytes }` records. Locators are trimmed exact-match opaque keys; the engine does not resolve paths, normalize URLs, or fetch the network. Global bundle configuration and byte budgets apply to every entry, but payload content is decoded only when an SVG `image` selects it; unused bundle bytes are not compared as SVG differences. The complete matrix is the [Resource Outcome Policy](resource-outcome-policy.md). `compare_with_control` and `compare_with_control_and_resources` add cooperative cancellation and an optional elapsed-time budget. `render_html_report` and `render_markdown_summary` are presentations over an existing report and never recompute differences. The HTML inspector exposes the exact Impact frontier, every Atomic Difference, non-null magnitudes, linked events, Difference Regions, conservative possible causes, and Diagnostics beside sandboxed source previews. The Markdown renderer is explicitly non-authoritative; see [Derived Markdown Summary](markdown-summary.md).
 
 `audit_nonvisual_metadata` is deliberately separate from comparison. It inventories exact authored inner content for outermost SVG `title`, `desc`, and `metadata` elements plus unprefixed `aria-*` and `data-*` attributes. It returns `SourceAuditReport` under independent audit schema `1.0`; its records never appear in Structured Report, Agent JSON, Visual Events, magnitudes, or regions. See the [Nonvisual Source Audit](source-audit.md) and its separate [JSON Schema](../schema/svgdiff-source-audit.schema.json).
 
 The two canonical JSON methods serialize schema `1.43`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value. `to_agent_projection_json_lines` emits the independent `svgdiff-agent-projection/1` JSONL transport: one header plus exact canonical section items that reconstruct the same report without loss.
 
-Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.5.25`.
+Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.5.26`.
 
 `ComparisonControl` contains `should_cancel: () -> Bool` and `max_elapsed_milliseconds: Int?`; `ComparisonControl::unlimited()` disables both controls. A true predicate raises `Cancelled`. A nonpositive time budget expires at the first checkpoint, and a positive budget raises `TimeBudgetExceeded(max_elapsed_milliseconds=...)` once elapsed time reaches it. Cancellation is checked first when both conditions hold.
 

@@ -196,7 +196,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P1** Add schema examples for equivalent spelling, tiny numeric deltas, salient changes, insertion/deletion, resources, and partial coverage.
 - [x] **P1** Define JSON Schema compatibility and migration tests for every released schema version.
 - [x] **P1** Add optional deterministic Markdown summaries only as derived presentation, never as source-of-truth evidence.
-- [ ] **P2** Improve the HTML report after core agent evaluation identifies concrete inspection needs.
+- [x] **P2** Improve the HTML report after core agent evaluation identifies concrete inspection needs, exposing what/how much/where/why evidence without changing the Structured Report.
 
 ## Phase 8: Deterministic text and fonts
 

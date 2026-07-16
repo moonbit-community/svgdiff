@@ -10,7 +10,7 @@ Last verified: 2026-07-16
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.25` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.5.26` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.43` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
 | Diagnostics | Schema `1.43` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
@@ -128,6 +128,8 @@ Module `0.5.23` adds required top-level `ImpactAssessment` under policy `event_r
 Module `0.5.24` adds `StructuredReport::to_agent_projection_json_lines` and CLI `--agent-projection`. The independent `svgdiff-agent-projection/1` transport partitions one canonical report into a header and ordered JSONL section-item records, preserving every value and exact reconstruction while reducing the largest record context on accepted fixtures. Default JSON and whitespace-only `--agent-json` remain unchanged and mutually exclusive with the new mode. Structured Report schema `1.43`, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 Module `0.5.25` adds `render_markdown_summary` and CLI `--summary FILE`. The deterministic Markdown is a separate derived presentation that lists the Impact frontier, every Atomic Difference, and every Diagnostic while explicitly deferring to canonical Structured Report JSON. It does not add report fields or introduce severity, visibility, equality, total-order, or unique-cause semantics. Structured Report schema `1.43`, Agent projection, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
+
+Module `0.5.26` deepens the existing self-contained HTML presentation into a complete evidence inspector. It presents the exact Impact frontier, every Atomic Difference, non-null magnitudes, linked Visual Events, Difference Regions, conservative possible Changed Fact causes, and Diagnostics; hover, keyboard focus, and explicit selection highlight report-defined regions on both sandboxed previews. The browser does not recompute comparison, ranking, visibility, equality, severity, or causality. Structured Report schema `1.43`, Agent projection, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 ## Structured Report schema versions
 

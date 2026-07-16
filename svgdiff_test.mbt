@@ -556,6 +556,14 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("default-src &#39;none&#39;") is Some(_))
   assert_true(html.find("difference_regions") is Some(_))
   assert_true(html.find("v2_domain_lexicographic") is Some(_))
+  assert_true(html.find("id=\"impact\"") is Some(_))
+  assert_true(html.find("All Atomic Differences") is Some(_))
+  assert_true(html.find("How much · non-null magnitude evidence") is Some(_))
+  assert_true(html.find("Where and why · Visual Events") is Some(_))
+  assert_true(html.find("Possible Changed Fact causes") is Some(_))
+  assert_true(html.find("data-locate") is Some(_))
+  assert_true(html.find("aria-pressed") is Some(_))
+  assert_true(html.find("innerHTML") is None)
   assert_true(html.find("<script>alert('unsafe')</script>") is None)
   assert_true(html.find("<details class=\"json-panel\">") is Some(_))
 }
@@ -571,4 +579,50 @@ test "HTML report escapes textarea termination in source evidence" {
   let html = @svgdiff.render_html_report(source, source, report)
   assert_true(html.find("</textarea><script>bad()") is None)
   assert_true(html.find("&lt;/textarea&gt;") is Some(_))
+}
+
+///|
+test "HTML report preserves explicit Impact presentation states" {
+  let base = @svgdiff.compare(
+    "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>",
+    "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>",
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  let report = {
+    ..base,
+    analysis_status: "partial",
+    impact_assessment: {
+      ..base.impact_assessment,
+      status: "partial",
+      frontier_relation: "incomparable",
+      frontier_groups: [
+        {
+          event_ids: ["event-a"],
+          atomic_difference_ids: [base.atomic_differences[0].id],
+          measurements: Some({
+            changed_pixel_fraction: 0.25,
+            linear_premultiplied_rgba_rmse: 0.5,
+          }),
+        },
+        {
+          event_ids: ["event-b"],
+          atomic_difference_ids: [],
+          measurements: None,
+        },
+      ],
+    },
+  }
+  let html = @svgdiff.render_html_report("<svg/>", "<svg/>", report)
+  assert_true(
+    html.find("&quot;analysis_status&quot;: &quot;partial&quot;") is Some(_),
+  )
+  assert_true(
+    html.find("&quot;frontier_relation&quot;: &quot;incomparable&quot;")
+    is Some(_),
+  )
+  assert_true(html.find("Measurements unavailable; not zero.") is Some(_))
+  assert_true(html.find("displayed order is not an impact ranking") is Some(_))
+  assert_true(
+    html.find("empty evidence inventories do not establish equality") is Some(_),
+  )
 }

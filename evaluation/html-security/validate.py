@@ -86,8 +86,20 @@ def main() -> None:
     breakout = '<script id="outer-breakout">'
     if breakout in document:
         raise ValueError("hostile source created an outer script element")
+    if "innerHTML" in document:
+        raise ValueError("report presentation must not assign report data through innerHTML")
+    for required in (
+        'id="impact"',
+        'id="diffs"',
+        'id="diagnostics"',
+        'id="selection-status"',
+        'id="report-data"',
+    ):
+        if required not in document:
+            raise ValueError(f"missing evidence-inspection root: {required}")
     textarea_match = re.search(
-        r'<textarea id="report-data" readonly>(.*?)</textarea>',
+        r'<textarea\b(?=[^>]*\bid="report-data")(?=[^>]*\breadonly\b)[^>]*>'
+        r"(.*?)</textarea>",
         document,
         flags=re.DOTALL,
     )
