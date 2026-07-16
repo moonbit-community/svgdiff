@@ -1,6 +1,29 @@
 {
-  "schema_version": "1.42",
+  "schema_version": "1.43",
   "analysis_status": "partial",
+  "impact_assessment": {
+    "policy_id": "event_rendered_pareto/v1",
+    "status": "partial",
+    "calibration_status": "not_calibrated",
+    "input_fields": [
+      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
+      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
+    ],
+    "candidate_event_count": 1,
+    "frontier_relation": "unique",
+    "frontier_groups": [
+      {
+        "event_ids": [
+          "event:label"
+        ],
+        "atomic_difference_ids": [
+          "diff:entity:label:text"
+        ],
+        "measurements": null
+      }
+    ],
+    "domination_witnesses": []
+  },
   "coverage_matrix": [
     {
       "feature_id": "document.xml",

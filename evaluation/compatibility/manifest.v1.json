@@ -7,8 +7,8 @@
   },
   "consumer_policy": {
     "policy_id": "svgdiff-consumer-compatibility/1",
-    "accepted_schema_versions": ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20", "1.21", "1.22", "1.23", "1.24", "1.25", "1.26", "1.27", "1.28", "1.29", "1.30", "1.31", "1.32", "1.33", "1.34", "1.35", "1.36", "1.37", "1.38", "1.39", "1.40", "1.41", "1.42"],
-    "current_schema_version": "1.42",
+    "accepted_schema_versions": ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20", "1.21", "1.22", "1.23", "1.24", "1.25", "1.26", "1.27", "1.28", "1.29", "1.30", "1.31", "1.32", "1.33", "1.34", "1.35", "1.36", "1.37", "1.38", "1.39", "1.40", "1.41", "1.42", "1.43"],
+    "current_schema_version": "1.43",
     "accepted_renderer_ids": [
       "mizchi/svg@0.2.1",
       "svgdiff/style-precedence-normalizer@1+mizchi/svg@0.2.1",
@@ -58,6 +58,7 @@
       "v1_domain_lexicographic",
       "v2_domain_lexicographic"
     ],
+    "accepted_impact_policy_ids": ["event_rendered_pareto/v1"],
     "legacy_optional_paths": [
       ["coverage_matrix"],
       ["profile", "renderer_conformance_profile_id"],
@@ -516,6 +517,16 @@
       "expected_schema_validation": "valid"
     },
     {
+      "id": "legacy-schema-1.42",
+      "mutations": [
+        { "op": "set", "path": ["schema_version"], "value": "1.42" },
+        { "op": "remove", "path": ["impact_assessment"] }
+      ],
+      "expected_decision": "accepted",
+      "expected_reason": "accepted_legacy_schema",
+      "expected_schema_validation": "valid"
+    },
+    {
       "id": "optional-alignment-evidence-absent",
       "mutations": [
         { "op": "remove", "path": ["subject_alignments", 0, "evidence"] }
@@ -615,6 +626,19 @@
       ],
       "expected_decision": "rejected",
       "expected_reason": "unknown_ordering_policy",
+      "expected_schema_validation": "invalid"
+    },
+    {
+      "id": "unknown-impact-policy",
+      "mutations": [
+        {
+          "op": "set",
+          "path": ["impact_assessment", "policy_id"],
+          "value": "unknown-impact-policy/1"
+        }
+      ],
+      "expected_decision": "rejected",
+      "expected_reason": "unknown_impact_policy",
       "expected_schema_validation": "invalid"
     }
   ]

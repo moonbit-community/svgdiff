@@ -71,8 +71,22 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.42":
+    if report.get("schema_version") != "1.43":
         raise ValueError(f"unexpected report schema for {case['id']}")
+    impact = report["impact_assessment"]
+    frontier_event_ids = [
+        event_id
+        for group in impact["frontier_groups"]
+        for event_id in group["event_ids"]
+    ]
+    if (
+        impact.get("policy_id") != "event_rendered_pareto/v1"
+        or impact.get("calibration_status") != "not_calibrated"
+        or impact.get("candidate_event_count") != len(report["events"])
+        or len(frontier_event_ids) != len(set(frontier_event_ids))
+        or not set(frontier_event_ids) <= {event["id"] for event in report["events"]}
+    ):
+        raise ValueError(f"invalid Impact Assessment for {case['id']}")
     if report["profile"]["flip_viewing_conditions"] is not None or report[
         "profile"
     ]["flip_error_threshold"] is not None or any(

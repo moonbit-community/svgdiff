@@ -146,8 +146,9 @@ fn rect_coverage_report(
   let subject_id = "rect:0"
   let diagnostic_id = "diagnostic:\{code}:\{subject_id}"
   {
-    schema_version: "1.42",
+    schema_version: "1.43",
     analysis_status: "partial",
+    impact_assessment: empty_impact_assessment(),
     coverage_matrix: [],
     renderer_capability_gaps: [],
     profile,
@@ -291,12 +292,13 @@ fn compare_rect_declared_facts(
     })
   }
   {
-    schema_version: "1.42",
+    schema_version: "1.43",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
       "partial"
     },
+    impact_assessment: empty_impact_assessment(),
     coverage_matrix: [],
     renderer_capability_gaps: [],
     profile,

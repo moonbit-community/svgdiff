@@ -423,9 +423,20 @@
     },
     {
       "report_schema_version": "1.42",
+      "status": "legacy",
+      "schema": "schema/svgdiff-report-1.42.schema.json",
+      "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
+      "canonical_examples": "evaluation/schema-examples/manifest.1.42.json",
+      "compatibility_case_ids": [
+        "legacy-schema-1.42"
+      ]
+    },
+    {
+      "report_schema_version": "1.43",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
+      "accepted_impact_policy_ids": ["event_rendered_pareto/v1"],
       "canonical_examples": "evaluation/schema-examples/manifest.v1.json",
       "compatibility_case_ids": [
         "current-schema-and-policy",

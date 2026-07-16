@@ -4,7 +4,7 @@ Status: current maintenance procedure
 
 Last verified: 2026-07-16
 
-Renderer, parser, metric, schema, and ordering-policy versions influence the meaning of a report. They must not be upgraded as isolated dependency edits. This document defines the evidence and synchronized changes required before an upgrade may be merged.
+Renderer, parser, metric, schema, same-domain ordering-policy, and Impact Assessment policy versions influence the meaning of a report. They must not be upgraded as isolated dependency edits. This document defines the evidence and synchronized changes required before an upgrade may be merged.
 
 ## Current pinned identities
 
@@ -18,9 +18,10 @@ Renderer, parser, metric, schema, and ordering-policy versions influence the mea
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
 | Perceptual color metric | `delta_e_ok_changed_pixels_after_linear_srgb_background/v1` | event-local changed-pixel sample count and arithmetic mean DeltaEOK |
 | Perceptual spatial metric | `nvlabs_ldr_flip/v1.7-b475eb4b` | event-local LDR-FLIP maps, response bounds, quantization, and Viewing Conditions |
-| JSON Schema | `1.42` | every serialized field, enum, null/absence rule, and top-level invariant |
+| JSON Schema | `1.43` | every serialized field, enum, null/absence rule, and top-level invariant |
 | Nonvisual source-audit schema | `1.0` | source-only fact identity, paths, values, provenance, status, and parse failures |
 | Same-domain ordering | `v2_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
+| Impact Assessment | `event_rendered_pareto/v1` | event eligibility, common rendered inputs, Pareto dominance, ties, incomparability, missing evidence, frontier groups, and domination witnesses |
 
 The source of dependency versions is `moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json). The [compatibility and versioning contract](versioning.md) decides which identity each consumer-visible change must increment.
 
@@ -145,7 +146,7 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Every released Schema, currently `1.0` through `1.42`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
+Every released Schema, currently `1.0` through `1.43`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
 
 The independent source-audit schema follows the same discipline but is not entered in the Structured Report registry. Validate [`svgdiff-source-audit.schema.json`](../schema/svgdiff-source-audit.schema.json), its canonical example, and the public `SourceAudit*` interface whenever audit identity, paths, values, spans, status, or failures change.
 
@@ -184,6 +185,25 @@ The current tuple layouts and exact-domain consumer procedure are defined in the
 Cross-domain ranking requires its own accepted policy and must not be smuggled into a same-domain upgrade.
 
 The complete compatibility boundary, including the rule that every tuple-semantic change allocates a new opaque policy ID, is defined in the [compatibility and versioning contract](versioning.md#ranking-policy-compatibility).
+
+## Impact Assessment policy upgrade
+
+`ImpactAssessment` is versioned separately from both the JSON Schema and same-domain ordering because main-event selection semantics can change while their serialized container remains stable.
+
+The current uncalibrated rule and Agent interpretation boundary are defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
+
+### Procedure
+
+1. State the Agent task and why the current policy cannot answer it.
+2. Define candidate events, every input field and unit, availability behavior, comparison relation, ties, incomparability, and deterministic representation.
+3. Preserve links from every result to its Visual Events and Atomic Differences.
+4. Add controlled identity, dominance, tie, tradeoff, missing-evidence, and deterministic-witness cases before changing production output.
+5. Evaluate the proposal against the versioned hidden-label corpus without feeding labels into production reports.
+6. Allocate a new `policy_id` whenever eligibility, inputs, normalization, dominance, thresholds, labels, weights, tie behavior, or witness selection changes.
+7. Update report construction, JSON Schema, compatibility policy, Agent guidance, benchmark harness, and current-contract documents together.
+8. Never let an assessment create or erase an Atomic Difference, establish equality, override Diagnostics, or fabricate missing measurements as zero.
+
+Calibration must introduce a new policy identity. It must record its corpus, label version, thresholds or learned parameters, required Comparison Profile inputs, and evaluation results rather than changing `event_rendered_pareto/v1` in place.
 
 ## Common validation gate
 

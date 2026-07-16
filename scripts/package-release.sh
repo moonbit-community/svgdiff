@@ -165,6 +165,7 @@ schema_version=$(printf '%s\n' "$version_output" | sed -n 's/^schema: //p')
 renderer_id=$(printf '%s\n' "$version_output" | sed -n 's/^renderer: //p')
 conformance_profile=$(printf '%s\n' "$version_output" | sed -n 's/^renderer-conformance-profile: //p')
 ordering_policy=$(printf '%s\n' "$version_output" | sed -n 's/^ordering-policy: //p')
+impact_policy=$(printf '%s\n' "$version_output" | sed -n 's/^impact-policy: //p')
 
 jq -n \
   --arg artifact_sha256 "$artifact_sha256" \
@@ -179,9 +180,10 @@ jq -n \
   --arg renderer_id "$renderer_id" \
   --arg conformance_profile "$conformance_profile" \
   --arg ordering_policy "$ordering_policy" \
+  --arg impact_policy "$impact_policy" \
   --slurpfile dependency_data "$dependency_manifest" \
   '{
-    schema_version: "svgdiff-release-provenance/1",
+    schema_version: "svgdiff-release-provenance/2",
     subject: { name: $executable_name, sha256: $artifact_sha256 },
     source: { revision: $source_revision, dirty: $source_dirty },
     build: {
@@ -195,7 +197,8 @@ jq -n \
       report_schema_version: $schema_version,
       renderer_id: $renderer_id,
       renderer_conformance_profile_id: $conformance_profile,
-      ordering_policy_id: $ordering_policy
+      ordering_policy_id: $ordering_policy,
+      impact_policy_id: $impact_policy
     },
     resolved_dependencies: ($dependency_data[0].dependencies | map({name, version, repository, license}))
   }' >"$bundle/provenance.json"

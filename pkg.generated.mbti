@@ -60,6 +60,14 @@ pub using @engine {type FlipErrorThreshold}
 
 pub using @engine {type FlipViewingConditions}
 
+pub using @engine {type ImpactAssessment}
+
+pub using @engine {type ImpactDominationWitness}
+
+pub using @engine {type ImpactFrontierGroup}
+
+pub using @engine {type ImpactMeasurement}
+
 pub using @engine {type IntrinsicRasterMagnitude}
 
 pub using @engine {type PaintedBoundaryDisplacementMagnitude}

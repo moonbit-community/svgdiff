@@ -1,6 +1,19 @@
 {
-  "schema_version": "1.42",
+  "schema_version": "1.43",
   "analysis_status": "failed",
+  "impact_assessment": {
+    "policy_id": "event_rendered_pareto/v1",
+    "status": "not_applicable",
+    "calibration_status": "not_calibrated",
+    "input_fields": [
+      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
+      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
+    ],
+    "candidate_event_count": 0,
+    "frontier_relation": "not_applicable",
+    "frontier_groups": [],
+    "domination_witnesses": []
+  },
   "coverage_matrix": [
     {
       "feature_id": "resource.raster_dimensions",

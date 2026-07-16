@@ -1856,12 +1856,13 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "1.42",
+    schema_version: "1.43",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
       "partial"
     },
+    impact_assessment: empty_impact_assessment(),
     coverage_matrix: [],
     renderer_capability_gaps: [],
     profile,

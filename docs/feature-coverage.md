@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.42` coverage map
+Status: current schema `1.43` coverage map
 
 Last verified: 2026-07-16
 
@@ -13,7 +13,7 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.42`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `1.43`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
@@ -39,7 +39,7 @@ Feature IDs use five current namespaces:
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 | `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.42` engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.43` engine always emits it.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 

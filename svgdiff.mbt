@@ -17,6 +17,10 @@ pub using @engine {
   type FlipErrorThreshold,
   type FlipViewingConditions,
   type IntrinsicRasterMagnitude,
+  type ImpactAssessment,
+  type ImpactDominationWitness,
+  type ImpactFrontierGroup,
+  type ImpactMeasurement,
   type PaintedBoundaryDisplacementMagnitude,
   type PaintedCoverageDifferenceMagnitude,
   type PerceptualBackground,
@@ -88,7 +92,7 @@ pub fn compare_with_resources(
   let report = @engine.compare_with_resources(
     before_svg, after_svg, canonical_profile, before_resources, after_resources,
   )
-  { ..report, schema_version: "1.42" }
+  { ..report, schema_version: "1.43" }
 }
 
 ///|
@@ -99,7 +103,7 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.42` profile.
+/// Compare two deterministic static SVG sources under one schema `1.43` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width`, `profile.viewport_height`, the optional
@@ -126,7 +130,7 @@ pub fn compare(
     flip_error_threshold: profile.flip_error_threshold,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.42" }
+  { ..report, schema_version: "1.43" }
 }
 
 ///|
@@ -158,7 +162,7 @@ pub fn compare_with_control(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.42" }
+    report => { ..report, schema_version: "1.43" }
   }
 }
 
@@ -190,6 +194,6 @@ pub fn compare_with_control_and_resources(
     TimeBudgetExceeded(max_elapsed_milliseconds~) =>
       raise TimeBudgetExceeded(max_elapsed_milliseconds~)
   } noraise {
-    report => { ..report, schema_version: "1.42" }
+    report => { ..report, schema_version: "1.43" }
   }
 }

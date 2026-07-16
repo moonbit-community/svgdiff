@@ -225,6 +225,28 @@
       ],
       "expected": {
         "analysis_status": "complete",
+        "impact_assessment": {
+          "policy_id": "event_rendered_pareto/v1",
+          "status": "complete",
+          "calibration_status": "not_calibrated",
+          "input_fields": [
+            "events[].rendered_outcome.magnitude.changed_pixel_fraction",
+            "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
+          ],
+          "candidate_event_count": 1,
+          "frontier_relation": "unique",
+          "frontier_groups": [
+            {
+              "event_ids": ["event:panel"],
+              "atomic_difference_ids": ["diff:entity:panel:fill"],
+              "measurements": {
+                "changed_pixel_fraction": 0.5625,
+                "linear_premultiplied_rgba_rmse": 0.5303300858899106
+              }
+            }
+          ],
+          "domination_witnesses": []
+        },
         "perceptual_background": { "red": 255, "green": 255, "blue": 255 },
         "flip_viewing_conditions": { "pixels_per_degree": 20 },
         "flip_error_threshold": { "value": 0.05 },

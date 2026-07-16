@@ -106,9 +106,15 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "1.42" else { abort("wrong schema") }
+  guard report.schema_version == "1.43" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
+  guard report.impact_assessment.policy_id == "event_rendered_pareto/v1" else {
+    abort("missing Impact Assessment")
+  }
+  guard report.impact_assessment.candidate_event_count == report.events.length() else {
+    abort("Impact Assessment candidate drift")
+  }
   let resource_svg = "<svg xmlns='http://www.w3.org/2000/svg'><image href='asset.png'/></svg>"
   let bundled = @svgdiff.compare_with_resources(
     resource_svg,

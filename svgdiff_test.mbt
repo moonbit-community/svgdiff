@@ -11,14 +11,34 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.42")
+  assert_eq(report.schema_version, "1.43")
   assert_eq(report.atomic_differences.length(), 1)
+  let impact : @svgdiff.ImpactAssessment = report.impact_assessment
+  assert_eq(impact.policy_id, "event_rendered_pareto/v1")
+  assert_eq(impact.status, "complete")
+  assert_eq(impact.calibration_status, "not_calibrated")
+  assert_eq(impact.candidate_event_count, 1)
+  assert_eq(impact.frontier_relation, "unique")
+  guard impact.frontier_groups is [group] else {
+    fail("expected one public Impact frontier group")
+  }
+  let group : @svgdiff.ImpactFrontierGroup = group
+  assert_eq(group.event_ids, [report.events[0].id])
+  assert_eq(group.atomic_difference_ids, report.events[0].atomic_difference_ids)
+  guard group.measurements is Some(measurements) else {
+    fail("expected public Impact measurements")
+  }
+  let measurements : @svgdiff.ImpactMeasurement = measurements
+  assert_true(measurements.changed_pixel_fraction > 0.0)
+  assert_true(measurements.linear_premultiplied_rgba_rmse > 0.0)
+  let witnesses : Array[@svgdiff.ImpactDominationWitness] = impact.domination_witnesses
+  assert_true(witnesses.is_empty())
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.42", "events": [_], .. } => ()
+    { "schema_version": "1.43", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.42", "events": [_], .. } => ()
+    { "schema_version": "1.43", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }

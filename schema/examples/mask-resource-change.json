@@ -1,6 +1,32 @@
 {
-  "schema_version": "1.42",
+  "schema_version": "1.43",
   "analysis_status": "complete",
+  "impact_assessment": {
+    "policy_id": "event_rendered_pareto/v1",
+    "status": "complete",
+    "calibration_status": "not_calibrated",
+    "input_fields": [
+      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
+      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
+    ],
+    "candidate_event_count": 1,
+    "frontier_relation": "unique",
+    "frontier_groups": [
+      {
+        "event_ids": [
+          "event:mask:fade"
+        ],
+        "atomic_difference_ids": [
+          "diff:mask:fade:fill-opacity"
+        ],
+        "measurements": {
+          "changed_pixel_fraction": 0.5,
+          "linear_premultiplied_rgba_rmse": 0.12352941176470601
+        }
+      }
+    ],
+    "domination_witnesses": []
+  },
   "coverage_matrix": [
     {
       "feature_id": "document.xml",

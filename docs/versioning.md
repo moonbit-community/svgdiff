@@ -10,11 +10,12 @@ Last verified: 2026-07-16
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.22` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.42` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.42` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.23` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.43` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.43` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
+| Impact Assessment | `event_rendered_pareto/v1` | emitted `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Candidate events, measurement inputs, dominance, ties, incomparability, missing evidence, frontier representation, and witnesses. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/25` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
@@ -121,6 +122,8 @@ Module `0.5.21` adds optional explicit `ComparisonProfile.flip_viewing_condition
 
 Module `0.5.22` adds invariant-checked optional `ComparisonProfile.flip_error_threshold`, CLI `--flip-error-threshold VALUE`, and required unquantized statistics on every computed FLIP map. `event_local_ldr_flip_pooling/v1` preserves whole-canvas mean, raw-different selected-event mean, complete-response nearest-rank p95, response maximum, all three sample counts, and nullable strict-above-threshold pixel count plus whole-canvas fraction. No default threshold or visibility, severity, equality, or Impact Assessment meaning is introduced. The required profile and computed-evidence fields advance Structured Report schema to `1.42`; renderer identity, conformance profile, raw evidence, DeltaEOK, regions, Diagnostics, causes, coverage, and ordering remain unchanged.
 
+Module `0.5.23` adds required top-level `ImpactAssessment` under policy `event_rendered_pareto/v1`. The policy compares Visual Events only by their common whole-canvas changed-pixel fraction and linear-premultiplied RGBA RMSE, exposes the complete Pareto frontier, preserves exact ties and incomparable vectors, keeps missing measurements in a separate incomparable group, and records one deterministic domination witness for every dominated event. It is explicitly uncalibrated and introduces no scalar, threshold, severity label, visibility claim, equality rule, or change to the Atomic Difference inventory. The required assessment advances Structured Report schema to `1.43`; renderer identity, conformance profile, raw evidence, Diagnostics, causes, and same-domain ordering remain unchanged.
+
 ## Structured Report schema versions
 
 `schema_version` uses `MAJOR.MINOR`, not the module SemVer.
@@ -131,7 +134,7 @@ Module `0.5.22` adds invariant-checked optional `ComparisonProfile.flip_error_th
 
 The optional fields historically added while schema `1.0` was being established remain part of `1.0`; this rule applies to changes after this contract was accepted. Consumers must reject unknown schema identities before semantic interpretation unless an explicit compatibility policy and migration test accepts them. “Additive” describes migration risk, not permission to silently retain an old producer identity.
 
-Every released schema identity has one entry in the [released Schema registry](../schema/registry.v1.json), a checked-in Schema, canonical examples, compatibility fixtures, and an explicit accept, migrate, or reject decision. Module and schema versions move independently: a new library helper need not change the report schema, while a schema change requires the appropriate module release but does not copy the module version number.
+Every released schema identity has one entry in the [released Schema registry](../schema/registry.v1.json), a checked-in Schema, canonical examples, compatibility fixtures, accepted ordering and Impact policy identities where applicable, and an explicit accept, migrate, or reject decision. Module and schema versions move independently: a new library helper need not change the report schema, while a schema change requires the appropriate module release but does not copy the module version number.
 
 The source-audit schema is a separate contract and is not a Structured Report registry entry. Its `audit_schema_version` must change whenever a consumer could misread source-audit fields, path identity, value normalization, null meaning, provenance, status, or Diagnostic behavior. A source-audit version change does not by itself change Structured Report schema, renderer conformance, or ordering identity.
 
@@ -154,17 +157,24 @@ Diagnostic strings deliberately remain open rather than a JSON Schema enum so an
 
 Tuples with different policy IDs are incomparable. Consumers must reject or explicitly migrate an unknown policy before ranking, and must never fall back to comparing its raw component array. Adding a second policy is compatible; changing the default emitted policy is a module-breaking behavior change even though the JSON shape is unchanged. The report schema changes only when the serialized ordering shape or field meaning changes.
 
+## Impact Assessment policy compatibility
+
+`ImpactAssessment.policy_id` is an opaque compatibility identity. Any change to candidate selection, input fields, normalization, dominance, missing-evidence behavior, tie grouping, frontier relation, witness selection, or deterministic representation allocates a new ID.
+
+Assessments with different policy IDs are incomparable. Consumers must reject or explicitly migrate an unknown policy before selecting main events and must not reinterpret its measurements using the current Pareto rule. Calibration status is part of the result: adding thresholds, labels, weights, or a total order requires a separately accepted calibrated policy identity rather than changing `event_rendered_pareto/v1` in place. The Structured Report schema changes independently when the serialized assessment shape or field meaning changes.
+
 ## Release review matrix
 
-| Change | Module | Schema | Diagnostic code | Ordering policy | Conformance profile |
-| --- | --- | --- | --- | --- | --- |
-| Backward-compatible public helper | MINOR, or pre-1.0 PATCH | Same | Same | Same | Same |
-| Breaking public API or CLI behavior | MAJOR, or pre-1.0 MINOR | Same unless report meaning changed | Review | Review | Review |
-| Optional report field added | Compatible module release | MINOR | Same | Same | Same |
-| Required/type/unit/report-meaning change | Breaking module release | MAJOR | Review | Review | Review |
-| New or retired Diagnostic condition | Compatible module release | MINOR | Add or retire without reuse | Same unless ranking changed | Review if renderer claim changed |
-| Diagnostic rename or semantic reuse | Breaking module release | MAJOR | Allocate a new code; do not reuse | Review | Review |
-| Ordering tuple semantics change | Breaking module release if it becomes the default | Same unless shape changed | Same | New ID | Same |
-| Renderer fixture, disposition, guard, tolerance, or accepted claim changes | Compatible or breaking according to behavior | Same unless report meaning changed | Review | Same unless magnitude ordering changed | New profile ID |
+| Change | Module | Schema | Diagnostic code | Ordering policy | Impact policy | Conformance profile |
+| --- | --- | --- | --- | --- | --- | --- |
+| Backward-compatible public helper | MINOR, or pre-1.0 PATCH | Same | Same | Same | Same | Same |
+| Breaking public API or CLI behavior | MAJOR, or pre-1.0 MINOR | Same unless report meaning changed | Review | Review | Review | Review |
+| Optional report field added | Compatible module release | MINOR | Same | Same | Same | Same |
+| Required/type/unit/report-meaning change | Breaking module release | MAJOR | Review | Review | Review | Review |
+| New or retired Diagnostic condition | Compatible module release | MINOR | Add or retire without reuse | Same unless ranking changed | Review if assessment inputs or eligibility changed | Review if renderer claim changed |
+| Diagnostic rename or semantic reuse | Breaking module release | MAJOR | Allocate a new code; do not reuse | Review | Review | Review |
+| Ordering tuple semantics change | Breaking module release if it becomes the default | Same unless shape changed | Same | New ID | Same unless assessment inputs changed | Same |
+| Impact Assessment semantics change | Breaking module release if it becomes the default | Same unless shape changed | Review | Same | New ID | Review if rendered inputs changed |
+| Renderer fixture, disposition, guard, tolerance, or accepted claim changes | Compatible or breaking according to behavior | Same unless report meaning changed | Review | Same unless magnitude ordering changed | Review if assessment inputs changed | New profile ID |
 
 “Review” means determine the result from the domain rules; it does not mean increment automatically. Before release, run `sh scripts/test-versioning.sh`, `sh scripts/test-release-bundle.sh`, the compatibility corpus, `moon info`, and the full validation gate in the upgrade procedures.

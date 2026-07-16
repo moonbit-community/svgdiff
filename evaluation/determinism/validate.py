@@ -123,6 +123,7 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
     alignment_ids = ids_by_kind.get("subject_alignment", set())
     fact_ids = ids_by_kind.get("changed_fact", set())
     difference_ids = ids_by_kind.get("atomic_difference", set())
+    event_ids = ids_by_kind.get("visual_event", set())
     diagnostic_ids = ids_by_kind.get("diagnostic", set())
 
     for difference in report["atomic_differences"]:
@@ -183,6 +184,46 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
             "every Atomic Difference must belong to exactly one Visual Event: "
             f"{wrong_membership!r}"
         )
+
+    impact = report["impact_assessment"]
+    if impact["candidate_event_count"] != len(event_ids):
+        raise ValueError("Impact Assessment candidate count does not match events")
+    frontier_event_ids: set[str] = set()
+    for index, group in enumerate(impact["frontier_groups"]):
+        owner = f"impact_assessment.frontier_groups[{index}]"
+        require_reference_list(owner, "event_ids", group["event_ids"], event_ids)
+        require_reference_list(
+            owner,
+            "atomic_difference_ids",
+            group["atomic_difference_ids"],
+            difference_ids,
+        )
+        overlap = frontier_event_ids.intersection(group["event_ids"])
+        if overlap:
+            raise ValueError(f"Impact frontier repeats events {sorted(overlap)!r}")
+        frontier_event_ids.update(group["event_ids"])
+    dominated_event_ids: set[str] = set()
+    for index, witness in enumerate(impact["domination_witnesses"]):
+        owner = f"impact_assessment.domination_witnesses[{index}]"
+        require_reference_list(
+            owner,
+            "dominant_event_id",
+            [witness["dominant_event_id"]],
+            event_ids,
+        )
+        require_reference_list(
+            owner,
+            "dominated_event_id",
+            [witness["dominated_event_id"]],
+            event_ids,
+        )
+        if witness["dominated_event_id"] in dominated_event_ids:
+            raise ValueError("Impact Assessment repeats a dominated event")
+        dominated_event_ids.add(witness["dominated_event_id"])
+    if frontier_event_ids.intersection(dominated_event_ids):
+        raise ValueError("Impact Assessment event is both frontier and dominated")
+    if frontier_event_ids.union(dominated_event_ids) != event_ids:
+        raise ValueError("Impact Assessment does not partition candidate events")
 
     for index, row in enumerate(report.get("coverage_matrix", [])):
         require_reference_list(
@@ -394,6 +435,13 @@ def main() -> None:
     first_reference = duplicate_reference["events"][0]["atomic_difference_ids"][0]
     duplicate_reference["events"][0]["atomic_difference_ids"].append(first_reference)
     expect_integrity_rejection(duplicate_reference, "duplicate report-local reference")
+    dangling_impact_reference = copy.deepcopy(control)
+    dangling_impact_reference["impact_assessment"]["frontier_groups"][0][
+        "event_ids"
+    ][0] = "event:missing"
+    expect_integrity_rejection(
+        dangling_impact_reference, "dangling Impact Assessment event reference"
+    )
     wrong_resource_role = copy.deepcopy(reports["resource-gradient-change"])
     entity_alignment_id = next(
         alignment["id"]
@@ -442,6 +490,7 @@ def main() -> None:
             "duplicate_report_local_id",
             "dangling_report_local_reference",
             "duplicate_report_local_reference",
+            "dangling_impact_assessment_reference",
             "resource_alignment_role_mismatch",
             "incomplete_revoked_cause_envelope",
             "cross_event_cause_contamination",

@@ -72,10 +72,17 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
     .status == "not_computed" and
     .reason_code == "flip_not_requested") and
   all(.[];
+    .report.impact_assessment.policy_id == "event_rendered_pareto/v1" and
+    .report.impact_assessment.calibration_status == "not_calibrated" and
+    .report.impact_assessment.candidate_event_count ==
+      (.report.events | length) and
+    (([.report.impact_assessment.frontier_groups[].event_ids[]] -
+      [.report.events[].id]) | length) == 0) and
+  all(.[];
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "1.42") and
+    (.report.schema_version == "1.43") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and

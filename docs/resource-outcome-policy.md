@@ -1,6 +1,6 @@
 # Resource Outcome Policy
 
-Status: current contract for schema `1.42`
+Status: current contract for schema `1.43`
 
 Last verified: 2026-07-16
 

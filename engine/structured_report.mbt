@@ -85,7 +85,7 @@ pub fn FlipErrorThreshold::value(self : FlipErrorThreshold) -> Double {
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.42` API accepts caller-provided viewport dimensions,
+/// The root schema `1.43` API accepts caller-provided viewport dimensions,
 /// Perceptual Background, FLIP Viewing Conditions, and FLIP error threshold,
 /// and canonicalizes the
 /// remaining fields to `v1_default`.
@@ -125,7 +125,7 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
 }
 
 ///|
-/// Return the fixed schema `1.42` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.43` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions,
 /// an explicitly parsed Perceptual Background, invariant-checked FLIP Viewing
@@ -762,6 +762,51 @@ pub(all) struct VisualEvent {
 } derive(ToJson)
 
 ///|
+/// Common whole-canvas event measurements used by one Impact Assessment.
+pub(all) struct ImpactMeasurement {
+  changed_pixel_fraction : Double
+  linear_premultiplied_rgba_rmse : Double
+} derive(ToJson, Eq)
+
+///|
+/// One singleton or exact measured-tie group on the main-event frontier.
+pub(all) struct ImpactFrontierGroup {
+  event_ids : Array[String]
+  atomic_difference_ids : Array[String]
+  measurements : ImpactMeasurement?
+} derive(Eq)
+
+///|
+pub impl ToJson for ImpactFrontierGroup with fn to_json(self) {
+  let fields : Map[String, Json] = Map([])
+  fields["event_ids"] = self.event_ids.to_json()
+  fields["atomic_difference_ids"] = self.atomic_difference_ids.to_json()
+  fields["measurements"] = nullable_report_value(self.measurements)
+  Json::object(fields)
+}
+
+///|
+/// One deterministic explanation for excluding a dominated event.
+pub(all) struct ImpactDominationWitness {
+  dominant_event_id : String
+  dominated_event_id : String
+  rule_id : String
+} derive(ToJson, Eq)
+
+///|
+/// Additive versioned main-event assessment that preserves partial ordering.
+pub(all) struct ImpactAssessment {
+  policy_id : String
+  status : String
+  calibration_status : String
+  input_fields : Array[String]
+  candidate_event_count : Int
+  frontier_relation : String
+  frontier_groups : Array[ImpactFrontierGroup]
+  domination_witnesses : Array[ImpactDominationWitness]
+} derive(ToJson, Eq)
+
+///|
 /// Structured coverage limitation or analysis failure.
 pub(all) struct Diagnostic {
   id : String
@@ -928,13 +973,14 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.42` result of one SVG comparison.
+/// Complete schema `1.43` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
+  impact_assessment : ImpactAssessment
   coverage_matrix : Array[FeatureCoverage]
   renderer_capability_gaps : Array[RendererCapabilityGap]
   profile : ComparisonProfile
@@ -947,13 +993,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.42` JSON.
+/// Serialize this report as indented schema `1.43` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.42` JSON.
+/// Serialize this report as whitespace-free schema `1.43` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1840,8 +1886,9 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.42",
+    schema_version: "1.43",
     analysis_status: "failed",
+    impact_assessment: empty_impact_assessment(),
     coverage_matrix: [
       {
         feature_id: "document.xml",
@@ -1882,6 +1929,7 @@ fn apply_preflight_diagnostics(
     } else {
       "partial"
     },
+    impact_assessment: report.impact_assessment,
     coverage_matrix: report.coverage_matrix,
     renderer_capability_gaps: report.renderer_capability_gaps,
     profile: report.profile,
@@ -2148,8 +2196,9 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.42",
+        schema_version: "1.43",
         analysis_status: "partial",
+        impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
         profile,
@@ -2228,8 +2277,9 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.42",
+        schema_version: "1.43",
         analysis_status: "complete",
+        impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
         profile,
@@ -2278,8 +2328,9 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.42",
+        schema_version: "1.43",
         analysis_status: "complete",
+        impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
         profile,
@@ -2415,8 +2466,9 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.42",
+            schema_version: "1.43",
             analysis_status: "complete",
+            impact_assessment: empty_impact_assessment(),
             coverage_matrix: [],
             renderer_capability_gaps: [],
             profile,
@@ -2455,8 +2507,9 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.42",
+            schema_version: "1.43",
             analysis_status: "partial",
+            impact_assessment: empty_impact_assessment(),
             coverage_matrix: [],
             renderer_capability_gaps: [],
             profile,
@@ -2515,8 +2568,9 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.42",
+              schema_version: "1.43",
               analysis_status: "partial",
+              impact_assessment: empty_impact_assessment(),
               coverage_matrix: [],
               renderer_capability_gaps: [],
               profile,

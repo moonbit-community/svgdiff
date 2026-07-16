@@ -192,15 +192,42 @@ for difference in report["atomic_differences"]:
         }
     )
 
-main_changes = [
-    {
-        "event_ids": [event["id"]],
-        "atomic_difference_ids": event["atomic_difference_ids"],
-        "description": f"Reported event {event['id']}.",
-        "rationale": "The report presents this event in deterministic event order.",
-    }
-    for event in report["events"]
-]
+impact = report["impact_assessment"]
+frontier_groups = impact["frontier_groups"]
+main_changes = []
+for index, group in enumerate(frontier_groups):
+    if group["measurements"] is None:
+        rationale = (
+            "The versioned Impact Assessment retains this event because its "
+            "required rendered measurements are unavailable; it cannot be "
+            "treated as zero or dominated."
+        )
+    elif len(frontier_groups) == 1 and len(group["event_ids"]) == 1:
+        rationale = (
+            "The versioned Impact Assessment identifies this unique "
+            "non-dominated event."
+        )
+    elif len(frontier_groups) == 1:
+        rationale = (
+            "The versioned Impact Assessment preserves these events as an "
+            "exact measured tie."
+        )
+    else:
+        rationale = (
+            "The versioned Impact Assessment preserves this non-dominated "
+            f"frontier group {index + 1} of {len(frontier_groups)} as "
+            "incomparable with the other groups."
+        )
+    main_changes.append(
+        {
+            "event_ids": group["event_ids"],
+            "atomic_difference_ids": group["atomic_difference_ids"],
+            "description": "Reported main event group "
+            + ", ".join(group["event_ids"])
+            + ".",
+            "rationale": rationale,
+        }
+    )
 
 status = report["analysis_status"]
 if status != "complete":
@@ -209,6 +236,33 @@ elif report["atomic_differences"]:
     equality = "different"
 else:
     equality = "established"
+
+limitations = [
+    f"{row['feature_id']} ({row['subject_id']}): "
+    + ", ".join(
+        layer
+        for layer in (
+            "source_semantics",
+            "computed_appearance",
+            "rendered_evidence",
+        )
+        if row[layer] in {"limited", "failed"}
+    )
+    for row in report.get("coverage_matrix", [])
+    if any(
+        row[layer] in {"limited", "failed"}
+        for layer in (
+            "source_semantics",
+            "computed_appearance",
+            "rendered_evidence",
+        )
+    )
+]
+if impact["status"] == "partial":
+    limitations.append(
+        "Impact Assessment is partial because at least one candidate event "
+        "has unavailable rendered measurements."
+    )
 
 json.dump(
     {
@@ -221,27 +275,7 @@ json.dump(
         },
         "differences": differences,
         "main_changes": main_changes,
-        "limitations": [
-            f"{row['feature_id']} ({row['subject_id']}): "
-            + ", ".join(
-                layer
-                for layer in (
-                    "source_semantics",
-                    "computed_appearance",
-                    "rendered_evidence",
-                )
-                if row[layer] in {"limited", "failed"}
-            )
-            for row in report.get("coverage_matrix", [])
-            if any(
-                row[layer] in {"limited", "failed"}
-                for layer in (
-                    "source_semantics",
-                    "computed_appearance",
-                    "rendered_evidence",
-                )
-            )
-        ],
+        "limitations": limitations,
     },
     sys.stdout,
 )

@@ -40,6 +40,144 @@ def nested_value(value: Any, path: str) -> Any:
     return current
 
 
+IMPACT_INPUT_FIELDS = [
+    "events[].rendered_outcome.magnitude.changed_pixel_fraction",
+    "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse",
+]
+
+
+def event_impact_measurements(event: dict[str, Any]) -> dict[str, float] | None:
+    evidence = event["rendered_outcome"]
+    magnitude = evidence.get("magnitude")
+    if evidence.get("status") != "computed" or not isinstance(magnitude, dict):
+        return None
+    return {
+        "changed_pixel_fraction": magnitude["changed_pixel_fraction"],
+        "linear_premultiplied_rgba_rmse": magnitude[
+            "linear_premultiplied_rgba_rmse"
+        ],
+    }
+
+
+def impact_dominates(
+    left: dict[str, float] | None, right: dict[str, float] | None
+) -> bool:
+    if left is None or right is None:
+        return False
+    return (
+        left["changed_pixel_fraction"] >= right["changed_pixel_fraction"]
+        and left["linear_premultiplied_rgba_rmse"]
+        >= right["linear_premultiplied_rgba_rmse"]
+        and (
+            left["changed_pixel_fraction"] > right["changed_pixel_fraction"]
+            or left["linear_premultiplied_rgba_rmse"]
+            > right["linear_premultiplied_rgba_rmse"]
+        )
+    )
+
+
+def report_id_key(value: str) -> tuple[int, str]:
+    return (len(value), value)
+
+
+def assert_impact_assessment(case: dict[str, Any], report: dict[str, Any]) -> None:
+    assessment = report["impact_assessment"]
+    events = {event["id"]: event for event in report["events"]}
+    measurements = {
+        event_id: event_impact_measurements(event)
+        for event_id, event in events.items()
+    }
+    if assessment["policy_id"] != "event_rendered_pareto/v1":
+        raise ValueError(f"{case['id']}: unexpected Impact Assessment policy")
+    if assessment["calibration_status"] != "not_calibrated":
+        raise ValueError(f"{case['id']}: Impact Assessment claimed calibration")
+    if assessment["input_fields"] != IMPACT_INPUT_FIELDS:
+        raise ValueError(f"{case['id']}: Impact Assessment input fields drifted")
+    if assessment["candidate_event_count"] != len(events):
+        raise ValueError(f"{case['id']}: Impact Assessment candidate count drifted")
+    expected_status = (
+        "not_applicable"
+        if not events
+        else "partial"
+        if any(value is None for value in measurements.values())
+        else "complete"
+    )
+    if assessment["status"] != expected_status:
+        raise ValueError(f"{case['id']}: Impact Assessment status drifted")
+
+    expected_frontier = {
+        event_id
+        for event_id, vector in measurements.items()
+        if not any(
+            other_id != event_id and impact_dominates(other, vector)
+            for other_id, other in measurements.items()
+        )
+    }
+    groups = assessment["frontier_groups"]
+    seen_frontier: set[str] = set()
+    previous_group_id: str | None = None
+    for group in groups:
+        event_ids = group["event_ids"]
+        if not event_ids or event_ids != sorted(set(event_ids), key=report_id_key):
+            raise ValueError(f"{case['id']}: invalid Impact frontier event IDs")
+        if (
+            previous_group_id is not None
+            and report_id_key(event_ids[0]) <= report_id_key(previous_group_id)
+        ):
+            raise ValueError(f"{case['id']}: Impact frontier groups are not stable")
+        previous_group_id = event_ids[0]
+        if seen_frontier.intersection(event_ids):
+            raise ValueError(f"{case['id']}: duplicate Impact frontier event")
+        seen_frontier.update(event_ids)
+        if not set(event_ids) <= set(events):
+            raise ValueError(f"{case['id']}: unknown Impact frontier event")
+        vector = group["measurements"]
+        if vector is None:
+            if len(event_ids) != 1 or measurements[event_ids[0]] is not None:
+                raise ValueError(f"{case['id']}: invalid unavailable Impact group")
+        elif any(measurements[event_id] != vector for event_id in event_ids):
+            raise ValueError(f"{case['id']}: invalid measured Impact tie group")
+        expected_difference_ids = []
+        for event_id in event_ids:
+            for difference_id in events[event_id]["atomic_difference_ids"]:
+                if difference_id not in expected_difference_ids:
+                    expected_difference_ids.append(difference_id)
+        if group["atomic_difference_ids"] != expected_difference_ids:
+            raise ValueError(f"{case['id']}: Impact difference links drifted")
+    if seen_frontier != expected_frontier:
+        raise ValueError(f"{case['id']}: Impact frontier is not Pareto complete")
+
+    if not groups:
+        expected_relation = "not_applicable"
+    elif len(groups) == 1:
+        expected_relation = "unique" if len(groups[0]["event_ids"]) == 1 else "tied"
+    elif any(len(group["event_ids"]) > 1 for group in groups):
+        expected_relation = "mixed"
+    else:
+        expected_relation = "incomparable"
+    if assessment["frontier_relation"] != expected_relation:
+        raise ValueError(f"{case['id']}: Impact frontier relation drifted")
+
+    dominated = sorted(set(events) - expected_frontier, key=report_id_key)
+    witnesses = assessment["domination_witnesses"]
+    if [item["dominated_event_id"] for item in witnesses] != dominated:
+        raise ValueError(f"{case['id']}: Impact domination coverage drifted")
+    for witness in witnesses:
+        dominated_id = witness["dominated_event_id"]
+        expected_dominant = next(
+            event_id
+            for event_id in sorted(events, key=report_id_key)
+            if event_id != dominated_id
+            and impact_dominates(measurements[event_id], measurements[dominated_id])
+        )
+        if (
+            witness["dominant_event_id"] != expected_dominant
+            or witness["rule_id"]
+            != "both_rendered_metrics_no_less_and_one_greater"
+        ):
+            raise ValueError(f"{case['id']}: invalid Impact domination witness")
+
+
 def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
     expected = case["expected"]
     differences = report["atomic_differences"]
@@ -78,6 +216,10 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             f"{case['id']}: unexpected FLIP error threshold "
             f"{report['profile']['flip_error_threshold']!r}"
         )
+    if "impact_assessment" in expected and report["impact_assessment"] != expected[
+        "impact_assessment"
+    ]:
+        raise ValueError(f"{case['id']}: exact Impact Assessment drifted")
     expected_perceptual = expected.get("perceptual_color")
     if expected_perceptual is None:
         for event in report["events"]:
@@ -828,6 +970,7 @@ def main() -> None:
         reports[case["id"]] = report
         validate_instance(report, schema, schema)
         assert_semantics(case, report)
+        assert_impact_assessment(case, report)
         assert_coverage_summary(case, report)
         assert_raw_magnitude_authority(case, report)
         assert_alignment_evidence(case, report)
@@ -844,6 +987,31 @@ def main() -> None:
     missing_required = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_required["analysis_status"]
     expect_schema_rejection(missing_required, schema, "missing required property")
+    missing_impact = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_impact["impact_assessment"]
+    expect_schema_rejection(missing_impact, schema, "missing Impact Assessment")
+    invalid_impact_policy = copy.deepcopy(reports["salient-fill-change"])
+    invalid_impact_policy["impact_assessment"]["policy_id"] = "unknown"
+    expect_schema_rejection(
+        invalid_impact_policy, schema, "unknown Impact Assessment policy"
+    )
+    invalid_impact_measurement = copy.deepcopy(reports["salient-fill-change"])
+    invalid_impact_measurement["impact_assessment"]["frontier_groups"][0][
+        "measurements"
+    ]["changed_pixel_fraction"] = 2
+    expect_schema_rejection(
+        invalid_impact_measurement, schema, "out-of-range Impact measurement"
+    )
+    inconsistent_impact = copy.deepcopy(reports["salient-fill-change"])
+    inconsistent_impact["impact_assessment"]["frontier_groups"][0]["event_ids"] = [
+        "unknown"
+    ]
+    try:
+        assert_impact_assessment({"id": "inconsistent-impact"}, inconsistent_impact)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("Impact semantic validator accepted an unknown frontier event")
     missing_background = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_background["profile"]["perceptual_background"]
     expect_schema_rejection(

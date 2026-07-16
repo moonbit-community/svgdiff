@@ -2278,6 +2278,7 @@ fn attach_subject_alignments(
   {
     schema_version: report.schema_version,
     analysis_status: report.analysis_status,
+    impact_assessment: report.impact_assessment,
     coverage_matrix: report.coverage_matrix,
     renderer_capability_gaps: report.renderer_capability_gaps,
     profile: report.profile,
@@ -2377,5 +2378,5 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_diagnostic_fact_locations(report)
   comparison_guard.checkpoint()
-  report
+  attach_impact_assessment(report)
 }

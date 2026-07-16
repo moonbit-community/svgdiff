@@ -1,11 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.42",
-  "title": "SVG Diff Structured Report 1.42",
+  "$id": "https://example.invalid/svgdiff/schema/1.43",
+  "title": "SVG Diff Structured Report 1.43",
   "type": "object",
   "required": [
     "schema_version",
     "analysis_status",
+    "impact_assessment",
     "profile",
     "subject_alignments",
     "changed_facts",
@@ -15,8 +16,9 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.42" },
+    "schema_version": { "const": "1.43" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
+    "impact_assessment": { "$ref": "#/$defs/impactAssessment" },
     "coverage_matrix": {
       "type": "array",
       "items": { "$ref": "#/$defs/featureCoverage" }
@@ -261,6 +263,105 @@
           "properties": { "status": { "const": "not_computed" } }
         }
       ],
+      "additionalProperties": false
+    },
+    "impactMeasurement": {
+      "type": "object",
+      "required": [
+        "changed_pixel_fraction",
+        "linear_premultiplied_rgba_rmse"
+      ],
+      "properties": {
+        "changed_pixel_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "linear_premultiplied_rgba_rmse": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "nullableImpactMeasurement": {
+      "anyOf": [
+        { "$ref": "#/$defs/impactMeasurement" },
+        { "type": "null" }
+      ]
+    },
+    "impactFrontierGroup": {
+      "type": "object",
+      "required": ["event_ids", "atomic_difference_ids", "measurements"],
+      "properties": {
+        "event_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "atomic_difference_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "measurements": { "$ref": "#/$defs/nullableImpactMeasurement" }
+      },
+      "additionalProperties": false
+    },
+    "impactDominationWitness": {
+      "type": "object",
+      "required": ["dominant_event_id", "dominated_event_id", "rule_id"],
+      "properties": {
+        "dominant_event_id": { "type": "string", "minLength": 1 },
+        "dominated_event_id": { "type": "string", "minLength": 1 },
+        "rule_id": {
+          "const": "both_rendered_metrics_no_less_and_one_greater"
+        }
+      },
+      "additionalProperties": false
+    },
+    "impactAssessment": {
+      "type": "object",
+      "required": [
+        "policy_id",
+        "status",
+        "calibration_status",
+        "input_fields",
+        "candidate_event_count",
+        "frontier_relation",
+        "frontier_groups",
+        "domination_witnesses"
+      ],
+      "properties": {
+        "policy_id": { "const": "event_rendered_pareto/v1" },
+        "status": { "enum": ["complete", "partial", "not_applicable"] },
+        "calibration_status": { "const": "not_calibrated" },
+        "input_fields": {
+          "const": [
+            "events[].rendered_outcome.magnitude.changed_pixel_fraction",
+            "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
+          ]
+        },
+        "candidate_event_count": { "type": "integer", "minimum": 0 },
+        "frontier_relation": {
+          "enum": [
+            "not_applicable",
+            "unique",
+            "tied",
+            "incomparable",
+            "mixed"
+          ]
+        },
+        "frontier_groups": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/impactFrontierGroup" }
+        },
+        "domination_witnesses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/impactDominationWitness" }
+        }
+      },
       "additionalProperties": false
     },
     "featureCoverage": {

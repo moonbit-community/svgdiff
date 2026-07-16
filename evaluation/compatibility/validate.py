@@ -29,6 +29,7 @@ REQUIRED_TOP_LEVEL = {
 }
 KNOWN_TOP_LEVEL = REQUIRED_TOP_LEVEL | {
     "coverage_matrix",
+    "impact_assessment",
     "renderer_capability_gaps",
 }
 
@@ -133,6 +134,16 @@ def classify(report: dict, policy: dict) -> tuple[str, str]:
         return "rejected", "malformed_report"
     if report["schema_version"] not in policy["accepted_schema_versions"]:
         return "rejected", "unknown_schema_version"
+    if report["schema_version"] == policy["current_schema_version"]:
+        impact_assessment = report.get("impact_assessment")
+        if not isinstance(impact_assessment, dict) or not isinstance(
+            impact_assessment.get("policy_id"), str
+        ):
+            return "rejected", "malformed_report"
+        if impact_assessment["policy_id"] not in policy[
+            "accepted_impact_policy_ids"
+        ]:
+            return "rejected", "unknown_impact_policy"
     profile = report.get("profile")
     if not isinstance(profile, dict):
         return "rejected", "malformed_report"
@@ -198,6 +209,17 @@ def load_released_schemas(
             policy["accepted_ordering_policy_ids"]
         ):
             raise ValueError(f"Schema {version} registers an unaccepted ordering policy")
+        registered_impact_policies = entry.get("accepted_impact_policy_ids", [])
+        if not isinstance(registered_impact_policies, list) or not set(
+            registered_impact_policies
+        ) <= set(policy["accepted_impact_policy_ids"]):
+            raise ValueError(f"Schema {version} registers an unaccepted Impact policy")
+        if version == "1.43" and registered_impact_policies != [
+            "event_rendered_pareto/v1"
+        ]:
+            raise ValueError("current Schema does not register its Impact policy")
+        if version != "1.43" and registered_impact_policies:
+            raise ValueError(f"legacy Schema {version} unexpectedly registers Impact")
         registered_cases = entry.get("compatibility_case_ids")
         if not isinstance(registered_cases, list) or not registered_cases:
             raise ValueError(f"Schema {version} has no compatibility cases")

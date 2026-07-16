@@ -25,11 +25,13 @@ schema_version=$(jq -r '.properties.schema_version.const' schema/svgdiff-report.
 renderer_id=$(sed -n 's/^renderer: //p' "$tmp/version.txt")
 conformance_profile=$(sed -n 's/^renderer-conformance-profile: //p' "$tmp/version.txt")
 ordering_policy=$(jq -r '.["$defs"].atomicDifference.properties.domain_ordering.properties.policy_id.const' schema/svgdiff-report.schema.json)
+impact_policy=$(jq -r '.["$defs"].impactAssessment.properties.policy_id.const' schema/svgdiff-report.schema.json)
 
 printf '%s\n' "$schema_version" | grep -Eq '^[1-9][0-9]*\.[0-9]+$'
 grep -Fx "schema: $schema_version" "$tmp/version.txt" >/dev/null
 grep -Fx "renderer-conformance-profile: $conformance_profile" "$tmp/version.txt" >/dev/null
 grep -Fx "ordering-policy: $ordering_policy" "$tmp/version.txt" >/dev/null
+grep -Fx "impact-policy: $impact_policy" "$tmp/version.txt" >/dev/null
 jq -e '
   .properties.profile.properties.renderer_id ==
     {"type": "string", "minLength": 1} and
@@ -40,25 +42,28 @@ jq -e '
 test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/baseline.v1.json)" = "$conformance_profile"
 test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/dispositions.v1.json)" = "$conformance_profile"
 jq -e --arg schema "$schema_version" --arg renderer "$renderer_id" \
-  --arg profile "$conformance_profile" --arg policy "$ordering_policy" '
+  --arg profile "$conformance_profile" --arg policy "$ordering_policy" \
+  --arg impact "$impact_policy" '
   (.consumer_policy.accepted_schema_versions | index($schema)) != null and
   (.consumer_policy.accepted_renderer_ids | index($renderer)) != null and
   (.consumer_policy.accepted_renderer_conformance_profile_ids |
     index($profile)) != null and
-  (.consumer_policy.accepted_ordering_policy_ids | index($policy)) != null
+  (.consumer_policy.accepted_ordering_policy_ids | index($policy)) != null and
+  (.consumer_policy.accepted_impact_policy_ids | index($impact)) != null
 ' evaluation/compatibility/manifest.v1.json >/dev/null
 
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e --arg schema "$schema_version" \
   --arg renderer "$renderer_id" --arg profile "$conformance_profile" \
-  --arg policy "$ordering_policy" '
+  --arg policy "$ordering_policy" --arg impact "$impact_policy" '
   .schema_version == $schema and
   .profile.renderer_id == $renderer and
   .profile.renderer_conformance_profile_id == $profile and
-  all(.atomic_differences[]; .domain_ordering.policy_id == $policy)
+  all(.atomic_differences[]; .domain_ordering.policy_id == $policy) and
+  .impact_assessment.policy_id == $impact
 ' "$tmp/report.json" >/dev/null
 
-printf 'Version identities: module=%s schema=%s renderer=%s ordering=%s conformance=%s\n' \
+printf 'Version identities: module=%s schema=%s renderer=%s ordering=%s impact=%s conformance=%s\n' \
   "$module_version" "$schema_version" "$renderer_id" "$ordering_policy" \
-  "$conformance_profile"
+  "$impact_policy" "$conformance_profile"

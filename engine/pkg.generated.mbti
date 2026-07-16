@@ -182,6 +182,35 @@ pub struct FlipViewingConditions {
 pub fn FlipViewingConditions::from_pixels_per_degree(Double) -> Self?
 pub fn FlipViewingConditions::pixels_per_degree(Self) -> Double
 
+pub(all) struct ImpactAssessment {
+  policy_id : String
+  status : String
+  calibration_status : String
+  input_fields : Array[String]
+  candidate_event_count : Int
+  frontier_relation : String
+  frontier_groups : Array[ImpactFrontierGroup]
+  domination_witnesses : Array[ImpactDominationWitness]
+} derive(Eq, ToJson)
+
+pub(all) struct ImpactDominationWitness {
+  dominant_event_id : String
+  dominated_event_id : String
+  rule_id : String
+} derive(Eq, ToJson)
+
+pub(all) struct ImpactFrontierGroup {
+  event_ids : Array[String]
+  atomic_difference_ids : Array[String]
+  measurements : ImpactMeasurement?
+} derive(Eq)
+pub impl ToJson for ImpactFrontierGroup
+
+pub(all) struct ImpactMeasurement {
+  changed_pixel_fraction : Double
+  linear_premultiplied_rgba_rmse : Double
+} derive(Eq, ToJson)
+
 pub(all) struct IntrinsicRasterMagnitude {
   before_width : Int
   before_height : Int
@@ -368,6 +397,7 @@ pub(all) struct SourceResolutionPair {
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
+  impact_assessment : ImpactAssessment
   coverage_matrix : Array[FeatureCoverage]
   renderer_capability_gaps : Array[RendererCapabilityGap]
   profile : ComparisonProfile

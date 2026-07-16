@@ -84,7 +84,7 @@ jq -e \
   --arg revision "$source_revision" \
   --arg version "$module_version" \
   --arg executable_name "$executable_name" '
-  .schema_version == "svgdiff-release-provenance/1" and
+  .schema_version == "svgdiff-release-provenance/2" and
   .subject == {"name": $executable_name, "sha256": $sha} and
   .source.revision == $revision and
   .source.dirty == true and
@@ -93,9 +93,10 @@ jq -e \
   (.build.target_os | length) > 0 and
   (.build.target_architecture | length) > 0 and
   .product.module_version == $version and
-  .product.report_schema_version == "1.42" and
+  .product.report_schema_version == "1.43" and
   .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and
   .product.ordering_policy_id == "v2_domain_lexicographic" and
+  .product.impact_policy_id == "event_rendered_pareto/v1" and
   (.resolved_dependencies | length) == 9
 ' "$bundle/provenance.json" >/dev/null
 
@@ -108,6 +109,7 @@ jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
   done
 
 "$bundle/$executable_name" --version | grep -Fx "svgdiff $module_version" >/dev/null
+"$bundle/$executable_name" --version | grep -Fx "impact-policy: event_rendered_pareto/v1" >/dev/null
 sh scripts/check-release-tag.sh "v$module_version" >/dev/null
 if sh scripts/check-release-tag.sh "$module_version" >"$tmp/tag.out" 2>"$tmp/tag.err"; then
   printf 'Release tag without v prefix unexpectedly succeeded\n' >&2

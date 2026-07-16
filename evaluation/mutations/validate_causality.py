@@ -220,6 +220,84 @@ def validate_perceptual_flip(report: dict[str, Any]) -> list[dict[str, Any]]:
     return computed
 
 
+def validate_impact_assessment(report: dict[str, Any]) -> int:
+    impact = report["impact_assessment"]
+    events = {event["id"]: event for event in report["events"]}
+    vectors = {}
+    for event_id, event in events.items():
+        rendered = event["rendered_outcome"]
+        magnitude = rendered.get("magnitude")
+        vectors[event_id] = (
+            None
+            if rendered.get("status") != "computed" or magnitude is None
+            else (
+                magnitude["changed_pixel_fraction"],
+                magnitude["linear_premultiplied_rgba_rmse"],
+            )
+        )
+
+    def dominates(left, right):
+        return (
+            left is not None
+            and right is not None
+            and left[0] >= right[0]
+            and left[1] >= right[1]
+            and (left[0] > right[0] or left[1] > right[1])
+        )
+
+    expected_frontier = {
+        event_id
+        for event_id, vector in vectors.items()
+        if not any(
+            other_id != event_id and dominates(other, vector)
+            for other_id, other in vectors.items()
+        )
+    }
+    frontier = [
+        event_id
+        for group in impact["frontier_groups"]
+        for event_id in group["event_ids"]
+    ]
+    dominated = sorted(
+        set(events) - expected_frontier,
+        key=lambda value: (len(value), value),
+    )
+    if (
+        impact.get("policy_id") != "event_rendered_pareto/v1"
+        or impact.get("calibration_status") != "not_calibrated"
+        or impact.get("candidate_event_count") != len(events)
+        or len(frontier) != len(set(frontier))
+        or set(frontier) != expected_frontier
+        or [
+            witness["dominated_event_id"]
+            for witness in impact["domination_witnesses"]
+        ]
+        != dominated
+    ):
+        raise ValueError("invalid Impact Assessment frontier")
+    for group in impact["frontier_groups"]:
+        expected_ids = []
+        for event_id in group["event_ids"]:
+            if event_id not in events:
+                raise ValueError("Impact Assessment references an unknown event")
+            for difference_id in events[event_id]["atomic_difference_ids"]:
+                if difference_id not in expected_ids:
+                    expected_ids.append(difference_id)
+        if group["atomic_difference_ids"] != expected_ids:
+            raise ValueError("Impact Assessment lost Atomic Difference links")
+    for witness in impact["domination_witnesses"]:
+        if (
+            witness["rule_id"]
+            != "both_rendered_metrics_no_less_and_one_greater"
+            or not dominates(
+                vectors.get(witness["dominant_event_id"]),
+                vectors.get(witness["dominated_event_id"]),
+            )
+        ):
+            raise ValueError("invalid Impact Assessment domination witness")
+    return len(frontier)
+
+
 SPATIAL_SCALAR_PROPERTIES = {
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
     "x1", "y1", "x2", "y2", "stroke-width", "stroke-dashoffset",
@@ -336,6 +414,7 @@ def main() -> None:
             report = json.loads(report_path.read_text(encoding="utf-8"))
             reports[directional_case["id"]] = report
             region_count = validate_case(directional_case, report)
+            validate_impact_assessment(report)
             if directional_case["expected_analysis_status"] == "complete":
                 complete_comparisons += 1
                 complete_regions += region_count
@@ -563,6 +642,17 @@ def main() -> None:
     else:
         raise ValueError("mutation property accepted invalid FLIP statistics")
 
+    invalid_impact_report = copy.deepcopy(next(iter(reports.values())))
+    invalid_impact_report["impact_assessment"]["frontier_groups"][0][
+        "event_ids"
+    ] = ["unknown"]
+    try:
+        validate_impact_assessment(invalid_impact_report)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted an invalid Impact frontier")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
@@ -571,7 +661,7 @@ def main() -> None:
         f"{len(coverage_differences)} coverage observations, "
         f"{len(perceptual_events)} perceptual-color observations, "
         f"{len(flip_events)} FLIP observations, "
-        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, invalid-perceptual-color, invalid-FLIP-map, and invalid-FLIP-statistics negative controls: ok"
+        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, invalid-perceptual-color, invalid-FLIP-map, invalid-FLIP-statistics, and invalid-Impact negative controls: ok"
     )
 
 

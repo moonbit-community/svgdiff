@@ -1,6 +1,6 @@
 # Structured Report Determinism and Local Identifiers
 
-Status: current schema `1.42` contract
+Status: current schema `1.43` contract
 
 Last verified: 2026-07-16
 
@@ -39,6 +39,10 @@ The following fields are report-local references and must contain no duplicate t
 | `AtomicDifference.changed_fact_ids[]` | Changed Facts |
 | `AtomicDifference.computed_relation.diagnostic_ids[]` | Diagnostics |
 | `VisualEvent.atomic_difference_ids[]` | Atomic Differences |
+| `ImpactFrontierGroup.event_ids[]` | Visual Events |
+| `ImpactFrontierGroup.atomic_difference_ids[]` | Atomic Differences |
+| `ImpactDominationWitness.dominant_event_id` | one Visual Event |
+| `ImpactDominationWitness.dominated_event_id` | one Visual Event |
 | `DifferenceRegion.cause_envelope.candidate_changed_fact_ids[]` | Changed Facts |
 | `DifferenceRegion.cause_envelope.diagnostic_ids[]` | Diagnostics |
 | `FeatureCoverage.diagnostic_ids[]` | Diagnostics |
@@ -48,11 +52,11 @@ Every Atomic Difference belongs to exactly one owning Visual Event. A Changed Fa
 
 ## Source-subject identity boundary
 
-`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.42` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span. An opaque filter primitive subject is derived from its filter resource subject plus zero-based direct-child position; insertion may therefore shift later labels and conservatively produce additional differences.
+`SubjectReference.authored_id`, `SubjectReference.instance_context`, `ChangedFact.subject_id`, `ChangedFact.affected_subject_ids`, `VisualEvent.primary_subject_id`, `Diagnostic.subject_id`, `FeatureCoverage.subject_id`, and source-resolution subject fields identify authored or derived SVG subjects. Schema `1.43` has no canonical subject table, so these fields are not report-local foreign keys and are not covered by reference closure. Authored IDs may be absent or duplicated in malformed or adversarial source, and generated subject labels are meaningful only under the analyzer that emitted them. A use instance ID is deterministically derived from its outer-to-inner use path plus definition subject ID; it does not replace the corresponding authored ID or Source Span. An opaque filter primitive subject is derived from its filter resource subject plus zero-based direct-child position; insertion may therefore shift later labels and conservatively produce additional differences.
 
 ## Ordering boundary
 
-Repeated identical comparisons preserve every emitted array order. Same-domain difference ordering additionally follows [`v2_domain_lexicographic`](domain-ordering.md). This contract does not invent semantic ordering for JSON object members, cross-domain importance, or source subjects that the current alignment model cannot distinguish.
+Repeated identical comparisons preserve every emitted array order. Same-domain difference ordering additionally follows [`v2_domain_lexicographic`](domain-ordering.md). Impact frontier groups, tied event IDs, and domination witnesses use MoonBit `String::compare` shortlex event-ID order solely for stable representation; Atomic Difference links inside each group preserve existing report order. Distinct frontier groups remain incomparable and their array position is not a total cross-domain importance ranking. This contract does not invent semantic ordering for JSON object members or source subjects that the current alignment model cannot distinguish.
 
 Rendered entity alignments are emitted first. Equal-cardinality repeated exact visual and reportable source-semantic signatures emit one equivalence-class alignment with endpoints in source traversal order but no pairwise positional meaning. Remaining same-kind candidates are stably sorted by their visual, hierarchy, cumulative-transform, and conservative-bounds signature and source index before the deterministic Hungarian assignment minimizes `rendered_geometry_feature_distance_v1`. Equal costs retain the first candidate in that order, and selected pairs emit by before then after source index. Source-structural entity and resource alignments follow in authored traversal order: recursive semantic-signature classes, authored-ID matches, structural-path matches, stable same-kind matches in sorted kind order, deletions, then insertions. Image resource alignments follow their entity placement alignments. Every tied class or fallback remains explicitly tied and uncalibrated.
 

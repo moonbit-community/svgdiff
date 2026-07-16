@@ -33,14 +33,15 @@ This directory separates the current product contract from future plans and hist
 | How are parser, renderer, serialization, and HTML boundaries fuzzed reproducibly? | [`fuzz/README.md`](../evaluation/fuzz/README.md) |
 | How are pipeline stages timed and representative CLI time and memory budgets enforced? | [`performance/README.md`](../evaluation/performance/README.md) |
 | How is hostile SVG source isolated in the generated HTML report? | [`html-security/README.md`](../evaluation/html-security/README.md) |
-| Which reports test schema and ordering-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
+| Which reports test schema, ordering-policy, and Impact-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
 | Which Structured Report Schema versions are released? | [`schema/registry.v1.json`](../schema/registry.v1.json) |
 | Which canonical reports demonstrate core agent interpretation cases? | [`schema/examples/README.md`](../schema/examples/README.md) |
 | What ordering and report-local ID repeatability is guaranteed? | [`report-determinism.md`](report-determinism.md) |
 | How are equally plausible Subject Alignments selected? | [`alignment-tie-breaking.md`](alignment-tie-breaking.md) |
 | How do source changes, Atomic Differences, and Visual Events group? | [`core-model.md`](core-model.md#visual-event) and [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md) |
 | How are same-domain differences ordered? | [`domain-ordering.md`](domain-ordering.md) |
-| Which measurements remain authoritative without an Impact Assessment? | [`impact-assessment.md`](impact-assessment.md) |
+| How are main Visual Events selected without hiding raw measurements? | [`impact-assessment.md`](impact-assessment.md) |
+| How is the uncalibrated main-event frontier checked against hidden targets? | [`impact/README.md`](../evaluation/impact/README.md) |
 | How is the MoonBit library used and documented? | [`library-api.md`](library-api.md) |
 | How do embedding agents cooperatively cancel or budget comparison time? | [`library-api.md`](library-api.md) and [ADR 0043](adr/0043-treat-comparison-interruption-as-control-flow.md) |
 | Which compatibility change increments which version? | [`versioning.md`](versioning.md) |
@@ -63,7 +64,8 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.42`.
+- The stable report schema is `1.43`.
+- Every report contains the uncalibrated `event_rendered_pareto/v1` Impact Assessment, which exposes all non-dominated Visual Event groups while preserving ties, incomparability, and missing rendered evidence.
 - The Comparison Profile can record one explicit opaque sRGB8 Perceptual Background and optional FLIP pixels-per-degree Viewing Conditions; events then expose changed-pixel mean DeltaEOK and opt-in event-local LDR-FLIP maps while raw rendering remains transparent.
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
 - The production comparison implementation lives in `engine`; the root package is the public seam.
@@ -92,9 +94,9 @@ These files must be updated whenever behavior changes:
 - [`agent-acceptance-spec.md`](agent-acceptance-spec.md): text-only evaluation boundary, answer contract, scoring dimensions, and safety gates;
 - [`report-determinism.md`](report-determinism.md): repeatability, report-local ID uniqueness, reference closure, and source-subject identity boundary;
 - [`alignment-tie-breaking.md`](alignment-tie-breaking.md): exact-signature and equal-cost deterministic alignment selection;
-- [`impact-assessment.md`](impact-assessment.md): raw magnitude authority and constraints on any future policy-derived Impact Assessment;
+- [`impact-assessment.md`](impact-assessment.md): raw magnitude authority, current uncalibrated main-event frontier, and future calibration boundary;
 - [`library-api.md`](library-api.md): public MoonBit seam, exported types, and executable examples;
-- [`versioning.md`](versioning.md): module, Schema, Diagnostic, ordering-policy, and renderer-conformance compatibility rules;
+- [`versioning.md`](versioning.md): module, Schema, Diagnostic, ordering-policy, Impact-policy, and renderer-conformance compatibility rules;
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.
