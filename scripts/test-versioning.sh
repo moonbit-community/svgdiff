@@ -26,12 +26,14 @@ renderer_id=$(sed -n 's/^renderer: //p' "$tmp/version.txt")
 conformance_profile=$(sed -n 's/^renderer-conformance-profile: //p' "$tmp/version.txt")
 ordering_policy=$(jq -r '.["$defs"].atomicDifference.properties.domain_ordering.properties.policy_id.const' schema/svgdiff-report.schema.json)
 impact_policy=$(jq -r '.["$defs"].impactAssessment.properties.policy_id.const' schema/svgdiff-report.schema.json)
+agent_projection=$(jq -r '.["$defs"].headerRecord.properties.projection_version.const' schema/svgdiff-agent-projection.schema.json)
 
 printf '%s\n' "$schema_version" | grep -Eq '^[1-9][0-9]*\.[0-9]+$'
 grep -Fx "schema: $schema_version" "$tmp/version.txt" >/dev/null
 grep -Fx "renderer-conformance-profile: $conformance_profile" "$tmp/version.txt" >/dev/null
 grep -Fx "ordering-policy: $ordering_policy" "$tmp/version.txt" >/dev/null
 grep -Fx "impact-policy: $impact_policy" "$tmp/version.txt" >/dev/null
+grep -Fx "agent-projection: $agent_projection" "$tmp/version.txt" >/dev/null
 jq -e '
   .properties.profile.properties.renderer_id ==
     {"type": "string", "minLength": 1} and
@@ -64,6 +66,6 @@ jq -e --arg schema "$schema_version" \
   .impact_assessment.policy_id == $impact
 ' "$tmp/report.json" >/dev/null
 
-printf 'Version identities: module=%s schema=%s renderer=%s ordering=%s impact=%s conformance=%s\n' \
-  "$module_version" "$schema_version" "$renderer_id" "$ordering_policy" \
-  "$impact_policy" "$conformance_profile"
+printf 'Version identities: module=%s schema=%s projection=%s renderer=%s ordering=%s impact=%s conformance=%s\n' \
+  "$module_version" "$schema_version" "$agent_projection" "$renderer_id" \
+  "$ordering_policy" "$impact_policy" "$conformance_profile"

@@ -95,6 +95,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0089](0089-reject-impact-calibration-from-the-v1-corpus.md) | Accepted | Reject production Impact tiers and total ordering from the single-pass, single-event v1 corpus while retaining explicit recalibration prerequisites. |
 | [0090](0090-keep-ssim-out-of-canonical-report-semantics.md) | Accepted | Retain SSIM and MS-SSIM only as versioned QA structural observations, never canonical evidence, equality, localization, severity, or Impact semantics. |
 | [0091](0091-separate-query-concern-from-context-free-impact.md) | Accepted | Preserve dominated events for query-conditioned concerns without inferring semantic priority from SVG source or visual magnitude. |
+| [0092](0092-partition-canonical-reports-into-lossless-agent-jsonl.md) | Accepted, implemented | Partition canonical reports into reconstructable line-addressable Agent JSONL without creating a second source of truth. |
 
 ## CLI and distribution decisions
 

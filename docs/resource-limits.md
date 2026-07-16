@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.5.23` and schema `1.43` contract
+Status: current module `0.5.24` and schema `1.43` contract
 
 Last verified: 2026-07-16
 
@@ -29,7 +29,7 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | Difference Regions | Whole report | 65,536 | Connected pixel regions and event-attached computed or pixel regions |
 | LDR-FLIP map pixels | Whole report | 1,048,576 | Serialized event-map samples across every computed FLIP event |
 | LDR-FLIP filter samples | Whole report | 268,435,456 | Spatial and feature kernel-sample visits over event context images |
-| Report bytes | Each built-in JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
+| Report bytes | Each canonical JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
 
 The admitted filter executor additionally caps each graph at 256 direct primitives and aggregate primitive-surface work at 16,777,216 viewport pixels per source. Crossing either bound produces partial `filter_graph_budget_exceeded` evidence rather than executing an unbounded graph; exact filter source facts remain present. This is a feature-admission guard, not a failed whole-comparison resource report.
 
@@ -72,10 +72,10 @@ Malformed XML remains `svg_parse_failed`, not a resource failure, unless an earl
 
 ## Boundary and non-goals
 
-The region budget stops region extraction and event attachment at the first excess, so it bounds retained region work. The report-byte budget checks completed built-in serializations; it bounds emitted JSON but does not claim to cap the transient memory needed to construct that serialization. The CLI currently reads each selected file or stdin stream into a String before the engine counts it, so the input budget protects parsing and later stages rather than initial file-read allocation.
+The region budget stops region extraction and event attachment at the first excess, so it bounds retained region work. The report-byte budget checks completed canonical serializations; it bounds default and `--agent-json` output but does not claim to cap the transient memory needed to construct that serialization. The lossless Agent projection is derived only from an already bounded report. Its total JSONL may add one small envelope per bounded array item and is not a third 32 MiB report-byte measurement; each individual record contains at most one canonical item plus fixed metadata. The CLI currently reads each selected file or stdin stream into a String before the engine counts it, so the input budget protects parsing and later stages rather than initial file-read allocation.
 
 The public [`compare_with_control`](library-api.md) operation adds cooperative cancellation and an elapsed-time budget around these fixed resource limits. Interruption returns no report and does not replace a resource-limit Diagnostic. It cannot preempt one synchronous dependency parse or render call, and the CLI does not expose it. Streaming input admission, peak-memory enforcement, hard preemptive deadlines, and configurable resource-limit policies remain future work. The generated HTML includes both bounded input sources in addition to report JSON and therefore has no separate report-byte identity.
 
 ## Executable evidence
 
-[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`perceptual_flip_wbtest.mbt`](../engine/perceptual_flip_wbtest.mbt) covers event-local FLIP budget exhaustion and independence from other evidence. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt) covers bundle entry-count, per-entry-byte, cumulative-byte, configuration, and decoder boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report, explicit resource-file, and exit-status behavior.
+[`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt) covers exact and one-past boundaries for the general dimensions, non-ASCII UTF-8 accounting, reference cycles, acyclic repeated-use expansion, source locations, non-truncation, and bounded failure reports. [`perceptual_flip_wbtest.mbt`](../engine/perceptual_flip_wbtest.mbt) covers event-local FLIP budget exhaustion and independence from other evidence. [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt) covers exact data-URL, decoded-byte, dimension, per-image, cumulative-pixel, and PNG decompression boundaries. [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt) covers bundle entry-count, per-entry-byte, cumulative-byte, configuration, and decoder boundaries. [`test-cli.sh`](../scripts/test-cli.sh) covers the public failed-report, explicit resource-file, and exit-status behavior. [`test-agent-projection.sh`](../scripts/test-agent-projection.sh) proves exact reconstruction and smaller maximum record context for complete, partial, failed, empty-inventory, and FLIP reports.

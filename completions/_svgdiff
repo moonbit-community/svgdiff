@@ -11,9 +11,10 @@ _svgdiff() {
     '--flip-error-threshold[report FLIP area above an explicit error threshold]:FLIP error threshold:' \
     '*--before-resource[supply one before-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
     '*--after-resource[supply one after-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
-    '--output[write Structured Report JSON to a file]:JSON file:_files' \
+    '--output[write JSON or Agent projection JSONL to a file]:output file:_files' \
     '--html[write the self-contained HTML report]:HTML file:_files' \
     '--agent-json[emit whitespace-free canonical JSON]' \
+    '--agent-projection[emit lossless line-addressable Agent projection JSONL]' \
     '--help[show command help]' \
     '--version[show component versions]'
 }

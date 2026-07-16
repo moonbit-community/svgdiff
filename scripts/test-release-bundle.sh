@@ -94,6 +94,7 @@ jq -e \
   (.build.target_architecture | length) > 0 and
   .product.module_version == $version and
   .product.report_schema_version == "1.43" and
+  .product.agent_projection_version == "svgdiff-agent-projection/1" and
   .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and
   .product.ordering_policy_id == "v2_domain_lexicographic" and
   .product.impact_policy_id == "event_rendered_pareto/v1" and
@@ -109,7 +110,15 @@ jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
   done
 
 "$bundle/$executable_name" --version | grep -Fx "svgdiff $module_version" >/dev/null
+"$bundle/$executable_name" --version | grep -Fx "agent-projection: svgdiff-agent-projection/1" >/dev/null
 "$bundle/$executable_name" --version | grep -Fx "impact-policy: event_rendered_pareto/v1" >/dev/null
+"$bundle/$executable_name" testdata/before.svg testdata/after.svg \
+  >"$tmp/bundle-report.json"
+"$bundle/$executable_name" testdata/before.svg testdata/after.svg \
+  --agent-projection >"$tmp/bundle-projection.jsonl"
+python3 evaluation/agent-projection/validate.py \
+  --report "$tmp/bundle-report.json" \
+  --projection "$tmp/bundle-projection.jsonl" >/dev/null
 sh scripts/check-release-tag.sh "v$module_version" >/dev/null
 if sh scripts/check-release-tag.sh "$module_version" >"$tmp/tag.out" 2>"$tmp/tag.err"; then
   printf 'Release tag without v prefix unexpectedly succeeded\n' >&2

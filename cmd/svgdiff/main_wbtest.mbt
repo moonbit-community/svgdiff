@@ -16,6 +16,7 @@ test "CLI parses paths viewport and output" {
       assert_eq(config.output_path, Some("report.json"))
       assert_eq(config.html_path, Some("report.html"))
       assert_true(config.agent_json)
+      assert_false(config.agent_projection)
       assert_eq(config.before_resources.length(), 1)
       assert_eq(config.before_resources[0].locator, "asset.png")
       assert_eq(config.before_resources[0].media_type, "image/png")
@@ -44,9 +45,31 @@ test "CLI parses paths viewport and output" {
 ///|
 test "CLI keeps canonical JSON as the default" {
   match parse_cli(["svgdiff", "before.svg", "after.svg"]) {
-    Config(config) => assert_false(config.agent_json)
+    Config(config) => {
+      assert_false(config.agent_json)
+      assert_false(config.agent_projection)
+    }
     Invalid(message) => fail("expected default configuration: \{message}")
   }
+}
+
+///|
+test "CLI selects one lossless Agent projection mode" {
+  match
+    parse_cli(["svgdiff", "before.svg", "after.svg", "--agent-projection"]) {
+    Config(config) => {
+      assert_false(config.agent_json)
+      assert_true(config.agent_projection)
+    }
+    Invalid(message) =>
+      fail("expected Agent projection configuration: \{message}")
+  }
+  assert_true(
+    parse_cli([
+      "svgdiff", "before.svg", "after.svg", "--agent-json", "--agent-projection",
+    ])
+    is Invalid("--agent-json and --agent-projection are mutually exclusive"),
+  )
 }
 
 ///|
@@ -142,6 +165,7 @@ test "CLI help documents options and exit statuses" {
   assert_true(help.contains("read only when named"))
   assert_true(help.contains("--html FILE"))
   assert_true(help.contains("--agent-json"))
+  assert_true(help.contains("--agent-projection"))
   assert_true(help.contains("--help"))
   assert_true(help.contains("--version"))
   assert_true(help.contains("Use - for exactly one input"))
@@ -152,6 +176,6 @@ test "CLI help documents options and exit statuses" {
 test "CLI version exposes every contract identity" {
   assert_eq(
     version_text(),
-    "svgdiff 0.5.23\nengine: 0.5.23\nschema: 1.43\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1",
+    "svgdiff 0.5.24\nengine: 0.5.24\nschema: 1.43\nagent-projection: svgdiff-agent-projection/1\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1",
   )
 }

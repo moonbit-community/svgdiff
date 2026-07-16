@@ -31,8 +31,9 @@ jq -e '
 PATH="$bindir:$PATH" svgdiff --help >help.txt
 PATH="$bindir:$PATH" svgdiff --version >version.txt
 grep -q '^Usage: svgdiff ' help.txt
-grep -q '^svgdiff 0.5.23$' version.txt
+grep -q '^svgdiff 0.5.24$' version.txt
 grep -q '^schema: 1.43$' version.txt
+grep -q '^agent-projection: svgdiff-agent-projection/1$' version.txt
 grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1$' version.txt
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/25$' version.txt
 grep -q '^impact-policy: event_rendered_pareto/v1$' version.txt
@@ -43,6 +44,13 @@ PATH="$bindir:$PATH" svgdiff \
 test ! -s agent.err
 test "$(wc -l <agent.json | tr -d ' ')" -eq 1
 jq -e '.schema_version == "1.43" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and (.atomic_differences | length) == 1 and .impact_assessment.policy_id == "event_rendered_pareto/v1"' agent.json >/dev/null
+
+PATH="$bindir:$PATH" svgdiff \
+  "$root/testdata/before.svg" \
+  "$root/testdata/after.svg" --agent-projection >projection.jsonl 2>projection.err
+test ! -s projection.err
+python3 "$root/evaluation/agent-projection/validate.py" \
+  --report report.json --projection projection.jsonl >/dev/null
 
 cat "$root/testdata/before.svg" | PATH="$bindir:$PATH" svgdiff \
   - "$root/testdata/after.svg" >stdin-report.json 2>stdin-report.err

@@ -73,6 +73,7 @@ jobs:
           moon check --target native --warn-list +73
           moon test --target native
           sh scripts/test-cli.sh
+          sh scripts/test-agent-projection.sh
           sh scripts/test-versioning.sh
           sh scripts/test-release-bundle.sh
 
@@ -148,6 +149,7 @@ jobs:
           moon check --target native --warn-list +73
           moon test --target native
           sh scripts/test-cli.sh
+          sh scripts/test-agent-projection.sh
           sh scripts/test-versioning.sh
           sh scripts/test-module-package.sh
           sh scripts/test-schema-examples.sh

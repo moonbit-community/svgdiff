@@ -16,6 +16,7 @@ This directory separates the current product contract from future plans and hist
 | What integrity and attribution files belong in a native release bundle? | [`release/README.md`](../release/README.md) |
 | What do CLI exit statuses mean? | [`cli-exit-codes.md`](cli-exit-codes.md) |
 | How does compact agent JSON differ from default JSON? | [`agent-json.md`](agent-json.md) |
+| How can a limited-context Agent stream a report without losing evidence? | [`agent-projection.md`](agent-projection.md) |
 | What JSON is emitted? | [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) and the public MoonBit report types |
 | What can v1 analyze completely today? | [`v1-scope.md`](v1-scope.md) |
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
@@ -96,12 +97,14 @@ These files must be updated whenever behavior changes:
 - [`resource-limits.md`](resource-limits.md): fixed input, structure, raster, region, and report budgets and their failure semantics;
 - [`reference-safety.md`](reference-safety.md): conservative local-reference graph, cycle detection, and transitive expansion budget;
 - [`agent-report-guide.md`](agent-report-guide.md): reading order and worked report interpretations for text-only agents;
+- [`agent-json.md`](agent-json.md): whitespace-only compact canonical transport;
+- [`agent-projection.md`](agent-projection.md): lossless line-addressable Agent projection transport and reconstruction;
 - [`agent-acceptance-spec.md`](agent-acceptance-spec.md): text-only evaluation boundary, answer contract, scoring dimensions, and safety gates;
 - [`report-determinism.md`](report-determinism.md): repeatability, report-local ID uniqueness, reference closure, and source-subject identity boundary;
 - [`alignment-tie-breaking.md`](alignment-tie-breaking.md): exact-signature and equal-cost deterministic alignment selection;
 - [`impact-assessment.md`](impact-assessment.md): raw magnitude authority, current uncalibrated main-event frontier, and future calibration boundary;
 - [`library-api.md`](library-api.md): public MoonBit seam, exported types, and executable examples;
-- [`versioning.md`](versioning.md): module, Schema, Diagnostic, ordering-policy, Impact-policy, and renderer-conformance compatibility rules;
+- [`versioning.md`](versioning.md): module, Schema, Agent-projection, Diagnostic, ordering-policy, Impact-policy, and renderer-conformance compatibility rules;
 - [`core-model.md`](core-model.md): current report model and invariants;
 - [`influence-provenance.md`](influence-provenance.md): current causal-completeness contract;
 - [`renderer-evaluation.md`](renderer-evaluation.md): current renderer decision and known blockers.

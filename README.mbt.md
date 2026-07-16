@@ -70,7 +70,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.23` with `moon add Milky2018/svgdiff@0.5.23` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.24` with `moon add Milky2018/svgdiff@0.5.24` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -190,9 +190,11 @@ test "serialize JSON and build the HTML presentation" {
   )
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
+  let projection_jsonl = report.to_agent_projection_json_lines()
   let html = @svgdiff.render_html_report(before, after, report)
   assert_true(json.find("\"schema_version\": \"1.43\"") is Some(_))
   assert_true(compact_json.length() < json.length())
+  assert_true(projection_jsonl.find("svgdiff-agent-projection/1") is Some(_))
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
 }
@@ -200,7 +202,7 @@ test "serialize JSON and build the HTML presentation" {
 
 The [public API guide](docs/library-api.md) groups all exported report types and documents how to inspect generated MoonBit API documentation.
 
-The CLI option `--agent-json` emits the same schema and evidence without formatting whitespace. It can be combined with `--output`; default output remains the indented canonical representation.
+The CLI option `--agent-json` emits the same schema and evidence without formatting whitespace. `--agent-projection` emits the separately versioned lossless JSONL projection so limited-context consumers can read one header or canonical section item at a time. Both modes can be combined with `--output`, are mutually exclusive with each other, and leave default indented JSON unchanged.
 
 ## Supported static subset
 

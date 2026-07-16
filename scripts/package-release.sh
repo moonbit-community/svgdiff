@@ -162,6 +162,7 @@ source_revision=$(git rev-parse HEAD)
 moon_version=$(moon version | sed -n '1p')
 version_output=$("$bundle/$executable_name" --version)
 schema_version=$(printf '%s\n' "$version_output" | sed -n 's/^schema: //p')
+agent_projection=$(printf '%s\n' "$version_output" | sed -n 's/^agent-projection: //p')
 renderer_id=$(printf '%s\n' "$version_output" | sed -n 's/^renderer: //p')
 conformance_profile=$(printf '%s\n' "$version_output" | sed -n 's/^renderer-conformance-profile: //p')
 ordering_policy=$(printf '%s\n' "$version_output" | sed -n 's/^ordering-policy: //p')
@@ -177,6 +178,7 @@ jq -n \
   --arg target_os "$target_os" \
   --arg target_arch "$target_arch" \
   --arg schema_version "$schema_version" \
+  --arg agent_projection "$agent_projection" \
   --arg renderer_id "$renderer_id" \
   --arg conformance_profile "$conformance_profile" \
   --arg ordering_policy "$ordering_policy" \
@@ -195,6 +197,7 @@ jq -n \
     product: {
       module_version: $module_version,
       report_schema_version: $schema_version,
+      agent_projection_version: $agent_projection,
       renderer_id: $renderer_id,
       renderer_conformance_profile_id: $conformance_profile,
       ordering_policy_id: $ordering_policy,

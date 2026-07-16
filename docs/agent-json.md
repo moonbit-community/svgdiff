@@ -32,4 +32,4 @@ Compact mode also retains events outside that frontier. A caller-concern query m
 
 Compact Agent JSON never includes the independent nonvisual `SourceAuditReport`. A caller may transport that audit separately under audit schema `1.0`, but an Agent must not merge its source-only facts into Visual Events, visual magnitudes, or main-change ranking.
 
-An agent should still follow the [Text-Only Agent Report Guide](agent-report-guide.md). Any future field projection or calibrated importance policy requires its own versioned contract and must remain traceable to this complete evidence.
+An agent should still follow the [Text-Only Agent Report Guide](agent-report-guide.md). The separately versioned [lossless Agent projection](agent-projection.md) partitions this same evidence into JSONL records without omitting fields. Any future lossy field projection or calibrated importance policy still requires its own versioned contract and must remain traceable to complete canonical evidence.

@@ -213,10 +213,12 @@ Run from the repository root:
 moon check --target native --warn-list +73
 moon test --target native
 sh scripts/test-cli.sh
+sh scripts/test-agent-projection.sh
 sh scripts/test-versioning.sh
 moon fmt
 moon info
 jq empty schema/svgdiff-report.schema.json
+jq empty schema/svgdiff-agent-projection.schema.json
 git diff --check
 ```
 

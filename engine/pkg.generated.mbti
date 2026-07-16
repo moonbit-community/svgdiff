@@ -408,6 +408,7 @@ pub(all) struct StructuredReport {
   events : Array[VisualEvent]
   diagnostics : Array[Diagnostic]
 } derive(ToJson)
+pub fn StructuredReport::to_agent_projection_json_lines(Self) -> String
 pub fn StructuredReport::to_compact_json_string(Self) -> String
 pub fn StructuredReport::to_json_string(Self) -> String
 

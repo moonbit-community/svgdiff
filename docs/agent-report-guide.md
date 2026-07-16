@@ -6,6 +6,8 @@ Last verified: 2026-07-16
 
 This guide explains how an agent without image access should turn a Structured Report into a faithful description of the SVG changes. It is a reading procedure, not a replacement for the complete JSON evidence.
 
+When input arrives as `svgdiff-agent-projection/1` JSONL, validate its header, sequence, section counts, and source Schema identity first, then follow the same reading order across the corresponding records. The projection partitions the report but does not change field meanings or permit omitted records in a complete answer.
+
 ## Reading order
 
 Read the report in this order:

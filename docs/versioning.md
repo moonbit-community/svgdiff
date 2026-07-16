@@ -10,8 +10,9 @@ Last verified: 2026-07-16
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.23` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.5.24` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.43` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
 | Diagnostics | Schema `1.43` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
@@ -124,6 +125,8 @@ Module `0.5.22` adds invariant-checked optional `ComparisonProfile.flip_error_th
 
 Module `0.5.23` adds required top-level `ImpactAssessment` under policy `event_rendered_pareto/v1`. The policy compares Visual Events only by their common whole-canvas changed-pixel fraction and linear-premultiplied RGBA RMSE, exposes the complete Pareto frontier, preserves exact ties and incomparable vectors, keeps missing measurements in a separate incomparable group, and records one deterministic domination witness for every dominated event. It is explicitly uncalibrated and introduces no scalar, threshold, severity label, visibility claim, equality rule, or change to the Atomic Difference inventory. The required assessment advances Structured Report schema to `1.43`; renderer identity, conformance profile, raw evidence, Diagnostics, causes, and same-domain ordering remain unchanged.
 
+Module `0.5.24` adds `StructuredReport::to_agent_projection_json_lines` and CLI `--agent-projection`. The independent `svgdiff-agent-projection/1` transport partitions one canonical report into a header and ordered JSONL section-item records, preserving every value and exact reconstruction while reducing the largest record context on accepted fixtures. Default JSON and whitespace-only `--agent-json` remain unchanged and mutually exclusive with the new mode. Structured Report schema `1.43`, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
+
 ## Structured Report schema versions
 
 `schema_version` uses `MAJOR.MINOR`, not the module SemVer.
@@ -162,6 +165,12 @@ Tuples with different policy IDs are incomparable. Consumers must reject or expl
 `ImpactAssessment.policy_id` is an opaque compatibility identity. Any change to candidate selection, input fields, normalization, dominance, missing-evidence behavior, tie grouping, frontier relation, witness selection, or deterministic representation allocates a new ID.
 
 Assessments with different policy IDs are incomparable. Consumers must reject or explicitly migrate an unknown policy before selecting main events and must not reinterpret its measurements using the current Pareto rule. Calibration status is part of the result: adding thresholds, labels, weights, or a total order requires a separately accepted calibrated policy identity rather than changing `event_rendered_pareto/v1` in place. The Structured Report schema changes independently when the serialized assessment shape or field meaning changes.
+
+## Agent projection compatibility
+
+`svgdiff-agent-projection/1` versions the JSONL record envelope, header fields, canonical section order, sequence and index rules, section counts, and exact reconstruction requirement. Consumers must reject an unknown projection identity or source Schema identity before reading item values. Adding, removing, renaming, or reordering a projection section, changing record meanings, or weakening integrity checks allocates a new projection identity.
+
+The projection does not version the copied report values; `source_schema_version` names that independent contract. A new Structured Report Schema may use the same projection identity only when the record protocol can carry and reconstruct it without changing projection semantics and its Schema explicitly accepts that source identity.
 
 ## Release review matrix
 

@@ -5,6 +5,7 @@ priv struct CliConfig {
   output_path : String?
   html_path : String?
   agent_json : Bool
+  agent_projection : Bool
   width : Int
   height : Int
   perceptual_background : @lib.PerceptualBackground?
@@ -47,12 +48,12 @@ fn usage() -> String {
 ///|
 fn help_text() -> String {
   usage() +
-  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --perceptual-background COLOR\n                     Record one explicit opaque deterministic sRGB background\n  --flip-pixels-per-degree PPD\n                     Request LDR-FLIP with supported PPD in [1, 4096]\n  --flip-error-threshold VALUE\n                     Report FLIP area strictly above an explicit value in [0, 1]\n  --before-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque before-side PNG/JPEG resource\n  --after-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque after-side PNG/JPEG resource\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
+  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --perceptual-background COLOR\n                     Record one explicit opaque deterministic sRGB background\n  --flip-pixels-per-degree PPD\n                     Request LDR-FLIP with supported PPD in [1, 4096]\n  --flip-error-threshold VALUE\n                     Report FLIP area strictly above an explicit value in [0, 1]\n  --before-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque before-side PNG/JPEG resource\n  --after-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque after-side PNG/JPEG resource\n  --output FILE      Write JSON or Agent projection JSONL to FILE\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --agent-projection Emit lossless line-addressable Agent projection JSONL\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
 }
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.5.23\nengine: 0.5.23\nschema: 1.43\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
+  "svgdiff 0.5.24\nengine: 0.5.24\nschema: 1.43\nagent-projection: svgdiff-agent-projection/1\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
 }
 
 ///|
@@ -113,12 +114,18 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
   let mut output_path : String? = None
   let mut html_path : String? = None
   let mut agent_json = false
+  let mut agent_projection = false
   let before_resources : Array[CliResource] = []
   let after_resources : Array[CliResource] = []
   let mut index = 3
   while index < args.length() {
     if args[index] == "--agent-json" {
       agent_json = true
+      index += 1
+      continue
+    }
+    if args[index] == "--agent-projection" {
+      agent_projection = true
       index += 1
       continue
     }
@@ -181,12 +188,16 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
     }
     index += 2
   }
+  if agent_json && agent_projection {
+    return Invalid("--agent-json and --agent-projection are mutually exclusive")
+  }
   Config({
     before_path: args[1],
     after_path: args[2],
     output_path,
     html_path,
     agent_json,
+    agent_projection,
     width,
     height,
     perceptual_background,
@@ -301,14 +312,24 @@ async fn main {
     before_resources,
     after_resources,
   )
-  let json = if config.agent_json {
+  let json = if config.agent_projection {
+    report.to_agent_projection_json_lines()
+  } else if config.agent_json {
     report.to_compact_json_string()
   } else {
     report.to_json_string()
   }
   match config.output_path {
     Some(path) =>
-      @fs.write_string_to_file(path, json, encoding="utf8") catch {
+      @fs.write_string_to_file(
+        path,
+        if config.agent_projection {
+          json + "\n"
+        } else {
+          json
+        },
+        encoding="utf8",
+      ) catch {
         error => {
           write_error("Failed to write \{path}: \{error}")
           @sys.exit(2)

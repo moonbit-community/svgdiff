@@ -156,6 +156,7 @@ graph TD
   ISS_138["ISS-138: Reconcile explicit alignment and interpretation uncertainty"]
   ISS_139["ISS-139: Enforce summary-to-evidence link semantics"]
   ISS_140["ISS-140: Score text-only magnitude fidelity"]
+  ISS_141["ISS-141: Add reconstructable Agent projection JSONL"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -398,6 +399,9 @@ graph TD
   ISS_032 --> ISS_140
   ISS_033 --> ISS_140
   ISS_060 --> ISS_140
+  ISS_038 --> ISS_141
+  ISS_058 --> ISS_141
+  ISS_140 --> ISS_141
 ```
 
 ## Warnings

@@ -25,7 +25,9 @@ Missing positional operands never imply stdin. Resource options are repeatable `
 | Condition | stdout | stderr |
 | --- | --- | --- |
 | Default comparison | One canonical Structured Report JSON document followed by a newline | Empty on success |
-| `--output report.json` | Empty | Empty on success; JSON is written to the selected file |
+| `--agent-json` | One whitespace-free canonical Structured Report JSON document followed by a newline | Empty on success |
+| `--agent-projection` | One lossless `svgdiff-agent-projection/1` JSONL stream followed by a newline | Empty on success |
+| `--output report.json` | Empty | Empty on success; the selected canonical JSON or projection JSONL is written to the selected file |
 | `--html report.html` | Unchanged from the JSON rule | Empty on success; HTML is written independently |
 | `--help` or `--version` | Requested informational text | Empty |
 | Invalid argument or I/O failure | Empty | Human-readable error |
@@ -35,4 +37,4 @@ The stable exit statuses associated with these outcomes are defined in [`cli-exi
 
 ## Rationale
 
-Machine callers can safely parse stdout as JSON for every comparison invocation that does not select `--output`. Explicit stdin avoids accidental blocking when arguments are missing. Rejecting two stream operands keeps the interface simple and leaves any future framed multi-document protocol as a separate decision.
+Machine callers can safely parse stdout as one JSON document in the default and `--agent-json` modes, or as versioned JSONL records under `--agent-projection`. The two Agent output modes are mutually exclusive. Explicit stdin avoids accidental blocking when arguments are missing. Rejecting two stream operands keeps the interface simple and leaves any future framed multi-document input protocol as a separate decision.

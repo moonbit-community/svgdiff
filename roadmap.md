@@ -192,7 +192,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Provide stable transitive links from Impact summary groups through Visual Events and Atomic Differences to Changed Facts, regions, Cause Envelopes, and Diagnostics.
 - [x] **P0** Guarantee deterministic ordering and report-local identifiers for identical inputs and profiles.
 - [x] **P0** Validate through the report-only protocol and independent machine metrics that an Agent answer can retain what changed, exact multidimensional magnitude, where, and possible causes from JSON alone; external language-model acceptance remains in M3.
-- [ ] **P1** Add compact report projections for limited-context agents without deleting canonical evidence.
+- [x] **P1** Add versioned lossless line-addressable report projection JSONL for limited-context Agents, with exact canonical reconstruction rather than deleted evidence.
 - [x] **P1** Add schema examples for equivalent spelling, tiny numeric deltas, salient changes, insertion/deletion, resources, and partial coverage.
 - [x] **P1** Define JSON Schema compatibility and migration tests for every released schema version.
 - [ ] **P1** Add optional natural-language summaries only as derived presentation, never as source-of-truth evidence.

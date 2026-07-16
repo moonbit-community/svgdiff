@@ -44,6 +44,7 @@ jobs:
       - name: Validate CLI and version identity
         run: |
           sh scripts/test-cli.sh
+          sh scripts/test-agent-projection.sh
           sh scripts/test-versioning.sh
 
       - name: Validate MoonBit publication package
