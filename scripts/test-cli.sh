@@ -77,13 +77,27 @@ jq -e '
 ' "$tmp/flip.json" >/dev/null
 test "$(jq -S -c '.profile.flip_viewing_conditions = null | .profile.flip_error_threshold = null | .events[].rendered_outcome.perceptual_flip = {"status":"not_computed","reason_code":"flip_not_requested"}' "$tmp/flip.json")" = "$(jq -S -c . "$tmp/background.json")"
 
-moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html" >"$tmp/output.stdout" 2>"$tmp/output.err"
+moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html" --summary "$tmp/summary.md" >"$tmp/output.stdout" 2>"$tmp/output.err"
 test ! -s "$tmp/output.stdout"
 test ! -s "$tmp/output.err"
 jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24 and .profile.comparison_dpr == 1 and .profile.color_interpretation == "srgb" and .profile.raster_representation == "linear_srgb_premultiplied_rgba_f64" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and (.events[0].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse > 0)' "$tmp/output.json" >/dev/null
 grep -q '<!doctype html>' "$tmp/report.html"
 grep -q 'sandbox=""' "$tmp/report.html"
 grep -q 'id="report-data"' "$tmp/report.html"
+grep -q '^# SVG Diff Summary$' "$tmp/summary.md"
+grep -q '^> Derived presentation only\.' "$tmp/summary.md"
+grep -q 'Structured Report JSON is authoritative' "$tmp/summary.md"
+grep -q 'Analysis status: complete' "$tmp/summary.md"
+grep -q 'event\\_rendered\\_pareto/v1' "$tmp/summary.md"
+diff_id=$(jq -r '.atomic_differences[0].id' "$tmp/output.json")
+grep -F "$diff_id" "$tmp/summary.md" >/dev/null
+moon run --target native cmd/svgdiff -- \
+  testdata/before.svg testdata/after.svg --width 32 --height 24 \
+  --output "$tmp/output-repeat.json" --summary "$tmp/summary-repeat.md" \
+  >"$tmp/summary-repeat.stdout"
+test ! -s "$tmp/summary-repeat.stdout"
+cmp "$tmp/output.json" "$tmp/output-repeat.json"
+cmp "$tmp/summary.md" "$tmp/summary-repeat.md"
 jq empty schema/svgdiff-report.schema.json
 jq -e '
   .properties.profile.properties.renderer_conformance_profile_id ==
@@ -211,11 +225,12 @@ grep -q -- '--perceptual-background COLOR' "$tmp/help.txt"
 grep -q -- '--flip-pixels-per-degree PPD' "$tmp/help.txt"
 grep -q -- '--flip-error-threshold VALUE' "$tmp/help.txt"
 grep -q -- '--agent-projection' "$tmp/help.txt"
+grep -q -- '--summary FILE' "$tmp/help.txt"
 grep -q 'Invalid arguments or file I/O failure' "$tmp/help.txt"
 
 moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.5.24$' "$tmp/version.txt"
-grep -q '^engine: 0.5.24$' "$tmp/version.txt"
+grep -q '^svgdiff 0.5.25$' "$tmp/version.txt"
+grep -q '^engine: 0.5.25$' "$tmp/version.txt"
 grep -q '^schema: 1.43$' "$tmp/version.txt"
 grep -q '^agent-projection: svgdiff-agent-projection/1$' "$tmp/version.txt"
 grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1$' "$tmp/version.txt"
@@ -325,3 +340,12 @@ jq -e '
 ' "$tmp/failed.json" >/dev/null
 jq -e '.renderer_capability_gaps == []' "$tmp/failed.json" >/dev/null
 jq -e 'all(.coverage_matrix[]; .source_semantics == "failed" and .computed_appearance == "failed" and .rendered_evidence == "failed")' "$tmp/failed.json" >/dev/null
+
+assert_status 1 moon run --target native cmd/svgdiff -- \
+  "$tmp/malformed.svg" testdata/after.svg \
+  --summary "$tmp/failed-summary.md" \
+  >"$tmp/failed-summary.json" 2>"$tmp/failed-summary.err"
+test ! -s "$tmp/failed-summary.err"
+cmp "$tmp/failed.json" "$tmp/failed-summary.json"
+grep -q 'Analysis status: failed' "$tmp/failed-summary.md"
+grep -q 'svg\\_parse\\_failed' "$tmp/failed-summary.md"

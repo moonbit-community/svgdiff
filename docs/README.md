@@ -17,6 +17,7 @@ This directory separates the current product contract from future plans and hist
 | What do CLI exit statuses mean? | [`cli-exit-codes.md`](cli-exit-codes.md) |
 | How does compact agent JSON differ from default JSON? | [`agent-json.md`](agent-json.md) |
 | How can a limited-context Agent stream a report without losing evidence? | [`agent-projection.md`](agent-projection.md) |
+| How can I generate optional natural-language orientation without replacing report evidence? | [`markdown-summary.md`](markdown-summary.md) |
 | What JSON is emitted? | [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) and the public MoonBit report types |
 | What can v1 analyze completely today? | [`v1-scope.md`](v1-scope.md) |
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |

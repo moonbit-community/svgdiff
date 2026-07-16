@@ -17,7 +17,7 @@ fi
 
 moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
 options=$(sed -n '/^Options:/,/^$/s/^  \(--[a-z-]*\).*/\1/p' "$tmp/help.txt")
-test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 13
+test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 14
 for option in $options; do
   grep -q -- "$option" "$tmp/help.txt"
   grep -q -- "$option" completions/svgdiff.bash

@@ -29,6 +29,7 @@ Missing positional operands never imply stdin. Resource options are repeatable `
 | `--agent-projection` | One lossless `svgdiff-agent-projection/1` JSONL stream followed by a newline | Empty on success |
 | `--output report.json` | Empty | Empty on success; the selected canonical JSON or projection JSONL is written to the selected file |
 | `--html report.html` | Unchanged from the JSON rule | Empty on success; HTML is written independently |
+| `--summary summary.md` | Unchanged from the selected JSON or JSONL rule | Empty on success; derived non-authoritative Markdown is written independently |
 | `--help` or `--version` | Requested informational text | Empty |
 | Invalid argument or I/O failure | Empty | Human-readable error |
 | Analysis status `failed` | A parseable failed Structured Report unless `--output` is used | Empty unless a separate I/O error occurs |
@@ -37,4 +38,4 @@ The stable exit statuses associated with these outcomes are defined in [`cli-exi
 
 ## Rationale
 
-Machine callers can safely parse stdout as one JSON document in the default and `--agent-json` modes, or as versioned JSONL records under `--agent-projection`. The two Agent output modes are mutually exclusive. Explicit stdin avoids accidental blocking when arguments are missing. Rejecting two stream operands keeps the interface simple and leaves any future framed multi-document input protocol as a separate decision.
+Machine callers can safely parse stdout as one JSON document in the default and `--agent-json` modes, or as versioned JSONL records under `--agent-projection`. The two Agent output modes are mutually exclusive. `--summary` never replaces stdout and the generated Markdown never replaces canonical evidence. Explicit stdin avoids accidental blocking when arguments are missing. Rejecting two stream operands keeps the interface simple and leaves any future framed multi-document input protocol as a separate decision.

@@ -119,6 +119,11 @@ jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
 python3 evaluation/agent-projection/validate.py \
   --report "$tmp/bundle-report.json" \
   --projection "$tmp/bundle-projection.jsonl" >/dev/null
+"$bundle/$executable_name" testdata/before.svg testdata/after.svg \
+  --summary "$tmp/bundle-summary.md" >"$tmp/bundle-summary-report.json"
+cmp "$tmp/bundle-report.json" "$tmp/bundle-summary-report.json"
+grep -q '^# SVG Diff Summary$' "$tmp/bundle-summary.md"
+grep -q 'Structured Report JSON is authoritative' "$tmp/bundle-summary.md"
 sh scripts/check-release-tag.sh "v$module_version" >/dev/null
 if sh scripts/check-release-tag.sh "$module_version" >"$tmp/tag.out" 2>"$tmp/tag.err"; then
   printf 'Release tag without v prefix unexpectedly succeeded\n' >&2

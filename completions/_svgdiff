@@ -13,6 +13,7 @@ _svgdiff() {
     '*--after-resource[supply one after-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
     '--output[write JSON or Agent projection JSONL to a file]:output file:_files' \
     '--html[write the self-contained HTML report]:HTML file:_files' \
+    '--summary[write a derived non-authoritative Markdown summary]:Markdown file:_files' \
     '--agent-json[emit whitespace-free canonical JSON]' \
     '--agent-projection[emit lossless line-addressable Agent projection JSONL]' \
     '--help[show command help]' \

@@ -2,10 +2,10 @@
 test "CLI parses paths viewport and output" {
   let config = parse_cli([
     "svgdiff", "before.svg", "after.svg", "--width", "32", "--height", "24", "--output",
-    "report.json", "--html", "report.html", "--agent-json", "--before-resource",
-    "asset.png", "image/png", "before.png", "--after-resource", "asset.png", "image/png",
-    "after.png", "--perceptual-background", "#336699", "--flip-pixels-per-degree",
-    "67", "--flip-error-threshold", "0.05",
+    "report.json", "--html", "report.html", "--summary", "summary.md", "--agent-json",
+    "--before-resource", "asset.png", "image/png", "before.png", "--after-resource",
+    "asset.png", "image/png", "after.png", "--perceptual-background", "#336699",
+    "--flip-pixels-per-degree", "67", "--flip-error-threshold", "0.05",
   ])
   match config {
     Config(config) => {
@@ -15,6 +15,7 @@ test "CLI parses paths viewport and output" {
       assert_eq(config.height, 24)
       assert_eq(config.output_path, Some("report.json"))
       assert_eq(config.html_path, Some("report.html"))
+      assert_eq(config.summary_path, Some("summary.md"))
       assert_true(config.agent_json)
       assert_false(config.agent_projection)
       assert_eq(config.before_resources.length(), 1)
@@ -48,6 +49,7 @@ test "CLI keeps canonical JSON as the default" {
     Config(config) => {
       assert_false(config.agent_json)
       assert_false(config.agent_projection)
+      assert_true(config.summary_path is None)
     }
     Invalid(message) => fail("expected default configuration: \{message}")
   }
@@ -164,6 +166,7 @@ test "CLI help documents options and exit statuses" {
   assert_true(help.contains("--after-resource LOCATOR MEDIA_TYPE FILE"))
   assert_true(help.contains("read only when named"))
   assert_true(help.contains("--html FILE"))
+  assert_true(help.contains("--summary FILE"))
   assert_true(help.contains("--agent-json"))
   assert_true(help.contains("--agent-projection"))
   assert_true(help.contains("--help"))
@@ -176,6 +179,6 @@ test "CLI help documents options and exit statuses" {
 test "CLI version exposes every contract identity" {
   assert_eq(
     version_text(),
-    "svgdiff 0.5.24\nengine: 0.5.24\nschema: 1.43\nagent-projection: svgdiff-agent-projection/1\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1",
+    "svgdiff 0.5.25\nengine: 0.5.25\nschema: 1.43\nagent-projection: svgdiff-agent-projection/1\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1",
   )
 }

@@ -8,6 +8,8 @@ This guide explains how an agent without image access should turn a Structured R
 
 When input arrives as `svgdiff-agent-projection/1` JSONL, validate its header, sequence, section counts, and source Schema identity first, then follow the same reading order across the corresponding records. The projection partitions the report but does not change field meanings or permit omitted records in a complete answer.
 
+An optional Markdown summary may help with orientation, but it is derived and incomplete presentation. Do not use it as the evidence source for an Agent answer; resolve every statement against canonical JSON or a validated complete Agent projection.
+
 ## Reading order
 
 Read the report in this order:

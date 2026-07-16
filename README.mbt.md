@@ -66,11 +66,16 @@ Add `--html report.html` to generate a self-contained interactive report with
 side-by-side sandboxed SVG previews, report-defined diff groups, region
 highlighting, and the complete JSON payload.
 
+Add `--summary summary.md` to write a deterministic natural-language orientation
+as a separate Markdown file. The Markdown is derived presentation only: it
+lists the Impact frontier, every Atomic Difference, and every Diagnostic, while
+the Structured Report JSON remains authoritative for complete evidence.
+
 The command exits with status `2` for invalid arguments or file I/O errors and status `1` when SVG analysis fails, including malformed input, a fixed resource-limit rejection, or an unsafe local-reference graph. A `partial` report is still emitted successfully because its Diagnostics describe exactly which evidence layers are unavailable. Admission failures return a small report rather than a truncated difference inventory; fixed budgets are documented in [`docs/resource-limits.md`](docs/resource-limits.md), and cycle plus transitive `<use>` expansion handling is documented in [`docs/reference-safety.md`](docs/reference-safety.md).
 
 ## Library API
 
-Install module version `0.5.24` with `moon add Milky2018/svgdiff@0.5.24` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.25` with `moon add Milky2018/svgdiff@0.5.25` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -192,17 +197,23 @@ test "serialize JSON and build the HTML presentation" {
   let compact_json = report.to_compact_json_string()
   let projection_jsonl = report.to_agent_projection_json_lines()
   let html = @svgdiff.render_html_report(before, after, report)
+  let summary = @svgdiff.render_markdown_summary(report)
   assert_true(json.find("\"schema_version\": \"1.43\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(projection_jsonl.find("svgdiff-agent-projection/1") is Some(_))
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
+  assert_true(summary.find("Derived presentation only") is Some(_))
 }
 ```
 
 The [public API guide](docs/library-api.md) groups all exported report types and documents how to inspect generated MoonBit API documentation.
 
 The CLI option `--agent-json` emits the same schema and evidence without formatting whitespace. `--agent-projection` emits the separately versioned lossless JSONL projection so limited-context consumers can read one header or canonical section item at a time. Both modes can be combined with `--output`, are mutually exclusive with each other, and leave default indented JSON unchanged.
+
+`render_markdown_summary` and CLI `--summary FILE` provide optional derived
+presentation. They do not add report fields, recompute comparison, replace JSON,
+or create severity, visibility, equality, or unique-cause claims.
 
 ## Supported static subset
 

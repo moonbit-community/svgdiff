@@ -10,6 +10,7 @@ complete -c svgdiff -l before-resource -r -d 'Supply LOCATOR MEDIA_TYPE FILE for
 complete -c svgdiff -l after-resource -r -d 'Supply LOCATOR MEDIA_TYPE FILE for the after SVG'
 complete -c svgdiff -l output -r -F -d 'Write JSON or Agent projection JSONL to a file'
 complete -c svgdiff -l html -r -F -d 'Write the self-contained HTML report'
+complete -c svgdiff -l summary -r -F -d 'Write a derived non-authoritative Markdown summary'
 complete -c svgdiff -l agent-json -d 'Emit whitespace-free canonical JSON'
 complete -c svgdiff -l agent-projection -d 'Emit lossless line-addressable Agent projection JSONL'
 complete -c svgdiff -l help -d 'Show command help'

@@ -96,6 +96,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0090](0090-keep-ssim-out-of-canonical-report-semantics.md) | Accepted | Retain SSIM and MS-SSIM only as versioned QA structural observations, never canonical evidence, equality, localization, severity, or Impact semantics. |
 | [0091](0091-separate-query-concern-from-context-free-impact.md) | Accepted | Preserve dominated events for query-conditioned concerns without inferring semantic priority from SVG source or visual magnitude. |
 | [0092](0092-partition-canonical-reports-into-lossless-agent-jsonl.md) | Accepted, implemented | Partition canonical reports into reconstructable line-addressable Agent JSONL without creating a second source of truth. |
+| [0093](0093-keep-natural-language-outside-the-structured-report.md) | Accepted, implemented | Keep deterministic natural language in an optional Markdown presentation that defers to canonical report evidence. |
 
 ## CLI and distribution decisions
 

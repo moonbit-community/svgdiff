@@ -157,6 +157,7 @@ graph TD
   ISS_139["ISS-139: Enforce summary-to-evidence link semantics"]
   ISS_140["ISS-140: Score text-only magnitude fidelity"]
   ISS_141["ISS-141: Add reconstructable Agent projection JSONL"]
+  ISS_142["ISS-142: Add derived Markdown summaries"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -402,6 +403,13 @@ graph TD
   ISS_038 --> ISS_141
   ISS_058 --> ISS_141
   ISS_140 --> ISS_141
+  ISS_132 --> ISS_142
+  ISS_136 --> ISS_142
+  ISS_137 --> ISS_142
+  ISS_138 --> ISS_142
+  ISS_139 --> ISS_142
+  ISS_140 --> ISS_142
+  ISS_141 --> ISS_142
 ```
 
 ## Warnings

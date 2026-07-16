@@ -24,7 +24,7 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | css_color | css_color/moon.pkg | css_color/pkg.generated.mbti | engine | engine/moon.pkg | engine/pkg.generated.mbti)
+    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | markdown_summary.mbt | css_color | css_color/moon.pkg | css_color/pkg.generated.mbti | engine | engine/moon.pkg | engine/pkg.generated.mbti)
       ;;
     css_color/*.mbt)
       case "$path" in
@@ -60,7 +60,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
+for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt markdown_summary.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 
@@ -114,6 +114,10 @@ fn main {
   }
   guard report.impact_assessment.candidate_event_count == report.events.length() else {
     abort("Impact Assessment candidate drift")
+  }
+  let summary = @svgdiff.render_markdown_summary(report)
+  guard summary.contains("Derived presentation only") else {
+    abort("Markdown summary API unavailable")
   }
   let resource_svg = "<svg xmlns='http://www.w3.org/2000/svg'><image href='asset.png'/></svg>"
   let bundled = @svgdiff.compare_with_resources(

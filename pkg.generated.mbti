@@ -19,6 +19,8 @@ pub fn compare_with_resources(String, String, @engine.ComparisonProfile, @engine
 
 pub fn render_html_report(String, String, @engine.StructuredReport) -> String
 
+pub fn render_markdown_summary(@engine.StructuredReport) -> String
+
 // Errors
 pub(all) suberror ComparisonInterrupted {
   Cancelled
