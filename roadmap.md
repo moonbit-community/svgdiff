@@ -189,7 +189,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Add explicit coverage summaries by subject, feature, and evidence layer.
 - [x] **P0** Expose explicit alignment ambiguity and uncalibrated confidence availability; represent interpretation uncertainty separately through `indeterminate`, Diagnostics, and coverage.
 - [ ] **Deferred** Calibrate alignment confidence only after independent correspondence ground truth, representative ambiguous cases, profile sensitivity, calibration error, and abstention behavior are versioned.
-- [ ] **P0** Provide stable links from summary events to Atomic Differences, Changed Facts, regions, Cause Envelopes, and Diagnostics.
+- [x] **P0** Provide stable transitive links from Impact summary groups through Visual Events and Atomic Differences to Changed Facts, regions, Cause Envelopes, and Diagnostics.
 - [x] **P0** Guarantee deterministic ordering and report-local identifiers for identical inputs and profiles.
 - [ ] **P0** Validate that a text-only agent can answer what changed, how much, where, and why from JSON alone.
 - [ ] **P1** Add compact report projections for limited-context agents without deleting canonical evidence.
@@ -277,6 +277,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-16 | Phase 7 main-event summary reconciliation | Confirmed required `ImpactAssessment` already satisfies the machine-readable summary item and added direct full-inventory and reference-closure regression checks. |
 | 2026-07-16 | Phase 7 outcome-state reconciliation | Codified explicit evidence-state distinctions, retained pure formatting exclusion, and kept subtle/salient severity labels deferred behind Impact calibration prerequisites. |
 | 2026-07-16 | Phase 7 uncertainty reconciliation | Confirmed alignment ambiguity and confidence availability are explicit, kept interpretation indeterminacy Diagnostic-based, and retained calibrated alignment confidence as deferred work. |
+| 2026-07-16 | Phase 7 summary traceability | Enforced exact frontier event-to-difference projection and retained downstream regions, causes, facts, and Diagnostics through the existing closed evidence graph. |
 
 ## Milestone gates
 

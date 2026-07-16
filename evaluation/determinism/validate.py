@@ -124,6 +124,7 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
     fact_ids = ids_by_kind.get("changed_fact", set())
     difference_ids = ids_by_kind.get("atomic_difference", set())
     event_ids = ids_by_kind.get("visual_event", set())
+    events_by_id = {event["id"]: event for event in report["events"]}
     diagnostic_ids = ids_by_kind.get("diagnostic", set())
 
     for difference in report["atomic_differences"]:
@@ -198,6 +199,15 @@ def validate_report_local_ids(report: dict[str, Any]) -> dict[str, int]:
             group["atomic_difference_ids"],
             difference_ids,
         )
+        expected_difference_ids = []
+        for event_id in group["event_ids"]:
+            for difference_id in events_by_id[event_id]["atomic_difference_ids"]:
+                if difference_id not in expected_difference_ids:
+                    expected_difference_ids.append(difference_id)
+        if group["atomic_difference_ids"] != expected_difference_ids:
+            raise ValueError(
+                f"{owner}: Atomic Difference links do not match selected events"
+            )
         overlap = frontier_event_ids.intersection(group["event_ids"])
         if overlap:
             raise ValueError(f"Impact frontier repeats events {sorted(overlap)!r}")
@@ -442,6 +452,24 @@ def main() -> None:
     expect_integrity_rejection(
         dangling_impact_reference, "dangling Impact Assessment event reference"
     )
+    wrong_impact_difference = copy.deepcopy(control)
+    selected_event_ids = set(
+        wrong_impact_difference["impact_assessment"]["frontier_groups"][0][
+            "event_ids"
+        ]
+    )
+    wrong_difference_id = next(
+        difference_id
+        for event in wrong_impact_difference["events"]
+        if event["id"] not in selected_event_ids
+        for difference_id in event["atomic_difference_ids"]
+    )
+    wrong_impact_difference["impact_assessment"]["frontier_groups"][0][
+        "atomic_difference_ids"
+    ][0] = wrong_difference_id
+    expect_integrity_rejection(
+        wrong_impact_difference, "valid but wrong Impact Atomic Difference reference"
+    )
     wrong_resource_role = copy.deepcopy(reports["resource-gradient-change"])
     entity_alignment_id = next(
         alignment["id"]
@@ -491,6 +519,7 @@ def main() -> None:
             "dangling_report_local_reference",
             "duplicate_report_local_reference",
             "dangling_impact_assessment_reference",
+            "wrong_impact_atomic_difference_reference",
             "resource_alignment_role_mismatch",
             "incomplete_revoked_cause_envelope",
             "cross_event_cause_contamination",
