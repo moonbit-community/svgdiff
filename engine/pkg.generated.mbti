@@ -124,6 +124,7 @@ pub(all) struct DifferenceMagnitude {
   parameter_viewport_fraction : Double?
   parameter_entity_fraction : Double?
   geometry_displacement_css_px : Double?
+  painted_boundary_displacement : PaintedBoundaryDisplacementMagnitude?
   geometry_viewport_fraction : Double?
   presence_painted_viewport_fraction : Double?
   raster_changed_pixel_fraction : Double?
@@ -175,6 +176,15 @@ pub(all) struct IntrinsicRasterMagnitude {
   rgba8_rmse : Double?
   linear_premultiplied_rgba_rmse : Double?
 } derive(ToJson)
+
+pub(all) struct PaintedBoundaryDisplacementMagnitude {
+  method_id : String
+  before_sample_count : Int
+  after_sample_count : Int
+  mean_css_px : Double
+  p95_css_px : Double
+  max_css_px : Double
+} derive(Eq, ToJson)
 
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int

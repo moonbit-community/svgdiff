@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.36",
+  "schema_version": "1.37",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -301,7 +301,8 @@
         "fact:alignment:0:stroke-dasharray"
       ],
       "evidence_layers": [
-        "source_semantics"
+        "source_semantics",
+        "rendered_evidence"
       ],
       "computed_relation": {
         "status": "equivalent",
@@ -316,6 +317,14 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 6,
+          "after_sample_count": 6,
+          "mean_css_px": 0,
+          "p95_css_px": 0,
+          "max_css_px": 0
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0,
@@ -361,7 +370,8 @@
         "fact:alignment:0:stroke-dashoffset"
       ],
       "evidence_layers": [
-        "source_semantics"
+        "source_semantics",
+        "rendered_evidence"
       ],
       "computed_relation": {
         "status": "equivalent",
@@ -376,6 +386,14 @@
         "parameter_viewport_fraction": 0,
         "parameter_entity_fraction": 0,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 6,
+          "after_sample_count": 6,
+          "mean_css_px": 0,
+          "p95_css_px": 0,
+          "max_css_px": 0
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0,

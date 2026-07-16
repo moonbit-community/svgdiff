@@ -330,11 +330,124 @@ fn entity_parameter_scales(
 }
 
 ///|
+priv struct PaintedBoundaryCacheEntry {
+  alignment_id : String
+  distribution : PaintedBoundaryDisplacementMagnitude?
+}
+
+///|
+priv struct PaintedBoundaryMeasurementCache {
+  mut comparisons : Int
+  mut raster_pixels : Int
+  entries : Array[PaintedBoundaryCacheEntry]
+}
+
+///|
+fn PaintedBoundaryMeasurementCache::new() -> PaintedBoundaryMeasurementCache {
+  { comparisons: 0, raster_pixels: 0, entries: [] }
+}
+
+///|
+fn boundary_isolated_paint_supported(
+  subject : SourceSubject,
+  property : String,
+) -> Bool {
+  match subject_value(subject, property) {
+    Some(value) => value.find("url(") is None
+    None => true
+  }
+}
+
+///|
+fn boundary_isolation_supported(subject : SourceSubject) -> Bool {
+  subject.geometry_complete &&
+  subject.stroke_complete &&
+  subject.transform_complete &&
+  subject.resource_owner_id is None &&
+  subject.clip_complete &&
+  subject.clip_resource_id is None &&
+  subject.mask_complete &&
+  subject.mask_resource_id is None &&
+  subject.marker_complete &&
+  !subject.marker_active &&
+  (subject.kind != "path" || subject.path_data_complete) &&
+  boundary_isolated_paint_supported(subject, "fill") &&
+  boundary_isolated_paint_supported(subject, "stroke") &&
+  (match subject_value(subject, "filter") {
+    Some(value) => value == "none"
+    None => true
+  })
+}
+
+///|
+fn PaintedBoundaryMeasurementCache::measure(
+  self : PaintedBoundaryMeasurementCache,
+  alignment_id : String,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+  profile : ComparisonProfile,
+) -> PaintedBoundaryDisplacementMagnitude? {
+  for entry in self.entries {
+    if entry.alignment_id == alignment_id {
+      return entry.distribution
+    }
+  }
+  let pixels = profile.viewport_width * profile.viewport_height
+  let work_pixels = pixels * 2
+  let distribution = if before.is_empty() ||
+    after.is_empty() ||
+    !before.all(boundary_isolation_supported) ||
+    !after.all(boundary_isolation_supported) ||
+    self.comparisons >= 64 ||
+    pixels > 1_048_576 ||
+    self.raster_pixels + work_pixels > 4_194_304 {
+    None
+  } else {
+    self.comparisons += 1
+    self.raster_pixels += work_pixels
+    isolated_subjects_painted_boundary_displacement_distribution(
+      before, after, profile,
+    )
+  }
+  self.entries.push({ alignment_id, distribution })
+  distribution
+}
+
+///|
+fn painted_boundary_distribution_for_difference(
+  report : StructuredReport,
+  difference : AtomicDifference,
+  before_subjects : Array[SourceSubject],
+  after_subjects : Array[SourceSubject],
+  cache : PaintedBoundaryMeasurementCache,
+) -> PaintedBoundaryDisplacementMagnitude? {
+  match difference.magnitude.painted_boundary_displacement {
+    Some(distribution) => return Some(distribution)
+    None => ()
+  }
+  guard difference.subject_role == "entity" &&
+    difference.domain.find("geometry.") == Some(0) &&
+    difference.domain.find("geometry.path.") != Some(0) else {
+    return None
+  }
+  guard alignment_for_difference(report, difference) is Some(alignment) else {
+    return None
+  }
+  cache.measure(
+    alignment.id,
+    subjects_for_references(before_subjects, alignment.before),
+    subjects_for_references(after_subjects, alignment.after),
+    report.profile,
+  )
+}
+
+///|
 fn difference_magnitude(
   report : StructuredReport,
   difference : AtomicDifference,
   before_subjects : Array[SourceSubject],
   after_subjects : Array[SourceSubject],
+  boundary_cache : PaintedBoundaryMeasurementCache,
 ) -> DifferenceMagnitude {
   let parameter_delta = match difference.parameter_delta_css_px {
     Some(delta) => Some(delta)
@@ -370,6 +483,9 @@ fn difference_magnitude(
   report.profile.viewport_height.to_double() *
   report.profile.viewport_height.to_double()).sqrt()
   let rendered = rendered_magnitude_for_difference(report, difference.id)
+  let painted_boundary_displacement = painted_boundary_distribution_for_difference(
+    report, difference, before_subjects, after_subjects, boundary_cache,
+  )
   let (entity_parameter_css_px, entity_parameter_fraction) = entity_parameter_scales(
     report, difference, parameter_abs, before_subjects, after_subjects,
   )
@@ -410,6 +526,7 @@ fn difference_magnitude(
     } else {
       None
     },
+    painted_boundary_displacement,
     geometry_viewport_fraction: if geometry {
       let displacement = if transform_translation is Some(_) {
         transform_translation
@@ -566,16 +683,23 @@ fn attach_difference_magnitudes(
   }
   let measured : Array[AtomicDifference] = []
   let domain_order : Array[String] = []
+  let boundary_cache = PaintedBoundaryMeasurementCache::new()
   for difference in report.atomic_differences {
     if !domain_order.contains(difference.domain) {
       domain_order.push(difference.domain)
     }
     let magnitude = difference_magnitude(
-      report, difference, before_subjects, after_subjects,
+      report, difference, before_subjects, after_subjects, boundary_cache,
     )
+    let evidence_layers = difference.evidence_layers.copy()
+    if magnitude.painted_boundary_displacement is Some(_) &&
+      !evidence_layers.contains("rendered_evidence") {
+      evidence_layers.push("rendered_evidence")
+    }
     measured.push({
       ..difference,
       magnitude,
+      evidence_layers,
       domain_ordering: ordering_for_magnitude(difference.domain, magnitude),
     })
   }

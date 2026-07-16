@@ -187,6 +187,25 @@
       }
     },
     {
+      "id": "painted-boundary-distribution",
+      "before": "evaluation/schema-examples/cases/painted-boundary-distribution/before.svg",
+      "after": "evaluation/schema-examples/cases/painted-boundary-distribution/after.svg",
+      "output": "schema/examples/painted-boundary-distribution.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["geometry.position"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.before_sample_count", "op": "eq", "value": 1 },
+          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.after_sample_count", "op": "eq", "value": 1 },
+          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.mean_css_px", "op": "eq", "value": 2 },
+          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.p95_css_px", "op": "eq", "value": 2 },
+          { "domain": "geometry.position", "field": "magnitude.painted_boundary_displacement.max_css_px", "op": "eq", "value": 2 }
+        ]
+      }
+    },
+    {
       "id": "salient-fill-change",
       "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
       "after": "evaluation/corpus/cases/salient-fill-change/after.svg",

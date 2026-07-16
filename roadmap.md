@@ -150,7 +150,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 ## Phase 5: Difference Magnitudes and importance
 
 - [x] **P0** Complete exact parameter magnitudes in authored units, CSS pixels, viewport fractions, and entity-relative scales.
-- [ ] **P0** Add painted-boundary displacement distributions with mean, p95, and maximum values.
+- [x] **P0** Add painted-boundary displacement distributions with mean, p95, and maximum values.
 - [ ] **P0** Add symmetric coverage-difference measurements independent of color.
 - [ ] **P0** Add event-local perceptual color measurements after explicit background compositing.
 - [ ] **P0** Implement FLIP as an optional event-local perceptual map with all viewing parameters recorded.

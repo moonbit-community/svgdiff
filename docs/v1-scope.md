@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.36` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.37` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -65,6 +65,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - inherited `paint-order` with omitted-operation expansion and active-operation comparison; inherited `fill-rule` with inactive-fill and simple-contour equivalence; and inherited `clip-rule` with inactive ordinary-element semantics plus conservative `clipPath` child ownership and dependency fan-out;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
 - exact continuous scalar parameter deltas in canonical local user units, CSS pixels under complete cumulative mappings, Comparison Viewport-diagonal fractions, and entity-relative fractions when nonzero per-side conservative bounds exist, all independent of raster quantization;
+- bounded two-sided isolated alpha-boundary displacement distributions for admitted entity geometry, with versioned method identity, per-side sample counts, and mean, nearest-rank p95, and maximum CSS-pixel distances;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
 - connected pixel-mask Difference Regions and conservative computed-bounds fallback regions;
@@ -124,7 +125,7 @@ V1 does not completely analyze:
 - scripts, event-driven state, or animation timelines;
 - static `foreignObject` through an HTML/CSS layout engine;
 - implicit network resources or treating SVG-authored locators as local paths;
-- complete path semantics, including exact arc/continuous-curve bounds and boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only;
+- complete path semantics, including exact arc/continuous-curve bounds and continuous boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only, while the current bounded isolated alpha-boundary distribution remains a raster observation;
 - precise transform-aware bounds and localization beyond the conservative painted bounds used for correspondence and admitted effect slices or the conservative whole-scene outcome regions;
 - automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, or dynamic viewport variants; object-bounding-box coordinates are implemented only for static gradient consumers and admitted numeric rectangular clip or mask coordinates;
 - CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization beyond bounded correspondence features;

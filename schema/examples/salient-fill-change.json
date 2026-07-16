@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.36",
+  "schema_version": "1.37",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -198,6 +198,7 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.5625,

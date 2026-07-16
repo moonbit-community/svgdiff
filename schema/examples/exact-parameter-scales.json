@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.36",
+  "schema_version": "1.37",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -191,6 +191,14 @@
         "parameter_viewport_fraction": 0.08838834764831843,
         "parameter_entity_fraction": 0.14907119849998599,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 32,
+          "after_sample_count": 32,
+          "mean_css_px": 1.375,
+          "p95_css_px": 2,
+          "max_css_px": 2
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.1875,

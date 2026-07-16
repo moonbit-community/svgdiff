@@ -217,6 +217,7 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
         "parameter_viewport_fraction",
         "parameter_entity_fraction",
         "geometry_displacement_css_px",
+        "painted_boundary_displacement",
         "geometry_viewport_fraction",
         "presence_painted_viewport_fraction",
         "raster_changed_pixel_fraction",
@@ -237,7 +238,12 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
         if any(
             value is not None and type(value) not in {int, float}
             for name, value in magnitude.items()
-            if name not in {"transform_effect", "intrinsic_raster"}
+            if name
+            not in {
+                "transform_effect",
+                "intrinsic_raster",
+                "painted_boundary_displacement",
+            }
         ):
             raise ValueError(
                 f"{case['id']}: {difference['id']} has a nonnumeric raw magnitude"
@@ -268,6 +274,43 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
             raise ValueError(
                 f"{case['id']}: {difference['id']} has an invalid entity fraction"
             )
+        boundary = magnitude["painted_boundary_displacement"]
+        if boundary is not None:
+            boundary_fields = {
+                "method_id",
+                "before_sample_count",
+                "after_sample_count",
+                "mean_css_px",
+                "p95_css_px",
+                "max_css_px",
+            }
+            if not isinstance(boundary, dict) or set(boundary) != boundary_fields:
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has an invalid boundary distribution"
+                )
+            before_count = boundary["before_sample_count"]
+            after_count = boundary["after_sample_count"]
+            mean = boundary["mean_css_px"]
+            p95 = boundary["p95_css_px"]
+            maximum = boundary["max_css_px"]
+            if (
+                boundary["method_id"]
+                != "symmetric_nearest_boundary_pixels/v1"
+                or type(before_count) is not int
+                or type(after_count) is not int
+                or before_count < 0
+                or after_count < 0
+                or (before_count == 0) != (after_count == 0)
+                or any(type(value) not in {int, float} for value in (mean, p95, maximum))
+                or not 0 <= mean <= maximum
+                or not 0 <= p95 <= maximum
+                or difference["subject_role"] != "entity"
+                or not difference["domain"].startswith("geometry.")
+                or "rendered_evidence" not in difference["evidence_layers"]
+            ):
+                raise ValueError(
+                    f"{case['id']}: {difference['id']} has inconsistent boundary evidence"
+                )
         intrinsic = magnitude.get("intrinsic_raster")
         if intrinsic is not None:
             intrinsic_fields = {
@@ -654,6 +697,34 @@ def main() -> None:
         pass
     else:
         raise ValueError("semantic validation accepted inconsistent parameter scales")
+    missing_boundary_distribution = copy.deepcopy(
+        reports["painted-boundary-distribution"]
+    )
+    del missing_boundary_distribution["atomic_differences"][0]["magnitude"][
+        "painted_boundary_displacement"
+    ]
+    expect_schema_rejection(
+        missing_boundary_distribution,
+        schema,
+        "missing painted-boundary distribution field",
+    )
+    inconsistent_boundary_distribution = copy.deepcopy(
+        reports["painted-boundary-distribution"]
+    )
+    inconsistent_boundary_distribution["atomic_differences"][0]["magnitude"][
+        "painted_boundary_displacement"
+    ]["p95_css_px"] = 3
+    try:
+        assert_raw_magnitude_authority(
+            {"id": "inconsistent-boundary-distribution"},
+            inconsistent_boundary_distribution,
+        )
+    except ValueError:
+        pass
+    else:
+        raise ValueError(
+            "semantic validation accepted inconsistent boundary distribution"
+        )
     wrong_nullable_fact = copy.deepcopy(reports["subject-insertion"])
     wrong_nullable_fact["changed_facts"][0]["before"] = 7
     expect_schema_rejection(wrong_nullable_fact, schema, "wrong nullable fact")

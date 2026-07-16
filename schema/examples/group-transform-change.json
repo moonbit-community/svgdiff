@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.36",
+  "schema_version": "1.37",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -229,7 +229,8 @@
       ],
       "evidence_layers": [
         "source_semantics",
-        "computed_appearance"
+        "computed_appearance",
+        "rendered_evidence"
       ],
       "computed_relation": {
         "status": "different",
@@ -244,6 +245,14 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 16,
+          "after_sample_count": 16,
+          "mean_css_px": 2,
+          "p95_css_px": 4,
+          "max_css_px": 4
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.15625,
@@ -285,6 +294,14 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 16,
+          "after_sample_count": 16,
+          "mean_css_px": 2,
+          "p95_css_px": 4,
+          "max_css_px": 4
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.15625,
@@ -326,6 +343,14 @@
         "parameter_viewport_fraction": 0.17677669529663687,
         "parameter_entity_fraction": 0.565685424949238,
         "geometry_displacement_css_px": 4,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 16,
+          "after_sample_count": 16,
+          "mean_css_px": 2,
+          "p95_css_px": 4,
+          "max_css_px": 4
+        },
         "geometry_viewport_fraction": 0.17677669529663687,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.15625,

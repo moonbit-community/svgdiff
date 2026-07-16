@@ -737,6 +737,9 @@ test "stroke width reports parameter and transform-aware boundary magnitude" {
       differences[0].magnitude.geometry_displacement_css_px,
       expected_boundary,
     )
+    assert_true(
+      differences[0].magnitude.painted_boundary_displacement is Some(_),
+    )
   }
 }
 

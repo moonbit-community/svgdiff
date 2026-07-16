@@ -31,6 +31,71 @@ MAGNITUDE_UNITS = {
 }
 
 
+def magnitude_claims(magnitude):
+    claims = [
+        {
+            "field": f"magnitude.{field}",
+            "status": "measured" if value is not None else "not_computed",
+            "value": value,
+            "unit": MAGNITUDE_UNITS[field],
+        }
+        for field, value in magnitude.items()
+        if field in MAGNITUDE_UNITS
+    ]
+    boundary = magnitude["painted_boundary_displacement"]
+    if boundary is None:
+        claims.append(
+            {
+                "field": "magnitude.painted_boundary_displacement",
+                "status": "not_computed",
+                "value": None,
+                "unit": "symmetric_nearest_boundary_pixels/v1",
+            }
+        )
+        return claims
+    claims.extend(
+        [
+            {
+                "field": "magnitude.painted_boundary_displacement.method_id",
+                "status": "measured",
+                "value": boundary["method_id"],
+                "unit": None,
+            },
+            {
+                "field": "magnitude.painted_boundary_displacement.before_sample_count",
+                "status": "measured",
+                "value": boundary["before_sample_count"],
+                "unit": "boundary_pixel_samples",
+            },
+            {
+                "field": "magnitude.painted_boundary_displacement.after_sample_count",
+                "status": "measured",
+                "value": boundary["after_sample_count"],
+                "unit": "boundary_pixel_samples",
+            },
+            {
+                "field": "magnitude.painted_boundary_displacement.mean_css_px",
+                "status": "measured",
+                "value": boundary["mean_css_px"],
+                "unit": "css_px",
+            },
+            {
+                "field": "magnitude.painted_boundary_displacement.p95_css_px",
+                "status": "measured",
+                "value": boundary["p95_css_px"],
+                "unit": "css_px",
+            },
+            {
+                "field": "magnitude.painted_boundary_displacement.max_css_px",
+                "status": "measured",
+                "value": boundary["max_css_px"],
+                "unit": "css_px",
+            },
+        ]
+    )
+    return claims
+
+
 differences = []
 for difference in report["atomic_differences"]:
     event = event_for_difference(difference["id"])
@@ -62,16 +127,7 @@ for difference in report["atomic_differences"]:
                 else [difference["subject_alignment_id"]]
             ),
             "description": f"Reported {difference['domain']} difference.",
-            "magnitude_claims": [
-                {
-                    "field": f"magnitude.{field}",
-                    "status": "measured" if value is not None else "not_computed",
-                    "value": value,
-                    "unit": MAGNITUDE_UNITS[field],
-                }
-                for field, value in difference["magnitude"].items()
-                if field in MAGNITUDE_UNITS
-            ],
+            "magnitude_claims": magnitude_claims(difference["magnitude"]),
             "region_ids": region_ids,
             "possible_cause_changed_fact_ids": possible_causes,
             "cause_guarantee": guarantee,

@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.36")
+  assert_eq(report.schema_version, "1.37")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.36", "events": [_], .. } => ()
+    { "schema_version": "1.37", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.36", "events": [_], .. } => ()
+    { "schema_version": "1.37", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -35,6 +35,18 @@ test "root comparison exposes exact parameter scales" {
   assert_eq(magnitude.parameter_abs_css_px, Some(2.0))
   assert_eq(magnitude.parameter_viewport_fraction, Some(0.08838834764831843))
   assert_eq(magnitude.parameter_entity_fraction, Some(0.14907119849998599))
+  match magnitude.painted_boundary_displacement {
+    Some(boundary) => {
+      assert_eq(boundary.method_id, "symmetric_nearest_boundary_pixels/v1")
+      assert_true(boundary.before_sample_count > 0)
+      assert_true(boundary.after_sample_count > 0)
+      assert_true(boundary.mean_css_px >= 0.0)
+      assert_true(boundary.mean_css_px <= boundary.max_css_px)
+      assert_true(boundary.p95_css_px >= 0.0)
+      assert_true(boundary.p95_css_px <= boundary.max_css_px)
+    }
+    None => fail("expected painted-boundary displacement evidence")
+  }
 }
 
 ///|

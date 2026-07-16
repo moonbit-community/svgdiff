@@ -14,7 +14,76 @@ test "tiny geometry changes retain continuous magnitude independent of pixels" {
   }
   assert_true(difference.magnitude.parameter_viewport_fraction is Some(_))
   assert_true(difference.magnitude.geometry_viewport_fraction is None)
+  guard difference.magnitude.painted_boundary_displacement is Some(boundary) else {
+    fail("expected a measured painted-boundary distribution")
+  }
+  assert_true(boundary.before_sample_count > 0)
+  assert_eq(boundary.before_sample_count, boundary.after_sample_count)
+  assert_true(boundary.mean_css_px >= 0.0)
+  assert_true(boundary.mean_css_px <= boundary.max_css_px)
+  assert_true(boundary.p95_css_px >= 0.0)
+  assert_true(boundary.p95_css_px <= boundary.max_css_px)
   assert_eq(difference.domain_ordering.policy_id, "v2_domain_lexicographic")
+}
+
+///|
+test "basic geometry exposes a painted-boundary distribution" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><rect id='box' x='1' y='1' width='1' height='1'/></svg>",
+    "<svg width='16' height='16'><rect id='box' x='3' y='1' width='1' height='1'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let difference = report.atomic_differences.filter(difference => {
+      difference.domain == "geometry.position"
+    })[0]
+  guard difference.magnitude.painted_boundary_displacement is Some(boundary) else {
+    fail("expected a painted-boundary distribution")
+  }
+  assert_eq(boundary.before_sample_count, 1)
+  assert_eq(boundary.after_sample_count, 1)
+  assert_eq(boundary.mean_css_px, 2.0)
+  assert_eq(boundary.p95_css_px, 2.0)
+  assert_eq(boundary.max_css_px, 2.0)
+  assert_true(difference.evidence_layers.contains("rendered_evidence"))
+}
+
+///|
+test "one aligned boundary observation is shared by related geometry differences" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><rect id='box' x='1' y='1' width='2' height='2'/></svg>",
+    "<svg width='16' height='16'><rect id='box' x='2' y='1' width='3' height='2'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let geometry = report.atomic_differences.filter(difference => {
+    difference.domain == "geometry.position" ||
+    difference.domain == "geometry.size"
+  })
+  assert_eq(geometry.length(), 2)
+  guard (
+      geometry[0].magnitude.painted_boundary_displacement,
+      geometry[1].magnitude.painted_boundary_displacement,
+    )
+    is (Some(first), Some(second)) else {
+    fail("expected shared painted-boundary observations")
+  }
+  assert_eq(first.before_sample_count, second.before_sample_count)
+  assert_eq(first.after_sample_count, second.after_sample_count)
+  assert_eq(first.mean_css_px, second.mean_css_px)
+  assert_eq(first.p95_css_px, second.p95_css_px)
+  assert_eq(first.max_css_px, second.max_css_px)
+}
+
+///|
+test "resource-backed paint keeps isolated boundary distribution unavailable" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><defs><linearGradient id='g'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='1' y='1' width='4' height='4' fill='url(#g)'/></svg>",
+    "<svg width='16' height='16'><defs><linearGradient id='g'><stop offset='0' stop-color='red'/><stop offset='1' stop-color='blue'/></linearGradient></defs><rect id='box' x='2' y='1' width='4' height='4' fill='url(#g)'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let position = report.atomic_differences.filter(difference => {
+      difference.domain == "geometry.position"
+    })[0]
+  assert_true(position.magnitude.painted_boundary_displacement is None)
 }
 
 ///|
@@ -115,6 +184,9 @@ test "paint and presence expose domain appropriate numeric evidence" {
     Some(value) => assert_true(value > 0.0)
     None => fail("expected raster RMSE")
   }
+  assert_true(
+    paint.atomic_differences[0].magnitude.painted_boundary_displacement is None,
+  )
   let presence = @engine.compare(
     "<svg width='16' height='16'></svg>",
     "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' opacity='0'/></svg>",
@@ -123,6 +195,10 @@ test "paint and presence expose domain appropriate numeric evidence" {
   assert_eq(
     presence.atomic_differences[0].magnitude.presence_painted_viewport_fraction,
     Some(0.0),
+  )
+  assert_true(
+    presence.atomic_differences[0].magnitude.painted_boundary_displacement
+    is None,
   )
 }
 

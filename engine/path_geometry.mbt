@@ -6,7 +6,7 @@ fn path_staged_magnitude(
   source_before : String,
   source_after : String,
   parameter_delta : Double?,
-  boundary_displacement : Double?,
+  boundary_distribution : PaintedBoundaryDisplacementMagnitude?,
 ) -> DifferenceMagnitude {
   let magnitude = {
     ..empty_difference_magnitude(),
@@ -21,7 +21,10 @@ fn path_staged_magnitude(
         Some(symmetric_relative_delta(before, after))
       _ => None
     },
-    geometry_displacement_css_px: boundary_displacement,
+    geometry_displacement_css_px: boundary_distribution.map(distribution => {
+      distribution.max_css_px
+    }),
+    painted_boundary_displacement: boundary_distribution,
   }
   guard parameter_delta is Some(delta) &&
     before_subject.transform_complete &&
@@ -78,7 +81,7 @@ fn PathBoundaryBudget::measure(
   before : SourceSubject,
   after : SourceSubject,
   profile : ComparisonProfile,
-) -> Double? {
+) -> PaintedBoundaryDisplacementMagnitude? {
   let pixels = profile.viewport_width * profile.viewport_height
   let work_pixels = pixels * 2
   if self.comparisons >= 64 ||
@@ -88,7 +91,7 @@ fn PathBoundaryBudget::measure(
   }
   self.comparisons += 1
   self.raster_pixels += work_pixels
-  isolated_painted_boundary_displacement(before, after, profile)
+  isolated_painted_boundary_displacement_distribution(before, after, profile)
 }
 
 ///|
@@ -256,7 +259,7 @@ fn append_path_atomic_difference(
   computed_status : String,
   reason_code : String,
   parameter_delta : Double?,
-  boundary_displacement : Double?,
+  boundary_distribution : PaintedBoundaryDisplacementMagnitude?,
   rendered_evidence_available : Bool,
   changed_facts : Array[ChangedFact],
   differences : Array[AtomicDifference],
@@ -304,7 +307,7 @@ fn append_path_atomic_difference(
     presence_magnitude: None,
     magnitude: path_staged_magnitude(
       before_subject, after_subject, property, source_before, source_after, parameter_delta,
-      boundary_displacement,
+      boundary_distribution,
     ),
     domain_ordering: empty_domain_ordering(),
   })
@@ -336,10 +339,10 @@ fn append_path_geometry_differences(
     ) {
     return
   }
-  let boundary_displacement = boundary_budget.measure(
+  let boundary_distribution = boundary_budget.measure(
     before_subject, after_subject, profile,
   )
-  let rendered_evidence_available = boundary_displacement is Some(_)
+  let rendered_evidence_available = boundary_distribution is Some(_)
   for position, pair in segment_alignment {
     let (before_index, after_index) = pair
     match (before_index, after_index) {
@@ -363,7 +366,7 @@ fn append_path_geometry_differences(
             "different",
             "path_segment_kinds_differ",
             None,
-            boundary_displacement,
+            boundary_distribution,
             rendered_evidence_available,
             changed_facts,
             differences,
@@ -384,7 +387,7 @@ fn append_path_geometry_differences(
             "equivalent",
             "same_normalized_path_segment",
             None,
-            boundary_displacement,
+            boundary_distribution,
             rendered_evidence_available,
             changed_facts,
             differences,
@@ -421,7 +424,7 @@ fn append_path_geometry_differences(
             "different",
             "path_segment_parameters_differ",
             parameter_delta,
-            boundary_displacement,
+            boundary_distribution,
             rendered_evidence_available,
             changed_facts,
             differences,
@@ -444,7 +447,7 @@ fn append_path_geometry_differences(
           "different",
           "path_segment_deleted",
           None,
-          boundary_displacement,
+          boundary_distribution,
           rendered_evidence_available,
           changed_facts,
           differences,
@@ -465,7 +468,7 @@ fn append_path_geometry_differences(
           "different",
           "path_segment_inserted",
           None,
-          boundary_displacement,
+          boundary_distribution,
           rendered_evidence_available,
           changed_facts,
           differences,

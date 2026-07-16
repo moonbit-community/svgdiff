@@ -954,32 +954,77 @@ fn boundary_squared_distance_transform(image : @svg.Image) -> Array[Double] {
 }
 
 ///|
-fn directional_boundary_maximum(
+fn directional_boundary_distances(
   source : @svg.Image,
   target : @svg.Image,
-) -> Double {
+) -> Array[Double] {
   let distances = boundary_squared_distance_transform(target)
-  let mut maximum = 0.0
+  let samples : Array[Double] = []
   for y in 0..<source.height {
     for x in 0..<source.width {
       if painted_boundary_pixel(source, x, y) {
-        maximum = maximum.max(distances[y * source.width + x].sqrt())
+        samples.push(distances[y * source.width + x].sqrt())
       }
     }
   }
-  maximum
+  samples
 }
 
 ///|
-fn isolated_painted_boundary_displacement(
-  before : SourceSubject,
-  after : SourceSubject,
+fn painted_boundary_displacement_distribution(
+  before : @svg.Image,
+  after : @svg.Image,
+  comparison_dpr : Double,
+) -> PaintedBoundaryDisplacementMagnitude? {
+  if before.width != after.width ||
+    before.height != after.height ||
+    comparison_dpr <= 0.0 {
+    return None
+  }
+  let before_count = painted_boundary_count(before)
+  let after_count = painted_boundary_count(after)
+  if before_count == 0 && after_count == 0 {
+    return Some({
+      method_id: "symmetric_nearest_boundary_pixels/v1",
+      before_sample_count: 0,
+      after_sample_count: 0,
+      mean_css_px: 0.0,
+      p95_css_px: 0.0,
+      max_css_px: 0.0,
+    })
+  }
+  if before_count == 0 || after_count == 0 {
+    return None
+  }
+  let samples = directional_boundary_distances(before, after) +
+    directional_boundary_distances(after, before)
+  samples.sort()
+  let mut total = 0.0
+  for sample in samples {
+    total += sample
+  }
+  let sample_count = samples.length()
+  let p95_index = (sample_count.to_double() * 0.95).ceil().to_int() - 1
+  Some({
+    method_id: "symmetric_nearest_boundary_pixels/v1",
+    before_sample_count: before_count,
+    after_sample_count: after_count,
+    mean_css_px: total / sample_count.to_double() / comparison_dpr,
+    p95_css_px: samples[p95_index] / comparison_dpr,
+    max_css_px: samples[sample_count - 1] / comparison_dpr,
+  })
+}
+
+///|
+fn isolated_subjects_painted_boundary_displacement_distribution(
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
   profile : ComparisonProfile,
-) -> Double? {
+) -> PaintedBoundaryDisplacementMagnitude? {
   let images = match
     (
-      isolated_subjects_image([before], profile),
-      isolated_subjects_image([after], profile),
+      isolated_subjects_image(before, profile),
+      isolated_subjects_image(after, profile),
     ) {
     (Some(before_image), Some(after_image)) => (before_image, after_image)
     _ => return None
@@ -989,19 +1034,23 @@ fn isolated_painted_boundary_displacement(
     before_image.height != after_image.height {
     return None
   }
-  let before_count = painted_boundary_count(before_image)
-  let after_count = painted_boundary_count(after_image)
-  if before_count == 0 && after_count == 0 {
-    return Some(0.0)
-  }
-  if before_count == 0 || after_count == 0 {
-    return None
-  }
-  Some(
-    directional_boundary_maximum(before_image, after_image).max(
-      directional_boundary_maximum(after_image, before_image),
-    ) /
+  painted_boundary_displacement_distribution(
+    before_image,
+    after_image,
     profile.comparison_dpr,
+  )
+}
+
+///|
+fn isolated_painted_boundary_displacement_distribution(
+  before : SourceSubject,
+  after : SourceSubject,
+  profile : ComparisonProfile,
+) -> PaintedBoundaryDisplacementMagnitude? {
+  isolated_subjects_painted_boundary_displacement_distribution(
+    [before],
+    [after],
+    profile,
   )
 }
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.36",
+  "schema_version": "1.37",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -206,6 +206,7 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.2421875,
@@ -249,6 +250,14 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 12,
+          "after_sample_count": 28,
+          "mean_css_px": 2.9230450570062354,
+          "p95_css_px": 6.4031242374328485,
+          "max_css_px": 7.0710678118654755
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.2421875,
@@ -290,6 +299,14 @@
         "parameter_viewport_fraction": null,
         "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
+        "painted_boundary_displacement": {
+          "method_id": "symmetric_nearest_boundary_pixels/v1",
+          "before_sample_count": 12,
+          "after_sample_count": 28,
+          "mean_css_px": 2.9230450570062354,
+          "p95_css_px": 6.4031242374328485,
+          "max_css_px": 7.0710678118654755
+        },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.2421875,

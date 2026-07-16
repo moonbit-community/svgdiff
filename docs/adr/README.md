@@ -85,6 +85,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0079](0079-validate-safe-alignment-cardinalities-in-the-production-corpus.md) | Accepted, implemented in the curated benchmark | Validate every admitted alignment cardinality through production reports without expanding safe many-to-many membership into mixed-change aggregation. |
 | [0080](0080-align-visual-resources-separately-from-entities.md) | Accepted, implemented | Give Visual Resources independent role-typed alignments and attach every resource Atomic Difference without collapsing mediated entity outcomes. |
 | [0081](0081-separate-exact-parameter-scales-from-rendered-outcomes.md) | Accepted, implemented | Preserve exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales without substituting boundary, raster, or severity evidence. |
+| [0082](0082-report-symmetric-painted-boundary-distributions.md) | Accepted, implemented | Report symmetric nearest-boundary mean, nearest-rank p95, maximum, and sampling support without conflating coverage, color, or importance. |
 
 ## CLI and distribution decisions
 

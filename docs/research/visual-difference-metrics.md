@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-13
 
-This note surveys available metrics and target design. Schema `1.36` implements the exact scalar parameter layer documented in [`../core-model.md`](../core-model.md); painted-boundary distributions, coverage difference, perceptual color, FLIP, and calibrated Impact Assessment remain roadmap work.
+This note surveys available metrics and target design. Schema `1.36` implements the exact scalar parameter layer and Schema `1.37` adds the pinned-raster symmetric nearest-boundary mean, nearest-rank p95, and maximum distribution documented in [`../core-model.md`](../core-model.md). Continuous vector correspondence, coverage difference, perceptual color, FLIP, and calibrated Impact Assessment remain roadmap work.
 
 ## Conclusion
 
@@ -24,7 +24,7 @@ This layer therefore needs no opaque similarity algorithm. For a displacement `d
 
 When two entities do not share comparable parameters, compare their painted geometry. Hausdorff distance is a mature contour-distance mechanism. OpenCV exposes both L1/L2 contour Hausdorff distance and a ranked partial Hausdorff variant; the latter reduces the domination of the ordinary maximum by a single outlier ([OpenCV `HausdorffDistanceExtractor`](https://docs.opencv.org/3.4/d0/de1/classcv_1_1HausdorffDistanceExtractor.html)).
 
-For SVG Diff, sample corresponding painted boundaries in device space and report a displacement distribution such as mean, p95, and max. Use symmetric partial Hausdorff only when pointwise correspondence is unavailable; it loses direction and can match the wrong repeated contour. Complement it with a bounded soft coverage difference:
+SVG Diff Schema `1.37` samples pinned-raster alpha-support boundaries in device space and reports the symmetric nearest-boundary arithmetic mean, nearest-rank p95, maximum, and per-side sample counts after DPR normalization. This is a deterministic partial-Hausdorff-style observation for cases without pointwise correspondence; it loses direction and can match the wrong repeated contour. Continuous vector correspondence remains future work. Complement it with a bounded soft coverage difference:
 
 ```text
 coverage_difference = sum(abs(coverage_before - coverage_after))

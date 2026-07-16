@@ -15,6 +15,7 @@ fn ordering_test_magnitude(
     parameter_viewport_fraction: None,
     parameter_entity_fraction: None,
     geometry_displacement_css_px: geometry_css_px,
+    painted_boundary_displacement: None,
     geometry_viewport_fraction,
     presence_painted_viewport_fraction: presence_viewport_fraction,
     raster_changed_pixel_fraction: changed_pixel_fraction,

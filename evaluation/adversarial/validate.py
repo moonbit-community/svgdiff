@@ -71,7 +71,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.36":
+    if report.get("schema_version") != "1.37":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -159,6 +159,27 @@ def validate_false_equality(case: dict, report: dict) -> None:
         or difference["magnitude"]["parameter_viewport_fraction"] is None
         or difference["magnitude"]["parameter_entity_fraction"] is None
         or difference["magnitude"]["geometry_displacement_css_px"] <= 0
+        or difference["magnitude"]["painted_boundary_displacement"] is None
+        or difference["magnitude"]["painted_boundary_displacement"][
+            "method_id"
+        ]
+        != "symmetric_nearest_boundary_pixels/v1"
+        or difference["magnitude"]["painted_boundary_displacement"][
+            "max_css_px"
+        ]
+        != difference["magnitude"]["geometry_displacement_css_px"]
+        or not (
+            0
+            <= difference["magnitude"]["painted_boundary_displacement"][
+                "mean_css_px"
+            ]
+            <= difference["magnitude"]["painted_boundary_displacement"][
+                "p95_css_px"
+            ]
+            <= difference["magnitude"]["painted_boundary_displacement"][
+                "max_css_px"
+            ]
+        )
         for difference in differences
     ):
         raise ValueError("false-equality path findings lost exact or boundary evidence")

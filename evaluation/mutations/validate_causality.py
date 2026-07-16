@@ -48,6 +48,32 @@ def matching_changed_facts(
     return matches
 
 
+def validate_boundary_distribution(difference: dict[str, Any]) -> bool:
+    boundary = difference["magnitude"]["painted_boundary_displacement"]
+    if boundary is None:
+        return False
+    before_count = boundary["before_sample_count"]
+    after_count = boundary["after_sample_count"]
+    mean = boundary["mean_css_px"]
+    p95 = boundary["p95_css_px"]
+    maximum = boundary["max_css_px"]
+    if (
+        boundary["method_id"] != "symmetric_nearest_boundary_pixels/v1"
+        or before_count < 0
+        or after_count < 0
+        or (before_count == 0) != (after_count == 0)
+        or not 0 <= mean <= maximum
+        or not 0 <= p95 <= maximum
+        or difference["subject_role"] != "entity"
+        or not difference["domain"].startswith("geometry.")
+        or "rendered_evidence" not in difference["evidence_layers"]
+    ):
+        raise ValueError(
+            f"{difference['id']}: invalid painted-boundary distribution"
+        )
+    return True
+
+
 SPATIAL_SCALAR_PROPERTIES = {
     "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
     "x1", "y1", "x2", "y2", "stroke-width", "stroke-dashoffset",
@@ -60,8 +86,6 @@ def validate_parameter_magnitude(
     expected = case["expected_changed_fact"]
     if expected.get("source_property") not in SPATIAL_SCALAR_PROPERTIES:
         return
-    before = float(expected["before_declared_value"])
-    after = float(expected["after_declared_value"])
     differences = [
         difference
         for difference in report["atomic_differences"]
@@ -71,8 +95,17 @@ def validate_parameter_magnitude(
     if len(differences) != 1:
         raise ValueError(f"{case['id']}: spatial scalar has no unique magnitude")
     magnitude = differences[0]["magnitude"]
-    if abs(magnitude["parameter_abs_user_units"] - abs(after - before)) > 1e-12:
-        raise ValueError(f"{case['id']}: local parameter magnitude changed")
+    try:
+        before = float(expected["before_declared_value"])
+        after = float(expected["after_declared_value"])
+    except ValueError:
+        pass
+    else:
+        if (
+            abs(magnitude["parameter_abs_user_units"] - abs(after - before))
+            > 1e-12
+        ):
+            raise ValueError(f"{case['id']}: local parameter magnitude changed")
     if (
         magnitude["parameter_abs_css_px"] is None
         or magnitude["parameter_viewport_fraction"] is None
@@ -173,6 +206,15 @@ def main() -> None:
             f"comparisons={complete_comparisons}, regions={complete_regions}"
         )
 
+    boundary_differences = [
+        difference
+        for report in reports.values()
+        for difference in report["atomic_differences"]
+        if validate_boundary_distribution(difference)
+    ]
+    if not boundary_differences:
+        raise ValueError("mutation surface produced no boundary distributions")
+
     negative_case = next(
         case
         for case in cases
@@ -224,11 +266,43 @@ def main() -> None:
     else:
         raise ValueError("mutation property accepted a missing parameter scale")
 
+    invalid_boundary_report = copy.deepcopy(
+        next(
+            report
+            for report in reports.values()
+            if any(
+                difference["magnitude"]["painted_boundary_displacement"]
+                is not None
+                for difference in report["atomic_differences"]
+            )
+        )
+    )
+    invalid_boundary = next(
+        difference
+        for difference in invalid_boundary_report["atomic_differences"]
+        if difference["magnitude"]["painted_boundary_displacement"] is not None
+    )
+    invalid_boundary["magnitude"]["painted_boundary_displacement"][
+        "p95_css_px"
+    ] = (
+        invalid_boundary["magnitude"]["painted_boundary_displacement"][
+            "max_css_px"
+        ]
+        + 1
+    )
+    try:
+        validate_boundary_distribution(invalid_boundary)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted an invalid boundary distribution")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
         f"{complete_regions} complete regions, "
-        "missing-cause and missing-parameter-scale negative controls: ok"
+        f"{len(boundary_differences)} boundary observations, "
+        "missing-cause, missing-parameter-scale, and invalid-boundary negative controls: ok"
     )
 
 

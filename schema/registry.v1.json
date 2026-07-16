@@ -363,6 +363,16 @@
     },
     {
       "report_schema_version": "1.36",
+      "status": "legacy",
+      "schema": "schema/svgdiff-report-1.36.schema.json",
+      "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
+      "canonical_examples": "evaluation/schema-examples/manifest.1.36.json",
+      "compatibility_case_ids": [
+        "legacy-schema-1.36"
+      ]
+    },
+    {
+      "report_schema_version": "1.37",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],

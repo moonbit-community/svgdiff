@@ -24,6 +24,63 @@ test "single-region magnitude scans its bounds and still excludes equal pixels" 
 }
 
 ///|
+test "painted boundary distribution reports symmetric nearest-rank statistics" {
+  let before = @svg.Image::new(40, 3)
+  let after = @svg.Image::new(40, 3)
+  let painted = @svg.Color::rgb(255, 0, 0)
+  for x in 1..<21 {
+    before.set_pixel(x, 1, painted)
+  }
+  for x in 1..<20 {
+    after.set_pixel(x, 1, painted)
+  }
+  after.set_pixel(30, 1, painted)
+  guard painted_boundary_displacement_distribution(before, after, 1.0)
+    is Some(distribution) else {
+    fail("expected a boundary distribution")
+  }
+  assert_eq(distribution.method_id, "symmetric_nearest_boundary_pixels/v1")
+  assert_eq(distribution.before_sample_count, 20)
+  assert_eq(distribution.after_sample_count, 20)
+  assert_eq(distribution.mean_css_px, 0.275)
+  assert_eq(distribution.p95_css_px, 0.0)
+  assert_eq(distribution.max_css_px, 10.0)
+  guard painted_boundary_displacement_distribution(after, before, 1.0)
+    is Some(reverse) else {
+    fail("expected a reversed boundary distribution")
+  }
+  assert_eq(reverse.mean_css_px, distribution.mean_css_px)
+  assert_eq(reverse.p95_css_px, distribution.p95_css_px)
+  assert_eq(reverse.max_css_px, distribution.max_css_px)
+  guard painted_boundary_displacement_distribution(before, after, 2.0)
+    is Some(high_dpr) else {
+    fail("expected a DPR-normalized boundary distribution")
+  }
+  assert_eq(high_dpr.mean_css_px, 0.1375)
+  assert_eq(high_dpr.p95_css_px, 0.0)
+  assert_eq(high_dpr.max_css_px, 5.0)
+}
+
+///|
+test "painted boundary distribution distinguishes both-empty from one-empty" {
+  let empty = @svg.Image::new(4, 4)
+  let painted = @svg.Image::new(4, 4)
+  painted.set_pixel(1, 1, @svg.Color::rgb(255, 0, 0))
+  guard painted_boundary_displacement_distribution(empty, empty, 1.0)
+    is Some(distribution) else {
+    fail("expected explicit empty-boundary equality")
+  }
+  assert_eq(distribution.before_sample_count, 0)
+  assert_eq(distribution.after_sample_count, 0)
+  assert_eq(distribution.mean_css_px, 0.0)
+  assert_eq(distribution.p95_css_px, 0.0)
+  assert_eq(distribution.max_css_px, 0.0)
+  assert_true(
+    painted_boundary_displacement_distribution(empty, painted, 1.0) is None,
+  )
+}
+
+///|
 test "polygon bounds use the canonical point sequence" {
   let source = "<svg width='20' height='20'><polygon points='1 2,8 2,5 7'/></svg>"
   let subjects = extract_source_subjects_with_profile_or_raise(

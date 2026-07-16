@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.36",
-  "title": "SVG Diff Structured Report 1.36",
+  "$id": "https://example.invalid/svgdiff/schema/1.37",
+  "title": "SVG Diff Structured Report 1.37",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.36" },
+    "schema_version": { "const": "1.37" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -386,6 +386,32 @@
         { "type": "null" }
       ]
     },
+    "paintedBoundaryDisplacementMagnitude": {
+      "type": "object",
+      "required": [
+        "method_id",
+        "before_sample_count",
+        "after_sample_count",
+        "mean_css_px",
+        "p95_css_px",
+        "max_css_px"
+      ],
+      "properties": {
+        "method_id": { "const": "symmetric_nearest_boundary_pixels/v1" },
+        "before_sample_count": { "type": "integer", "minimum": 0 },
+        "after_sample_count": { "type": "integer", "minimum": 0 },
+        "mean_css_px": { "type": "number", "minimum": 0 },
+        "p95_css_px": { "type": "number", "minimum": 0 },
+        "max_css_px": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "nullablePaintedBoundaryDisplacementMagnitude": {
+      "anyOf": [
+        { "$ref": "#/$defs/paintedBoundaryDisplacementMagnitude" },
+        { "type": "null" }
+      ]
+    },
     "magnitude": {
       "type": "object",
       "required": [
@@ -396,6 +422,7 @@
         "parameter_viewport_fraction",
         "parameter_entity_fraction",
         "geometry_displacement_css_px",
+        "painted_boundary_displacement",
         "geometry_viewport_fraction",
         "presence_painted_viewport_fraction",
         "raster_changed_pixel_fraction",
@@ -405,6 +432,9 @@
       ],
       "properties": {
         "transform_effect": { "$ref": "#/$defs/transformEffect" },
+        "painted_boundary_displacement": {
+          "$ref": "#/$defs/nullablePaintedBoundaryDisplacementMagnitude"
+        },
         "intrinsic_raster": {
           "$ref": "#/$defs/nullableIntrinsicRasterMagnitude"
         }
