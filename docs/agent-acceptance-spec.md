@@ -71,6 +71,7 @@ The answer may combine several Atomic Differences into one event-level sentence,
 7. Rank within a domain only under its reported policy. Cross-domain main-change selection must cite magnitude, extent, event structure, or human-label tolerance and acknowledge ties or ambiguity when evidence does not determine one order.
 8. Do not claim visual salience from source wording, authored IDs, or the number of Atomic Differences alone.
 9. A caller-concern match is selected from the complete report before Impact interpretation. Frontier exclusion or small magnitude cannot suppress a matching item, and missing resolvable context means unknown importance rather than low importance.
+10. Do not infer source-byte identity from an empty complete visual report. Pure XML formatting variations are outside Atomic Differences, while supported authored representation changes remain explicit source-semantic evidence.
 
 ## Case-level scoring dimensions
 

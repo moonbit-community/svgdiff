@@ -106,6 +106,20 @@ The following outcomes are deliberately different:
 - computed `indeterminate`: the engine cannot soundly decide because a Diagnostic constrains coverage;
 - computed `not_applicable`: one side has no comparable fact, as in insertion or deletion.
 
+Use this field-only decision table; do not substitute prose labels or source inspection:
+
+| Outcome | Required report evidence |
+| --- | --- |
+| Supported authored representation change with no computed or rendered effect | An Atomic Difference exists, `evidence_layers` is source-only, `computed_relation.status` is `equivalent`, and the owning event has measured zero rendered magnitude. |
+| Computed change with measured zero rendered response | `computed_relation.status` is `different`, while the owning event has `rendered_outcome.status: computed` and zero changed pixels and raster error. |
+| Measured rendered change | The owning event has `rendered_outcome.status: computed` and at least one nonzero rendered magnitude. |
+| Partial comparison | `analysis_status` is `partial`; read every limited coverage cell and referenced Diagnostic before using the retained supported evidence. |
+| Failed analysis | `analysis_status` is `failed`; do not interpret the deliberately incomplete semantic inventories. |
+
+Pure XML formatting variation is intentionally not a Visual Difference. Attribute order, quote style, tag-closing style, entity spelling, declaration whitespace, and source-offset movement alone create no Atomic Difference. Therefore an empty complete Structured Report establishes profile-scoped visual equality, but it cannot distinguish byte-identical inputs from inputs that differ only in those formatting choices. Do not claim source-byte equality from it.
+
+`subtle`, `salient`, `major`, and similar terms are not current report outcome classes. Describe the raw measurements and uncalibrated Impact frontier instead. Human corpus tiers remain evaluation-only until a future calibrated policy satisfies the recorded prerequisites.
+
 For transforms, keep `geometry.transform.list`, `geometry.transform.cumulative_matrix`, and the five effect domains distinct. The first identifies the authored transform declaration and may be computed-equivalent to another list; the second identifies the resulting root-to-subject affine mapping. `geometry.transform.translation`, `.rotation`, `.scale`, and `.skew` carry a tagged `magnitude.transform_effect` with before, after, and domain-specific delta fields. Translation uses CSS pixels, rotation and skew use shortest signed degree deltas, and signed X/Y scales preserve reflections. `geometry.transform.residual_matrix` retains exact coefficients when a singular linear transform has no unique finite decomposition; do not turn those coefficients into a scalar distance. These domains are separate evidence and must not be added or compared across units. Alignment may use conservative transformed painted bounds, but transform events can still use the complete scene pixel mask where precise effect-localized outcome attribution is unavailable; that region is conservative and does not claim every returned pixel belongs only to the subject.
 
 Read `document.viewport` the same way as an authored coordinate-system cause, not as a second raster canvas. Resolve its Changed Fact to see whether `x`, `y`, `width`, `height`, `viewBox`, or `preserveAspectRatio` changed, then follow linked cumulative-matrix and typed effect differences to describe the consequence for each affected leaf. A root intrinsic `width` or `height` change can be computed-equivalent because the recorded profile still supplies one common viewport. A `preserveAspectRatio` change without a `viewBox` is likewise ignored by computed mapping. Do not hide either source distinction, and do not claim that the two inputs were rendered at different sizes.

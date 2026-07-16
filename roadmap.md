@@ -36,7 +36,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 - Keep Source Semantics, Computed Appearance, and Rendered Evidence independently reportable.
 - Preserve continuous measurements; never replace them with only a visibility boolean, label, or universal score.
-- Report formatting-only, computed-equivalent, low-impact, and salient changes as distinct outcomes.
+- Exclude pure XML formatting variation from Visual Differences while preserving supported authored representation changes, computed equivalence, rendered-zero outcomes, and raw magnitude evidence as distinct states.
 - Enumerate every supported Atomic Difference, group by domain, and order only with an explicit versioned policy.
 - Treat measured zero, not-computed, indeterminate, unsupported, and failed as different states.
 - Never claim `complete` when an unsupported semantic, missing resource, renderer gap, or failed measurement could affect the result.
@@ -184,7 +184,8 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 ## Phase 7: Agent-oriented Structured Report
 
 - [x] **P0** Add a machine-readable summary of the highest-impact Visual Events while retaining the full difference inventory through required `ImpactAssessment` and complete event/difference arrays.
-- [ ] **P0** Make formatting-only, computed-equivalent, rendered-zero, subtle, salient, partial, and failed outcomes easy to distinguish without external heuristics.
+- [x] **P0** Make supported source-only, computed-equivalent, computed-different/rendered-zero, rendered-nonzero, partial, and failed outcomes distinguishable through explicit report fields; pure XML formatting remains intentionally outside Visual Differences.
+- [ ] **Deferred** Add calibrated subtle/salient or other severity outcome classes only after the Impact recalibration prerequisites are satisfied under a new policy identity.
 - [x] **P0** Add explicit coverage summaries by subject, feature, and evidence layer.
 - [ ] **P0** Add explicit confidence and ambiguity fields where the engine makes an uncertain alignment or interpretation.
 - [ ] **P0** Provide stable links from summary events to Atomic Differences, Changed Facts, regions, Cause Envelopes, and Diagnostics.
@@ -273,6 +274,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-16 | SSIM/MS-SSIM diagnostic evaluation | Accepted versioned QA-only structural observations; rejected report, equality, localization, severity, and Impact meanings after scale, coverage, availability, and human-order failures. |
 | 2026-07-16 | Query-conditioned semantic concerns | Retained context-free Impact, required dominated concern matches to remain recoverable from the complete inventory, and rejected source- or magnitude-derived semantic priority. |
 | 2026-07-16 | Phase 7 main-event summary reconciliation | Confirmed required `ImpactAssessment` already satisfies the machine-readable summary item and added direct full-inventory and reference-closure regression checks. |
+| 2026-07-16 | Phase 7 outcome-state reconciliation | Codified explicit evidence-state distinctions, retained pure formatting exclusion, and kept subtle/salient severity labels deferred behind Impact calibration prerequisites. |
 
 ## Milestone gates
 

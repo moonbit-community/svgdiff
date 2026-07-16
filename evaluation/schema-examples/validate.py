@@ -409,6 +409,61 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             )
 
 
+def assert_outcome_state_examples(reports: dict[str, dict[str, Any]]) -> None:
+    equivalent = reports["equivalent-color-spelling"]
+    equivalent_difference = equivalent["atomic_differences"][0]
+    if not (
+        equivalent["analysis_status"] == "complete"
+        and equivalent_difference["evidence_layers"] == ["source_semantics"]
+        and equivalent_difference["computed_relation"]["status"] == "equivalent"
+        and equivalent["events"][0]["rendered_outcome"]["magnitude"][
+            "changed_pixels"
+        ]
+        == 0
+    ):
+        raise ValueError("source-only computed-equivalent outcome is not explicit")
+
+    rendered_zero = reports["color-alpha-opacity-equivalent"]
+    different_ids = {
+        item["id"]
+        for item in rendered_zero["atomic_differences"]
+        if item["computed_relation"]["status"] == "different"
+    }
+    zero_event_difference_ids = {
+        difference_id
+        for event in rendered_zero["events"]
+        if event["rendered_outcome"]["magnitude"]["changed_pixels"] == 0
+        and event["rendered_outcome"]["magnitude"]["rgba8_rmse"] == 0
+        and event["rendered_outcome"]["magnitude"][
+            "linear_premultiplied_rgba_rmse"
+        ]
+        == 0
+        for difference_id in event["atomic_difference_ids"]
+    }
+    if not different_ids or not different_ids <= zero_event_difference_ids:
+        raise ValueError("computed-different rendered-zero outcome is not explicit")
+
+    rendered_change = reports["salient-fill-change"]
+    if not (
+        any(
+            item["computed_relation"]["status"] == "different"
+            for item in rendered_change["atomic_differences"]
+        )
+        and any(
+            event["rendered_outcome"]["magnitude"]["changed_pixels"] > 0
+            for event in rendered_change["events"]
+        )
+    ):
+        raise ValueError("rendered-nonzero outcome is not explicit")
+
+    partial = reports["unsupported-partial-coverage"]
+    if partial["analysis_status"] != "partial" or not partial["diagnostics"]:
+        raise ValueError("partial outcome lacks explicit status or Diagnostics")
+    failed = reports["reference-cycle-failure"]
+    if failed["analysis_status"] != "failed" or not failed["diagnostics"]:
+        raise ValueError("failed outcome lacks explicit status or Diagnostics")
+
+
 def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
     rows = report.get("coverage_matrix")
     if not isinstance(rows, list) or not rows:
@@ -983,6 +1038,8 @@ def main() -> None:
             raise ValueError(
                 f"{case['id']}: checked-in example drifted; run the update command"
             )
+
+    assert_outcome_state_examples(reports)
 
     missing_required = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_required["analysis_status"]
