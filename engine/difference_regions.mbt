@@ -75,6 +75,53 @@ fn points_bounds(subject : SourceSubject) -> CssBounds? {
 }
 
 ///|
+fn path_control_hull_bounds(subject : SourceSubject) -> CssBounds? {
+  if !subject.path_data_complete || subject.path_segments.is_empty() {
+    return None
+  }
+  let mut min_x = 1.7976931348623157e308
+  let mut min_y = 1.7976931348623157e308
+  let mut max_x = -1.7976931348623157e308
+  let mut max_y = -1.7976931348623157e308
+  let mut point_count = 0
+  let mut drawable = false
+  fn include_point(x : Double, y : Double) -> Unit {
+    min_x = min_x.min(x)
+    min_y = min_y.min(y)
+    max_x = max_x.max(x)
+    max_y = max_y.max(y)
+    point_count += 1
+  }
+  for segment in subject.path_segments {
+    match segment.normalized {
+      MoveTo(x, y) => include_point(x, y)
+      LineTo(x, y) => {
+        include_point(x, y)
+        drawable = true
+      }
+      CubicTo(x1, y1, x2, y2, x, y) => {
+        include_point(x1, y1)
+        include_point(x2, y2)
+        include_point(x, y)
+        drawable = true
+      }
+      QuadraticTo(x1, y1, x, y) => {
+        include_point(x1, y1)
+        include_point(x, y)
+        drawable = true
+      }
+      ArcTo(_, _, _, _, _, _, _) => return None
+      ClosePath => drawable = true
+    }
+  }
+  if !drawable || point_count == 0 {
+    None
+  } else {
+    Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+  }
+}
+
+///|
 fn inflate_bounds(bounds : CssBounds, expansion : Double) -> CssBounds {
   {
     x: bounds.x - expansion,
@@ -167,6 +214,7 @@ fn source_subject_geometry_bounds(subject : SourceSubject) -> CssBounds? {
       })
     }
     "polyline" | "polygon" => points_bounds(subject)
+    "path" => path_control_hull_bounds(subject)
     _ => None
   }
 }

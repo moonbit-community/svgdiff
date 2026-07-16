@@ -37,6 +37,13 @@
       "viewport": { "width": 16, "height": 16 }
     },
     {
+      "id": "wrong-alignment-transform-reorder",
+      "failure_mode": "wrong_alignment_transform",
+      "before": "evaluation/adversarial/cases/wrong-alignment-transform-reorder/before.svg",
+      "after": "evaluation/adversarial/cases/wrong-alignment-transform-reorder/after.svg",
+      "viewport": { "width": 16, "height": 16 }
+    },
+    {
       "id": "attribution-leakage-disjoint-paint",
       "failure_mode": "attribution_leakage",
       "before": "evaluation/adversarial/cases/attribution-leakage-disjoint-paint/before.svg",

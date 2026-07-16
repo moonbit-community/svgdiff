@@ -95,6 +95,20 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
                 f"{case['id']}: expected affected subjects="
                 f"{expected['changed_fact_affected_subject_ids']!r}, got {affected!r}"
             )
+    if "alignment_authored_pairs" in expected:
+        pairs = []
+        for alignment in report["subject_alignments"]:
+            if len(alignment["before"]) == 1 and len(alignment["after"]) == 1:
+                before_id = alignment["before"][0]["authored_id"]
+                after_id = alignment["after"][0]["authored_id"]
+                if before_id is not None and after_id is not None:
+                    pairs.append([before_id, after_id])
+        pairs.sort()
+        if pairs != expected["alignment_authored_pairs"]:
+            raise ValueError(
+                f"{case['id']}: expected authored alignment pairs="
+                f"{expected['alignment_authored_pairs']!r}, got {pairs!r}"
+            )
 
 
 def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
@@ -308,6 +322,7 @@ def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> N
     assessed_score_kinds = {
         "exact_visual_signature",
         "property_distance",
+        "rendered_geometry_feature_distance_v1",
         "embedded_image_source_order_v1",
     }
     candidate_only_score_kinds = {

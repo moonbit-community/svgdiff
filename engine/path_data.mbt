@@ -627,49 +627,6 @@ fn normalized_path_segment_parameters(
 }
 
 ///|
-fn normalized_path_segment_distance(
-  before : NormalizedPathSegment,
-  after : NormalizedPathSegment,
-) -> Double {
-  if normalized_path_segment_kind(before) != normalized_path_segment_kind(after) {
-    return 1000000.0
-  }
-  let before_parameters = normalized_path_segment_parameters(before)
-  let after_parameters = normalized_path_segment_parameters(after)
-  let mut distance = 0.0
-  for index in 0..<before_parameters.length() {
-    match
-      (
-        before_parameters[index].numeric_value,
-        after_parameters[index].numeric_value,
-      ) {
-      (Some(left), Some(right)) => distance += (left - right).abs()
-      _ if before_parameters[index].value != after_parameters[index].value =>
-        distance += 1.0
-      _ => ()
-    }
-  }
-  distance
-}
-
-///|
-fn normalized_path_distance(
-  before : Array[PathSegmentEvidence],
-  after : Array[PathSegmentEvidence],
-) -> Double {
-  let shared = before.length().min(after.length())
-  let mut distance = (before.length() - after.length()).abs().to_double() *
-    1000000.0
-  for index in 0..<shared {
-    distance += normalized_path_segment_distance(
-      before[index].normalized,
-      after[index].normalized,
-    )
-  }
-  distance
-}
-
-///|
 fn path_segments_signature(segments : Array[PathSegmentEvidence]) -> String {
   let mut signature = ""
   for segment in segments {

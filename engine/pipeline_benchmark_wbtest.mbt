@@ -34,6 +34,7 @@ fn benchmark_align_source_subjects(
     align_source_subjects_with_guard(
       before,
       after,
+      ComparisonProfile::v1_default(),
       ComparisonGuard::new(ComparisonControl::unlimited()),
     )
   catch {

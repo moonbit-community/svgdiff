@@ -142,6 +142,311 @@ fn alignment_property_order() -> Array[String] {
 }
 
 ///|
+fn bounded_alignment_distance(value : Double) -> Double {
+  if value <= 0.0 {
+    0.0
+  } else {
+    value / (1.0 + value)
+  }
+}
+
+///|
+fn alignment_viewport_diagonal(profile : ComparisonProfile) -> Double {
+  @math.hypot(
+    profile.viewport_width.to_double(),
+    profile.viewport_height.to_double(),
+  ).max(1.0)
+}
+
+///|
+fn alignment_subject_bounds(subject : SourceSubject) -> CssBounds? {
+  if subject.transform_complete {
+    source_subject_bounds(subject)
+  } else {
+    None
+  }
+}
+
+///|
+fn alignment_bounds_signature(subject : SourceSubject) -> String {
+  match alignment_subject_bounds(subject) {
+    Some(bounds) =>
+      "bounds(\{bounds.x},\{bounds.y},\{bounds.width},\{bounds.height})"
+    None => "bounds-unavailable"
+  }
+}
+
+///|
+fn exact_subject_alignment_signature(subject : SourceSubject) -> String {
+  let transform = if subject.transform_complete {
+    subject.cumulative_transform.signature()
+  } else {
+    "transform-incomplete"
+  }
+  "\{subject.signature}|alignment-transform=\{transform}|alignment-\{alignment_bounds_signature(subject)}"
+}
+
+///|
+fn rendered_bounds_feature_distance(
+  left : SourceSubject,
+  right : SourceSubject,
+  profile : ComparisonProfile,
+) -> Double? {
+  match (alignment_subject_bounds(left), alignment_subject_bounds(right)) {
+    (None, None) => None
+    (Some(_), None) | (None, Some(_)) => Some(1.0)
+    (Some(left), Some(right)) => {
+      let diagonal = alignment_viewport_diagonal(profile)
+      let left_center_x = left.x + left.width / 2.0
+      let left_center_y = left.y + left.height / 2.0
+      let right_center_x = right.x + right.width / 2.0
+      let right_center_y = right.y + right.height / 2.0
+      Some(
+        (
+          bounded_alignment_distance(
+            (left_center_x - right_center_x).abs() / diagonal,
+          ) +
+          bounded_alignment_distance(
+            (left_center_y - right_center_y).abs() / diagonal,
+          ) +
+          bounded_alignment_distance(
+            (left.width - right.width).abs() / diagonal,
+          ) +
+          bounded_alignment_distance(
+            (left.height - right.height).abs() / diagonal,
+          )
+        ) /
+        4.0,
+      )
+    }
+  }
+}
+
+///|
+fn transform_probe_feature_distance(
+  left : SourceSubject,
+  right : SourceSubject,
+  profile : ComparisonProfile,
+) -> Double? {
+  match (left.transform_complete, right.transform_complete) {
+    (false, false) => None
+    (true, false) | (false, true) => Some(1.0)
+    (true, true) => {
+      let width = profile.viewport_width.to_double()
+      let height = profile.viewport_height.to_double()
+      let diagonal = alignment_viewport_diagonal(profile)
+      let probes = [(0.0, 0.0), (width, 0.0), (0.0, height), (width, height)]
+      let mut distance = 0.0
+      for probe in probes {
+        let (x, y) = probe
+        let (left_x, left_y) = left.cumulative_transform.apply_point(x, y)
+        let (right_x, right_y) = right.cumulative_transform.apply_point(x, y)
+        distance += bounded_alignment_distance(
+          @math.hypot(left_x - right_x, left_y - right_y) / diagonal,
+        )
+      }
+      Some(distance / probes.length().to_double())
+    }
+  }
+}
+
+///|
+fn alignment_property_feature_distance(
+  left : SourceSubject,
+  right : SourceSubject,
+) -> Double {
+  let mut distance = 0.0
+  let mut compared = 0
+  for property in alignment_property_order() {
+    if basic_shape_geometry_property(left.kind, property) {
+      continue
+    }
+    let left_value = subject_value(left, property)
+    let right_value = subject_value(right, property)
+    if left_value is None && right_value is None {
+      continue
+    }
+    compared += 1
+    if left_value == right_value {
+      continue
+    }
+    match
+      (parse_alignment_number(left_value), parse_alignment_number(right_value)) {
+      (Some(left_number), Some(right_number)) =>
+        distance += bounded_alignment_distance(
+          (left_number - right_number).abs() /
+          (left_number.abs() + right_number.abs() + 1.0),
+        )
+      _ => distance += 1.0
+    }
+  }
+  if compared == 0 {
+    0.0
+  } else {
+    distance / compared.to_double()
+  }
+}
+
+///|
+fn alignment_point_distance(
+  left : AffineTransform,
+  left_x : Double,
+  left_y : Double,
+  right : AffineTransform,
+  right_x : Double,
+  right_y : Double,
+  diagonal : Double,
+) -> Double {
+  let (left_x, left_y) = left.apply_point(left_x, left_y)
+  let (right_x, right_y) = right.apply_point(right_x, right_y)
+  bounded_alignment_distance(
+    @math.hypot(left_x - right_x, left_y - right_y) / diagonal,
+  )
+}
+
+///|
+fn path_segment_feature_distance(
+  left : NormalizedPathSegment,
+  left_transform : AffineTransform,
+  right : NormalizedPathSegment,
+  right_transform : AffineTransform,
+  diagonal : Double,
+) -> Double {
+  match (left, right) {
+    (MoveTo(left_x, left_y), MoveTo(right_x, right_y))
+    | (LineTo(left_x, left_y), LineTo(right_x, right_y)) =>
+      alignment_point_distance(
+        left_transform, left_x, left_y, right_transform, right_x, right_y, diagonal,
+      )
+    (CubicTo(lx1, ly1, lx2, ly2, lx, ly), CubicTo(rx1, ry1, rx2, ry2, rx, ry)) =>
+      (
+        alignment_point_distance(
+          left_transform, lx1, ly1, right_transform, rx1, ry1, diagonal,
+        ) +
+        alignment_point_distance(
+          left_transform, lx2, ly2, right_transform, rx2, ry2, diagonal,
+        ) +
+        alignment_point_distance(
+          left_transform, lx, ly, right_transform, rx, ry, diagonal,
+        )
+      ) /
+      3.0
+    (QuadraticTo(lx1, ly1, lx, ly), QuadraticTo(rx1, ry1, rx, ry)) =>
+      (
+        alignment_point_distance(
+          left_transform, lx1, ly1, right_transform, rx1, ry1, diagonal,
+        ) +
+        alignment_point_distance(
+          left_transform, lx, ly, right_transform, rx, ry, diagonal,
+        )
+      ) /
+      2.0
+    (
+      ArcTo(lrx, lry, lrotation, llarge, lsweep, lx, ly),
+      ArcTo(rrx, rry, rrotation, rlarge, rsweep, rx, ry),
+    ) => {
+      let parameter_distance = bounded_alignment_distance(
+        (lrx - rrx).abs() +
+        (lry - rry).abs() +
+        (lrotation - rrotation).abs() / 180.0 +
+        (if llarge == rlarge { 0.0 } else { 1.0 }) +
+        (if lsweep == rsweep { 0.0 } else { 1.0 }),
+      )
+      (
+        alignment_point_distance(
+          left_transform, lx, ly, right_transform, rx, ry, diagonal,
+        ) +
+        parameter_distance
+      ) /
+      2.0
+    }
+    (ClosePath, ClosePath) => 0.0
+    _ => 1.0
+  }
+}
+
+///|
+fn path_feature_distance(
+  left : SourceSubject,
+  right : SourceSubject,
+  profile : ComparisonProfile,
+) -> Double? {
+  if left.kind != "path" || right.kind != "path" {
+    return None
+  }
+  match (left.transform_complete, right.transform_complete) {
+    (false, false) => return None
+    (true, false) | (false, true) => return Some(1.0)
+    (true, true) => ()
+  }
+  if left.path_data_complete != right.path_data_complete {
+    return Some(1.0)
+  }
+  if left.path_segments.length() != right.path_segments.length() {
+    return Some(1.0)
+  }
+  if left.path_segments.is_empty() {
+    return Some(0.0)
+  }
+  let diagonal = alignment_viewport_diagonal(profile)
+  let mut distance = 0.0
+  for index in 0..<left.path_segments.length() {
+    distance += path_segment_feature_distance(
+      left.path_segments[index].normalized,
+      left.cumulative_transform,
+      right.path_segments[index].normalized,
+      right.cumulative_transform,
+      diagonal,
+    )
+  }
+  Some(distance / left.path_segments.length().to_double())
+}
+
+///|
+fn subject_alignment_feature_distance(
+  left : SourceSubject,
+  right : SourceSubject,
+  profile : ComparisonProfile,
+) -> Double {
+  let rendered_bounds = rendered_bounds_feature_distance(left, right, profile)
+  let transform_probes = match rendered_bounds {
+    Some(_) => None
+    None => transform_probe_feature_distance(left, right, profile)
+  }
+  let appearance = alignment_property_feature_distance(left, right)
+  let hierarchy = if left.hierarchy_signature == right.hierarchy_signature {
+    0.0
+  } else {
+    1.0
+  }
+  let path = path_feature_distance(left, right, profile)
+  let mut total = appearance + hierarchy
+  let mut count = 2
+  match rendered_bounds {
+    Some(value) => {
+      total += value
+      count += 1
+    }
+    None => ()
+  }
+  match transform_probes {
+    Some(value) => {
+      total += value
+      count += 1
+    }
+    None => ()
+  }
+  match path {
+    Some(value) => {
+      total += value
+      count += 1
+    }
+    None => ()
+  }
+  total / count.to_double()
+}
+
+///|
 fn subject_value(subject : SourceSubject, property : String) -> String? {
   for item in subject.values {
     let (name, value) = item
@@ -839,11 +1144,9 @@ fn extract_pattern_child_subjects_with_profile_or_raise(
 ///|
 fn extract_source_subjects_or_raise(
   input : String,
+  profile? : ComparisonProfile = ComparisonProfile::v1_default(),
 ) -> Array[SourceSubject] raise {
-  extract_source_subjects_with_profile_or_raise(
-    input,
-    ComparisonProfile::v1_default(),
-  )
+  extract_source_subjects_with_profile_or_raise(input, profile)
 }
 
 ///|
@@ -1210,37 +1513,12 @@ fn align_structural_subjects_with_guard(
 }
 
 ///|
-fn subject_distance(left : SourceSubject, right : SourceSubject) -> Double {
-  let mut distance = if left.hierarchy_signature == right.hierarchy_signature {
-    0.0
-  } else {
-    1000000.0
-  }
-  for property in alignment_property_order() {
-    let left_value = subject_value(left, property)
-    let right_value = subject_value(right, property)
-    if left_value != right_value {
-      match
-        (
-          parse_alignment_number(left_value),
-          parse_alignment_number(right_value),
-        ) {
-        (Some(left_number), Some(right_number)) =>
-          distance += (left_number - right_number).abs()
-        _ => distance += 1000000.0
-      }
-    }
-  }
-  if left.kind == "path" && right.kind == "path" {
-    if left.path_data_complete != right.path_data_complete {
-      distance += 1000000.0
-    }
-    distance += normalized_path_distance(
-      left.path_segments,
-      right.path_segments,
-    )
-  }
-  distance
+fn subject_distance(
+  left : SourceSubject,
+  right : SourceSubject,
+  profile : ComparisonProfile,
+) -> Double {
+  subject_alignment_feature_distance(left, right, profile)
 }
 
 ///|
@@ -1249,8 +1527,8 @@ fn sort_subject_indices(
   subjects : Array[SourceSubject],
 ) -> Unit {
   indices.sort_by(fn(left, right) {
-    let signature_order = subjects[left].signature.compare(
-      subjects[right].signature,
+    let signature_order = exact_subject_alignment_signature(subjects[left]).compare(
+      exact_subject_alignment_signature(subjects[right]),
     )
     if signature_order != 0 {
       signature_order
@@ -1266,6 +1544,7 @@ fn minimum_cost_subject_pairs_with_guard(
   after_indices : Array[Int],
   before : Array[SourceSubject],
   after : Array[SourceSubject],
+  profile : ComparisonProfile,
   comparison_guard : ComparisonGuard,
 ) -> Array[(Int, Int)] raise ComparisonInterrupted {
   if before_indices.is_empty() || after_indices.is_empty() {
@@ -1299,11 +1578,13 @@ fn minimum_cost_subject_pairs_with_guard(
           subject_distance(
             before[columns[candidate - 1]],
             after[rows[current_row - 1]],
+            profile,
           )
         } else {
           subject_distance(
             before[rows[current_row - 1]],
             after[columns[candidate - 1]],
+            profile,
           )
         }
         let reduced = cost -
@@ -1351,6 +1632,16 @@ fn minimum_cost_subject_pairs_with_guard(
       pairs.push((rows[matching[column] - 1], columns[column - 1]))
     }
   }
+  pairs.sort_by(fn(left, right) {
+    let (left_before, left_after) = left
+    let (right_before, right_after) = right
+    let before_order = left_before - right_before
+    if before_order != 0 {
+      before_order
+    } else {
+      left_after - right_after
+    }
+  })
   pairs
 }
 
@@ -1358,6 +1649,7 @@ fn minimum_cost_subject_pairs_with_guard(
 fn align_source_subjects_with_guard(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
+  profile : ComparisonProfile,
   comparison_guard : ComparisonGuard,
 ) -> Array[SubjectAlignment] raise ComparisonInterrupted {
   let alignments : Array[SubjectAlignment] = []
@@ -1399,19 +1691,22 @@ fn align_source_subjects_with_guard(
     }
     let candidates = [
       for after_index, after_subject in after if !after_used[after_index] &&
-      before_subject.signature == after_subject.signature => after_index
+      exact_subject_alignment_signature(before_subject) ==
+      exact_subject_alignment_signature(after_subject) => after_index
     ]
     if !candidates.is_empty() {
       let after_index = candidates[0]
       let mut before_signature_count = 0
       let mut after_signature_count = 0
       for subject in before {
-        if subject.signature == before_subject.signature {
+        if exact_subject_alignment_signature(subject) ==
+          exact_subject_alignment_signature(before_subject) {
           before_signature_count += 1
         }
       }
       for subject in after {
-        if subject.signature == before_subject.signature {
+        if exact_subject_alignment_signature(subject) ==
+          exact_subject_alignment_signature(before_subject) {
           after_signature_count += 1
         }
       }
@@ -1538,7 +1833,7 @@ fn align_source_subjects_with_guard(
     sort_subject_indices(after_indices, after)
     for
       pair in minimum_cost_subject_pairs_with_guard(
-        before_indices, after_indices, before, after, comparison_guard,
+        before_indices, after_indices, before, after, profile, comparison_guard,
       ) {
       let (before_index, after_index) = pair
       before_used[before_index] = true
@@ -1549,11 +1844,12 @@ fn align_source_subjects_with_guard(
           "correspondence",
           [before[before_index]],
           [after[after_index]],
-          "minimum_property_distance",
+          "minimum_rendered_geometry_distance",
           {
             let selected_score = subject_distance(
               before[before_index],
               after[after_index],
+              profile,
             )
             let compatible = if before_indices.length() > after_indices.length() {
               before_indices.length()
@@ -1563,21 +1859,21 @@ fn align_source_subjects_with_guard(
             let mut equal_scores = 0
             if before_indices.length() > after_indices.length() {
               for index in before_indices {
-                if subject_distance(before[index], after[after_index]) ==
+                if subject_distance(before[index], after[after_index], profile) ==
                   selected_score {
                   equal_scores += 1
                 }
               }
             } else {
               for index in after_indices {
-                if subject_distance(before[before_index], after[index]) ==
+                if subject_distance(before[before_index], after[index], profile) ==
                   selected_score {
                   equal_scores += 1
                 }
               }
             }
             alignment_evidence(
-              "property_distance",
+              "rendered_geometry_feature_distance_v1",
               Some(selected_score),
               compatible,
               equal_scores,
@@ -1627,13 +1923,14 @@ fn align_source_subjects_with_guard(
 fn subject_alignments_for_sources_with_guard(
   before_svg : String,
   after_svg : String,
+  profile : ComparisonProfile,
   comparison_guard : ComparisonGuard,
 ) -> Array[SubjectAlignment] raise ComparisonInterrupted {
   let inventories = try
     Some(
       (
-        extract_source_subjects_or_raise(before_svg),
-        extract_source_subjects_or_raise(after_svg),
+        extract_source_subjects_or_raise(before_svg, profile~),
+        extract_source_subjects_or_raise(after_svg, profile~),
         structural_alignment_subjects(
           extract_structural_document_or_raise(before_svg),
         ),
@@ -1650,7 +1947,7 @@ fn subject_alignments_for_sources_with_guard(
   match inventories {
     Some((before, after, before_structural, after_structural)) => {
       let alignments = align_source_subjects_with_guard(
-        before, after, comparison_guard,
+        before, after, profile, comparison_guard,
       )
       alignments.push_iter(
         align_structural_subjects_with_guard(

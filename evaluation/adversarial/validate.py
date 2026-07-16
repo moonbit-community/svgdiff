@@ -14,6 +14,7 @@ EXPECTED_MODES = {
     "false_equality",
     "structural_false_equality",
     "wrong_alignment",
+    "wrong_alignment_transform",
     "attribution_leakage",
     "magnitude_ordering",
     "reference_cycle",
@@ -69,7 +70,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.32":
+    if report.get("schema_version") != "1.33":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -362,6 +363,7 @@ def main() -> None:
         "false_equality": lambda case, report: validate_false_equality(case, report),
         "structural_false_equality": lambda _case, report: validate_structural_false_equality(report),
         "wrong_alignment": lambda _case, report: validate_wrong_alignment(report),
+        "wrong_alignment_transform": lambda _case, report: validate_wrong_alignment(report),
         "attribution_leakage": validate_attribution_leakage,
         "magnitude_ordering": lambda _case, report: validate_magnitude_ordering(report),
         "reference_cycle": lambda _case, report: validate_reference_cycle(report),

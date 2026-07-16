@@ -2,6 +2,20 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "transform-aware-alignment",
+      "before": "evaluation/schema-examples/cases/transform-aware-alignment/before.svg",
+      "after": "evaluation/schema-examples/cases/transform-aware-alignment/after.svg",
+      "output": "schema/examples/transform-aware-alignment.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": [],
+        "computed_relations": [],
+        "diagnostic_codes": [],
+        "magnitude_checks": [],
+        "alignment_authored_pairs": [["before-left", "after-left"], ["before-right", "after-right"]]
+      }
+    },
+    {
       "id": "text-source-alignment",
       "before": "evaluation/schema-examples/cases/text-source-alignment/before.svg",
       "after": "evaluation/schema-examples/cases/text-source-alignment/after.svg",

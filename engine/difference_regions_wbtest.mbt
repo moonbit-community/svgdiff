@@ -56,3 +56,21 @@ test "stroke bounds distinguish ordinary and non-scaling expansion" {
     is Some({ x: 18.0, y: 18.0, width: 24.0, height: 4.0 }),
   )
 }
+
+///|
+test "complete non-arc path bounds use a transformed conservative control hull" {
+  let subject = extract_source_subjects_or_raise(
+      "<svg><path d='M1 2 C3 10 7 -2 9 4' transform='translate(5 6)'/></svg>",
+    )[0]
+  guard source_subject_bounds(subject) is Some(bounds) else {
+    fail("expected conservative path bounds")
+  }
+  assert_eq(bounds.x, 6.0)
+  assert_eq(bounds.y, 4.0)
+  assert_eq(bounds.width, 8.0)
+  assert_eq(bounds.height, 12.0)
+  let arc = extract_source_subjects_or_raise(
+      "<svg><path d='M1 2 A4 5 0 0 1 9 4'/></svg>",
+    )[0]
+  assert_true(source_subject_bounds(arc) is None)
+}

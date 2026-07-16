@@ -137,7 +137,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 ## Phase 4: Subject Alignment and Visual Event construction
 
 - [x] **P0** Extend Subject Alignment to paths, groups, text, resource definitions, and `<use>` instances.
-- [ ] **P0** Add transform-aware and rendered-geometry-aware correspondence features.
+- [x] **P0** Add transform-aware and rendered-geometry-aware correspondence features.
 - [ ] **P0** Improve repeated-subject matching without relying on authored IDs or source order.
 - [x] **P0** Record alignment evidence, ambiguity, and confidence without converting uncertainty into equality.
 - [ ] **P1** Validate one-to-one, insertion, deletion, split, merge, and many-to-many reorganizations on the benchmark corpus.

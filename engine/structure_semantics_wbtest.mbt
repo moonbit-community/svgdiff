@@ -102,6 +102,7 @@ test "use placement reaches cumulative subject transforms" {
   let alignments = align_source_subjects_with_guard(
     subjects,
     subjects,
+    ComparisonProfile::v1_default(),
     ComparisonGuard::new(ComparisonControl::unlimited()),
   )
   assert_eq(alignments.length(), 2)
@@ -165,10 +166,13 @@ test "one definition fact fans out to every rendered use instance" {
   )
   let report = compare(before, after, ComparisonProfile::v1_default())
   assert_eq(report.analysis_status, "complete")
-  assert_eq(report.subject_alignments.length(), 2)
+  let rendered_alignments = [
+    for alignment in report.subject_alignments if alignment.basis ==
+    "use_instance_path" => alignment
+  ]
+  assert_eq(rendered_alignments.length(), 2)
   assert_true(
-    report.subject_alignments.all(alignment => {
-      alignment.basis == "use_instance_path" &&
+    rendered_alignments.all(alignment => {
       alignment.before[0].instance_context is Some(_)
     }),
   )
@@ -264,8 +268,12 @@ test "use target changes preserve placement and definition identities" {
   let after = before.replace_all(old="#red-shape", new="#blue-shape")
   let report = compare(before, after, ComparisonProfile::v1_default())
   assert_eq(report.analysis_status, "complete")
-  assert_eq(report.subject_alignments.length(), 1)
-  let alignment = report.subject_alignments[0]
+  let rendered_alignments = [
+    for alignment in report.subject_alignments if alignment.basis ==
+    "use_instance_path" => alignment
+  ]
+  assert_eq(rendered_alignments.length(), 1)
+  let alignment = rendered_alignments[0]
   assert_eq(alignment.basis, "use_instance_path")
   assert_eq(
     alignment.before[0].instance_context.unwrap().definition_subject_id,
@@ -373,11 +381,27 @@ test "unused definitions remain source visible without rendered subjects" {
   let after = before.replace_all(old="fill=\"red\"", new="fill=\"blue\"")
   let unchanged = compare(before, before, ComparisonProfile::v1_default())
   assert_eq(unchanged.analysis_status, "complete")
-  assert_true(unchanged.subject_alignments.is_empty())
+  assert_true(
+    unchanged.subject_alignments.any(alignment => {
+      alignment.basis == "structural_authored_id" &&
+      alignment.before[0].kind == "g"
+    }),
+  )
+  assert_true(
+    unchanged.subject_alignments.all(alignment => {
+      alignment.before.all(reference => reference.instance_context is None) &&
+      alignment.after.all(reference => reference.instance_context is None)
+    }),
+  )
   assert_true(unchanged.atomic_differences.is_empty())
   let changed = compare(before, after, ComparisonProfile::v1_default())
   assert_eq(changed.analysis_status, "complete")
-  assert_true(changed.subject_alignments.is_empty())
+  assert_true(
+    changed.subject_alignments.any(alignment => {
+      alignment.basis == "structural_authored_id" &&
+      alignment.before[0].kind == "g"
+    }),
+  )
   assert_eq(changed.changed_facts.length(), 1)
   assert_eq(changed.changed_facts[0].subject_id, "tile")
   assert_true(changed.changed_facts[0].affected_subject_ids.is_empty())

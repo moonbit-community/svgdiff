@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.32",
+  "schema_version": "1.33",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -145,10 +145,10 @@
           "instance_context": null
         }
       ],
-      "basis": "minimum_property_distance",
+      "basis": "minimum_rendered_geometry_distance",
       "evidence": {
-        "score_kind": "property_distance",
-        "selected_score": 1000000.375,
+        "score_kind": "rendered_geometry_feature_distance_v1",
+        "selected_score": 0.030448717948717948,
         "candidate_count": 1,
         "equal_score_candidate_count": 1,
         "ambiguity": "unique",

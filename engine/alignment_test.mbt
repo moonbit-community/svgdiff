@@ -108,7 +108,7 @@ test "similar subjects use deterministic minimum geometry distance" {
       alignment.before[0].source_index == 0 &&
       alignment.after.length() == 1 &&
       alignment.after[0].source_index == 1 &&
-      alignment.basis == "minimum_property_distance" &&
+      alignment.basis == "minimum_rendered_geometry_distance" &&
       alignment.evidence.ambiguity == "unique" &&
       alignment.evidence.candidate_count == 2 &&
       alignment.evidence.equal_score_candidate_count == 1
@@ -135,7 +135,7 @@ test "changed subjects use global rather than greedy minimum cost" {
       alignment.before[0].source_index == 0 &&
       alignment.after.length() == 1 &&
       alignment.after[0].source_index == 1 &&
-      alignment.basis == "minimum_property_distance"
+      alignment.basis == "minimum_rendered_geometry_distance"
     }),
   )
 }
@@ -186,14 +186,21 @@ test "equal minimum costs retain stable signature and source order" {
   )
   let pairs = [
     for alignment in report.subject_alignments if alignment.basis ==
-    "minimum_property_distance" => {
+    "minimum_rendered_geometry_distance" => {
       (alignment.before[0].source_index, alignment.after[0].source_index)
     }
   ]
   assert_eq(pairs, [(0, 0), (1, 1)])
   for alignment in report.subject_alignments {
-    assert_eq(alignment.evidence.score_kind, "property_distance")
-    assert_true(alignment.evidence.selected_score == Some(1.0))
+    assert_eq(
+      alignment.evidence.score_kind,
+      "rendered_geometry_feature_distance_v1",
+    )
+    assert_true(
+      alignment.evidence.selected_score is Some(score) &&
+      score >= 0.0 &&
+      score <= 1.0,
+    )
     assert_eq(alignment.evidence.candidate_count, 2)
     assert_eq(alignment.evidence.equal_score_candidate_count, 2)
     assert_eq(alignment.evidence.ambiguity, "tied")
@@ -397,4 +404,132 @@ test "repeated structural subjects expose stable-order ambiguity" {
       alignment.before.any(reference => reference.kind == "filter")
     }),
   )
+}
+
+///|
+test "exact alignment distinguishes swapped cumulative transforms" {
+  let before = alignment_svg(
+    "<rect id='before-left' x='0' y='0' width='2' height='2'/><rect id='before-right' x='0' y='0' width='2' height='2' transform='translate(10 0)'/>",
+  )
+  let after = alignment_svg(
+    "<rect id='after-right' x='0' y='0' width='2' height='2' transform='translate(10 0)'/><rect id='after-left' x='0' y='0' width='2' height='2'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("before-left") &&
+      alignment.after[0].authored_id == Some("after-left") &&
+      alignment.basis == "exact_visual_signature"
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("before-right") &&
+      alignment.after[0].authored_id == Some("after-right") &&
+      alignment.basis == "exact_visual_signature"
+    }),
+  )
+}
+
+///|
+test "feature distance aligns compensated local geometry by final bounds" {
+  let before = alignment_svg(
+    "<rect id='before-left' x='0' y='0' width='2' height='2' transform='translate(10 0)'/><rect id='before-right' x='20' y='0' width='2' height='2'/>",
+  )
+  let after = alignment_svg(
+    "<rect id='after-right' x='0' y='0' width='2' height='2' transform='translate(20 0)'/><rect id='after-left' x='10' y='0' width='2' height='2'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("before-left") &&
+      alignment.after[0].authored_id == Some("after-left") &&
+      alignment.basis == "minimum_rendered_geometry_distance"
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("before-right") &&
+      alignment.after[0].authored_id == Some("after-right") &&
+      alignment.basis == "minimum_rendered_geometry_distance"
+    }),
+  )
+}
+
+///|
+test "alignment resolves geometry under the caller comparison viewport" {
+  let before = alignment_svg(
+    "<rect id='percentage' x='50%' y='0' width='2' height='2'/>",
+  )
+  let after = alignment_svg(
+    "<rect id='absolute' x='100' y='0' width='2' height='2'/>",
+  )
+  let report = @engine.compare(before, after, {
+    ..@engine.ComparisonProfile::v1_default(),
+    viewport_width: 200,
+  })
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("percentage") &&
+      alignment.after[0].authored_id == Some("absolute") &&
+      alignment.basis == "exact_visual_signature"
+    }),
+  )
+}
+
+///|
+test "path feature distance compares control geometry in device space" {
+  let before = alignment_svg(
+    "<path id='before-left' d='M0 0 L2 2' transform='translate(10 0)'/><path id='before-right' d='M20 0 L22 2'/>",
+  )
+  let after = alignment_svg(
+    "<path id='after-right' d='M0 0 L2 2' transform='translate(20 0)'/><path id='after-left' d='M10 0 L12 2'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("before-left") &&
+      alignment.after[0].authored_id == Some("after-left") &&
+      alignment.basis == "minimum_rendered_geometry_distance"
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before[0].authored_id == Some("before-right") &&
+      alignment.after[0].authored_id == Some("after-right") &&
+      alignment.basis == "minimum_rendered_geometry_distance"
+    }),
+  )
+}
+
+///|
+test "one-sided incomplete transform cannot receive zero feature distance" {
+  let before = alignment_svg(
+    "<rect id='incomplete' x='0' y='0' width='2' height='2' transform='translate('/>",
+  )
+  let after = alignment_svg(
+    "<rect id='complete' x='0' y='0' width='2' height='2'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  guard report.subject_alignments[0].evidence.selected_score is Some(score) else {
+    fail("expected assessed feature distance")
+  }
+  assert_true(score > 0.0 && score <= 1.0)
 }

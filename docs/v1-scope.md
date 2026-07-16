@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.32` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.33` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -124,10 +124,10 @@ V1 does not completely analyze:
 - scripts, event-driven state, or animation timelines;
 - static `foreignObject` through an HTML/CSS layout engine;
 - implicit network resources or treating SVG-authored locators as local paths;
-- complete path semantics, including transformed geometry, continuous-curve boundary distance, and browser-conformant stroke and paint evaluation;
-- precise transform-aware bounds and localization beyond the conservative whole-scene outcome regions;
+- complete path semantics, including exact arc/continuous-curve bounds and boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only;
+- precise transform-aware bounds and localization beyond the conservative painted bounds used for correspondence and admitted effect slices or the conservative whole-scene outcome regions;
 - automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, or dynamic viewport variants; object-bounding-box coordinates are implemented only for static gradient consumers and admitted numeric rectangular clip or mask coordinates;
-- CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization;
+- CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or precise transform-aware shape localization beyond bounded correspondence features;
 - selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system palette selection, or custom-property syntax outside the admitted balanced subset;
 - external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, embedded SVG images, unbundled or unsupported external images, final raster-image compositing, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, external use documents, or dynamic instance-tree behavior;
 - general clip or mask geometry, percentages in `objectBoundingBox` clips, clip or mask references on use hosts, nested clip/mask resources, CSS image and multi-layer masks, mask-border, visual execution of filter primitives beyond direct static `feOffset`, CSS filter functions, filter templates or primitive subregions, transformed/fractional/dynamic/reused filter application, continuous-alpha or antialiased blending, container blend modes, blend attachment on instances, and blend interactions with transforms, opacity, clip, mask, or filter effects;
