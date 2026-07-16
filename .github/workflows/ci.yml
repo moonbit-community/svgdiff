@@ -60,6 +60,14 @@ jobs:
       - name: Run fixed-seed fuzz smoke
         run: sh scripts/test-fuzz-smoke.sh
 
+      - name: Validate curated corpus and hidden annotations
+        run: |
+          sh scripts/test-corpus.sh
+          sh scripts/test-annotations.sh
+          sh scripts/test-alignment-annotations.sh
+          sh scripts/test-region-annotations.sh
+          sh scripts/test-cause-annotations.sh
+
       - name: Run benchmark sanity gate
         run: sh scripts/test-benchmark.sh
 

@@ -71,6 +71,30 @@
         "diff:alignment:image:0:href",
         "diff:alignment:image:0:decoded_content"
       ]]
+    },
+    {
+      "case_id": "subject-deletion",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:alignment:1"],
+      "accepted_top_atomic_difference_id_sets": [["diff:alignment:1:presence"]]
+    },
+    {
+      "case_id": "subject-split",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:alignment:0"],
+      "accepted_top_atomic_difference_id_sets": [["diff:alignment:0:structure"]]
+    },
+    {
+      "case_id": "subject-merge",
+      "evaluation_status": "scorable",
+      "accepted_top_event_ids": ["event:alignment:0"],
+      "accepted_top_atomic_difference_id_sets": [["diff:alignment:0:structure"]]
+    },
+    {
+      "case_id": "subject-many-to-many",
+      "evaluation_status": "not_applicable",
+      "accepted_top_event_ids": [],
+      "accepted_top_atomic_difference_id_sets": []
     }
   ]
 }

@@ -101,6 +101,46 @@
       "reason": "The decoded intrinsic cause is controlled, but final image compositing remains renderer-limited so the Cause Envelope is not established.",
       "reference_region_ids": [],
       "actual_causes": []
+    },
+    {
+      "case_id": "subject-deletion",
+      "evaluation_status": "eligible",
+      "reason": "The deleted subject's presence is the controlled cause of the removed painted region.",
+      "reference_region_ids": ["region-ref:subject-deletion:badge"],
+      "actual_causes": [
+        {
+          "id": "actual:subject-deletion:presence",
+          "fact_locator": {
+            "report_property": "presence",
+            "source_property": null,
+            "before_declared_value": null,
+            "after_declared_value": null,
+            "affected_subject_ids": ["badge"]
+          },
+          "rationale": "The background is unchanged and the badge exists only in the before document."
+        }
+      ]
+    },
+    {
+      "case_id": "subject-split",
+      "evaluation_status": "not_applicable",
+      "reason": "The structural split produces no rendered Difference Region, so there is no changed-pixel outcome for Cause Envelope recall.",
+      "reference_region_ids": [],
+      "actual_causes": []
+    },
+    {
+      "case_id": "subject-merge",
+      "evaluation_status": "not_applicable",
+      "reason": "The structural merge produces no rendered Difference Region, so there is no changed-pixel outcome for Cause Envelope recall.",
+      "reference_region_ids": [],
+      "actual_causes": []
+    },
+    {
+      "case_id": "subject-many-to-many",
+      "evaluation_status": "not_applicable",
+      "reason": "The exact equivalence class produces no Atomic Difference or rendered Difference Region.",
+      "reference_region_ids": [],
+      "actual_causes": []
     }
   ]
 }

@@ -4,7 +4,7 @@ Status: active evaluation transport
 
 Acceptance contract: `agent-acceptance/1`
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 The harness transports canonical Structured Report JSON to an evaluated agent without including SVG sources, rendered images, corpus metadata, or hidden annotations. It records normalized answer records for later metric computation.
 
@@ -60,7 +60,9 @@ sh scripts/run-agent-benchmark.sh --output /tmp/svgdiff-benchmark
 
 Pass a real adapter with `--agent "command --arguments"`. The output directory must be empty and receives `reports/`, `tasks.jsonl`, `answers.jsonl`, `metrics.json`, `gate.json`, and `failures.json`. The default `evaluation/benchmark-thresholds.v1.json` uses independent minimum and maximum checks; it does not compute a combined score. Use `--thresholds FILE` only for an explicitly versioned alternate policy.
 
-The current strict thresholds are calibrated to the eight-case corpus and deterministic evidence adapter. They are regression gates, not evidence that an external language model has been evaluated. Any corpus or metric version change requires an explicit threshold review.
+The current strict thresholds are calibrated to the thirteen-case corpus and deterministic evidence adapter. They are regression gates, not evidence that an external language model has been evaluated. Any corpus or metric version change requires an explicit threshold review.
+
+The 2026-07-15 review expanded the corpus from nine to thirteen cases and retained every strict threshold unchanged. The evidence adapter remains perfect on coverage, equality safety, Diagnostic recall, Atomic Difference recall, main-change rank, region overlap, and possible-cause recall, with zero hard safety failures, cause false positives, or invalid evidence references. Report candidate volume changed mechanically to 10 unique candidates, 18 candidate occurrences, and 13 regions; those raw values are regression evidence rather than relaxed acceptance thresholds.
 
 [`failure-attribution.md`](../failure-attribution.md) defines how `failures.json` separates renderer conformance, planned feature coverage, input failure, report-model regression, and agent-interpretation regression. The artifact is written even when the threshold gate fails.
 

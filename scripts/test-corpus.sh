@@ -32,8 +32,30 @@ jq -e '
     (.viewport.height | type == "number" and . > 0) and
     (.expected_analysis_status == "complete" or .expected_analysis_status == "partial") and
     (.minimum_atomic_differences | type == "number" and . >= 0) and
-    (.required_diagnostics | type == "array")
+    (.required_diagnostics | type == "array") and
+    ((.required_subject_alignments // []) | type == "array") and
+    all((.required_subject_alignments // [])[];
+      (.relation == "correspondence" or
+       .relation == "insertion" or
+       .relation == "deletion" or
+       .relation == "split" or
+       .relation == "merge") and
+      (.before_count | type == "number" and floor == . and . >= 0) and
+      (.after_count | type == "number" and floor == . and . >= 0) and
+      (.before_count + .after_count > 0) and
+      ((has("basis") | not) or (.basis | type == "string" and length > 0))
+    )
   )
+' "$manifest" >/dev/null
+
+jq -e '
+  [.cases[].required_subject_alignments[]?] as $alignments |
+  any($alignments[]; .before_count == 1 and .after_count == 1) and
+  any($alignments[]; .before_count == 0 and .after_count == 1) and
+  any($alignments[]; .before_count == 1 and .after_count == 0) and
+  any($alignments[]; .before_count == 1 and .after_count > 1) and
+  any($alignments[]; .before_count > 1 and .after_count == 1) and
+  any($alignments[]; .before_count > 1 and .after_count > 1)
 ' "$manifest" >/dev/null
 
 jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
@@ -54,11 +76,20 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   if ! printf '%s' "$case_json" | jq -e --slurpfile report "$tmp/$id.json" '
       ($report[0].analysis_status == .expected_analysis_status) and
       (($report[0].atomic_differences | length) >= .minimum_atomic_differences) and
-      ([.required_diagnostics[]] - [$report[0].diagnostics[].code] | length == 0)
+      ([.required_diagnostics[]] - [$report[0].diagnostics[].code] | length == 0) and
+      all((.required_subject_alignments // [])[];
+        . as $expected |
+        any($report[0].subject_alignments[];
+          .relation == $expected.relation and
+          (.before | length) == $expected.before_count and
+          (.after | length) == $expected.after_count and
+          (($expected | has("basis") | not) or .basis == $expected.basis)
+        )
+      )
     ' >/dev/null; then
     printf 'Corpus expectation failed: %s\n' "$id" >&2
     exit 1
   fi
 done
 
-printf 'Corpus cases: %s, required categories: 7, status: ok\n' "$(jq '.cases | length' "$manifest")"
+printf 'Corpus cases: %s, required categories: 7, alignment cardinalities: 6, status: ok\n' "$(jq '.cases | length' "$manifest")"

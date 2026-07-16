@@ -10,7 +10,10 @@
       "viewport": { "width": 16, "height": 16 },
       "expected_analysis_status": "complete",
       "minimum_atomic_differences": 1,
-      "required_diagnostics": []
+      "required_diagnostics": [],
+      "required_subject_alignments": [
+        { "relation": "correspondence", "before_count": 1, "after_count": 1 }
+      ]
     },
     {
       "id": "subtle-geometry-shift",
@@ -43,7 +46,15 @@
       "viewport": { "width": 16, "height": 16 },
       "expected_analysis_status": "complete",
       "minimum_atomic_differences": 1,
-      "required_diagnostics": []
+      "required_diagnostics": [],
+      "required_subject_alignments": [
+        {
+          "relation": "insertion",
+          "before_count": 0,
+          "after_count": 1,
+          "basis": "unmatched_subject"
+        }
+      ]
     },
     {
       "id": "resource-gradient-stop-change",
@@ -99,6 +110,82 @@
       "expected_analysis_status": "partial",
       "minimum_atomic_differences": 2,
       "required_diagnostics": ["renderer_embedded_raster_unavailable"]
+    },
+    {
+      "id": "subject-deletion",
+      "title": "Opaque rectangle deletion",
+      "categories": ["alignment", "deletion"],
+      "before": "cases/subject-deletion/before.svg",
+      "after": "cases/subject-deletion/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": [],
+      "required_subject_alignments": [
+        {
+          "relation": "deletion",
+          "before_count": 1,
+          "after_count": 0,
+          "basis": "unmatched_subject"
+        }
+      ]
+    },
+    {
+      "id": "subject-split",
+      "title": "One rectangle split into two equivalent parts",
+      "categories": ["alignment", "split", "equivalent"],
+      "before": "cases/subject-split/before.svg",
+      "after": "cases/subject-split/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": [],
+      "required_subject_alignments": [
+        {
+          "relation": "split",
+          "before_count": 1,
+          "after_count": 2,
+          "basis": "equivalent_rect_coverage"
+        }
+      ]
+    },
+    {
+      "id": "subject-merge",
+      "title": "Two rectangle parts merged into one equivalent whole",
+      "categories": ["alignment", "merge", "equivalent"],
+      "before": "cases/subject-merge/before.svg",
+      "after": "cases/subject-merge/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 1,
+      "required_diagnostics": [],
+      "required_subject_alignments": [
+        {
+          "relation": "merge",
+          "before_count": 2,
+          "after_count": 1,
+          "basis": "equivalent_rect_coverage"
+        }
+      ]
+    },
+    {
+      "id": "subject-many-to-many",
+      "title": "Indistinguishable repeated subjects reorganized as one set",
+      "categories": ["alignment", "many-to-many", "equivalent"],
+      "before": "cases/subject-many-to-many/before.svg",
+      "after": "cases/subject-many-to-many/after.svg",
+      "viewport": { "width": 16, "height": 16 },
+      "expected_analysis_status": "complete",
+      "minimum_atomic_differences": 0,
+      "required_diagnostics": [],
+      "required_subject_alignments": [
+        {
+          "relation": "correspondence",
+          "before_count": 2,
+          "after_count": 2,
+          "basis": "exact_visual_equivalence_class"
+        }
+      ]
     }
   ]
 }

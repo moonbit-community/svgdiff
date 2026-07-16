@@ -12,6 +12,8 @@ Structural subjects pair only within the same SVG kind. The engine first groups 
 
 An equal semantic class retains every endpoint in one set alignment. A one-member class is locally `unique`; a larger class is `tied` with its cardinality in both candidate counts. Authored IDs, structural paths, and source order remain weaker correspondence hints, not identity proof. Unequal-cardinality and mixed-change clusters can still reach those fallbacks until broader many-to-many invariants are accepted.
 
+The production benchmark separately fixes all currently admitted cardinality shapes: one-to-one, insertion, deletion, rectangle split, rectangle merge, and an exact repeated two-to-two class. The last case validates set membership and explicitly leaves pairwise identity undefined. It does not authorize aggregating mixed-change or unequal-cardinality repeated subjects.
+
 ## Exact visual-signature ties
 
 The engine visits before subjects in source index order and identifies unused after subjects whose kind, hierarchy signature, normalized supported visual-property signature, cumulative-transform completeness and matrix, and conservative device-space painted-bounds signature are identical. Authored `id` values are not part of this signature and do not override the visual evidence.

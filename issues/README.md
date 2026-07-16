@@ -138,6 +138,7 @@ graph TD
   ISS_120["ISS-120: Extend subject alignment across structural SVG subjects"]
   ISS_121["ISS-121: Add transform-aware rendered-geometry alignment features"]
   ISS_122["ISS-122: Match repeated subjects as semantic equivalence classes"]
+  ISS_123["ISS-123: Validate Subject Alignment cardinalities on the benchmark corpus"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -354,8 +355,9 @@ graph TD
   ISS_119 --> ISS_120
   ISS_120 --> ISS_121
   ISS_121 --> ISS_122
+  ISS_122 --> ISS_123
 ```
 
 ## Warnings
 
-None.
+- issues/ISS-123.md: unknown type 'test'

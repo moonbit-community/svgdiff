@@ -2,11 +2,23 @@
 
 Status: hidden benchmark reference data
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 Annotation files contain manually authored reference answers for the curated SVG corpus. They are available to benchmark scoring but must not be included in the prompt, context, filenames, or tools exposed to the evaluated text-only agent.
 
 The report-only [agent harness](../harness/README.md) deliberately does not read this directory when preparing or running tasks.
+
+## Subject Alignment labels
+
+`subject-alignments.v1.json` records one reviewed corpus representative for one-to-one correspondence, insertion, deletion, split, merge, and safe many-to-many membership. Its expectations are limited to relation, side cardinalities, an optional accepted basis, and the pairwise-identity boundary. In particular, the repeated two-by-two class records pairwise identity as undefined; array positions are not reference pairs.
+
+Validate these labels and their exact correspondence with production corpus expectations using:
+
+```sh
+sh scripts/test-alignment-annotations.sh
+```
+
+These labels validate the report model. They are not visual main-change answers and are never included in Agent tasks.
 
 ## Main-change labels
 

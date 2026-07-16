@@ -1,0 +1,72 @@
+{
+  "schema_version": "svgdiff-subject-alignment-labels/1",
+  "corpus_version": "svgdiff-corpus/1",
+  "annotation_method": "manual relationship and cardinality review without pairwise identity inference",
+  "cases": [
+    {
+      "case_id": "equivalent-color-spelling",
+      "shape": "one-to-one",
+      "expected_alignment": {
+        "relation": "correspondence",
+        "before_count": 1,
+        "after_count": 1
+      },
+      "pairwise_identity": "not_authoritative"
+    },
+    {
+      "case_id": "structural-rect-insertion",
+      "shape": "insertion",
+      "expected_alignment": {
+        "relation": "insertion",
+        "before_count": 0,
+        "after_count": 1,
+        "basis": "unmatched_subject"
+      },
+      "pairwise_identity": "not_applicable"
+    },
+    {
+      "case_id": "subject-deletion",
+      "shape": "deletion",
+      "expected_alignment": {
+        "relation": "deletion",
+        "before_count": 1,
+        "after_count": 0,
+        "basis": "unmatched_subject"
+      },
+      "pairwise_identity": "not_applicable"
+    },
+    {
+      "case_id": "subject-split",
+      "shape": "split",
+      "expected_alignment": {
+        "relation": "split",
+        "before_count": 1,
+        "after_count": 2,
+        "basis": "equivalent_rect_coverage"
+      },
+      "pairwise_identity": "not_applicable"
+    },
+    {
+      "case_id": "subject-merge",
+      "shape": "merge",
+      "expected_alignment": {
+        "relation": "merge",
+        "before_count": 2,
+        "after_count": 1,
+        "basis": "equivalent_rect_coverage"
+      },
+      "pairwise_identity": "not_applicable"
+    },
+    {
+      "case_id": "subject-many-to-many",
+      "shape": "many-to-many",
+      "expected_alignment": {
+        "relation": "correspondence",
+        "before_count": 2,
+        "after_count": 2,
+        "basis": "exact_visual_equivalence_class"
+      },
+      "pairwise_identity": "undefined"
+    }
+  ]
+}
