@@ -50,6 +50,7 @@ This directory separates the current product contract from future plans and hist
 | How are deterministic browser reference rasters captured? | [`browser-oracle/README.md`](../evaluation/browser-oracle/README.md) |
 | How is the pinned renderer compared with those rasters? | [`renderer-conformance/README.md`](../evaluation/renderer-conformance/README.md) |
 | How are alternate output scales used for renderer QA? | [`alternate-scale/README.md`](../evaluation/alternate-scale/README.md) |
+| What did SSIM and MS-SSIM contribute as secondary diagnostics? | [`ssim-diagnostics/README.md`](../evaluation/ssim-diagnostics/README.md) |
 | Can the current human labels calibrate Impact tiers or a total event order? | [`impact-calibration/README.md`](../evaluation/impact-calibration/README.md) |
 | When should a renderer gap go upstream or become an owned module? | [`renderer-ownership-gate.md`](renderer-ownership-gate.md) |
 | When does roadmap work become an `ISS-###` issue? | [`work-planning.md`](work-planning.md) |
@@ -67,6 +68,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 - The stable report schema is `1.43`.
 - Every report contains the uncalibrated `event_rendered_pareto/v1` Impact Assessment, which exposes all non-dominated Visual Event groups while preserving ties, incomparability, and missing rendered evidence. The v1 calibration study rejected production tiers and total ordering until stronger human evidence exists.
+- SSIM and MS-SSIM remain outside the report and Agent protocol; a versioned QA-only evaluation records their scale sensitivity, renderer-coverage false identity, unavailable product, and human-order inversions.
 - The Comparison Profile can record one explicit opaque sRGB8 Perceptual Background and optional FLIP pixels-per-degree Viewing Conditions; events then expose changed-pixel mean DeltaEOK and opt-in event-local LDR-FLIP maps while raw rendering remains transparent.
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
 - The production comparison implementation lives in `engine`; the root package is the public seam.

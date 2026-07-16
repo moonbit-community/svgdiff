@@ -149,6 +149,7 @@ graph TD
   ISS_131["ISS-131: Preserve separate event-local FLIP statistics"]
   ISS_132["ISS-132: Define a versioned main-difference Impact Assessment policy"]
   ISS_133["ISS-133: Calibrate Impact thresholds and ordering on human labels"]
+  ISS_134["ISS-134: Evaluate SSIM and MS-SSIM as QA-only structural diagnostics"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -376,6 +377,7 @@ graph TD
   ISS_130 --> ISS_131
   ISS_131 --> ISS_132
   ISS_132 --> ISS_133
+  ISS_133 --> ISS_134
 ```
 
 ## Warnings

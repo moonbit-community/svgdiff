@@ -115,3 +115,11 @@ The first versioned calibration study evaluated changed-pixel fraction, linear p
 Changed-pixel fraction can perfectly separate the eleven measured events when fitted and tested on the same data, but leave-one-case-out evaluation predicts only ten of twelve labeled events and gets nine correct. RMSE and FLIP canvas mean have overlapping or inverted tier ranges, so monotonic four-tier cutpoints are not trainable. The existing Pareto frontier recalls the accepted top target in all twelve scorable cases, but that result establishes only frontier inclusion, not a total order or tier calibration.
 
 Therefore the evidence supports retaining `event_rendered_pareto/v1` as `not_calibrated`, not emitting `none`/`low`/`medium`/`high` or `subtle`/`major`, and repeating calibration only after the prerequisites recorded in the [evaluation artifact](../../evaluation/impact-calibration/README.md) are met.
+
+## 2026-07-16 SSIM/MS-SSIM follow-up
+
+A versioned thirteen-case evaluation implemented the original SSIM local-statistics formula and five-level MS-SSIM product weights under explicit QA method identities. The original [SSIM guidance](https://ece.uwaterloo.ca/~z70wang/research/ssim/) states that useful scale depends on resolution and viewing distance, while the [MS-SSIM design](https://www.ece.uwaterloo.ca/~z70wang/publications/msssim.pdf) repeatedly filters and downsamples with calibrated cross-scale weights. The current 16×16 canonical raster is too small for five levels of an 11×11 window, so the MS-SSIM experiment necessarily used a separately identified 16× enlarged raster.
+
+The result rejects canonical integration. Canonical and enlarged SSIM differed by up to `0.9779354872328625`; the embedded-raster change became false identity under a known renderer gap; one MS-SSIM product was unavailable due to a non-positive component; and every score produced human-tier inversions or ties. Global pooling also supplies no report IDs, regions, or causes.
+
+SSIM and MS-SSIM therefore remain optional development observations for a fixed raster source and scale. They do not enter Difference Magnitude, equality, coverage, Impact Assessment, Agent tasks, or severity. See the [reproducible evaluation](../../evaluation/ssim-diagnostics/README.md) and [ADR 0090](../adr/0090-keep-ssim-out-of-canonical-report-semantics.md).

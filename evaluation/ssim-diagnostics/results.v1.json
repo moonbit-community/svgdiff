@@ -1,0 +1,512 @@
+{
+  "accepted_role": "qa_only_secondary_structural_observation",
+  "adapter_implementation_sha256": "88b005bb69fbdc3df469fd583832c81f039aae804ca78e9afd059951738641ee",
+  "annotation_review_status": "initial_single_pass",
+  "canonical_report_evidence": false,
+  "cases": [
+    {
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
+      "case_id": "equivalent-color-spelling",
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
+      "human_tier": "none",
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "fc8b5926cb2315f59692b6b50f29dddf71a0f9e5b01620f4f18cc0be1bcb44b3",
+      "ssim_scale_absolute_delta": 0
+    },
+    {
+      "canonical_dissimilarity": 0.385220290551763,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.614779709448237,
+      "case_id": "subtle-geometry-shift",
+      "enlarged_dissimilarity": 0.02492261013717023,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.9750773898628298,
+      "human_tier": "low",
+      "ms_ssim": 0.9921736821793399,
+      "ms_ssim_dissimilarity": 0.007826317820660122,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "partial",
+      "production_renderer_capability_gaps": [
+        {
+          "capability_id": "raster.fractional_geometry",
+          "diagnostic_ids": [
+            "diagnostic:renderer-fractional-geometry-unproven:box:x"
+          ],
+          "support_status": "guarded"
+        }
+      ],
+      "source_pair_sha256": "c2a8f812cdbcb8b4648456dd79a9ccb4f934da29dfcad5aeaf2e45ac8ed46670",
+      "ssim_scale_absolute_delta": 0.36029768041459276
+    },
+    {
+      "canonical_dissimilarity": 0.33079209819711575,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.6692079018028843,
+      "case_id": "salient-fill-change",
+      "enlarged_dissimilarity": 0.1978854394403292,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.8021145605596708,
+      "human_tier": "high",
+      "ms_ssim": 0.9391315203231477,
+      "ms_ssim_dissimilarity": 0.06086847967685227,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "6e1111de2fd4db0cfde6c4089a96fe2870ecc8897b66b1510a5e0704464d3576",
+      "ssim_scale_absolute_delta": 0.13290665875678653
+    },
+    {
+      "canonical_dissimilarity": 0.9923608136945772,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.007639186305422824,
+      "case_id": "structural-rect-insertion",
+      "enlarged_dissimilarity": 0.11007436643184842,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.8899256335681516,
+      "human_tier": "medium",
+      "ms_ssim": 0.32866241331352614,
+      "ms_ssim_dissimilarity": 0.6713375866864739,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "28a9e076d3e6f1b59f37906ded31837ef57ee7013c7342a61d93b1edf07cff9a",
+      "ssim_scale_absolute_delta": 0.8822864472627288
+    },
+    {
+      "canonical_dissimilarity": 0.00026620083720763077,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.9997337991627924,
+      "case_id": "resource-gradient-stop-change",
+      "enlarged_dissimilarity": 0.00036973866618972284,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.9996302613338103,
+      "human_tier": "high",
+      "ms_ssim": 0.9999033958415103,
+      "ms_ssim_dissimilarity": 9.660415848966597e-05,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "partial",
+      "production_renderer_capability_gaps": [
+        {
+          "capability_id": "raster.referenced_gradient",
+          "diagnostic_ids": [
+            "diagnostic:renderer-gradient-raster-unproven:box:fill"
+          ],
+          "support_status": "guarded"
+        }
+      ],
+      "source_pair_sha256": "b1c2e7e3b59a87fcc5c510a7c4d54dc2aaa6404dcaf8190fe0404a79d5e960ba",
+      "ssim_scale_absolute_delta": 0.00010353782898209207
+    },
+    {
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
+      "case_id": "zero-contribution-insertion",
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
+      "human_tier": "none",
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "716bf5fd089a138d50c1039648e834438c309e2584ff2d12c1ce778e969022aa",
+      "ssim_scale_absolute_delta": 0
+    },
+    {
+      "canonical_dissimilarity": 0.8864992288419771,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.1135007711580229,
+      "case_id": "unsupported-path-change",
+      "enlarged_dissimilarity": 0.3425338528956011,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.6574661471043989,
+      "human_tier": "medium",
+      "ms_ssim": null,
+      "ms_ssim_dissimilarity": null,
+      "ms_ssim_reason_code": "non_positive_final_ssim",
+      "production_analysis_status": "partial",
+      "production_renderer_capability_gaps": [
+        {
+          "capability_id": "raster.stroke_join",
+          "diagnostic_ids": [
+            "diagnostic:renderer-stroke-join-raster-unproven:mark"
+          ],
+          "support_status": "guarded"
+        },
+        {
+          "capability_id": "raster.stroke_outline",
+          "diagnostic_ids": [
+            "diagnostic:renderer-stroke-outline-raster-unproven:mark"
+          ],
+          "support_status": "guarded"
+        }
+      ],
+      "source_pair_sha256": "3114be8b05064d6b532a946d327b62e02728728a6463bcf2ae3e52f6d8caa887",
+      "ssim_scale_absolute_delta": 0.543965375946376
+    },
+    {
+      "canonical_dissimilarity": 0.9792476463151139,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.020752353684886163,
+      "case_id": "group-transform-change",
+      "enlarged_dissimilarity": 0.0013121590822513518,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.9986878409177486,
+      "human_tier": "medium",
+      "ms_ssim": 0.9996875756927561,
+      "ms_ssim_dissimilarity": 0.0003124243072438748,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "e95e938c31bec306fc14a58b7ac9a75023b5a843b15335bff41c0fc80bd0c1d9",
+      "ssim_scale_absolute_delta": 0.9779354872328625
+    },
+    {
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
+      "case_id": "embedded-raster-change",
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
+      "human_tier": "high",
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "partial",
+      "production_renderer_capability_gaps": [
+        {
+          "capability_id": "raster.embedded_images",
+          "diagnostic_ids": [
+            "diagnostic:renderer_embedded_raster_unavailable:after:0",
+            "diagnostic:renderer_embedded_raster_unavailable:before:0"
+          ],
+          "support_status": "unavailable"
+        }
+      ],
+      "source_pair_sha256": "054c2d53a22dec4c5bfd3ece1e7d4927dfc1440bd403be57ef98254da58b8416",
+      "ssim_scale_absolute_delta": 0
+    },
+    {
+      "canonical_dissimilarity": 0.9944624320581255,
+      "canonical_exact_rgba8": false,
+      "canonical_ssim": 0.00553756794187451,
+      "case_id": "subject-deletion",
+      "enlarged_dissimilarity": 0.12939969744378021,
+      "enlarged_exact_rgba8": false,
+      "enlarged_ssim": 0.8706003025562198,
+      "human_tier": "medium",
+      "ms_ssim": 0.30789656848425506,
+      "ms_ssim_dissimilarity": 0.6921034315157449,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "15449f3f218b3d14a97cbcb9add1aef74b5c02b262cf69da29390ad838823e0e",
+      "ssim_scale_absolute_delta": 0.8650627346143452
+    },
+    {
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
+      "case_id": "subject-split",
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
+      "human_tier": "none",
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "c413edf2383b484241e2e94dcc165caa64fa233817d2dfb8b8a8e4a52ec6b3ab",
+      "ssim_scale_absolute_delta": 0
+    },
+    {
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
+      "case_id": "subject-merge",
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
+      "human_tier": "none",
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "945181ad6bb0b0c756de701ec30e440c9bd5675dd057d235c77a01d20e5e7c7d",
+      "ssim_scale_absolute_delta": 0
+    },
+    {
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
+      "case_id": "subject-many-to-many",
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
+      "human_tier": "none",
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
+      "ms_ssim_reason_code": null,
+      "production_analysis_status": "complete",
+      "production_renderer_capability_gaps": [],
+      "source_pair_sha256": "662417a31f5c391fb45d8577b4e32d4df9d17f2494e64d63c727154aa141344e",
+      "ssim_scale_absolute_delta": 0
+    }
+  ],
+  "grayscale_profile": {
+    "background": {
+      "blue": 255,
+      "green": 255,
+      "red": 255
+    },
+    "coefficients": [
+      0.2989,
+      0.587,
+      0.114
+    ],
+    "dynamic_range": 255,
+    "method_id": "srgb8_bt601_luma_after_white_composite/v1"
+  },
+  "input_version": "svgdiff-ssim-diagnostic-input/1",
+  "ms_ssim_profile": {
+    "downsampling_method_id": "disjoint_2x2_box_average/v1",
+    "exact_sample_identity_clamp": true,
+    "input_output_scale": 16,
+    "levels": 5,
+    "method_id": "wang_ms_ssim_product_5_level_disjoint_box/v1",
+    "non_positive_component_behavior": "not_computed",
+    "weights": [
+      0.0448,
+      0.2856,
+      0.3001,
+      0.2363,
+      0.1333
+    ]
+  },
+  "production_integration": "rejected",
+  "production_rejection_reasons": [
+    "global_scores_do_not_localize_or_attribute_causes",
+    "scores_depend_materially_on_output_scale",
+    "renderer_coverage_gaps_can_create_false_identity",
+    "ms_ssim_product_can_be_unavailable_for_non_positive_components",
+    "human_importance_order_contains_inversions_and_ties"
+  ],
+  "production_renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
+  "raster_source_id": "direct_mizchi_svg@0.2.1",
+  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "schema_version": "svgdiff-ssim-diagnostic-results/1",
+  "ssim_profile": {
+    "canonical_output_scale": 1,
+    "exact_sample_identity_clamp": true,
+    "k1": 0.01,
+    "k2": 0.03,
+    "method_id": "wang_ssim_mean_valid_gaussian/v1",
+    "qa_enlarged_output_scale": 16,
+    "window_sigma": 1.5,
+    "window_width": 11
+  },
+  "summary": {
+    "canonical_ssim_ordering": {
+      "concordant_pair_count": 39,
+      "different_tier_pair_count": 59,
+      "inversion_examples": [
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.33079209819711575,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.385220290551763
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00026620083720763077,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.385220290551763
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.385220290551763
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.33079209819711575,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.9923608136945772
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.33079209819711575,
+          "lower_tier_case_id": "unsupported-path-change",
+          "lower_tier_score": 0.8864992288419771
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.33079209819711575,
+          "lower_tier_case_id": "group-transform-change",
+          "lower_tier_score": 0.9792476463151139
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.33079209819711575,
+          "lower_tier_case_id": "subject-deletion",
+          "lower_tier_score": 0.9944624320581255
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00026620083720763077,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.9923608136945772
+        }
+      ],
+      "inverted_pair_count": 15,
+      "measured_case_count": 13,
+      "pair_accuracy": 0.6610169491525424,
+      "tied_pair_count": 5
+    },
+    "case_count": 13,
+    "enlarged_ssim_ordering": {
+      "concordant_pair_count": 42,
+      "different_tier_pair_count": 59,
+      "inversion_examples": [
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00036973866618972284,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.02492261013717023
+        },
+        {
+          "higher_tier_case_id": "group-transform-change",
+          "higher_tier_score": 0.0013121590822513518,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.02492261013717023
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.02492261013717023
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.1978854394403292,
+          "lower_tier_case_id": "unsupported-path-change",
+          "lower_tier_score": 0.3425338528956011
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00036973866618972284,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.11007436643184842
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.11007436643184842
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00036973866618972284,
+          "lower_tier_case_id": "unsupported-path-change",
+          "lower_tier_score": 0.3425338528956011
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00036973866618972284,
+          "lower_tier_case_id": "group-transform-change",
+          "lower_tier_score": 0.0013121590822513518
+        }
+      ],
+      "inverted_pair_count": 12,
+      "measured_case_count": 13,
+      "pair_accuracy": 0.711864406779661,
+      "tied_pair_count": 5
+    },
+    "human_non_none_false_exact_case_ids": [
+      "embedded-raster-change"
+    ],
+    "human_tier_case_counts": {
+      "high": 3,
+      "low": 1,
+      "medium": 4,
+      "none": 5
+    },
+    "ms_ssim_ordering": {
+      "concordant_pair_count": 34,
+      "different_tier_pair_count": 50,
+      "inversion_examples": [
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 9.660415848966597e-05,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.007826317820660122
+        },
+        {
+          "higher_tier_case_id": "group-transform-change",
+          "higher_tier_score": 0.0003124243072438748,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.007826317820660122
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "subtle-geometry-shift",
+          "lower_tier_score": 0.007826317820660122
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.06086847967685227,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.6713375866864739
+        },
+        {
+          "higher_tier_case_id": "salient-fill-change",
+          "higher_tier_score": 0.06086847967685227,
+          "lower_tier_case_id": "subject-deletion",
+          "lower_tier_score": 0.6921034315157449
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 9.660415848966597e-05,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.6713375866864739
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.6713375866864739
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 9.660415848966597e-05,
+          "lower_tier_case_id": "group-transform-change",
+          "lower_tier_score": 0.0003124243072438748
+        }
+      ],
+      "inverted_pair_count": 11,
+      "measured_case_count": 12,
+      "pair_accuracy": 0.68,
+      "tied_pair_count": 5
+    },
+    "ms_ssim_unavailable_case_ids": [
+      "unsupported-path-change"
+    ],
+    "ssim_scale_absolute_delta_maximum": 0.9779354872328625,
+    "ssim_scale_absolute_delta_mean": 0.289427532465898
+  }
+}

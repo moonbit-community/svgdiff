@@ -93,6 +93,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0087](0087-preserve-separate-event-local-flip-statistics.md) | Accepted, implemented | Preserve canvas, selected-event, response-tail, maximum, and explicit-threshold area statistics without conflating their domains. |
 | [0088](0088-define-an-uncalibrated-event-impact-frontier.md) | Implemented | Identify non-dominated main Visual Events through a traceable uncalibrated common-rendered-evidence frontier. |
 | [0089](0089-reject-impact-calibration-from-the-v1-corpus.md) | Accepted | Reject production Impact tiers and total ordering from the single-pass, single-event v1 corpus while retaining explicit recalibration prerequisites. |
+| [0090](0090-keep-ssim-out-of-canonical-report-semantics.md) | Accepted | Retain SSIM and MS-SSIM only as versioned QA structural observations, never canonical evidence, equality, localization, severity, or Impact semantics. |
 
 ## CLI and distribution decisions
 

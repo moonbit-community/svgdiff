@@ -299,7 +299,7 @@ The following concepts are intentional future work rather than hidden current fi
 - a universal main-difference scalar or generated natural-language summary;
 - calibrated Impact Assessment thresholds, labels, confidence, or total ordering;
 - exact per-pixel Contribution Index or minimal root-cause set;
-- calibrated perceptual importance derived from DeltaEOK, FLIP, or other measurements;
+- calibrated perceptual importance derived from DeltaEOK, FLIP, or other measurements, and canonical SSIM/MS-SSIM report fields or equality meaning;
 - deterministic font loading, shaping, layout, and glyph evidence;
 - resource bundles beyond admitted PNG/JPEG `image` consumers, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
 - complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, visual execution of filter primitives beyond the admitted static `feOffset` graph, CSS filter functions, general mask or clip content, continuous-alpha/container/effect-interacting blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
