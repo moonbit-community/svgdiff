@@ -1,10 +1,63 @@
 ///|
 fn path_staged_magnitude(
+  before_subject : SourceSubject,
+  after_subject : SourceSubject,
+  property : String,
+  source_before : String,
+  source_after : String,
+  parameter_delta : Double?,
   boundary_displacement : Double?,
 ) -> DifferenceMagnitude {
-  {
+  let magnitude = {
     ..empty_difference_magnitude(),
+    parameter_abs_user_units: parameter_delta.map(delta => delta.abs()),
+    parameter_signed_user_units: parameter_delta,
+    symmetric_relative: match
+      (
+        parse_alignment_number(Some(source_before)),
+        parse_alignment_number(Some(source_after)),
+      ) {
+      (Some(before), Some(after)) =>
+        Some(symmetric_relative_delta(before, after))
+      _ => None
+    },
     geometry_displacement_css_px: boundary_displacement,
+  }
+  guard parameter_delta is Some(delta) &&
+    before_subject.transform_complete &&
+    after_subject.transform_complete else {
+    return magnitude
+  }
+  let direction = if property.has_suffix(".x") ||
+    property.has_suffix(".x1") ||
+    property.has_suffix(".x2") ||
+    property.has_suffix(".rx") {
+    Some(Horizontal)
+  } else if property.has_suffix(".y") ||
+    property.has_suffix(".y1") ||
+    property.has_suffix(".y2") ||
+    property.has_suffix(".ry") {
+    Some(Vertical)
+  } else {
+    None
+  }
+  guard direction is Some(direction) else { return magnitude }
+  guard common_parameter_directional_css_scale(
+      before_subject.cumulative_transform,
+      after_subject.cumulative_transform,
+      direction,
+    )
+    is Some(scale) else {
+    return magnitude
+  }
+  let css = delta.abs() * scale
+  {
+    ..magnitude,
+    parameter_abs_css_px: Some(css),
+    parameter_entity_fraction: parameter_entity_fraction_from_bounds(css, [
+      source_subject_bounds(before_subject),
+      source_subject_bounds(after_subject),
+    ]),
   }
 }
 
@@ -249,7 +302,10 @@ fn append_path_atomic_difference(
     },
     parameter_delta_css_px: parameter_delta,
     presence_magnitude: None,
-    magnitude: path_staged_magnitude(boundary_displacement),
+    magnitude: path_staged_magnitude(
+      before_subject, after_subject, property, source_before, source_after, parameter_delta,
+      boundary_displacement,
+    ),
     domain_ordering: empty_domain_ordering(),
   })
   difference_ids.push(difference_id)

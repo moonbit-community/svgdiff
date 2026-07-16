@@ -44,9 +44,297 @@ fn transform_translation_displacement(
 }
 
 ///|
+fn scalar_spatial_parameter(property : String) -> Bool {
+  match property {
+    "x"
+    | "y"
+    | "cx"
+    | "cy"
+    | "x1"
+    | "y1"
+    | "x2"
+    | "y2"
+    | "width"
+    | "height"
+    | "rx"
+    | "ry"
+    | "r"
+    | "stroke-width"
+    | "stroke-dashoffset" => true
+    _ => false
+  }
+}
+
+///|
+fn difference_parameter_property(difference : AtomicDifference) -> String? {
+  match difference.source_fact_before {
+    Some(fact) => Some(fact.property)
+    None => difference.source_fact_after.map(fact => fact.property)
+  }
+}
+
+///|
+fn alignment_for_difference(
+  report : StructuredReport,
+  difference : AtomicDifference,
+) -> SubjectAlignment? {
+  match difference.subject_alignment_id {
+    Some(id) =>
+      for alignment in report.subject_alignments {
+        if alignment.id == id {
+          return Some(alignment)
+        }
+      } nobreak {
+        None
+      }
+    None => None
+  }
+}
+
+///|
+fn parameter_directional_css_scale(
+  matrix : AffineTransform,
+  direction : SvgLengthDirection,
+) -> Double {
+  match direction {
+    Horizontal => @math.hypot(matrix.a, matrix.b)
+    Vertical => @math.hypot(matrix.c, matrix.d)
+    Unspecified => matrix.max_linear_scale()
+  }
+}
+
+///|
+fn parameter_scales_equal(left : Double, right : Double) -> Bool {
+  (left - right).abs() <= 1.0e-12 * left.abs().max(right.abs()).max(1.0)
+}
+
+///|
+fn directional_parameter_mappings_equal(
+  before : AffineTransform,
+  after : AffineTransform,
+  direction : SvgLengthDirection,
+) -> Bool {
+  match direction {
+    Horizontal =>
+      parameter_scales_equal(before.a, after.a) &&
+      parameter_scales_equal(before.b, after.b)
+    Vertical =>
+      parameter_scales_equal(before.c, after.c) &&
+      parameter_scales_equal(before.d, after.d)
+    Unspecified =>
+      parameter_scales_equal(before.a, after.a) &&
+      parameter_scales_equal(before.b, after.b) &&
+      parameter_scales_equal(before.c, after.c) &&
+      parameter_scales_equal(before.d, after.d)
+  }
+}
+
+///|
+fn common_parameter_directional_css_scale(
+  before : AffineTransform,
+  after : AffineTransform,
+  direction : SvgLengthDirection,
+) -> Double? {
+  if directional_parameter_mappings_equal(before, after, direction) {
+    Some(parameter_directional_css_scale(before, direction))
+  } else {
+    None
+  }
+}
+
+///|
+fn uniform_linear_css_scale(matrix : AffineTransform) -> Double? {
+  let maximum = matrix.max_linear_scale()
+  if maximum == 0.0 {
+    return Some(0.0)
+  }
+  let determinant = (matrix.a * matrix.d - matrix.b * matrix.c).abs()
+  let minimum = determinant / maximum
+  if parameter_scales_equal(maximum, minimum) {
+    Some(maximum)
+  } else {
+    None
+  }
+}
+
+///|
+fn scalar_parameter_css_scale(
+  subject : SourceSubject,
+  property : String,
+) -> Double? {
+  if (property == "stroke-width" || property == "stroke-dashoffset") &&
+    subject.stroke_non_scaling {
+    return Some(1.0)
+  }
+  let matrix = subject.cumulative_transform
+  if property == "stroke-width" || property == "stroke-dashoffset" {
+    uniform_linear_css_scale(matrix)
+  } else {
+    Some(
+      parameter_directional_css_scale(
+        matrix,
+        basic_shape_length_direction(property),
+      ),
+    )
+  }
+}
+
+///|
+fn common_scalar_parameter_css_scale(
+  before : SourceSubject,
+  after : SourceSubject,
+  property : String,
+) -> Double? {
+  match
+    (
+      scalar_parameter_css_scale(before, property),
+      scalar_parameter_css_scale(after, property),
+    ) {
+    (Some(before_scale), Some(after_scale)) =>
+      if parameter_scales_equal(before_scale, after_scale) {
+        Some(before_scale)
+      } else {
+        None
+      }
+    _ => None
+  }
+}
+
+///|
+fn scalar_parameter_css_mappings_equal(
+  before : SourceSubject,
+  after : SourceSubject,
+  property : String,
+) -> Bool {
+  if property == "stroke-width" || property == "stroke-dashoffset" {
+    if before.stroke_non_scaling != after.stroke_non_scaling {
+      return false
+    }
+    match
+      (
+        scalar_parameter_css_scale(before, property),
+        scalar_parameter_css_scale(after, property),
+      ) {
+      (Some(before_scale), Some(after_scale)) =>
+        parameter_scales_equal(before_scale, after_scale)
+      _ => false
+    }
+  } else {
+    directional_parameter_mappings_equal(
+      before.cumulative_transform,
+      after.cumulative_transform,
+      basic_shape_length_direction(property),
+    )
+  }
+}
+
+///|
+fn entity_characteristic_size_from_bounds(
+  bounds_values : Array[CssBounds?],
+) -> Double? {
+  let mut characteristic_size = 0.0
+  for bounds_value in bounds_values {
+    match bounds_value {
+      Some(bounds) =>
+        characteristic_size = characteristic_size.max(
+          @math.hypot(bounds.width, bounds.height),
+        )
+      None => ()
+    }
+  }
+  if characteristic_size > 0.0 {
+    Some(characteristic_size)
+  } else {
+    None
+  }
+}
+
+///|
+fn parameter_entity_fraction_from_bounds(
+  css : Double,
+  bounds_values : Array[CssBounds?],
+) -> Double? {
+  entity_characteristic_size_from_bounds(bounds_values).map(size => css / size)
+}
+
+///|
+fn entity_characteristic_size(
+  report : StructuredReport,
+  difference : AtomicDifference,
+  before_subjects : Array[SourceSubject],
+  after_subjects : Array[SourceSubject],
+) -> Double? {
+  guard difference.subject_role == "entity" else { return None }
+  guard alignment_for_difference(report, difference) is Some(alignment) else {
+    return None
+  }
+  let subjects = subjects_for_references(before_subjects, alignment.before) +
+    subjects_for_references(after_subjects, alignment.after)
+  guard !subjects.is_empty() else { return None }
+  let bounds_values : Array[CssBounds?] = []
+  for subject in subjects {
+    bounds_values.push(source_subject_bounds(subject))
+  }
+  entity_characteristic_size_from_bounds(bounds_values)
+}
+
+///|
+fn entity_parameter_scales(
+  report : StructuredReport,
+  difference : AtomicDifference,
+  parameter_abs : Double?,
+  before_subjects : Array[SourceSubject],
+  after_subjects : Array[SourceSubject],
+) -> (Double?, Double?) {
+  guard difference.subject_role == "entity" else { return (None, None) }
+  guard difference_parameter_property(difference) is Some(property) &&
+    scalar_spatial_parameter(property) else {
+    return (None, None)
+  }
+  guard parameter_abs is Some(parameter_abs) else { return (None, None) }
+  guard alignment_for_difference(report, difference) is Some(alignment) else {
+    return (None, None)
+  }
+  let before = subjects_for_references(before_subjects, alignment.before)
+  let after = subjects_for_references(after_subjects, alignment.after)
+  let subjects = before + after
+  guard !subjects.is_empty() &&
+    subjects.all(subject => subject.transform_complete) else {
+    return (None, None)
+  }
+  let mut scale : Double? = None
+  let mut reference_subject : SourceSubject? = None
+  for subject in subjects {
+    guard scalar_parameter_css_scale(subject, property) is Some(subject_scale) else {
+      return (None, None)
+    }
+    match reference_subject {
+      Some(reference) if !scalar_parameter_css_mappings_equal(
+          reference, subject, property,
+        ) => return (None, None)
+      None => {
+        reference_subject = Some(subject)
+        scale = Some(subject_scale)
+      }
+      _ => ()
+    }
+  }
+  guard scale is Some(scale) else { return (None, None) }
+  let css = parameter_abs * scale
+  (
+    Some(css),
+    entity_characteristic_size(
+      report, difference, before_subjects, after_subjects,
+    ).map(characteristic_size => css / characteristic_size),
+  )
+}
+
+///|
 fn difference_magnitude(
   report : StructuredReport,
   difference : AtomicDifference,
+  before_subjects : Array[SourceSubject],
+  after_subjects : Array[SourceSubject],
 ) -> DifferenceMagnitude {
   let parameter_delta = match difference.parameter_delta_css_px {
     Some(delta) => Some(delta)
@@ -74,8 +362,6 @@ fn difference_magnitude(
   }
   let geometry = difference.domain.find("geometry.") == Some(0)
   let path_geometry = difference.domain.find("geometry.path.") == Some(0)
-  let positional_geometry = difference.domain == "geometry.position" ||
-    difference.domain == "geometry.size"
   let transform_translation = transform_translation_displacement(
     difference.magnitude.transform_effect,
   )
@@ -84,18 +370,43 @@ fn difference_magnitude(
   report.profile.viewport_height.to_double() *
   report.profile.viewport_height.to_double()).sqrt()
   let rendered = rendered_magnitude_for_difference(report, difference.id)
+  let (entity_parameter_css_px, entity_parameter_fraction) = entity_parameter_scales(
+    report, difference, parameter_abs, before_subjects, after_subjects,
+  )
+  let translation_entity_fraction = match transform_translation {
+    Some(css) =>
+      entity_characteristic_size(
+        report, difference, before_subjects, after_subjects,
+      ).map(characteristic_size => css / characteristic_size)
+    None => None
+  }
+  let parameter_abs_css_px = match difference.magnitude.parameter_abs_css_px {
+    Some(value) => Some(value)
+    None if entity_parameter_css_px is Some(_) => entity_parameter_css_px
+    None if transform_translation is Some(_) => transform_translation
+    None => None
+  }
   {
     parameter_abs_user_units: parameter_abs,
     parameter_signed_user_units: parameter_delta,
     symmetric_relative,
+    parameter_abs_css_px,
+    parameter_viewport_fraction: parameter_abs_css_px.map(value => {
+      value / viewport_diagonal
+    }),
+    parameter_entity_fraction: match
+      difference.magnitude.parameter_entity_fraction {
+      Some(value) => Some(value)
+      None if translation_entity_fraction is Some(_) =>
+        translation_entity_fraction
+      None => entity_parameter_fraction
+    },
     geometry_displacement_css_px: if transform_translation is Some(_) {
       transform_translation
     } else if path_geometry {
       difference.magnitude.geometry_displacement_css_px
     } else if difference.magnitude.geometry_displacement_css_px is Some(_) {
       difference.magnitude.geometry_displacement_css_px
-    } else if positional_geometry {
-      parameter_abs
     } else {
       None
     },
@@ -106,8 +417,6 @@ fn difference_magnitude(
         difference.magnitude.geometry_displacement_css_px
       } else if difference.magnitude.geometry_displacement_css_px is Some(_) {
         difference.magnitude.geometry_displacement_css_px
-      } else if positional_geometry {
-        parameter_abs
       } else {
         None
       }
@@ -238,14 +547,32 @@ fn difference_rank(differences : Array[AtomicDifference], id : String) -> Int {
 }
 
 ///|
-fn attach_difference_magnitudes(report : StructuredReport) -> StructuredReport {
+fn attach_difference_magnitudes(
+  report : StructuredReport,
+  before_svg : String,
+  after_svg : String,
+) -> StructuredReport {
+  let before_subjects = extract_source_subjects_with_profile_or_raise(
+    before_svg,
+    report.profile,
+  ) catch {
+    _ => []
+  }
+  let after_subjects = extract_source_subjects_with_profile_or_raise(
+    after_svg,
+    report.profile,
+  ) catch {
+    _ => []
+  }
   let measured : Array[AtomicDifference] = []
   let domain_order : Array[String] = []
   for difference in report.atomic_differences {
     if !domain_order.contains(difference.domain) {
       domain_order.push(difference.domain)
     }
-    let magnitude = difference_magnitude(report, difference)
+    let magnitude = difference_magnitude(
+      report, difference, before_subjects, after_subjects,
+    )
     measured.push({
       ..difference,
       magnitude,

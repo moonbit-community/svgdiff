@@ -203,3 +203,50 @@ test "tiny path parameters remain exact across boundary quantization" {
     differences[0].magnitude.parameter_abs_user_units,
   )
 }
+
+///|
+test "path coordinate parameters expose exact transformed scales" {
+  let before = "<svg width='16' height='16'><path d='M1 1L4 1L4 4Z' transform='scale(2)'/></svg>"
+  let after = "<svg width='16' height='16'><path d='M2 1L4 1L4 4Z' transform='scale(2)'/></svg>"
+  let differences = path_domain_differences(
+    compare(before, after, ComparisonProfile::v1_default()),
+  )
+  assert_eq(differences.length(), 1)
+  assert_eq(differences[0].magnitude.parameter_abs_user_units, Some(1.0))
+  assert_eq(differences[0].magnitude.parameter_abs_css_px, Some(2.0))
+  assert_eq(
+    differences[0].magnitude.parameter_viewport_fraction,
+    Some(0.08838834764831843),
+  )
+  assert_true(
+    (differences[0].magnitude.parameter_entity_fraction.unwrap() -
+    0.23570226039551587).abs() <
+    0.000000000000001,
+  )
+}
+
+///|
+test "path arc radii expose spatial scales while rotation remains angular" {
+  let radius = path_domain_differences(
+      compare(
+        "<svg width='16' height='16'><path d='M1 1A2 3 0 0 0 8 8' transform='scale(2)'/></svg>",
+        "<svg width='16' height='16'><path d='M1 1A3 3 0 0 0 8 8' transform='scale(2)'/></svg>",
+        ComparisonProfile::v1_default(),
+      ),
+    )[0]
+  assert_eq(radius.magnitude.parameter_abs_user_units, Some(1.0))
+  assert_eq(radius.magnitude.parameter_abs_css_px, Some(2.0))
+  assert_true(radius.magnitude.parameter_viewport_fraction is Some(_))
+  assert_true(radius.magnitude.parameter_entity_fraction is None)
+  let rotation = path_domain_differences(
+      compare(
+        "<svg width='16' height='16'><path d='M1 1A2 3 0 0 0 8 8' transform='scale(2)'/></svg>",
+        "<svg width='16' height='16'><path d='M1 1A2 3 10 0 0 8 8' transform='scale(2)'/></svg>",
+        ComparisonProfile::v1_default(),
+      ),
+    )[0]
+  assert_eq(rotation.magnitude.parameter_abs_user_units, Some(10.0))
+  assert_true(rotation.magnitude.parameter_abs_css_px is None)
+  assert_true(rotation.magnitude.parameter_viewport_fraction is None)
+  assert_true(rotation.magnitude.parameter_entity_fraction is None)
+}

@@ -59,6 +59,28 @@ test "pattern resource and mediated fill differences are reported together" {
 }
 
 ///|
+test "pattern resource lengths retain canonical local magnitude without contextual scales" {
+  let before = "<svg width='200' height='200'><defs><pattern id='tile' patternUnits='userSpaceOnUse' width='1in' height='10'><rect width='1' height='1'/></pattern></defs><rect id='box' width='200' height='200' fill='url(#tile)'/></svg>"
+  let after = before.replace_all(old="width='1in'", new="width='192px'")
+  let report = compare(before, after, {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: 200,
+    viewport_height: 200,
+  })
+  guard report.atomic_differences.filter(difference => {
+      difference.domain == "resource.pattern.geometry.width"
+    })
+    is [difference] else {
+    fail("expected one pattern width difference")
+  }
+  assert_eq(difference.magnitude.parameter_abs_user_units, Some(96.0))
+  assert_eq(difference.magnitude.parameter_signed_user_units, Some(96.0))
+  assert_true(difference.magnitude.parameter_abs_css_px is None)
+  assert_true(difference.magnitude.parameter_viewport_fraction is None)
+  assert_true(difference.magnitude.parameter_entity_fraction is None)
+}
+
+///|
 test "equivalent direct and template pattern authoring remains source visible" {
   let before = "<svg width='20' height='20'><defs><pattern id='base' width='.25' height='.25'><rect id='dot' width='1' height='1' fill='red'/></pattern><pattern id='tile' href='#base'/></defs><rect id='box' width='20' height='20' fill='url(#tile)'/></svg>"
   let after = "<svg width='20' height='20'><defs><pattern id='base' width='.25' height='.25'><rect id='dot' width='1' height='1' fill='red'/></pattern><pattern id='tile' width='.25' height='.25'><rect id='dot2' width='1' height='1' fill='red'/></pattern></defs><rect id='box' width='20' height='20' fill='url(#tile)'/></svg>"

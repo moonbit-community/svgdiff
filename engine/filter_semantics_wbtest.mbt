@@ -512,6 +512,9 @@ test "filter report exposes attachment graph offsets magnitudes and localized re
   assert_eq(offsets.length(), 1)
   assert_eq(offsets[0].computed_relation.status, "different")
   assert_eq(offsets[0].magnitude.parameter_abs_user_units, Some(2.0))
+  assert_true(offsets[0].magnitude.parameter_abs_css_px is None)
+  assert_true(offsets[0].magnitude.parameter_viewport_fraction is None)
+  assert_true(offsets[0].magnitude.parameter_entity_fraction is None)
   assert_true(
     report.changed_facts.any(fact => {
       fact.id == "fact:filter:shift:primitive:0:dx" &&

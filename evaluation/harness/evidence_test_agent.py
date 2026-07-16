@@ -15,6 +15,22 @@ def event_for_difference(difference_id):
     return None
 
 
+MAGNITUDE_UNITS = {
+    "parameter_abs_user_units": "local_user_units",
+    "parameter_signed_user_units": "local_user_units",
+    "symmetric_relative": "ratio",
+    "parameter_abs_css_px": "css_px",
+    "parameter_viewport_fraction": "viewport_diagonal_fraction",
+    "parameter_entity_fraction": "entity_diagonal_fraction",
+    "geometry_displacement_css_px": "css_px",
+    "geometry_viewport_fraction": "viewport_diagonal_fraction",
+    "presence_painted_viewport_fraction": "viewport_fraction",
+    "raster_changed_pixel_fraction": "pixel_fraction",
+    "raster_rgba8_rmse": "rgba8_rmse",
+    "raster_linear_premultiplied_rgba_rmse": "linear_premultiplied_rgba_rmse",
+}
+
+
 differences = []
 for difference in report["atomic_differences"]:
     event = event_for_difference(difference["id"])
@@ -46,7 +62,16 @@ for difference in report["atomic_differences"]:
                 else [difference["subject_alignment_id"]]
             ),
             "description": f"Reported {difference['domain']} difference.",
-            "magnitude_claims": [],
+            "magnitude_claims": [
+                {
+                    "field": f"magnitude.{field}",
+                    "status": "measured" if value is not None else "not_computed",
+                    "value": value,
+                    "unit": MAGNITUDE_UNITS[field],
+                }
+                for field, value in difference["magnitude"].items()
+                if field in MAGNITUDE_UNITS
+            ],
             "region_ids": region_ids,
             "possible_cause_changed_fact_ids": possible_causes,
             "cause_guarantee": guarantee,

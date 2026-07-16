@@ -703,12 +703,17 @@ test "non-scaling stroke is a distinct computed transform effect" {
 ///|
 test "stroke width reports parameter and transform-aware boundary magnitude" {
   let cases = [
-    ("", Some(1.0)),
-    (" transform='scale(2)'", Some(2.0)),
-    (" transform='scale(2)' vector-effect='non-scaling-stroke'", Some(1.0)),
+    ("", Some(2.0), Some(1.0)),
+    (" transform='scale(2)'", Some(4.0), Some(2.0)),
+    (" transform='scale(2 3)'", None, Some(3.0)),
+    (
+      " transform='scale(2)' vector-effect='non-scaling-stroke'",
+      Some(2.0),
+      Some(1.0),
+    ),
   ]
   for case in cases {
-    let (attributes, expected_displacement) = case
+    let (attributes, expected_parameter, expected_boundary) = case
     let before = shape_svg(
       "<line id='edge' x1='2' y1='10' x2='18' y2='10' stroke='black' stroke-width='2'\{attributes}/>",
     )
@@ -727,9 +732,10 @@ test "stroke width reports parameter and transform-aware boundary magnitude" {
     assert_eq(differences.length(), 1)
     assert_eq(differences[0].magnitude.parameter_signed_user_units, Some(2.0))
     assert_eq(differences[0].magnitude.parameter_abs_user_units, Some(2.0))
+    assert_eq(differences[0].magnitude.parameter_abs_css_px, expected_parameter)
     assert_eq(
       differences[0].magnitude.geometry_displacement_css_px,
-      expected_displacement,
+      expected_boundary,
     )
   }
 }
@@ -750,5 +756,28 @@ test "stroke scalar controls do not masquerade as spatial displacement" {
   let difference = report.atomic_differences[0]
   assert_eq(difference.domain, "geometry.stroke_dash_offset")
   assert_eq(difference.magnitude.parameter_abs_user_units, Some(1.0))
+  assert_eq(difference.magnitude.parameter_abs_css_px, Some(1.0))
+  assert_true(difference.magnitude.geometry_displacement_css_px is None)
+}
+
+///|
+test "anisotropic stroke scalar mappings do not invent a CSS magnitude" {
+  let before = shape_svg(
+    "<polyline id='edge' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-dasharray='2 2' stroke-dashoffset='0' transform='scale(2 3)'/>",
+  )
+  let after = shape_svg(
+    "<polyline id='edge' points='2,14 8,2 14,14' fill='none' stroke='black' stroke-dasharray='2 2' stroke-dashoffset='1' transform='scale(2 3)'/>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let difference = report.atomic_differences[0]
+  assert_eq(difference.domain, "geometry.stroke_dash_offset")
+  assert_eq(difference.magnitude.parameter_abs_user_units, Some(1.0))
+  assert_true(difference.magnitude.parameter_abs_css_px is None)
+  assert_true(difference.magnitude.parameter_viewport_fraction is None)
+  assert_true(difference.magnitude.parameter_entity_fraction is None)
   assert_true(difference.magnitude.geometry_displacement_css_px is None)
 }

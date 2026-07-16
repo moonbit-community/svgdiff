@@ -71,7 +71,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.35":
+    if report.get("schema_version") != "1.36":
         raise ValueError(f"unexpected report schema for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
@@ -155,6 +155,9 @@ def validate_false_equality(case: dict, report: dict) -> None:
         difference["domain"] != "geometry.path.parameter"
         or difference["computed_relation"]["status"] != "different"
         or difference["magnitude"]["parameter_abs_user_units"] != 14
+        or difference["magnitude"]["parameter_abs_css_px"] != 14
+        or difference["magnitude"]["parameter_viewport_fraction"] is None
+        or difference["magnitude"]["parameter_entity_fraction"] is None
         or difference["magnitude"]["geometry_displacement_css_px"] <= 0
         for difference in differences
     ):
@@ -321,6 +324,17 @@ def validate_magnitude_ordering(report: dict) -> None:
     ]
     if magnitudes != [4, 1]:
         raise ValueError(f"geometry magnitudes are not descending: {magnitudes}")
+    if [
+        difference["magnitude"]["parameter_abs_css_px"]
+        for difference in differences
+    ] != [4, 1]:
+        raise ValueError("geometry parameter CSS magnitudes were lost")
+    if any(
+        difference["magnitude"]["parameter_viewport_fraction"] is None
+        or difference["magnitude"]["parameter_entity_fraction"] is None
+        for difference in differences
+    ):
+        raise ValueError("geometry normalized parameter magnitudes were lost")
     if any(
         difference["domain_ordering"]["policy_id"] != "v2_domain_lexicographic"
         for difference in differences

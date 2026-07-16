@@ -169,6 +169,24 @@
       }
     },
     {
+      "id": "exact-parameter-scales",
+      "before": "evaluation/schema-examples/cases/exact-parameter-scales/before.svg",
+      "after": "evaluation/schema-examples/cases/exact-parameter-scales/after.svg",
+      "output": "schema/examples/exact-parameter-scales.json",
+      "expected": {
+        "analysis_status": "complete",
+        "domains": ["geometry.position"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": [],
+        "magnitude_checks": [
+          { "domain": "geometry.position", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 1 },
+          { "domain": "geometry.position", "field": "magnitude.parameter_abs_css_px", "op": "eq", "value": 2 },
+          { "domain": "geometry.position", "field": "magnitude.parameter_viewport_fraction", "op": "eq", "value": 0.08838834764831843 },
+          { "domain": "geometry.position", "field": "magnitude.parameter_entity_fraction", "op": "eq", "value": 0.14907119849998599 }
+        ]
+      }
+    },
+    {
       "id": "salient-fill-change",
       "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
       "after": "evaluation/corpus/cases/salient-fill-change/after.svg",
@@ -323,7 +341,7 @@
         ],
         "magnitude_checks": [
           { "domain": "geometry.path.parameter", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 12 },
-          { "domain": "geometry.path.parameter", "field": "magnitude.geometry_displacement_css_px", "op": "gt", "value": 0 }
+          { "domain": "geometry.path.parameter", "field": "magnitude.parameter_abs_css_px", "op": "gt", "value": 0 }
         ]
       }
     },
@@ -434,7 +452,7 @@
         "diagnostic_codes": [],
         "magnitude_checks": [
           { "domain": "geometry.position", "field": "magnitude.parameter_abs_user_units", "op": "eq", "value": 0 },
-          { "domain": "geometry.size", "field": "magnitude.geometry_displacement_css_px", "op": "eq", "value": 0 }
+          { "domain": "geometry.size", "field": "magnitude.parameter_abs_css_px", "op": "eq", "value": 0 }
         ]
       }
     },

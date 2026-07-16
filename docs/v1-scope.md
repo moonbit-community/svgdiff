@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-15
 
-This document states what schema `1.35` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.36` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -64,7 +64,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - SVG 2 paint-server URL fallbacks for `fill` and `stroke`: valid same-document gradients and patterns select the resource, missing or wrong-kind local targets select an optional supported solid color, `currentColor`, or `none`, and an absent fallback resolves to no paint; inactive fallbacks retain source facts without computed dependencies;
 - inherited `paint-order` with omitted-operation expansion and active-operation comparison; inherited `fill-rule` with inactive-fill and simple-contour equivalence; and inherited `clip-rule` with inactive ordinary-element semantics plus conservative `clipPath` child ownership and dependency fan-out;
 - source, computed, and rendered distinction for equivalent paint spellings such as `red`, `#ff0000`, `rgb(255,0,0)`, and `hsl(0,100%,50%)`;
-- exact continuous parameter deltas independent of raster quantization;
+- exact continuous scalar parameter deltas in canonical local user units, CSS pixels under complete cumulative mappings, Comparison Viewport-diagonal fractions, and entity-relative fractions when nonzero per-side conservative bounds exist, all independent of raster quantization;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
 - connected pixel-mask Difference Regions and conservative computed-bounds fallback regions;

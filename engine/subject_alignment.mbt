@@ -2365,7 +2365,7 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_cause_envelopes(report)
   comparison_guard.checkpoint()
-  let report = attach_difference_magnitudes(report)
+  let report = attach_difference_magnitudes(report, before_svg, after_svg)
   comparison_guard.checkpoint()
   let report = attach_feature_coverage(
     report, before_svg, after_svg, resources, limits,

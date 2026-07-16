@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.35` interpretation guide
+Status: current schema `1.36` interpretation guide
 
 Last verified: 2026-07-15
 
@@ -42,7 +42,7 @@ For each referenced Subject Alignment, read `evidence` before describing the ali
 
 Local uniqueness is not proof of authored identity or global assignment uniqueness. A deterministic tie-break is not confidence. Current reports therefore use `confidence: null` with `confidence_status: "not_calibrated"`; never derive a probability from candidate counts. Because `evidence` is additive and optional in Schema `1.1`, absence means uncertainty evidence was not reported and must not be rewritten as `unique`.
 
-Schema `1.35` distinguishes entity and resource alignments with `subject_role`. `use_instance_path`, transform- and bounds-aware visual signatures, and `rendered_geometry_feature_distance_v1` concern rendered entities. `resource_semantic_signature`, `resource_authored_id`, `resource_path`, and `resource_stable_kind_order` concern resource definitions; an image may have both a resource alignment for its content and an entity alignment for its placement. Every resource Atomic Difference references a resource-role alignment, but that correspondence does not prove that consumers, computed paints, or rendered pixels agree. Preserve separately reported mediated entity differences and Changed Fact fan-out.
+Schema `1.36` distinguishes entity and resource alignments with `subject_role`. `use_instance_path`, transform- and bounds-aware visual signatures, and `rendered_geometry_feature_distance_v1` concern rendered entities. `resource_semantic_signature`, `resource_authored_id`, `resource_path`, and `resource_stable_kind_order` concern resource definitions; an image may have both a resource alignment for its content and an entity alignment for its placement. Every resource Atomic Difference references a resource-role alignment, but that correspondence does not prove that consumers, computed paints, or rendered pixels agree. Preserve separately reported mediated entity differences and Changed Fact fan-out.
 
 The feature score is a bounded, dimensionless candidate-selection cost; a lower value means only that the selected same-kind endpoints were closer under this versioned geometry/appearance/hierarchy/path policy. `exact_visual_equivalence_class` and multi-endpoint semantic-signature alignments are sets, not ordered pairs: never zip `before` and `after`, and do not claim that matching array positions identify the same object. Weaker authored-ID, path, and stable-order rules are correspondence hints for changed subjects. Do not report any alignment evidence as visual magnitude, rendered equality, perceptual distance, calibrated confidence, or a cross-report comparable quality score. A text alignment does not remove `font_analysis_deferred`.
 
@@ -110,13 +110,17 @@ Read `document.viewport` the same way as an authored coordinate-system cause, no
 
 Magnitude fields are evidence, not severity labels:
 
-- parameter and geometry fields describe exact or device-space displacement;
+- `parameter_abs_user_units` and `parameter_signed_user_units` describe the canonical local scalar delta; authored spelling and units remain in the source facts;
+- `parameter_abs_css_px` describes exact device-space scalar displacement only under one complete mapping shared by both sides, `parameter_viewport_fraction` divides it by the recorded viewport diagonal, and `parameter_entity_fraction` divides it by the maximum nonzero before/after entity-bounds diagonal;
+- geometry displacement fields describe outcome-oriented boundary or geometry evidence and must not be substituted for exact parameter displacement;
 - tagged transform-effect fields describe canonical affine component changes in their declared CSS-pixel, degree, scale, or exact-matrix units;
 - presence fields describe bounds and painted footprint on the side where the subject exists;
 - raster fields describe the canonical rendered response;
 - null or absent fields mean not computed, not zero.
 
-Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.35` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
+Do not infer visibility from any one parameter field. A nonzero exact parameter value can coexist with zero changed pixels, and a null contextual field can coexist with a valid local delta when transforms conflict, a stroke mapping is anisotropic, or entity bounds are zero or unavailable. Do not compare a viewport fraction with an entity fraction as if they used the same denominator, and do not turn either into an Impact Assessment label.
+
+Use `domain_ordering.components` only to order items from the exact same domain under the same `policy_id`; the [v2 policy](domain-ordering.md) defines component meanings and tie-breaking. Schema `1.36` does not define a universal cross-domain importance score. When asked for the "main" difference across domains, describe the strongest directly supported evidence and state that the cross-domain choice is an interpretation rather than an intrinsic numeric comparison.
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 

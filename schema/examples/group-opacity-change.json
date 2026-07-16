@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.35",
+  "schema_version": "1.36",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -447,6 +447,9 @@
         "parameter_abs_user_units": 0.5,
         "parameter_signed_user_units": -0.5,
         "symmetric_relative": 0.6666666666666666,
+        "parameter_abs_css_px": null,
+        "parameter_viewport_fraction": null,
+        "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.35",
+  "schema_version": "1.36",
   "analysis_status": "complete",
   "coverage_matrix": [
     {
@@ -240,6 +240,9 @@
         "parameter_abs_user_units": null,
         "parameter_signed_user_units": null,
         "symmetric_relative": null,
+        "parameter_abs_css_px": null,
+        "parameter_viewport_fraction": null,
+        "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
@@ -278,6 +281,9 @@
         "parameter_abs_user_units": null,
         "parameter_signed_user_units": null,
         "symmetric_relative": null,
+        "parameter_abs_css_px": null,
+        "parameter_viewport_fraction": null,
+        "parameter_entity_fraction": null,
         "geometry_displacement_css_px": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
@@ -316,6 +322,9 @@
         "parameter_abs_user_units": null,
         "parameter_signed_user_units": null,
         "symmetric_relative": null,
+        "parameter_abs_css_px": 4,
+        "parameter_viewport_fraction": 0.17677669529663687,
+        "parameter_entity_fraction": 0.565685424949238,
         "geometry_displacement_css_px": 4,
         "geometry_viewport_fraction": 0.17677669529663687,
         "presence_painted_viewport_fraction": null,

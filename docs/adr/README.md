@@ -84,6 +84,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0078](0078-represent-exact-repeated-subjects-as-equivalence-classes.md) | Accepted, implemented for equal-cardinality exact classes | Preserve indistinguishable rendered and structural repeats as set-to-set classes without manufacturing pairwise source-order identity. |
 | [0079](0079-validate-safe-alignment-cardinalities-in-the-production-corpus.md) | Accepted, implemented in the curated benchmark | Validate every admitted alignment cardinality through production reports without expanding safe many-to-many membership into mixed-change aggregation. |
 | [0080](0080-align-visual-resources-separately-from-entities.md) | Accepted, implemented | Give Visual Resources independent role-typed alignments and attach every resource Atomic Difference without collapsing mediated entity outcomes. |
+| [0081](0081-separate-exact-parameter-scales-from-rendered-outcomes.md) | Accepted, implemented | Preserve exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales without substituting boundary, raster, or severity evidence. |
 
 ## CLI and distribution decisions
 

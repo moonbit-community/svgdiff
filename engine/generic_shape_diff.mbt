@@ -673,72 +673,99 @@ fn generic_initial_magnitude(
   parameter_delta : Double?,
 ) -> DifferenceMagnitude {
   let magnitude = empty_difference_magnitude()
-  if relation.status != "different" {
-    return magnitude
-  }
   match parameter_delta {
     Some(delta) => {
+      let before_value = generic_subject_computed_value(
+        before_subject,
+        property,
+        source_subject_fact(before_subject, property),
+      ).bind(value => parse_alignment_number(Some(value)))
+      let after_value = generic_subject_computed_value(
+        after_subject,
+        property,
+        source_subject_fact(after_subject, property),
+      ).bind(value => parse_alignment_number(Some(value)))
+      let parameter_magnitude = {
+        ..magnitude,
+        parameter_abs_user_units: Some(delta.abs()),
+        parameter_signed_user_units: Some(delta),
+        symmetric_relative: match (before_value, after_value) {
+          (Some(before), Some(after)) =>
+            Some(symmetric_relative_delta(before, after))
+          _ => None
+        },
+      }
+      if relation.status != "different" {
+        return parameter_magnitude
+      }
       if property == "opacity" ||
         property == "fill-opacity" ||
         property == "stroke-opacity" {
-        fn computed_number(subject : SourceSubject) -> Double? {
-          match
-            generic_subject_computed_value(
-              subject,
-              property,
-              source_subject_fact(subject, property),
-            ) {
-            Some(value) => parse_alignment_number(Some(value))
-            None => None
-          }
-        }
-        let before = computed_number(before_subject)
-        let after = computed_number(after_subject)
-        return {
-          ..magnitude,
-          parameter_abs_user_units: Some(delta.abs()),
-          parameter_signed_user_units: Some(delta),
-          symmetric_relative: match (before, after) {
-            (Some(before), Some(after)) =>
-              Some(symmetric_relative_delta(before, after))
-            _ => None
-          },
-        }
+        return parameter_magnitude
+      }
+      if !before_subject.transform_complete || !after_subject.transform_complete {
+        return parameter_magnitude
       }
       if basic_shape_geometry_property(before_subject.kind, property) {
-        fn scale(subject : SourceSubject) -> Double {
-          let matrix = subject.cumulative_transform
-          match basic_shape_length_direction(property) {
-            Horizontal => @math.hypot(matrix.a, matrix.b)
-            Vertical => @math.hypot(matrix.c, matrix.d)
-            Unspecified => matrix.max_linear_scale()
-          }
+        guard common_parameter_directional_css_scale(
+            before_subject.cumulative_transform,
+            after_subject.cumulative_transform,
+            basic_shape_length_direction(property),
+          )
+          is Some(scale) else {
+          return parameter_magnitude
         }
+        let css_displacement = delta.abs() * scale
         return {
-          ..magnitude,
-          geometry_displacement_css_px: Some(
-            delta.abs() * scale(before_subject).max(scale(after_subject)),
+          ..parameter_magnitude,
+          parameter_abs_css_px: Some(css_displacement),
+          parameter_entity_fraction: parameter_entity_fraction_from_bounds(
+            css_displacement,
+            [
+              source_subject_bounds(before_subject),
+              source_subject_bounds(after_subject),
+            ],
           ),
+          geometry_displacement_css_px: Some(css_displacement),
         }
       }
       if property != "stroke-width" {
-        return magnitude
+        return parameter_magnitude
       }
-      let before_scale = if before_subject.stroke_non_scaling {
+      let before_boundary_scale = if before_subject.stroke_non_scaling {
         1.0
       } else {
         before_subject.cumulative_transform.max_linear_scale()
       }
-      let after_scale = if after_subject.stroke_non_scaling {
+      let after_boundary_scale = if after_subject.stroke_non_scaling {
         1.0
       } else {
         after_subject.cumulative_transform.max_linear_scale()
       }
+      let boundary_css_px = delta.abs() /
+        2.0 *
+        before_boundary_scale.max(after_boundary_scale)
+      guard common_scalar_parameter_css_scale(
+          before_subject, after_subject, property,
+        )
+        is Some(scale) else {
+        return {
+          ..parameter_magnitude,
+          geometry_displacement_css_px: Some(boundary_css_px),
+        }
+      }
+      let parameter_css_px = delta.abs() * scale
       {
-        ..magnitude,
-        geometry_displacement_css_px: Some(
-          delta.abs() / 2.0 * before_scale.max(after_scale),
+        ..parameter_magnitude,
+        parameter_abs_css_px: Some(parameter_css_px),
+        parameter_entity_fraction: parameter_entity_fraction_from_bounds(
+          parameter_css_px,
+          [
+            source_subject_bounds(before_subject),
+            source_subject_bounds(after_subject),
+          ],
         ),
+        geometry_displacement_css_px: Some(boundary_css_px),
       }
     }
     None => magnitude
@@ -1147,7 +1174,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "1.35",
+    schema_version: "1.36",
     analysis_status: "complete",
     coverage_matrix: [],
     renderer_capability_gaps: [],

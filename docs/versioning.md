@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-15
+Last verified: 2026-07-16
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -10,9 +10,9 @@ Last verified: 2026-07-15
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.15` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.35` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Diagnostics | Schema `1.35` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| MoonBit module and CLI | `0.5.16` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.36` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Diagnostics | Schema `1.36` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/25` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
@@ -106,6 +106,8 @@ Module `0.5.13` makes direct rendered-subject correspondence sensitive to comple
 Module `0.5.14` represents equal-cardinality duplicates with exact rendered and reportable source-semantic signatures as one set-to-set equivalence-class alignment instead of arbitrary source-order pairs; visually equivalent authoring differences remain one-to-one and reportable. Source-structural subjects first match by a recursive kind/attribute/direct-text/ordered-child semantic signature that ignores authored IDs, sibling order, attribute order, and nonvisual `aria-*`/`data-*` metadata, then retain authored-ID, path, and stable-order fallbacks for changed semantics. The new closed `structural_semantic_signature` score kind and the explicit non-pairwise meaning of repeated alignment arrays advance Structured Report schema to `1.34`; renderer identity, conformance profile `/25`, public report fields, Diagnostics, and v2 ordering tuples remain unchanged.
 
 Module `0.5.15` separates Visual Resource alignment from Visual Entity alignment with a required `subject_role` on every Subject Alignment. Resource definitions use distinct semantic, authored-ID, path, stable-order, and unmatched evidence vocabularies; intrinsic image content receives a resource alignment independently from image placement. Every resource Atomic Difference now references a resource-role alignment while mediated entity outcomes, Changed Fact fan-out, events, regions, and Cause Envelopes remain intact. The required role and closed resource score kinds advance Structured Report schema to `1.35`; renderer identity, conformance profile `/25`, Diagnostics, and v2 ordering tuples remain unchanged.
+
+Module `0.5.16` adds required nullable `parameter_abs_css_px`, `parameter_viewport_fraction`, and `parameter_entity_fraction` fields beside the existing canonical local scalar deltas. Admitted scalar entity geometry and decomposed translation use complete cumulative mappings, the Comparison Viewport diagonal, and the maximum nonzero per-side conservative-bounds diagonal; unavailable contexts remain null. Exact parameter measurements stay independent from outcome-oriented geometry, raster, and future Impact Assessment evidence. The required magnitude fields advance Structured Report schema to `1.36`; renderer identity, conformance profile `/25`, Diagnostics, and v2 ordering tuples remain unchanged.
 
 ## Structured Report schema versions
 

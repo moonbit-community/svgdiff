@@ -120,6 +120,9 @@ pub(all) struct DifferenceMagnitude {
   parameter_abs_user_units : Double?
   parameter_signed_user_units : Double?
   symmetric_relative : Double?
+  parameter_abs_css_px : Double?
+  parameter_viewport_fraction : Double?
+  parameter_entity_fraction : Double?
   geometry_displacement_css_px : Double?
   geometry_viewport_fraction : Double?
   presence_painted_viewport_fraction : Double?

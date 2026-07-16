@@ -200,11 +200,15 @@ fn append_pattern_component_difference(
     fact_ids.push_iter(group.changed_fact_ids.iter())
   }
   let magnitude = match (before_number, after_number) {
-    (Some(before), Some(after)) =>
+    (Some(before), Some(after)) => {
+      let delta = after - before
       {
         ..empty_difference_magnitude(),
+        parameter_abs_user_units: Some(delta.abs()),
+        parameter_signed_user_units: Some(delta),
         symmetric_relative: Some(symmetric_relative_delta(before, after)),
       }
+    }
     _ => empty_difference_magnitude()
   }
   let id = "diff:pattern:\{key}:\{component}"

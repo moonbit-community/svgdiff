@@ -11,16 +11,30 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.35")
+  assert_eq(report.schema_version, "1.36")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.35", "events": [_], .. } => ()
+    { "schema_version": "1.36", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.35", "events": [_], .. } => ()
+    { "schema_version": "1.36", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
+}
+
+///|
+test "root comparison exposes exact parameter scales" {
+  let report = @svgdiff.compare(
+    "<svg width='16' height='16'><rect id='box' x='1' y='1' width='3' height='4' transform='scale(2 3)'/></svg>",
+    "<svg width='16' height='16'><rect id='box' x='2' y='1' width='3' height='4' transform='scale(2 3)'/></svg>",
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  let magnitude = report.atomic_differences[0].magnitude
+  assert_eq(magnitude.parameter_abs_user_units, Some(1.0))
+  assert_eq(magnitude.parameter_abs_css_px, Some(2.0))
+  assert_eq(magnitude.parameter_viewport_fraction, Some(0.08838834764831843))
+  assert_eq(magnitude.parameter_entity_fraction, Some(0.14907119849998599))
 }
 
 ///|

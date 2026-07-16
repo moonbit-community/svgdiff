@@ -48,7 +48,7 @@ python3 evaluation/harness/score.py \
 
 Metrics version `svgdiff-evaluation-metrics/1` keeps report and agent layers separate. It records agent Atomic Difference recall and main-change reciprocal rank, report and agent region overlap, report Cause Envelope and agent possible-cause recall, conservative candidate volume and false-positive counts, and invalid evidence references. Candidate volume includes unique candidates, candidate occurrences across regions, region count, and candidates per region for every case. False-positive count and fraction are computed only where hidden actual-cause labels make precision scorable. Exact reference bounds use bounding-box IoU; conservative reference bounds score how much of the predicted union is contained by the reference. Results include per-case values and macro or total aggregates, never a universal combined score.
 
-`evidence_test_agent.py` is a deterministic protocol and scoring fixture that copies report evidence without reading hidden labels. It is not an intelligent benchmark baseline.
+`evidence_test_agent.py` is a deterministic protocol and scoring fixture that copies report evidence without reading hidden labels, including every named scalar magnitude with its explicit availability and unit. It is not an intelligent benchmark baseline.
 
 ## Reproducible benchmark gate
 

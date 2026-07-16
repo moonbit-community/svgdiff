@@ -3,6 +3,7 @@
 import argparse
 import copy
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -60,12 +61,15 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             raise ValueError(f"{case['id']}: missing domain {check['domain']}")
         actual_value = nested_value(by_domain[check["domain"]], check["field"])
         expected_value = check["value"]
-        operators = {
-            "eq": actual_value == expected_value,
-            "gt": actual_value > expected_value,
-            "lt": actual_value < expected_value,
-        }
-        if check["op"] not in operators or not operators[check["op"]]:
+        if check["op"] == "eq":
+            matches = actual_value == expected_value
+        elif check["op"] == "gt":
+            matches = isinstance(actual_value, (int, float)) and actual_value > expected_value
+        elif check["op"] == "lt":
+            matches = isinstance(actual_value, (int, float)) and actual_value < expected_value
+        else:
+            matches = False
+        if not matches:
             raise ValueError(
                 f"{case['id']}: {check['field']}={actual_value!r} does not "
                 f"satisfy {check['op']} {expected_value!r}"
@@ -209,6 +213,9 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
         "parameter_abs_user_units",
         "parameter_signed_user_units",
         "symmetric_relative",
+        "parameter_abs_css_px",
+        "parameter_viewport_fraction",
+        "parameter_entity_fraction",
         "geometry_displacement_css_px",
         "geometry_viewport_fraction",
         "presence_painted_viewport_fraction",
@@ -234,6 +241,32 @@ def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any])
         ):
             raise ValueError(
                 f"{case['id']}: {difference['id']} has a nonnumeric raw magnitude"
+            )
+        parameter_css = magnitude["parameter_abs_css_px"]
+        parameter_viewport = magnitude["parameter_viewport_fraction"]
+        parameter_entity = magnitude["parameter_entity_fraction"]
+        viewport_diagonal = math.hypot(
+            report["profile"]["viewport_width"],
+            report["profile"]["viewport_height"],
+        )
+        if (parameter_css is None) != (parameter_viewport is None):
+            raise ValueError(
+                f"{case['id']}: {difference['id']} split one parameter measurement"
+            )
+        if parameter_css is not None and not math.isclose(
+            parameter_viewport,
+            parameter_css / viewport_diagonal,
+            rel_tol=1e-12,
+            abs_tol=1e-15,
+        ):
+            raise ValueError(
+                f"{case['id']}: {difference['id']} has an inconsistent viewport fraction"
+            )
+        if parameter_entity is not None and (
+            parameter_css is None or parameter_entity < 0
+        ):
+            raise ValueError(
+                f"{case['id']}: {difference['id']} has an invalid entity fraction"
             )
         intrinsic = magnitude.get("intrinsic_raster")
         if intrinsic is not None:
@@ -599,6 +632,28 @@ def main() -> None:
         "parameter_abs_user_units"
     ] = "not-a-number"
     expect_schema_rejection(wrong_nullable_type, schema, "wrong nullable type")
+    missing_parameter_scale = copy.deepcopy(reports["exact-parameter-scales"])
+    del missing_parameter_scale["atomic_differences"][0]["magnitude"][
+        "parameter_abs_css_px"
+    ]
+    expect_schema_rejection(
+        missing_parameter_scale, schema, "missing exact parameter scale"
+    )
+    inconsistent_parameter_scale = copy.deepcopy(
+        reports["exact-parameter-scales"]
+    )
+    inconsistent_parameter_scale["atomic_differences"][0]["magnitude"][
+        "parameter_viewport_fraction"
+    ] = 1
+    try:
+        assert_raw_magnitude_authority(
+            {"id": "inconsistent-parameter-scale"},
+            inconsistent_parameter_scale,
+        )
+    except ValueError:
+        pass
+    else:
+        raise ValueError("semantic validation accepted inconsistent parameter scales")
     wrong_nullable_fact = copy.deepcopy(reports["subject-insertion"])
     wrong_nullable_fact["changed_facts"][0]["before"] = 7
     expect_schema_rejection(wrong_nullable_fact, schema, "wrong nullable fact")

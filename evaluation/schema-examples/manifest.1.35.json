@@ -1,0 +1,21 @@
+{
+  "schema_version": "svgdiff-schema-examples/1",
+  "cases": [
+    {
+      "id": "tiny-numeric-geometry",
+      "before": "evaluation/corpus/cases/subtle-geometry-shift/before.svg",
+      "after": "evaluation/corpus/cases/subtle-geometry-shift/after.svg",
+      "output": "schema/examples/legacy-1.35-tiny-numeric-geometry.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["geometry.position"],
+        "computed_relations": ["different"],
+        "diagnostic_codes": ["renderer_fractional_geometry_unproven"],
+        "magnitude_checks": [
+          { "domain": "geometry.position", "field": "magnitude.parameter_abs_user_units", "op": "gt", "value": 0 },
+          { "domain": "geometry.position", "field": "magnitude.geometry_viewport_fraction", "op": "gt", "value": 0 }
+        ]
+      }
+    }
+  ]
+}

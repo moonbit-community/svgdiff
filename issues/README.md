@@ -140,6 +140,7 @@ graph TD
   ISS_122["ISS-122: Match repeated subjects as semantic equivalence classes"]
   ISS_123["ISS-123: Validate Subject Alignment cardinalities on the benchmark corpus"]
   ISS_124["ISS-124: Align Visual Resources separately from Visual Entities"]
+  ISS_125["ISS-125: Complete exact parameter magnitudes across coordinate scales"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -358,6 +359,7 @@ graph TD
   ISS_121 --> ISS_122
   ISS_122 --> ISS_123
   ISS_123 --> ISS_124
+  ISS_124 --> ISS_125
 ```
 
 ## Warnings

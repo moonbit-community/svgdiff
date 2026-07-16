@@ -1,17 +1,19 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: current schema `1.35` contract
+Status: current schema `1.36` contract
 
 Last verified: 2026-07-14
 
-Schema `1.35` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
+Schema `1.36` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
 
-- `AtomicDifference.magnitude` for continuous parameter, relative, device-space, viewport-relative, presence, and raster observations;
+- `AtomicDifference.magnitude` for continuous local parameter, exact CSS-pixel parameter, viewport-diagonal, entity-relative, geometry-outcome, presence, and raster observations;
 - optional tagged `AtomicDifference.magnitude.transform_effect` for raw translation, rotation, signed-scale, skew, or singular residual-matrix effects;
 - optional `AtomicDifference.presence_magnitude` for inserted or deleted subject count, bounds, and isolated painted footprint;
 - `VisualEvent.rendered_outcome.magnitude` for the canonical event raster response.
 
 Unavailable observations remain null or explicitly not computed. Numeric zero is a measured result and cannot be replaced by absence, while absence cannot be converted to zero.
+
+The parameter fields are not interchangeable normalizations. `parameter_viewport_fraction` and `parameter_entity_fraction` share the exact `parameter_abs_css_px` numerator but use the Comparison Viewport diagonal and the maximum nonzero per-side entity-bounds diagonal respectively. They describe scale, not visibility, salience, confidence, or severity. Outcome-oriented geometry and raster fields remain independent observations.
 
 `AtomicDifference.domain_ordering` is a versioned derived view for ordering only differences from the exact same domain. Every component of `v2_domain_lexicographic` is copied from a named retained raw magnitude field, in the order defined by the [Domain Ordering Policy](domain-ordering.md). Transform component domains deliberately retain different leading units and are incomparable with one another. The tuple does not contain a hidden score and is never more authoritative than its source fields.
 

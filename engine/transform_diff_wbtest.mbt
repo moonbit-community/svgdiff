@@ -48,6 +48,16 @@ test "local transform change reports its cumulative matrix" {
   assert_true(
     differences[2].magnitude.transform_effect is Some(TranslationEffect(_)),
   )
+  assert_eq(differences[2].magnitude.parameter_abs_css_px, Some(2.0))
+  assert_eq(
+    differences[2].magnitude.parameter_viewport_fraction,
+    Some(0.08838834764831843),
+  )
+  assert_true(
+    (differences[2].magnitude.parameter_entity_fraction.unwrap() -
+    0.35355339059327373).abs() <
+    0.000000000000001,
+  )
   assert_eq(report.changed_facts.length(), 1)
 }
 
@@ -204,6 +214,11 @@ test "combined affine change emits typed translation rotation scale and skew" {
     }
     _ => fail("rotation magnitude kind changed")
   }
+  let rotation = transform_effect_difference(
+    report, "geometry.transform.rotation",
+  )
+  assert_true(rotation.magnitude.parameter_abs_css_px is None)
+  assert_true(rotation.magnitude.parameter_entity_fraction is None)
   match
     transform_effect_difference(report, "geometry.transform.scale").magnitude.transform_effect {
     Some(ScaleEffect(value)) => {
@@ -213,6 +228,9 @@ test "combined affine change emits typed translation rotation scale and skew" {
     }
     _ => fail("scale magnitude kind changed")
   }
+  let scale = transform_effect_difference(report, "geometry.transform.scale")
+  assert_true(scale.magnitude.parameter_abs_css_px is None)
+  assert_true(scale.magnitude.parameter_entity_fraction is None)
   match
     transform_effect_difference(report, "geometry.transform.skew").magnitude.transform_effect {
     Some(SkewEffect(value)) => {

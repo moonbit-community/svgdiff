@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.35",
+  "schema_version": "1.36",
   "analysis_status": "partial",
   "coverage_matrix": [
     {
@@ -219,8 +219,11 @@
         "parameter_abs_user_units": 0.00000999999999995449,
         "parameter_signed_user_units": -0.00000999999999995449,
         "symmetric_relative": 0.000010000050000204492,
-        "geometry_displacement_css_px": 0.00000999999999995449,
-        "geometry_viewport_fraction": 4.419417382395809e-7,
+        "parameter_abs_css_px": 0.00000999999999995449,
+        "parameter_viewport_fraction": 4.419417382395809e-7,
+        "parameter_entity_fraction": 8.838834764791618e-7,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
         "raster_changed_pixel_fraction": 0.0625,
         "raster_rgba8_rmse": 0.1767766952966369,
@@ -230,8 +233,6 @@
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.00000999999999995449,
-          4.419417382395809e-7,
           0.0625
         ]
       }

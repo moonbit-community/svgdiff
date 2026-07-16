@@ -157,6 +157,34 @@ test "small embedded image placement delta remains numeric" {
 }
 
 ///|
+test "embedded image placement exposes transformed parameter scales" {
+  let href = embedded_png_url(embedded_red_png_base64)
+  let before = embedded_image_svg(
+    href,
+    attributes="x='1' y='1' width='3' height='4' transform='scale(2 3)'",
+  )
+  let after = embedded_image_svg(
+    href,
+    attributes="x='2' y='1' width='3' height='4' transform='scale(2 3)'",
+  )
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  guard difference_in_domain(report, "geometry.position") is Some(position) else {
+    fail("expected transformed image placement difference")
+  }
+  assert_eq(position.magnitude.parameter_abs_user_units, Some(1.0))
+  assert_eq(position.magnitude.parameter_abs_css_px, Some(2.0))
+  assert_eq(
+    position.magnitude.parameter_viewport_fraction,
+    Some(0.08838834764831843),
+  )
+  assert_eq(
+    position.magnitude.parameter_entity_fraction,
+    Some(0.14907119849998599),
+  )
+  assert_true(position.magnitude.geometry_displacement_css_px is None)
+}
+
+///|
 test "invalid and external embedded image sources are explicit" {
   let invalid = compare(
     embedded_image_svg("data:image/png;base64,not-base64"),

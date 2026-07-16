@@ -48,6 +48,39 @@ def matching_changed_facts(
     return matches
 
 
+SPATIAL_SCALAR_PROPERTIES = {
+    "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
+    "x1", "y1", "x2", "y2", "stroke-width", "stroke-dashoffset",
+}
+
+
+def validate_parameter_magnitude(
+    case: dict[str, Any], report: dict[str, Any], fact_id: str
+) -> None:
+    expected = case["expected_changed_fact"]
+    if expected.get("source_property") not in SPATIAL_SCALAR_PROPERTIES:
+        return
+    before = float(expected["before_declared_value"])
+    after = float(expected["after_declared_value"])
+    differences = [
+        difference
+        for difference in report["atomic_differences"]
+        if fact_id in difference["changed_fact_ids"]
+        and difference["magnitude"]["parameter_abs_user_units"] is not None
+    ]
+    if len(differences) != 1:
+        raise ValueError(f"{case['id']}: spatial scalar has no unique magnitude")
+    magnitude = differences[0]["magnitude"]
+    if abs(magnitude["parameter_abs_user_units"] - abs(after - before)) > 1e-12:
+        raise ValueError(f"{case['id']}: local parameter magnitude changed")
+    if (
+        magnitude["parameter_abs_css_px"] is None
+        or magnitude["parameter_viewport_fraction"] is None
+        or magnitude["parameter_entity_fraction"] is None
+    ):
+        raise ValueError(f"{case['id']}: spatial parameter scales are incomplete")
+
+
 def validate_case(case: dict[str, Any], report: dict[str, Any]) -> int:
     expected_status = case["expected_analysis_status"]
     if report["analysis_status"] != expected_status:
@@ -61,6 +94,7 @@ def validate_case(case: dict[str, Any], report: dict[str, Any]) -> int:
             f"{case['id']}: declared actual cause matched {len(matches)} facts"
         )
     actual_id = matches[0]["id"]
+    validate_parameter_magnitude(case, report, actual_id)
     regions = [
         region
         for event in report["events"]
@@ -166,11 +200,35 @@ def main() -> None:
     else:
         raise ValueError("causal property accepted a missing actual cause")
 
+    parameter_case = next(
+        case
+        for case in cases
+        if case["expected_changed_fact"].get("source_property")
+        in SPATIAL_SCALAR_PROPERTIES
+    )
+    invalid_magnitude_report = copy.deepcopy(reports[parameter_case["id"]])
+    parameter_fact_id = matching_changed_facts(
+        invalid_magnitude_report, parameter_case["expected_changed_fact"]
+    )[0]["id"]
+    parameter_difference = next(
+        difference
+        for difference in invalid_magnitude_report["atomic_differences"]
+        if parameter_fact_id in difference["changed_fact_ids"]
+        and difference["magnitude"]["parameter_abs_user_units"] is not None
+    )
+    parameter_difference["magnitude"]["parameter_abs_css_px"] = None
+    try:
+        validate_case(parameter_case, invalid_magnitude_report)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted a missing parameter scale")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
         f"{complete_regions} complete regions, "
-        "missing-cause negative control: ok"
+        "missing-cause and missing-parameter-scale negative controls: ok"
     )
 
 

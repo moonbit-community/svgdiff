@@ -304,6 +304,48 @@ fn embedded_numeric_relation(
 }
 
 ///|
+fn embedded_image_parameter_magnitude(
+  before : EmbeddedImageSubject,
+  after : EmbeddedImageSubject,
+  property : String,
+  before_value : Double,
+  after_value : Double,
+) -> DifferenceMagnitude {
+  let delta = after_value - before_value
+  let magnitude = {
+    ..empty_difference_magnitude(),
+    parameter_abs_user_units: Some(delta.abs()),
+    parameter_signed_user_units: Some(delta),
+    symmetric_relative: Some(
+      symmetric_relative_delta(before_value, after_value),
+    ),
+  }
+  if property == "opacity" ||
+    !before.placement_complete ||
+    !after.placement_complete {
+    return magnitude
+  }
+  let direction = basic_shape_length_direction(property)
+  guard common_parameter_directional_css_scale(
+      before.cumulative_transform,
+      after.cumulative_transform,
+      direction,
+    )
+    is Some(scale) else {
+    return magnitude
+  }
+  let css = delta.abs() * scale
+  {
+    ..magnitude,
+    parameter_abs_css_px: Some(css),
+    parameter_entity_fraction: parameter_entity_fraction_from_bounds(css, [
+      embedded_image_subject_bounds(before),
+      embedded_image_subject_bounds(after),
+    ]),
+  }
+}
+
+///|
 fn append_embedded_image_fact_difference(
   report : StructuredReport,
   alignment : SubjectAlignment,
@@ -331,7 +373,9 @@ fn append_embedded_image_fact_difference(
       embedded_image_fact_source(before_fact),
       embedded_image_fact_source(after_fact),
       embedded_numeric_relation(before_value, after_value),
-      empty_difference_magnitude(),
+      embedded_image_parameter_magnitude(
+        before, after, property, before_value, after_value,
+      ),
       difference_ids,
     )
   }
