@@ -23,7 +23,8 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
       "$root/evaluation/corpus/$after" \
       --width "$width" --height "$height" \
       --perceptual-background white \
-      --flip-pixels-per-degree 20 >"$reports/$id.json"
+      --flip-pixels-per-degree 20 \
+      --flip-error-threshold 0.05 >"$reports/$id.json"
   else
     moon run --target native cmd/svgdiff -- \
       "$root/evaluation/corpus/$before" \
@@ -43,6 +44,8 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
     . == {"red": 255, "green": 255, "blue": 255}) and
   any(.[].report.profile.flip_viewing_conditions;
     . == {"pixels_per_degree": 20}) and
+  any(.[].report.profile.flip_error_threshold;
+    . == {"value": 0.05}) and
   any(.[].report.events[].rendered_outcome.perceptual_color;
     .status == "computed" and
     .magnitude.method_id ==
@@ -56,7 +59,15 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
     .status == "computed" and
     .map.method_id == "nvlabs_ldr_flip/v1.7-b475eb4b" and
     .map.encoding == "uint16_be_base64" and
-    (.map.values_base64 | length) > 0) and
+    (.map.values_base64 | length) > 0 and
+    .statistics.method_id == "event_local_ldr_flip_pooling/v1" and
+    .statistics.canvas_pixel_count > 0 and
+    .statistics.event_region_sample_count > 0 and
+    .statistics.response_sample_count > 0 and
+    .statistics.response_maximum >= .statistics.response_p95 and
+    .statistics.area_above_threshold.threshold == 0.05 and
+    .statistics.area_above_threshold.pixel_count > 0 and
+    .statistics.area_above_threshold.canvas_fraction > 0) and
   any(.[].report.events[].rendered_outcome.perceptual_flip;
     .status == "not_computed" and
     .reason_code == "flip_not_requested") and
@@ -64,7 +75,7 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "1.41") and
+    (.report.schema_version == "1.42") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and

@@ -22,12 +22,12 @@ assert_status() {
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
-jq -e '.schema_version == "1.41" and .profile.perceptual_background == null and .profile.flip_viewing_conditions == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1 and all(.events[]; .rendered_outcome.perceptual_color == {"status":"not_computed","reason_code":"perceptual_background_absent"} and .rendered_outcome.perceptual_flip == {"status":"not_computed","reason_code":"flip_not_requested"})' "$tmp/report.json" >/dev/null
+jq -e '.schema_version == "1.42" and .profile.perceptual_background == null and .profile.flip_viewing_conditions == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1 and all(.events[]; .rendered_outcome.perceptual_color == {"status":"not_computed","reason_code":"perceptual_background_absent"} and .rendered_outcome.perceptual_flip == {"status":"not_computed","reason_code":"flip_not_requested"})' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
 test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.41" and .profile.perceptual_background == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
+jq -e '.schema_version == "1.42" and .profile.perceptual_background == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
 test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
 test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
 
@@ -47,10 +47,12 @@ test "$(jq -S -c 'del(.profile.perceptual_background) | del(.events[].rendered_o
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   --perceptual-background '#336699' --flip-pixels-per-degree 20 \
+  --flip-error-threshold 0.05 \
   >"$tmp/flip.json" 2>"$tmp/flip.err"
 test ! -s "$tmp/flip.err"
 jq -e '
   .profile.flip_viewing_conditions == {"pixels_per_degree": 20} and
+  .profile.flip_error_threshold == {"value": 0.05} and
   all(.events[];
     .rendered_outcome.perceptual_flip.status == "computed" and
     .rendered_outcome.perceptual_flip.map.method_id ==
@@ -58,9 +60,22 @@ jq -e '
     .rendered_outcome.perceptual_flip.map.encoding == "uint16_be_base64" and
     .rendered_outcome.perceptual_flip.map.quantization_step ==
       0.000015259021896696422 and
-    (.rendered_outcome.perceptual_flip.map.values_base64 | length) > 0)
+    (.rendered_outcome.perceptual_flip.map.values_base64 | length) > 0 and
+    .rendered_outcome.perceptual_flip.statistics.method_id ==
+      "event_local_ldr_flip_pooling/v1" and
+    .rendered_outcome.perceptual_flip.statistics.canvas_pixel_count == 256 and
+    .rendered_outcome.perceptual_flip.statistics.event_region_sample_count > 0 and
+    .rendered_outcome.perceptual_flip.statistics.response_sample_count > 0 and
+    .rendered_outcome.perceptual_flip.statistics.canvas_mean > 0 and
+    .rendered_outcome.perceptual_flip.statistics.event_region_mean > 0 and
+    .rendered_outcome.perceptual_flip.statistics.response_p95 >= 0 and
+    .rendered_outcome.perceptual_flip.statistics.response_maximum >=
+      .rendered_outcome.perceptual_flip.statistics.response_p95 and
+    .rendered_outcome.perceptual_flip.statistics.area_above_threshold.threshold == 0.05 and
+    .rendered_outcome.perceptual_flip.statistics.area_above_threshold.pixel_count > 0 and
+    .rendered_outcome.perceptual_flip.statistics.area_above_threshold.canvas_fraction > 0)
 ' "$tmp/flip.json" >/dev/null
-test "$(jq -S -c '.profile.flip_viewing_conditions = null | .events[].rendered_outcome.perceptual_flip = {"status":"not_computed","reason_code":"flip_not_requested"}' "$tmp/flip.json")" = "$(jq -S -c . "$tmp/background.json")"
+test "$(jq -S -c '.profile.flip_viewing_conditions = null | .profile.flip_error_threshold = null | .events[].rendered_outcome.perceptual_flip = {"status":"not_computed","reason_code":"flip_not_requested"}' "$tmp/flip.json")" = "$(jq -S -c . "$tmp/background.json")"
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html" >"$tmp/output.stdout" 2>"$tmp/output.err"
 test ! -s "$tmp/output.stdout"
@@ -126,11 +141,11 @@ jq -e '
 
 cat testdata/before.svg | moon run --target native cmd/svgdiff -- - testdata/after.svg >"$tmp/stdin-before.json" 2>"$tmp/stdin-before.err"
 test ! -s "$tmp/stdin-before.err"
-jq -e '.schema_version == "1.41" and .analysis_status == "complete"' "$tmp/stdin-before.json" >/dev/null
+jq -e '.schema_version == "1.42" and .analysis_status == "complete"' "$tmp/stdin-before.json" >/dev/null
 
 cat testdata/after.svg | moon run --target native cmd/svgdiff -- testdata/before.svg - >"$tmp/stdin-after.json" 2>"$tmp/stdin-after.err"
 test ! -s "$tmp/stdin-after.err"
-jq -e '.schema_version == "1.41" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
+jq -e '.schema_version == "1.42" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
 
 printf '%s\n' "<svg xmlns='http://www.w3.org/2000/svg'><image id='photo' width='8' height='8' href='asset.png'/></svg>" >"$tmp/bundle.svg"
 printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==' | base64 -d >"$tmp/red.png"
@@ -180,12 +195,13 @@ grep -q '^Usage: svgdiff ' "$tmp/help.txt"
 grep -q -- '--version' "$tmp/help.txt"
 grep -q -- '--perceptual-background COLOR' "$tmp/help.txt"
 grep -q -- '--flip-pixels-per-degree PPD' "$tmp/help.txt"
+grep -q -- '--flip-error-threshold VALUE' "$tmp/help.txt"
 grep -q 'Invalid arguments or file I/O failure' "$tmp/help.txt"
 
 moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.5.21$' "$tmp/version.txt"
-grep -q '^engine: 0.5.21$' "$tmp/version.txt"
-grep -q '^schema: 1.41$' "$tmp/version.txt"
+grep -q '^svgdiff 0.5.22$' "$tmp/version.txt"
+grep -q '^engine: 0.5.22$' "$tmp/version.txt"
+grep -q '^schema: 1.42$' "$tmp/version.txt"
 grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1$' "$tmp/version.txt"
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/25$' "$tmp/version.txt"
 grep -q '^ordering-policy: v2_domain_lexicographic$' "$tmp/version.txt"
@@ -208,6 +224,15 @@ for invalid_ppd in 0 4097 nan inf invalid; do
     >"$tmp/invalid-ppd.out" 2>"$tmp/invalid-ppd.err"
   test ! -s "$tmp/invalid-ppd.out"
   grep -q '^--flip-pixels-per-degree requires a finite number in \[1, 4096\]$' "$tmp/invalid-ppd.err"
+done
+
+for invalid_threshold in -0.001 1.001 nan inf invalid; do
+  assert_status 2 moon run --target native cmd/svgdiff -- \
+    testdata/before.svg testdata/after.svg \
+    --flip-error-threshold "$invalid_threshold" \
+    >"$tmp/invalid-threshold.out" 2>"$tmp/invalid-threshold.err"
+  test ! -s "$tmp/invalid-threshold.out"
+  grep -q '^--flip-error-threshold requires a finite number in \[0, 1\]$' "$tmp/invalid-threshold.err"
 done
 
 assert_status 2 moon run --target native cmd/svgdiff -- "$tmp/missing.svg" testdata/after.svg >"$tmp/missing-file.out" 2>"$tmp/missing-file.err"
@@ -234,7 +259,7 @@ assert_status 1 moon run --target native cmd/svgdiff -- \
   >"$tmp/resource-failed.json" 2>"$tmp/resource-failed.err"
 test ! -s "$tmp/resource-failed.err"
 jq -e '
-  .schema_version == "1.41" and
+  .schema_version == "1.42" and
   .analysis_status == "failed" and
   .subject_alignments == [] and
   .atomic_differences == [] and

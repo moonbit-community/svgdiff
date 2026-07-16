@@ -71,9 +71,11 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.41":
+    if report.get("schema_version") != "1.42":
         raise ValueError(f"unexpected report schema for {case['id']}")
-    if report["profile"]["flip_viewing_conditions"] is not None or any(
+    if report["profile"]["flip_viewing_conditions"] is not None or report[
+        "profile"
+    ]["flip_error_threshold"] is not None or any(
         event["rendered_outcome"]["perceptual_flip"]
         != {
             "status": "not_computed",

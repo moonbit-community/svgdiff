@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-16
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.41`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.42`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -57,7 +57,7 @@ The private MoonBit LDR-FLIP implementation follows the equations and constants 
 
 ## Known security gaps
 
-Schema `1.41` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.42` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;

@@ -9,6 +9,7 @@ priv struct CliConfig {
   height : Int
   perceptual_background : @lib.PerceptualBackground?
   flip_viewing_conditions : @lib.FlipViewingConditions?
+  flip_error_threshold : @lib.FlipErrorThreshold?
   before_resources : Array[CliResource]
   after_resources : Array[CliResource]
 }
@@ -40,18 +41,18 @@ priv enum ResourceInputResult {
 
 ///|
 fn usage() -> String {
-  "Usage: svgdiff <before.svg> <after.svg> [--width N] [--height N] [--perceptual-background COLOR] [--flip-pixels-per-degree PPD] [--before-resource LOCATOR MEDIA_TYPE FILE] [--after-resource LOCATOR MEDIA_TYPE FILE] [--output report.json] [--html report.html]"
+  "Usage: svgdiff <before.svg> <after.svg> [--width N] [--height N] [--perceptual-background COLOR] [--flip-pixels-per-degree PPD] [--flip-error-threshold VALUE] [--before-resource LOCATOR MEDIA_TYPE FILE] [--after-resource LOCATOR MEDIA_TYPE FILE] [--output report.json] [--html report.html]"
 }
 
 ///|
 fn help_text() -> String {
   usage() +
-  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --perceptual-background COLOR\n                     Record one explicit opaque deterministic sRGB background\n  --flip-pixels-per-degree PPD\n                     Request LDR-FLIP with supported PPD in [1, 4096]\n  --before-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque before-side PNG/JPEG resource\n  --after-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque after-side PNG/JPEG resource\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
+  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --perceptual-background COLOR\n                     Record one explicit opaque deterministic sRGB background\n  --flip-pixels-per-degree PPD\n                     Request LDR-FLIP with supported PPD in [1, 4096]\n  --flip-error-threshold VALUE\n                     Report FLIP area strictly above an explicit value in [0, 1]\n  --before-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque before-side PNG/JPEG resource\n  --after-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque after-side PNG/JPEG resource\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
 }
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.5.21\nengine: 0.5.21\nschema: 1.41\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic"
+  "svgdiff 0.5.22\nengine: 0.5.22\nschema: 1.42\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic"
 }
 
 ///|
@@ -84,6 +85,19 @@ fn parse_flip_viewing_conditions(
 }
 
 ///|
+fn parse_flip_error_threshold(
+  value : String,
+) -> Result[@lib.FlipErrorThreshold, String] {
+  let parsed = @string.parse_double(value) catch {
+    _ => return Err("--flip-error-threshold requires a finite number in [0, 1]")
+  }
+  match @lib.FlipErrorThreshold::from_value(parsed) {
+    Some(threshold) => Ok(threshold)
+    None => Err("--flip-error-threshold requires a finite number in [0, 1]")
+  }
+}
+
+///|
 fn parse_cli(args : Array[String]) -> CliParseResult {
   if args.length() < 3 {
     return Invalid(usage())
@@ -95,6 +109,7 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
   let mut height = 16
   let mut perceptual_background : @lib.PerceptualBackground? = None
   let mut flip_viewing_conditions : @lib.FlipViewingConditions? = None
+  let mut flip_error_threshold : @lib.FlipErrorThreshold? = None
   let mut output_path : String? = None
   let mut html_path : String? = None
   let mut agent_json = false
@@ -155,6 +170,11 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
           Ok(viewing) => flip_viewing_conditions = Some(viewing)
           Err(message) => return Invalid(message)
         }
+      "--flip-error-threshold" =>
+        match parse_flip_error_threshold(value) {
+          Ok(threshold) => flip_error_threshold = Some(threshold)
+          Err(message) => return Invalid(message)
+        }
       "--output" => output_path = Some(value)
       "--html" => html_path = Some(value)
       option => return Invalid("Unknown option: \{option}")
@@ -171,6 +191,7 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
     height,
     perceptual_background,
     flip_viewing_conditions,
+    flip_error_threshold,
     before_resources,
     after_resources,
   })
@@ -275,6 +296,7 @@ async fn main {
       viewport_height: config.height,
       perceptual_background: config.perceptual_background,
       flip_viewing_conditions: config.flip_viewing_conditions,
+      flip_error_threshold: config.flip_error_threshold,
     },
     before_resources,
     after_resources,

@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.41")
+  assert_eq(report.schema_version, "1.42")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.41", "events": [_], .. } => ()
+    { "schema_version": "1.42", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.41", "events": [_], .. } => ()
+    { "schema_version": "1.42", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -311,6 +311,11 @@ test "root package exposes optional event-local LDR-FLIP maps" {
     fail("expected supported FLIP Viewing Conditions")
   }
   assert_eq(viewing.pixels_per_degree(), 20.0)
+  assert_true(@svgdiff.FlipErrorThreshold::from_value(-0.001) is None)
+  guard @svgdiff.FlipErrorThreshold::from_value(0.05) is Some(threshold) else {
+    fail("expected supported FLIP error threshold")
+  }
+  assert_eq(threshold.value(), 0.05)
   guard @svgdiff.PerceptualBackground::parse_srgb("white") is Some(background) else {
     fail("expected an opaque deterministic sRGB background")
   }
@@ -328,6 +333,7 @@ test "root package exposes optional event-local LDR-FLIP maps" {
   let report = @svgdiff.compare(before, after, {
     ..profile,
     flip_viewing_conditions: Some(viewing),
+    flip_error_threshold: Some(threshold),
   })
   guard report.profile.flip_viewing_conditions is Some(recorded) else {
     fail("expected FLIP Viewing Conditions in the report profile")
@@ -344,6 +350,22 @@ test "root package exposes optional event-local LDR-FLIP maps" {
   assert_eq(map.encoding, "uint16_be_base64")
   assert_eq(map.quantization_step, 1.0 / 65535.0)
   assert_true(!map.values_base64.is_empty())
+  guard report.events[0].rendered_outcome.perceptual_flip.statistics
+    is Some(statistics) else {
+    fail("expected event-local FLIP statistics")
+  }
+  assert_eq(statistics.canvas_pixel_count, 256)
+  assert_eq(statistics.event_region_sample_count, 1)
+  assert_eq(statistics.response_sample_count, 169)
+  assert_true(statistics.canvas_mean > 0.0)
+  assert_true(statistics.event_region_mean > 0.0)
+  assert_true(statistics.response_maximum >= statistics.response_p95)
+  guard statistics.area_above_threshold is Some(area) else {
+    fail("expected explicit threshold-area statistics")
+  }
+  assert_eq(area.threshold, 0.05)
+  assert_true(area.pixel_count > 0)
+  assert_true(area.canvas_fraction > 0.0)
   let events : Array[@svgdiff.VisualEvent] = []
   for index, event in report.events {
     events.push({
@@ -356,7 +378,11 @@ test "root package exposes optional event-local LDR-FLIP maps" {
   }
   let without_flip_profile = {
     ..report,
-    profile: { ..report.profile, flip_viewing_conditions: None },
+    profile: {
+      ..report.profile,
+      flip_viewing_conditions: None,
+      flip_error_threshold: None,
+    },
     events,
   }
   assert_eq(

@@ -56,6 +56,8 @@ pub using @engine {type DomainOrdering}
 
 pub using @engine {type FeatureCoverage}
 
+pub using @engine {type FlipErrorThreshold}
+
 pub using @engine {type FlipViewingConditions}
 
 pub using @engine {type IntrinsicRasterMagnitude}
@@ -70,9 +72,13 @@ pub using @engine {type PerceptualColorEvidence}
 
 pub using @engine {type PerceptualColorMagnitude}
 
+pub using @engine {type PerceptualFlipAreaAboveThreshold}
+
 pub using @engine {type PerceptualFlipEvidence}
 
 pub using @engine {type PerceptualFlipMap}
+
+pub using @engine {type PerceptualFlipStatistics}
 
 pub using @engine {type PresenceMagnitude}
 

@@ -71,6 +71,13 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             f"{case['id']}: unexpected FLIP Viewing Conditions "
             f"{report['profile']['flip_viewing_conditions']!r}"
         )
+    if report["profile"]["flip_error_threshold"] != expected.get(
+        "flip_error_threshold"
+    ):
+        raise ValueError(
+            f"{case['id']}: unexpected FLIP error threshold "
+            f"{report['profile']['flip_error_threshold']!r}"
+        )
     expected_perceptual = expected.get("perceptual_color")
     if expected_perceptual is None:
         for event in report["events"]:
@@ -166,6 +173,13 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
             raise ValueError(
                 f"{case['id']}: expected FLIP SHA-256 "
                 f"{expected_flip['values_sha256']}, got {digest}"
+            )
+        statistics = evidence.get("statistics")
+        expected_statistics = expected_flip["statistics"]
+        if statistics != expected_statistics:
+            raise ValueError(
+                f"{case['id']}: expected FLIP statistics "
+                f"{expected_statistics!r}, got {statistics!r}"
             )
     by_domain = {item["domain"]: item for item in differences}
     for check in expected["magnitude_checks"]:
@@ -852,6 +866,16 @@ def main() -> None:
     expect_schema_rejection(
         invalid_flip_viewing, schema, "out-of-range FLIP pixels per degree"
     )
+    missing_flip_threshold = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_flip_threshold["profile"]["flip_error_threshold"]
+    expect_schema_rejection(
+        missing_flip_threshold, schema, "missing FLIP error threshold state"
+    )
+    invalid_flip_threshold = copy.deepcopy(reports["salient-fill-change"])
+    invalid_flip_threshold["profile"]["flip_error_threshold"]["value"] = 2
+    expect_schema_rejection(
+        invalid_flip_threshold, schema, "out-of-range FLIP error threshold"
+    )
     missing_perceptual = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_perceptual["events"][0]["rendered_outcome"]["perceptual_color"]
     expect_schema_rejection(
@@ -874,6 +898,20 @@ def main() -> None:
         "encoding"
     ] = "float32_base64"
     expect_schema_rejection(invalid_flip, schema, "unknown FLIP map encoding")
+    missing_flip_statistics = copy.deepcopy(reports["salient-fill-change"])
+    del missing_flip_statistics["events"][0]["rendered_outcome"][
+        "perceptual_flip"
+    ]["statistics"]
+    expect_schema_rejection(
+        missing_flip_statistics, schema, "missing FLIP statistics"
+    )
+    invalid_flip_statistics = copy.deepcopy(reports["salient-fill-change"])
+    invalid_flip_statistics["events"][0]["rendered_outcome"][
+        "perceptual_flip"
+    ]["statistics"]["response_p95"] = 2
+    expect_schema_rejection(
+        invalid_flip_statistics, schema, "out-of-range FLIP statistic"
+    )
     wrong_nullable_type = copy.deepcopy(reports["equivalent-color-spelling"])
     wrong_nullable_type["atomic_differences"][0]["magnitude"][
         "parameter_abs_user_units"

@@ -118,12 +118,73 @@ fn empty_perceptual_flip_map() -> PerceptualFlipMap {
 }
 
 ///|
+fn perceptual_flip_statistics(
+  response_values : Array[Double],
+  event_region_values : Array[Double],
+  canvas_pixel_count : Int,
+  threshold : FlipErrorThreshold?,
+) -> PerceptualFlipStatistics {
+  let mut response_sum = 0.0
+  let mut response_maximum = 0.0
+  for value in response_values {
+    response_sum += value
+    response_maximum = response_maximum.max(value)
+  }
+  let mut event_region_sum = 0.0
+  for value in event_region_values {
+    event_region_sum += value
+  }
+  let response_p95 = if response_values.is_empty() {
+    0.0
+  } else {
+    let sorted = response_values.copy()
+    sorted.sort()
+    let rank = (sorted.length() * 95 + 99) / 100
+    sorted[rank - 1]
+  }
+  let area_above_threshold = match threshold {
+    None => None
+    Some(threshold) => {
+      let value = threshold.value
+      let mut pixel_count = 0
+      for sample in response_values {
+        if sample > value {
+          pixel_count += 1
+        }
+      }
+      Some({
+        threshold: value,
+        pixel_count,
+        canvas_fraction: pixel_count.to_double() /
+        canvas_pixel_count.to_double(),
+      })
+    }
+  }
+  {
+    method_id: "event_local_ldr_flip_pooling/v1",
+    canvas_pixel_count,
+    event_region_sample_count: event_region_values.length(),
+    response_sample_count: response_values.length(),
+    canvas_mean: response_sum / canvas_pixel_count.to_double(),
+    event_region_mean: if event_region_values.is_empty() {
+      0.0
+    } else {
+      event_region_sum / event_region_values.length().to_double()
+    },
+    response_p95,
+    response_maximum,
+    area_above_threshold,
+  }
+}
+
+///|
 fn event_local_perceptual_flip_evidence(
   before : @svg.Image,
   after : @svg.Image,
   regions : Array[DifferenceRegion],
   background : PerceptualBackground,
   viewing : FlipViewingConditions,
+  threshold : FlipErrorThreshold?,
   remaining_output_pixels : Int,
   remaining_convolution_samples : Int,
 ) -> PerceptualFlipComputation {
@@ -139,7 +200,15 @@ fn event_local_perceptual_flip_evidence(
   let selected = match selected_raw_difference_bounds(before, after, regions) {
     None =>
       return {
-        evidence: computed_perceptual_flip_evidence(empty_perceptual_flip_map()),
+        evidence: computed_perceptual_flip_evidence(
+          empty_perceptual_flip_map(),
+          perceptual_flip_statistics(
+            [],
+            [],
+            before.width * before.height,
+            threshold,
+          ),
+        ),
         output_pixels: 0,
         convolution_samples: 0,
       }
@@ -207,28 +276,44 @@ fn event_local_perceptual_flip_evidence(
     pixels_per_degree,
   )
   let values : Array[Double] = []
+  let event_region_values : Array[Double] = []
   let local_start_x = output_bounds.pixel_x - context_bounds.pixel_x
   let local_start_y = output_bounds.pixel_y - context_bounds.pixel_y
   for y in 0..<output_bounds.pixel_height {
     for x in 0..<output_bounds.pixel_width {
-      values.push(
-        error_map.values[(local_start_y + y) * context_bounds.pixel_width +
+      let value = error_map.values[(local_start_y + y) *
+        context_bounds.pixel_width +
         local_start_x +
-        x],
-      )
+        x]
+      values.push(value)
+      let global_x = output_bounds.pixel_x + x
+      let global_y = output_bounds.pixel_y + y
+      let global_index = global_y * before.width + global_x
+      if pixel_in_regions(global_x, global_y, regions) &&
+        pixels_differ(before, after, global_index) {
+        event_region_values.push(value)
+      }
     }
   }
   {
-    evidence: computed_perceptual_flip_evidence({
-      method_id: "nvlabs_ldr_flip/v1.7-b475eb4b",
-      pixel_x: output_bounds.pixel_x,
-      pixel_y: output_bounds.pixel_y,
-      pixel_width: output_bounds.pixel_width,
-      pixel_height: output_bounds.pixel_height,
-      encoding: "uint16_be_base64",
-      quantization_step: 1.0 / 65535.0,
-      values_base64: encode_flip_u16_base64(values),
-    }),
+    evidence: computed_perceptual_flip_evidence(
+      {
+        method_id: "nvlabs_ldr_flip/v1.7-b475eb4b",
+        pixel_x: output_bounds.pixel_x,
+        pixel_y: output_bounds.pixel_y,
+        pixel_width: output_bounds.pixel_width,
+        pixel_height: output_bounds.pixel_height,
+        encoding: "uint16_be_base64",
+        quantization_step: 1.0 / 65535.0,
+        values_base64: encode_flip_u16_base64(values),
+      },
+      perceptual_flip_statistics(
+        values,
+        event_region_values,
+        before.width * before.height,
+        threshold,
+      ),
+    ),
     output_pixels,
     convolution_samples: context_pixels * samples_per_pixel,
   }

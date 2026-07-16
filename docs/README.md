@@ -63,7 +63,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.41`.
+- The stable report schema is `1.42`.
 - The Comparison Profile can record one explicit opaque sRGB8 Perceptual Background and optional FLIP pixels-per-degree Viewing Conditions; events then expose changed-pixel mean DeltaEOK and opt-in event-local LDR-FLIP maps while raw rendering remains transparent.
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
 - The production comparison implementation lives in `engine`; the root package is the public seam.

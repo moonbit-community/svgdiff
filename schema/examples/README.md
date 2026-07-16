@@ -1,6 +1,6 @@
 # Structured Report Examples
 
-Status: canonical schema `1.41` examples
+Status: canonical schema `1.42` examples
 
 Last verified: 2026-07-16
 

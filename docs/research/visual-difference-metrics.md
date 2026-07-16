@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-16
 
-This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, Schema `1.39` records an optional explicit opaque sRGB Perceptual Background, Schema `1.40` adds event-local changed-pixel mean DeltaEOK, and Schema `1.41` adds optional event-local LDR-FLIP maps under explicit pixels-per-degree Viewing Conditions. Continuous vector correspondence, pooled perceptual statistics, and calibrated Impact Assessment remain roadmap work.
+This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, Schema `1.39` records an optional explicit opaque sRGB Perceptual Background, Schema `1.40` adds event-local changed-pixel mean DeltaEOK, Schema `1.41` adds optional event-local LDR-FLIP maps under explicit pixels-per-degree Viewing Conditions, and Schema `1.42` adds separately pooled canvas, selected-event, response-tail, maximum, and explicit-threshold-area statistics. Continuous vector correspondence and calibrated Impact Assessment remain roadmap work.
 
 ## Conclusion
 
@@ -51,7 +51,7 @@ SSIM is suitable as a secondary whole-image structural summary. It should not be
 
 FLIP is the strongest existing candidate for the rendered-perception component because it was designed specifically to produce a spatial error map for differences between rendered images. Its authors describe the map as approximating the difference perceived while alternating the two images and report a supporting user study ([Andersson et al., 2020](https://research.nvidia.com/publication/flip)). The maintained NVIDIA implementation supports LDR- and HDR-FLIP, records pixels per degree, and emits pooled values as well as the error map ([NVlabs/flip](https://github.com/NVlabs/flip)). The authors now recommend mean FLIP when one pooled number is unavoidable, although the map remains the more useful artifact.
 
-FLIP should be the default spatial perceptual channel, not the definition of equality. Its result depends on viewing assumptions such as pixels per degree, its LDR form assumes the alternating-image viewing protocol, and a canvas-wide mean can understate a spatially small event. Schema `1.41` therefore makes LDR-FLIP opt-in, records pixels per degree, preserves one event-local map, and retains unrelated pixels only as filtering context. It does not yet expose pooled event or canvas statistics.
+FLIP should be the default spatial perceptual channel, not the definition of equality. Its result depends on viewing assumptions such as pixels per degree, its LDR form assumes the alternating-image viewing protocol, and a canvas-wide mean can understate a spatially small event. Schema `1.41` therefore makes LDR-FLIP opt-in, records pixels per degree, preserves one event-local map, and retains unrelated pixels only as filtering context. Schema `1.42` pools the unquantized internal map into explicitly separate whole-canvas mean, raw-different selected-event mean, complete-response nearest-rank p95, response maximum, and optional strict-above-threshold whole-canvas area. It does not assign perceptual meaning to the caller-supplied threshold.
 
 ### 6. Learned perceptual metrics
 
@@ -82,9 +82,9 @@ Each Atomic Difference and Visual Event should carry measurements rather than on
       "metric": "FLIP",
       "canvas_mean": 0.0,
       "event_region_mean": 0.0,
-      "p95": 0.0,
-      "max": 0.0,
-      "area_above_threshold": 0.0
+      "response_p95": 0.0,
+      "response_maximum": 0.0,
+      "area_above_threshold": null
     }
   }
 }
@@ -106,4 +106,4 @@ Prefer lexicographic ordering by Domain-relevant measurements over adding incomm
 
 ## Recommendation
 
-Adopt a layered `Difference Magnitude` abstraction with exact parameter/device-space measurements, painted-boundary and coverage measurements, raw raster/color evidence, and FLIP as the default spatial perceptual map under one Comparison Profile. Schema `1.41` implements that map boundary; later work should add explicitly named canvas and event-region pooling without decoding the quantized report representation. Treat SSIM/MS-SSIM, LPIPS, and alternate-scale rerendering as development diagnostics. Calibrate severity thresholds on a curated SVG corpus with human labels before claiming that any composite score represents "major visual difference."
+Adopt a layered `Difference Magnitude` abstraction with exact parameter/device-space measurements, painted-boundary and coverage measurements, raw raster/color evidence, and FLIP as the default spatial perceptual map under one Comparison Profile. Schema `1.41` implements that map boundary and Schema `1.42` adds explicitly named pooling directly from the unquantized internal map. Treat SSIM/MS-SSIM, LPIPS, and alternate-scale rerendering as development diagnostics. Calibrate severity thresholds on a curated SVG corpus with human labels before claiming that any composite score represents "major visual difference."

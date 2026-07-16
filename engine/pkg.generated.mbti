@@ -87,6 +87,7 @@ pub(all) struct ComparisonProfile {
   renderer_conformance_profile_id : String
   perceptual_background : PerceptualBackground?
   flip_viewing_conditions : FlipViewingConditions?
+  flip_error_threshold : FlipErrorThreshold?
 }
 pub fn ComparisonProfile::v1_default() -> Self
 pub impl ToJson for ComparisonProfile
@@ -169,6 +170,12 @@ pub(all) struct FeatureCoverage {
   diagnostic_ids : Array[String]
 } derive(ToJson)
 
+pub struct FlipErrorThreshold {
+  value : Double
+} derive(Eq, ToJson)
+pub fn FlipErrorThreshold::from_value(Double) -> Self?
+pub fn FlipErrorThreshold::value(Self) -> Double
+
 pub struct FlipViewingConditions {
   pixels_per_degree : Double
 } derive(Eq, ToJson)
@@ -227,10 +234,17 @@ pub(all) struct PerceptualColorMagnitude {
   mean_delta_e_ok : Double
 } derive(Eq, ToJson)
 
+pub(all) struct PerceptualFlipAreaAboveThreshold {
+  threshold : Double
+  pixel_count : Int
+  canvas_fraction : Double
+} derive(Eq, ToJson)
+
 pub(all) struct PerceptualFlipEvidence {
   status : String
   reason_code : String?
   map : PerceptualFlipMap?
+  statistics : PerceptualFlipStatistics?
 } derive(Eq, ToJson)
 
 pub(all) struct PerceptualFlipMap {
@@ -243,6 +257,19 @@ pub(all) struct PerceptualFlipMap {
   quantization_step : Double
   values_base64 : String
 } derive(Eq, ToJson)
+
+pub(all) struct PerceptualFlipStatistics {
+  method_id : String
+  canvas_pixel_count : Int
+  event_region_sample_count : Int
+  response_sample_count : Int
+  canvas_mean : Double
+  event_region_mean : Double
+  response_p95 : Double
+  response_maximum : Double
+  area_above_threshold : PerceptualFlipAreaAboveThreshold?
+} derive(Eq)
+pub impl ToJson for PerceptualFlipStatistics
 
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int

@@ -1377,6 +1377,7 @@ fn attach_difference_regions(
                     regions,
                     background,
                     viewing,
+                    report.profile.flip_error_threshold,
                     limits.max_perceptual_map_pixels - perceptual_map_pixels,
                     limits.max_perceptual_flip_samples - perceptual_flip_samples,
                   )

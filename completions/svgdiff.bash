@@ -3,10 +3,10 @@ _svgdiff() {
   COMPREPLY=()
   current=${COMP_WORDS[COMP_CWORD]}
   previous=${COMP_WORDS[COMP_CWORD-1]:-}
-  options='--width --height --perceptual-background --flip-pixels-per-degree --before-resource --after-resource --output --html --agent-json --help --version'
+  options='--width --height --perceptual-background --flip-pixels-per-degree --flip-error-threshold --before-resource --after-resource --output --html --agent-json --help --version'
 
   case "$previous" in
-    --width|--height|--perceptual-background|--flip-pixels-per-degree)
+    --width|--height|--perceptual-background|--flip-pixels-per-degree|--flip-error-threshold)
       return
       ;;
     --output|--html)

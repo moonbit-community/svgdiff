@@ -145,6 +145,8 @@ def validate_perceptual_flip(report: dict[str, Any]) -> list[dict[str, Any]]:
         "pixels_per_degree": 20
     }:
         raise ValueError("mutation report lost FLIP Viewing Conditions")
+    if report["profile"]["flip_error_threshold"] != {"value": 0.05}:
+        raise ValueError("mutation report lost FLIP error threshold")
     computed = []
     viewport_width = report["profile"]["viewport_width"]
     viewport_height = report["profile"]["viewport_height"]
@@ -159,9 +161,11 @@ def validate_perceptual_flip(report: dict[str, Any]) -> list[dict[str, Any]]:
                 raise ValueError(f"{event['id']}: invalid unavailable FLIP")
             continue
         flip_map = evidence.get("map")
+        statistics = evidence.get("statistics")
         if (
             evidence.get("status") != "computed"
             or flip_map is None
+            or statistics is None
             or flip_map["method_id"] != "nvlabs_ldr_flip/v1.7-b475eb4b"
             or flip_map["encoding"] != "uint16_be_base64"
             or flip_map["quantization_step"] != 1 / 65535
@@ -182,6 +186,36 @@ def validate_perceptual_flip(report: dict[str, Any]) -> list[dict[str, Any]]:
             raise ValueError(f"{event['id']}: invalid FLIP base64") from error
         if len(values) != 2 * flip_map["pixel_width"] * flip_map["pixel_height"]:
             raise ValueError(f"{event['id']}: invalid FLIP sample count")
+        area = statistics.get("area_above_threshold")
+        canvas_pixel_count = viewport_width * viewport_height
+        response_sample_count = flip_map["pixel_width"] * flip_map["pixel_height"]
+        rendered_magnitude = rendered.get("magnitude")
+        if (
+            statistics.get("method_id") != "event_local_ldr_flip_pooling/v1"
+            or statistics.get("canvas_pixel_count") != canvas_pixel_count
+            or statistics.get("response_sample_count") != response_sample_count
+            or not 0 <= statistics.get("event_region_sample_count", -1) <= response_sample_count
+            or rendered_magnitude is None
+            or statistics["event_region_sample_count"]
+            != rendered_magnitude["changed_pixels"]
+            or any(
+                not isinstance(statistics.get(field), (int, float))
+                or not 0 <= statistics[field] <= 1
+                for field in (
+                    "canvas_mean",
+                    "event_region_mean",
+                    "response_p95",
+                    "response_maximum",
+                )
+            )
+            or statistics["response_p95"] > statistics["response_maximum"]
+            or not isinstance(area, dict)
+            or area.get("threshold") != 0.05
+            or not 0 <= area.get("pixel_count", -1) <= response_sample_count
+            or area.get("canvas_fraction")
+            != area["pixel_count"] / canvas_pixel_count
+        ):
+            raise ValueError(f"{event['id']}: invalid FLIP statistics")
         computed.append(event)
     return computed
 
@@ -513,6 +547,22 @@ def main() -> None:
     else:
         raise ValueError("mutation property accepted invalid FLIP samples")
 
+    invalid_flip_statistics_report = copy.deepcopy(
+        next(report for report in reports.values() if validate_perceptual_flip(report))
+    )
+    invalid_flip_statistics = validate_perceptual_flip(
+        invalid_flip_statistics_report
+    )[0]
+    invalid_flip_statistics["rendered_outcome"]["perceptual_flip"]["statistics"][
+        "response_p95"
+    ] = 2
+    try:
+        validate_perceptual_flip(invalid_flip_statistics_report)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("mutation property accepted invalid FLIP statistics")
+
     print(
         "Mutation causal property: "
         f"{complete_comparisons} complete directional comparisons, "
@@ -521,7 +571,7 @@ def main() -> None:
         f"{len(coverage_differences)} coverage observations, "
         f"{len(perceptual_events)} perceptual-color observations, "
         f"{len(flip_events)} FLIP observations, "
-        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, invalid-perceptual-color, and invalid-FLIP negative controls: ok"
+        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, invalid-perceptual-color, invalid-FLIP-map, and invalid-FLIP-statistics negative controls: ok"
     )
 
 

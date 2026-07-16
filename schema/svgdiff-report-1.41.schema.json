@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.42",
-  "title": "SVG Diff Structured Report 1.42",
+  "$id": "https://example.invalid/svgdiff/schema/1.41",
+  "title": "SVG Diff Structured Report 1.41",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.42" },
+    "schema_version": { "const": "1.41" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "coverage_matrix": {
       "type": "array",
@@ -35,8 +35,7 @@
         "raster_representation",
         "renderer_id",
         "perceptual_background",
-        "flip_viewing_conditions",
-        "flip_error_threshold"
+        "flip_viewing_conditions"
       ],
       "properties": {
         "viewport_width": { "type": "integer", "minimum": 1 },
@@ -56,9 +55,6 @@
         },
         "flip_viewing_conditions": {
           "$ref": "#/$defs/nullableFlipViewingConditions"
-        },
-        "flip_error_threshold": {
-          "$ref": "#/$defs/nullableFlipErrorThreshold"
         }
       }
     },
@@ -119,20 +115,6 @@
         { "type": "null" }
       ]
     },
-    "flipErrorThreshold": {
-      "type": "object",
-      "required": ["value"],
-      "properties": {
-        "value": { "type": "number", "minimum": 0, "maximum": 1 }
-      },
-      "additionalProperties": false
-    },
-    "nullableFlipErrorThreshold": {
-      "anyOf": [
-        { "$ref": "#/$defs/flipErrorThreshold" },
-        { "type": "null" }
-      ]
-    },
     "perceptualColorMagnitude": {
       "type": "object",
       "required": ["method_id", "sample_count", "mean_delta_e_ok"],
@@ -189,50 +171,6 @@
       },
       "additionalProperties": false
     },
-    "perceptualFlipAreaAboveThreshold": {
-      "type": "object",
-      "required": ["threshold", "pixel_count", "canvas_fraction"],
-      "properties": {
-        "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
-        "pixel_count": { "type": "integer", "minimum": 0 },
-        "canvas_fraction": { "type": "number", "minimum": 0, "maximum": 1 }
-      },
-      "additionalProperties": false
-    },
-    "nullablePerceptualFlipAreaAboveThreshold": {
-      "anyOf": [
-        { "$ref": "#/$defs/perceptualFlipAreaAboveThreshold" },
-        { "type": "null" }
-      ]
-    },
-    "perceptualFlipStatistics": {
-      "type": "object",
-      "required": [
-        "method_id",
-        "canvas_pixel_count",
-        "event_region_sample_count",
-        "response_sample_count",
-        "canvas_mean",
-        "event_region_mean",
-        "response_p95",
-        "response_maximum",
-        "area_above_threshold"
-      ],
-      "properties": {
-        "method_id": { "const": "event_local_ldr_flip_pooling/v1" },
-        "canvas_pixel_count": { "type": "integer", "minimum": 1 },
-        "event_region_sample_count": { "type": "integer", "minimum": 0 },
-        "response_sample_count": { "type": "integer", "minimum": 0 },
-        "canvas_mean": { "type": "number", "minimum": 0, "maximum": 1 },
-        "event_region_mean": { "type": "number", "minimum": 0, "maximum": 1 },
-        "response_p95": { "type": "number", "minimum": 0, "maximum": 1 },
-        "response_maximum": { "type": "number", "minimum": 0, "maximum": 1 },
-        "area_above_threshold": {
-          "$ref": "#/$defs/nullablePerceptualFlipAreaAboveThreshold"
-        }
-      },
-      "additionalProperties": false
-    },
     "perceptualFlipEvidence": {
       "type": "object",
       "required": ["status"],
@@ -246,17 +184,14 @@
             "perceptual_map_budget_exceeded"
           ]
         },
-        "map": { "$ref": "#/$defs/perceptualFlipMap" },
-        "statistics": { "$ref": "#/$defs/perceptualFlipStatistics" }
+        "map": { "$ref": "#/$defs/perceptualFlipMap" }
       },
       "anyOf": [
         {
-          "type": "object",
-          "required": ["status", "map", "statistics"],
+          "required": ["status", "map"],
           "properties": { "status": { "const": "computed" } }
         },
         {
-          "type": "object",
           "required": ["status", "reason_code"],
           "properties": { "status": { "const": "not_computed" } }
         }

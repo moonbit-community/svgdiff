@@ -90,6 +90,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0084](0084-record-an-explicit-opaque-srgb-perceptual-background.md) | Accepted, implemented | Record one optional normalized opaque sRGB background without changing transparent-canvas raw evidence. |
 | [0085](0085-measure-event-local-deltaeok-after-explicit-background-compositing.md) | Accepted, implemented | Measure event-local DeltaEOK only after exact shared-background compositing. |
 | [0086](0086-expose-optional-event-local-ldr-flip-maps.md) | Accepted, implemented | Expose explicitly requested event-local LDR-FLIP maps without pooling or importance claims. |
+| [0087](0087-preserve-separate-event-local-flip-statistics.md) | Accepted, implemented | Preserve canvas, selected-event, response-tail, maximum, and explicit-threshold area statistics without conflating their domains. |
 
 ## CLI and distribution decisions
 

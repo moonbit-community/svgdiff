@@ -62,10 +62,32 @@ pub fn FlipViewingConditions::pixels_per_degree(
 }
 
 ///|
+/// Explicit optional reporting threshold for LDR-FLIP error values.
+pub struct FlipErrorThreshold {
+  value : Double
+} derive(ToJson, Eq)
+
+///|
+/// Construct one finite FLIP reporting threshold in the metric's `[0, 1]` range.
+pub fn FlipErrorThreshold::from_value(value : Double) -> FlipErrorThreshold? {
+  if value.is_nan() || value.is_inf() || value < 0.0 || value > 1.0 {
+    None
+  } else {
+    Some({ value, })
+  }
+}
+
+///|
+pub fn FlipErrorThreshold::value(self : FlipErrorThreshold) -> Double {
+  self.value
+}
+
+///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.41` API accepts caller-provided viewport dimensions,
-/// Perceptual Background, and FLIP Viewing Conditions, and canonicalizes the
+/// The root schema `1.42` API accepts caller-provided viewport dimensions,
+/// Perceptual Background, FLIP Viewing Conditions, and FLIP error threshold,
+/// and canonicalizes the
 /// remaining fields to `v1_default`.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
@@ -77,6 +99,7 @@ pub(all) struct ComparisonProfile {
   renderer_conformance_profile_id : String
   perceptual_background : PerceptualBackground?
   flip_viewing_conditions : FlipViewingConditions?
+  flip_error_threshold : FlipErrorThreshold?
 }
 
 ///|
@@ -95,15 +118,18 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
   fields["flip_viewing_conditions"] = nullable_report_value(
     self.flip_viewing_conditions,
   )
+  fields["flip_error_threshold"] = nullable_report_value(
+    self.flip_error_threshold,
+  )
   Json::object(fields)
 }
 
 ///|
-/// Return the fixed schema `1.41` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.42` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions,
-/// an explicitly parsed Perceptual Background, or invariant-checked FLIP
-/// Viewing Conditions.
+/// an explicitly parsed Perceptual Background, invariant-checked FLIP Viewing
+/// Conditions, or an invariant-checked FLIP error threshold.
 pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
   {
     viewport_width: 16,
@@ -115,6 +141,7 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
     renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/25",
     perceptual_background: None,
     flip_viewing_conditions: None,
+    flip_error_threshold: None,
   }
 }
 
@@ -183,11 +210,51 @@ pub(all) struct PerceptualFlipMap {
 } derive(ToJson, Eq)
 
 ///|
+/// Explicit-threshold spatial extent for one event-local LDR-FLIP response.
+pub(all) struct PerceptualFlipAreaAboveThreshold {
+  threshold : Double
+  pixel_count : Int
+  canvas_fraction : Double
+} derive(ToJson, Eq)
+
+///|
+/// Separate pooled domains over one unquantized event-local LDR-FLIP map.
+pub(all) struct PerceptualFlipStatistics {
+  method_id : String
+  canvas_pixel_count : Int
+  event_region_sample_count : Int
+  response_sample_count : Int
+  canvas_mean : Double
+  event_region_mean : Double
+  response_p95 : Double
+  response_maximum : Double
+  area_above_threshold : PerceptualFlipAreaAboveThreshold?
+} derive(Eq)
+
+///|
+pub impl ToJson for PerceptualFlipStatistics with fn to_json(self) {
+  let fields : Map[String, Json] = Map([])
+  fields["method_id"] = self.method_id.to_json()
+  fields["canvas_pixel_count"] = self.canvas_pixel_count.to_json()
+  fields["event_region_sample_count"] = self.event_region_sample_count.to_json()
+  fields["response_sample_count"] = self.response_sample_count.to_json()
+  fields["canvas_mean"] = self.canvas_mean.to_json()
+  fields["event_region_mean"] = self.event_region_mean.to_json()
+  fields["response_p95"] = self.response_p95.to_json()
+  fields["response_maximum"] = self.response_maximum.to_json()
+  fields["area_above_threshold"] = nullable_report_value(
+    self.area_above_threshold,
+  )
+  Json::object(fields)
+}
+
+///|
 /// Availability and optional event-local LDR-FLIP map.
 pub(all) struct PerceptualFlipEvidence {
   status : String
   reason_code : String?
   map : PerceptualFlipMap?
+  statistics : PerceptualFlipStatistics?
 } derive(ToJson, Eq)
 
 ///|
@@ -861,7 +928,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.41` result of one SVG comparison.
+/// Complete schema `1.42` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -880,13 +947,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.41` JSON.
+/// Serialize this report as indented schema `1.42` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.41` JSON.
+/// Serialize this report as whitespace-free schema `1.42` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1773,7 +1840,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.41",
+    schema_version: "1.42",
     analysis_status: "failed",
     coverage_matrix: [
       {
@@ -2048,15 +2115,26 @@ fn not_computed_perceptual_color_evidence(
 ///|
 fn computed_perceptual_flip_evidence(
   map : PerceptualFlipMap,
+  statistics : PerceptualFlipStatistics,
 ) -> PerceptualFlipEvidence {
-  { status: "computed", reason_code: None, map: Some(map) }
+  {
+    status: "computed",
+    reason_code: None,
+    map: Some(map),
+    statistics: Some(statistics),
+  }
 }
 
 ///|
 fn not_computed_perceptual_flip_evidence(
   reason_code : String,
 ) -> PerceptualFlipEvidence {
-  { status: "not_computed", reason_code: Some(reason_code), map: None }
+  {
+    status: "not_computed",
+    reason_code: Some(reason_code),
+    map: None,
+    statistics: None,
+  }
 }
 
 ///|
@@ -2070,7 +2148,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.41",
+        schema_version: "1.42",
         analysis_status: "partial",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2150,7 +2228,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.41",
+        schema_version: "1.42",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2200,7 +2278,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.41",
+        schema_version: "1.42",
         analysis_status: "complete",
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2337,7 +2415,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.41",
+            schema_version: "1.42",
             analysis_status: "complete",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2377,7 +2455,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.41",
+            schema_version: "1.42",
             analysis_status: "partial",
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2437,7 +2515,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.41",
+              schema_version: "1.42",
               analysis_status: "partial",
               coverage_matrix: [],
               renderer_capability_gaps: [],

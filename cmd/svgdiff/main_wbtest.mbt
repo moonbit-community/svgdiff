@@ -5,7 +5,7 @@ test "CLI parses paths viewport and output" {
     "report.json", "--html", "report.html", "--agent-json", "--before-resource",
     "asset.png", "image/png", "before.png", "--after-resource", "asset.png", "image/png",
     "after.png", "--perceptual-background", "#336699", "--flip-pixels-per-degree",
-    "67",
+    "67", "--flip-error-threshold", "0.05",
   ])
   match config {
     Config(config) => {
@@ -32,6 +32,10 @@ test "CLI parses paths viewport and output" {
         fail("expected parsed FLIP Viewing Conditions")
       }
       assert_eq(viewing.pixels_per_degree(), 67.0)
+      guard config.flip_error_threshold is Some(threshold) else {
+        fail("expected parsed FLIP error threshold")
+      }
+      assert_eq(threshold.value(), 0.05)
     }
     Invalid(message) => fail("expected valid CLI configuration: \{message}")
   }
@@ -42,6 +46,24 @@ test "CLI keeps canonical JSON as the default" {
   match parse_cli(["svgdiff", "before.svg", "after.svg"]) {
     Config(config) => assert_false(config.agent_json)
     Invalid(message) => fail("expected default configuration: \{message}")
+  }
+}
+
+///|
+test "CLI records a FLIP error threshold without inventing Viewing Conditions" {
+  match
+    parse_cli([
+      "svgdiff", "before.svg", "after.svg", "--flip-error-threshold", "0.25",
+    ]) {
+    Config(config) => {
+      assert_true(config.flip_viewing_conditions is None)
+      guard config.flip_error_threshold is Some(threshold) else {
+        fail("expected parsed FLIP error threshold")
+      }
+      assert_eq(threshold.value(), 0.25)
+    }
+    Invalid(message) =>
+      fail("expected threshold-only configuration: \{message}")
   }
 }
 
@@ -63,6 +85,12 @@ test "CLI rejects missing and invalid arguments" {
   for value in ["0", "4097", "nan", "inf", "invalid"] {
     assert_true(
       parse_cli(["svgdiff", "a.svg", "b.svg", "--flip-pixels-per-degree", value])
+      is Invalid(_),
+    )
+  }
+  for value in ["-0.001", "1.001", "nan", "inf", "invalid"] {
+    assert_true(
+      parse_cli(["svgdiff", "a.svg", "b.svg", "--flip-error-threshold", value])
       is Invalid(_),
     )
   }
@@ -107,6 +135,7 @@ test "CLI help documents options and exit statuses" {
   assert_true(help.contains("--height N"))
   assert_true(help.contains("--perceptual-background COLOR"))
   assert_true(help.contains("--flip-pixels-per-degree PPD"))
+  assert_true(help.contains("--flip-error-threshold VALUE"))
   assert_true(help.contains("--output FILE"))
   assert_true(help.contains("--before-resource LOCATOR MEDIA_TYPE FILE"))
   assert_true(help.contains("--after-resource LOCATOR MEDIA_TYPE FILE"))
@@ -123,6 +152,6 @@ test "CLI help documents options and exit statuses" {
 test "CLI version exposes every contract identity" {
   assert_eq(
     version_text(),
-    "svgdiff 0.5.21\nengine: 0.5.21\nschema: 1.41\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic",
+    "svgdiff 0.5.22\nengine: 0.5.22\nschema: 1.42\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic",
   )
 }
