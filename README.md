@@ -63,7 +63,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.10` with `moon add Milky2018/svgdiff@0.5.10` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.11` with `moon add Milky2018/svgdiff@0.5.11` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -74,7 +74,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.30`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.31`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
@@ -86,7 +86,7 @@ Inherited `paint-order`, `fill-rule`, and `clip-rule` are resolved through the s
 
 Non-inherited `mask` and `mask-mode` use the same host/resource separation. One same-document SVG mask with zero or one direct non-rounded solid rectangle is complete-eligible for alpha or sRGB-luminance transfer, user-space or object-bounding-box region/content coordinates, normative region defaults, deterministic axis transforms, leaf or ordinary container application, shared consumer fan-out, continuous numeric deltas, isolated compositing, and conservative per-side effect bounds. Missing, wrong-kind, empty, or non-positive-region admitted masks deterministically suppress the target as transparent black; CSS image/multi-layer masks and other excluded interactions remain precise source-located Diagnostics.
 
-Non-inherited `filter` also uses host/resource separation. One same-document graph of direct static `feOffset` primitives on an explicit-ID, untransformed basic-shape leaf is complete-eligible. A missing or wrong-kind local target deterministically applies no filter, while an empty admitted graph produces transparent output. The engine resolves `filterUnits`, `primitiveUnits`, normative filter-region defaults, SourceGraphic, SourceAlpha, implicit previous results, and named earlier results; evaluates every primitive on a distinct transparent RGBA surface; hard-clips every intermediate to the filter region; reports graph, region, input, result, and offset changes with continuous magnitudes and fan-out; and propagates conservative per-intermediate and final bounds. Other primitives, CSS filter functions, templates, primitive subregions, fractional device offsets, transforms, animation, reuse, and effect interactions retain precise source-located Diagnostics.
+Non-inherited `filter` also uses host/resource separation. One same-document graph of direct static `feOffset` primitives on an explicit-ID, untransformed basic-shape leaf is complete-eligible. A missing or wrong-kind local target deterministically applies no filter, while an empty admitted graph produces transparent output. The engine resolves `filterUnits`, `primitiveUnits`, normative filter-region defaults, SourceGraphic, SourceAlpha, implicit previous results, and named earlier results; evaluates every primitive on a distinct transparent RGBA surface; hard-clips every intermediate to the filter region; reports graph, region, input, result, and offset changes with continuous magnitudes and fan-out; and propagates conservative per-intermediate and final bounds. Every unsupported direct primitive is retained as a position-aligned full source subtree, so attribute, type, nested-content, text, comment, insertion, deletion, and spelling changes remain source-only Atomic Differences with exact spans and affected consumers. Those opaque records, CSS filter functions, templates, primitive subregions, fractional device offsets, transforms, animation, reuse, and effect interactions retain precise source-located Diagnostics and make no computed or rendered claim.
 
 Non-inherited CSS `mix-blend-mode` and `isolation` are complete-eligible for explicit-ID, untransformed, integer non-rounded opaque solid rectangles. All sixteen standard blend keywords use browser-matched W3C formulas; ordinary groups share their parent backdrop, while `isolation:isolate` on the root SVG or an authored-ID `g` starts transparent and composites once. Reports keep modes categorical, name the foreground plus conservative ordered backdrop prefix inside the nearest isolation boundary, use the same compositor for stacking changes, and widen complete causes comparison-wide so simultaneous backdrop edits cannot be omitted. Continuous alpha, antialiasing, strokes, transforms, instances, container blend modes, anonymous or instance isolation hosts, and effect interactions remain precise source-located Diagnostics.
 
@@ -117,7 +117,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.30")
+  assert_eq(report.schema_version, "1.31")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -175,7 +175,7 @@ test "serialize JSON and build the HTML presentation" {
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
-  assert_true(json.find("\"schema_version\": \"1.30\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.31\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
@@ -191,7 +191,7 @@ The CLI option `--agent-json` emits the same schema and evidence without formatt
 - source spans, authored values, normalized declarations, presentation/inline/static-stylesheet cascade provenance including specificity, source order, duplicates, and `!important`, plus ordinary inheritance and CSS-wide defaulting for every supported visual property;
 - case-sensitive inherited custom properties with bounded nested `var()` fallback, `currentColor` dependencies, and causal fan-out into supported geometry, paint, stroke, opacity, vector-effect, marker attachment, and admitted gradient stop colors;
 - set-to-set alignment for rect, circle, ellipse, line, polyline, polygon, and guarded path subjects without treating IDs or source order as identity;
-- geometry, exact normalized path parameter and topology, fill, stroke paint, canonical length-aware stroke width/caps/joins/miter limits/dashes/dash offsets/vector effects, local marker attachments and length-aware resource viewport/orientation properties, bounded embedded-raster source/content/placement, leaf and isolated container opacity, static alpha/luminance masks, bounded static `feOffset` graphs, opaque binary-alpha blend modes and isolation, insertion, deletion, and consequence-aware ancestry, instance-resolution, and stacking differences;
+- geometry, exact normalized path parameter and topology, fill, stroke paint, canonical length-aware stroke width/caps/joins/miter limits/dashes/dash offsets/vector effects, local marker attachments and length-aware resource viewport/orientation properties, bounded embedded-raster source/content/placement, leaf and isolated container opacity, static alpha/luminance masks, bounded static `feOffset` graphs, opaque unsupported-filter source subtrees, opaque binary-alpha blend modes and isolation, insertion, deletion, and consequence-aware ancestry, instance-resolution, and stacking differences;
 - root and nested SVG viewport declarations, nearest-viewport percentage resolution, and exact cumulative coordinate mappings under one explicit common Comparison Viewport;
 - exact continuous parameter magnitudes, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.

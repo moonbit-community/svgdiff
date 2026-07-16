@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.30`
+Status: current model for Structured Report schema `1.31`
 
 Last verified: 2026-07-15
 
@@ -28,14 +28,14 @@ SVG source
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> visual events
-  -> Structured Report 1.30
+  -> Structured Report 1.31
 ```
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile
 
-Schema `1.30` records:
+Schema `1.31` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -104,7 +104,9 @@ Static rectangular clipping separates the non-inherited host attachment from the
 
 Static masking similarly separates the non-inherited host `mask` and `mask-mode` facts from the referenced resource. The resource records presence, `maskUnits`, `maskContentUnits`, region coordinates, `mask-type`, color interpolation, direct rectangle geometry and transform, solid color, independent alpha declarations, and every consumer. Effective mode is host `alpha` or `luminance`, or the resource type for `match-source`; alpha uses content alpha while luminance uses non-premultiplied sRGB coefficients multiplied by that alpha. Complete target and mask surfaces are isolated before multiplication and source-over composition. Each side's conservative effect bound intersects target paint, mask region, and transformed nonzero mask content; host localization unions affected descendants from both sides so newly vacated pixels are not lost. Missing, wrong-kind, empty, and non-positive-region single SVG mask layers are deterministic transparent black. These numeric values and rectangles describe transfer and localization, not a visibility boolean or exact contributor index.
 
-Static filtering separates the non-inherited host `filter` attachment from one same-document resource graph. A missing or wrong-kind local target deterministically applies no filter; an admitted empty graph instead produces transparent output. A nonempty admitted graph contains only direct static `feOffset` primitives and resolves `filterUnits`, `primitiveUnits`, the `-10% -10% 120% 120%` default region, SourceGraphic, SourceAlpha, omitted previous input, and admitted ASCII identifier results from earlier primitives. Every primitive executes on a distinct transparent RGBA surface, and each input/output is hard-clipped to the filter region. Conservative bounds begin at host paint, translate with each offset, intersect the filter region, and remain attached to every intermediate and final result; a clipped-empty result is proven zero contribution. Resource insertion/deletion, units, region, primitive presence, graph edges, result names, and offsets remain separate typed differences with exact provenance, continuous deltas, and consumer fan-out. The execution budget admits at most 256 primitives per graph and 16,777,216 aggregate primitive-surface pixels per source. Other primitives and excluded interactions preserve source facts but revoke computed, rendered, and causal completeness through precise Diagnostics.
+Static filtering separates the non-inherited host `filter` attachment from one same-document resource graph. A missing or wrong-kind local target deterministically applies no filter; an admitted empty graph instead produces transparent output. A nonempty admitted graph contains only direct static `feOffset` primitives and resolves `filterUnits`, `primitiveUnits`, the `-10% -10% 120% 120%` default region, SourceGraphic, SourceAlpha, omitted previous input, and admitted ASCII identifier results from earlier primitives. Every primitive executes on a distinct transparent RGBA surface, and each input/output is hard-clipped to the filter region. Conservative bounds begin at host paint, translate with each offset, intersect the filter region, and remain attached to every intermediate and final result; a clipped-empty result is proven zero contribution. Resource insertion/deletion, units, region, primitive presence, graph edges, result names, and offsets remain separate typed differences with exact provenance, continuous deltas, and consumer fan-out. The execution budget admits at most 256 primitives per graph and 16,777,216 aggregate primitive-surface pixels per source.
+
+An unsupported direct primitive is not executed or attribute-normalized. The engine retains its direct-child position, local name, resource-qualified subject ID, and full-subtree offsets, then aligns positions and slices exact source facts only when producing Diagnostics or `resource.filter.primitive.source` differences. If either aligned side is unsupported, one opaque comparison covers its complete element, attributes, namespace spelling, nested nodes, text, comments, insertion, deletion, or type replacement. A shifted sequence may over-report later positions; unknown semantics do not justify stronger matching. Opaque differences name every affected consumer but expose only source semantics, an indeterminate computed relation, no numeric magnitude, no rendered outcome, no region, and no causal-completeness guarantee. Both-side admitted `feOffset` pairs retain their finer facts. Malformed XML remains a failed input, and direct metadata children remain outside the visual inventory.
 
 Static blending resolves non-inherited CSS `mix-blend-mode` and `isolation` without treating same-named XML attributes as presentation attributes. The admitted binary-alpha slice renders explicit-ID opaque integer rectangles in source order: ordinary groups share the current backdrop, `isolation:isolate` on the root SVG or an authored-ID `g` starts a transparent layer and composites it once, and each non-normal leaf uses the W3C separable or non-separable formula before source-over. `compositing.blend_mode` and `compositing.isolation` are categorical; their differences retain exact declarations, computed keywords, affected foreground and conservative nearest-boundary backdrop-prefix subjects, measured pixels, and no universal scalar between modes. Because a simultaneous backdrop or order change may be the real cause, their complete Cause Envelopes deliberately use comparison-wide Changed Fact candidates under `sound_overapproximation`. Structural stacking outcomes call the same product compositor. Continuous alpha, antialiasing, transforms, strokes, instances, container blend modes, anonymous or instance isolation hosts, and other effect interactions preserve source facts behind precise Diagnostics.
 
@@ -183,7 +185,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.30` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.31` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 `DomainOrdering` contains a policy ID and a lexicographic component vector. It orders differences within an exact domain without pretending that geometry, paint, presence, text, and perceptual effects share one natural unit. The complete v2 component, missing-value, and tie-break contract is defined in the [Domain Ordering Policy](domain-ordering.md).
 
@@ -206,7 +208,7 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.30` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.31` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -222,11 +224,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.30` top-level object contains exactly these conceptual sections:
+The schema `1.31` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.30",
+  "schema_version": "1.31",
   "analysis_status": "complete | partial | failed",
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
@@ -258,7 +260,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.30
+## Not implemented in schema 1.31
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -268,7 +270,7 @@ The following concepts are intentional future work rather than hidden current fi
 - perceptual-background-dependent metrics such as FLIP;
 - deterministic font loading, shaping, layout, and glyph evidence;
 - resource bundles beyond admitted PNG/JPEG `image` consumers, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
-- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, filter primitives beyond the admitted static `feOffset` graph, CSS filter functions, general mask or clip content, continuous-alpha/container/effect-interacting blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
+- complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, visual execution of filter primitives beyond the admitted static `feOffset` graph, CSS filter functions, general mask or clip content, continuous-alpha/container/effect-interacting blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
 - cross-subject Visual Event aggregation.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).

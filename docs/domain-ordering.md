@@ -2,7 +2,7 @@
 
 Status: current `v2_domain_lexicographic` contract
 
-Last verified: 2026-07-14
+Last verified: 2026-07-15
 
 `DomainOrdering` is a derived, versioned view over the authoritative raw `DifferenceMagnitude`. It answers only: “in what deterministic order should differences from this exact same domain be presented?” It is not a universal visual-importance score.
 
@@ -25,6 +25,8 @@ Every component is nonnegative and compared in descending lexicographic order. C
 
 The five exact transform rows take precedence over the broader `geometry.*` fallback, and `resource.image.content` takes precedence over the broad resource fallback. Their leading components retain deliberately different units: CSS pixels, degrees, a unitless scale delta, or normalized pixel error. The table defines tuple construction, not cross-family comparability. `geometry.position` and `geometry.size` use the same construction family but remain different domains and are not numerically ranked against one another. For guarded `geometry.path.*` differences, `geometry_displacement_css_px` is the optional isolated alpha-boundary maximum distance shared by that aligned path comparison; the exact normalized parameter delta remains separately available in `parameter_abs` and `parameter_symmetric_relative`.
 
+`resource.filter.primitive.source` has no computed magnitude by design. Its v2 component array is therefore empty, not a measured zero or evidence that two opaque changes are equally important. Stable difference-ID tie-breaking provides deterministic presentation within that exact domain without inventing an ordering signal.
+
 ## Missing values and ties
 
 An unavailable magnitude remains `null` in `DifferenceMagnitude` and is omitted from the v2 component array; it is never changed to measured zero. Policy-construction tests pin this behavior for all current families. Consumers must not infer a universal component meaning without first dispatching on the exact domain and policy ID, and should read the named raw magnitude fields rather than reverse-engineering a shortened array.
@@ -41,6 +43,6 @@ Policy `v1_domain_lexicographic` remains valid only for legacy reports through S
 2. Group by exact `AtomicDifference.domain`.
 3. Compare tuples only inside one exact-domain group and one policy ID.
 4. Preserve `DifferenceMagnitude` as the evidence shown to the agent; the tuple is derived ordering metadata.
-5. For a question about the “main” change across domains, use an explicitly versioned Impact Assessment when one exists. Schema `1.30` has none, so report the strongest domain-specific evidence and disclose the interpretation instead of comparing tuple numbers.
+5. For a question about the “main” change across domains, use an explicitly versioned Impact Assessment when one exists. Schema `1.31` has none, so report the strongest domain-specific evidence and disclose the interpretation instead of comparing tuple numbers.
 
 [ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) records that future cross-domain assessment should preserve structured evidence, ties, and incomparability instead of introducing a universal scalar without a demonstrated Agent task and calibrated policy.

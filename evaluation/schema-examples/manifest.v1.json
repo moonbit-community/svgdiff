@@ -2,6 +2,19 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "unsupported-filter-primitive-change",
+      "before": "evaluation/schema-examples/cases/unsupported-filter-primitive-change/before.svg",
+      "after": "evaluation/schema-examples/cases/unsupported-filter-primitive-change/after.svg",
+      "output": "schema/examples/unsupported-filter-primitive-change.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["resource.filter.primitive.source"],
+        "computed_relations": ["indeterminate"],
+        "diagnostic_codes": ["unsupported_visual_subject", "filter_primitive_unsupported", "filter_primitive_unsupported"],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "blend-mode-change",
       "before": "evaluation/schema-examples/cases/blend-mode-change/before.svg",
       "after": "evaluation/schema-examples/cases/blend-mode-change/after.svg",

@@ -1,0 +1,339 @@
+{
+  "schema_version": "1.31",
+  "analysis_status": "partial",
+  "coverage_matrix": [
+    {
+      "feature_id": "property.x",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "property.y",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "document.xml",
+      "subject_id": "document",
+      "source_semantics": "covered",
+      "computed_appearance": "not_applicable",
+      "rendered_evidence": "not_applicable",
+      "diagnostic_ids": []
+    },
+    {
+      "feature_id": "subject.rect",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "property.fill",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "property.width",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "property.height",
+      "subject_id": "box",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "guard.unsupported_visual_subject",
+      "subject_id": "feGaussianBlur",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:unsupported-visual-subject:feGaussianBlur"
+      ]
+    },
+    {
+      "feature_id": "guard.filter_primitive_unsupported",
+      "subject_id": "box",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box"
+      ]
+    },
+    {
+      "feature_id": "guard.filter_primitive_unsupported",
+      "subject_id": "blur:primitive:0",
+      "source_semantics": "not_applicable",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:blur:primitive:0"
+      ]
+    },
+    {
+      "feature_id": "domain.resource.filter.primitive.source",
+      "subject_id": "blur",
+      "source_semantics": "covered",
+      "computed_appearance": "limited",
+      "rendered_evidence": "limited",
+      "diagnostic_ids": [
+        "diagnostic:filter_primitive_unsupported:box",
+        "diagnostic:filter_primitive_unsupported:blur:primitive:0"
+      ]
+    }
+  ],
+  "renderer_capability_gaps": [],
+  "profile": {
+    "viewport_width": 16,
+    "viewport_height": 16,
+    "comparison_dpr": 1,
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25"
+  },
+  "subject_alignments": [
+    {
+      "id": "alignment:0",
+      "relation": "correspondence",
+      "before": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "box",
+          "instance_context": null
+        }
+      ],
+      "after": [
+        {
+          "source_index": 0,
+          "kind": "rect",
+          "authored_id": "box",
+          "instance_context": null
+        }
+      ],
+      "basis": "exact_visual_signature",
+      "evidence": {
+        "score_kind": "exact_visual_signature",
+        "selected_score": 0,
+        "candidate_count": 1,
+        "equal_score_candidate_count": 1,
+        "ambiguity": "unique",
+        "confidence": null,
+        "confidence_status": "not_calibrated"
+      }
+    }
+  ],
+  "changed_facts": [
+    {
+      "id": "fact:filter:blur:primitive:0:source",
+      "subject_id": "blur:primitive:0",
+      "property": "primitive-source",
+      "before": {
+        "property": "primitive-source",
+        "authored_value": "<feGaussianBlur stdDeviation=\"1\"/>",
+        "declared_value": "<feGaussianBlur stdDeviation=\"1\"/>",
+        "origin": "resource_content",
+        "source_span": {
+          "start_offset": 102,
+          "end_offset": 136
+        }
+      },
+      "after": {
+        "property": "primitive-source",
+        "authored_value": "<feGaussianBlur stdDeviation=\"3\"/>",
+        "declared_value": "<feGaussianBlur stdDeviation=\"3\"/>",
+        "origin": "resource_content",
+        "source_span": {
+          "start_offset": 102,
+          "end_offset": 136
+        }
+      },
+      "affected_subject_ids": [
+        "box"
+      ]
+    }
+  ],
+  "source_resolutions": [],
+  "atomic_differences": [
+    {
+      "id": "diff:filter:blur:primitive:0:source",
+      "subject_role": "resource",
+      "subject_alignment_id": null,
+      "domain": "resource.filter.primitive.source",
+      "source_before": "<feGaussianBlur stdDeviation=\"1\"/>",
+      "source_after": "<feGaussianBlur stdDeviation=\"3\"/>",
+      "source_fact_before": {
+        "property": "primitive-source",
+        "authored_value": "<feGaussianBlur stdDeviation=\"1\"/>",
+        "declared_value": "<feGaussianBlur stdDeviation=\"1\"/>",
+        "origin": "resource_content",
+        "source_span": {
+          "start_offset": 102,
+          "end_offset": 136
+        }
+      },
+      "source_fact_after": {
+        "property": "primitive-source",
+        "authored_value": "<feGaussianBlur stdDeviation=\"3\"/>",
+        "declared_value": "<feGaussianBlur stdDeviation=\"3\"/>",
+        "origin": "resource_content",
+        "source_span": {
+          "start_offset": 102,
+          "end_offset": 136
+        }
+      },
+      "changed_fact_ids": [
+        "fact:filter:blur:primitive:0:source"
+      ],
+      "evidence_layers": [
+        "source_semantics"
+      ],
+      "computed_relation": {
+        "status": "indeterminate",
+        "reason_code": "filter_coverage_partial",
+        "diagnostic_ids": [
+          "diagnostic:filter_primitive_unsupported:box",
+          "diagnostic:filter_primitive_unsupported:blur:primitive:0"
+        ]
+      },
+      "magnitude": {
+        "parameter_abs_user_units": null,
+        "parameter_signed_user_units": null,
+        "symmetric_relative": null,
+        "geometry_displacement_css_px": null,
+        "geometry_viewport_fraction": null,
+        "presence_painted_viewport_fraction": null,
+        "raster_changed_pixel_fraction": null,
+        "raster_rgba8_rmse": null,
+        "raster_linear_premultiplied_rgba_rmse": null,
+        "intrinsic_raster": null
+      },
+      "domain_ordering": {
+        "policy_id": "v2_domain_lexicographic",
+        "components": []
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event:filter:blur",
+      "primary_subject_id": "blur",
+      "atomic_difference_ids": [
+        "diff:filter:blur:primitive:0:source"
+      ],
+      "rendered_outcome": {
+        "status": "not_computed",
+        "reason_code": "filter_resource_rendered_evidence_unavailable"
+      },
+      "difference_regions": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "diagnostic:unsupported-visual-subject:feGaussianBlur",
+      "code": "unsupported_visual_subject",
+      "subject_id": "feGaussianBlur",
+      "affected_evidence_layers": [
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 102,
+            "end_offset": 136
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 102,
+            "end_offset": 136
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:filter_primitive_unsupported:blur:primitive:0",
+      "code": "filter_primitive_unsupported",
+      "subject_id": "blur:primitive:0",
+      "affected_evidence_layers": [
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 102,
+            "end_offset": 136
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 102,
+            "end_offset": 136
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic:filter_primitive_unsupported:box",
+      "code": "filter_primitive_unsupported",
+      "subject_id": "box",
+      "affected_evidence_layers": [
+        "computed_appearance",
+        "rendered_evidence"
+      ],
+      "source_locations": [
+        {
+          "source_role": "before",
+          "source_span": {
+            "start_offset": 230,
+            "end_offset": 240
+          }
+        },
+        {
+          "source_role": "after",
+          "source_span": {
+            "start_offset": 230,
+            "end_offset": 240
+          }
+        }
+      ]
+    }
+  ]
+}

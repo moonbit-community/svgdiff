@@ -134,6 +134,7 @@ graph TD
   ISS_116["ISS-116: Implement deterministic alpha and luminance masking"]
   ISS_117["ISS-117: Implement bounded static filter primitive graphs"]
   ISS_118["ISS-118: Implement bounded static blending and isolation"]
+  ISS_119["ISS-119: Preserve unsupported filter primitive source differences"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -346,6 +347,7 @@ graph TD
   ISS_115 --> ISS_116
   ISS_116 --> ISS_117
   ISS_117 --> ISS_118
+  ISS_118 --> ISS_119
 ```
 
 ## Warnings

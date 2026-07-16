@@ -132,7 +132,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Implement masking, including luminance/alpha mask semantics and resource units.
 - [x] **P1** Implement filter primitive graphs, filter regions, intermediate surfaces, and conservative expansion bounds.
 - [x] **P1** Implement blending modes, isolation, and stacking/compositing dependencies.
-- [ ] **P1** Define deterministic handling for unsupported filter primitives without losing source differences.
+- [x] **P1** Define deterministic handling for unsupported filter primitives without losing source differences.
 
 ## Phase 4: Subject Alignment and Visual Event construction
 

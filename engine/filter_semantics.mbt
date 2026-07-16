@@ -30,6 +30,26 @@ priv struct FilterOffsetPrimitive {
 }
 
 ///|
+priv struct FilterPrimitiveSource {
+  position : Int
+  kind : String
+  subject_id : String
+  start_offset : Int
+  end_offset : Int
+  offset_index : Int?
+}
+
+///|
+priv struct PendingFilterPrimitiveSource {
+  resource_index : Int
+  position : Int
+  kind : String
+  subject_id : String
+  start_offset : Int
+  offset_index : Int?
+}
+
+///|
 priv struct FilterResource {
   subject_id : String
   authored_id : String?
@@ -45,6 +65,7 @@ priv struct FilterResource {
   region_height : FilterLength
   region_facts : Array[DeclaredVisualFact]
   primitives : Array[FilterOffsetPrimitive]
+  primitive_sources : Array[FilterPrimitiveSource]
   mut complete : Bool
 }
 
@@ -270,8 +291,51 @@ fn filter_resource_from_element(
     region_height: lengths[3],
     region_facts,
     primitives: [],
+    primitive_sources: [],
     complete,
   }
+}
+
+///|
+fn filter_pending_primitive_source(
+  resource_index : Int,
+  resource : FilterResource,
+  kind : String,
+  start_offset : Int,
+  offset_index : Int?,
+) -> PendingFilterPrimitiveSource {
+  let position = resource.primitive_sources.length()
+  {
+    resource_index,
+    position,
+    kind,
+    subject_id: "\{resource.subject_id}:primitive:\{position}",
+    start_offset,
+    offset_index,
+  }
+}
+
+///|
+fn filter_finish_primitive_source(
+  resource : FilterResource,
+  pending : PendingFilterPrimitiveSource,
+  end_offset : Int,
+) -> FilterPrimitiveSource {
+  let source = {
+    position: pending.position,
+    kind: pending.kind,
+    subject_id: pending.subject_id,
+    start_offset: pending.start_offset,
+    end_offset,
+    offset_index: pending.offset_index,
+  }
+  resource.primitive_sources.push(source)
+  source
+}
+
+///|
+fn filter_metadata_child(kind : String) -> Bool {
+  kind == "title" || kind == "desc" || kind == "metadata"
 }
 
 ///|
@@ -402,6 +466,7 @@ fn extract_filter_semantic_document_or_raise(
   }
   let reader = @xml.NamespaceReader::from_string(input)
   let mut active : Int? = None
+  let mut pending_primitive : PendingFilterPrimitiveSource? = None
   let mut depth = 0
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -422,21 +487,24 @@ fn extract_filter_semantic_document_or_raise(
                   document.resources[index],
                 )
                 document.resources[index].primitives.push(primitive)
-              } else if element.name.local_name != "title" &&
-                element.name.local_name != "desc" &&
-                element.name.local_name != "metadata" {
+                pending_primitive = Some(
+                  filter_pending_primitive_source(
+                    index,
+                    document.resources[index],
+                    element.name.local_name,
+                    event.span.start.offset,
+                    Some(primitive.index),
+                  ),
+                )
+              } else if !filter_metadata_child(element.name.local_name) {
                 document.resources[index].complete = false
-                filter_issue(
-                  document,
-                  "filter_primitive_unsupported",
-                  document.resources[index].subject_id,
-                  Some(
-                    clip_source_fact(
-                      input,
-                      "primitive",
-                      event.span.start.offset,
-                      event.span.end.offset,
-                    ),
+                pending_primitive = Some(
+                  filter_pending_primitive_source(
+                    index,
+                    document.resources[index],
+                    element.name.local_name,
+                    event.span.start.offset,
+                    None,
                   ),
                 )
               }
@@ -510,22 +578,44 @@ fn extract_filter_semantic_document_or_raise(
               document.resources[index],
             )
             document.resources[index].primitives.push(primitive)
+            let pending = filter_pending_primitive_source(
+              index,
+              document.resources[index],
+              element.name.local_name,
+              event.span.start.offset,
+              Some(primitive.index),
+            )
+            let _ = filter_finish_primitive_source(
+              document.resources[index],
+              pending,
+              event.span.end.offset,
+            )
           }
           Some(index) if depth == 1 &&
-            element.name.local_name != "title" &&
-            element.name.local_name != "desc" &&
-            element.name.local_name != "metadata" => {
+            !filter_metadata_child(element.name.local_name) => {
             document.resources[index].complete = false
+            let pending = filter_pending_primitive_source(
+              index,
+              document.resources[index],
+              element.name.local_name,
+              event.span.start.offset,
+              None,
+            )
+            let source = filter_finish_primitive_source(
+              document.resources[index],
+              pending,
+              event.span.end.offset,
+            )
             filter_issue(
               document,
               "filter_primitive_unsupported",
-              document.resources[index].subject_id,
+              source.subject_id,
               Some(
                 clip_source_fact(
                   input,
-                  "primitive",
-                  event.span.start.offset,
-                  event.span.end.offset,
+                  "primitive-source",
+                  source.start_offset,
+                  source.end_offset,
                 ),
               ),
             )
@@ -546,7 +636,35 @@ fn extract_filter_semantic_document_or_raise(
       }
       End(_) =>
         match active {
-          Some(_) => {
+          Some(index) => {
+            if depth == 2 {
+              match pending_primitive {
+                Some(pending) if pending.resource_index == index => {
+                  let source = filter_finish_primitive_source(
+                    document.resources[index],
+                    pending,
+                    event.span.end.offset,
+                  )
+                  if source.offset_index is None {
+                    filter_issue(
+                      document,
+                      "filter_primitive_unsupported",
+                      source.subject_id,
+                      Some(
+                        clip_source_fact(
+                          input,
+                          "primitive-source",
+                          source.start_offset,
+                          source.end_offset,
+                        ),
+                      ),
+                    )
+                  }
+                  pending_primitive = None
+                }
+                _ => ()
+              }
+            }
             depth -= 1
             if depth == 0 {
               active = None
@@ -1438,6 +1556,48 @@ fn filter_primitive_value(
 }
 
 ///|
+fn filter_offset_for_source(
+  resource : FilterResource,
+  source : FilterPrimitiveSource?,
+) -> FilterOffsetPrimitive? {
+  source
+  .bind(value => value.offset_index)
+  .bind(index => resource.primitives.get(index))
+}
+
+///|
+fn filter_primitive_source_fact(
+  input : String,
+  source : FilterPrimitiveSource?,
+) -> DeclaredVisualFact? {
+  source.map(value => {
+    clip_source_fact(
+      input,
+      "primitive-source",
+      value.start_offset,
+      value.end_offset,
+    )
+  })
+}
+
+///|
+fn filter_primitive_source_value(
+  input : String,
+  source : FilterPrimitiveSource?,
+) -> String {
+  source
+  .map(value => source_range_slice(input, value.start_offset, value.end_offset))
+  .unwrap_or("")
+}
+
+///|
+fn filter_primitive_source_is_opaque(source : FilterPrimitiveSource?) -> Bool {
+  source
+  .map(value => value.kind != "feOffset" || value.offset_index is None)
+  .unwrap_or(false)
+}
+
+///|
 fn filter_report_diagnostic_ids(
   report : StructuredReport,
   subjects : Array[String],
@@ -1686,11 +1846,50 @@ fn attach_filter_differences(
             )
           }
         }
-        let primitive_count = left.primitives
+        let primitive_count = left.primitive_sources
           .length()
-          .max(right.primitives.length())
-        for index in 0..<primitive_count {
-          match (left.primitives.get(index), right.primitives.get(index)) {
+          .max(right.primitive_sources.length())
+        for position in 0..<primitive_count {
+          let left_source = left.primitive_sources.get(position)
+          let right_source = right.primitive_sources.get(position)
+          if filter_primitive_source_is_opaque(left_source) ||
+            filter_primitive_source_is_opaque(right_source) {
+            let left_fact = filter_primitive_source_fact(
+              before_svg, left_source,
+            )
+            let right_fact = filter_primitive_source_fact(
+              after_svg, right_source,
+            )
+            if declared_fact_changed(left_fact, right_fact) {
+              let source = match (left_source, right_source) {
+                (Some(value), _) | (_, Some(value)) => value
+                _ => abort("unreachable empty filter primitive source pair")
+              }
+              append_filter_report_difference(
+                changed_facts,
+                differences,
+                difference_ids,
+                "fact:filter:\{key}:primitive:\{source.position}:source",
+                "diff:filter:\{key}:primitive:\{source.position}:source",
+                source.subject_id,
+                "resource",
+                "primitive-source",
+                "resource.filter.primitive.source",
+                left_fact,
+                right_fact,
+                filter_primitive_source_value(before_svg, left_source),
+                filter_primitive_source_value(after_svg, right_source),
+                affected,
+                diagnostics,
+                None,
+                None,
+              )
+            }
+            continue
+          }
+          let left_primitive = filter_offset_for_source(left, left_source)
+          let right_primitive = filter_offset_for_source(right, right_source)
+          match (left_primitive, right_primitive) {
             (Some(left_primitive), Some(right_primitive)) =>
               for property in ["in", "result", "dx", "dy"] {
                 let left_fact = filter_primitive_fact(left_primitive, property)
@@ -1702,8 +1901,8 @@ fn attach_filter_differences(
                     changed_facts,
                     differences,
                     difference_ids,
-                    "fact:filter:\{key}:primitive:\{index}:\{property}",
-                    "diff:filter:\{key}:primitive:\{index}:\{property}",
+                    "fact:filter:\{key}:primitive:\{position}:\{property}",
+                    "diff:filter:\{key}:primitive:\{position}:\{property}",
                     left_primitive.subject_id,
                     "resource",
                     property,
@@ -1744,8 +1943,8 @@ fn attach_filter_differences(
                 changed_facts,
                 differences,
                 difference_ids,
-                "fact:filter:\{key}:primitive:\{index}:presence",
-                "diff:filter:\{key}:primitive:\{index}:presence",
+                "fact:filter:\{key}:primitive:\{position}:presence",
+                "diff:filter:\{key}:primitive:\{position}:presence",
                 primitive.subject_id,
                 "resource",
                 "presence",
@@ -1806,6 +2005,36 @@ fn attach_filter_differences(
           None,
           None,
         )
+        let diagnostics = filter_report_diagnostic_ids(
+          report,
+          [resource.subject_id, ..affected],
+        )
+        for source in resource.primitive_sources {
+          guard filter_primitive_source_is_opaque(Some(source)) else {
+            continue
+          }
+          let left_source = if left is Some(_) { Some(source) } else { None }
+          let right_source = if right is Some(_) { Some(source) } else { None }
+          append_filter_report_difference(
+            changed_facts,
+            differences,
+            difference_ids,
+            "fact:filter:\{key}:primitive:\{source.position}:source",
+            "diff:filter:\{key}:primitive:\{source.position}:source",
+            source.subject_id,
+            "resource",
+            "primitive-source",
+            "resource.filter.primitive.source",
+            filter_primitive_source_fact(before_svg, left_source),
+            filter_primitive_source_fact(after_svg, right_source),
+            filter_primitive_source_value(before_svg, left_source),
+            filter_primitive_source_value(after_svg, right_source),
+            affected,
+            diagnostics,
+            None,
+            None,
+          )
+        }
       }
     }
     if !difference_ids.is_empty() {

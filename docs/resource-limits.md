@@ -1,6 +1,6 @@
 # Comparison Resource Limits
 
-Status: current module `0.5.10` and schema `1.30` contract
+Status: current module `0.5.11` and schema `1.31` contract
 
 Last verified: 2026-07-15
 
@@ -30,6 +30,8 @@ Every production comparison uses the same fixed safety budgets. The public API d
 | Report bytes | Each built-in JSON form | 33,554,432 | The larger UTF-8 size of indented and compact serialization |
 
 The admitted filter executor additionally caps each graph at 256 direct primitives and aggregate primitive-surface work at 16,777,216 viewport pixels per source. Crossing either bound produces partial `filter_graph_budget_exceeded` evidence rather than executing an unbounded graph; exact filter source facts remain present. This is a feature-admission guard, not a failed whole-comparison resource report.
+
+Opaque unsupported filter primitives add no second retained subtree string during semantic extraction: the internal record keeps only bounded input offsets, position, type, and subject identity. Exact subtree text is sliced when a Diagnostic or changed report fact requires it, then remains subject to the ordinary 8 MiB per-input and 32 MiB serialized-report limits. Malformed XML cannot yield a completed subtree record and follows the existing `svg_parse_failed` path.
 
 The admitted blend compositor additionally caps each source at 64 active blend or isolation surfaces and 67,108,864 aggregate viewport-surface pixels. The exact inclusive boundary is accepted. Crossing either bound produces partial `blend_surface_budget_exceeded` evidence while retaining exact declarations, resolved keywords, stacking order, and conservative affected subjects; it does not emit a truncated render or a failed whole-comparison resource report.
 

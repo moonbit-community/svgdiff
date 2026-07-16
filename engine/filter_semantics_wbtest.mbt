@@ -132,6 +132,174 @@ test "filter graph guards unresolved inputs unsupported primitives and fractiona
 }
 
 ///|
+test "unsupported filter primitives retain complete opaque source subtrees" {
+  let source =
+    #|<svg><defs><filter id="f">
+    #|  <feGaussianBlur stdDeviation="2"/>
+    #|  <title>ignored metadata</title>
+    #|  <feMerge data-kind="paired"><feMergeNode in="SourceGraphic"/><!--keep--></feMerge>
+    #|</filter></defs><rect id="box" width="4" height="4" filter="url(#f)"/></svg>
+  let document = extract_filter_semantic_document_or_raise(
+    source,
+    ComparisonProfile::v1_default(),
+  )
+  guard document.resources is [resource] else {
+    fail("expected one filter resource")
+  }
+  assert_eq(resource.primitive_sources.length(), 2)
+  assert_eq(resource.primitive_sources[0].position, 0)
+  assert_eq(resource.primitive_sources[0].kind, "feGaussianBlur")
+  let first_fact = filter_primitive_source_fact(
+    source,
+    Some(resource.primitive_sources[0]),
+  ).unwrap()
+  assert_eq(first_fact.declared_value, "<feGaussianBlur stdDeviation=\"2\"/>")
+  assert_eq(resource.primitive_sources[1].position, 1)
+  assert_eq(resource.primitive_sources[1].kind, "feMerge")
+  let second_fact = filter_primitive_source_fact(
+    source,
+    Some(resource.primitive_sources[1]),
+  ).unwrap()
+  assert_eq(
+    second_fact.declared_value,
+    "<feMerge data-kind=\"paired\"><feMergeNode in=\"SourceGraphic\"/><!--keep--></feMerge>",
+  )
+  assert_eq(
+    source_range_slice(
+      source,
+      second_fact.source_span.start_offset,
+      second_fact.source_span.end_offset,
+    ),
+    second_fact.declared_value,
+  )
+}
+
+///|
+test "unsupported filter primitive changes remain source-only differences" {
+  let before = "<svg><defs><filter id='f'><feMerge><feMergeNode in='SourceGraphic'/><!--before--></feMerge></filter></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  let after = "<svg><defs><filter id='f'><feMerge><feMergeNode in='SourceAlpha'/><!--after--></feMerge></filter></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_eq(report.analysis_status, "partial")
+  guard report.atomic_differences.filter(difference => {
+      difference.domain == "resource.filter.primitive.source"
+    })
+    is [difference] else {
+    fail("expected one opaque primitive source difference")
+  }
+  assert_eq(difference.subject_role, "resource")
+  assert_eq(difference.evidence_layers, ["source_semantics"])
+  assert_eq(difference.computed_relation.status, "indeterminate")
+  assert_true(!difference.computed_relation.diagnostic_ids.is_empty())
+  assert_eq(
+    difference.source_fact_before.map(fact => fact.property),
+    Some("primitive-source"),
+  )
+  assert_true(difference.source_before.contains("SourceGraphic"))
+  assert_true(difference.source_after.contains("SourceAlpha"))
+  assert_true(
+    difference.magnitude.parameter_abs_user_units is None &&
+    difference.magnitude.parameter_signed_user_units is None &&
+    difference.magnitude.symmetric_relative is None &&
+    difference.magnitude.geometry_displacement_css_px is None &&
+    difference.magnitude.geometry_viewport_fraction is None &&
+    difference.magnitude.presence_painted_viewport_fraction is None &&
+    difference.magnitude.raster_changed_pixel_fraction is None &&
+    difference.magnitude.raster_rgba8_rmse is None &&
+    difference.magnitude.raster_linear_premultiplied_rgba_rmse is None &&
+    difference.magnitude.intrinsic_raster is None &&
+    difference.magnitude.transform_effect is None &&
+    difference.presence_magnitude is None &&
+    difference.domain_ordering.components.is_empty(),
+  )
+  guard report.events.filter(event => event.id == "event:filter:f") is [event] else {
+    fail("expected one filter resource event")
+  }
+  assert_eq(event.rendered_outcome.status, "not_computed")
+  assert_true(event.difference_regions.is_empty())
+  assert_true(
+    report.changed_facts.any(fact => {
+      fact.id == "fact:filter:f:primitive:0:source" &&
+      fact.affected_subject_ids == ["box"]
+    }),
+  )
+}
+
+///|
+test "unsupported primitive position alignment is deterministic and conservative" {
+  let host = "</filter></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  let prefix = "<svg><defs><filter id='f'>"
+  let cases = [
+    (
+      prefix + "<feGaussianBlur stdDeviation='1'/>" + host,
+      prefix + "<feFlood flood-color='red'/>" + host,
+      1,
+    ),
+    (
+      prefix + "<feGaussianBlur stdDeviation='1'/>" + host,
+      prefix +
+      "<feColorMatrix values='1'/><feGaussianBlur stdDeviation='1'/>" +
+      host,
+      2,
+    ),
+    (
+      prefix + "<feGaussianBlur stdDeviation='1'/>" + host,
+      prefix + "<feGaussianBlur stdDeviation='1'/>" + host,
+      0,
+    ),
+  ]
+  for case in cases {
+    let first = compare(case.0, case.1, ComparisonProfile::v1_default())
+    let second = compare(case.0, case.1, ComparisonProfile::v1_default())
+    let differences = first.atomic_differences.filter(difference => {
+      difference.domain == "resource.filter.primitive.source"
+    })
+    assert_eq(differences.length(), case.2)
+    assert_eq(first.to_json(), second.to_json())
+  }
+}
+
+///|
+test "unsupported primitives survive whole filter resource insertion and deletion" {
+  let missing = "<svg><defs></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  let present = "<svg><defs><filter id='f'><feGaussianBlur stdDeviation='2'/></filter></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  for case in [(missing, present, "before"), (present, missing, "after")] {
+    let report = compare(case.0, case.1, ComparisonProfile::v1_default())
+    guard report.atomic_differences.filter(difference => {
+        difference.domain == "resource.filter.primitive.source"
+      })
+      is [difference] else {
+      fail("expected one opaque primitive for resource insertion or deletion")
+    }
+    assert_eq(difference.computed_relation.status, "indeterminate")
+    if case.2 == "before" {
+      assert_true(difference.source_fact_before is None)
+      assert_true(difference.source_fact_after is Some(_))
+    } else {
+      assert_true(difference.source_fact_before is Some(_))
+      assert_true(difference.source_fact_after is None)
+    }
+    assert_true(
+      report.changed_facts.any(fact => {
+        fact.id == "fact:filter:f:primitive:0:source" &&
+        fact.affected_subject_ids == ["box"]
+      }),
+    )
+  }
+}
+
+///|
+test "supported filter primitives do not emit opaque source differences" {
+  let before = "<svg><defs><filter id='f'><feOffset dx='1'/></filter></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  let after = "<svg><defs><filter id='f'><feOffset dx='2'/></filter></defs><rect id='box' width='4' height='4' filter='url(#f)'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_true(
+    !report.atomic_differences.any(difference => {
+      difference.domain == "resource.filter.primitive.source"
+    }),
+  )
+}
+
+///|
 test "filter resource outcomes stay deterministic and source located" {
   for
     source in [
