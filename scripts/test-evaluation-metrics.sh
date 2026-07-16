@@ -8,8 +8,12 @@ reports="$tmp/reports"
 tasks="$tmp/tasks.jsonl"
 evidence_answers="$tmp/evidence-answers.jsonl"
 empty_answers="$tmp/empty-answers.jsonl"
+wrong_magnitude_answers="$tmp/wrong-magnitude-answers.jsonl"
 evidence_metrics="$tmp/evidence-metrics.json"
 empty_metrics="$tmp/empty-metrics.json"
+wrong_magnitude_metrics="$tmp/wrong-magnitude-metrics.json"
+wrong_magnitude_gate="$tmp/wrong-magnitude-gate.json"
+wrong_magnitude_failures="$tmp/wrong-magnitude-failures.json"
 mkdir -p "$reports"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -36,10 +40,48 @@ python3 evaluation/harness/harness.py run \
   --output "$empty_answers" \
   --agent "python3 evaluation/harness/report_only_test_agent.py"
 
+jq -s -e '
+  any(.[] | select(.case_id == "subtle-geometry-shift");
+    any(.differences[].magnitude_claims[];
+      .field == "parameter_delta_css_px" and
+      .status == "measured" and
+      .unit == "css_px")) and
+  any(.[] | select(.case_id == "structural-rect-insertion");
+    any(.differences[].magnitude_claims[];
+      .field == "presence_magnitude.affected_entity_count" and
+      .status == "measured" and
+      .value == 1 and
+      .unit == "entities")) and
+  any(.[] | select(.case_id == "group-transform-change");
+    any(.differences[].magnitude_claims[];
+      .field == "magnitude.transform_effect.norm_css_px" and
+      .status == "measured" and
+      .value == 4 and
+      .unit == "css_px")) and
+  any(.[] | select(.case_id == "embedded-raster-change");
+    any(.differences[].magnitude_claims[];
+      .field == "magnitude.intrinsic_raster.changed_pixel_fraction" and
+      .status == "measured" and
+      .value == 1 and
+      .unit == "pixel_fraction"))
+' "$evidence_answers" >/dev/null
+
+jq -c '
+  if .case_id == "subtle-geometry-shift" then
+    .differences[0].magnitude_claims[0].value = 123456
+  else
+    .
+  end
+' "$evidence_answers" >"$wrong_magnitude_answers"
+
 python3 evaluation/harness/score.py \
   --tasks "$tasks" --answers "$evidence_answers" --output "$evidence_metrics"
 python3 evaluation/harness/score.py \
   --tasks "$tasks" --answers "$empty_answers" --output "$empty_metrics"
+python3 evaluation/harness/score.py \
+  --tasks "$tasks" \
+  --answers "$wrong_magnitude_answers" \
+  --output "$wrong_magnitude_metrics"
 
 jq -e '
   .metrics_version == "svgdiff-evaluation-metrics/1" and
@@ -49,6 +91,7 @@ jq -e '
   .aggregate.agent_required_diagnostic_recall_macro == 1 and
   .aggregate.agent_hard_safety_failure_count == 0 and
   .aggregate.agent_atomic_difference_recall_macro == 1 and
+  .aggregate.agent_magnitude_claim_recall_macro == 1 and
   .aggregate.agent_main_difference_mrr == 1 and
   .aggregate.report_region_overlap_macro == 1 and
   .aggregate.agent_region_overlap_macro == 1 and
@@ -61,12 +104,14 @@ jq -e '
   .aggregate.report_cause_false_positive_count == 0 and
   .aggregate.report_cause_false_positive_fraction_macro == 0 and
   .aggregate.agent_cause_false_positive_count == 0 and
+  .aggregate.invalid_magnitude_claim_count == 0 and
   .aggregate.invalid_evidence_reference_count == 0
 ' "$evidence_metrics" >/dev/null
 
 jq -e '
   .aggregate.agent_hard_safety_failure_count == 0 and
   .aggregate.agent_atomic_difference_recall_macro < 1 and
+  .aggregate.agent_magnitude_claim_recall_macro < 1 and
   .aggregate.agent_main_difference_mrr == 0 and
   .aggregate.agent_region_overlap_macro == 0 and
   .aggregate.agent_possible_cause_recall_macro == 0 and
@@ -77,4 +122,36 @@ jq -e '
   .aggregate.report_cause_false_positive_fraction_macro == 0
 ' "$empty_metrics" >/dev/null
 
-printf 'Evaluation metrics: report and agent layers separated, evidence baseline: ok, empty baseline: lower\n'
+jq -e --slurpfile evidence "$evidence_metrics" '
+  .aggregate.agent_atomic_difference_recall_macro == 1 and
+  .aggregate.agent_magnitude_claim_recall_macro < 1 and
+  .aggregate.invalid_magnitude_claim_count == 1 and
+  .aggregate.report_region_overlap_macro ==
+    $evidence[0].aggregate.report_region_overlap_macro and
+  .aggregate.report_cause_envelope_recall_macro ==
+    $evidence[0].aggregate.report_cause_envelope_recall_macro
+' "$wrong_magnitude_metrics" >/dev/null
+
+if python3 evaluation/harness/check_thresholds.py \
+  --metrics "$wrong_magnitude_metrics" \
+  --thresholds evaluation/benchmark-thresholds.v1.json \
+  --output "$wrong_magnitude_gate" >/dev/null 2>&1; then
+  printf 'Benchmark unexpectedly accepted an altered magnitude claim\n' >&2
+  exit 1
+fi
+python3 evaluation/harness/classify_failures.py \
+  --tasks "$tasks" \
+  --gate "$wrong_magnitude_gate" \
+  --output "$wrong_magnitude_failures"
+jq -e '
+  .gate_passed == false and
+  .summary.threshold_failures_by_domain.agent_interpretation == 2 and
+  .summary.threshold_failures_by_domain.report_model == 0 and
+  .summary.has_unclassified == false and
+  any(.threshold_failures[];
+    .metric == "agent_magnitude_claim_recall_macro") and
+  any(.threshold_failures[];
+    .metric == "invalid_magnitude_claim_count")
+' "$wrong_magnitude_failures" >/dev/null
+
+printf 'Evaluation metrics: four answer dimensions scored, altered magnitude rejected\n'

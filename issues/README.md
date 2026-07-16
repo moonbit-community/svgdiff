@@ -155,6 +155,7 @@ graph TD
   ISS_137["ISS-137: Reconcile explicit outcome states without uncalibrated severity labels"]
   ISS_138["ISS-138: Reconcile explicit alignment and interpretation uncertainty"]
   ISS_139["ISS-139: Enforce summary-to-evidence link semantics"]
+  ISS_140["ISS-140: Score text-only magnitude fidelity"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -391,6 +392,12 @@ graph TD
   ISS_070 --> ISS_138
   ISS_058 --> ISS_139
   ISS_132 --> ISS_139
+  ISS_024 --> ISS_140
+  ISS_030 --> ISS_140
+  ISS_031 --> ISS_140
+  ISS_032 --> ISS_140
+  ISS_033 --> ISS_140
+  ISS_060 --> ISS_140
 ```
 
 ## Warnings

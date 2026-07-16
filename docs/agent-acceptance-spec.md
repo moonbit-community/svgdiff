@@ -75,14 +75,14 @@ The answer may combine several Atomic Differences into one event-level sentence,
 
 ## Case-level scoring dimensions
 
-Each case is scored independently along these dimensions. Later benchmark work will select formulas, tolerances, aggregation, and release thresholds.
+Each case is scored independently along these dimensions. The current report-only benchmark implements coverage safety, Atomic Difference recall, exact magnitude-claim fidelity, localization, Cause Envelope recall, and main-change ranking as separate metrics and thresholds; it does not collapse them into one score. Kind and free-text description quality remain contract requirements for a future independently labeled language-model benchmark.
 
 | Dimension | Full-credit behavior | Typical error |
 | --- | --- | --- |
 | Coverage safety | Matches status and equality permission; reports all conclusion-limiting Diagnostics | Claims equality from an empty partial report |
 | Atomic Difference recall | Accounts for every expected report difference ID without inventing unsupported differences | Omits computed-equivalent or zero-rendered change |
 | Kind fidelity | Correctly reports domain, semantic relation, and before/after meaning | Calls a paint spelling change a visible color change |
-| Magnitude fidelity | Preserves values, units, signs where meaningful, zeros, and unavailable states | Converts missing data to zero or exaggerates a tiny geometric delta from raster count |
+| Magnitude fidelity | Preserves values, units, signs where meaningful, zeros, and unavailable states; current exact scoring compares the field, status, JSON value, and unit for each cited Atomic Difference | Converts missing data to zero or exaggerates a tiny geometric delta from raster count |
 | Localization | Identifies accepted region IDs and bounds, or correctly states that localization is unavailable | Invents a location or attaches another event's region |
 | Cause-envelope recall | Retains required candidate cause IDs and guarantee state | Drops an actual-cause candidate or states that all candidates definitely caused the outcome |
 | Main-change interpretation | Selects an accepted main event or allowed alternative and supports it with report evidence | Ranks by difference count or authored ID |

@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from harness import read_json_lines, validate_answer
+from magnitude_claims import claim_key, difference_magnitude_claims
 
 
 ROOT = Path(__file__).resolve().parent
@@ -196,6 +197,38 @@ def score_case(task, answer, ranking, region_label, cause_label):
     else:
         atomic_recall = 1.0 if not agent_difference_ids else 0.0
 
+    expected_magnitude_claims = {
+        difference["id"]: {
+            claim_key(claim) for claim in difference_magnitude_claims(difference)
+        }
+        for difference in report["atomic_differences"]
+    }
+    matched_magnitude_claims = set()
+    invalid_magnitude_claim_count = 0
+    for answer_difference in answer["differences"]:
+        cited_ids = set(answer_difference["atomic_difference_ids"])
+        valid_cited_ids = cited_ids & expected_difference_ids
+        for magnitude_claim in answer_difference["magnitude_claims"]:
+            key = claim_key(magnitude_claim)
+            matching_ids = {
+                difference_id
+                for difference_id in valid_cited_ids
+                if key in expected_magnitude_claims[difference_id]
+            }
+            if not matching_ids:
+                invalid_magnitude_claim_count += 1
+            matched_magnitude_claims.update(
+                (difference_id, key) for difference_id in matching_ids
+            )
+    expected_magnitude_claim_count = sum(
+        len(claims) for claims in expected_magnitude_claims.values()
+    )
+    magnitude_claim_recall = (
+        len(matched_magnitude_claims) / expected_magnitude_claim_count
+        if expected_magnitude_claim_count
+        else 1.0
+    )
+
     regions_by_id = report_regions(report)
     report_region_ids = set(regions_by_id)
     agent_region_ids = {
@@ -265,6 +298,10 @@ def score_case(task, answer, ranking, region_label, cause_label):
         "agent_required_diagnostic_recall": diagnostic_recall,
         "agent_hard_safety_failure": hard_safety_failure,
         "agent_atomic_difference_recall": atomic_recall,
+        "agent_magnitude_claim_recall": magnitude_claim_recall,
+        "expected_magnitude_claim_count": expected_magnitude_claim_count,
+        "matched_magnitude_claim_count": len(matched_magnitude_claims),
+        "invalid_magnitude_claim_count": invalid_magnitude_claim_count,
         "agent_main_difference_reciprocal_rank": reciprocal_rank(answer, ranking),
         "report_region_overlap": report_region_overlap,
         "agent_region_overlap": agent_region_overlap,
@@ -353,6 +390,18 @@ def main():
                 ),
                 "agent_atomic_difference_recall_macro": mean(
                     values("agent_atomic_difference_recall")
+                ),
+                "agent_magnitude_claim_recall_macro": mean(
+                    values("agent_magnitude_claim_recall")
+                ),
+                "expected_magnitude_claim_count_total": sum(
+                    values("expected_magnitude_claim_count")
+                ),
+                "matched_magnitude_claim_count_total": sum(
+                    values("matched_magnitude_claim_count")
+                ),
+                "invalid_magnitude_claim_count": sum(
+                    values("invalid_magnitude_claim_count")
                 ),
                 "agent_main_difference_mrr": mean(
                     values("agent_main_difference_reciprocal_rank")

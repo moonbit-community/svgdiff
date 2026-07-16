@@ -79,6 +79,8 @@
       "agent_required_diagnostic_recall_macro",
       "agent_hard_safety_failure_count",
       "agent_atomic_difference_recall_macro",
+      "agent_magnitude_claim_recall_macro",
+      "invalid_magnitude_claim_count",
       "agent_main_difference_mrr",
       "agent_region_overlap_macro",
       "agent_possible_cause_recall_macro",

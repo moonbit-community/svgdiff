@@ -191,7 +191,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [ ] **Deferred** Calibrate alignment confidence only after independent correspondence ground truth, representative ambiguous cases, profile sensitivity, calibration error, and abstention behavior are versioned.
 - [x] **P0** Provide stable transitive links from Impact summary groups through Visual Events and Atomic Differences to Changed Facts, regions, Cause Envelopes, and Diagnostics.
 - [x] **P0** Guarantee deterministic ordering and report-local identifiers for identical inputs and profiles.
-- [ ] **P0** Validate that a text-only agent can answer what changed, how much, where, and why from JSON alone.
+- [x] **P0** Validate through the report-only protocol and independent machine metrics that an Agent answer can retain what changed, exact multidimensional magnitude, where, and possible causes from JSON alone; external language-model acceptance remains in M3.
 - [ ] **P1** Add compact report projections for limited-context agents without deleting canonical evidence.
 - [x] **P1** Add schema examples for equivalent spelling, tiny numeric deltas, salient changes, insertion/deletion, resources, and partial coverage.
 - [x] **P1** Define JSON Schema compatibility and migration tests for every released schema version.

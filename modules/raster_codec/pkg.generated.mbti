@@ -27,3 +27,4 @@ pub(all) struct ImageData {
 // Type aliases
 
 // Traits
+

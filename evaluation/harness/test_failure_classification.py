@@ -39,6 +39,14 @@ class FailureClassificationTest(unittest.TestCase):
             metric_domain("agent_region_overlap_macro", POLICY),
             "agent_interpretation",
         )
+        self.assertEqual(
+            metric_domain("agent_magnitude_claim_recall_macro", POLICY),
+            "agent_interpretation",
+        )
+        self.assertEqual(
+            metric_domain("invalid_magnitude_claim_count", POLICY),
+            "agent_interpretation",
+        )
 
     def test_unknown_values_remain_unclassified(self):
         self.assertEqual(diagnostic_domain("new_unknown_gap", POLICY), "unclassified")
