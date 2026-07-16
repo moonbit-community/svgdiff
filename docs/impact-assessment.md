@@ -63,10 +63,14 @@ For a request about the main visual differences:
 5. follow the linked Visual Events and Atomic Differences for domains, subjects, source evidence, regions, causes, raw magnitudes, coverage, and Diagnostics;
 6. avoid translating the frontier into low, medium, high, visible, invisible, important, or unimportant without a separate explicit policy.
 
+For a request that additionally names a caller concern, first enumerate the complete `events` and `atomic_differences` inventories. Resolve the concern only through context supplied by the caller and report evidence such as a subject, event, difference, Changed Fact, source location, or Difference Region. Every matching item must be reported even when its event is absent from the frontier; use a domination witness only to explain that context-free exclusion. Authored identifiers may locate a caller-named target, but they do not create the importance judgment.
+
+If the caller's phrase cannot be resolved to report evidence, state that its semantic importance or identity is unknown and still enumerate every reported difference. Never use pixel thresholds or frontier membership to suppress the complete inventory. The focused [semantic-concern evaluation](../evaluation/semantic-concern/README.md) verifies that a dominated one-pixel event remains recoverable through both normal and Agent JSON.
+
 ## Policy evolution requirements
 
 Any future Impact Assessment remains additive and derived. It must retain every raw magnitude and availability state, identify an opaque versioned policy ID, state all inputs and rules, preserve event and difference links, and remain unable to create or erase an Atomic Difference, establish equality, or override coverage and Diagnostics.
 
 A calibrated policy must additionally identify its calibration corpus, label version, metric versions, required Comparison Profile fields, thresholds or learned parameters, and deterministic tie behavior. Changing candidate selection, inputs, normalization, dominance, missing-value behavior, grouping, witness selection, thresholds, labels, weights, or ordering requires a new policy ID under the [versioning contract](versioning.md#impact-assessment-policy-compatibility).
 
-[ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) rejects a universal cross-domain scalar, [ADR 0088](adr/0088-define-an-uncalibrated-event-impact-frontier.md) defines the current structured frontier, and [ADR 0089](adr/0089-reject-impact-calibration-from-the-v1-corpus.md) records why the current labels cannot yet justify a calibrated production policy.
+[ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) rejects a universal cross-domain scalar, [ADR 0088](adr/0088-define-an-uncalibrated-event-impact-frontier.md) defines the current structured frontier, [ADR 0089](adr/0089-reject-impact-calibration-from-the-v1-corpus.md) records why the current labels cannot yet justify a calibrated production policy, and [ADR 0091](adr/0091-separate-query-concern-from-context-free-impact.md) keeps caller concern outside context-free Impact.

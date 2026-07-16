@@ -4,7 +4,7 @@ Status: accepted evaluation contract
 
 Version: `agent-acceptance/1`
 
-Last verified: 2026-07-14
+Last verified: 2026-07-16
 
 ## Objective
 
@@ -36,6 +36,12 @@ First state whether the report establishes a complete comparison, a partial comp
 
 The harness may request JSON or natural language, but it must preserve every required answer component below. Machine scoring should use the answer record; natural-language quality is not part of this contract.
 
+## Query-conditioned concern overlay
+
+`agent-acceptance/1` remains a context-free task. A separate evaluation may append caller context that identifies a concern, but it must retain the canonical prompt and complete difference-enumeration requirement. The overlay is evaluation input, not a Structured Report field or hidden engine label.
+
+When the supplied context resolves to report evidence, the answer must include every matching event and Atomic Difference even if the event is dominated by the Impact frontier. It must distinguish “matches the caller's concern” from “belongs to the context-free main frontier.” Authored IDs or text may resolve an explicitly caller-named target but cannot create semantic importance on their own. If the context cannot be resolved, the answer must state that the concern is not identifiable from the report and must still enumerate all reported differences.
+
 ## Required answer record
 
 The normalized answer record contains:
@@ -64,6 +70,7 @@ The answer may combine several Atomic Differences into one event-level sentence,
 6. Surface every Diagnostic that constrains a conclusion used in the answer. An unchanged unsupported construct does not permit equality.
 7. Rank within a domain only under its reported policy. Cross-domain main-change selection must cite magnitude, extent, event structure, or human-label tolerance and acknowledge ties or ambiguity when evidence does not determine one order.
 8. Do not claim visual salience from source wording, authored IDs, or the number of Atomic Differences alone.
+9. A caller-concern match is selected from the complete report before Impact interpretation. Frontier exclusion or small magnitude cannot suppress a matching item, and missing resolvable context means unknown importance rather than low importance.
 
 ## Case-level scoring dimensions
 
@@ -92,6 +99,7 @@ Regardless of aggregate score, a case fails the safety gate if the answer:
 - omits a Diagnostic that directly invalidates an equality or main-change conclusion it makes;
 - fabricates a measurement, location, subject, cause, or report identifier;
 - reports no difference solely because canonical pixels are equal while supported source or computed differences exist.
+- omits a report-resolvable caller concern solely because its event is dominated, spatially small, or absent from the Impact frontier.
 
 These gates protect the tool's terminal purpose: a fluent but unsafe answer is not acceptable evidence for an agent without independent image access.
 

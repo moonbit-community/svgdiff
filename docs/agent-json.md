@@ -28,6 +28,8 @@ Opaque `resource.filter.primitive.source` differences are intentionally not shor
 
 Compact mode preserves the required `impact_assessment` exactly. `event_rendered_pareto/v1` names all non-dominated Visual Event groups under the two declared whole-canvas rendered inputs, retains exact ties and incomparable vectors, and keeps missing measurements as null. The serialized group order is deterministic representation, not a total importance order, and `calibration_status: "not_calibrated"` forbids inventing severity labels from the frontier.
 
+Compact mode also retains events outside that frontier. A caller-concern query must search the complete event and Atomic Difference inventories; a dominated matching event cannot be discarded merely because it is spatially small. The transport does not add semantic concern or business-importance fields.
+
 Compact Agent JSON never includes the independent nonvisual `SourceAuditReport`. A caller may transport that audit separately under audit schema `1.0`, but an Agent must not merge its source-only facts into Visual Events, visual magnitudes, or main-change ranking.
 
 An agent should still follow the [Text-Only Agent Report Guide](agent-report-guide.md). Any future field projection or calibrated importance policy requires its own versioned contract and must remain traceable to this complete evidence.

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <rect id="panel" x="1" y="1" width="8" height="8" fill="blue"/>
+  <rect id="indicator" x="14" y="14" width="1" height="1" fill="white"/>
+</svg>

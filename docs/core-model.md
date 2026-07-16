@@ -249,6 +249,8 @@ Separate primary alignments remain separate outcome events even when they overla
 
 Equal measured vectors form one tie group; different non-dominated vectors remain incomparable groups. Missing rendered magnitudes form a separate null-measurement group, make the assessment partial, and are never treated as zero. Every group links back to all contributing event and Atomic Difference IDs. Every dominated event receives one deterministic witness naming the lexically first event that dominates it. The policy is explicitly not calibrated and supplies no severity label, visibility claim, scalar score, or total order.
 
+Impact is a context-free derived view, not the complete event inventory. Caller-supplied semantic concern is external query context: when it resolves to report evidence, every matching dominated event remains reportable through the full event, Atomic Difference, region, and cause chain. The engine does not infer concern from authored identifiers, text, spatial extent, or magnitude. Without resolvable context, semantic importance is unknown. [ADR 0091](adr/0091-separate-query-concern-from-context-free-impact.md) defines this boundary.
+
 ### Diagnostic
 
 A `Diagnostic` identifies an unsupported, unresolved, or failed analysis condition, the affected subject, and the evidence layers whose claims are constrained. Its source locations pair a `before` or `after` input role with a half-open UTF-16 Source Span in that input. One Diagnostic may retain several locations when the same stable condition occurs on both sides or at several declarations; a comparison-global synthetic Diagnostic has an empty location array rather than fabricated provenance. `resource_limit_exceeded`, `reference_cycle_detected`, and `reference_expansion_limit_exceeded` use stable failure subjects and make the whole comparison failed instead of exposing a truncated inventory. Diagnostics are part of the result, not debug logging.
@@ -298,6 +300,7 @@ The following concepts are intentional future work rather than hidden current fi
 
 - a universal main-difference scalar or generated natural-language summary;
 - calibrated Impact Assessment thresholds, labels, confidence, or total ordering;
+- a caller Concern Profile, source-derived semantic priority, or concern-aware event ranking;
 - exact per-pixel Contribution Index or minimal root-cause set;
 - calibrated perceptual importance derived from DeltaEOK, FLIP, or other measurements, and canonical SSIM/MS-SSIM report fields or equality meaning;
 - deterministic font loading, shaping, layout, and glyph evidence;

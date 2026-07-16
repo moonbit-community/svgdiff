@@ -162,7 +162,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P1** Add DeltaEOK or CIEDE2000 under an explicitly declared perceptual background.
 - [x] **P1** Evaluate SSIM/MS-SSIM only as secondary structural diagnostics; retain them as QA-only observations and reject canonical report or Impact semantics.
 - [ ] **P2** Evaluate LPIPS as an optional experiment, never as an equality oracle.
-- [ ] **P1** Define policy behavior for spatially small but semantically important changes.
+- [x] **P1** Define policy behavior for spatially small but semantically important changes; preserve query-matching dominated events from the complete inventory without inferring semantic priority from visual magnitude or SVG source.
 - [x] **P1** Version and test domain-specific lexicographic ordering tuples.
 - [x] **Decision** Decide whether a cross-domain scalar is needed at all; if adopted, record policy ID, weights, thresholds, corpus, and metric versions.
 
@@ -271,6 +271,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-14 | Pre-M1 baseline | Retained every unchecked capability; established the rejection ledger from accepted ADRs. |
 | 2026-07-16 | Impact calibration v1 | Completed the reproducible calibration study, rejected production labels and total ordering from insufficient evidence, and retained an explicit prerequisite-bound recalibration item plus the M3 calibrated-Impact gate. |
 | 2026-07-16 | SSIM/MS-SSIM diagnostic evaluation | Accepted versioned QA-only structural observations; rejected report, equality, localization, severity, and Impact meanings after scale, coverage, availability, and human-order failures. |
+| 2026-07-16 | Query-conditioned semantic concerns | Retained context-free Impact, required dominated concern matches to remain recoverable from the complete inventory, and rejected source- or magnitude-derived semantic priority. |
 
 ## Milestone gates
 

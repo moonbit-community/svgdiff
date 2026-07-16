@@ -71,6 +71,9 @@ jobs:
       - name: Validate QA-only structural diagnostics
         run: sh scripts/test-ssim-diagnostics.sh
 
+      - name: Validate query-conditioned semantic concern policy
+        run: sh scripts/test-semantic-concern-policy.sh
+
       - name: Run benchmark sanity gate
         run: sh scripts/test-benchmark.sh
 

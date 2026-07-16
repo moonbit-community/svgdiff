@@ -130,6 +130,12 @@ Use `domain_ordering.components` only to order items from the exact same domain 
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 
+### Caller-supplied semantic concerns
+
+Semantic importance can come from the caller even when visual magnitude is small. Start from every event and Atomic Difference, not only `impact_assessment.frontier_groups`. If caller context resolves to a report subject, event, difference, Changed Fact, source location, or region, report every matching item. A dominated match remains required; cite its domination witness to explain only why it is not a context-free main event.
+
+The caller's statement supplies the semantic priority. An authored ID or text token may help locate a target explicitly named by the caller, but its spelling does not independently prove importance. If a phrase such as “the safety icon” cannot be mapped to report evidence, say that the target is not identifiable from this report. Do not guess, call it unimportant, or omit other differences. Missing query context means semantic importance is unknown, not low.
+
 ## Regions and possible causes
 
 `difference_regions` localize the event outcome:

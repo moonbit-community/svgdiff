@@ -236,6 +236,8 @@ The [canonical Structured Report examples](schema/examples/README.md) are byte-f
 
 The [determinism evaluation](evaluation/determinism/README.md) repeats equivalent, changed, structural, resource, unsupported, multi-event, and non-default-viewport comparisons in separate CLI processes. Run `sh scripts/test-report-determinism.sh` to verify byte-stable output, globally unique report-local IDs, closed references, and identical evidence in default and compact JSON. CI also compares exact canonical bundles across Ubuntu 24.04 x64, Windows Server 2025 x64, and macOS 15 arm64; `sh scripts/test-cross-platform-determinism.sh` exercises the same aggregation policy locally with positive and negative controls.
 
+The [semantic-concern evaluation](evaluation/semantic-concern/README.md) proves that a caller-designated one-pixel event remains recoverable from the full and Agent inventories even when a larger event dominates it under context-free Impact. Run `sh scripts/test-semantic-concern-policy.sh` to verify the query-conditioned policy boundary.
+
 The [performance suites](evaluation/performance/README.md) independently time parse/admission, alignment, rendering, region extraction, provenance, and serialization through native release microbenchmarks, then enforce representative small, medium, and large end-to-end native CLI wall-time and peak-RSS ceilings. Run `sh scripts/run-stage-benchmarks.sh --output /tmp/svgdiff-stage-benchmarks.json` for stage diagnostics and `sh scripts/run-performance-budgets.sh --output /tmp/svgdiff-performance-budgets.json` for the regression gate. Both are distinct from the Agent-quality benchmark.
 
 ## Documentation
@@ -276,6 +278,7 @@ sh scripts/test-html-security.sh
 sh scripts/test-compatibility.sh
 sh scripts/test-schema-examples.sh
 sh scripts/test-completions.sh
+sh scripts/test-semantic-concern-policy.sh
 ```
 
 The browser oracle, renderer-conformance, and HTML-security validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.
