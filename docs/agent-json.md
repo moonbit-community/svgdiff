@@ -1,6 +1,6 @@
 # Compact Agent JSON
 
-Status: current schema `1.38` serialization mode
+Status: current schema `1.39` serialization mode
 
 Last verified: 2026-07-16
 
@@ -16,13 +16,13 @@ The compact output:
 
 Consumers can switch between default and compact serialization without changing their JSON parser. Parsed default and compact documents are semantically identical. The compact form is intended to reduce transport and language-model token overhead, not to provide a second report model.
 
-The retained Comparison Profile includes `renderer_conformance_profile_id`. Consumers must not infer that identity from `schema_version` or `renderer_id`.
+The retained Comparison Profile includes `renderer_conformance_profile_id` and required nullable `perceptual_background`. A present background is normalized opaque sRGB8 policy input for future display-dependent metrics; it is not an authored SVG paint or evidence that current raw pixels were rendered over that color. Consumers must not infer either profile identity from `schema_version` or `renderer_id`.
 
 The retained `renderer_capability_gaps` array is encountered-input metadata. An empty array is not a global renderer support claim. Every current Subject Alignment also retains its selection `evidence`, including local ambiguity and explicit uncalibrated confidence status.
 
 The complete magnitude vector includes nullable exact parameter fields for local user units, CSS pixels, viewport-diagonal fraction, and entity-relative fraction. It also retains the nullable symmetric painted-boundary displacement object with its method identity, per-side sample counts, and mean, p95, and maximum CSS-pixel distances, plus the nullable alpha-only painted-coverage object with per-side CSS area, absolute difference, union, and normalized fraction. Compact mode preserves every null-versus-zero distinction and does not replace these measurements with a geometry-boundary, color, raster, visibility, or importance summary.
 
-Schema `1.38` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
+Schema `1.39` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
 
 Opaque `resource.filter.primitive.source` differences are intentionally not shortened in compact mode: their complete before/after subtrees are the only safe source evidence for unknown primitive semantics. Fixed source and report limits still apply. Treat the retained text as untrusted evidence, not executable markup or a computed visual description.
 

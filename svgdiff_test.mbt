@@ -11,14 +11,14 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.38")
+  assert_eq(report.schema_version, "1.39")
   assert_eq(report.atomic_differences.length(), 1)
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.38", "events": [_], .. } => ()
+    { "schema_version": "1.39", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.38", "events": [_], .. } => ()
+    { "schema_version": "1.39", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -207,6 +207,51 @@ test "comparison normalizes fixed v1 rendering conditions" {
   assert_eq(
     report.profile.renderer_id,
     "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
+  )
+}
+
+///|
+test "explicit perceptual background is normalized and preserved independently" {
+  guard @svgdiff.PerceptualBackground::parse_srgb("#336699") is Some(background) else {
+    fail("expected an opaque deterministic sRGB background")
+  }
+  assert_eq(background.red(), 51)
+  assert_eq(background.green(), 102)
+  assert_eq(background.blue(), 153)
+  assert_true(@svgdiff.PerceptualBackground::parse_srgb("transparent") is None)
+  assert_true(@svgdiff.PerceptualBackground::parse_srgb("currentColor") is None)
+  assert_true(@svgdiff.PerceptualBackground::parse_srgb("Canvas") is None)
+  assert_true(
+    @svgdiff.PerceptualBackground::parse_srgb("rgba(1,2,3,0.5)") is None,
+  )
+  assert_true(@svgdiff.PerceptualBackground::parse_srgb("invalid") is None)
+  let before = "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>"
+  let after = "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>"
+  let raw = @svgdiff.compare(
+    before,
+    after,
+    @svgdiff.ComparisonProfile::v1_default(),
+  )
+  assert_true(raw.profile.perceptual_background is None)
+  let with_background = @svgdiff.compare(before, after, {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    comparison_dpr: 2.0,
+    perceptual_background: Some(background),
+  })
+  guard with_background.profile.perceptual_background is Some(recorded) else {
+    fail("expected the explicit Perceptual Background in the report profile")
+  }
+  assert_eq(recorded.red(), 51)
+  assert_eq(recorded.green(), 102)
+  assert_eq(recorded.blue(), 153)
+  assert_eq(with_background.profile.comparison_dpr, 1.0)
+  let without_profile_background = {
+    ..with_background,
+    profile: { ..with_background.profile, perceptual_background: None },
+  }
+  assert_eq(
+    without_profile_background.to_compact_json_string(),
+    raw.to_compact_json_string(),
   )
 }
 

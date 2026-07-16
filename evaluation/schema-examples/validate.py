@@ -55,6 +55,13 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
                 f"{case['id']}: expected {field}={expected[field]!r}, "
                 f"got {actual[field]!r}"
             )
+    if report["profile"]["perceptual_background"] != expected.get(
+        "perceptual_background"
+    ):
+        raise ValueError(
+            f"{case['id']}: unexpected Perceptual Background "
+            f"{report['profile']['perceptual_background']!r}"
+        )
     by_domain = {item["domain"]: item for item in differences}
     for check in expected["magnitude_checks"]:
         if check["domain"] not in by_domain:
@@ -718,6 +725,16 @@ def main() -> None:
     missing_required = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_required["analysis_status"]
     expect_schema_rejection(missing_required, schema, "missing required property")
+    missing_background = copy.deepcopy(reports["equivalent-color-spelling"])
+    del missing_background["profile"]["perceptual_background"]
+    expect_schema_rejection(
+        missing_background, schema, "missing Perceptual Background state"
+    )
+    invalid_background = copy.deepcopy(reports["salient-fill-change"])
+    invalid_background["profile"]["perceptual_background"]["red"] = 256
+    expect_schema_rejection(
+        invalid_background, schema, "out-of-range Perceptual Background"
+    )
     wrong_nullable_type = copy.deepcopy(reports["equivalent-color-spelling"])
     wrong_nullable_type["atomic_differences"][0]["magnitude"][
         "parameter_abs_user_units"

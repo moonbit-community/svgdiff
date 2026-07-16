@@ -143,6 +143,7 @@ graph TD
   ISS_125["ISS-125: Complete exact parameter magnitudes across coordinate scales"]
   ISS_126["ISS-126: Add painted-boundary displacement distributions"]
   ISS_127["ISS-127: Add symmetric painted-coverage difference measurements"]
+  ISS_128["ISS-128: Add an explicit Perceptual Background to the Comparison Profile"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -364,6 +365,7 @@ graph TD
   ISS_124 --> ISS_125
   ISS_125 --> ISS_126
   ISS_126 --> ISS_127
+  ISS_127 --> ISS_128
 ```
 
 ## Warnings

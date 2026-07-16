@@ -1,10 +1,10 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: current schema `1.38` contract
+Status: current schema `1.39` contract
 
 Last verified: 2026-07-16
 
-Schema `1.38` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
+Schema `1.39` has no Impact Assessment, severity label, universal similarity score, or cross-domain ranking scalar. The authoritative quantitative evidence is the raw measurement surface retained in the Structured Report:
 
 - `AtomicDifference.magnitude` for continuous local parameter, exact CSS-pixel parameter, viewport-diagonal, entity-relative, symmetric painted-boundary displacement, alpha-only painted-coverage difference, geometry-outcome, presence, and raster observations;
 - optional tagged `AtomicDifference.magnitude.transform_effect` for raw translation, rotation, signed-scale, skew, or singular residual-matrix effects;
@@ -12,6 +12,8 @@ Schema `1.38` has no Impact Assessment, severity label, universal similarity sco
 - `VisualEvent.rendered_outcome.magnitude` for the canonical event raster response.
 
 Unavailable observations remain null or explicitly not computed. Numeric zero is a measured result and cannot be replaced by absence, while absence cannot be converted to zero.
+
+`ComparisonProfile.perceptual_background` is explicit policy input, not a current magnitude or impact signal. Supplying it does not alter transparent-canvas raw rendering or make a perceptual measurement available in Schema `1.39`; later display-dependent metrics must composite both inputs over exactly that recorded color or remain not computed.
 
 The parameter fields are not interchangeable normalizations. `parameter_viewport_fraction` and `parameter_entity_fraction` share the exact `parameter_abs_css_px` numerator but use the Comparison Viewport diagonal and the maximum nonzero per-side entity-bounds diagonal respectively. They describe scale, not visibility, salience, confidence, or severity. Outcome-oriented geometry and raster fields remain independent observations.
 

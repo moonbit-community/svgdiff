@@ -85,8 +85,10 @@ pub(all) struct ComparisonProfile {
   raster_representation : String
   renderer_id : String
   renderer_conformance_profile_id : String
-} derive(ToJson)
+  perceptual_background : PerceptualBackground?
+}
 pub fn ComparisonProfile::v1_default() -> Self
+pub impl ToJson for ComparisonProfile
 
 pub(all) struct ComputedRelation {
   status : String
@@ -195,6 +197,16 @@ pub(all) struct PaintedCoverageDifferenceMagnitude {
   union_coverage_css_px2 : Double
   fraction : Double
 } derive(Eq, ToJson)
+
+pub struct PerceptualBackground {
+  red : Int
+  green : Int
+  blue : Int
+} derive(Eq, ToJson)
+pub fn PerceptualBackground::blue(Self) -> Int
+pub fn PerceptualBackground::green(Self) -> Int
+pub fn PerceptualBackground::parse_srgb(String) -> Self?
+pub fn PerceptualBackground::red(Self) -> Int
 
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int

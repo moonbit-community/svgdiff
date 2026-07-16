@@ -32,16 +32,16 @@ A pushed tag exactly matching `v<moon.mod version>` starts [the release workflow
 
 The publication job refuses to replace an existing release. Verify the downloaded archives with `sha256sum -c SHA256SUMS`, then extract the selected archive and verify its internal `SHA256SUMS` with `sha256sum -c` or `shasum -a 256 -c`. On Windows PowerShell, use `Get-FileHash <archive> -Algorithm SHA256` and compare the result with the matching `SHA256SUMS` entry before extraction.
 
-The Mooncakes source-module release is separate from binary publication. Package and publish `Milky2018/svgdiff-raster-codec@0.1.0` before `Milky2018/svgdiff@0.5.18`; the root registry archive intentionally references the separately versioned codec instead of embedding a duplicate module. `sh scripts/test-module-package.sh` checks both archives together before either publication.
+The Mooncakes source-module release is separate from binary publication. Package and publish `Milky2018/svgdiff-raster-codec@0.1.0` before `Milky2018/svgdiff@0.5.19`; the root registry archive intentionally references the separately versioned codec instead of embedding a duplicate module. `sh scripts/test-module-package.sh` checks both archives together before either publication.
 
 To release after the version change and validation commit are on the intended branch, create and push the matching tag explicitly:
 
 ```sh
-sh scripts/check-release-tag.sh v0.5.18
-git tag -a v0.5.18 -m "svgdiff v0.5.18"
-git push origin v0.5.18
+sh scripts/check-release-tag.sh v0.5.19
+git tag -a v0.5.19 -m "svgdiff v0.5.19"
+git push origin v0.5.19
 ```
 
-Replace `0.5.18` with the current `moon.mod` version. The workflow rejects any mismatch before packaging and uses `--verify-tag` before publication.
+Replace `0.5.19` with the current `moon.mod` version. The workflow rejects any mismatch before packaging and uses `--verify-tag` before publication.
 
 This metadata is an unsigned project attestation. The release does not claim SLSA conformance, an SBOM, hermetic or cross-toolchain reproducible builds, malware scanning, code signing, or macOS notarization. The fixed hosted matrix and canonical corpus are tested; that is not exhaustive proof over all platform environments or SVG inputs.

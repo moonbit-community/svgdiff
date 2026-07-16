@@ -215,8 +215,10 @@
       "before": "evaluation/corpus/cases/salient-fill-change/before.svg",
       "after": "evaluation/corpus/cases/salient-fill-change/after.svg",
       "output": "schema/examples/salient-fill-change.json",
+      "cli_args": ["--perceptual-background", "white"],
       "expected": {
         "analysis_status": "complete",
+        "perceptual_background": { "red": 255, "green": 255, "blue": 255 },
         "domains": ["paint.fill"],
         "computed_relations": ["different"],
         "diagnostic_codes": [],

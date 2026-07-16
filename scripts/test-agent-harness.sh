@@ -17,10 +17,18 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   after=$(printf '%s' "$case_json" | jq -r '.after')
   width=$(printf '%s' "$case_json" | jq -r '.viewport.width')
   height=$(printf '%s' "$case_json" | jq -r '.viewport.height')
-  moon run --target native cmd/svgdiff -- \
-    "$root/evaluation/corpus/$before" \
-    "$root/evaluation/corpus/$after" \
-    --width "$width" --height "$height" >"$reports/$id.json"
+  if [ "$id" = "salient-fill-change" ]; then
+    moon run --target native cmd/svgdiff -- \
+      "$root/evaluation/corpus/$before" \
+      "$root/evaluation/corpus/$after" \
+      --width "$width" --height "$height" \
+      --perceptual-background white >"$reports/$id.json"
+  else
+    moon run --target native cmd/svgdiff -- \
+      "$root/evaluation/corpus/$before" \
+      "$root/evaluation/corpus/$after" \
+      --width "$width" --height "$height" >"$reports/$id.json"
+  fi
 done
 
 python3 evaluation/harness/harness.py prepare \
@@ -29,11 +37,14 @@ python3 evaluation/harness/harness.py prepare \
 
 jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
   length == $expected and
+  any(.[].report.profile.perceptual_background; . == null) and
+  any(.[].report.profile.perceptual_background;
+    . == {"red": 255, "green": 255, "blue": 255}) and
   all(.[];
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "1.38") and
+    (.report.schema_version == "1.39") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and

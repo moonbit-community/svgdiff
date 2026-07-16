@@ -2,7 +2,7 @@
 
 Status: current command contract
 
-Last verified: 2026-07-14
+Last verified: 2026-07-16
 
 ## Inputs
 
@@ -15,8 +15,9 @@ Last verified: 2026-07-14
 | `cat after.svg \| svgdiff before.svg -` | Read the after SVG from stdin. |
 | `svgdiff - -` | Invalid: one stdin stream cannot supply two independently bounded documents. |
 | `svgdiff before.svg after.svg --before-resource asset.png image/png before.png --after-resource asset.png image/png after.png` | Supply exact-match bytes for `asset.png` independently on each side. |
+| `svgdiff before.svg after.svg --perceptual-background white` | Record one normalized opaque sRGB8 Perceptual Background without changing current transparent-canvas raw evidence. |
 
-Missing positional operands never imply stdin. Resource options are repeatable `LOCATOR MEDIA_TYPE FILE` triplets; their file operand may not be `-`. The CLI reads only those explicitly named resource files, and the engine treats each locator as an opaque key rather than opening it as a path. The command reads the complete SVG stream and explicit resource files before comparison, then the engine applies the fixed source and bundle budgets before XML or image analysis. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and CLI cancellation remain future work. Cooperative controls are available only to callers of the MoonBit library.
+Missing positional operands never imply stdin. Resource options are repeatable `LOCATOR MEDIA_TYPE FILE` triplets; their file operand may not be `-`. The CLI reads only those explicitly named resource files, and the engine treats each locator as an opaque key rather than opening it as a path. `--perceptual-background COLOR` accepts only deterministic resolved opaque sRGB colors; contextual, system, invalid, and translucent values are rejected before comparison. The command reads the complete SVG stream and explicit resource files before comparison, then the engine applies the fixed source and bundle budgets before XML or image analysis. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and CLI cancellation remain future work. Cooperative controls are available only to callers of the MoonBit library.
 
 ## Outputs
 

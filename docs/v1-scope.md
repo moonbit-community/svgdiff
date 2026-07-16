@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-16
 
-This document states what schema `1.38` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.39` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -24,12 +24,12 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
 | Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1`. |
 | Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/25`. |
-| Background | Transparent canvas only; no perceptual background option. |
+| Background | Raw rendering remains transparent. The profile may separately record one optional normalized opaque sRGB8 Perceptual Background; no display-dependent metric consumes it yet. |
 | Resources | Bounded 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied `image` bundles; no SVG-authored path loading or implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
 | Fonts | No deterministic font environment or font-dependent completeness claim. |
 
-The root library seam canonicalizes DPR, color interpretation, raster representation, renderer identity, and renderer conformance profile. It currently uses only the caller-supplied viewport dimensions from `ComparisonProfile`.
+The root library seam preserves the caller-supplied viewport dimensions and optional parsed Perceptual Background while canonicalizing DPR, color interpretation, raster representation, renderer identity, and renderer conformance profile.
 
 ## Implemented complete-analysis slice
 
@@ -134,7 +134,7 @@ V1 does not completely analyze:
 - external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, embedded SVG images, unbundled or unsupported external images, final raster-image compositing, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, external use documents, or dynamic instance-tree behavior;
 - general clip or mask geometry, percentages in `objectBoundingBox` clips, clip or mask references on use hosts, nested clip/mask resources, CSS image and multi-layer masks, mask-border, visual execution of filter primitives beyond direct static `feOffset`, CSS filter functions, filter templates or primitive subregions, transformed/fractional/dynamic/reused filter application, continuous-alpha or antialiased blending, container blend modes, blend attachment on instances, and blend interactions with transforms, opacity, clip, mask, or filter effects;
 - deterministic fonts, shaping, text layout, and glyph rasterization;
-- perceptual backgrounds, FLIP, SSIM, learned perceptual metrics, and advanced color profiles;
+- perceptual background compositing and color metrics, FLIP, SSIM, learned perceptual metrics, and advanced color profiles; the optional opaque sRGB8 profile input is recorded but not yet applied;
 - unequal-cardinality or mixed-change repeated-subject equivalence classes, exact contribution weights, minimal root causes, or cross-subject event synthesis;
 - browser-to-browser or renderer-to-renderer equality claims.
 

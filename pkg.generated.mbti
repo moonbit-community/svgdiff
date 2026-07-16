@@ -62,6 +62,8 @@ pub using @engine {type PaintedBoundaryDisplacementMagnitude}
 
 pub using @engine {type PaintedCoverageDifferenceMagnitude}
 
+pub using @engine {type PerceptualBackground}
+
 pub using @engine {type PresenceMagnitude}
 
 pub using @engine {type RenderedEvidence}
@@ -111,4 +113,3 @@ pub using @engine {type TransformTranslationMagnitude}
 pub using @engine {type VisualEvent}
 
 // Traits
-

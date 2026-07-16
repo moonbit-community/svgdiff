@@ -4,7 +4,7 @@ Status: research note
 
 Evidence snapshot: 2026-07-13
 
-This note surveys available metrics and target design. Schema `1.36` implements the exact scalar parameter layer, Schema `1.37` adds the pinned-raster symmetric nearest-boundary distribution, and Schema `1.38` adds the alpha-only symmetric coverage difference documented in [`../core-model.md`](../core-model.md). Continuous vector correspondence, perceptual color, FLIP, and calibrated Impact Assessment remain roadmap work.
+This note surveys available metrics and target design. Schema `1.36` implements exact scalar parameters, Schema `1.37` adds painted-boundary distributions, Schema `1.38` adds alpha-only coverage difference, and Schema `1.39` records an optional explicit opaque sRGB Perceptual Background. Continuous vector correspondence, perceptual color measurement, FLIP, and calibrated Impact Assessment remain roadmap work.
 
 ## Conclusion
 

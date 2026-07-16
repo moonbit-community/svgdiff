@@ -213,7 +213,7 @@ This phase is explicitly recorded but not currently scheduled. It expands [ISS-0
 
 ## Phase 9: Color, backgrounds, and renderer profiles
 
-- [ ] **P1** Add an explicit Perceptual Background to the Comparison Profile.
+- [x] **P1** Add an explicit Perceptual Background to the Comparison Profile.
 - [ ] **P1** Composite both inputs over exactly the same declared background before display-dependent metrics.
 - [ ] **P1** Keep transparent-canvas raw evidence independent from perceptual-background evidence.
 - [ ] **P1** Detect embedded ICC, Display-P3, wide-gamut, and HDR content and emit precise coverage diagnostics.

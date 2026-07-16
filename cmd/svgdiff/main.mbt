@@ -7,6 +7,7 @@ priv struct CliConfig {
   agent_json : Bool
   width : Int
   height : Int
+  perceptual_background : @lib.PerceptualBackground?
   before_resources : Array[CliResource]
   after_resources : Array[CliResource]
 }
@@ -38,18 +39,18 @@ priv enum ResourceInputResult {
 
 ///|
 fn usage() -> String {
-  "Usage: svgdiff <before.svg> <after.svg> [--width N] [--height N] [--before-resource LOCATOR MEDIA_TYPE FILE] [--after-resource LOCATOR MEDIA_TYPE FILE] [--output report.json] [--html report.html]"
+  "Usage: svgdiff <before.svg> <after.svg> [--width N] [--height N] [--perceptual-background COLOR] [--before-resource LOCATOR MEDIA_TYPE FILE] [--after-resource LOCATOR MEDIA_TYPE FILE] [--output report.json] [--html report.html]"
 }
 
 ///|
 fn help_text() -> String {
   usage() +
-  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --before-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque before-side PNG/JPEG resource\n  --after-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque after-side PNG/JPEG resource\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
+  "\n\nCompare two deterministic static SVG files and emit Structured Report JSON.\nUse - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.\n\nOptions:\n  --width N          Comparison viewport width in CSS pixels (default: 16)\n  --height N         Comparison viewport height in CSS pixels (default: 16)\n  --perceptual-background COLOR\n                     Record one explicit opaque deterministic sRGB background\n  --before-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque before-side PNG/JPEG resource\n  --after-resource LOCATOR MEDIA_TYPE FILE\n                     Supply one opaque after-side PNG/JPEG resource\n  --output FILE      Write JSON to FILE instead of stdout\n  --html FILE        Also write the self-contained HTML presentation\n  --agent-json       Remove JSON formatting whitespace without removing evidence\n  --help             Show this help and exit\n  --version          Show component versions and exit\n\nExit status:\n  0  Complete or partial report produced\n  1  Analysis failed; a failed Structured Report was produced\n  2  Invalid arguments or file I/O failure"
 }
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.5.18\nengine: 0.5.18\nschema: 1.38\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic"
+  "svgdiff 0.5.19\nengine: 0.5.19\nschema: 1.39\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic"
 }
 
 ///|
@@ -74,6 +75,7 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
   }
   let mut width = 16
   let mut height = 16
+  let mut perceptual_background : @lib.PerceptualBackground? = None
   let mut output_path : String? = None
   let mut html_path : String? = None
   let mut agent_json = false
@@ -121,6 +123,14 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
           Ok(parsed) => height = parsed
           Err(message) => return Invalid(message)
         }
+      "--perceptual-background" =>
+        match @lib.PerceptualBackground::parse_srgb(value) {
+          Some(background) => perceptual_background = Some(background)
+          None =>
+            return Invalid(
+              "--perceptual-background requires an opaque deterministic sRGB color",
+            )
+        }
       "--output" => output_path = Some(value)
       "--html" => html_path = Some(value)
       option => return Invalid("Unknown option: \{option}")
@@ -135,6 +145,7 @@ fn parse_cli(args : Array[String]) -> CliParseResult {
     agent_json,
     width,
     height,
+    perceptual_background,
     before_resources,
     after_resources,
   })
@@ -237,6 +248,7 @@ async fn main {
       ..@lib.ComparisonProfile::v1_default(),
       viewport_width: config.width,
       viewport_height: config.height,
+      perceptual_background: config.perceptual_background,
     },
     before_resources,
     after_resources,
