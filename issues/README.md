@@ -153,6 +153,7 @@ graph TD
   ISS_135["ISS-135: Define query-conditioned handling for spatially small semantic concerns"]
   ISS_136["ISS-136: Reconcile the implemented machine-readable main-event summary"]
   ISS_137["ISS-137: Reconcile explicit outcome states without uncalibrated severity labels"]
+  ISS_138["ISS-138: Reconcile explicit alignment and interpretation uncertainty"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -386,6 +387,7 @@ graph TD
   ISS_024 --> ISS_137
   ISS_056 --> ISS_137
   ISS_133 --> ISS_137
+  ISS_070 --> ISS_138
 ```
 
 ## Warnings

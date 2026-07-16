@@ -169,6 +169,8 @@ Schema `1.43` gives every alignment a closed `entity` or `resource` role. Groups
 
 Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). Schema `1.1` adds optional selection `evidence`, and current producers always emit its score kind, nullable selected score, local candidate counts, and `unique`, `tied`, or `not_assessed` ambiguity. `confidence` remains null with `confidence_status: "not_calibrated"`. The selected pairing is repeatable, but local uniqueness does not imply authoritative identity or global assignment uniqueness.
 
+This alignment uncertainty is independent from computed interpretation uncertainty. The latter is represented by `ComputedRelation.status: indeterminate`, resolving Diagnostic IDs, and limited Computed Appearance coverage. It is not assigned an invented probability or merged with alignment confidence.
+
 ### Changed Fact
 
 A `ChangedFact` stores one supported authored change or evaluated structural relationship and the subject IDs it may affect. Atomic Differences refer to Changed Fact IDs so a shared inherited declaration, resource change, or structural cause does not need to be duplicated for each outcome. Relationship facts have no fabricated declaration or Source Span.

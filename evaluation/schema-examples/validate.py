@@ -464,6 +464,47 @@ def assert_outcome_state_examples(reports: dict[str, dict[str, Any]]) -> None:
         raise ValueError("failed outcome lacks explicit status or Diagnostics")
 
 
+def assert_uncertainty_state_examples(reports: dict[str, dict[str, Any]]) -> None:
+    all_evidence = [
+        alignment["evidence"]
+        for report in reports.values()
+        for alignment in report["subject_alignments"]
+    ]
+    if not all_evidence or any(
+        evidence["confidence"] is not None
+        or evidence["confidence_status"] != "not_calibrated"
+        for evidence in all_evidence
+    ):
+        raise ValueError("current alignments do not expose uncalibrated confidence")
+
+    repeated = reports["repeated-subject-equivalence-class"]
+    if not any(
+        alignment["evidence"]["ambiguity"] == "tied"
+        for alignment in repeated["subject_alignments"]
+    ):
+        raise ValueError("canonical alignment ambiguity lacks a tied case")
+    insertion = reports["subject-insertion"]
+    if not any(
+        alignment["evidence"]["ambiguity"] == "not_assessed"
+        for alignment in insertion["subject_alignments"]
+    ):
+        raise ValueError("canonical alignment ambiguity lacks not_assessed")
+
+    uncertain = reports["unsupported-filter-primitive-change"]
+    diagnostic_ids = {item["id"] for item in uncertain["diagnostics"]}
+    indeterminate = [
+        item
+        for item in uncertain["atomic_differences"]
+        if item["computed_relation"]["status"] == "indeterminate"
+    ]
+    if not indeterminate or any(
+        not item["computed_relation"]["diagnostic_ids"]
+        or not set(item["computed_relation"]["diagnostic_ids"]) <= diagnostic_ids
+        for item in indeterminate
+    ):
+        raise ValueError("indeterminate interpretation lacks resolving Diagnostics")
+
+
 def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
     rows = report.get("coverage_matrix")
     if not isinstance(rows, list) or not rows:
@@ -1040,6 +1081,7 @@ def main() -> None:
             )
 
     assert_outcome_state_examples(reports)
+    assert_uncertainty_state_examples(reports)
 
     missing_required = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_required["analysis_status"]
