@@ -309,7 +309,7 @@ test "singular linear change emits exact residual coefficients without a score" 
 }
 
 ///|
-test "transform event keeps the complete scene mask until bounds are transform aware" {
+test "transform event keeps occupied and vacated pixel components" {
   let before = "<svg width='16' height='16'><g transform='translate(1 0)'><rect id='box' x='2' y='4' width='5' height='5' fill='red'/></g></svg>"
   let after = "<svg width='16' height='16'><g transform='translate(5 0)'><rect id='box' x='2' y='4' width='5' height='5' fill='red'/></g></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
@@ -319,6 +319,24 @@ test "transform event keeps the complete scene mask until bounds are transform a
   assert_eq(event.difference_regions.map(region => region.changed_pixels), [
     20, 20,
   ])
+}
+
+///|
+test "transform event excludes disjoint changes outside cumulative painted bounds" {
+  let before = "<svg width='16' height='16'><rect id='moved' x='1' y='1' width='3' height='3' fill='red' transform='translate(0 0)'/><rect id='other' x='12' y='12' width='3' height='3' fill='red'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='moved' x='1' y='1' width='3' height='3' fill='red' transform='translate(4 0)'/><rect id='other' x='12' y='12' width='3' height='3' fill='blue'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  guard report.events.filter(event => event.id.find(":transform") is Some(_))
+    is [event] else {
+    fail("expected one transform event")
+  }
+  assert_eq(event.difference_regions.length(), 2)
+  assert_true(
+    event.difference_regions.all(region => {
+      region.css_x >= 1.0 && region.css_x + region.css_width <= 8.0
+    }),
+  )
+  assert_eq(event.rendered_outcome.magnitude.unwrap().changed_pixels, 18)
 }
 
 ///|

@@ -522,12 +522,6 @@ fn alignment_for_event(
   event : VisualEvent,
   alignments : Array[SubjectAlignment],
 ) -> SubjectAlignment? {
-  if event.id.find(":transform") is Some(_) {
-    // Transform-aware bounds are a later localization item. Until then the
-    // complete scene mask is conservative; clipping to untransformed bounds
-    // would silently discard vacated or newly occupied pixels.
-    return None
-  }
   for alignment in alignments {
     if event.primary_subject_id == alignment.id {
       return Some(alignment)
@@ -738,6 +732,17 @@ fn filter_host_conservative_bounds(host : ResolvedFilterHost) -> CssBounds? {
   let mut bounds = host.effect_bounds
   for primitive in host.primitive_bounds {
     bounds = union_bounds(bounds, primitive)
+  }
+  if !host.complete {
+    // Every primitive output is clipped to the resolved filter region. Even
+    // when primitive semantics remain unsupported, that region is therefore
+    // a sound localization upper bound rather than a rendered-pixel claim.
+    bounds = union_bounds(bounds, host.filter_region)
+  } else if host.resource is Some(_) && host.primitive_bounds.is_empty() {
+    // A valid empty graph deterministically suppresses its target. The target
+    // bounds localize that disappearance even though the output bounds are
+    // empty by definition.
+    bounds = union_bounds(bounds, host.target_bounds)
   }
   bounds
 }
@@ -1258,6 +1263,8 @@ fn attach_difference_regions(
                     event, before_filter_hosts, after_filter_hosts,
                   ) {
                   Some(bounds) => Some(bounds)
+                  None if event.id.has_prefix("event:filter:") ||
+                    event.id.has_prefix("event:filter-host:") => None
                   None =>
                     match mask_host_event_bounds(event, before, after) {
                       Some(bounds) => Some(bounds)

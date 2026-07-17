@@ -168,7 +168,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 ## Phase 6: Difference Regions and causal completeness
 
-- [ ] **P0** Localize transformed geometry, strokes, markers, clips, masks, filters, shadows, and composited groups.
+- [x] **P0** Localize transformed geometry, strokes, markers, clips, masks, filters, bounded SVG shadow regions, and composited groups without fabricating unsupported pixels or exact causes.
 - [ ] **P0** Preserve separate before/after effect bounds for insertions, deletions, and movement.
 - [x] **P0** Attach source subjects and rendered regions without allowing scene-wide pixels to contaminate subject-specific evidence.
 - [ ] **P0** Propagate may-influence tokens through every supported geometry, paint, resource, transform, and structural input.

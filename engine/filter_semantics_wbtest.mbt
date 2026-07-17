@@ -215,13 +215,84 @@ test "unsupported filter primitive changes remain source-only differences" {
     fail("expected one filter resource event")
   }
   assert_eq(event.rendered_outcome.status, "not_computed")
-  assert_true(event.difference_regions.is_empty())
+  assert_true(!event.difference_regions.is_empty())
+  assert_true(
+    event.difference_regions.all(region => {
+      region.source == "computed_bounds" &&
+      region.css_x <= 0.0 &&
+      region.css_y <= 0.0 &&
+      region.css_x + region.css_width >= 4.0 &&
+      region.css_y + region.css_height >= 4.0
+    }),
+  )
   assert_true(
     report.changed_facts.any(fact => {
       fact.id == "fact:filter:f:primitive:0:source" &&
       fact.affected_subject_ids == ["box"]
     }),
   )
+}
+
+///|
+test "unsupported SVG shadow primitive localizes to the resolved filter region" {
+  let before = "<svg width='16' height='16'><defs><filter id='shadow'><feDropShadow dx='1' dy='1' stdDeviation='1'/></filter></defs><rect id='box' x='4' y='4' width='4' height='4' filter='url(#shadow)'/></svg>"
+  let after = before.replace_all(old="stdDeviation='1'", new="stdDeviation='2'")
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_eq(report.analysis_status, "partial")
+  guard report.events.filter(event => event.id == "event:filter:shadow")
+    is [event] else {
+    fail("expected one shadow filter resource event")
+  }
+  assert_eq(event.rendered_outcome.status, "not_computed")
+  guard event.difference_regions is [region] else {
+    fail("expected one conservative shadow region")
+  }
+  assert_eq(region.source, "computed_bounds")
+  assert_true(
+    region.css_x < 4.0 &&
+    region.css_y < 4.0 &&
+    region.css_x + region.css_width > 8.0 &&
+    region.css_y + region.css_height > 8.0,
+  )
+  assert_eq(region.cause_envelope.guarantee, "not_established")
+  assert_eq(region.cause_envelope.coverage, "partial")
+  assert_true(!region.cause_envelope.diagnostic_ids.is_empty())
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain == "resource.filter.primitive.source" &&
+      difference.evidence_layers == ["source_semantics"] &&
+      difference.computed_relation.status == "indeterminate"
+    }),
+  )
+}
+
+///|
+test "filter values without a resolved region stay unlocalized" {
+  for
+    entry in [
+      ("blur(1px)", "blur(2px)", "filter_reference_invalid"),
+      (
+        "url(asset-a.svg#shadow)", "url(asset-b.svg#shadow)", "filter_external_reference_unsupported",
+      ),
+    ] {
+    let (before_filter, after_filter, diagnostic_code) = entry
+    let before = "<svg width='16' height='16'><rect id='box' x='4' y='4' width='4' height='4' filter='\{before_filter}'/></svg>"
+    let after = "<svg width='16' height='16'><rect id='box' x='4' y='4' width='4' height='4' filter='\{after_filter}'/></svg>"
+    let report = compare(before, after, ComparisonProfile::v1_default())
+    assert_eq(report.analysis_status, "partial")
+    guard report.events.filter(event => event.id == "event:filter-host:box")
+      is [event] else {
+      fail("expected one unsupported filter host event")
+    }
+    assert_eq(event.rendered_outcome.status, "not_computed")
+    assert_true(event.difference_regions.is_empty())
+    assert_true(
+      report.diagnostics.any(diagnostic => {
+        diagnostic.code == diagnostic_code &&
+        !diagnostic.source_locations.is_empty()
+      }),
+    )
+  }
 }
 
 ///|
