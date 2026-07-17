@@ -256,6 +256,8 @@ The [determinism evaluation](evaluation/determinism/README.md) repeats equivalen
 
 The [performance suites](evaluation/performance/README.md) independently time parse/admission, alignment, rendering, region extraction, provenance, and serialization through native release microbenchmarks, then enforce representative small, medium, and large end-to-end native CLI wall-time and peak-RSS ceilings. Run `sh scripts/run-stage-benchmarks.sh --output /tmp/svgdiff-stage-benchmarks.json` for stage diagnostics and `sh scripts/run-performance-budgets.sh --output /tmp/svgdiff-performance-budgets.json` for the regression gate. Both are distinct from the Agent-quality benchmark.
 
+The opt-in [report-only language-model benchmark](evaluation/language-model-benchmark/README.md) evaluates an isolated actual model against the same thirteen-case corpus and strict machine thresholds. Its retained v1 observation passes all accepted Agent metrics with zero hard safety failures. The deterministic evidence adapter remains the default CI regression fixture; rerunning the model benchmark requires the pinned Codex CLI, authentication, and network access.
+
 ## Documentation
 
 - [Documentation guide](docs/README.md): authority, reading order, and maintenance rules;

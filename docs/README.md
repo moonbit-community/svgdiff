@@ -44,6 +44,7 @@ This directory separates the current product contract from future plans and hist
 | How will external URL resources become closed offline comparison inputs? | [`general-resource-snapshot-bundles.md`](general-resource-snapshot-bundles.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
+| What independent report-only model run satisfies the current M3 benchmark gate? | [`language-model-benchmark/README.md`](../evaluation/language-model-benchmark/README.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
 | How are parser, renderer, serialization, and HTML boundaries fuzzed reproducibly? | [`fuzz/README.md`](../evaluation/fuzz/README.md) |
 | How are pipeline stages timed and representative CLI time and memory budgets enforced? | [`performance/README.md`](../evaluation/performance/README.md) |

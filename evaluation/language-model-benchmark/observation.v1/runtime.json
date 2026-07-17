@@ -1,0 +1,29 @@
+{
+  "benchmark_exit_code": 0,
+  "codex_cli_path": "/opt/homebrew/bin/codex",
+  "codex_cli_version": "codex-cli 0.144.4",
+  "completed_at_utc": "2026-07-17T07:59:45.080804+00:00",
+  "duration_seconds": 483.930013,
+  "implementation_sha256": {
+    "adapter": "a0a0bf4416f6cb93975472d40da381abd74711337a0390161d21356f387a9250",
+    "answer_schema": "96e98455095483b2304bc2bc3553d97b46f2eea4140a6f7cef81460575b7693c",
+    "canonical_prompt": "2a6f8496094465940c37941b7ed3d542fa165f51aba0cea3f1b06fc72f5fe465",
+    "corpus_manifest": "c6f80337a7c7e1be5c75b06a2a5b78eb766c5a1be581f0a12c9170eb313a0507",
+    "failure_classifier": "5bcb02529167da600f378737798ca606921ff11df58eb12f9206d972d24ee3ed",
+    "harness": "477bd3532ba8229fc4b9d37fed6d5ed9d47a59e5ec8fb810d260396cadb10f26",
+    "scorer": "78485284d4e89fa9f1821332f9aac2f39a7e10b366cbcc2c8a48420f67b326e9",
+    "structured_output_schema": "d142ad6ac23431b974e2089850fcc95168f28c9f58c18d0d9c27224fc4797bc5",
+    "threshold_checker": "45d81344e26e2c3f89aa001c1f4096823a64ae897a1d158d8fcbb2fd4e03f0c2",
+    "thresholds": "a5b27cb991565c733ede9b1cfd387c6ea99b32ceabf6aad600f22cf75614d80e"
+  },
+  "input_authority": "canonical_prompt_case_id_acceptance_version_and_structured_report_only",
+  "model": "gpt-5.6-sol",
+  "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "python_version": "3.14.5",
+  "reasoning_effort": "low",
+  "repository_commit": "8ae5a6c69201e02fd17b8e8479f17ef68897dc3a",
+  "repository_dirty_at_run": true,
+  "schema_version": "svgdiff-language-model-runtime/1",
+  "started_at_utc": "2026-07-17T07:51:41.150791+00:00",
+  "tool_event_rejection_enforced": true
+}

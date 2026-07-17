@@ -1,0 +1,12 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "answers.jsonl": "ff0f2d470537bfd44100388b3b17dbb8eb0e156c87c02dffd6b619cda0963717",
+    "failures.json": "82362ca2b1cd686a98f0e1fa6fb5f413e984e4fae64fe52da7581e659e2eaa6a",
+    "gate.json": "882f1fff3a0b3d20b89f778fd0729c0d2c127c23cba985615c72e3912b016898",
+    "metrics.json": "6111d7a3afdf12f26677542d2bb7ef7f114990c5353d36e73e5264bc22168763",
+    "profile.json": "7e132e4f7eaf02c4ca9203571eaa61fdfe8082410a2bb03480390da436b368ba",
+    "runtime.json": "a22701fc10775819b793f96c112fe136f3cdb260a7f30677b500e437366d6d95"
+  },
+  "schema_version": "svgdiff-language-model-integrity/1"
+}

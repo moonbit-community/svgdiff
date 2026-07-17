@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "actual": 1.0,
+      "metric": "agent_atomic_difference_recall_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_coverage_status_accuracy_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_equality_conclusion_accuracy_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_magnitude_claim_recall_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_main_difference_mrr",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_possible_cause_recall_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_region_overlap_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "agent_required_diagnostic_recall_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "report_cause_envelope_recall_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 1.0,
+      "metric": "report_region_overlap_macro",
+      "operator": ">=",
+      "passed": true,
+      "threshold": 1.0
+    },
+    {
+      "actual": 0,
+      "metric": "agent_cause_false_positive_count",
+      "operator": "<=",
+      "passed": true,
+      "threshold": 1
+    },
+    {
+      "actual": 0,
+      "metric": "agent_hard_safety_failure_count",
+      "operator": "<=",
+      "passed": true,
+      "threshold": 0
+    },
+    {
+      "actual": 0,
+      "metric": "invalid_evidence_reference_count",
+      "operator": "<=",
+      "passed": true,
+      "threshold": 0
+    },
+    {
+      "actual": 0,
+      "metric": "invalid_magnitude_claim_count",
+      "operator": "<=",
+      "passed": true,
+      "threshold": 0
+    },
+    {
+      "actual": 0,
+      "metric": "report_cause_false_positive_count",
+      "operator": "<=",
+      "passed": true,
+      "threshold": 1
+    }
+  ],
+  "gate_version": "svgdiff-benchmark-gate/1",
+  "metrics_version": "svgdiff-evaluation-metrics/1",
+  "passed": true,
+  "thresholds_version": "svgdiff-benchmark-thresholds/1"
+}

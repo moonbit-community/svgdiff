@@ -7,9 +7,10 @@ thresholds="$root/evaluation/benchmark-thresholds.v1.json"
 agent="python3 evaluation/harness/evidence_test_agent.py"
 output=""
 invocation_dir=$(pwd)
+agent_timeout=60
 
 usage() {
-  printf 'Usage: %s --output DIR [--agent COMMAND] [--thresholds FILE]\n' "$0"
+  printf 'Usage: %s --output DIR [--agent COMMAND] [--agent-timeout SECONDS] [--thresholds FILE]\n' "$0"
 }
 
 while [ "$#" -gt 0 ]; do
@@ -24,6 +25,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --agent)
       agent=$2
+      shift 2
+      ;;
+    --agent-timeout)
+      agent_timeout=$2
       shift 2
       ;;
     --thresholds)
@@ -77,7 +82,7 @@ done
 
 python3 evaluation/harness/harness.py prepare --reports "$reports" --output "$tasks"
 python3 evaluation/harness/harness.py run \
-  --tasks "$tasks" --output "$answers" --agent "$agent"
+  --tasks "$tasks" --output "$answers" --agent "$agent" --timeout "$agent_timeout"
 python3 evaluation/harness/score.py \
   --tasks "$tasks" --answers "$answers" --output "$metrics"
 gate_status=0

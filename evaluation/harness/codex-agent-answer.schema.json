@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://milky2018.github.io/svgdiff/schema/codex-agent-answer-1.json",
+  "title": "SVG Diff Codex structured-output answer",
+  "type": "object",
+  "required": [
+    "case_id",
+    "acceptance_version",
+    "coverage",
+    "differences",
+    "main_changes",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": { "type": "string" },
+    "acceptance_version": { "type": "string", "const": "agent-acceptance/1" },
+    "coverage": {
+      "type": "object",
+      "required": ["analysis_status", "equality_conclusion", "diagnostic_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "analysis_status": { "type": "string", "enum": ["complete", "partial", "failed"] },
+        "equality_conclusion": { "type": "string", "enum": ["established", "different", "not_established"] },
+        "diagnostic_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "differences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "atomic_difference_ids",
+          "kind",
+          "subject_ids",
+          "description",
+          "magnitude_claims",
+          "region_ids",
+          "possible_cause_changed_fact_ids",
+          "cause_guarantee",
+          "diagnostic_ids"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "atomic_difference_ids": { "type": "array", "items": { "type": "string" } },
+          "kind": { "type": "string" },
+          "subject_ids": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "magnitude_claims": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field", "status", "value", "unit"],
+              "additionalProperties": false,
+              "properties": {
+                "field": { "type": "string" },
+                "status": { "type": "string", "enum": ["measured", "not_computed", "indeterminate"] },
+                "value": {
+                  "anyOf": [
+                    { "type": "string" },
+                    { "type": "number" },
+                    { "type": "array", "items": { "type": "number" } },
+                    { "type": "null" }
+                  ]
+                },
+                "unit": { "type": ["string", "null"] }
+              }
+            }
+          },
+          "region_ids": { "type": "array", "items": { "type": "string" } },
+          "possible_cause_changed_fact_ids": { "type": "array", "items": { "type": "string" } },
+          "cause_guarantee": { "type": "string", "enum": ["sound_overapproximation", "not_established", "not_applicable"] },
+          "diagnostic_ids": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "main_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_ids", "atomic_difference_ids", "description", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "event_ids": { "type": "array", "items": { "type": "string" } },
+          "atomic_difference_ids": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "rationale": { "type": "string" }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

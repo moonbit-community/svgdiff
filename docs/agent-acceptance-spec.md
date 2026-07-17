@@ -4,7 +4,7 @@ Status: accepted evaluation contract
 
 Version: `agent-acceptance/1`
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 ## Objective
 
@@ -75,7 +75,7 @@ The answer may combine several Atomic Differences into one event-level sentence,
 
 ## Case-level scoring dimensions
 
-Each case is scored independently along these dimensions. The current report-only benchmark implements coverage safety, Atomic Difference recall, exact magnitude-claim fidelity, localization, Cause Envelope recall, and main-change ranking as separate metrics and thresholds; it does not collapse them into one score. Kind and free-text description quality remain contract requirements for a future independently labeled language-model benchmark.
+Each case is scored independently along these dimensions. The current report-only benchmark implements coverage safety, Atomic Difference recall, exact magnitude-claim fidelity, localization, Cause Envelope recall, and main-change ranking as separate metrics and thresholds; it does not collapse them into one score. Kind and free-text description quality remain contract requirements but are not independently scored by the current machine metrics.
 
 | Dimension | Full-credit behavior | Typical error |
 | --- | --- | --- |
@@ -89,6 +89,12 @@ Each case is scored independently along these dimensions. The current report-onl
 | Evidence traceability | Every substantive claim resolves to the correct report-local IDs | Gives a plausible narrative with no recoverable evidence links |
 
 False-positive cause volume is an engine metric, not an agent error, when the agent faithfully reports the supplied envelope. The agent is scored on interpreting the guarantee and retaining relevant candidates.
+
+## Accepted independent model observation
+
+The opt-in [`svgdiff-language-model-benchmark-profile/1`](../evaluation/language-model-benchmark/README.md) runs one actual model session per case with only this prompt, the acceptance version, an opaque case ID, and Structured Report JSON. A stricter transport Schema and explicit field-normalization rules make the required machine answer representation unambiguous without exposing source SVGs, rendered images, annotations, scorer code, or expected answers. Fresh empty working and Codex-home directories prevent project rules, user configuration, prior sessions, and model caches from entering the task; authentication is the only copied state. Any tool event invalidates the run.
+
+The retained 2026-07-17 observation passes all accepted thirteen-case thresholds, including 354/354 exact magnitude claims and zero hard safety or invalid-reference failures. This is evidence for the pinned model, reasoning effort, Codex CLI, adapter, implementation hashes, corpus, and metric versions only. The deterministic evidence adapter remains the default reproducible report-extractability test, while report-region and report Cause Envelope metrics remain report-layer evidence rather than model credit.
 
 ## Hard safety failures
 

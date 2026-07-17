@@ -287,6 +287,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | M2 core static coverage gate | Validated nine explicit complete-or-partial feature contracts without widening path or renderer claims; every admitted slice retains focused tests and every wider boundary remains Diagnostic-guarded. |
 | 2026-07-17 | M2 renderer and coverage safety gate | Reproduced 141 conformance cases, validated all 74 divergence dispositions, and connected renderer gaps through coverage proof and unsupported-input properties so raw pixel agreement cannot imply false complete equality. |
 | 2026-07-17 | M2 alignment-region-cause soundness gate | Validated bounded correspondence, side-typed localization, complete actual-cause containment or conservative fallback, partial guarantee revocation, and report-reference closure across focused, mutation, annotation, and adversarial suites. |
+| 2026-07-17 | M3 report-only language-model benchmark | Ran an isolated pinned language model with tools disabled over all thirteen Structured Reports using fresh opaque case IDs, matched all 354 exact magnitude claims, passed every recall, localization, causal, ranking, and safety threshold, and retained full answers plus runtime and integrity evidence. |
 
 ## Milestone gates
 
@@ -304,7 +305,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 ### M3: Agent-grade main-difference reporting
 
-- [ ] A text-only agent benchmark demonstrates acceptable difference recall, localization, causal recall, and main-event ranking.
+- [x] A text-only agent benchmark demonstrates acceptable difference recall, localization, causal recall, and main-event ranking.
 - [ ] Event-local perceptual evidence and calibrated Impact Assessment are available without replacing raw measurements.
 - [ ] Compact summaries link losslessly to the complete evidence graph.
 

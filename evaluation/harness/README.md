@@ -4,7 +4,7 @@ Status: active evaluation transport
 
 Acceptance contract: `agent-acceptance/1`
 
-Last verified: 2026-07-15
+Last verified: 2026-07-17
 
 The harness transports canonical Structured Report JSON to an evaluated agent without including SVG sources, rendered images, corpus metadata, or hidden annotations. It records normalized answer records for later metric computation.
 
@@ -62,7 +62,9 @@ sh scripts/run-agent-benchmark.sh --output /tmp/svgdiff-benchmark
 
 Pass a real adapter with `--agent "command --arguments"`. The output directory must be empty and receives `reports/`, `tasks.jsonl`, `answers.jsonl`, `metrics.json`, `gate.json`, and `failures.json`. The default `evaluation/benchmark-thresholds.v1.json` uses independent minimum and maximum checks; it does not compute a combined score. Use `--thresholds FILE` only for an explicitly versioned alternate policy.
 
-The current strict thresholds are calibrated to the thirteen-case corpus and deterministic evidence adapter. They require complete Atomic Difference and magnitude-claim recall, accepted main-change ranking, complete region and possible-cause recall, zero hard safety failures, zero altered or fabricated magnitude claims, and zero invalid evidence references. They are regression gates proving that the report-only protocol and scorer expose the required evidence, not evidence that an external language model has been evaluated. Any corpus or metric version change requires an explicit threshold review.
+The current strict thresholds are calibrated to the thirteen-case corpus. They require complete Atomic Difference and magnitude-claim recall, accepted main-change ranking, complete region and possible-cause recall, zero hard safety failures, zero altered or fabricated magnitude claims, and zero invalid evidence references. The default deterministic adapter remains a reproducible regression gate proving that the report-only protocol and scorer expose the required evidence. Any corpus or metric version change requires an explicit threshold review.
+
+The separate [report-only language-model benchmark](../language-model-benchmark/README.md) applies the same corpus, hidden annotations, metrics, and thresholds to an independently executed model. It pins and isolates the execution environment, rejects tool events, records full answers and implementation identities, and remains opt-in rather than part of default CI. Its retained `observation.v1` passes all accepted thresholds; that dated observation does not replace the deterministic default or guarantee future nondeterministic runs.
 
 The 2026-07-16 review additionally made exact multidimensional magnitude claims a thresholded dimension. The evidence adapter retains parameter, presence, typed transform, intrinsic-raster, boundary, coverage, and canonical raster scalar states with explicit units. A valid answer with one altered magnitude value now fails both recall and invalid-claim gates while report-layer metrics remain unchanged. Report candidate volume remains 10 unique candidates, 18 candidate occurrences, and 13 regions; those raw values are regression evidence rather than relaxed acceptance thresholds.
 
@@ -72,6 +74,8 @@ The 2026-07-16 review additionally made exact multidimensional magnitude claims 
 
 ```sh
 sh scripts/test-agent-harness.sh
+python3 -m unittest evaluation/harness/test_codex_report_only_agent.py
+sh scripts/test-language-model-observation.sh
 ```
 
 The integration test generates reports from the curated corpus as setup, prepares task JSONL, checks that task top-level fields contain no source or annotation path, runs a report-only test adapter, and validates one answer per case.
