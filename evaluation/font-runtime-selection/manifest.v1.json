@@ -1,0 +1,131 @@
+{
+  "schema_version": "svgdiff-font-runtime-selection-input/1",
+  "decision_status": "accepted_not_implemented",
+  "runtime_api_identity": "svgdiff-font-runtime-api/1",
+  "runtime_build_identity_format": "svgdiff-font-runtime-build/1",
+  "initial_execution_slice": "svgdiff-font-execution-slice/1",
+  "ownership": {
+    "kind": "separately_versioned_workspace_module",
+    "path": "modules/font_runtime",
+    "module": "Milky2018/svgdiff-font-runtime",
+    "upstream_types_public": false,
+    "copies_verified_input_bytes": true,
+    "copies_all_outputs": true
+  },
+  "sources": [
+    {
+      "component": "harfbuzz",
+      "version": "14.2.1",
+      "peeled_commit": "56feae4035bdd48f62ba2b8d8c16232d4d89b3a4",
+      "archive_url": "https://github.com/harfbuzz/harfbuzz/releases/download/14.2.1/harfbuzz-14.2.1.tar.xz",
+      "archive_sha256": "a54a5d8e9380a41fbb762ce367bcbf7704792dfca0d93f1bbca86c5a57902e0e",
+      "selected_license": "Old MIT"
+    },
+    {
+      "component": "freetype",
+      "version": "2.14.3",
+      "peeled_commit": "0a0221a1347e2f1e07c395263540026e9a0aa7c7",
+      "archive_url": "https://downloads.sourceforge.net/project/freetype/freetype2/2.14.3/freetype-2.14.3.tar.xz",
+      "archive_sha256": "36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f",
+      "selected_license": "FTL"
+    }
+  ],
+  "harfbuzz_build": {
+    "build_system": "meson",
+    "default_library": "static",
+    "enabled": [
+      "builtin_unicode",
+      "builtin_font_callbacks",
+      "opentype_shaper"
+    ],
+    "disabled_meson_features": [
+      "benchmark",
+      "cairo",
+      "chafa",
+      "coretext",
+      "directwrite",
+      "docs",
+      "fontations",
+      "freetype",
+      "gdi",
+      "glib",
+      "gobject",
+      "gpu",
+      "graphite2",
+      "harfrust",
+      "icu",
+      "introspection",
+      "kbts",
+      "png",
+      "raster",
+      "subset",
+      "tests",
+      "utilities",
+      "vector",
+      "wasm",
+      "zlib"
+    ],
+    "experimental_api": false,
+    "production_override_requirements": [
+      "HB_NO_AAT",
+      "HB_NO_FALLBACK_SHAPE",
+      "HB_NO_GETENV",
+      "HB_NO_MMAP",
+      "HB_NO_OPEN",
+      "HB_NO_SETLOCALE"
+    ]
+  },
+  "freetype_build": {
+    "build_system": "cmake",
+    "shared_libraries": false,
+    "dependency_disable_options": [
+      "FT_DISABLE_BROTLI=TRUE",
+      "FT_DISABLE_BZIP2=TRUE",
+      "FT_DISABLE_HARFBUZZ=TRUE",
+      "FT_DISABLE_PNG=TRUE",
+      "FT_DISABLE_ZLIB=TRUE"
+    ],
+    "production_configuration_required": true,
+    "production_configuration_files": [
+      "ftmodule.h",
+      "ftoption.h"
+    ]
+  },
+  "initial_slice": {
+    "containers": [
+      "opentype_collection",
+      "opentype_sfnt"
+    ],
+    "outlines": [
+      "cff1_static",
+      "glyf_static"
+    ],
+    "shaper": "ot",
+    "shaping_font_callbacks": "hb_ot_font",
+    "shaping_scale": "units_per_em_integer",
+    "raster_mode": "freetype_normal_grayscale_unhinted",
+    "gated": [
+      "aat",
+      "autohinting",
+      "bitmap_strikes",
+      "bidi_and_run_segmentation",
+      "cff2_and_variable_fonts",
+      "color_glyphs",
+      "family_matching_and_fallback",
+      "graphite",
+      "hinting_bytecode",
+      "lcd_and_subpixel",
+      "platform_backends",
+      "svg_glyphs",
+      "svg_text_layout",
+      "synthetic_styles",
+      "vertical_layout",
+      "woff1_and_woff2"
+    ]
+  },
+  "community_packages_role": "differential_oracle_and_future_replacement_candidate",
+  "product_integration": false,
+  "report_schema_change": false,
+  "public_api_change": false,
+  "default_ci_change": false
+}

@@ -101,6 +101,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0093](0093-keep-natural-language-outside-the-structured-report.md) | Accepted, implemented | Keep deterministic natural language in an optional Markdown presentation that defers to canonical report evidence. |
 | [0096](0096-keep-lpips-outside-product-semantics.md) | Accepted | Retain LPIPS only as a pinned optional offline experiment, never equality, canonical evidence, Impact, or a default dependency. |
 | [0097](0097-separate-font-bundle-rendering-identity-from-legal-metadata.md) | Accepted, not implemented | Separate exact font-resource rendering identity from complete legal/provenance manifest integrity and later execution policy. |
+| [0098](0098-own-a-pinned-font-runtime-module.md) | Accepted, not implemented | Own exact-source HarfBuzz and FreeType behind a separately versioned private workspace module and bounded initial execution slice. |
 
 ## CLI and distribution decisions
 

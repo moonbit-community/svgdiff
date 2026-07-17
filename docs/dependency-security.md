@@ -2,7 +2,7 @@
 
 Status: current maintenance ledger
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.44`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
@@ -77,7 +77,9 @@ These gaps do not permit false complete analysis, and fixed limits plus local-re
 | [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Direct `mizchi/image` dependencies fail while compiling packaged upstream tests, but the decoder implementation remains usable | Keep canvas and direct image dependencies out of production; maintain the narrow attributed workspace codec without patching the dependency cache |
 | `moonbitlang/x@0.4.40` `Rational[Int64]` lacks `Debug` in dependency `assert_eq` tests | No matching open upstream PR found in the 2026-07-14 check | `moon doc` fails while checking transitive dependency tests | Use `moon ide doc` and `moon info`; project check, tests, and CLI remain green |
 
-Deterministic font analysis is a deferred product capability, not an upstream blocker. The accepted [Font Bundle contract](font-resource-bundle.md) now closes the future raw-byte, collection-face, fingerprint, legal-evidence, and no-ambient-I/O boundary without adding a dependency or product loader. Matching, fallback, shaping, layout, rasterization, runtime identity, and their dependency selection remain separate decisions before implementation.
+Deterministic font analysis is a deferred product capability, not an upstream blocker. The accepted [Font Bundle contract](font-resource-bundle.md) closes the future raw-byte, collection-face, fingerprint, legal-evidence, and no-ambient-I/O boundary. The accepted [Font Runtime dependency contract](font-runtime-dependencies.md) selects exact-source HarfBuzz 14.2.1 plus FreeType 2.14.3 behind a future separately versioned workspace module, with a static no-system-library build and a narrow initial OpenType/unhinted-grayscale slice.
+
+Those libraries are selected future sources, not resolved dependencies in the table above. They are not vendored, linked, distributed, or consulted by current product code. Before that changes, the workspace module must carry the complete Old MIT and selected FreeType License texts/notices, exact source and build identities, sanitizer/fuzz evidence, hard parser/work limits, and target-specific shaping/outline/raster conformance. Current Mooncakes font implementations remain differential candidates rather than trusted canonical dependencies.
 
 ## Refresh procedure
 

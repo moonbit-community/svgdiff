@@ -134,7 +134,7 @@ V1 does not completely analyze:
 - selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system palette selection, or custom-property syntax outside the admitted balanced subset;
 - external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, embedded SVG images, unbundled or unsupported external images, final raster-image compositing, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, external use documents, or dynamic instance-tree behavior;
 - general clip or mask geometry, percentages in `objectBoundingBox` clips, clip or mask references on use hosts, nested clip/mask resources, CSS image and multi-layer masks, mask-border, visual execution of filter primitives beyond direct static `feOffset`, CSS filter functions, filter templates or primitive subregions, transformed/fractional/dynamic/reused filter application, continuous-alpha or antialiased blending, container blend modes, blend attachment on instances, and blend interactions with transforms, opacity, clip, mask, or filter effects;
-- deterministic font loading, matching, shaping, text layout, and glyph rasterization; the exact caller-supplied [Font Bundle contract](font-resource-bundle.md) is accepted, but no product loader or Font Execution Profile is implemented;
+- deterministic font loading, matching, shaping, text layout, and glyph rasterization; the exact caller-supplied [Font Bundle contract](font-resource-bundle.md) and future [Font Runtime dependency boundary](font-runtime-dependencies.md) are accepted, but no runtime module, product loader, Font Execution Profile, or text evidence is implemented;
 - SSIM/MS-SSIM or LPIPS report fields and product semantics, other learned perceptual metrics, and advanced color profiles beyond the implemented event-local changed-pixel mean DeltaEOK and optional event-local LDR-FLIP map with separately pooled statistics over one explicit opaque sRGB8 background; SSIM/MS-SSIM remain QA-only and LPIPS remains a separately pinned optional offline experiment;
 - unequal-cardinality or mixed-change repeated-subject equivalence classes, exact contribution weights, minimal root causes, or cross-subject event synthesis;
 - browser-to-browser or renderer-to-renderer equality claims.
@@ -159,6 +159,7 @@ For unsupported or unresolved content, the engine must:
 - `Milky2018/xml@0.4.0` owns XML well-formedness, namespaces, entities, and source locations.
 - Private project code owns SVG-aware Source Semantics and mapping into report facts.
 - `mizchi/svg@0.2.1` supplies the pinned scene and raster implementation behind the engine seam.
+- A future separate `Milky2018/svgdiff-font-runtime` workspace module is selected to own pinned HarfBuzz/FreeType sources and project-owned font records; it is not present in the current dependency graph or engine.
 - The project owns comparison, coverage guards, alignment, magnitudes, regions, conservative Cause Envelopes, report serialization, and HTML projection.
 - Dependency-specific types remain private.
 

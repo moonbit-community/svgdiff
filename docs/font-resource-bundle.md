@@ -25,7 +25,7 @@ The v1 contract forbids:
 - inferring redistribution permission from OpenType metadata or an SPDX expression alone;
 - claiming that an admitted bundle fixes family matching, fallback, variations, shaping, SVG text layout, hinting, rasterization, color-font behavior, or pixels.
 
-Those execution choices require a separately versioned Font Execution Profile. The next roadmap decision may select dependencies, but it cannot weaken this resource boundary.
+Those execution choices require a separately versioned Font Execution Profile. The accepted [Font Runtime dependency contract](font-runtime-dependencies.md) selects a future implementation seam, but it does not weaken this resource boundary or add current execution support.
 
 ## Manifest
 

@@ -83,3 +83,11 @@ _Avoid_: Rendering fingerprint
 **Font Execution Profile**:
 The future versioned identity that combines a Font Bundle with selection, shaping, layout, rasterization, and runtime policies.
 _Avoid_: Font Bundle, system renderer
+
+**Font Runtime Module**:
+The future separately versioned workspace boundary that owns pinned shaping and glyph-rasterization dependencies behind project-owned records and errors.
+_Avoid_: System font stack, text layout engine, upstream API
+
+**Font Runtime Build Identity**:
+The exact identity of font-runtime sources, patches, configuration, toolchain, target, static artifacts, shim, and linked binary.
+_Avoid_: Library name, Font Bundle Fingerprint, execution result

@@ -30,6 +30,7 @@ This directory separates the current product contract from future plans and hist
 | How are resource dependencies, local cycles, and explosive `<use>` DAGs modeled? | [`reference-safety.md`](reference-safety.md) and [resource graph research](research/svg-resource-dependency-graph.md) |
 | How are explicit local raster resources supplied without implicit I/O? | [`library-api.md`](library-api.md), [`resource-limits.md`](resource-limits.md), and [bundle policy research](research/local-resource-bundle-policy.md) |
 | What exact font-resource input must exist before deterministic text can be implemented? | [`font-resource-bundle.md`](font-resource-bundle.md) |
+| Which shaping and glyph-rasterization dependencies and ownership boundary are accepted for future work? | [`font-runtime-dependencies.md`](font-runtime-dependencies.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
@@ -116,6 +117,7 @@ These files must be updated whenever behavior changes:
 - [`upgrade-procedures.md`](upgrade-procedures.md): renderer, parser, metric, schema, and policy upgrade gates.
 - [`dependency-security.md`](dependency-security.md): resolved licenses, input/output security boundary, and live blockers.
 - [`font-resource-bundle.md`](font-resource-bundle.md): accepted future font-byte, face, fingerprint, licensing, and reproducibility input boundary; explicitly not current font execution.
+- [`font-runtime-dependencies.md`](font-runtime-dependencies.md): accepted exact-source shaping/raster stack, private workspace-module seam, initial execution slice, and implementation gates; explicitly not a current dependency or capability.
 
 ### Planning
 
