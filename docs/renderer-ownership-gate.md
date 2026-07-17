@@ -2,7 +2,7 @@
 
 Status: current renderer escalation policy
 
-Last verified: 2026-07-14
+Last verified: 2026-07-17
 
 This policy decides whether a measured renderer gap should remain guarded, receive a focused upstream patch, or cause SVG Diff to own a MoonBit rendering layer. It refines [ADR 0011](adr/0011-prefer-moonbit-rendering-dependencies-before-owning-a-renderer.md) and [ADR 0012](adr/0012-own-only-the-smallest-failing-renderer-layer.md) without changing the current support contract.
 
@@ -79,7 +79,7 @@ Record one row per candidate before proposing ownership:
 | Fractional geometry quantization | Measured browser divergence with a rendered-only guard; broader geometry work is not yet complete | Keep guarded while identifying the smallest sampling layer; ownership evidence is incomplete. |
 | Referenced-gradient sampling | Two raster observations in one paint-server family with a guard | Keep guarded; it does not meet breadth or control trigger. |
 | Fractional leaf opacity | One arithmetic boundary case with a guard | Keep guarded and prefer a focused upstream correction if promoted to active scope. |
-| Group opacity | One isolated-compositing mechanism, already outside complete coverage | Keep guarded until compositing becomes active milestone work; one case cannot admit ownership. |
+| Group opacity | One isolated-compositing mechanism with complete admitted source/computed semantics plus product-owned overlap, nesting, backdrop, order, transform, and symbol-instance pixel tests | Retain the already adopted `isolated-group-compositor@1` smallest layer and its conformance identity. This closes only the documented static container-opacity slice and does not admit general compositing ownership. |
 | `mizchi/canvas` test compatibility | One transitive test-only `Debug` defect with a focused upstream PR | Continue focused upstream path; this is far below ownership threshold. |
 
 Re-evaluate a row when its roadmap priority changes, a new independent case is added, upstream publishes a relevant release, or the renderer conformance profile changes.

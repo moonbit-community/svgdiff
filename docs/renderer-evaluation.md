@@ -71,6 +71,8 @@ Every divergence now has an executable disposition. A browser-invisible `1.0` to
 
 Current reports project those encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The structured records expose stable capability IDs and `guarded` or `unavailable` status without pretending to be a global renderer support inventory.
 
+The [M2 renderer and coverage gate](../evaluation/m2-renderer-coverage-gate/README.md) makes the complete safety chain explicit: reproducible observations, one disposition per divergence, encountered capability projection, centralized coverage proof, status composition, and unsupported-input false-equality properties. It does not promote this renderer to browser-equivalence authority.
+
 ### Platform font observations
 
 The accepted [platform-native font boundary](platform-native-font-modes.md) extends the same oracle separation to CoreText, DirectWrite, browser text, and comparable system stacks. They are permanently excluded from canonical Font Execution Profiles. A future exact-bundle capture may be a named-target external conformance observation; an ambient system-font capture is exploratory and unreproducible. Neither can enter Structured Report equality, magnitude, coverage, Impact, regions, or causality directly.

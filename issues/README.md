@@ -177,6 +177,7 @@ graph TD
   ISS_159["ISS-159: Define generalized external resource snapshot bundles"]
   ISS_160["ISS-160: Investigate incremental and cached comparisons"]
   ISS_161["ISS-161: Validate the M2 core static coverage gate"]
+  ISS_162["ISS-162: Validate the M2 renderer and coverage safety gate"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -548,6 +549,15 @@ graph TD
   ISS_115 --> ISS_161
   ISS_116 --> ISS_161
   ISS_114 --> ISS_161
+  ISS_040 --> ISS_162
+  ISS_041 --> ISS_162
+  ISS_043 --> ISS_162
+  ISS_044 --> ISS_162
+  ISS_045 --> ISS_162
+  ISS_046 --> ISS_162
+  ISS_049 --> ISS_162
+  ISS_077 --> ISS_162
+  ISS_161 --> ISS_162
 ```
 
 ## Warnings

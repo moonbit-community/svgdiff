@@ -47,6 +47,8 @@ The matrix is validated by the [Coverage Proof Obligations](coverage-proof-oblig
 
 The first M2 gate is an aggregate traceability claim, not a wider completeness claim. Its [versioned gate inventory](../evaluation/m2-core-static-coverage/README.md) maps paths, transforms, viewports, CSS cascade, reuse, gradients, clipping, masking, and group compositing to the complete-eligible rows and partial boundaries below. Path remains explicitly partial, and every other capability retains its documented guard outside the admitted slice.
 
+The second M2 gate composes renderer observations with coverage safety rather than treating them as one score. Its [renderer and coverage inventory](../evaluation/m2-renderer-coverage-gate/README.md) requires every measured divergence to have one production disposition, every encountered renderer limitation to constrain its evidence layer, centralized coverage proof to validate the matrix, and unsupported self-comparisons to remain non-complete.
+
 ## Complete-eligible capabilities
 
 | Feature slice | Evidence layers | Diagnostic on the supported path | Executable coverage |

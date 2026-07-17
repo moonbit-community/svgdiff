@@ -22,4 +22,6 @@ The MoonBit adapter under `evaluation/renderer_adapter` exports raw pinned-rende
 
 Run `sh scripts/test-renderer-dispositions.sh` to require a one-to-one disposition for every divergence, execute each Diagnostic, normalizer, or compositor proof through the production CLI, and confirm that exact supported fixtures do not acquire a new conformance guard. Other analyzer limitations remain independent. A future versioned conformance profile may replace a guard with a reviewed tolerance or adapter fix.
 
+The aggregate [M2 renderer and coverage safety gate](../m2-renderer-coverage-gate/README.md) additionally checks that these dispositions connect to encountered capability metadata, coverage proof, status composition, and unsupported-input equality guards. This baseline alone cannot close that product claim.
+
 The separate [alternate-scale QA baseline](../alternate-scale/README.md) measures pinned-renderer scale curves and directional behavior. It is not a browser conformance oracle and cannot change a disposition or canonical report magnitude by itself.

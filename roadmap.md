@@ -285,6 +285,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | General external resource snapshot boundary | Accepted side-qualified offline request/response snapshots with recursive closure and separate acquisition provenance, preserved current opaque raster bundles, and permanently excluded comparison-time I/O. |
 | 2026-07-17 | Incremental and cache investigation | Kept full recomputation authoritative, deferred persistent and graph-incremental reuse for lack of measured workload and stable intermediates, and reserved a complete local exact-result key as the first future candidate. |
 | 2026-07-17 | M2 core static coverage gate | Validated nine explicit complete-or-partial feature contracts without widening path or renderer claims; every admitted slice retains focused tests and every wider boundary remains Diagnostic-guarded. |
+| 2026-07-17 | M2 renderer and coverage safety gate | Reproduced 141 conformance cases, validated all 74 divergence dispositions, and connected renderer gaps through coverage proof and unsupported-input properties so raw pixel agreement cannot imply false complete equality. |
 
 ## Milestone gates
 
@@ -297,7 +298,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 ### M2: Credible essential static SVG coverage
 
 - [x] Paths, transforms, viewports, CSS cascade, reuse, gradients, clipping, masking, and group compositing have explicit complete or partial behavior.
-- [ ] Renderer conformance and coverage gates prevent false complete equality.
+- [x] Renderer conformance and coverage gates prevent false complete equality.
 - [ ] Subject alignment, regions, and Cause Envelopes remain sound across the supported set.
 
 ### M3: Agent-grade main-difference reporting
