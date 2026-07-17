@@ -51,7 +51,7 @@ done <"$tmp/package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | README.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | jpeg_decode.mbt | jpeg_tables.mbt | png_color.mbt | png_decode.mbt | png_filter.mbt | types.mbt)
+    LICENSE | README.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | color_metadata.mbt | jpeg_decode.mbt | jpeg_tables.mbt | png_color.mbt | png_decode.mbt | png_filter.mbt | types.mbt)
       ;;
     *)
       printf 'Raster codec package contains an unexpected path: %s\n' "$path" >&2
@@ -106,7 +106,7 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "1.43" else { abort("wrong schema") }
+  guard report.schema_version == "1.44" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
   guard report.impact_assessment.policy_id == "event_rendered_pareto/v1" else {

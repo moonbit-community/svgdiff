@@ -346,7 +346,7 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.43",
+      "schema_version": "1.44",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],
@@ -438,7 +438,7 @@ test "compact JSON preserves the complete structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "1.43",
+      "schema_version": "1.44",
       "analysis_status": "partial",
       "coverage_matrix": _,
       "renderer_capability_gaps": [],

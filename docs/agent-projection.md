@@ -4,7 +4,7 @@ Status: current transport contract
 
 Projection identity: `svgdiff-agent-projection/1`
 
-Source report identity: Structured Report Schema `1.43`
+Source report identity: Structured Report Schema `1.44`
 
 Last verified: 2026-07-16
 

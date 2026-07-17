@@ -214,11 +214,11 @@ def load_released_schemas(
             registered_impact_policies
         ) <= set(policy["accepted_impact_policy_ids"]):
             raise ValueError(f"Schema {version} registers an unaccepted Impact policy")
-        if version == "1.43" and registered_impact_policies != [
+        if version in ("1.43", "1.44") and registered_impact_policies != [
             "event_rendered_pareto/v1"
         ]:
-            raise ValueError("current Schema does not register its Impact policy")
-        if version != "1.43" and registered_impact_policies:
+            raise ValueError("Impact-era Schema does not register its Impact policy")
+        if version not in ("1.43", "1.44") and registered_impact_policies:
             raise ValueError(f"legacy Schema {version} unexpectedly registers Impact")
         registered_cases = entry.get("compatibility_case_ids")
         if not isinstance(registered_cases, list) or not registered_cases:

@@ -12,8 +12,22 @@ priv struct DecodedEmbeddedRaster {
 }
 
 ///|
+priv struct UnsupportedEmbeddedRasterColor {
+  source_kind : String
+  media_type : String
+  encoding : String
+  encoded_bytes : Int
+  encoded_sha256 : String
+  width : Int
+  height : Int
+  diagnostic_code : String
+  detail : String
+}
+
+///|
 priv enum EmbeddedRasterDecodeResult {
   EmbeddedRasterDecoded(DecodedEmbeddedRaster)
+  EmbeddedRasterColorUnsupported(UnsupportedEmbeddedRasterColor)
   EmbeddedRasterUnsupported(String)
   EmbeddedRasterInvalid(String)
   EmbeddedRasterLimitExceeded(String)
@@ -43,6 +57,45 @@ fn decode_raster_bytes(
         "resource_bundle_entry_bytes"
       },
     )
+  }
+  let color = try {
+    if media_type == "image/png" {
+      @raster_codec.inspect_png_color_metadata(bytes)
+    } else {
+      @raster_codec.inspect_jpeg_color_metadata(bytes)
+    }
+  } catch {
+    InvalidSignature(_) =>
+      return EmbeddedRasterInvalid("embedded_raster_signature_mismatch")
+    _ => return EmbeddedRasterInvalid("embedded_raster_decode_failed")
+  }
+  if color.width > max_dimension || color.height > max_dimension {
+    return EmbeddedRasterLimitExceeded("embedded_raster_dimension")
+  }
+  if color.width * color.height > max_pixels {
+    return EmbeddedRasterLimitExceeded("embedded_raster_pixels")
+  }
+  let color_limitation = match color.condition {
+    SrgbCompatible => None
+    EmbeddedColorProfile(detail) =>
+      Some(("embedded_raster_color_profile_unsupported", detail))
+    HdrOrHighBitDepth(detail) =>
+      Some(("embedded_raster_hdr_unsupported", detail))
+  }
+  match color_limitation {
+    Some((diagnostic_code, detail)) =>
+      return EmbeddedRasterColorUnsupported({
+        source_kind,
+        media_type,
+        encoding,
+        encoded_bytes: bytes.length(),
+        encoded_sha256: raster_sha256(bytes),
+        width: color.width,
+        height: color.height,
+        diagnostic_code,
+        detail,
+      })
+    None => ()
   }
   let image = try {
     if media_type == "image/png" {

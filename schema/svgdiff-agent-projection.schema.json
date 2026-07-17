@@ -40,7 +40,7 @@
         "profile"
       ],
       "properties": {
-        "schema_version": { "const": "1.43" },
+        "schema_version": { "const": "1.44" },
         "analysis_status": { "enum": ["complete", "partial", "failed"] },
         "impact_assessment": { "type": "object" },
         "profile": { "type": "object" }
@@ -59,7 +59,7 @@
       ],
       "properties": {
         "projection_version": { "const": "svgdiff-agent-projection/1" },
-        "source_schema_version": { "const": "1.43" },
+        "source_schema_version": { "const": "1.44" },
         "record_type": { "const": "header" },
         "sequence": { "const": 0 },
         "section_counts": { "$ref": "#/$defs/sectionCounts" },
@@ -80,7 +80,7 @@
       ],
       "properties": {
         "projection_version": { "const": "svgdiff-agent-projection/1" },
-        "source_schema_version": { "const": "1.43" },
+        "source_schema_version": { "const": "1.44" },
         "record_type": { "const": "item" },
         "sequence": { "type": "integer", "minimum": 1 },
         "section": {

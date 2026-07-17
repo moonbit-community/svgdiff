@@ -2,6 +2,22 @@
   "schema_version": "svgdiff-schema-examples/1",
   "cases": [
     {
+      "id": "embedded-color-profile",
+      "before": "evaluation/schema-examples/cases/embedded-color-profile/before.svg",
+      "after": "evaluation/schema-examples/cases/embedded-color-profile/after.svg",
+      "output": "schema/examples/embedded-color-profile.json",
+      "expected": {
+        "analysis_status": "partial",
+        "domains": ["resource.image.source"],
+        "computed_relations": ["indeterminate"],
+        "diagnostic_codes": [
+          "embedded_raster_color_profile_unsupported",
+          "embedded_raster_hdr_unsupported"
+        ],
+        "magnitude_checks": []
+      }
+    },
+    {
       "id": "repeated-subject-equivalence-class",
       "before": "evaluation/schema-examples/cases/repeated-subject-equivalence-class/before.svg",
       "after": "evaluation/schema-examples/cases/repeated-subject-equivalence-class/after.svg",

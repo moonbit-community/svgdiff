@@ -101,6 +101,8 @@ fn embedded_image_href_summary(result : EmbeddedRasterDecodeResult) -> String {
   match result {
     EmbeddedRasterDecoded(image) =>
       "\{image.source_kind}:\{image.media_type};encoding=\{image.encoding};bytes=\{image.encoded_bytes};encoded_sha256=\{image.encoded_sha256};intrinsic=\{image.width}x\{image.height};rgba8_sha256=\{image.rgba8_sha256}"
+    EmbeddedRasterColorUnsupported(image) =>
+      "\{image.source_kind}:\{image.media_type};encoding=\{image.encoding};bytes=\{image.encoded_bytes};encoded_sha256=\{image.encoded_sha256};intrinsic=\{image.width}x\{image.height};color_limitation=\{image.detail}"
     EmbeddedRasterUnsupported(reason) => "unsupported:\{reason}"
     EmbeddedRasterInvalid(reason) => "invalid:\{reason}"
     EmbeddedRasterLimitExceeded(reason) => "limit_exceeded:\{reason}"
@@ -163,6 +165,8 @@ fn embedded_image_intrinsic_size(
 ) -> (Double, Double)? {
   match raster {
     EmbeddedRasterDecoded(image) =>
+      Some((image.width.to_double(), image.height.to_double()))
+    EmbeddedRasterColorUnsupported(image) =>
       Some((image.width.to_double(), image.height.to_double()))
     _ => None
   }
@@ -707,6 +711,15 @@ fn embedded_image_preflight_diagnostics(
             subject,
             "renderer_embedded_raster_unavailable",
             ["rendered_evidence"],
+          ),
+        )
+      EmbeddedRasterColorUnsupported(image) =>
+        diagnostics.push(
+          embedded_image_diagnostic(
+            source_role,
+            subject,
+            image.diagnostic_code,
+            ["computed_appearance", "rendered_evidence"],
           ),
         )
       EmbeddedRasterUnsupported(reason) =>

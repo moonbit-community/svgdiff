@@ -20,12 +20,12 @@ test "Agent projection partitions every canonical report section" {
   match @json.parse(lines[0]) {
     {
       "projection_version": "svgdiff-agent-projection/1",
-      "source_schema_version": "1.43",
+      "source_schema_version": "1.44",
       "record_type": "header",
       "sequence": 0,
       "section_counts": { "atomic_differences": 1, "events": 1, .. },
       "value": {
-        "schema_version": "1.43",
+        "schema_version": "1.44",
         "analysis_status": "complete",
         "impact_assessment": _,
         "profile": _,

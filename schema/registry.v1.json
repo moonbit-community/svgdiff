@@ -433,6 +433,17 @@
     },
     {
       "report_schema_version": "1.43",
+      "status": "legacy",
+      "schema": "schema/svgdiff-report-1.43.schema.json",
+      "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],
+      "accepted_impact_policy_ids": ["event_rendered_pareto/v1"],
+      "canonical_examples": "evaluation/schema-examples/manifest.1.43.json",
+      "compatibility_case_ids": [
+        "legacy-schema-1.43"
+      ]
+    },
+    {
+      "report_schema_version": "1.44",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "accepted_ordering_policy_ids": ["v2_domain_lexicographic"],

@@ -52,7 +52,7 @@
     },
     {
       "name": "Milky2018/svgdiff-raster-codec",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "relationship": "direct local workspace module",
       "repository": "https://github.com/Milky2018/svgdiff",
       "license": "Apache-2.0",

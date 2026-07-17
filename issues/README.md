@@ -159,6 +159,7 @@ graph TD
   ISS_141["ISS-141: Add reconstructable Agent projection JSONL"]
   ISS_142["ISS-142: Add derived Markdown summaries"]
   ISS_143["ISS-143: Improve HTML evidence inspection"]
+  ISS_144["ISS-144: Detect out-of-profile embedded color content"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -418,6 +419,13 @@ graph TD
   ISS_138 --> ISS_143
   ISS_139 --> ISS_143
   ISS_140 --> ISS_143
+  ISS_053 --> ISS_144
+  ISS_057 --> ISS_144
+  ISS_078 --> ISS_144
+  ISS_087 --> ISS_144
+  ISS_110 --> ISS_144
+  ISS_111 --> ISS_144
+  ISS_128 --> ISS_144
 ```
 
 ## Warnings

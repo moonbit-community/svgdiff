@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-16
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.43`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.44`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 ## Resolved dependencies and licenses
 
@@ -16,7 +16,7 @@ This ledger records the licenses shipped with the currently resolved packages, t
 | `moonbitlang/async` | Direct module dependency | `0.19.1` | Apache-2.0 | Yes |
 | `moonbitlang/x` | Direct module dependency | `0.4.40` | Apache-2.0 | No |
 | `moonbitlang/quickcheck` | Direct module dependency retained by `moon info` | `0.14.0` | Apache-2.0 | Yes |
-| `Milky2018/svgdiff-raster-codec` | Direct local workspace module; bounded admitted PNG/JPEG subset decoding | `0.1.0` | Apache-2.0 | Project-owned source and LICENSE |
+| `Milky2018/svgdiff-raster-codec` | Direct local workspace module; bounded admitted PNG/JPEG subset decoding and color-metadata inspection | `0.1.1` | Apache-2.0 | Project-owned source and LICENSE |
 | `mizchi/image` | Transitive through `pixelmatch` | `0.1.2` | Apache-2.0 | No |
 | `mizchi/zlib` | Transitive through `image` and the raster-codec module | `0.4.6` | Apache-2.0 | Yes |
 
@@ -57,7 +57,7 @@ The private MoonBit LDR-FLIP implementation follows the equations and constants 
 
 ## Known security gaps
 
-Schema `1.43` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.44` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;

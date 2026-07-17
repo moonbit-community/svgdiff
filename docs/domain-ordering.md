@@ -45,6 +45,6 @@ Policy `v1_domain_lexicographic` remains valid only for legacy reports through S
 2. Group by exact `AtomicDifference.domain`.
 3. Compare tuples only inside one exact-domain group and one policy ID.
 4. Preserve `DifferenceMagnitude` as the evidence shown to the agent; the tuple is derived ordering metadata.
-5. For a question about the “main” change across domains, use the required schema `1.43` Impact Assessment. Under `event_rendered_pareto/v1`, report every frontier group and preserve its exact ties, incomparability, and missing-evidence status instead of comparing domain tuple numbers.
+5. For a question about the “main” change across domains, use the required schema `1.44` Impact Assessment. Under `event_rendered_pareto/v1`, report every frontier group and preserve its exact ties, incomparability, and missing-evidence status instead of comparing domain tuple numbers.
 
 [ADR 0039](adr/0039-do-not-adopt-a-universal-cross-domain-scalar.md) records that future cross-domain assessment should preserve structured evidence, ties, and incomparability instead of introducing a universal scalar without a demonstrated Agent task and calibrated policy.

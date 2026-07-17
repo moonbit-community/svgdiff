@@ -69,7 +69,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 
 ## Current product snapshot
 
-- The stable report schema is `1.43`.
+- The stable report schema is `1.44`.
 - Every report contains the uncalibrated `event_rendered_pareto/v1` Impact Assessment, which exposes all non-dominated Visual Event groups while preserving ties, incomparability, and missing rendered evidence. The v1 calibration study rejected production tiers and total ordering until stronger human evidence exists.
 - SSIM and MS-SSIM remain outside the report and Agent protocol; a versioned QA-only evaluation records their scale sensitivity, renderer-coverage false identity, unavailable product, and human-order inversions.
 - Caller-supplied semantic concerns remain outside Structured Report and context-free Impact; the full event inventory and Agent JSON preserve dominated matches without inferring priority from SVG source.

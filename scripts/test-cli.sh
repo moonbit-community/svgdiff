@@ -22,12 +22,12 @@ assert_status() {
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
-jq -e '.schema_version == "1.43" and .profile.perceptual_background == null and .profile.flip_viewing_conditions == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1 and all(.events[]; .rendered_outcome.perceptual_color == {"status":"not_computed","reason_code":"perceptual_background_absent"} and .rendered_outcome.perceptual_flip == {"status":"not_computed","reason_code":"flip_not_requested"}) and .impact_assessment.policy_id == "event_rendered_pareto/v1" and .impact_assessment.status == "complete" and .impact_assessment.calibration_status == "not_calibrated" and .impact_assessment.candidate_event_count == 1 and .impact_assessment.frontier_relation == "unique" and .impact_assessment.frontier_groups[0].event_ids == [.events[0].id] and .impact_assessment.frontier_groups[0].atomic_difference_ids == .events[0].atomic_difference_ids and .impact_assessment.domination_witnesses == []' "$tmp/report.json" >/dev/null
+jq -e '.schema_version == "1.44" and .profile.perceptual_background == null and .profile.flip_viewing_conditions == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1 and all(.events[]; .rendered_outcome.perceptual_color == {"status":"not_computed","reason_code":"perceptual_background_absent"} and .rendered_outcome.perceptual_flip == {"status":"not_computed","reason_code":"flip_not_requested"}) and .impact_assessment.policy_id == "event_rendered_pareto/v1" and .impact_assessment.status == "complete" and .impact_assessment.calibration_status == "not_calibrated" and .impact_assessment.candidate_event_count == 1 and .impact_assessment.frontier_relation == "unique" and .impact_assessment.frontier_groups[0].event_ids == [.events[0].id] and .impact_assessment.frontier_groups[0].atomic_difference_ids == .events[0].atomic_difference_ids and .impact_assessment.domination_witnesses == []' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
 test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.43" and .profile.perceptual_background == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
+jq -e '.schema_version == "1.44" and .profile.perceptual_background == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
 test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
 test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
 
@@ -169,11 +169,11 @@ jq -e '
 
 cat testdata/before.svg | moon run --target native cmd/svgdiff -- - testdata/after.svg >"$tmp/stdin-before.json" 2>"$tmp/stdin-before.err"
 test ! -s "$tmp/stdin-before.err"
-jq -e '.schema_version == "1.43" and .analysis_status == "complete"' "$tmp/stdin-before.json" >/dev/null
+jq -e '.schema_version == "1.44" and .analysis_status == "complete"' "$tmp/stdin-before.json" >/dev/null
 
 cat testdata/after.svg | moon run --target native cmd/svgdiff -- testdata/before.svg - >"$tmp/stdin-after.json" 2>"$tmp/stdin-after.err"
 test ! -s "$tmp/stdin-after.err"
-jq -e '.schema_version == "1.43" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
+jq -e '.schema_version == "1.44" and .analysis_status == "complete"' "$tmp/stdin-after.json" >/dev/null
 
 printf '%s\n' "<svg xmlns='http://www.w3.org/2000/svg'><image id='photo' width='8' height='8' href='asset.png'/></svg>" >"$tmp/bundle.svg"
 printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==' | base64 -d >"$tmp/red.png"
@@ -229,9 +229,9 @@ grep -q -- '--summary FILE' "$tmp/help.txt"
 grep -q 'Invalid arguments or file I/O failure' "$tmp/help.txt"
 
 moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.5.26$' "$tmp/version.txt"
-grep -q '^engine: 0.5.26$' "$tmp/version.txt"
-grep -q '^schema: 1.43$' "$tmp/version.txt"
+grep -q '^svgdiff 0.5.27$' "$tmp/version.txt"
+grep -q '^engine: 0.5.27$' "$tmp/version.txt"
+grep -q '^schema: 1.44$' "$tmp/version.txt"
 grep -q '^agent-projection: svgdiff-agent-projection/1$' "$tmp/version.txt"
 grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1$' "$tmp/version.txt"
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/25$' "$tmp/version.txt"
@@ -291,7 +291,7 @@ assert_status 1 moon run --target native cmd/svgdiff -- \
   >"$tmp/resource-failed.json" 2>"$tmp/resource-failed.err"
 test ! -s "$tmp/resource-failed.err"
 jq -e '
-  .schema_version == "1.43" and
+  .schema_version == "1.44" and
   .analysis_status == "failed" and
   .impact_assessment.status == "not_applicable" and
   .impact_assessment.candidate_event_count == 0 and

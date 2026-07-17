@@ -11,6 +11,21 @@ let embedded_red_jpeg_base64 = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAIBAQEBAQIBAQEC
 let embedded_indexed_transparency_png_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAAA1BMVEX/AAAZ4gk3AAAAAXRSTlMAQObYZgAAAApJREFUeJxjYAAAAAIAAUivpHEAAAAASUVORK5CYII="
 
 ///|
+let embedded_srgb_png_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUeJxj+M/A8B8ABQAB/4mZPR0AAAAASUVORK5CYII="
+
+///|
+let embedded_icc_png_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEmlDQ1BwAAB4nCsoyk/LzEkFAAv+AvI52EAcAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg=="
+
+///|
+let embedded_hdr_png_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGNJQ1ABEAABiJcLEQAAAA1JREFUeJxj+M/A8B8ABQAB/4mZPR0AAAAASUVORK5CYII="
+
+///|
+let embedded_icc_jpeg_base64 = "/9j/4gAQSUNDX1BST0ZJTEUAAQH/wAALCAABAAEBEQD/2Q=="
+
+///|
+let embedded_12_bit_jpeg_base64 = "/9j/wQALDAABAAEBAREA/9k="
+
+///|
 let embedded_red_png_percent = "%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%06%00%00%00%1F%15%C4%89%00%00%00%0DIDATx%9Cc%F8%CF%C0%F0%1F%00%05%00%01%FF%89%99=%1D%00%00%00%00IEND%AEB`%82"
 
 ///|
@@ -131,6 +146,72 @@ test "JPEG base64 and percent forms decode to the same intrinsic pixels" {
   let report = compare(before, after, ComparisonProfile::v1_default())
   guard difference_in_domain(report, "resource.image.source") is Some(source) else {
     fail("expected distinct JPEG source encodings")
+  }
+  assert_eq(source.computed_relation.status, "equivalent")
+  assert_true(difference_in_domain(report, "resource.image.content") is None)
+}
+
+///|
+test "embedded raster color metadata produces precise partial diagnostics" {
+  let png = compare(
+    embedded_image_svg(embedded_png_url(embedded_icc_png_base64)),
+    embedded_image_svg(embedded_png_url(embedded_hdr_png_base64)),
+    ComparisonProfile::v1_default(),
+  )
+  assert_eq(png.analysis_status, "partial")
+  for
+    code in [
+      "embedded_raster_color_profile_unsupported", "embedded_raster_hdr_unsupported",
+    ] {
+    assert_true(
+      png.diagnostics.any(diagnostic => {
+        diagnostic.code == code && !diagnostic.source_locations.is_empty()
+      }),
+    )
+  }
+  guard difference_in_domain(png, "resource.image.source") is Some(source) else {
+    fail("expected exact profile-bearing source difference")
+  }
+  assert_true(source.source_before.find("encoded_sha256=") is Some(_))
+  assert_true(source.source_after.find("encoded_sha256=") is Some(_))
+  assert_true(source.source_before.find("intrinsic=1x1") is Some(_))
+  assert_true(source.source_after.find("intrinsic=1x1") is Some(_))
+  assert_true(
+    png.to_compact_json_string().find(embedded_icc_png_base64) is None,
+  )
+  let jpeg = compare(
+    embedded_image_svg("data:image/jpeg;base64,\{embedded_icc_jpeg_base64}"),
+    embedded_image_svg("data:image/jpeg;base64,\{embedded_12_bit_jpeg_base64}"),
+    ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    jpeg.diagnostics.any(diagnostic => {
+      diagnostic.code == "embedded_raster_color_profile_unsupported"
+    }),
+  )
+  assert_true(
+    jpeg.diagnostics.any(diagnostic => {
+      diagnostic.code == "embedded_raster_hdr_unsupported"
+    }),
+  )
+}
+
+///|
+test "explicit PNG sRGB metadata remains admitted" {
+  let report = compare(
+    embedded_image_svg(embedded_png_url(embedded_srgb_png_base64)),
+    embedded_image_svg(embedded_png_url(embedded_red_png_base64)),
+    ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    !report.diagnostics.any(diagnostic => {
+      diagnostic.code == "embedded_raster_color_profile_unsupported" ||
+      diagnostic.code == "embedded_raster_hdr_unsupported" ||
+      diagnostic.code == "embedded_raster_variant_unsupported"
+    }),
+  )
+  guard difference_in_domain(report, "resource.image.source") is Some(source) else {
+    fail("expected source-only sRGB metadata difference")
   }
   assert_eq(source.computed_relation.status, "equivalent")
   assert_true(difference_in_domain(report, "resource.image.content") is None)

@@ -44,7 +44,7 @@ jq -e '
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
-  .schema_version == "1.43" and
+  .schema_version == "1.44" and
   .impact_assessment.policy_id == "event_rendered_pareto/v1" and
   ([paths | map(tostring) | join(".") |
     select(test("(^|\\.)(ssim|ms_ssim)($|\\.)"))] | length) == 0

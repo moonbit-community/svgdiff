@@ -82,6 +82,33 @@ test "bundle bytes can be visually equivalent to a data URL" {
 }
 
 ///|
+test "bundle raster color metadata uses the same precise diagnostics" {
+  let svg = embedded_image_svg("asset.png", attributes="width='8' height='8'")
+  let report = compare_with_resources(
+    svg,
+    svg,
+    ComparisonProfile::v1_default(),
+    test_raster_bundle("asset.png", "image/png", embedded_icc_png_base64),
+    test_raster_bundle("asset.png", "image/png", embedded_hdr_png_base64),
+  )
+  for
+    code in [
+      "embedded_raster_color_profile_unsupported", "embedded_raster_hdr_unsupported",
+    ] {
+    assert_true(
+      report.diagnostics.any(diagnostic => {
+        diagnostic.code == code && !diagnostic.source_locations.is_empty()
+      }),
+    )
+  }
+  guard difference_in_domain(report, "resource.image.source") is Some(source) else {
+    fail("expected profile-bearing bundle difference")
+  }
+  assert_true(source.source_before.find("bundle:image/png") is Some(_))
+  assert_true(source.source_after.find("bundle:image/png") is Some(_))
+}
+
+///|
 test "bundle locator matching is exact after outer SVG whitespace" {
   let svg = embedded_image_svg(" asset.png ")
   let resolved = compare_with_resources(

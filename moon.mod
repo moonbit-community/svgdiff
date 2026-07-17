@@ -11,7 +11,7 @@
 
 name = "Milky2018/svgdiff"
 
-version = "0.5.26"
+version = "0.5.27"
 
 readme = "PACKAGE.mbt.md"
 
@@ -30,7 +30,7 @@ import {
   "Milky2018/xml@0.4.0",
   "moonbitlang/x@0.4.40",
   "moonbitlang/quickcheck@0.14.0",
-  "Milky2018/svgdiff-raster-codec@0.1.0",
+  "Milky2018/svgdiff-raster-codec@0.1.1",
 }
 
 options(

@@ -107,6 +107,17 @@ fn embedded_rasters_relation(
 }
 
 ///|
+fn embedded_rasters_both_decoded(
+  before : EmbeddedRasterDecodeResult,
+  after : EmbeddedRasterDecodeResult,
+) -> Bool {
+  match (before, after) {
+    (EmbeddedRasterDecoded(_), EmbeddedRasterDecoded(_)) => true
+    _ => false
+  }
+}
+
+///|
 fn embedded_raw_rgba8_squared_error(
   before : Bytes,
   after : Bytes,
@@ -394,7 +405,15 @@ fn append_embedded_image_correspondence(
     Some(before),
     Some(after),
   )
-  if before.href_authored != after.href_authored {
+  let compact_source_changed = before.compact_href_fact.map(fact => {
+      fact.authored_value
+    }) !=
+    after.compact_href_fact.map(fact => fact.authored_value)
+  if before.href_authored != after.href_authored ||
+    (
+      !embedded_rasters_both_decoded(before.raster, after.raster) &&
+      compact_source_changed
+    ) {
     append_embedded_image_difference(
       report,
       alignment,

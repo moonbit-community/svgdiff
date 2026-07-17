@@ -1,6 +1,6 @@
 # Resource Outcome Policy
 
-Status: current contract for schema `1.43`
+Status: current contract for schema `1.44`
 
 Last verified: 2026-07-16
 
@@ -35,6 +35,8 @@ The first matching row determines the report-level outcome. Family-specific Diag
 | Missing or wrong-kind local target for one admitted SVG `filter` reference | `complete`-eligible | Exact authored filter reference, target-kind lookup, and deterministic unfiltered host result | Ignore the whole filter chain and render the host as if no filter were applied. External locators and unsupported filter syntax remain partial. |
 | Missing or wrong-kind local target for another consumer | `partial` | Exact locator/reference fact and Source Span plus independently supported facts | Emit the precise family Diagnostic, such as `use_target_missing`, `use_target_kind_unsupported`, or `marker_semantics_unsupported`. |
 | External locator outside an explicit admitted bundle-backed raster image | `partial` | Exact authored locator and independently supported facts | Do not fetch. Use the family-specific external-reference or missing-bundle Diagnostic. |
+| Referenced PNG/JPEG contains an embedded ICC or non-v1 color profile | `partial` | Exact locator span, source kind, encoded hash, intrinsic dimensions, placement facts, and resource identity | Emit `embedded_raster_color_profile_unsupported`; do not convert or reinterpret the samples as v1 sRGB. |
+| Referenced PNG/JPEG contains HDR metadata or samples above 8 bits | `partial` | Exact locator span, source kind, encoded hash, intrinsic dimensions, placement facts, and resource identity | Emit `embedded_raster_hdr_unsupported`; do not tone-map, clip, or down-convert the samples. |
 | Malformed, unsupported, or semantically invalid referenced definition or payload | `partial` | Exact source facts, Source Spans, and every independently resolved component | Block only the evidence layers named by the family Diagnostic; do not substitute a guessed value or measured zero. |
 | Valid unused SVG definition | `complete`-eligible | Resource-role source/computed differences, with no affected rendered-subject fan-out | Preserve latent visual semantics. Do not invent a consumer or nonzero final rendered outcome. |
 | Invalid unused SVG definition | `partial` | Exact authored definition evidence and family Diagnostic | Activity does not make authored visual-resource syntax valid or prove source-semantic equality. |
@@ -57,7 +59,7 @@ This ordering explains two superficially different unused cases. An unused bundl
 
 ## Agent reading rule
 
-A text-only Agent must not infer resource meaning from the absence of an Atomic Difference alone. Read `analysis_status`, then the coverage matrix and Diagnostics. For `partial`, report the independently supported findings but never claim equality. For `failed`, stop interpreting difference arrays. For an unused resource difference, describe it as a source-visible latent resource change with no current consumer fan-out; do not call it a current pixel change. For missing paint targets, report the selected fallback or no-paint result rather than calling the paint indeterminate. For an admitted missing or wrong-kind SVG mask target, report deterministic transparent-black suppression and keep it distinct from an unsupported external or image mask. A missing or wrong-kind local filter target is a deterministic unfiltered result, while an admitted empty filter graph has a deterministic transparent output; keep both distinct from an unsupported external or malformed filter reference.
+A text-only Agent must not infer resource meaning from the absence of an Atomic Difference alone. Read `analysis_status`, then the coverage matrix and Diagnostics. For `partial`, report the independently supported findings but never claim equality. For `failed`, stop interpreting difference arrays. For an unused resource difference, describe it as a source-visible latent resource change with no current consumer fan-out; do not call it a current pixel change. Treat embedded color-profile and HDR Diagnostics as unavailable color interpretation, not as black, clipped sRGB, measured zero, or proof of a visible change. For missing paint targets, report the selected fallback or no-paint result rather than calling the paint indeterminate. For an admitted missing or wrong-kind SVG mask target, report deterministic transparent-black suppression and keep it distinct from an unsupported external or image mask. A missing or wrong-kind local filter target is a deterministic unfiltered result, while an admitted empty filter graph has a deterministic transparent output; keep both distinct from an unsupported external or malformed filter reference.
 
 ## Executable enforcement
 

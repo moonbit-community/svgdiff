@@ -78,7 +78,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.26` with `moon add Milky2018/svgdiff@0.5.26` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.27` with `moon add Milky2018/svgdiff@0.5.27` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -89,7 +89,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.43`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, optional normalized opaque sRGB8 Perceptual Background, optional bounded FLIP pixels-per-degree Viewing Conditions, an optional explicit FLIP error threshold, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. With the background and raw event pixels, each event reports changed-pixel mean DeltaEOK; with Viewing Conditions too, it reports a bounded event-local LDR-FLIP map plus separate whole-canvas mean, selected-event mean, response p95, and response maximum statistics. A supplied threshold additionally reports strict-above pixel count and whole-canvas fraction; no threshold is assumed, and none of these values is a severity or visibility label. Both perceptual channels composite over exactly the recorded background without changing transparent-canvas evidence. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.44`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, optional normalized opaque sRGB8 Perceptual Background, optional bounded FLIP pixels-per-degree Viewing Conditions, an optional explicit FLIP error threshold, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. With the background and raw event pixels, each event reports changed-pixel mean DeltaEOK; with Viewing Conditions too, it reports a bounded event-local LDR-FLIP map plus separate whole-canvas mean, selected-event mean, response p95, and response maximum statistics. A supplied threshold additionally reports strict-above pixel count and whole-canvas fraction; no threshold is assumed, and none of these values is a severity or visibility label. Both perceptual channels composite over exactly the recorded background without changing transparent-canvas evidence. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
 
 Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
 
@@ -115,7 +115,7 @@ Consequence-aware structure reporting links effective reparenting and use-target
 
 A private typed resource graph now unifies gradient, pattern, marker, clip, mask, filter, symbol, image, use, attribute URL, and static stylesheet dependencies. It retains locator states and exact reference spans, supplies deterministic conservative reachability, and drives the existing cycle and use-expansion safety checks. The complete unchanged graph is not added to Agent JSON; reports continue to expose only relevant resource facts, affected consumers, and Diagnostics.
 
-Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied resources on `image` are decoded under fixed no-I/O resource limits. Reports distinguish source encodings, intrinsic dimensions and normalized RGBA8 content, placement, fitting, opacity, transform, insertion, and deletion. Different encodings that decode identically remain source-distinct but computed-equivalent; content differences carry an intrinsic raster magnitude and conservative image bounds without embedding payloads in JSON. Other valid raster variants remain explicit partial coverage instead of being approximated. The pinned renderer does not composite these images, so `renderer_embedded_raster_unavailable` keeps final-canvas evidence explicitly unavailable. Resource types beyond bundled PNG/JPEG images, embedded SVG images, final image compositing, general clip/mask content, and general filter primitives remain later roadmap work.
+Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied resources on `image` are decoded under fixed no-I/O resource limits. Reports distinguish source encodings, intrinsic dimensions and normalized RGBA8 content, placement, fitting, opacity, transform, insertion, and deletion. Different encodings that decode identically remain source-distinct but computed-equivalent; content differences carry an intrinsic raster magnitude and conservative image bounds without embedding payloads in JSON. Embedded ICC and other non-v1 profile metadata, HDR metadata, and samples above 8 bits retain compact hashes, intrinsic dimensions, placement, exact locator spans, and precise partial Diagnostics without conversion or tone mapping; explicit PNG `sRGB` remains admitted. Other valid raster variants remain explicit partial coverage instead of being approximated. The pinned renderer does not composite these images, so `renderer_embedded_raster_unavailable` keeps final-canvas evidence explicitly unavailable. Resource types beyond bundled PNG/JPEG images, embedded SVG images, final image compositing, general clip/mask content, and general filter primitives remain later roadmap work.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -136,7 +136,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.43")
+  assert_eq(report.schema_version, "1.44")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -203,7 +203,7 @@ test "serialize JSON and build the HTML presentation" {
   let projection_jsonl = report.to_agent_projection_json_lines()
   let html = @svgdiff.render_html_report(before, after, report)
   let summary = @svgdiff.render_markdown_summary(report)
-  assert_true(json.find("\"schema_version\": \"1.43\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.44\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(projection_jsonl.find("svgdiff-agent-projection/1") is Some(_))
   assert_true(html.find("<!doctype html>") is Some(_))

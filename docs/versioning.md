@@ -10,10 +10,10 @@ Last verified: 2026-07-16
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.26` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.43` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| MoonBit module and CLI | `0.5.27` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `1.44` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
-| Diagnostics | Schema `1.43` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| Diagnostics | Schema `1.44` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Impact Assessment | `event_rendered_pareto/v1` | emitted `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Candidate events, measurement inputs, dominance, ties, incomparability, missing evidence, frontier representation, and witnesses. |
@@ -130,6 +130,8 @@ Module `0.5.24` adds `StructuredReport::to_agent_projection_json_lines` and CLI 
 Module `0.5.25` adds `render_markdown_summary` and CLI `--summary FILE`. The deterministic Markdown is a separate derived presentation that lists the Impact frontier, every Atomic Difference, and every Diagnostic while explicitly deferring to canonical Structured Report JSON. It does not add report fields or introduce severity, visibility, equality, total-order, or unique-cause semantics. Structured Report schema `1.43`, Agent projection, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 Module `0.5.26` deepens the existing self-contained HTML presentation into a complete evidence inspector. It presents the exact Impact frontier, every Atomic Difference, non-null magnitudes, linked Visual Events, Difference Regions, conservative possible Changed Fact causes, and Diagnostics; hover, keyboard focus, and explicit selection highlight report-defined regions on both sandboxed previews. The browser does not recompute comparison, ranking, visibility, equality, severity, or causality. Structured Report schema `1.43`, Agent projection, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
+
+Module `0.5.27` and raster codec `0.1.1` classify embedded PNG/JPEG color metadata before pixel interpretation. Explicit PNG `sRGB` remains admitted; embedded ICC and other non-v1 profile metadata emit `embedded_raster_color_profile_unsupported`, while HDR metadata and samples above 8 bits emit `embedded_raster_hdr_unsupported`. Both data URLs and caller bundles retain exact locator spans, encoded hashes, source kind, intrinsic dimensions, placement, and resource identity without conversion, clipping, or tone mapping. The new stable Diagnostic codes advance Structured Report schema to `1.44`; Agent projection, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 ## Structured Report schema versions
 

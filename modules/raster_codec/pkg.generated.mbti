@@ -1,10 +1,18 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Milky2018/svgdiff-raster-codec"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn decode_jpeg_bounded(Bytes, max_dimension~ : Int, max_pixels~ : Int) -> ImageData raise DecodeError
 
 pub fn decode_png_bounded(Bytes, max_dimension~ : Int, max_pixels~ : Int) -> ImageData raise DecodeError
+
+pub fn inspect_jpeg_color_metadata(Bytes) -> RasterColorMetadata raise DecodeError
+
+pub fn inspect_png_color_metadata(Bytes) -> RasterColorMetadata raise DecodeError
 
 // Errors
 pub(all) suberror DecodeError {
@@ -23,6 +31,18 @@ pub(all) struct ImageData {
   height : Int
   data : Bytes
 } derive(Eq)
+
+pub(all) enum RasterColorCondition {
+  SrgbCompatible
+  EmbeddedColorProfile(String)
+  HdrOrHighBitDepth(String)
+} derive(Eq, @debug.Debug)
+
+pub(all) struct RasterColorMetadata {
+  width : Int
+  height : Int
+  condition : RasterColorCondition
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 

@@ -6,6 +6,20 @@ pub(all) struct ImageData {
 } derive(Eq)
 
 ///|
+pub(all) enum RasterColorCondition {
+  SrgbCompatible
+  EmbeddedColorProfile(String)
+  HdrOrHighBitDepth(String)
+} derive(Debug, Eq)
+
+///|
+pub(all) struct RasterColorMetadata {
+  width : Int
+  height : Int
+  condition : RasterColorCondition
+} derive(Debug, Eq)
+
+///|
 priv enum ColorType {
   Grayscale
   Rgb

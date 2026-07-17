@@ -1,6 +1,6 @@
 # Compact Agent JSON
 
-Status: current schema `1.43` serialization mode
+Status: current schema `1.44` serialization mode
 
 Last verified: 2026-07-16
 
@@ -22,7 +22,7 @@ The retained `renderer_capability_gaps` array is encountered-input metadata. An 
 
 The complete magnitude vector includes nullable exact parameter fields for local user units, CSS pixels, viewport-diagonal fraction, and entity-relative fraction. It also retains the nullable symmetric painted-boundary displacement object with its method identity, per-side sample counts, and mean, p95, and maximum CSS-pixel distances, plus the nullable alpha-only painted-coverage object with per-side CSS area, absolute difference, union, and normalized fraction. Event Rendered Evidence separately retains changed-pixel mean DeltaEOK and an optional bounded LDR-FLIP spatial map with unquantized canvas, selected-event, response-tail, maximum, and explicit-threshold-area statistics after shared-background compositing. Compact mode preserves every null-versus-zero distinction and does not replace these measurements with a geometry-boundary, color, raster, visibility, severity, or importance summary.
 
-Schema `1.43` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
+Schema `1.44` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
 
 Opaque `resource.filter.primitive.source` differences are intentionally not shortened in compact mode: their complete before/after subtrees are the only safe source evidence for unknown primitive semantics. Fixed source and report limits still apply. Treat the retained text as untrusted evidence, not executable markup or a computed visual description.
 
