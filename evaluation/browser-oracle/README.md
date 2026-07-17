@@ -2,9 +2,11 @@
 
 Status: deterministic fixture oracle
 
-Last verified: 2026-07-14
+Last verified: 2026-07-17
 
 The browser oracle renders supported deterministic SVG fixtures in headless Chromium without entering the core comparison engine. It provides an independent raster source for renderer-conformance work; it does not by itself decide whether the pinned renderer is conformant.
+
+Under the accepted [multi-renderer experiment semantics](../../docs/multi-renderer-profiles.md), one oracle capture may become only an external observation cell for its exact browser, environment, profile, fixture, and capture identity. It is not a browser vote, a preferred truth, a multi-cell matrix by itself, or a source/computed/causal report.
 
 ## Profile
 

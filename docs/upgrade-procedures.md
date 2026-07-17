@@ -134,6 +134,19 @@ No beyond-sRGB profile currently exists. Before admitting or changing one under 
 
 ICC dependency selection and HDR reference/display semantics require their own accepted decisions before implementation. Platform or physical-display captures remain external `svgdiff-color-observation/1` artifacts and cannot substitute for this gate.
 
+## Multi-renderer experiment admission or upgrade
+
+No multi-renderer container currently exists. Before implementing or changing `svgdiff-renderer-experiment-matrix/1` or `svgdiff-renderer-experiment-cell/1`:
+
+1. preserve each current Structured Report or external observation as an independently identified cell with its native authority, status, coverage, errors, resources, environment, and output contract;
+2. version cell, edge, comparator, cross-cell mapping, and Agent-synthesis contracts without reusing Schema, renderer, or renderer-conformance identities;
+3. prove same-target profile edges and same-profile target edges separately, reject direct diagonal attribution, and retain before, after, and before-to-after outcome relations;
+4. add negative controls for missing, failed, partial, ambient, cross-OS, unmatched, dimension-, alpha-, color-, and normalization-incompatible cells, all of which must yield `insufficient_evidence` where required;
+5. require universal evidence over the declared required set for invariance, with no voting, averaging, preferred-renderer truth, or discarded disagreement; and
+6. validate at least one closed four-cell rectangle plus sparse and failed matrices before adding product, Agent, CI, or release integration.
+
+Follow the accepted [multi-renderer semantics](multi-renderer-profiles.md). External browser or platform cells cannot acquire Source Semantics, Computed Appearance, Visual Events, Cause Envelopes, or canonical completeness merely by entering the container.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.

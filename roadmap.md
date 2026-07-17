@@ -221,7 +221,7 @@ This phase is explicitly recorded but not currently scheduled. It expands [ISS-0
 - [x] **P1** Keep transparent-canvas raw evidence independent from perceptual-background evidence.
 - [x] **P1** Detect embedded ICC, Display-P3, wide-gamut, and HDR content and emit precise coverage diagnostics without out-of-profile color conversion.
 - [x] **Decision** Define color-management profiles beyond v1 sRGB.
-- [ ] **Decision** Define whether multiple renderer or browser profiles compare one engine against itself, browsers against each other, or both.
+- [x] **Decision** Define whether multiple renderer or browser profiles compare one engine against itself, browsers against each other, or both.
 - [ ] **Deferred** Implement cross-browser comparison profiles without weakening single-profile equality claims.
 - [ ] **Deferred** Add platform-specific rendering profiles only when their environment and resource inputs are fully declared.
 

@@ -6,6 +6,8 @@ Last verified: 2026-07-16
 
 `analysis_status` summarizes the report's per-feature, per-evidence-layer `coverage_matrix` under the recorded Comparison Profile. It does not describe whether the SVGs are equal, how many differences exist, or how visually important a difference is.
 
+The status belongs to one Structured Report and one exact renderer/profile execution. A future [multi-renderer experiment matrix](multi-renderer-profiles.md) may associate several reports or external observations, but it cannot upgrade a cell's `partial` or `failed` status, turn missing cells into agreement, or extend one cell's equality/completeness claim to another target or profile.
+
 ## Status summary
 
 | Status | Comparison result available | Complete equality conclusion allowed | CLI exit status |

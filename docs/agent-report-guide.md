@@ -10,6 +10,8 @@ When input arrives as `svgdiff-agent-projection/1` JSONL, validate its header, s
 
 An optional Markdown summary may help with orientation, but it is derived and incomplete presentation. Do not use it as the evidence source for an Agent answer; resolve every statement against canonical JSON or a validated complete Agent projection.
 
+The current report contains one renderer/profile execution and no multi-renderer matrix. Do not infer cross-browser stability, profile invariance, or renderer consensus from it. If a future [`svgdiff-renderer-experiment-matrix/1`](multi-renderer-profiles.md) accompanies reports, preserve its separate authority: use only versioned cross-cell mappings, retain every disagreeing or unavailable cell, and never extend one cell's equality or completeness to the matrix.
+
 ## Reading order
 
 Read the report in this order:

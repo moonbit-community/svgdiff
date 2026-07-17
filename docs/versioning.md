@@ -23,6 +23,8 @@ The renderer package identity and raster representation are also report semantic
 
 `svgdiff-color-execution-profile/1` is reserved by the accepted [color-management boundary](color-management-profiles.md) but is not a current version domain because no beyond-sRGB profile is implemented or serialized. A future admission must add an explicit Comparison Profile reference and compatibility policy separately from Schema, renderer, and renderer-conformance identities. Reports with different color execution identities are not rendered-equality-compatible by default.
 
+`svgdiff-renderer-experiment-matrix/1` and `svgdiff-renderer-experiment-cell/1` are reserved by the accepted [multi-renderer experiment boundary](multi-renderer-profiles.md), but neither is a current report version domain or implemented artifact. A future container must version cell identity, typed edges, per-evidence compatibility, cross-cell mappings, and Agent synthesis independently from Structured Report Schema and every cell's native renderer, conformance, font, color, and observation identities.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:

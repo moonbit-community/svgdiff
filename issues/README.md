@@ -169,6 +169,7 @@ graph TD
   ISS_151["ISS-151: Select deterministic shaping and glyph-rasterization dependencies"]
   ISS_152["ISS-152: Decide the platform-native font rendering boundary"]
   ISS_153["ISS-153: Define color-management profiles beyond v1 sRGB"]
+  ISS_154["ISS-154: Define multi-renderer and browser profile comparison semantics"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -498,6 +499,9 @@ graph TD
   ISS_150 --> ISS_151
   ISS_151 --> ISS_152
   ISS_144 --> ISS_153
+  ISS_046 --> ISS_154
+  ISS_152 --> ISS_154
+  ISS_153 --> ISS_154
 ```
 
 ## Warnings

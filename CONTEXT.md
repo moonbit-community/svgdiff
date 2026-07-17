@@ -103,3 +103,11 @@ _Avoid_: Gamut name, display profile, renderer identity
 **Color Observation**:
 An external capture of browser, platform, or physical-display color behavior under one completely named environment.
 _Avoid_: Color Execution Profile, canonical output, active display default
+
+**Renderer Experiment Cell**:
+One exact before/after execution by one target under one semantic profile, retaining its native report or observation authority.
+_Avoid_: Renderer vote, canonical aggregate, screenshot alone
+
+**Renderer Experiment Edge**:
+A typed relation between compatible cells that states which target/profile axes are fixed or varied and what claims follow.
+_Avoid_: Generic renderer diff, diagonal attribution, majority result

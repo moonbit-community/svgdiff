@@ -82,7 +82,7 @@ Unsupported input continues to preserve exact source and resource evidence, emit
 
 An exact mathematical virtual target may support a closed observation. A physical display, active host profile, unavailable transform state, adaptive headroom, or unknown screenshot conversion forces `ambient_unreproducible`. In either case the exact captured artifact, not the environment description, is the observation's output authority.
 
-Observations remain outside canonical Structured Report evidence. The later multi-renderer decision must define how they are associated and compared; it cannot promote host color behavior implicitly.
+Observations remain outside canonical Structured Report evidence. The accepted [multi-renderer boundary](multi-renderer-profiles.md) associates them only through typed profile-sensitivity, conformance, target-observation, or confounded edges; it cannot promote host color behavior implicitly.
 
 ## Reconsideration
 

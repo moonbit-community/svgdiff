@@ -77,6 +77,10 @@ The accepted [platform-native font boundary](platform-native-font-modes.md) exte
 
 The accepted [color-management profile boundary](color-management-profiles.md) applies the same separation to browser, OS, display-profile, and physical HDR/SDR output. Future canonical color execution must use a closed mathematical reference profile; host or display pixels remain independently identified `svgdiff-color-observation/1` evidence and cannot directly establish canonical equality, magnitude, completeness, or Impact.
 
+### Future multi-renderer experiments
+
+The accepted [multi-renderer boundary](multi-renderer-profiles.md) supports both same-target profile sensitivity and same-profile renderer conformance, but only as separate typed edges over independently identified cells. A target-plus-profile diagonal remains confounded, cross-environment browser output is a target observation rather than pure engine conformance, and no majority can replace the canonical report or a reviewed divergence disposition.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:
@@ -103,3 +107,4 @@ One minimized dependency-owned failure is enough for a focused upstream patch. O
 - [Dependency, security, and upstream status](dependency-security.md)
 - [Platform-native font rendering boundary](platform-native-font-modes.md)
 - [Color-management profile boundary](color-management-profiles.md)
+- [Multi-renderer and browser profile boundary](multi-renderer-profiles.md)

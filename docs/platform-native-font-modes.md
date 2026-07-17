@@ -64,7 +64,7 @@ They may not:
 - make an ambient-font capture a conformance baseline; or
 - silently change renderer, font, execution, schema, ordering, or Impact identities.
 
-The later Phase 9 multi-renderer decision still must define whether external observations compare one engine across profiles, different engines, or both. This decision only fixes their non-canonical role and prevents that later work from promoting platform font behavior into complete canonical evidence.
+The accepted [multi-renderer boundary](multi-renderer-profiles.md) permits both same-target profile sensitivity and same-profile target observations through separate typed edges. It preserves this decision's non-canonical role: a platform font cell cannot become complete canonical evidence merely by joining a matrix.
 
 ## Reconsideration
 

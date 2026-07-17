@@ -33,6 +33,7 @@ This directory separates the current product contract from future plans and hist
 | Which shaping and glyph-rasterization dependencies and ownership boundary are accepted for future work? | [`font-runtime-dependencies.md`](font-runtime-dependencies.md) |
 | Can CoreText, DirectWrite, browsers, or system-font output become a canonical font profile? | [`platform-native-font-modes.md`](platform-native-font-modes.md) |
 | How are predefined SDR, ICC, HDR, and physical-display color behavior staged beyond v1 sRGB? | [`color-management-profiles.md`](color-management-profiles.md) |
+| How will same-engine profile sensitivity and cross-engine/browser conformance remain distinguishable? | [`multi-renderer-profiles.md`](multi-renderer-profiles.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
@@ -122,6 +123,7 @@ These files must be updated whenever behavior changes:
 - [`font-runtime-dependencies.md`](font-runtime-dependencies.md): accepted exact-source shaping/raster stack, private workspace-module seam, initial execution slice, and implementation gates; explicitly not a current dependency or capability.
 - [`platform-native-font-modes.md`](platform-native-font-modes.md): permanent canonical exclusion of native font stacks plus the exact external-observation and ambient-capture claim boundary.
 - [`color-management-profiles.md`](color-management-profiles.md): future executable color-profile layers, staged predefined-SDR/ICC/HDR boundaries, and permanent ambient-display exclusions; explicitly no current conversion.
+- [`multi-renderer-profiles.md`](multi-renderer-profiles.md): future experiment cells, same-axis edge semantics, Agent synthesis, and permanent anti-majority/confounded-diagonal boundaries; explicitly no current container.
 
 ### Planning
 
