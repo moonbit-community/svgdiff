@@ -14,6 +14,8 @@ V1 compares two well-formed deterministic static SVG source strings under one ex
 
 When an input leaves the supported slice, the engine emits Diagnostics and changes `analysis_status` to `partial` or `failed`. Supported source-level differences may still be reported even when computed or rendered evidence is unavailable. Crossing a fixed [comparison resource limit](resource-limits.md), forming an accepted local-reference cycle, or exceeding the conservative transitive `<use>` bound is a failed admission result and never returns a truncated difference inventory.
 
+The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) composes the current boundaries for deterministic and platform fonts, beyond-sRGB color, multi-renderer comparison, scripts, interaction, animation, `foreignObject`, and generalized external resources. None is an adopted capability. Encountered unsupported authored semantics remain `partial` or fail admission; platform and browser observations remain non-canonical; and accepted future profile identities do not widen this contract.
+
 ## Implemented profile
 
 | Condition | Current behavior |

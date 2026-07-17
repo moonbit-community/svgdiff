@@ -173,6 +173,12 @@ Source-structural alignment endpoints receive `subject.<kind>` rows with covered
 - Final complete-status proof gate: [`coverage_proof.mbt`](../engine/coverage_proof.mbt)
 - Resource admission and bounded failure reports: [`resource_limits.mbt`](../engine/resource_limits.mbt)
 
+## Advanced non-goal composition
+
+The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) inventories every accepted but unadopted advanced boundary and ties it to its decision validator plus a product guard or explicit outside-input reason. Production self-comparisons cover font-dependent text, Display-P3 color, dynamic selectors, scripts, animation, `foreignObject`, and external references: every case retains an empty Atomic Difference inventory but remains `partial` with limited coverage and a stable Diagnostic. The gate therefore proves the safety distinction directly: zero reported differences is not complete equality when unsupported visual semantics were encountered.
+
+Multi-renderer aggregation is not SVG-authored input, so it has no per-input Diagnostic. One current report remains one renderer/profile cell; a separately identified future experiment container cannot change that cell's coverage or become canonical by majority vote.
+
 ## Maintenance rule
 
 Every new complete-eligible feature must add a positive complete-status test and a mutation test for its supported facts. Every unsupported boundary must have a stable Diagnostic and a generated negative case proving it cannot produce complete equality. When a partial row becomes complete-eligible, update this matrix, [`unsupported-input-properties.md`](unsupported-input-properties.md), [`v1-scope.md`](v1-scope.md), the relevant tests, and the roadmap in the same item commit.

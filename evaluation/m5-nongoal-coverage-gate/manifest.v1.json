@@ -1,0 +1,134 @@
+{
+  "schema_version": "svgdiff-m5-nongoal-coverage-gate/1",
+  "canonical_rule": "unsupported_or_unavailable_advanced_semantics_never_establish_complete_equality",
+  "capabilities": [
+    {
+      "id": "deterministic_font_runtime",
+      "adopted": false,
+      "disposition": "future_canonical_profile_unimplemented",
+      "authority": "current_static_report_with_partial_font_guard",
+      "document": "docs/font-runtime-dependencies.md",
+      "decision_artifact": "evaluation/font-runtime-selection/results.v1.json",
+      "validation_command": "scripts/test-font-runtime-selection.sh",
+      "product_guards": ["analysis_coverage_unproven", "font_analysis_deferred"],
+      "future_identities": ["svgdiff-font-runtime-build/1", "svgdiff-font-execution-slice/1"]
+    },
+    {
+      "id": "platform_native_fonts",
+      "adopted": false,
+      "disposition": "external_observation_only",
+      "authority": "target_local_observation_cannot_create_canonical_claims",
+      "document": "docs/platform-native-font-modes.md",
+      "decision_artifact": "evaluation/platform-font-modes/decision.v1.json",
+      "validation_command": "scripts/test-platform-font-modes.sh",
+      "product_guards": ["analysis_coverage_unproven", "font_analysis_deferred"],
+      "future_identities": ["svgdiff-platform-font-observation/1"]
+    },
+    {
+      "id": "beyond_srgb_color",
+      "adopted": false,
+      "disposition": "future_canonical_profile_and_external_observation_unimplemented",
+      "authority": "current_srgb_profile_with_explicit_color_metadata_guards",
+      "document": "docs/color-management-profiles.md",
+      "decision_artifact": "evaluation/color-profile-decision/decision.v1.json",
+      "validation_command": "scripts/test-color-profile-decision.sh",
+      "product_guards": [
+        "color_profile_unsupported",
+        "embedded_raster_color_profile_unsupported",
+        "embedded_raster_hdr_unsupported"
+      ],
+      "future_identities": ["svgdiff-color-execution-profile/1", "svgdiff-color-observation/1"]
+    },
+    {
+      "id": "multi_renderer_comparison",
+      "adopted": false,
+      "disposition": "typed_external_experiment_container_unimplemented",
+      "authority": "one_current_report_is_one_explicit_renderer_profile_cell",
+      "document": "docs/multi-renderer-profiles.md",
+      "decision_artifact": "evaluation/multi-renderer-decision/decision.v1.json",
+      "validation_command": "scripts/test-multi-renderer-decision.sh",
+      "product_guards": [],
+      "outside_input_reason": "renderer aggregation is not SVG-authored input and cannot enter a single current report implicitly",
+      "future_identities": ["svgdiff-renderer-experiment-cell/1", "svgdiff-renderer-experiment-matrix/1"]
+    },
+    {
+      "id": "script_execution",
+      "adopted": false,
+      "disposition": "permanent_canonical_non_goal_external_observation_deferred",
+      "authority": "secure_static_report_with_dynamic_content_guards",
+      "document": "docs/script-execution-boundary.md",
+      "decision_artifact": "evaluation/script-runtime-decision/decision.v1.json",
+      "validation_command": "scripts/test-script-runtime-decision.sh",
+      "product_guards": [
+        "unsupported_visual_subject",
+        "gradient_dynamic_content_unsupported",
+        "pattern_dynamic_content_unsupported",
+        "filter_dynamic_unsupported",
+        "clip_path_dynamic_unsupported",
+        "mask_dynamic_unsupported"
+      ],
+      "future_identities": ["svgdiff-script-observation/1"]
+    },
+    {
+      "id": "interaction_state",
+      "adopted": false,
+      "disposition": "future_typed_checkpoint_profile_unimplemented",
+      "authority": "current_no_interaction_profile_with_selector_guard",
+      "document": "docs/interaction-state-profiles.md",
+      "decision_artifact": "evaluation/interaction-state-decision/decision.v1.json",
+      "validation_command": "scripts/test-interaction-state-decision.sh",
+      "product_guards": ["css_cascade_unsupported"],
+      "future_identities": ["svgdiff-interaction-state-profile/1", "svgdiff-interaction-observation/1"]
+    },
+    {
+      "id": "animation_timeline",
+      "adopted": false,
+      "disposition": "future_exact_timeline_profile_unimplemented",
+      "authority": "current_no_timeline_profile_with_dynamic_subject_guards",
+      "document": "docs/animation-timeline-model.md",
+      "decision_artifact": "evaluation/animation-timeline-decision/decision.v1.json",
+      "validation_command": "scripts/test-animation-timeline-decision.sh",
+      "product_guards": [
+        "unsupported_visual_subject",
+        "filter_dynamic_unsupported",
+        "clip_path_dynamic_unsupported",
+        "mask_dynamic_unsupported"
+      ],
+      "future_identities": ["svgdiff-animation-timeline-profile/1", "svgdiff-animation-observation/1"]
+    },
+    {
+      "id": "foreign_object_layout",
+      "adopted": false,
+      "disposition": "future_pinned_host_layout_profile_unimplemented",
+      "authority": "outer_svg_geometry_does_not_establish_foreign_content_semantics",
+      "document": "docs/foreign-object-layout-boundary.md",
+      "decision_artifact": "evaluation/foreign-content-decision/decision.v1.json",
+      "validation_command": "scripts/test-foreign-content-decision.sh",
+      "product_guards": ["unsupported_visual_subject"],
+      "future_identities": ["svgdiff-foreign-object-layout-profile/1", "svgdiff-foreign-object-observation/1"]
+    },
+    {
+      "id": "general_external_resources",
+      "adopted": false,
+      "disposition": "future_offline_snapshot_bundle_unimplemented_network_prefetch_external",
+      "authority": "current_explicit_raster_bundle_only_with_zero_implicit_acquisition",
+      "document": "docs/general-resource-snapshot-bundles.md",
+      "decision_artifact": "evaluation/resource-snapshot-decision/decision.v1.json",
+      "validation_command": "scripts/test-resource-snapshot-decision.sh",
+      "product_guards": [
+        "use_external_reference_unsupported",
+        "gradient_external_reference_unsupported",
+        "pattern_external_reference_unsupported",
+        "clip_path_external_reference_unsupported",
+        "mask_external_reference_unsupported",
+        "filter_external_reference_unsupported"
+      ],
+      "future_identities": [
+        "svgdiff-resource-snapshot-bundle/1",
+        "svgdiff-resource-resolution-policy/1",
+        "svgdiff-resource-prefetch-profile/1",
+        "svgdiff-resource-prefetch-transcript/1"
+      ]
+    }
+  ]
+}

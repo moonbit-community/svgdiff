@@ -24,6 +24,8 @@ The current profile does not lay out `foreignObject`. If future [foreign-content
 
 For future [resource snapshot artifacts](general-resource-snapshot-bundles.md), distinguish authored locator, effective base and resolved request, response or failure snapshot, exact representation bytes, family interpretation, reachability, consumer result, rendered consequence, and independent acquisition provenance. Equal URLs do not imply equal side bytes; equal bytes do not imply equal interpretation; unused package members are not SVG changes; and an absent snapshot is not evidence about the live network.
 
+These boundaries are checked together by the [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md). Its manifest records future identities and non-goal dispositions, not available evidence. Until a separately versioned capability is actually adopted, an Agent must treat its Diagnostic as a limit on conclusions and must not use a browser, platform, display, or cross-renderer observation to repair canonical equality, magnitude, Impact, regions, or causes.
+
 ## Reading order
 
 Read the report in this order:

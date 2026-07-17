@@ -289,6 +289,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | M2 alignment-region-cause soundness gate | Validated bounded correspondence, side-typed localization, complete actual-cause containment or conservative fallback, partial guarantee revocation, and report-reference closure across focused, mutation, annotation, and adversarial suites. |
 | 2026-07-17 | M3 report-only language-model benchmark | Ran an isolated pinned language model with tools disabled over all thirteen Structured Reports using fresh opaque case IDs, matched all 354 exact magnitude claims, passed every recall, localization, causal, ranking, and safety threshold, and retained full answers plus runtime and integrity evidence. |
 | 2026-07-17 | M3 compact-summary traceability gate | Composed compact JSON value identity, exact Agent projection reconstruction, Impact event-to-difference semantics, typed report-reference closure, and derived Markdown link checks without treating Markdown as a lossless evidence serialization. |
+| 2026-07-17 | M5 explicit non-goal coverage gate | Composed nine advanced-capability decisions with current product guards and false-equality probes; retained every capability as unadopted and kept external observations outside canonical authority. |
 
 ## Milestone gates
 
@@ -318,7 +319,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 ### M5: Optional advanced profiles
 
 - [ ] Every adopted dynamic, `foreignObject`, wide-gamut, platform, or cross-renderer capability has a pinned environment and separate profile identity.
-- [ ] Capabilities that remain non-goals are explicitly documented and continue to reduce coverage rather than imply equality.
+- [x] Capabilities that remain non-goals are explicitly documented and continue to reduce coverage rather than imply equality.
 
 ## Terminal acceptance
 

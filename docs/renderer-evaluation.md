@@ -93,6 +93,10 @@ The accepted [foreign-content boundary](foreign-object-layout-boundary.md) does 
 
 The accepted [Resource Snapshot boundary](general-resource-snapshot-bundles.md) supplies closed external response inputs but cannot make an unsupported CSS, font, nested-SVG, image-compositing, or host-language path renderer-conformant. Each family still needs its own semantic and disposition evidence. The initial URL-resolved PNG/JPEG tracer reuses current intrinsic decoding only and does not expand final image compositing.
 
+### Composed M5 authority boundary
+
+The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) validates these renderer-adjacent decisions together with fonts, scripts, interaction, animation, and color. Passing it does not adopt a backend or profile. A browser, platform stack, physical display, or alternate renderer remains a separately identified observation; neither exact pixels nor a majority of observations can override one canonical report's renderer identity, coverage matrix, or Diagnostics.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:

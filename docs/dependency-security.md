@@ -10,6 +10,8 @@ The opt-in report-only language-model benchmark uses a separately installed pinn
 
 The M3 compact-summary traceability gate adds no runtime or release dependency. It executes the existing local CLI, JSON validators, and deterministic evaluation scripts over generated temporary artifacts; it does not evaluate report-controlled text as commands or promote Markdown/HTML presentation to evidence authority.
 
+The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) likewise adds no product dependency or execution path. It validates decision artifacts, current Diagnostics, zero implicit comparison-time I/O, and production false-equality probes. Future identity strings in its manifest are reservations only: they do not vendor font, color, browser, script, interaction, animation, layout, renderer, resolver, or acquisition runtimes.
+
 ## Resolved dependencies and licenses
 
 | Dependency | Relationship | Resolved version | Manifest license | License file in installed package |
