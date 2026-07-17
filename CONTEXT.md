@@ -2,7 +2,7 @@
 
 Status: current orientation
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 ## Terminal goal
 
@@ -59,3 +59,27 @@ _Avoid_: Source change, Changed Fact
 **Primary Subject Alignment**:
 The one before/after subject relationship that owns a current Visual Event and fixes its outcome boundary.
 _Avoid_: Authored ID, global identity
+
+**Font Resource**:
+One exact encoded font byte sequence supplied inside a closed Font Bundle.
+_Avoid_: System font, family name, font path
+
+**Font Face Locator**:
+The bundle-local pair of a Font Resource identifier and its zero-based face index.
+_Avoid_: PostScript name, named instance, family name
+
+**Font Bundle**:
+An immutable closed set of caller-supplied Font Resources plus separately verifiable licensing and provenance evidence.
+_Avoid_: Font directory, installed fonts, system environment
+
+**Font Bundle Fingerprint**:
+The content identity of the bundle fields that can select different encoded font resources or faces.
+_Avoid_: Manifest digest, family name, glyph hash
+
+**Font Bundle Manifest Digest**:
+The integrity identity of the complete Font Bundle manifest, including legal and provenance evidence.
+_Avoid_: Rendering fingerprint
+
+**Font Execution Profile**:
+The future versioned identity that combines a Font Bundle with selection, shaping, layout, rasterization, and runtime policies.
+_Avoid_: Font Bundle, system renderer

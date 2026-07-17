@@ -202,7 +202,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 
 This phase is explicitly recorded but not currently scheduled. It expands [ISS-013](issues/ISS-013.md).
 
-- [ ] **Decision** Define the font-resource bundle, fingerprint, versioning, licensing, and reproducibility contract.
+- [x] **Decision** Define the font-resource bundle, fingerprint, versioning, licensing, and reproducibility contract.
 - [ ] **Decision** Select or build deterministic shaping and glyph-rasterization dependencies.
 - [ ] **Deferred** Implement explicit font loading with no unspecified system-font dependency.
 - [ ] **Deferred** Implement deterministic family matching, fallback selection, style, weight, stretch, and variable-font axes.

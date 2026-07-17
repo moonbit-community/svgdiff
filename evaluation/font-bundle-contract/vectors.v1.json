@@ -1,0 +1,109 @@
+{
+  "schema_version": "svgdiff-font-bundle-contract-vectors/1",
+  "base_manifest": {
+    "schema_version": "svgdiff-font-bundle/1",
+    "bundle_id": "fixture-bundle",
+    "resources": [
+      {
+        "resource_id": "latin-regular",
+        "encoded_format": "opentype_sfnt",
+        "byte_length": 1024,
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "face_indices": [0],
+        "license_id": "ofl"
+      },
+      {
+        "resource_id": "symbols-collection",
+        "encoded_format": "opentype_collection",
+        "byte_length": 2048,
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "face_indices": [0, 1],
+        "license_id": "apache"
+      }
+    ],
+    "licenses": [
+      {
+        "license_id": "apache",
+        "spdx_expression": "Apache-2.0",
+        "license_text_sha256s": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "notice_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "distribution_review": "not_reviewed"
+      },
+      {
+        "license_id": "ofl",
+        "spdx_expression": "OFL-1.1",
+        "license_text_sha256s": [
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ],
+        "notice_sha256": null,
+        "distribution_review": "not_reviewed"
+      }
+    ],
+    "provenance": [
+      {
+        "resource_id": "latin-regular",
+        "source_ref": "https://example.invalid/latin-regular.ttf",
+        "upstream_version": "fixture-1",
+        "copyright_notice_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "reserved_font_names_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+        "derivation": "unmodified",
+        "derivation_tool": null
+      },
+      {
+        "resource_id": "symbols-collection",
+        "source_ref": "https://example.invalid/symbols.ttc",
+        "upstream_version": "fixture-1",
+        "copyright_notice_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "reserved_font_names_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+        "derivation": "repacked",
+        "derivation_tool": "fixture-packager/1"
+      }
+    ]
+  },
+  "legal_metadata_variant": {
+    "license_id": "ofl",
+    "replacement_license_text_sha256s": [
+      "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "replacement_distribution_review": "reviewed_for_distribution",
+    "replacement_source_ref": "https://mirror.example.invalid/latin-regular.ttf"
+  },
+  "rendering_variant": {
+    "resource_id": "symbols-collection",
+    "replacement_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "expected": {
+    "base_font_bundle_fingerprint": "2ecf86f620a238899af85b3a6a802573332c2ed58e893ce338212cd580a44b76",
+    "base_manifest_digest": "da07639ee5b2f9d7f7af2fe7f90c4eef4b0e15463230c08686a41aceb590c59b",
+    "legal_variant_font_bundle_fingerprint": "2ecf86f620a238899af85b3a6a802573332c2ed58e893ce338212cd580a44b76",
+    "legal_variant_manifest_digest": "43e35e45c3bf7a426999d8b110ae35c7d32b759178e7b91ccb5a428a0b9ebf1c",
+    "rendering_variant_font_bundle_fingerprint": "160ac475afeccaf925e1f6c78efdf48840e58882298bc69bed0d5ed364db6850",
+    "rendering_variant_manifest_digest": "d34a2d6250398f9b8aa34e2edfbb44ce768c1b6fdbc742b0e2a240a91ae2fed7"
+  },
+  "invalid_mutations": [
+    { "id": "unknown-schema", "expected_error": "schema_version" },
+    { "id": "unknown-top-level-field", "expected_error": "manifest fields" },
+    { "id": "resource-order", "expected_error": "resource order" },
+    { "id": "duplicate-resource-id", "expected_error": "resource_id uniqueness" },
+    { "id": "duplicate-resource-bytes", "expected_error": "resource sha256 uniqueness" },
+    { "id": "uppercase-sha256", "expected_error": "resource sha256" },
+    { "id": "noncontiguous-faces", "expected_error": "face_indices" },
+    { "id": "single-face-container-multiple-faces", "expected_error": "single-face container" },
+    { "id": "missing-license-reference", "expected_error": "license reference" },
+    { "id": "license-order", "expected_error": "license order" },
+    { "id": "license-text-order", "expected_error": "license text sha256s" },
+    { "id": "noassertion-distribution", "expected_error": "distribution review" },
+    { "id": "provenance-order", "expected_error": "provenance order" },
+    { "id": "resource-byte-limit", "expected_error": "resource byte limit" },
+    { "id": "non-ascii-metadata", "expected_error": "ASCII" }
+  ],
+  "invalid_json": [
+    {
+      "id": "duplicate-key",
+      "text": "{\"schema_version\":\"svgdiff-font-bundle/1\",\"schema_version\":\"svgdiff-font-bundle/1\"}",
+      "expected_error": "duplicate JSON key"
+    }
+  ]
+}

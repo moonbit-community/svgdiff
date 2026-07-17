@@ -8,6 +8,7 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [MoonBit SVG ecosystem survey](moonbit-svg-ecosystem.md) | Registry snapshot 2026-07-10; refreshed 2026-07-13 | Selects the MoonBit-native stack for the initial implementation. |
 | [Visual difference metrics](visual-difference-metrics.md) | 2026-07-16 | Explains why magnitude is a vector and records the rejected v1 Impact calibration plus QA-only SSIM/MS-SSIM boundary. |
 | [LPIPS optional experiment](lpips-evaluation.md) | 2026-07-17 | Records the learned metric, dual-weight and runtime contract, reproducibility and licensing boundaries, and why LPIPS cannot be an equality oracle. |
+| [Deterministic font-resource bundle](font-resource-bundle.md) | 2026-07-17 | Establishes the raw-byte, collection-face, variable-font, no-system-font, security, and licensing evidence behind the accepted input contract. |
 | [XMLParser 0.2.5 evaluation](xmlparser-evaluation.md) | 2026-07-13 | Rejected dependency evaluation retained for rationale. |
 | [Milky XML 0.4.0 evaluation](milky-xml-evaluation.md) | 2026-07-13 | Accepted dependency evidence for authored parsing and spans. |
 | [Influence Provenance prototype verdict](influence-provenance-prototype.md) | 2026-07-10 to 2026-07-13 | Archives the removed prototype's causal propagation and renderer experiments. |

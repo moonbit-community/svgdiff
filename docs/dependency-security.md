@@ -77,7 +77,7 @@ These gaps do not permit false complete analysis, and fixed limits plus local-re
 | [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Direct `mizchi/image` dependencies fail while compiling packaged upstream tests, but the decoder implementation remains usable | Keep canvas and direct image dependencies out of production; maintain the narrow attributed workspace codec without patching the dependency cache |
 | `moonbitlang/x@0.4.40` `Rational[Int64]` lacks `Debug` in dependency `assert_eq` tests | No matching open upstream PR found in the 2026-07-14 check | `moon doc` fails while checking transitive dependency tests | Use `moon ide doc` and `moon info`; project check, tests, and CLI remain green |
 
-Deterministic font analysis is a deferred product capability, not an upstream blocker. It remains tracked separately because the font environment and shaping contract require a design decision before implementation.
+Deterministic font analysis is a deferred product capability, not an upstream blocker. The accepted [Font Bundle contract](font-resource-bundle.md) now closes the future raw-byte, collection-face, fingerprint, legal-evidence, and no-ambient-I/O boundary without adding a dependency or product loader. Matching, fallback, shaping, layout, rasterization, runtime identity, and their dependency selection remain separate decisions before implementation.
 
 ## Refresh procedure
 

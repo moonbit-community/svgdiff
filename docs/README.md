@@ -2,7 +2,7 @@
 
 Status: current documentation map
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This directory separates the current product contract from future plans and historical evidence. When two documents appear to disagree, use the authority order below instead of inferring which file is newer.
 
@@ -29,6 +29,7 @@ This directory separates the current product contract from future plans and hist
 | How are nonvisual metadata changes audited without polluting visual differences? | [`source-audit.md`](source-audit.md) and [ADR 0069](adr/0069-separate-nonvisual-source-audit-from-visual-diff.md) |
 | How are resource dependencies, local cycles, and explosive `<use>` DAGs modeled? | [`reference-safety.md`](reference-safety.md) and [resource graph research](research/svg-resource-dependency-graph.md) |
 | How are explicit local raster resources supplied without implicit I/O? | [`library-api.md`](library-api.md), [`resource-limits.md`](resource-limits.md), and [bundle policy research](research/local-resource-bundle-policy.md) |
+| What exact font-resource input must exist before deterministic text can be implemented? | [`font-resource-bundle.md`](font-resource-bundle.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
@@ -85,6 +86,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Representative native release CLI workloads have measured wall-time and peak-RSS regression ceilings.
 - Embedding callers can cooperatively cancel or set an elapsed-time budget without creating a truncated report.
 - Font-dependent analysis and the broader SVG feature set are future work recorded in the roadmap.
+- The future font input boundary is accepted and executable as contract vectors, but no font loader, matcher, shaper, text layout, or glyph renderer is part of the product.
 
 ## Document classes
 
@@ -113,6 +115,7 @@ These files must be updated whenever behavior changes:
 - [`renderer-ownership-gate.md`](renderer-ownership-gate.md): evidence thresholds for guards, focused upstream patches, and project-owned layers.
 - [`upgrade-procedures.md`](upgrade-procedures.md): renderer, parser, metric, schema, and policy upgrade gates.
 - [`dependency-security.md`](dependency-security.md): resolved licenses, input/output security boundary, and live blockers.
+- [`font-resource-bundle.md`](font-resource-bundle.md): accepted future font-byte, face, fingerprint, licensing, and reproducibility input boundary; explicitly not current font execution.
 
 ### Planning
 
