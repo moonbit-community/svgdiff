@@ -123,3 +123,15 @@ _Avoid_: Pseudo-class boolean bag, browser action trace, ambient UI state
 **Interaction Observation**:
 An external target-specific action replay with achieved-state postconditions, transcript, and output evidence.
 _Avoid_: Interaction State Profile, canonical selector state, replay intent alone
+
+**Animation Timeline Profile**:
+A future closed logical-time contract that names one checkpoint question, exact rational coordinates, mechanism semantics, triggers, mappings, resources, limits, and evaluator identity.
+_Avoid_: Wall-clock delay, frame count, normalized-progress equality, browser clock
+
+**Animation Checkpoint Set**:
+The ordered requested and achieved before/after temporal states for one Animation Timeline Profile, retaining per-checkpoint status and links to comparison evidence.
+_Avoid_: Video, sampled interval proof, settled final frame
+
+**Animation Observation**:
+An external target-specific virtual-time and capture replay for script-driven or browser-specific animation, retaining requested and achieved time and state.
+_Avoid_: Canonical timeline result, screenshot after sleep, browser truth

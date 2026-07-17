@@ -24,6 +24,8 @@ Script-enabled capture is outside this oracle. It must follow the separate [Scri
 
 Interaction-state and action-replay capture are also outside this oracle. They must follow the separate [Interaction State boundary](../../docs/interaction-state-profiles.md); a browser action trace must record achieved-state postconditions and remains target-local evidence.
 
+Animation-time and script-driven frame capture are outside this oracle. They must follow the separate [Animation Timeline boundary](../../docs/animation-timeline-model.md), record exact requested and achieved logical state, and cannot turn a wall-clock delay or finite sample set into canonical or interval evidence.
+
 The workflow uses Playwright CLI commands. Exact transparent-background capture uses `run-code` because the ordinary CLI screenshot command does not expose `omitBackground`.
 
 ## Run

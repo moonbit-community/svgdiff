@@ -124,7 +124,7 @@ Current producers also project encountered renderer-specific Diagnostics into `r
 
 V1 does not completely analyze:
 
-- SVG scripts and event-handler execution, which are a permanent [canonical non-goal](script-execution-boundary.md); event-driven state and animation timelines remain separate undecided dynamic-profile work;
+- SVG scripts and event-handler execution, which are a permanent [canonical non-goal](script-execution-boundary.md); accepted future [interaction-state](interaction-state-profiles.md) and [animation-timeline](animation-timeline-model.md) boundaries define separate typed work without implementing either capability;
 - static `foreignObject` through an HTML/CSS layout engine;
 - implicit network resources or treating SVG-authored locators as local paths;
 - complete path semantics, including exact arc/continuous-curve bounds and continuous boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only, while the current bounded isolated alpha-boundary and coverage measurements remain raster observations;

@@ -12,6 +12,8 @@ The canonical profile never executes SVG scripts. Encountering script-capable co
 
 The current profile also declares no interaction state. Unsupported pseudo-class selectors keep the affected report partial; they are not treated as false. A future [Interaction State Profile](interaction-state-profiles.md) would establish completeness only for one resolved checkpoint, while a failed, unstable, or target-local browser replay cannot upgrade status or establish checkpoint equality.
 
+The current profile also disables animation rather than sampling it at zero. A future [Animation Timeline Profile](animation-timeline-model.md) would scope completeness to one exact resolved checkpoint or independently proven interval; matching finite samples or an external browser replay cannot upgrade current status or establish temporal equality.
+
 ## Status summary
 
 | Status | Comparison result available | Complete equality conclusion allowed | CLI exit status |
@@ -42,7 +44,7 @@ A complete report with no Atomic Differences supports this statement:
 It does not support any of these stronger statements:
 
 - the source files are byte-for-byte or XML-identical;
-- the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource environment, background, browser, or future interaction state;
+- the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource environment, background, browser, future interaction state, animation checkpoint, or temporal interval;
 - the SVGs would remain equivalent after the support contract expands;
 - nonvisual metadata is identical.
 

@@ -172,6 +172,7 @@ graph TD
   ISS_154["ISS-154: Define multi-renderer and browser profile comparison semantics"]
   ISS_155["ISS-155: Decide the deterministic SVG scripting boundary"]
   ISS_156["ISS-156: Define reproducible interaction-state semantics"]
+  ISS_157["ISS-157: Define the dynamic comparison timeline model"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -511,6 +512,8 @@ graph TD
   ISS_098 --> ISS_156
   ISS_154 --> ISS_156
   ISS_155 --> ISS_156
+  ISS_155 --> ISS_157
+  ISS_156 --> ISS_157
 ```
 
 ## Warnings

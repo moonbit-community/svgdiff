@@ -56,7 +56,7 @@ Agreement across repeated observations is scoped to the recorded target and scen
 
 ## Relationship to later dynamic decisions
 
-The accepted [Interaction State boundary](interaction-state-profiles.md) now owns event-driven pseudo-class checkpoints and target-local action scenarios; animation timelines remain a separate open decision. This script decision does not choose state, event sequences, sampled times, or a settled-state rule indirectly. A script observation must reference the applicable accepted interaction/timeline contracts or remain explicitly target-local and observational.
+The accepted [Interaction State boundary](interaction-state-profiles.md) owns event-driven pseudo-class checkpoints and target-local action scenarios. The accepted [Animation Timeline boundary](animation-timeline-model.md) owns exact logical time, synchronization, checkpoint kinds, and interval proof limits. Neither decision re-enables script: a Script Observation must reference the applicable contracts and retain requested and achieved target-local state.
 
 General browser script execution, implicit comparison-time network access, ambient storage, service workers, user input, physical devices, and host credentials are permanent product non-goals. A future external harness must acquire all inputs explicitly before execution and run outside the comparison process.
 

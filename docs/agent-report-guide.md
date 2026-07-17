@@ -16,6 +16,8 @@ The current profile also never executes SVG scripts. A script Diagnostic means t
 
 The current profile declares no interaction checkpoint, so an unsupported `:hover`, `:focus`, or related selector is not equivalent to a false match. If future [interaction artifacts](interaction-state-profiles.md) accompany a report, distinguish requested checkpoint seeds, project-derived match state, action intent, and target-local achieved state. A failed replay, missing target, unstable hit-test loop, or different achieved postcondition is unavailable evidence, not “not hovered” or equality.
 
+The current profile disables animation; it does not show the frame at `t = 0`. If future [animation timeline artifacts](animation-timeline-model.md) accompany a report, distinguish authored timing, generated effects, checkpoint kind, synchronization mode, requested and achieved time/state, sampled frame evidence, and interval-proof status. Matching finite samples do not mean equal animation, and effect-phase similarity does not mean same-document-time equality.
+
 ## Reading order
 
 Read the report in this order:

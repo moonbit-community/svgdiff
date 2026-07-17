@@ -36,6 +36,7 @@ This directory separates the current product contract from future plans and hist
 | How will same-engine profile sensitivity and cross-engine/browser conformance remain distinguishable? | [`multi-renderer-profiles.md`](multi-renderer-profiles.md) |
 | Will svgdiff execute SVG scripts in a sandboxed canonical runtime? | [`script-execution-boundary.md`](script-execution-boundary.md) |
 | How will pseudo-class state differ from browser action replay? | [`interaction-state-profiles.md`](interaction-state-profiles.md) |
+| How are animation time, checkpoints, synchronization, and interval claims separated? | [`animation-timeline-model.md`](animation-timeline-model.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |

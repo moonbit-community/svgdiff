@@ -20,6 +20,8 @@ The canonical seam always uses script-free secure-static processing. An encounte
 
 The current seam likewise has no pointer, focus, URL-target, activation, or action-replay input. Unsupported pseudo-classes reduce coverage rather than matching false. A future [Interaction State Profile](interaction-state-profiles.md) would derive one checkpoint through project-owned state and hit-test rules; a browser action transcript and its achieved-state observation remain external and cannot define canonical applicability.
 
+The current seam has no animation timeline and disabled animation is not an animated sample at `t = 0`. The accepted [Animation Timeline Model](animation-timeline-model.md) reserves future exact logical checkpoints for closed declarative subsets, keeps same-document-time, logical-event, effect-phase, and external-frame questions distinct, and does not permit finite samples to establish interval equality.
+
 ## Current pipeline
 
 ```text

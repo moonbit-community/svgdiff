@@ -68,7 +68,7 @@ Directly supplied sets such as `hover_ids: ["box"]`, `focus_within: true`, or `a
 | HTML form, validation, autofill, media, fullscreen, modal, popover, and platform-widget states | Deferred or target-observation-only; current SVG and `foreignObject` boundaries do not supply their semantics. |
 | Unknown or future dynamic pseudo-classes | Unsupported until independently classified and versioned. |
 
-CSS transitions or animations caused by a state change are not evaluated at an implicit instant. Without an accepted timeline profile, the canonical checkpoint applies the final non-animated computed style with transition/animation execution disabled, or remains unsupported where the specification does not permit that separation.
+CSS transitions or animations caused by a state change are not evaluated at an implicit instant. Without an implemented [Animation Timeline Profile](animation-timeline-model.md), the canonical checkpoint applies the final non-animated computed style with transition/animation execution disabled, or remains unsupported where the specification does not permit that separation. A future transition checkpoint must record the pre-change style, exact state-change tick, after-change style, and any reversal history.
 
 ## External action observation
 

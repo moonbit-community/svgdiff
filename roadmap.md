@@ -231,7 +231,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 - [x] **Decision** Decide whether scripts remain a permanent non-goal or are evaluated in a sandboxed deterministic runtime.
 - [x] **Decision** Decide how event-driven pseudo-classes and user-interaction state are declared and reproduced.
-- [ ] **Decision** Define a timeline model for SMIL, CSS, and script-driven animation comparisons.
+- [x] **Decision** Define a timeline model for SMIL, CSS, and script-driven animation comparisons.
 - [ ] **Deferred** Compare animation keyframes, sampled times, or temporal difference intervals only after the timeline model is accepted.
 - [ ] **Decision** Decide whether static `foreignObject` requires an embedded deterministic HTML/CSS layout engine.
 - [ ] **Deferred** Render `foreignObject` only under a pinned layout, font, resource, and scripting profile.
@@ -280,6 +280,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-16 | Phase 7 summary traceability | Enforced exact frontier event-to-difference projection and retained downstream regions, causes, facts, and Diagnostics through the existing closed evidence graph. |
 | 2026-07-17 | Script execution boundary | Permanently excluded SVG script execution from canonical analysis, retained secure-static coverage guards, and allowed only future separately versioned external observations after state, security, replay, and authority gates. |
 | 2026-07-17 | Interaction state boundary | Accepted typed checkpoint seeds plus derived pseudo-class state for future canonical work, while keeping WebDriver-style action scenarios and achieved-state evidence as target-local observations. |
+| 2026-07-17 | Animation timeline boundary | Accepted exact logical checkpoint questions with document-time locking by default, retained native mechanism and trigger state, and prohibited finite sampling or browser delay from proving temporal intervals. |
 
 ## Milestone gates
 

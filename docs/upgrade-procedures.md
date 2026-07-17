@@ -175,6 +175,20 @@ No interaction profile, action scenario, or browser observation currently exists
 
 Follow the accepted [interaction-state semantics](interaction-state-profiles.md). A browser action observation cannot define canonical selector applicability or upgrade a static report.
 
+## Animation timeline profile or observation admission
+
+No animation timeline profile, checkpoint set, or observation currently exists. Before implementing or changing `svgdiff-animation-timeline-profile/1`, `svgdiff-animation-checkpoint-set/1`, or `svgdiff-animation-observation/1`:
+
+1. state the Agent task and choose one deliberately small declarative mechanism slice, leaving script execution external and unsupported timing guarded;
+2. version exact rational time, origin and activation, mechanism evaluator, initial state and resources, triggers, effect locators and mappings, synchronization mode, capture phase, limits, and normalized manifest identity;
+3. distinguish point, finite-point-set, boundary/event-set, and continuous-interval questions, and prohibit sample agreement from establishing interval equality;
+4. use `document_time_locked` as the default before/after question, retain one-sided effects and boundaries, and keep `effect_phase_locked` diagnostic rather than substituting it for same-time evidence;
+5. add exact controls for inactive and unresolved time, negative time and delay, pending tasks, pause, seek, fill, repeat, restart, indefinite duration, cancellation, event starts, transition generation and reversal, mapping failure, schedule cycles, and every limit;
+6. for external replay, require requested and achieved timeline/effect state, event/task/microtask/frame transcripts, output hashes, repeats, typed divergence, isolation, and target-local authority; and
+7. run source, cascade, state, script, resource, renderer-conformance, determinism, Agent, adversarial, and cross-host gates before product or release integration.
+
+Follow the accepted [animation timeline semantics](animation-timeline-model.md). Animation-disabled output is not `t = 0`, a browser virtual-time harness is not canonical authority, and a finite checkpoint set cannot upgrade a static report or prove an interval.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.

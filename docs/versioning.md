@@ -29,6 +29,8 @@ The renderer package identity and raster representation are also report semantic
 
 `svgdiff-interaction-state-profile/1`, `svgdiff-interaction-scenario/1`, and `svgdiff-interaction-observation/1` are reserved by the accepted [interaction-state boundary](interaction-state-profiles.md), but none is a current version domain or implemented artifact. Future canonical checkpoint inputs and derivation rules must version independently from browser action intent and target-local achieved-state evidence; neither identity is an alias for Structured Report Schema, renderer, conformance, script, or animation identities.
 
+`svgdiff-animation-timeline-profile/1`, `svgdiff-animation-checkpoint-set/1`, and `svgdiff-animation-observation/1` are reserved by the accepted [animation-timeline boundary](animation-timeline-model.md), but none is a current version domain or implemented artifact. Future logical-time inputs, checkpoint derivation, and target-local replay must version independently from Structured Report Schema and from script, interaction, renderer, conformance, font, color, and resource identities. Point samples, sample sets, boundary/event sets, and continuous-interval questions are compatibility-distinct semantics.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:
