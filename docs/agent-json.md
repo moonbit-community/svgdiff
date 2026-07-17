@@ -2,7 +2,7 @@
 
 Status: current schema `1.44` serialization mode
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 `svgdiff before.svg after.svg --agent-json` emits the complete Structured Report on one JSON line. The mode removes indentation and line breaks but does not project, summarize, rename, reorder by a new policy, or omit any report evidence.
 
@@ -15,6 +15,8 @@ The compact output:
 - does not alter the independently generated HTML report.
 
 Consumers can switch between default and compact serialization without changing their JSON parser. Parsed default and compact documents are semantically identical. The compact form is intended to reduce transport and language-model token overhead, not to provide a second report model.
+
+The [M3 compact-summary traceability gate](../evaluation/m3-summary-traceability-gate/README.md) verifies this value identity across complete, partial, failed, and determinism cases, then composes it with projection reconstruction and summary-to-evidence reference closure. “Compact summary” does not authorize a lossy field subset here: `--agent-json` remains the complete report.
 
 The retained Comparison Profile includes `renderer_conformance_profile_id`, required nullable `perceptual_background`, required nullable `flip_viewing_conditions`, and required nullable `flip_error_threshold`. A present background is normalized opaque sRGB8 policy input for `RenderedEvidence.perceptual_color` and `RenderedEvidence.perceptual_flip`; it is not authored SVG paint or evidence that raw pixels were rendered over that color. Present FLIP Viewing Conditions record the exact pixels per degree rather than an ambient monitor assumption. A present FLIP threshold enables only strict-above area and is not a visibility or severity boundary. Each channel explicitly distinguishes computed evidence from its unavailable states. Consumers must not infer profile inputs or renderer-conformance identity from `schema_version` or `renderer_id`.
 

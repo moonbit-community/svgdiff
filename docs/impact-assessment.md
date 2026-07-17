@@ -2,7 +2,7 @@
 
 Status: current schema `1.44` contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 Schema `1.44` retains every raw measurement and adds one required top-level `ImpactAssessment`. The assessment identifies the current main Visual Events without replacing the evidence that produced them. It is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
 
@@ -49,6 +49,8 @@ Exact measured vectors form one tie group. Different non-dominated vectors remai
 Missing evidence is expressed independently through `status: "partial"` and a group's null `measurements`; it does not receive a fabricated relation category.
 
 Each `frontier_group` lists its Visual Event IDs and the complete Atomic Difference IDs contributed by those events. IDs are representation links, not new causes. Groups and witnesses use MoonBit `String::compare` shortlex event-ID order solely for deterministic serialization; Atomic Difference IDs preserve their existing report order.
+
+The [M3 compact-summary traceability gate](../evaluation/m3-summary-traceability-gate/README.md) recomputes that exact ordered event-to-difference union and then follows the existing typed report references to regions, Cause Envelopes, Changed Facts, Subject Alignments, and Diagnostics. Those transitive links are the lossless summary seam; the assessment deliberately does not duplicate downstream evidence.
 
 Every dominated event has exactly one `domination_witness`. The witness names the first event under that same shortlex order among all events that dominate it and records rule `both_rendered_metrics_no_less_and_one_greater`. The witness explains exclusion from the frontier; it is not a claim that the chosen dominator is the only or closest cause.
 

@@ -6,7 +6,7 @@ Projection identity: `svgdiff-agent-projection/1`
 
 Source report identity: Structured Report Schema `1.44`
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 `svgdiff before.svg after.svg --agent-projection` emits a deterministic JSON Lines transport for limited-context consumers. It does not summarize or discard report evidence. Instead, it partitions one canonical Structured Report into a header followed by individually addressable canonical array items.
 
@@ -43,6 +43,8 @@ python3 evaluation/agent-projection/validate.py \
 ```
 
 The validation corpus covers complete, partial, failed, empty-inventory, and opt-in FLIP reports. Negative controls remove, duplicate, reorder, miscount, and relabel records. Because each value is copied from canonical serialization, Source Spans, source-only differences, exact and unavailable magnitudes, FLIP maps, Changed Facts, Difference Regions, Cause Envelopes, and Diagnostics remain intact.
+
+The [M3 compact-summary traceability gate](../evaluation/m3-summary-traceability-gate/README.md) additionally composes exact reconstruction with Impact semantic-edge and report-reference closure checks, and rejects unknown projection and source-Schema identities. It does not treat selective limited-context retrieval as a complete answer when the omitted records are relevant.
 
 ## Limited-context use
 

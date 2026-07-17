@@ -40,6 +40,8 @@ SVG source
   -> Structured Report 1.44
 ```
 
+Compact canonical JSON preserves this entire value, while the Agent projection partitions it for exact reconstruction. Impact and derived Markdown are navigation summaries whose stable IDs lead back into the same typed report graph. The [M3 summary-traceability gate](../evaluation/m3-summary-traceability-gate/README.md) validates those distinctions and never treats Markdown as a complete evidence serialization.
+
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
 ## Comparison Profile

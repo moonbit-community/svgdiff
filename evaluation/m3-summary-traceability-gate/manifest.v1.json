@@ -1,0 +1,64 @@
+{
+  "schema_version": "svgdiff-m3-summary-traceability-gate/1",
+  "report_schema_version": "1.44",
+  "agent_projection_version": "svgdiff-agent-projection/1",
+  "impact_policy_id": "event_rendered_pareto/v1",
+  "markdown_authority": "derived_presentation_only",
+  "canonical_authority": "structured_report_json",
+  "obligations": [
+    {
+      "id": "compact_json_value_identity",
+      "claim": "Default and compact canonical JSON parse to the same complete report value.",
+      "commands": ["scripts/test-cli.sh", "scripts/test-report-determinism.sh"],
+      "negative_controls": ["parsed_value_mismatch"]
+    },
+    {
+      "id": "projection_exact_reconstruction",
+      "claim": "Every complete projection stream reconstructs the exact canonical report.",
+      "commands": ["scripts/test-agent-projection.sh"],
+      "coverage_classes": ["complete", "partial", "failed", "empty_inventory", "flip"],
+      "negative_controls": [
+        "missing_record",
+        "duplicate_record",
+        "reordered_record",
+        "miscounted_section",
+        "wrong_section",
+        "unknown_projection_identity",
+        "source_schema_mismatch"
+      ]
+    },
+    {
+      "id": "impact_frontier_semantic_edges",
+      "claim": "Every frontier group retains the exact ordered union of differences owned by its events.",
+      "commands": ["scripts/test-impact-assessment.sh", "scripts/test-report-determinism.sh"],
+      "negative_controls": [
+        "dangling_impact_event_reference",
+        "wrong_valid_impact_difference_reference"
+      ]
+    },
+    {
+      "id": "transitive_evidence_reference_closure",
+      "claim": "Summary event and difference IDs reach a closed typed evidence graph without duplicated summary payload.",
+      "commands": ["scripts/test-report-determinism.sh"],
+      "negative_controls": [
+        "duplicate_report_local_id",
+        "dangling_report_local_reference",
+        "duplicate_report_local_reference",
+        "alignment_role_mismatch",
+        "incomplete_cause_envelope",
+        "cross_event_cause_contamination"
+      ]
+    },
+    {
+      "id": "markdown_traceability_without_authority",
+      "claim": "Markdown retains stable summary links and limitations while canonical JSON remains authoritative.",
+      "commands": ["scripts/test-m3-summary-traceability-gate.sh"],
+      "coverage_classes": ["complete", "partial", "failed"],
+      "negative_controls": [
+        "missing_trace_id",
+        "missing_authority_disclaimer",
+        "wrong_analysis_status"
+      ]
+    }
+  ]
+}

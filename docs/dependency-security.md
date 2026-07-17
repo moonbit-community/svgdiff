@@ -8,6 +8,8 @@ This ledger records the licenses shipped with the currently resolved packages, t
 
 The opt-in report-only language-model benchmark uses a separately installed pinned Codex CLI and authenticated remote model. Neither is linked, vendored, resolved by MoonBit, shipped in release archives, or used by the comparison engine. Each evaluated case gets an empty working directory and isolated temporary Codex home containing only authentication; user configuration, project rules, prior sessions, and model caches are excluded. Strict feature overrides disable shell, browser, apps, MCP, memory, and related tools before the request, while any residual tool event rejects the run. This protects benchmark validity, not hostile multi-tenant execution: the benchmark requires trusted operator credentials and network access and must not be exposed as an unauthenticated service.
 
+The M3 compact-summary traceability gate adds no runtime or release dependency. It executes the existing local CLI, JSON validators, and deterministic evaluation scripts over generated temporary artifacts; it does not evaluate report-controlled text as commands or promote Markdown/HTML presentation to evidence authority.
+
 ## Resolved dependencies and licenses
 
 | Dependency | Relationship | Resolved version | Manifest license | License file in installed package |

@@ -2,11 +2,13 @@
 
 Status: current presentation contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 `svgdiff before.svg after.svg --summary summary.md` writes an optional deterministic natural-language orientation beside the normal Structured Report output. Library callers can invoke `render_markdown_summary(report)` directly.
 
 The Markdown is never a source of truth. It is generated only from the supplied `StructuredReport`, does not run comparison again, and prominently identifies canonical Structured Report JSON as authoritative. Consumers that need complete evidence must inspect the report's coverage matrix, alignments, Changed Facts, magnitudes, Difference Regions, Cause Envelopes, events, and Diagnostics.
+
+The [M3 compact-summary traceability gate](../evaluation/m3-summary-traceability-gate/README.md) checks complete, partial, and failed summaries for their exact report status, Impact policy and ambiguity, frontier event/difference IDs, every Atomic Difference, its alignment/fact/relation-Diagnostic links, every Diagnostic ID, and the authority disclaimer. Negative controls remove a trace ID or alter the authority and status text. This proves stable links into the closed report graph, not lossless reconstruction from Markdown alone.
 
 ## Included orientation
 
