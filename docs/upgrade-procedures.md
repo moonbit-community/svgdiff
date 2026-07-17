@@ -203,6 +203,20 @@ No foreign-content profile, host-language engine, or observation currently exist
 
 Follow the accepted [foreign-content semantics](foreign-object-layout-boundary.md). A DOM or CSS parser is not layout support, a bounded evaluator is not general XHTML support, and browser pixels cannot upgrade current report coverage.
 
+## General resource snapshot or prefetch admission
+
+No generalized snapshot bundle, URL resolver, or prefetcher currently exists. Before implementing or changing `svgdiff-resource-snapshot-bundle/1`, `svgdiff-resource-resolution-policy/1`, `svgdiff-resource-prefetch-profile/1`, `svgdiff-resource-prefetch-transcript/1`, or `svgdiff-resource-snapshot-http-image-slice/1`:
+
+1. state the Agent task and keep the released exact opaque PNG/JPEG `ResourceBundle` behavior unchanged;
+2. version root/side binding, URL and base algorithms, fragment handling, complete logical request keys, response/failure records, representation-byte boundary, canonical encoding, closure, digest, duplicate, and compatibility rules;
+3. preserve authored locator, request, response, exact bytes, interpretation, graph activity, consumers, downstream evidence, acquisition transcript, and compliance evidence separately;
+4. add exact side-difference, base, query, fragment, alias, variant, redirect, status, header, MIME/charset, integrity, missing, blocked, failed, invalid, unused, nested, cycle, conflict, and limit controls;
+5. prove every family parser consumes only verified representation bytes, recursive closure cannot truncate, unused members create no SVG difference, and report authority still follows family semantics and coverage;
+6. prove zero comparison-time filesystem/network authority and reject implicit paths, `file:`, URL credentials, private/localhost destinations, ambient cache/proxy/storage, and missing-entry fallback fetch; and
+7. before prefetch ships, independently pass allowlist, SSRF, DNS-rebinding, redirect, CORS, credential, secret-redaction, decompression, atomic-output, transcript, process-isolation, determinism, license, and Agent gates.
+
+Follow the accepted [resource snapshot semantics](general-resource-snapshot-bundles.md). A URL is not content identity, successful acquisition is not valid interpretation, and a prefetch transcript is not a rendering result.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.

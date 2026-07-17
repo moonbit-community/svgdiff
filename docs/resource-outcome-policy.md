@@ -44,6 +44,8 @@ The first matching row determines the report-level outcome. Family-specific Diag
 
 The accepted [color-management profile boundary](color-management-profiles.md) leaves the current color and HDR outcomes unchanged. Any future profile that retires one must admit the exact metadata precedence, transform, precision, reference output, limits, and measurement semantics rather than weakening these guards globally.
 
+The accepted [Resource Snapshot Bundle boundary](general-resource-snapshot-bundles.md) likewise leaves every current outcome unchanged. Future external graphs add independent authored-locator, logical-request, response/failure, representation, interpretation, closure, and acquisition axes; family semantics still decide missing targets, fallbacks, cycles, invalid content, and activity rather than inheriting one generic bundle `resolved` value.
+
 `complete`-eligible means this resource condition does not itself force a lower status. The overall comparison can still be partial because another feature or rendered-evidence layer is guarded.
 
 ## Ordering of decisions

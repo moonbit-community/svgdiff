@@ -143,3 +143,11 @@ _Avoid_: Browser name, outer foreignObject rectangle, generic HTML support
 **Foreign Object Observation**:
 An external target-specific parse, layout, and render capture for foreign content with exact environment, achieved tree/state, and output evidence.
 _Avoid_: Canonical layout, screenshot truth, unknown-namespace fallback
+
+**Resource Snapshot Bundle**:
+A future immutable side-qualified package of root-bound logical requests, response or failure snapshots, exact representation bytes, recursive closure, and digests, consumed with zero comparison-time I/O.
+_Avoid_: URL-to-bytes map, current ResourceBundle, browser cache, fetch permission
+
+**Resource Prefetch Transcript**:
+A future sanitized record of one explicit acquisition run under a named Prefetch Profile, separate from rendering identity and comparison execution.
+_Avoid_: Resource Snapshot Bundle, network replay inside comparison, ambient HAR

@@ -78,7 +78,7 @@ Declarative clock-based timing may be evaluated canonically only inside an accep
 
 Script-driven animation remains external under the permanent [script execution boundary](script-execution-boundary.md). A future `svgdiff-animation-observation/1` may reference one exact `svgdiff-script-observation/1`, but canonical analysis still executes no script. `requestAnimationFrame` timestamps, tasks, microtasks, timers, DOM mutations, and achieved captures belong to that observation's transcript and cannot be inferred from a sleep duration.
 
-Resource readiness is an input or a typed unavailable outcome. A delayed font, image, stylesheet, or external document cannot be allowed to race a checkpoint. The current no-implicit-I/O policy remains unchanged.
+Resource readiness is an input or a typed unavailable outcome. A delayed font, image, stylesheet, or external document cannot be allowed to race a checkpoint. A future [Resource Snapshot Bundle](general-resource-snapshot-bundles.md) may close exact offline response inputs, but readiness and activation still belong to the timeline profile. The current no-implicit-I/O policy remains unchanged.
 
 ## Outcomes and authority
 

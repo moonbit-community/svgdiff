@@ -235,7 +235,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [ ] **Deferred** Compare animation keyframes, sampled times, or temporal difference intervals only after the timeline model is accepted.
 - [x] **Decision** Decide whether static `foreignObject` requires an embedded deterministic HTML/CSS layout engine.
 - [ ] **Deferred** Render `foreignObject` only under a pinned layout, font, resource, and scripting profile.
-- [ ] **Decision** Define explicit resource bundles for assets beyond embedded and caller-supplied resources.
+- [x] **Decision** Define explicit resource bundles for assets beyond embedded and caller-supplied resources.
 - [ ] **Deferred** Add network-backed acquisition only as a separate prefetch step; never perform implicit comparison-time fetching.
 
 ## Phase 11: Robustness, security, and performance
@@ -282,6 +282,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | Interaction state boundary | Accepted typed checkpoint seeds plus derived pseudo-class state for future canonical work, while keeping WebDriver-style action scenarios and achieved-state evidence as target-local observations. |
 | 2026-07-17 | Animation timeline boundary | Accepted exact logical checkpoint questions with document-time locking by default, retained native mechanism and trigger state, and prohibited finite sampling or browser delay from proving temporal intervals. |
 | 2026-07-17 | Static foreignObject layout boundary | Required a deterministic host-language engine for general canonical XHTML, allowed smaller closed evaluators without wider claims, and kept browser layout as target-local observation evidence. |
+| 2026-07-17 | General external resource snapshot boundary | Accepted side-qualified offline request/response snapshots with recursive closure and separate acquisition provenance, preserved current opaque raster bundles, and permanently excluded comparison-time I/O. |
 
 ## Milestone gates
 

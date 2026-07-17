@@ -87,6 +87,10 @@ The accepted [multi-renderer boundary](multi-renderer-profiles.md) supports both
 
 The accepted [foreign-content boundary](foreign-object-layout-boundary.md) does not treat the pinned SVG renderer or Chromium oracle as a hidden HTML/CSS layout engine. General canonical XHTML requires a separately profiled deterministic host-language engine. The initial rectangular XHTML slice remains unimplemented and must prove its box and paint records plus outer SVG integration before any renderer disposition can expand coverage; browser output remains conformance or target-local observation evidence.
 
+### Future generalized resource snapshots
+
+The accepted [Resource Snapshot boundary](general-resource-snapshot-bundles.md) supplies closed external response inputs but cannot make an unsupported CSS, font, nested-SVG, image-compositing, or host-language path renderer-conformant. Each family still needs its own semantic and disposition evidence. The initial URL-resolved PNG/JPEG tracer reuses current intrinsic decoding only and does not expand final image compositing.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:

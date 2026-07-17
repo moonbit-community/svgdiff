@@ -174,6 +174,7 @@ graph TD
   ISS_156["ISS-156: Define reproducible interaction-state semantics"]
   ISS_157["ISS-157: Define the dynamic comparison timeline model"]
   ISS_158["ISS-158: Decide the static foreignObject layout boundary"]
+  ISS_159["ISS-159: Define generalized external resource snapshot bundles"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -520,6 +521,15 @@ graph TD
   ISS_155 --> ISS_158
   ISS_156 --> ISS_158
   ISS_157 --> ISS_158
+  ISS_058 --> ISS_159
+  ISS_079 --> ISS_159
+  ISS_109 --> ISS_159
+  ISS_111 --> ISS_159
+  ISS_112 --> ISS_159
+  ISS_150 --> ISS_159
+  ISS_155 --> ISS_159
+  ISS_157 --> ISS_159
+  ISS_158 --> ISS_159
 ```
 
 ## Warnings

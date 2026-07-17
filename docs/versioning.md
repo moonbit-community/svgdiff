@@ -33,6 +33,8 @@ The renderer package identity and raster representation are also report semantic
 
 `svgdiff-foreign-object-layout-profile/1`, `svgdiff-foreign-object-xhtml-rect-slice/1`, and `svgdiff-foreign-object-observation/1` are reserved by the accepted [foreign-content boundary](foreign-object-layout-boundary.md), but none is a current version domain or implemented artifact. A future profile must version its namespace and tree-construction mode, host semantics, UA style, CSS/layout slice, SVG integration, fonts, resources, processing axes, color/rendering, limits, and evaluator build independently from Structured Report Schema. The rectangular slice is not compatible with an unclaimed wider HTML/CSS engine, and an observation identity is never a canonical profile alias.
 
+`svgdiff-resource-snapshot-bundle/1`, `svgdiff-resource-resolution-policy/1`, `svgdiff-resource-prefetch-profile/1`, `svgdiff-resource-prefetch-transcript/1`, and `svgdiff-resource-snapshot-http-image-slice/1` are reserved by the accepted [resource snapshot boundary](general-resource-snapshot-bundles.md), but none is a current version domain or implemented artifact. Bundle format, URL/request/closure policy, acquisition authority, acquisition evidence, family interpretation, and initial product slice version independently from Structured Report Schema and from the released opaque `ResourceBundle`. Rendering-relevant reachable-input, whole-package, acquisition, and compliance digests are not interchangeable.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:

@@ -20,6 +20,8 @@ The current profile disables animation; it does not show the frame at `t = 0`. I
 
 The current profile does not lay out `foreignObject`. If future [foreign-content artifacts](foreign-object-layout-boundary.md) accompany a report, distinguish the outer SVG rectangle, namespace-qualified source tree, host-language handler, computed style, layout fragments, fonts and replaced resources, isolated surface, final SVG compositing, and coverage. Unknown namespaces or missing fonts/resources are not empty content, and matching browser pixels are not canonical semantic equality.
 
+For future [resource snapshot artifacts](general-resource-snapshot-bundles.md), distinguish authored locator, effective base and resolved request, response or failure snapshot, exact representation bytes, family interpretation, reachability, consumer result, rendered consequence, and independent acquisition provenance. Equal URLs do not imply equal side bytes; equal bytes do not imply equal interpretation; unused package members are not SVG changes; and an absent snapshot is not evidence about the live network.
+
 ## Reading order
 
 Read the report in this order:

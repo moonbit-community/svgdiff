@@ -16,6 +16,8 @@ The current profile also disables animation rather than sampling it at zero. A f
 
 The current profile has no `foreignObject` host-language layout engine. Even empty or identical foreign content keeps the affected report partial; outer geometry or matching browser pixels cannot upgrade status. A future [Foreign Object Layout Profile](foreign-object-layout-boundary.md) would establish completeness only for its exact namespace, markup, style, layout, font, resource, paint, and SVG-integration subset.
 
+The current profile resolves only admitted data URLs and exact opaque PNG/JPEG bundle keys. An external URL remains partial even when a network target currently exists or before/after locators match. A future [Resource Snapshot Bundle](general-resource-snapshot-bundles.md) could close one exact side-qualified request graph, but a missing snapshot, acquisition transcript, or matching URL cannot upgrade current status.
+
 ## Status summary
 
 | Status | Comparison result available | Complete equality conclusion allowed | CLI exit status |
@@ -46,7 +48,7 @@ A complete report with no Atomic Differences supports this statement:
 It does not support any of these stronger statements:
 
 - the source files are byte-for-byte or XML-identical;
-- the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource environment, background, browser, future interaction state, animation checkpoint, temporal interval, or foreign-content profile;
+- the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource snapshot, background, browser, future interaction state, animation checkpoint, temporal interval, or foreign-content profile;
 - the SVGs would remain equivalent after the support contract expands;
 - nonvisual metadata is identical.
 

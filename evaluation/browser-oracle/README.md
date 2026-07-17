@@ -28,6 +28,8 @@ Animation-time and script-driven frame capture are outside this oracle. They mus
 
 `foreignObject` host-language layout is outside this oracle. A future browser capture must follow the [Foreign Content boundary](../../docs/foreign-object-layout-boundary.md), identify parsing mode, namespace tree, UA style, fonts, resources, state, target, and achieved layout, and remains observation or conformance evidence rather than canonical semantics.
 
+External resource acquisition is outside this oracle. Future fixtures may consume an exact [Resource Snapshot Bundle](../../docs/general-resource-snapshot-bundles.md) or record a separate browser/network observation, but the oracle must never satisfy missing entries from ambient network, cache, credentials, service workers, or local files.
+
 The workflow uses Playwright CLI commands. Exact transparent-background capture uses `run-code` because the ordinary CLI screenshot command does not expose `omitBackground`.
 
 ## Run

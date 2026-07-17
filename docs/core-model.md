@@ -78,6 +78,8 @@ Intrinsic viewport derivation, fonts, alternate perceptual backgrounds or color 
 
 Explicit resource bundles are inputs to comparison rather than ambient profile state. Before and after each receive an ordered set of opaque locator, MIME, and byte entries. Exact locator matching can resolve admitted PNG/JPEG `image` resources; no base URL, filesystem path, redirect, or network environment participates. The report retains authored locator Source Spans and compact content hashes but never serializes supplied bytes or CLI resource-file paths.
 
+The accepted future [Resource Snapshot Bundle](general-resource-snapshot-bundles.md) is a parallel contract, not a reinterpretation of those opaque keys. It binds each side to an explicit root URL, complete logical request identities, response or failure snapshots, exact representation bytes, recursive closure, and independent acquisition provenance while permanently retaining zero comparison-time I/O. No generalized bundle, URL resolver, or prefetcher is implemented.
+
 ## Evidence layers
 
 ### Source Semantics

@@ -29,6 +29,8 @@ Those execution choices require a separately versioned Font Execution Profile. T
 
 Supplying the same closed bundle to CoreText, DirectWrite, or a browser can support an external [Platform Font Observation](platform-native-font-modes.md), but exact resource bytes do not make that platform stack canonical or portable.
 
+The future [general Resource Snapshot Bundle](general-resource-snapshot-bundles.md) may carry an external font response and acquisition evidence, but it does not replace `svgdiff-font-bundle/1` face inventory, legal manifest, fingerprint, or Font Execution Profile. URL response identity and admitted font-resource identity remain separate contracts.
+
 ## Manifest
 
 The manifest is strict UTF-8 JSON with exactly five top-level fields. Every string is ASCII in v1, object fields are closed, resource and provenance arrays are ordered by `resource_id`, license records are ordered by `license_id`, and face indices are ascending and contiguous from zero.

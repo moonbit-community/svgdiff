@@ -54,6 +54,8 @@ A text-only Agent must keep these statements distinct:
 
 Agreement across repeated observations is scoped to the recorded target and scenario. Cross-target observations follow the [multi-renderer experiment boundary](multi-renderer-profiles.md); they never vote a script result into semantic truth.
 
+The accepted [Resource Snapshot boundary](general-resource-snapshot-bundles.md) may supply closed static external inputs to future profiles, but it does not authorize script-created fetches or turn a Script Observation transcript into canonical resource semantics. Every script-visible request and achieved response remains in the target-local execution transcript unless independently admitted by the snapshot contract.
+
 ## Relationship to later dynamic decisions
 
 The accepted [Interaction State boundary](interaction-state-profiles.md) owns event-driven pseudo-class checkpoints and target-local action scenarios. The accepted [Animation Timeline boundary](animation-timeline-model.md) owns exact logical time, synchronization, checkpoint kinds, and interval proof limits. Neither decision re-enables script: a Script Observation must reference the applicable contracts and retain requested and achieved target-local state.
