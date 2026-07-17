@@ -2,7 +2,7 @@
 
 Status: current schema `1.44` interpretation guide
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This guide explains how an agent without image access should turn a Structured Report into a faithful description of the SVG changes. It is a reading procedure, not a replacement for the complete JSON evidence.
 
@@ -163,6 +163,8 @@ The caller's statement supplies the semantic priority. An authored ID or text to
 - `pixel_mask` is a connected region from canonical differing pixels;
 - `computed_bounds` is a conservative semantic bound used when raster localization is unavailable;
 - an empty region list is valid for source-only, computed-equivalent, unrendered, or zero-raster outcomes.
+
+The engine computes ordinary-subject and supported-effect bounds separately for the before and after inputs, then serializes only their conservative union. Consequently a moved subject's region may cover both its vacated and occupied locations, while an insertion or deletion has only the location from the side where it exists. Do not split that union into invented side-specific pixels or treat it as an exact contribution mask.
 
 A Cause Envelope is not a proven unique cause:
 

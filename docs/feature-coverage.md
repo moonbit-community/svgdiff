@@ -2,7 +2,7 @@
 
 Status: current schema `1.44` coverage map
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics and tests that enforce it. It is an implementation index, not an expansion of the supported scope.
 
@@ -86,7 +86,7 @@ The matrix is validated by the [Coverage Proof Obligations](coverage-proof-oblig
 | Presence footprint and isolated painted coverage | Computed footprint and rendered measurements | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): insertion/deletion and isolated coverage tests |
 | Same-domain lexicographic ordering | Report ordering evidence | None | [`difference_ordering_wbtest.mbt`](../engine/difference_ordering_wbtest.mbt): all v2 tuple families, including typed transform effects, missing values, and comparator direction; [`magnitude_test.mbt`](../engine/magnitude_test.mbt): descending magnitude and stable equal-tuple tie-breaking |
 | Connected pixel-mask Difference Regions | Rendered | None | [`difference_region_test.mbt`](../engine/difference_region_test.mbt): `spatially disconnected pixel changes produce separate regions` |
-| Conservative computed-bounds regions when raster evidence is unavailable | Computed localization | The reason that made raster evidence unavailable remains present | [`difference_regions_wbtest.mbt`](../engine/difference_regions_wbtest.mbt): supported subject-bound derivation and conservative union behavior |
+| Side-typed entity and effect localization plus conservative computed-bounds regions | Private before/after bounds for ordinary subjects, images, markers, group opacity, clips, masks, and filters; movement retains both sides, insertion only after, deletion only before; the serialized region exposes only their final conservative union | The reason that made raster evidence unavailable remains present; no side-specific pixel attribution or exact contribution is implied | [`difference_regions_wbtest.mbt`](../engine/difference_regions_wbtest.mbt): movement/insertion/deletion side invariants, clip/filter effect-side invariants, supported subject-bound derivation, and conservative union behavior; family-specific region suites |
 | Cause Envelopes for a complete report | Rendered region plus conservative Changed Fact candidates | None; guarantee is `sound_overapproximation` | [`cause_envelope_test.mbt`](../engine/cause_envelope_test.mbt): complete, inherited paint, disjoint region, insertion, and deletion cases |
 
 ## Guarded, partial, and failed capabilities

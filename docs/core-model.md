@@ -2,7 +2,7 @@
 
 Status: current model for Structured Report schema `1.44`
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This document defines the concepts and invariants implemented by the current comparison engine. The checked-in [JSON Schema](../schema/svgdiff-report.schema.json) and public MoonBit report types are authoritative for serialized field names. The [current v1 scope](v1-scope.md) defines which SVG features may receive complete analysis; the [roadmap](../roadmap.md) contains future extensions.
 
@@ -225,6 +225,8 @@ The raw magnitude fields remain authoritative beneath the required Impact Assess
 A `DifferenceRegion` localizes an event using either a connected pixel-mask component or conservative computed bounds. It records pixel-space and CSS-space bounds, changed-pixel count, viewport fraction, and a Cause Envelope.
 
 Pixel-mask regions describe observed final differences. Computed-bounds regions are conservative localization when rendered evidence is unavailable. Neither form alone proves an exact causal contribution.
+
+Localization retains private `before` and `after` bounds until the event is attached to regions. Movement therefore preserves both occupied extents, insertion preserves only the `after` extent, and deletion preserves only the `before` extent. Ordinary subjects, embedded images, markers, group opacity, clips, masks, and filters compute those sides independently; only their conservative union is exposed through the event's regions. The report does not serialize side-specific bounds, side-specific pixels, an exact mask, or a contribution map.
 
 ### Cause Envelope
 

@@ -2,7 +2,7 @@
 
 Status: implementation-aligned contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This document states what schema `1.44` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
@@ -69,7 +69,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - symmetric alpha-only painted-coverage differences for admitted two-sided entity changes, retaining per-side coverage, absolute difference, and union in CSS square pixels plus their bounded ratio, independent of RGB color;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
-- connected pixel-mask Difference Regions and conservative computed-bounds fallback regions;
+- connected pixel-mask Difference Regions and conservative computed-bounds fallback regions, with private side-typed bounds retained through entity and effect localization so movement includes both sides while insertion and deletion retain only the side that exists before final union;
 - conservative Cause Envelopes with a sound-overapproximation guarantee for complete covered regions;
 - self-contained HTML presentation generated from the report without recomputing comparison semantics.
 

@@ -24,6 +24,121 @@ test "single-region magnitude scans its bounds and still excludes equal pixels" 
 }
 
 ///|
+test "side bounds preserve movement insertion and deletion before union" {
+  let profile = ComparisonProfile::v1_default()
+  let before = "<svg width='20' height='20'><rect id='box' x='1' y='2' width='4' height='5'/></svg>"
+  let after = "<svg width='20' height='20'><rect id='box' x='7' y='2' width='4' height='5'/></svg>"
+  let moved = compare(before, after, profile)
+  guard moved.subject_alignments.filter(alignment => {
+      alignment.before.any(reference => reference.authored_id == Some("box")) &&
+      alignment.after.any(reference => reference.authored_id == Some("box"))
+    })
+    is [movement] else {
+    fail("expected one box alignment")
+  }
+  let movement_sides = alignment_side_bounds(
+    movement,
+    extract_source_subjects_with_profile_or_raise(before, profile),
+    extract_source_subjects_with_profile_or_raise(after, profile),
+  )
+  assert_true(
+    movement_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+  assert_true(
+    movement_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+  assert_true(
+    side_bounds_union(movement_sides)
+    is Some({ x: 1.0, y: 2.0, width: 10.0, height: 5.0 }),
+  )
+
+  let empty = "<svg width='20' height='20'/>"
+  let inserted = compare(empty, after, profile)
+  guard inserted.subject_alignments.filter(alignment => {
+      alignment.relation == "insertion"
+    })
+    is [insertion] else {
+    fail("expected one insertion alignment")
+  }
+  let insertion_sides = alignment_side_bounds(
+    insertion,
+    extract_source_subjects_with_profile_or_raise(empty, profile),
+    extract_source_subjects_with_profile_or_raise(after, profile),
+  )
+  assert_true(insertion_sides.before is None)
+  assert_true(
+    insertion_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+
+  let deleted = compare(before, empty, profile)
+  guard deleted.subject_alignments.filter(alignment => {
+      alignment.relation == "deletion"
+    })
+    is [deletion] else {
+    fail("expected one deletion alignment")
+  }
+  let deletion_sides = alignment_side_bounds(
+    deletion,
+    extract_source_subjects_with_profile_or_raise(before, profile),
+    extract_source_subjects_with_profile_or_raise(empty, profile),
+  )
+  assert_true(
+    deletion_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+  assert_true(deletion_sides.after is None)
+}
+
+///|
+test "clip and filter localization retain distinct effect bounds by side" {
+  let profile = ComparisonProfile::v1_default()
+  let clip_before =
+    #|<svg width="20" height="20"><defs><clipPath id="clip"><rect x="1" y="2" width="4" height="5"/></clipPath></defs><rect id="box" width="20" height="20" clip-path="url(#clip)"/></svg>
+  let clip_after =
+    #|<svg width="20" height="20"><defs><clipPath id="clip"><rect x="7" y="2" width="4" height="5"/></clipPath></defs><rect id="box" width="20" height="20" clip-path="url(#clip)"/></svg>
+  let clip_report = compare(clip_before, clip_after, profile)
+  guard clip_report.subject_alignments.filter(alignment => {
+      alignment.before.any(reference => reference.authored_id == Some("box")) &&
+      alignment.after.any(reference => reference.authored_id == Some("box"))
+    })
+    is [clip_alignment] else {
+    fail("expected one clipped box alignment")
+  }
+  let clip_sides = alignment_side_bounds(
+    clip_alignment,
+    extract_source_subjects_with_profile_or_raise(clip_before, profile),
+    extract_source_subjects_with_profile_or_raise(clip_after, profile),
+  )
+  assert_true(
+    clip_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+  assert_true(
+    clip_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+
+  let filter_before =
+    #|<svg width="20" height="20"><defs><filter id="shift" x="-100%" y="-100%" width="400%" height="400%"><feOffset dx="1"/></filter></defs><rect id="box" x="2" y="2" width="4" height="5" filter="url(#shift)"/></svg>
+  let filter_after =
+    #|<svg width="20" height="20"><defs><filter id="shift" x="-100%" y="-100%" width="400%" height="400%"><feOffset dx="3"/></filter></defs><rect id="box" x="2" y="2" width="4" height="5" filter="url(#shift)"/></svg>
+  let filter_report = compare(filter_before, filter_after, profile)
+  guard filter_report.events.filter(event => event.id == "event:filter:shift")
+    is [filter_event] else {
+    fail("expected one filter resource event")
+  }
+  let (_, before_hosts) = resolve_filter_hosts_or_raise(filter_before, profile)
+  let (_, after_hosts) = resolve_filter_hosts_or_raise(filter_after, profile)
+  guard filter_event_side_bounds(filter_event, before_hosts, after_hosts)
+    is Some(filter_sides) else {
+    fail("expected filter side bounds")
+  }
+  assert_true(
+    filter_sides.before is Some({ x: 3.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+  assert_true(
+    filter_sides.after is Some({ x: 5.0, y: 2.0, width: 4.0, height: 5.0 }),
+  )
+}
+
+///|
 test "painted boundary distribution reports symmetric nearest-rank statistics" {
   let before = @svg.Image::new(40, 3)
   let after = @svg.Image::new(40, 3)

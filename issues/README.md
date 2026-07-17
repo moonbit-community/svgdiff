@@ -161,6 +161,7 @@ graph TD
   ISS_143["ISS-143: Improve HTML evidence inspection"]
   ISS_144["ISS-144: Detect out-of-profile embedded color content"]
   ISS_145["ISS-145: Complete effect-aware Difference Region localization"]
+  ISS_146["ISS-146: Preserve side-typed effect bounds before region union"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -437,6 +438,16 @@ graph TD
   ISS_116 --> ISS_145
   ISS_117 --> ISS_145
   ISS_118 --> ISS_145
+  ISS_008 --> ISS_146
+  ISS_017 --> ISS_146
+  ISS_064 --> ISS_146
+  ISS_095 --> ISS_146
+  ISS_110 --> ISS_146
+  ISS_114 --> ISS_146
+  ISS_115 --> ISS_146
+  ISS_116 --> ISS_146
+  ISS_117 --> ISS_146
+  ISS_145 --> ISS_146
 ```
 
 ## Warnings

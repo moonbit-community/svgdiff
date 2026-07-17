@@ -2,7 +2,7 @@
 
 Status: accepted design; v1 implementation validated
 
-Last verified: 2026-07-15
+Last verified: 2026-07-17
 
 This is the current causal-completeness contract for the supported v1 slice. Feature coverage remains defined by [`v1-scope.md`](v1-scope.md); historical prototype evidence is archived in [`research/influence-provenance-prototype.md`](research/influence-provenance-prototype.md).
 
@@ -57,6 +57,8 @@ CauseEnvelope(R) = Delta intersect union(
 ```
 
 Both inputs are required. A moved or deleted entity may influence only the vacated region in the before rendering, while an inserted or moved entity may influence only the occupied region in the after rendering.
+
+The production localization seam preserves those independently optional side bounds through ordinary geometry, images, markers, group opacity, clips, masks, and filters. It unions them only when selecting or emitting an event's Difference Regions; this is a conservative spatial envelope and does not assign pixels or causes to one side.
 
 If no safe influence information is available, the required fallback is:
 

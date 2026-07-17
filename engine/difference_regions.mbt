@@ -7,6 +7,17 @@ priv struct CssBounds {
 }
 
 ///|
+priv struct SideBounds {
+  before : CssBounds?
+  after : CssBounds?
+}
+
+///|
+fn side_bounds_union(bounds : SideBounds) -> CssBounds? {
+  union_bounds(bounds.before, bounds.after)
+}
+
+///|
 priv enum DifferenceRegionExtraction {
   Regions(Array[DifferenceRegion])
   RegionLimitExceeded
@@ -278,26 +289,35 @@ fn alignment_bounds(
   before : Array[SourceSubject],
   after : Array[SourceSubject],
 ) -> CssBounds? {
-  union_bounds(
-    subjects_bounds(subjects_for_references(before, alignment.before)),
-    subjects_bounds(subjects_for_references(after, alignment.after)),
-  )
+  side_bounds_union(alignment_side_bounds(alignment, before, after))
 }
 
 ///|
-fn embedded_image_alignment_bounds(
+fn alignment_side_bounds(
+  alignment : SubjectAlignment,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> SideBounds {
+  {
+    before: subjects_bounds(subjects_for_references(before, alignment.before)),
+    after: subjects_bounds(subjects_for_references(after, alignment.after)),
+  }
+}
+
+///|
+fn embedded_image_alignment_side_bounds(
   alignment : SubjectAlignment,
   before : Array[EmbeddedImageSubject],
   after : Array[EmbeddedImageSubject],
-) -> CssBounds? {
-  union_bounds(
-    embedded_image_subject_for_reference(before, alignment.before)
+) -> SideBounds {
+  {
+    before: embedded_image_subject_for_reference(before, alignment.before)
     .map(embedded_image_subject_bounds)
     .unwrap_or(None),
-    embedded_image_subject_for_reference(after, alignment.after)
+    after: embedded_image_subject_for_reference(after, alignment.after)
     .map(embedded_image_subject_bounds)
     .unwrap_or(None),
-  )
+  }
 }
 
 ///|
@@ -542,11 +562,27 @@ fn alignment_for_event(
 }
 
 ///|
-fn marker_resource_bounds_for_event(
+fn marker_bounds_for_resource(
+  subjects : Array[SourceSubject],
+  resource_id : String,
+) -> CssBounds? {
+  let mut bounds : CssBounds? = None
+  for subject in subjects {
+    for placement in subject.marker_placements {
+      if placement.resource_id == resource_id {
+        bounds = union_bounds(bounds, Some(placement.bounds))
+      }
+    }
+  }
+  bounds
+}
+
+///|
+fn marker_resource_side_bounds_for_event(
   event : VisualEvent,
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-) -> CssBounds? {
+) -> SideBounds? {
   if !event.id.has_prefix("event:marker-resource:") {
     return None
   }
@@ -555,22 +591,10 @@ fn marker_resource_bounds_for_event(
     Some(offset) => suffix.view(end_offset=offset).to_owned()
     None => suffix.to_owned()
   }
-  let mut bounds : CssBounds? = None
-  for subject in before {
-    for placement in subject.marker_placements {
-      if placement.resource_id == resource_id {
-        bounds = union_bounds(bounds, Some(placement.bounds))
-      }
-    }
-  }
-  for subject in after {
-    for placement in subject.marker_placements {
-      if placement.resource_id == resource_id {
-        bounds = union_bounds(bounds, Some(placement.bounds))
-      }
-    }
-  }
-  bounds
+  Some({
+    before: marker_bounds_for_resource(before, resource_id),
+    after: marker_bounds_for_resource(after, resource_id),
+  })
 }
 
 ///|
@@ -591,12 +615,26 @@ fn group_opacity_subject_matches(
 }
 
 ///|
-fn group_opacity_event_bounds(
+fn group_opacity_subject_bounds(
+  subjects : Array[SourceSubject],
+  affected_subject_ids : Array[String],
+) -> CssBounds? {
+  subjects_bounds(
+    subjects.filter(subject => {
+      affected_subject_ids.any(subject_id => {
+        group_opacity_subject_matches(subject, subject_id)
+      })
+    }),
+  )
+}
+
+///|
+fn group_opacity_event_side_bounds(
   event : VisualEvent,
   report : StructuredReport,
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-) -> CssBounds? {
+) -> SideBounds? {
   let affected_subject_ids : Array[String] = []
   for difference in report.atomic_differences {
     if difference.domain != "compositing.opacity" ||
@@ -618,38 +656,19 @@ fn group_opacity_event_bounds(
   if affected_subject_ids.is_empty() {
     return None
   }
-  let subjects : Array[SourceSubject] = []
-  for subject in before + after {
-    if affected_subject_ids.any(subject_id => {
-        group_opacity_subject_matches(subject, subject_id)
-      }) {
-      subjects.push(subject)
-    }
-  }
-  subjects_bounds(subjects)
+  Some({
+    before: group_opacity_subject_bounds(before, affected_subject_ids),
+    after: group_opacity_subject_bounds(after, affected_subject_ids),
+  })
 }
 
 ///|
-fn clip_resource_event_bounds(
-  event : VisualEvent,
-  report : StructuredReport,
-  before : Array[SourceSubject],
-  after : Array[SourceSubject],
+fn clip_resource_bounds_for_subjects(
+  subjects : Array[SourceSubject],
+  keys : Array[String],
 ) -> CssBounds? {
-  let keys : Array[String] = []
-  for difference_id in event.atomic_difference_ids {
-    for difference in report.atomic_differences {
-      if difference.id == difference_id &&
-        difference.domain.has_prefix("resource.clip.") {
-        push_unique(keys, event.primary_subject_id)
-      }
-    }
-  }
-  if keys.is_empty() {
-    return None
-  }
   let mut bounds : CssBounds? = None
-  for subject in before + after {
+  for subject in subjects {
     match subject.clip_resource_id {
       Some(id) if keys.contains(id) =>
         bounds = union_bounds(
@@ -667,17 +686,17 @@ fn clip_resource_event_bounds(
 }
 
 ///|
-fn mask_resource_event_bounds(
+fn clip_resource_event_side_bounds(
   event : VisualEvent,
   report : StructuredReport,
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-) -> CssBounds? {
+) -> SideBounds? {
   let keys : Array[String] = []
   for difference_id in event.atomic_difference_ids {
     for difference in report.atomic_differences {
       if difference.id == difference_id &&
-        difference.domain.has_prefix("resource.mask.") {
+        difference.domain.has_prefix("resource.clip.") {
         push_unique(keys, event.primary_subject_id)
       }
     }
@@ -685,8 +704,19 @@ fn mask_resource_event_bounds(
   if keys.is_empty() {
     return None
   }
+  Some({
+    before: clip_resource_bounds_for_subjects(before, keys),
+    after: clip_resource_bounds_for_subjects(after, keys),
+  })
+}
+
+///|
+fn mask_resource_bounds_for_subjects(
+  subjects : Array[SourceSubject],
+  keys : Array[String],
+) -> CssBounds? {
   let mut bounds : CssBounds? = None
-  for subject in before + after {
+  for subject in subjects {
     match subject.mask_resource_id {
       Some(id) if keys.contains(id) =>
         bounds = union_bounds(
@@ -704,11 +734,48 @@ fn mask_resource_event_bounds(
 }
 
 ///|
-fn mask_host_event_bounds(
+fn mask_resource_event_side_bounds(
+  event : VisualEvent,
+  report : StructuredReport,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> SideBounds? {
+  let keys : Array[String] = []
+  for difference_id in event.atomic_difference_ids {
+    for difference in report.atomic_differences {
+      if difference.id == difference_id &&
+        difference.domain.has_prefix("resource.mask.") {
+        push_unique(keys, event.primary_subject_id)
+      }
+    }
+  }
+  if keys.is_empty() {
+    return None
+  }
+  Some({
+    before: mask_resource_bounds_for_subjects(before, keys),
+    after: mask_resource_bounds_for_subjects(after, keys),
+  })
+}
+
+///|
+fn mask_host_subject_bounds(
+  subjects : Array[SourceSubject],
+  affected_subject_ids : Array[String],
+) -> CssBounds? {
+  subjects_bounds(
+    subjects.filter(subject => {
+      affected_subject_ids.contains(source_subject_id(subject))
+    }),
+  )
+}
+
+///|
+fn mask_host_event_side_bounds(
   event : VisualEvent,
   before : Array[SourceSubject],
   after : Array[SourceSubject],
-) -> CssBounds? {
+) -> SideBounds? {
   if !event.id.has_prefix("event:mask-host:") {
     return None
   }
@@ -718,13 +785,10 @@ fn mask_host_event_bounds(
       push_unique(affected_subject_ids, source_subject_id(subject))
     }
   }
-  let mut bounds : CssBounds? = None
-  for subject in before + after {
-    if affected_subject_ids.contains(source_subject_id(subject)) {
-      bounds = union_bounds(bounds, source_subject_bounds(subject))
-    }
-  }
-  bounds
+  Some({
+    before: mask_host_subject_bounds(before, affected_subject_ids),
+    after: mask_host_subject_bounds(after, affected_subject_ids),
+  })
 }
 
 ///|
@@ -748,17 +812,16 @@ fn filter_host_conservative_bounds(host : ResolvedFilterHost) -> CssBounds? {
 }
 
 ///|
-fn filter_event_bounds(
+fn filter_bounds_for_event_hosts(
   event : VisualEvent,
-  before : Array[ResolvedFilterHost],
-  after : Array[ResolvedFilterHost],
+  hosts : Array[ResolvedFilterHost],
 ) -> CssBounds? {
   let mut bounds : CssBounds? = None
   if event.id.has_prefix("event:filter-host:") {
     let owner_id = event.id
       .view(start_offset="event:filter-host:".length())
       .to_owned()
-    for host in before + after {
+    for host in hosts {
       if host.owner_id == owner_id {
         bounds = union_bounds(bounds, filter_host_conservative_bounds(host))
       }
@@ -767,13 +830,29 @@ fn filter_event_bounds(
     let resource_id = event.id
       .view(start_offset="event:filter:".length())
       .to_owned()
-    for host in before + after {
+    for host in hosts {
       if host.resource_id == Some(resource_id) {
         bounds = union_bounds(bounds, filter_host_conservative_bounds(host))
       }
     }
   }
   bounds
+}
+
+///|
+fn filter_event_side_bounds(
+  event : VisualEvent,
+  before : Array[ResolvedFilterHost],
+  after : Array[ResolvedFilterHost],
+) -> SideBounds? {
+  if !event.id.has_prefix("event:filter:") &&
+    !event.id.has_prefix("event:filter-host:") {
+    return None
+  }
+  Some({
+    before: filter_bounds_for_event_hosts(event, before),
+    after: filter_bounds_for_event_hosts(event, after),
+  })
 }
 
 ///|
@@ -1173,6 +1252,77 @@ fn generic_presence_magnitude_for_difference(
 }
 
 ///|
+fn nonempty_side_bounds(bounds : SideBounds?) -> SideBounds? {
+  match bounds {
+    Some(bounds) if bounds.before is Some(_) || bounds.after is Some(_) =>
+      Some(bounds)
+    _ => None
+  }
+}
+
+///|
+fn event_side_bounds(
+  event : VisualEvent,
+  report : StructuredReport,
+  alignments : Array[SubjectAlignment],
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+  before_images : Array[EmbeddedImageSubject],
+  after_images : Array[EmbeddedImageSubject],
+  before_filter_hosts : Array[ResolvedFilterHost],
+  after_filter_hosts : Array[ResolvedFilterHost],
+) -> SideBounds? {
+  match
+    nonempty_side_bounds(
+      group_opacity_event_side_bounds(event, report, before, after),
+    ) {
+    Some(bounds) => return Some(bounds)
+    None => ()
+  }
+  match
+    nonempty_side_bounds(
+      clip_resource_event_side_bounds(event, report, before, after),
+    ) {
+    Some(bounds) => return Some(bounds)
+    None => ()
+  }
+  match
+    nonempty_side_bounds(
+      mask_resource_event_side_bounds(event, report, before, after),
+    ) {
+    Some(bounds) => return Some(bounds)
+    None => ()
+  }
+  match
+    filter_event_side_bounds(event, before_filter_hosts, after_filter_hosts) {
+    Some(bounds) => return Some(bounds)
+    None => ()
+  }
+  match
+    nonempty_side_bounds(mask_host_event_side_bounds(event, before, after)) {
+    Some(bounds) => return Some(bounds)
+    None => ()
+  }
+  match
+    nonempty_side_bounds(
+      marker_resource_side_bounds_for_event(event, before, after),
+    ) {
+    Some(bounds) => return Some(bounds)
+    None => ()
+  }
+  match alignment_for_event(event, alignments) {
+    Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
+      Some(
+        embedded_image_alignment_side_bounds(
+          alignment, before_images, after_images,
+        ),
+      )
+    Some(alignment) => Some(alignment_side_bounds(alignment, before, after))
+    None => None
+  }
+}
+
+///|
 fn attach_difference_regions(
   report : StructuredReport,
   before_svg : String,
@@ -1248,48 +1398,12 @@ fn attach_difference_regions(
   let mut perceptual_flip_samples = 0
   for event in report.events {
     comparison_guard.checkpoint()
-    let bounds = match
-      group_opacity_event_bounds(event, report, before, after) {
-      Some(bounds) => Some(bounds)
-      None =>
-        match clip_resource_event_bounds(event, report, before, after) {
-          Some(bounds) => Some(bounds)
-          None =>
-            match mask_resource_event_bounds(event, report, before, after) {
-              Some(bounds) => Some(bounds)
-              None =>
-                match
-                  filter_event_bounds(
-                    event, before_filter_hosts, after_filter_hosts,
-                  ) {
-                  Some(bounds) => Some(bounds)
-                  None if event.id.has_prefix("event:filter:") ||
-                    event.id.has_prefix("event:filter-host:") => None
-                  None =>
-                    match mask_host_event_bounds(event, before, after) {
-                      Some(bounds) => Some(bounds)
-                      None =>
-                        match
-                          marker_resource_bounds_for_event(event, before, after) {
-                          Some(bounds) => Some(bounds)
-                          None =>
-                            match alignment_for_event(event, alignments) {
-                              Some(alignment) if alignment.id.has_prefix(
-                                  "alignment:image:",
-                                ) =>
-                                embedded_image_alignment_bounds(
-                                  alignment, before_images, after_images,
-                                )
-                              Some(alignment) =>
-                                alignment_bounds(alignment, before, after)
-                              None => None
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    let bounds = event_side_bounds(
+        event, report, alignments, before, after, before_images, after_images, before_filter_hosts,
+        after_filter_hosts,
+      )
+      .map(side_bounds_union)
+      .unwrap_or(None)
     let regions : Array[DifferenceRegion] = []
     if event.rendered_outcome.status == "computed" {
       match bounds {
