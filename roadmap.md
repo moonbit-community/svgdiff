@@ -161,7 +161,7 @@ Milestone reviews follow [`docs/roadmap-governance.md`](docs/roadmap-governance.
 - [x] **P0** Keep the raw score vector authoritative beneath every policy-dependent Impact Assessment and across legacy reports where one is unavailable.
 - [x] **P1** Add DeltaEOK or CIEDE2000 under an explicitly declared perceptual background.
 - [x] **P1** Evaluate SSIM/MS-SSIM only as secondary structural diagnostics; retain them as QA-only observations and reject canonical report or Impact semantics.
-- [ ] **P2** Evaluate LPIPS as an optional experiment, never as an equality oracle.
+- [x] **P2** Evaluate LPIPS as an optional experiment, never as an equality oracle.
 - [x] **P1** Define policy behavior for spatially small but semantically important changes; preserve query-matching dominated events from the complete inventory without inferring semantic priority from visual magnitude or SVG source.
 - [x] **P1** Version and test domain-specific lexicographic ordering tuples.
 - [x] **Decision** Decide whether a cross-domain scalar is needed at all; if adopted, record policy ID, weights, thresholds, corpus, and metric versions.

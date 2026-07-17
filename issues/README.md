@@ -164,6 +164,7 @@ graph TD
   ISS_146["ISS-146: Preserve side-typed effect bounds before region union"]
   ISS_147["ISS-147: Propagate source-input influence tokens to rendered subjects"]
   ISS_148["ISS-148: Propagate influence through supported effect and compositing operations"]
+  ISS_149["ISS-149: Evaluate LPIPS as an optional offline experiment"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -478,6 +479,18 @@ graph TD
   ISS_145 --> ISS_148
   ISS_146 --> ISS_148
   ISS_147 --> ISS_148
+  ISS_024 --> ISS_149
+  ISS_025 --> ISS_149
+  ISS_027 --> ISS_149
+  ISS_031 --> ISS_149
+  ISS_043 --> ISS_149
+  ISS_044 --> ISS_149
+  ISS_060 --> ISS_149
+  ISS_128 --> ISS_149
+  ISS_129 --> ISS_149
+  ISS_130 --> ISS_149
+  ISS_133 --> ISS_149
+  ISS_134 --> ISS_149
 ```
 
 ## Warnings

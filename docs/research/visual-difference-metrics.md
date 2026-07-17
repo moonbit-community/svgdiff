@@ -123,3 +123,11 @@ A versioned thirteen-case evaluation implemented the original SSIM local-statist
 The result rejects canonical integration. Canonical and enlarged SSIM differed by up to `0.9779354872328625`; the embedded-raster change became false identity under a known renderer gap; one MS-SSIM product was unavailable due to a non-positive component; and every score produced human-tier inversions or ties. Global pooling also supplies no report IDs, regions, or causes.
 
 SSIM and MS-SSIM therefore remain optional development observations for a fixed raster source and scale. They do not enter Difference Magnitude, equality, coverage, Impact Assessment, Agent tasks, or severity. See the [reproducible evaluation](../../evaluation/ssim-diagnostics/README.md) and [ADR 0090](../adr/0090-keep-ssim-out-of-canonical-report-semantics.md).
+
+## 2026-07-17 LPIPS follow-up
+
+A versioned offline experiment ran the official learned AlexNet LPIPS v0.1 scalar on all thirteen curated cases under four explicitly separate QA profiles: 4x and 16x rerenders over white and black backgrounds. The environment pins Python, PyTorch, TorchVision, NumPy, the LPIPS implementation and calibration weights, the ImageNet AlexNet backbone weights, CPU execution, and deterministic settings. No neural dependency enters the MoonBit module or default gate.
+
+The recorded environment was exactly symmetric under input reversal and bit-stable under repeated inference, but the measurement was materially profile-dependent. The mean absolute scale delta was `0.0559021375195768`, the maximum scale delta was `0.27395099401474`, and background changes reached `0.6048315763473511`. Every profile inverted or tied some current human-tier pairs. The embedded-raster case remained falsely identical in all four profiles because the raster source cannot paint it; the unsupported-path case also collapsed to zero over black.
+
+The result therefore rejects LPIPS as equality, canonical evidence, Difference Magnitude, Impact input, Agent evidence, severity, a default dependency, or a release gate. It remains only an optional offline learned-perceptual experiment under one complete versioned environment. See the [experiment](../../evaluation/lpips-experiment/README.md), [primary-source research](lpips-evaluation.md), and [ADR 0096](../adr/0096-keep-lpips-outside-product-semantics.md).

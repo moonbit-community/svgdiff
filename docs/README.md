@@ -53,6 +53,7 @@ This directory separates the current product contract from future plans and hist
 | How is the pinned renderer compared with those rasters? | [`renderer-conformance/README.md`](../evaluation/renderer-conformance/README.md) |
 | How are alternate output scales used for renderer QA? | [`alternate-scale/README.md`](../evaluation/alternate-scale/README.md) |
 | What did SSIM and MS-SSIM contribute as secondary diagnostics? | [`ssim-diagnostics/README.md`](../evaluation/ssim-diagnostics/README.md) |
+| What did the optional LPIPS experiment establish? | [`lpips-experiment/README.md`](../evaluation/lpips-experiment/README.md) |
 | How are spatially small caller concerns recovered when Impact omits them? | [`semantic-concern/README.md`](../evaluation/semantic-concern/README.md) |
 | Can the current human labels calibrate Impact tiers or a total event order? | [`impact-calibration/README.md`](../evaluation/impact-calibration/README.md) |
 | When should a renderer gap go upstream or become an owned module? | [`renderer-ownership-gate.md`](renderer-ownership-gate.md) |
