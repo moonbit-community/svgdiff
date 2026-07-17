@@ -161,6 +161,20 @@ Canonical script execution is a permanent non-goal and no external observer curr
 
 Follow the accepted [script execution boundary](script-execution-boundary.md). Passing these gates admits only a target-local external observation, not a canonical Script Execution Profile.
 
+## Interaction state profile or observation admission
+
+No interaction profile, action scenario, or browser observation currently exists. Before implementing or changing `svgdiff-interaction-state-profile/1`, `svgdiff-interaction-scenario/1`, or `svgdiff-interaction-observation/1`:
+
+1. state the Agent task and select one deliberately small pseudo-class slice, keeping static structural selectors, script execution, animation time, form controls, and browser UI states in their owning domains;
+2. version exact checkpoint seeds, before/after target locators and mapping mode, state evaluator, selector grammar, focus policy, hit-test method, fixed-point algorithm, limits, and normalized manifest identity;
+3. reject caller-supplied match booleans and add valid, empty, impossible, missing, ambiguous, wrong-instance, unstable-cycle, limit, and one-side-unavailable cases;
+4. distinguish coordinate-locked from mapped-subject-locked checkpoints and prove geometry, clipping, stacking, transforms, `pointer-events`, focus ancestry, target fragments, and state-feedback behavior for the accepted slice;
+5. for browser replay, version ordered action ticks separately and require achieved-state postconditions, transcripts, repeats, typed dispatch/default-action failures, and target-local authority;
+6. preserve every invalid, unresolved, unsupported, unstable, divergent, or ambient state as unavailable or insufficient evidence, never selector non-match, zero, or equality; and
+7. run selector, cascade, renderer-conformance, resource, determinism, Agent, adversarial, and cross-host gates before product or release integration.
+
+Follow the accepted [interaction-state semantics](interaction-state-profiles.md). A browser action observation cannot define canonical selector applicability or upgrade a static report.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.

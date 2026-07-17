@@ -14,6 +14,8 @@ The current report contains one renderer/profile execution and no multi-renderer
 
 The current profile also never executes SVG scripts. A script Diagnostic means the realized dynamic state was not computed, even when script bytes are identical or an external browser capture shows no changed pixels. If a future [`svgdiff-script-observation/1`](script-execution-boundary.md) accompanies the report, describe its exact target and scenario separately; never turn its DOM, transcript, or pixels into canonical Atomic Differences, equality, Impact, regions, or causes.
 
+The current profile declares no interaction checkpoint, so an unsupported `:hover`, `:focus`, or related selector is not equivalent to a false match. If future [interaction artifacts](interaction-state-profiles.md) accompany a report, distinguish requested checkpoint seeds, project-derived match state, action intent, and target-local achieved state. A failed replay, missing target, unstable hit-test loop, or different achieved postcondition is unavailable evidence, not “not hovered” or equality.
+
 ## Reading order
 
 Read the report in this order:

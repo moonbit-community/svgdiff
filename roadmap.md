@@ -230,7 +230,7 @@ This phase is explicitly recorded but not currently scheduled. It expands [ISS-0
 These capabilities remain outside deterministic static v1 and require explicit product decisions.
 
 - [x] **Decision** Decide whether scripts remain a permanent non-goal or are evaluated in a sandboxed deterministic runtime.
-- [ ] **Decision** Decide how event-driven pseudo-classes and user-interaction state are declared and reproduced.
+- [x] **Decision** Decide how event-driven pseudo-classes and user-interaction state are declared and reproduced.
 - [ ] **Decision** Define a timeline model for SMIL, CSS, and script-driven animation comparisons.
 - [ ] **Deferred** Compare animation keyframes, sampled times, or temporal difference intervals only after the timeline model is accepted.
 - [ ] **Decision** Decide whether static `foreignObject` requires an embedded deterministic HTML/CSS layout engine.
@@ -279,6 +279,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-16 | Phase 7 uncertainty reconciliation | Confirmed alignment ambiguity and confidence availability are explicit, kept interpretation indeterminacy Diagnostic-based, and retained calibrated alignment confidence as deferred work. |
 | 2026-07-16 | Phase 7 summary traceability | Enforced exact frontier event-to-difference projection and retained downstream regions, causes, facts, and Diagnostics through the existing closed evidence graph. |
 | 2026-07-17 | Script execution boundary | Permanently excluded SVG script execution from canonical analysis, retained secure-static coverage guards, and allowed only future separately versioned external observations after state, security, replay, and authority gates. |
+| 2026-07-17 | Interaction state boundary | Accepted typed checkpoint seeds plus derived pseudo-class state for future canonical work, while keeping WebDriver-style action scenarios and achieved-state evidence as target-local observations. |
 
 ## Milestone gates
 

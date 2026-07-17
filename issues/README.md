@@ -171,6 +171,7 @@ graph TD
   ISS_153["ISS-153: Define color-management profiles beyond v1 sRGB"]
   ISS_154["ISS-154: Define multi-renderer and browser profile comparison semantics"]
   ISS_155["ISS-155: Decide the deterministic SVG scripting boundary"]
+  ISS_156["ISS-156: Define reproducible interaction-state semantics"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -507,6 +508,9 @@ graph TD
   ISS_058 --> ISS_155
   ISS_079 --> ISS_155
   ISS_084 --> ISS_155
+  ISS_098 --> ISS_156
+  ISS_154 --> ISS_156
+  ISS_155 --> ISS_156
 ```
 
 ## Warnings

@@ -115,3 +115,11 @@ _Avoid_: Generic renderer diff, diagonal attribution, majority result
 **Script Observation**:
 An external target-specific artifact for one exact script-enabled runtime, scenario, state closure, and capture checkpoint; it is never canonical Structured Report evidence.
 _Avoid_: Script Execution Profile, sandboxed truth, complete analysis
+
+**Interaction State Profile**:
+A future canonical checkpoint that declares URL, focus, modality, pointer, button, geometry, and processing inputs, then derives pseudo-class matches through versioned state and hit-test rules.
+_Avoid_: Pseudo-class boolean bag, browser action trace, ambient UI state
+
+**Interaction Observation**:
+An external target-specific action replay with achieved-state postconditions, transcript, and output evidence.
+_Avoid_: Interaction State Profile, canonical selector state, replay intent alone

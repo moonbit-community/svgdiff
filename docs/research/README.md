@@ -14,6 +14,7 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [Color-management profiles beyond sRGB](color-management-profiles.md) | 2026-07-17 | Separates predefined SDR mathematics, ICC transforms, HDR reference processing, and physical-display observations for the accepted staged profile boundary. |
 | [Multi-renderer and browser profiles](multi-renderer-profiles.md) | 2026-07-17 | Establishes the same-target, same-profile, matrix, confounding, environment, and Agent-synthesis evidence behind the accepted typed experiment boundary. |
 | [SVG script runtime boundary](script-runtime-boundary.md) | 2026-07-17 | Establishes why secure-static canonical analysis remains script-free and why sandboxed script output can only be an external observation. |
+| [Interaction-state profiles](interaction-state-profiles.md) | 2026-07-17 | Separates typed canonical checkpoints, derived pseudo-class state, WebDriver-style action scenarios, and target-local achieved-state observations. |
 | [XMLParser 0.2.5 evaluation](xmlparser-evaluation.md) | 2026-07-13 | Rejected dependency evaluation retained for rationale. |
 | [Milky XML 0.4.0 evaluation](milky-xml-evaluation.md) | 2026-07-13 | Accepted dependency evidence for authored parsing and spans. |
 | [Influence Provenance prototype verdict](influence-provenance-prototype.md) | 2026-07-10 to 2026-07-13 | Archives the removed prototype's causal propagation and renderer experiments. |

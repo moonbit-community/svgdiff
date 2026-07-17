@@ -56,7 +56,7 @@ Agreement across repeated observations is scoped to the recorded target and scen
 
 ## Relationship to later dynamic decisions
 
-The next roadmap decisions still own event-driven pseudo-classes, interaction state, and animation timelines. This decision does not choose event sequences, sampled times, or a settled-state rule indirectly. A script observation must either reference those future accepted contracts or remain explicitly target-local and observational.
+The accepted [Interaction State boundary](interaction-state-profiles.md) now owns event-driven pseudo-class checkpoints and target-local action scenarios; animation timelines remain a separate open decision. This script decision does not choose state, event sequences, sampled times, or a settled-state rule indirectly. A script observation must reference the applicable accepted interaction/timeline contracts or remain explicitly target-local and observational.
 
 General browser script execution, implicit comparison-time network access, ambient storage, service workers, user input, physical devices, and host credentials are permanent product non-goals. A future external harness must acquire all inputs explicitly before execution and run outside the comparison process.
 

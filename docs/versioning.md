@@ -27,6 +27,8 @@ The renderer package identity and raster representation are also report semantic
 
 `svgdiff-script-observation/1` is reserved by the accepted [script execution boundary](script-execution-boundary.md), but it is not a current version domain or implemented artifact. Any future target-local capture must version runtime, scenario, state closure, scheduling, limits, transcript, output, and replay semantics independently from Structured Report Schema and cannot become a canonical script-execution profile through versioning alone.
 
+`svgdiff-interaction-state-profile/1`, `svgdiff-interaction-scenario/1`, and `svgdiff-interaction-observation/1` are reserved by the accepted [interaction-state boundary](interaction-state-profiles.md), but none is a current version domain or implemented artifact. Future canonical checkpoint inputs and derivation rules must version independently from browser action intent and target-local achieved-state evidence; neither identity is an alias for Structured Report Schema, renderer, conformance, script, or animation identities.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:

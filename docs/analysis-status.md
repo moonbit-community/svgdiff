@@ -10,6 +10,8 @@ The status belongs to one Structured Report and one exact renderer/profile execu
 
 The canonical profile never executes SVG scripts. Encountering script-capable content therefore prevents complete dynamic-state equality even when the two script sources are identical or a separate browser capture happens to match. A future [Script Observation](script-execution-boundary.md) cannot upgrade the report's status or turn disabled execution into measured zero.
 
+The current profile also declares no interaction state. Unsupported pseudo-class selectors keep the affected report partial; they are not treated as false. A future [Interaction State Profile](interaction-state-profiles.md) would establish completeness only for one resolved checkpoint, while a failed, unstable, or target-local browser replay cannot upgrade status or establish checkpoint equality.
+
 ## Status summary
 
 | Status | Comparison result available | Complete equality conclusion allowed | CLI exit status |

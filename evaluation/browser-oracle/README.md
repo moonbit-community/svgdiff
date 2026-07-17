@@ -22,6 +22,8 @@ Any future browser text capture must follow the separate [Platform Font Observat
 
 Script-enabled capture is outside this oracle. It must follow the separate [Script Observation boundary](../../docs/script-execution-boundary.md) and cannot inherit conformance or canonical authority from the current static fixture harness.
 
+Interaction-state and action-replay capture are also outside this oracle. They must follow the separate [Interaction State boundary](../../docs/interaction-state-profiles.md); a browser action trace must record achieved-state postconditions and remains target-local evidence.
+
 The workflow uses Playwright CLI commands. Exact transparent-background capture uses `run-code` because the ordinary CLI screenshot command does not expose `omitBackground`.
 
 ## Run

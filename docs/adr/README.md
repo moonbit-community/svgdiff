@@ -106,6 +106,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0100](0100-stage-color-management-beyond-srgb.md) | Accepted, not implemented | Keep v1 sRGB fixed while staging predefined SDR, ICC, HDR, and physical-display behavior behind separate executable or observational identities. |
 | [0101](0101-model-multi-renderer-work-as-typed-experiments.md) | Accepted, not implemented | Support profile sensitivity and renderer conformance through separate typed experiment edges without changing single-profile report authority. |
 | [0102](0102-keep-svg-script-execution-outside-canonical-analysis.md) | Accepted | Permanently exclude SVG script execution from canonical analysis while permitting only separately versioned external observations. |
+| [0103](0103-separate-declared-interaction-state-from-action-observations.md) | Accepted, not implemented | Derive future canonical pseudo-class state from typed checkpoints while keeping browser action replay observational. |
 
 ## CLI and distribution decisions
 

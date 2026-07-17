@@ -18,6 +18,8 @@ Callers provide two SVG source strings and a Comparison Profile. Parsing, suppor
 
 The canonical seam always uses script-free secure-static processing. An encountered `<script>`, event handler, or other dynamic construct reduces coverage; the engine never executes it through the parser, renderer, browser oracle, or HTML preview. The accepted [Script Observation boundary](script-execution-boundary.md) permits only a future external target artifact and does not add a fourth evidence layer or extend current equality.
 
+The current seam likewise has no pointer, focus, URL-target, activation, or action-replay input. Unsupported pseudo-classes reduce coverage rather than matching false. A future [Interaction State Profile](interaction-state-profiles.md) would derive one checkpoint through project-owned state and hit-test rules; a browser action transcript and its achieved-state observation remain external and cannot define canonical applicability.
+
 ## Current pipeline
 
 ```text
