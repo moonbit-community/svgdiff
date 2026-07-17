@@ -164,7 +164,8 @@ def validate_html(
         if payload in rendered_html:
             raise ValueError(f"{case['id']}: hostile payload escaped its sandbox")
     match = re.search(
-        r'<textarea id="report-data" readonly>(.*?)</textarea>',
+        r'<textarea\b(?=[^>]*\bid="report-data")(?=[^>]*\breadonly\b)[^>]*>'
+        r"(.*?)</textarea>",
         rendered_html,
         flags=re.DOTALL,
     )

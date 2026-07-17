@@ -183,6 +183,7 @@ graph TD
   ISS_165["ISS-165: Validate the M3 compact-summary traceability gate"]
   ISS_166["ISS-166: Validate the M5 explicit non-goal coverage gate"]
   ISS_167["ISS-167: Validate the M5 adopted-profile environment gate"]
+  ISS_169["ISS-169: Accept additive textarea attributes in fuzz validation"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -627,6 +628,9 @@ graph TD
   ISS_157 --> ISS_167
   ISS_158 --> ISS_167
   ISS_166 --> ISS_167
+  ISS_075 --> ISS_169
+  ISS_076 --> ISS_169
+  ISS_143 --> ISS_169
 ```
 
 ## Warnings
