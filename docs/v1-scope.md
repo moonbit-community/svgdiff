@@ -70,7 +70,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
 - connected pixel-mask Difference Regions and conservative computed-bounds fallback regions, with private side-typed bounds retained through entity and effect localization so movement includes both sides while insertion and deletion retain only the side that exists before final union;
-- conservative Cause Envelopes with a sound-overapproximation guarantee for complete covered regions, including direct event tokens and every source-input token reached through the before/after rendered-subject fan-out of admitted geometry, paint, resources, transforms, viewport mapping, use instances, and structural relationships;
+- conservative Cause Envelopes with a sound-overapproximation guarantee for complete covered regions, including direct event tokens, every source-input token reached through before/after rendered-subject fan-out, and conservative participants for admitted group, clip, mask, filter, blend, isolation, and stacking operations;
 - self-contained HTML presentation generated from the report without recomputing comparison semantics.
 
 ## Partial and guarded slices

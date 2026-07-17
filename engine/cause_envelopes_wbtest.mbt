@@ -58,6 +58,23 @@ fn influence_test_reference(
 }
 
 ///|
+fn influence_test_event_for_domain(
+  report : StructuredReport,
+  domain : String,
+) -> VisualEvent? {
+  for difference in report.atomic_differences {
+    if difference.domain == domain {
+      for event in report.events {
+        if event.atomic_difference_ids.contains(difference.id) {
+          return Some(event)
+        }
+      }
+    }
+  }
+  None
+}
+
+///|
 test "subject influence index covers every source-input token category" {
   let facts = [
     influence_test_fact("fact:geometry", "geometry.position", ["box"]),
@@ -222,5 +239,225 @@ test "resource and relationship events query direct-fact subject fan-out" {
   assert_eq(
     event_influence_subject_ids(stacking_event, stacking, stacking_direct),
     ["red", "blue"],
+  )
+}
+
+///|
+test "operation classifier covers every supported effect and compositing family" {
+  assert_true(influence_operation_for_domain("paint.fill") is LeafInput)
+  assert_true(
+    influence_operation_for_domain("compositing.opacity") is GroupSurface,
+  )
+  assert_true(influence_operation_for_domain("clipping.path") is ClipEffect)
+  assert_true(
+    influence_operation_for_domain("resource.clip.geometry") is ClipEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("masking.attachment") is MaskEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("resource.mask.geometry") is MaskEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("filtering.attachment") is FilterEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("resource.filter.primitive.offset")
+    is FilterEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("compositing.blend_mode") is BlendEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("compositing.isolation") is IsolationEffect,
+  )
+  assert_true(
+    influence_operation_for_domain("document.structure.stacking_order")
+    is CompositingOrder,
+  )
+}
+
+///|
+test "group and blend transfer retain backdrop but exclude disjoint later facts" {
+  let group_before =
+    #|<svg width="16" height="16"><rect id="backdrop" width="8" height="8" fill="green"/><g id="layer" opacity="1"><rect id="front" width="8" height="8" fill="red"/></g><rect id="outside" x="13" y="1" width="2" height="2" fill="blue"/></svg>
+  let group_after = group_before
+    .replace_all(old="fill=\"green\"", new="fill=\"yellow\"")
+    .replace_all(old="opacity=\"1\"", new="opacity=\"0.5\"")
+    .replace_all(old="fill=\"blue\"", new="fill=\"lime\"")
+  let group = compare(
+    group_before,
+    group_after,
+    ComparisonProfile::v1_default(),
+  )
+  assert_eq(group.analysis_status, "complete")
+  guard influence_test_event_for_domain(group, "compositing.opacity")
+    is Some(group_event) else {
+    fail("expected one group-opacity event")
+  }
+  guard group.changed_facts.filter(fact => {
+      fact.property == "fill" && fact.affected_subject_ids == ["backdrop"]
+    })
+    is [backdrop_fact] else {
+    fail("expected one backdrop fact")
+  }
+  guard group.changed_facts.filter(fact => {
+      fact.property == "fill" && fact.affected_subject_ids == ["outside"]
+    })
+    is [outside_fact] else {
+    fail("expected one outside fact")
+  }
+  assert_true(
+    group_event.difference_regions.all(region => {
+      region.cause_envelope.candidate_changed_fact_ids.contains(
+        backdrop_fact.id,
+      ) &&
+      !region.cause_envelope.candidate_changed_fact_ids.contains(
+        outside_fact.id,
+      )
+    }),
+  )
+
+  let blend_before =
+    #|<svg width="16" height="16"><rect id="back" width="8" height="8" fill="#c86432"/><rect id="front" width="4" height="4" fill="#6496c8" style="mix-blend-mode:multiply"/><rect id="outside" x="13" y="1" width="2" height="2" fill="blue"/></svg>
+  let blend_after = blend_before
+    .replace_all(old="fill=\"#c86432\"", new="fill=\"#c86433\"")
+    .replace_all(old="mix-blend-mode:multiply", new="mix-blend-mode:screen")
+    .replace_all(old="fill=\"blue\"", new="fill=\"lime\"")
+  let blend = compare(
+    blend_before,
+    blend_after,
+    ComparisonProfile::v1_default(),
+  )
+  assert_eq(blend.analysis_status, "complete")
+  guard influence_test_event_for_domain(blend, "compositing.blend_mode")
+    is Some(blend_event) else {
+    fail("expected one blend event")
+  }
+  guard blend.changed_facts.filter(fact => {
+      fact.property == "fill" && fact.affected_subject_ids == ["back"]
+    })
+    is [blend_backdrop_fact] else {
+    fail("expected one blend backdrop fact")
+  }
+  guard blend.changed_facts.filter(fact => {
+      fact.property == "fill" && fact.affected_subject_ids == ["outside"]
+    })
+    is [blend_outside_fact] else {
+    fail("expected one blend outside fact")
+  }
+  assert_true(
+    blend_event.difference_regions.all(region => {
+      region.cause_envelope.candidate_changed_fact_ids.contains(
+        blend_backdrop_fact.id,
+      ) &&
+      !region.cause_envelope.candidate_changed_fact_ids.contains(
+        blend_outside_fact.id,
+      )
+    }),
+  )
+}
+
+///|
+test "stacking transfer follows shared region identity without contamination" {
+  let before =
+    #|<svg width="16" height="16"><rect id="red" width="12" height="12" fill="red"/><rect id="blue" x="4" y="4" width="12" height="12" fill="blue"/><rect id="outside" x="13" y="1" width="2" height="2" fill="green"/></svg>
+  let after =
+    #|<svg width="16" height="16"><rect id="blue" x="4" y="4" width="12" height="12" fill="blue"/><rect id="red" width="12" height="12" fill="red"/><rect id="outside" x="13" y="1" width="2" height="2" fill="yellow"/></svg>
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_eq(report.analysis_status, "complete")
+  guard influence_test_event_for_domain(
+      report, "document.structure.stacking_order",
+    )
+    is Some(stacking_event) else {
+    fail("expected one stacking event")
+  }
+  guard report.changed_facts.filter(fact => {
+      fact.property == "fill" && fact.affected_subject_ids == ["outside"]
+    })
+    is [outside_fact] else {
+    fail("expected one outside fact")
+  }
+  assert_true(stacking_event.difference_regions.length() >= 2)
+  assert_true(
+    stacking_event.difference_regions.any(region => {
+      region.css_x < 12.0 &&
+      !region.cause_envelope.candidate_changed_fact_ids.contains(
+        outside_fact.id,
+      )
+    }),
+  )
+  assert_true(
+    stacking_event.difference_regions.any(region => {
+      region.css_x >= 12.0 &&
+      region.cause_envelope.candidate_changed_fact_ids.contains(outside_fact.id)
+    }),
+  )
+}
+
+///|
+test "mask and filter transfer reaches effect consumers and descendants" {
+  let mask_before =
+    #|<svg width="8" height="8"><defs><mask id="fade" mask-type="alpha" maskUnits="userSpaceOnUse"><rect width="4" height="8" fill="white"/></mask></defs><g id="layer"><rect id="box" width="8" height="8" fill="red"/></g></svg>
+  let mask_after = mask_before.replace_all(
+    old="<g id=\"layer\">",
+    new="<g id=\"layer\" mask=\"url(#fade)\">",
+  )
+  let mask = compare(mask_before, mask_after, {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: 8,
+    viewport_height: 8,
+  })
+  guard influence_test_event_for_domain(mask, "masking.attachment")
+    is Some(mask_event) else {
+    fail("expected one mask host event")
+  }
+  let mask_direct = event_changed_fact_ids(mask_event, mask.atomic_differences)
+  assert_eq(event_influence_subject_ids(mask_event, mask, mask_direct), [
+    "layer", "box",
+  ])
+  let mask_facts = mask.changed_facts.copy()
+  mask_facts.push(
+    influence_test_fact("fact:mask-child-input", "paint.fill", ["box"]),
+  )
+  let mask_augmented = { ..mask, changed_facts: mask_facts }
+  assert_true(
+    event_may_influence_fact_ids(
+      mask_event,
+      mask_augmented,
+      build_subject_influence_index(mask_facts),
+    ).contains("fact:mask-child-input"),
+  )
+
+  let filter_before =
+    #|<svg width="16" height="16"><defs><filter id="shift" x="-100%" y="-100%" width="400%" height="400%"><feOffset dx="1"/></filter></defs><rect id="box" x="2" y="2" width="4" height="4" fill="red" filter="url(#shift)"/></svg>
+  let filter_after = filter_before.replace_all(old="dx=\"1\"", new="dx=\"3\"")
+  let filter = compare(
+    filter_before,
+    filter_after,
+    ComparisonProfile::v1_default(),
+  )
+  guard filter.events.filter(event => event.id == "event:filter:shift")
+    is [filter_event] else {
+    fail("expected one filter resource event")
+  }
+  let filter_direct = event_changed_fact_ids(
+    filter_event,
+    filter.atomic_differences,
+  )
+  assert_eq(event_influence_subject_ids(filter_event, filter, filter_direct), [
+    "box",
+  ])
+  let filter_facts = filter.changed_facts.copy()
+  filter_facts.push(
+    influence_test_fact("fact:filter-input", "paint.fill", ["box"]),
+  )
+  let filter_augmented = { ..filter, changed_facts: filter_facts }
+  assert_true(
+    event_may_influence_fact_ids(
+      filter_event,
+      filter_augmented,
+      build_subject_influence_index(filter_facts),
+    ).contains("fact:filter-input"),
   )
 }

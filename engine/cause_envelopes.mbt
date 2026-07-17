@@ -60,6 +60,74 @@ priv struct SubjectInfluenceIndex {
 }
 
 ///|
+priv enum InfluenceOperation {
+  LeafInput
+  GroupSurface
+  ClipEffect
+  MaskEffect
+  FilterEffect
+  BlendEffect
+  IsolationEffect
+  CompositingOrder
+}
+
+///|
+fn influence_operation_for_domain(domain : String) -> InfluenceOperation {
+  if domain == "compositing.opacity" {
+    return GroupSurface
+  }
+  if domain.has_prefix("clipping.") || domain.has_prefix("resource.clip.") {
+    return ClipEffect
+  }
+  if domain.has_prefix("masking.") || domain.has_prefix("resource.mask.") {
+    return MaskEffect
+  }
+  if domain.has_prefix("filtering.") || domain.has_prefix("resource.filter.") {
+    return FilterEffect
+  }
+  if domain == "compositing.blend_mode" {
+    return BlendEffect
+  }
+  if domain == "compositing.isolation" {
+    return IsolationEffect
+  }
+  if domain == "document.structure.stacking_order" {
+    return CompositingOrder
+  }
+  LeafInput
+}
+
+///|
+fn event_influence_operation(
+  event : VisualEvent,
+  differences : Array[AtomicDifference],
+) -> InfluenceOperation {
+  for difference in differences {
+    if event.atomic_difference_ids.contains(difference.id) {
+      match influence_operation_for_domain(difference.domain) {
+        LeafInput => ()
+        operation => return operation
+      }
+    }
+  }
+  LeafInput
+}
+
+///|
+fn operation_uses_direct_subject_fanout(operation : InfluenceOperation) -> Bool {
+  match operation {
+    LeafInput => false
+    GroupSurface
+    | ClipEffect
+    | MaskEffect
+    | FilterEffect
+    | BlendEffect
+    | IsolationEffect
+    | CompositingOrder => true
+  }
+}
+
+///|
 fn build_subject_influence_index(
   changed_facts : Array[ChangedFact],
 ) -> SubjectInfluenceIndex {
@@ -179,16 +247,26 @@ fn event_influence_subject_ids(
   report : StructuredReport,
   direct_fact_ids : Array[String],
 ) -> Array[String] {
-  match entity_alignment_for_influence_event(event, report.subject_alignments) {
-    Some(alignment) => return alignment_influence_subject_ids(alignment)
-    None => ()
-  }
   let ids : Array[String] = []
-  for fact in report.changed_facts {
-    if direct_fact_ids.contains(fact.id) {
-      for subject_id in fact.affected_subject_ids {
+  match entity_alignment_for_influence_event(event, report.subject_alignments) {
+    Some(alignment) =>
+      for subject_id in alignment_influence_subject_ids(alignment) {
         if !ids.contains(subject_id) {
           ids.push(subject_id)
+        }
+      }
+    None => ()
+  }
+  if ids.is_empty() ||
+    operation_uses_direct_subject_fanout(
+      event_influence_operation(event, report.atomic_differences),
+    ) {
+    for fact in report.changed_facts {
+      if direct_fact_ids.contains(fact.id) {
+        for subject_id in fact.affected_subject_ids {
+          if !ids.contains(subject_id) {
+            ids.push(subject_id)
+          }
         }
       }
     }
@@ -223,17 +301,6 @@ fn attach_cause_envelopes(input_report : StructuredReport) -> StructuredReport {
   let complete = report.analysis_status == "complete"
   let events : Array[VisualEvent] = []
   for event in report.events {
-    let compositing_dependency_event = event.atomic_difference_ids.any(id => {
-      report.atomic_differences.any(difference => {
-        difference.id == id &&
-        (
-          difference.domain == "compositing.opacity" ||
-          difference.domain == "compositing.blend_mode" ||
-          difference.domain == "compositing.isolation" ||
-          difference.domain == "document.structure.stacking_order"
-        )
-      })
-    })
     let regions : Array[DifferenceRegion] = []
     for region in event.difference_regions {
       let candidates : Array[String] = []
@@ -252,9 +319,6 @@ fn attach_cause_envelopes(input_report : StructuredReport) -> StructuredReport {
         }
       }
       if !complete || candidates.is_empty() {
-        push_unique_fact_ids(candidates, all_fact_ids)
-      }
-      if complete && compositing_dependency_event {
         push_unique_fact_ids(candidates, all_fact_ids)
       }
       regions.push({

@@ -163,6 +163,7 @@ graph TD
   ISS_145["ISS-145: Complete effect-aware Difference Region localization"]
   ISS_146["ISS-146: Preserve side-typed effect bounds before region union"]
   ISS_147["ISS-147: Propagate source-input influence tokens to rendered subjects"]
+  ISS_148["ISS-148: Propagate influence through supported effect and compositing operations"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -463,6 +464,20 @@ graph TD
   ISS_109 --> ISS_147
   ISS_124 --> ISS_147
   ISS_146 --> ISS_147
+  ISS_009 --> ISS_148
+  ISS_061 --> ISS_148
+  ISS_063 --> ISS_148
+  ISS_064 --> ISS_148
+  ISS_067 --> ISS_148
+  ISS_068 --> ISS_148
+  ISS_114 --> ISS_148
+  ISS_115 --> ISS_148
+  ISS_116 --> ISS_148
+  ISS_117 --> ISS_148
+  ISS_118 --> ISS_148
+  ISS_145 --> ISS_148
+  ISS_146 --> ISS_148
+  ISS_147 --> ISS_148
 ```
 
 ## Warnings

@@ -42,6 +42,8 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0023](0023-default-the-comparison-dpr-to-one.md) | Accepted, implemented as a fixed v1 value | Default Comparison DPR to one. |
 | [0024](0024-use-srgb-semantics-and-linear-srgb-raster-math.md) | Accepted, implemented for the v1 raster metrics | Use sRGB semantics and linear-sRGB premultiplied raster math. |
 | [0027](0027-represent-authored-visual-declarations-as-facts.md) | Accepted, implemented for supported properties | Represent authored visual declarations as facts. |
+| [0094](0094-index-source-influence-by-rendered-subject.md) | Accepted, implemented | Index analyzer-owned Changed Fact influence under before/after rendered-subject identities. |
+| [0095](0095-propagate-influence-through-operation-participants.md) | Accepted, implemented | Propagate conservative tokens through supported operation participants and exact shared-region events. |
 
 ## Dependency and ownership decisions
 
