@@ -9,6 +9,14 @@ trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
 moon build --target native --release cmd/svgdiff >/dev/null
+test -x "$cli"
+if grep -q '_build/native/release/build/cmd/svgdiff/svgdiff.exe' \
+  .github/workflows/ci.yml; then
+  printf 'CI still references the obsolete pre-owner-rename executable path\n' >&2
+  exit 1
+fi
+grep -q '_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe' \
+  .github/workflows/ci.yml
 python3 evaluation/determinism/validate.py \
   --cli "$cli" \
   --output "$tmp/results.json" \

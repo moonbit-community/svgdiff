@@ -187,6 +187,7 @@ graph TD
   ISS_169["ISS-169: Accept additive textarea attributes in fuzz validation"]
   ISS_170["ISS-170: Validate terminal multidimensional magnitude preservation"]
   ISS_171["ISS-171: Validate terminal text-only Agent reliability"]
+  ISS_172["ISS-172: Repair the cross-platform determinism executable path"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -675,6 +676,10 @@ graph TD
   ISS_165 --> ISS_171
   ISS_168 --> ISS_171
   ISS_170 --> ISS_171
+  ISS_021 --> ISS_172
+  ISS_022 --> ISS_172
+  ISS_058 --> ISS_172
+  ISS_085 --> ISS_172
 ```
 
 ## Warnings
