@@ -71,7 +71,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.43":
+    if report.get("schema_version") != "1.44":
         raise ValueError(f"unexpected report schema for {case['id']}")
     impact = report["impact_assessment"]
     frontier_event_ids = [
