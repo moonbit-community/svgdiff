@@ -189,6 +189,7 @@ graph TD
   ISS_171["ISS-171: Validate terminal text-only Agent reliability"]
   ISS_172["ISS-172: Repair the cross-platform determinism executable path"]
   ISS_173["ISS-173: Validate terminal operational readiness"]
+  ISS_174["ISS-174: Record the deferred blocker register"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -697,6 +698,17 @@ graph TD
   ISS_168 --> ISS_173
   ISS_169 --> ISS_173
   ISS_172 --> ISS_173
+  ISS_065 --> ISS_174
+  ISS_074 --> ISS_174
+  ISS_133 --> ISS_174
+  ISS_138 --> ISS_174
+  ISS_150 --> ISS_174
+  ISS_151 --> ISS_174
+  ISS_154 --> ISS_174
+  ISS_157 --> ISS_174
+  ISS_158 --> ISS_174
+  ISS_159 --> ISS_174
+  ISS_173 --> ISS_174
 ```
 
 ## Warnings
