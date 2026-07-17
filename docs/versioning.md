@@ -21,6 +21,8 @@ Last verified: 2026-07-17
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
+`svgdiff-cache-investigation/1` identifies the accepted [cache investigation](incremental-cache-investigation.md), not a product artifact or compatibility domain. `svgdiff-exact-result-cache-key/1` is reserved but unimplemented. A future cache key and envelope must version independently from module, Schema, renderer, conformance, ordering, Impact, and execution profiles; a Schema match alone can never authorize reuse across engine or policy changes.
+
 `svgdiff-color-execution-profile/1` is reserved by the accepted [color-management boundary](color-management-profiles.md) but is not a current version domain because no beyond-sRGB profile is implemented or serialized. A future admission must add an explicit Comparison Profile reference and compatibility policy separately from Schema, renderer, and renderer-conformance identities. Reports with different color execution identities are not rendered-equality-compatible by default.
 
 `svgdiff-renderer-experiment-matrix/1` and `svgdiff-renderer-experiment-cell/1` are reserved by the accepted [multi-renderer experiment boundary](multi-renderer-profiles.md), but neither is a current report version domain or implemented artifact. A future container must version cell identity, typed edges, per-evidence compatibility, cross-cell mappings, and Agent synthesis independently from Structured Report Schema and every cell's native renderer, conformance, font, color, and observation identities.

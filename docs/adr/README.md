@@ -110,6 +110,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0104](0104-compare-animation-at-explicit-logical-checkpoints.md) | Accepted, not implemented | Compare future declarative animation at explicit logical checkpoints while keeping samples, intervals, and browser observations distinct. |
 | [0105](0105-require-a-deterministic-host-language-engine-for-foreign-content.md) | Accepted, not implemented | Require a deterministic host-language engine for general foreign content while permitting only explicitly bounded canonical subsets. |
 | [0106](0106-use-side-qualified-resource-response-snapshots.md) | Accepted, not implemented | Bind generalized external resources as side-qualified offline request/response snapshots and keep acquisition outside comparison. |
+| [0107](0107-defer-persistent-caching-until-measured.md) | Accepted | Keep persistent and graph-incremental caches out of the product until measured demand justifies a complete exact-result key and untrusted artifact envelope. |
 
 ## CLI and distribution decisions
 

@@ -85,3 +85,5 @@ The optimization does not change a budget, matching policy, report order, or met
 ## Interpretation boundaries
 
 Timing varies with CPU, operating system, load, compiler, and MoonBit toolchain. Stage results require finite, positive, internally consistent statistics but intentionally have no machine-specific pass/fail threshold. Their measurements overlap and must not be added. End-to-end results have explicit ceilings for named workloads and record the executing environment so regressions can be interpreted without mistaking them for universal product guarantees. Agent-quality scores remain a third independent evaluation axis.
+
+The suite measures cold full comparisons only. It records no repeated-pair distribution, edit locality, cache hit rate, artifact-size budget, or invalidation frequency, so it cannot justify persistent or graph-incremental caching. The accepted [cache investigation](../../docs/incremental-cache-investigation.md) keeps full recomputation authoritative and requires a separate representative workload before any persistent cache implementation.

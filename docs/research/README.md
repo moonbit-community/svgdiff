@@ -18,6 +18,7 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [Animation timeline model](animation-timeline-model.md) | 2026-07-17 | Separates document, event, effect-phase, and external-frame questions while preserving unresolved timing and instant-versus-interval proof limits. |
 | [Static foreignObject layout boundary](foreign-object-layout-boundary.md) | 2026-07-17 | Establishes the host-language engine requirement, XML/HTML namespace split, bounded rectangular XHTML tracer, and target-local browser authority. |
 | [Generalized external resource snapshot bundles](general-resource-snapshot-bundles.md) | 2026-07-17 | Separates source locators, logical requests, side-local responses, interpretation, recursive closure, digests, and future explicit prefetch acquisition. |
+| [Incremental and cached deterministic comparisons](incremental-cached-comparisons.md) | 2026-07-17 | Reviews hermetic action keys, content-addressed dependency graphs, invalidation, clean-run equivalence, poisoning, and local-versus-shared cache boundaries. |
 | [XMLParser 0.2.5 evaluation](xmlparser-evaluation.md) | 2026-07-13 | Rejected dependency evaluation retained for rationale. |
 | [Milky XML 0.4.0 evaluation](milky-xml-evaluation.md) | 2026-07-13 | Accepted dependency evidence for authored parsing and spans. |
 | [Influence Provenance prototype verdict](influence-provenance-prototype.md) | 2026-07-10 to 2026-07-13 | Archives the removed prototype's causal propagation and renderer experiments. |

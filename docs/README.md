@@ -44,6 +44,7 @@ This directory separates the current product contract from future plans and hist
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
 | How are parser, renderer, serialization, and HTML boundaries fuzzed reproducibly? | [`fuzz/README.md`](../evaluation/fuzz/README.md) |
 | How are pipeline stages timed and representative CLI time and memory budgets enforced? | [`performance/README.md`](../evaluation/performance/README.md) |
+| Should comparisons be cached or recomputed incrementally? | [`incremental-cache-investigation.md`](incremental-cache-investigation.md) |
 | How is hostile SVG source isolated in the generated HTML report? | [`html-security/README.md`](../evaluation/html-security/README.md) |
 | Which reports test schema, ordering-policy, and Impact-policy compatibility? | [`compatibility/README.md`](../evaluation/compatibility/README.md) |
 | Which Structured Report Schema versions are released? | [`schema/registry.v1.json`](../schema/registry.v1.json) |
@@ -93,6 +94,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Fixed resource budgets fail safely instead of returning a truncated difference inventory.
 - Cyclic or explosively expanding accepted local-reference graphs fail before renderer parsing.
 - Representative native release CLI workloads have measured wall-time and peak-RSS regression ceilings.
+- Persistent and graph-incremental caches are intentionally absent; only measured within-call memoization is accepted until a repeated-workload study justifies the versioned exact-result boundary.
 - Embedding callers can cooperatively cancel or set an elapsed-time budget without creating a truncated report.
 - Font-dependent analysis and the broader SVG feature set are future work recorded in the roadmap.
 - The future font input boundary is accepted and executable as contract vectors, but no font loader, matcher, shaper, text layout, or glyph renderer is part of the product.

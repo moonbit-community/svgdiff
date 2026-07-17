@@ -251,7 +251,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **P1** Add cancellation and time-budget handling for embedding agents.
 - [x] **P1** Test deterministic output across supported operating systems and architectures.
 - [x] **P1** Add CI for formatting, warning checks, interfaces, tests, CLI integration, schema validation, fuzz smoke tests, and benchmark sanity.
-- [ ] **P2** Investigate incremental or cached comparisons only after correctness and profile identity are stable.
+- [x] **P2** Investigate incremental or cached comparisons only after correctness and profile identity are stable.
 
 ## Phase 12: Documentation and maintenance
 
@@ -283,6 +283,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | Animation timeline boundary | Accepted exact logical checkpoint questions with document-time locking by default, retained native mechanism and trigger state, and prohibited finite sampling or browser delay from proving temporal intervals. |
 | 2026-07-17 | Static foreignObject layout boundary | Required a deterministic host-language engine for general canonical XHTML, allowed smaller closed evaluators without wider claims, and kept browser layout as target-local observation evidence. |
 | 2026-07-17 | General external resource snapshot boundary | Accepted side-qualified offline request/response snapshots with recursive closure and separate acquisition provenance, preserved current opaque raster bundles, and permanently excluded comparison-time I/O. |
+| 2026-07-17 | Incremental and cache investigation | Kept full recomputation authoritative, deferred persistent and graph-incremental reuse for lack of measured workload and stable intermediates, and reserved a complete local exact-result key as the first future candidate. |
 
 ## Milestone gates
 

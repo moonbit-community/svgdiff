@@ -52,6 +52,8 @@ It does not support any of these stronger statements:
 - the SVGs would remain equivalent after the support contract expands;
 - nonvisual metadata is identical.
 
+Whether a report was fully recomputed or returned by a future validated exact-result cache cannot strengthen this claim. Cache provenance is operational metadata outside Structured Report semantics, and no cache hit may promote `partial` or `failed` evidence to `complete`. The current product performs full comparisons and has no persistent cache; see the [cache investigation](incremental-cache-investigation.md).
+
 The independent `SourceAuditReport.analysis_status` is not this field and does not compose into Structured Report coverage. A malformed source audit can fail independently; a complete visual report can coexist with nonvisual source-audit differences.
 
 A complete report may contain Atomic Differences with zero rendered magnitude. `complete` means the analysis claim is covered, not that every semantic difference changes a pixel.

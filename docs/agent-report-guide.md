@@ -387,6 +387,8 @@ Possible causes and uncertainty
 
 Keep every claim traceable to report IDs. If summarization omits lower-priority items, state the number omitted and retain their IDs so the complete report remains navigable.
 
+Cache hits, misses, lookup time, and storage provenance are not visual evidence or Impact signals. The current product has no persistent cache. If an embedding layer later returns a validated exact-result artifact, interpret the retained profile, status, coverage, evidence, and Diagnostics exactly as a cold report; cache provenance cannot upgrade or weaken them.
+
 ## Validation sources
 
 Machine-readable, production-generated versions of the core worked-example categories live in the [Structured Report examples](../schema/examples/README.md). They are regenerated from curated SVG inputs and checked against the current Schema and semantic manifest; use them when testing a consumer instead of copying abbreviated snippets from this guide.

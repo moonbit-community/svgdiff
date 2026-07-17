@@ -301,6 +301,19 @@ The current uncalibrated rule and Agent interpretation boundary are defined in [
 
 Calibration must introduce a new policy identity. It must record its corpus, label version, thresholds or learned parameters, required Comparison Profile inputs, and evaluation results rather than changing `event_rendered_pareto/v1` in place.
 
+## Future exact-result cache upgrades
+
+No cache artifact is currently implemented. If `svgdiff-exact-result-cache-key/1` is activated later:
+
+1. treat every module, Schema, Diagnostic, parser, semantic adapter, renderer, conformance, coverage, alignment, region, magnitude, provenance, ordering, Impact, resource, and adopted execution-profile change as a cache-key compatibility review;
+2. include exact ordered before/after source and resource inputs, the complete Comparison Profile, effective deterministic limits, engine/build dependencies, and required target/toolchain identity;
+3. allocate a new key or envelope version whenever canonical encoding, digest input, validation, stored report encoding, or reuse meaning changes;
+4. test that changing each identity produces a miss and that cold and hit paths return byte-identical valid reports for every admitted status;
+5. reject unknown, corrupt, oversized, cross-user, traversal, poisoned, cancelled, or time-budget-interrupted entries and fall back to full recomputation; and
+6. keep cache migration and operational hit/miss telemetry outside Structured Report semantics.
+
+Per-input, per-stage, graph-incremental, and remote artifacts require their own stable schemas and invalidation or trust proofs; an exact-result envelope does not authorize them.
+
 ## Common validation gate
 
 Run from the repository root:
