@@ -1,0 +1,107 @@
+{
+  "schema_version": "svgdiff-color-profile-decision/1",
+  "future_profile_identity_format": "svgdiff-color-execution-profile/1",
+  "external_observation_identity_format": "svgdiff-color-observation/1",
+  "observation_roles": [
+    "ambient_unreproducible",
+    "closed_reference_observation"
+  ],
+  "current_product_profile": {
+    "classification": "implemented_canonical_baseline",
+    "color_interpretation": "srgb",
+    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
+    "changed": false
+  },
+  "required_profile_layers": [
+    "conversion_and_numeric_execution",
+    "execution_identity_limits_and_conformance",
+    "interpolation",
+    "measurement",
+    "reference_output_and_mapping",
+    "source_admission_and_resources",
+    "working_compositing_and_alpha"
+  ],
+  "families": [
+    {
+      "family": "css_color_4_predefined_sdr",
+      "status": "first_future_canonical_candidate_after_separate_gates",
+      "canonical_now": false
+    },
+    {
+      "family": "png_cicp_predefined_sdr",
+      "status": "future_canonical_candidate_when_mathematically_identical_and_bounded",
+      "canonical_now": false
+    },
+    {
+      "family": "icc_v4_rgb_matrix_trc",
+      "status": "deferred_canonical_candidate_after_transform_safety_and_conformance_gates",
+      "canonical_now": false
+    },
+    {
+      "family": "arbitrary_icc_custom_and_non_rgb",
+      "status": "deferred_experimental_only",
+      "canonical_now": false
+    },
+    {
+      "family": "hdr_reference_space",
+      "status": "deferred_experimental_only",
+      "canonical_now": false
+    },
+    {
+      "family": "browser_os_and_physical_display_output",
+      "status": "external_observation_only",
+      "canonical_now": false
+    },
+    {
+      "family": "ambient_platform_color_management",
+      "status": "permanent_non_goal",
+      "canonical_now": false
+    },
+    {
+      "family": "implicit_cross_profile_equality",
+      "status": "permanent_non_goal",
+      "canonical_now": false
+    }
+  ],
+  "canonical_forbidden_defaults": [
+    "ambient_display_profile",
+    "automatic_platform_cms",
+    "device_dependent_tone_mapping",
+    "ignored_embedded_profile",
+    "implicit_cross_profile_comparison",
+    "implicit_gamut_mapping",
+    "implicit_hdr_tone_mapping",
+    "silent_retag_as_srgb",
+    "silent_srgb_clipping"
+  ],
+  "first_icc_candidate_constraints": {
+    "profile_version": "v4",
+    "device_space": "rgb",
+    "transform_shape": "matrix_trc",
+    "rendering_intent": "media_relative_colorimetric",
+    "black_point_compensation": "disabled",
+    "exact_profile_bytes_required": true,
+    "pinned_transform_implementation_required": true
+  },
+  "hdr_profile_must_close": [
+    "absolute_luminance_and_reference_white",
+    "dynamic_range_and_signal_range",
+    "mastering_and_content_light_metadata",
+    "output_reference_and_headroom",
+    "primaries_and_transfer_function",
+    "scene_or_display_referred_state",
+    "sdr_hdr_compositing",
+    "tone_and_gamut_mapping",
+    "viewing_conditions"
+  ],
+  "same_profile_required_for_before_after": true,
+  "cross_profile_equality_forbidden": true,
+  "external_observation_is_structured_report_evidence": false,
+  "color_dependency_selected": false,
+  "product_conversion_implemented": false,
+  "report_schema_change": false,
+  "public_api_change": false,
+  "module_dependency_change": false,
+  "diagnostic_change": false,
+  "default_ci_change": false
+}

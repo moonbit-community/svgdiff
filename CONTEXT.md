@@ -95,3 +95,11 @@ _Avoid_: Library name, Font Bundle Fingerprint, execution result
 **Platform Font Observation**:
 An external target-specific capture from CoreText, DirectWrite, a browser, or another platform stack; it is never canonical Structured Report evidence.
 _Avoid_: Font Execution Profile, renderer truth, complete analysis
+
+**Color Execution Profile**:
+A future executable identity for source color admission, conversion, interpolation, compositing, reference output, measurement, limits, and implementation.
+_Avoid_: Gamut name, display profile, renderer identity
+
+**Color Observation**:
+An external capture of browser, platform, or physical-display color behavior under one completely named environment.
+_Avoid_: Color Execution Profile, canonical output, active display default

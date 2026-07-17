@@ -73,6 +73,10 @@ Current reports project those encountered renderer-specific Diagnostics into `re
 
 The accepted [platform-native font boundary](platform-native-font-modes.md) extends the same oracle separation to CoreText, DirectWrite, browser text, and comparable system stacks. They are permanently excluded from canonical Font Execution Profiles. A future exact-bundle capture may be a named-target external conformance observation; an ambient system-font capture is exploratory and unreproducible. Neither can enter Structured Report equality, magnitude, coverage, Impact, regions, or causality directly.
 
+### Color observations
+
+The accepted [color-management profile boundary](color-management-profiles.md) applies the same separation to browser, OS, display-profile, and physical HDR/SDR output. Future canonical color execution must use a closed mathematical reference profile; host or display pixels remain independently identified `svgdiff-color-observation/1` evidence and cannot directly establish canonical equality, magnitude, completeness, or Impact.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:
@@ -98,3 +102,4 @@ One minimized dependency-owned failure is enough for a focused upstream patch. O
 - [Alternate-scale renderer QA baseline](../evaluation/alternate-scale/README.md)
 - [Dependency, security, and upstream status](dependency-security.md)
 - [Platform-native font rendering boundary](platform-native-font-modes.md)
+- [Color-management profile boundary](color-management-profiles.md)

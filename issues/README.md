@@ -168,6 +168,7 @@ graph TD
   ISS_150["ISS-150: Define the deterministic font-resource bundle contract"]
   ISS_151["ISS-151: Select deterministic shaping and glyph-rasterization dependencies"]
   ISS_152["ISS-152: Decide the platform-native font rendering boundary"]
+  ISS_153["ISS-153: Define color-management profiles beyond v1 sRGB"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -496,6 +497,7 @@ graph TD
   ISS_134 --> ISS_149
   ISS_150 --> ISS_151
   ISS_151 --> ISS_152
+  ISS_144 --> ISS_153
 ```
 
 ## Warnings

@@ -11,6 +11,7 @@ Research notes preserve dated evidence and rejected alternatives. They are not c
 | [Deterministic font-resource bundle](font-resource-bundle.md) | 2026-07-17 | Establishes the raw-byte, collection-face, variable-font, no-system-font, security, and licensing evidence behind the accepted input contract. |
 | [Deterministic font runtime dependencies](font-runtime-dependencies.md) | 2026-07-17 | Audits current Mooncakes candidates and exact upstream sources, then selects a private static HarfBuzz/FreeType module with a bounded initial execution slice. |
 | [Platform-native font rendering](platform-native-font-rendering.md) | 2026-07-17 | Establishes why native stacks and ambient fonts cannot be canonical while preserving closed-bundle captures as target-specific external observations. |
+| [Color-management profiles beyond sRGB](color-management-profiles.md) | 2026-07-17 | Separates predefined SDR mathematics, ICC transforms, HDR reference processing, and physical-display observations for the accepted staged profile boundary. |
 | [XMLParser 0.2.5 evaluation](xmlparser-evaluation.md) | 2026-07-13 | Rejected dependency evaluation retained for rationale. |
 | [Milky XML 0.4.0 evaluation](milky-xml-evaluation.md) | 2026-07-13 | Accepted dependency evidence for authored parsing and spans. |
 | [Influence Provenance prototype verdict](influence-provenance-prototype.md) | 2026-07-10 to 2026-07-13 | Archives the removed prototype's causal propagation and renderer experiments. |

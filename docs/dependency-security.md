@@ -81,6 +81,8 @@ Deterministic font analysis is a deferred product capability, not an upstream bl
 
 Those libraries are selected future sources, not resolved dependencies in the table above. They are not vendored, linked, distributed, or consulted by current product code. Before that changes, the workspace module must carry the complete Old MIT and selected FreeType License texts/notices, exact source and build identities, sanitizer/fuzz evidence, hard parser/work limits, and target-specific shaping/outline/raster conformance. Current Mooncakes font implementations remain differential candidates rather than trusted canonical dependencies.
 
+No color-management dependency is selected or resolved. The accepted [color-management profile boundary](color-management-profiles.md) makes CSS Color 4 predefined SDR mathematics the first future candidate and defers ICC conversion behind a separate transform-dependency evaluation. Any later ICC seam must pin exact sources and builds, isolate dependency types, accept bounded in-memory bytes only, validate hostile profile structures and transform work, preserve complete licenses, and prove numeric and cross-target conformance. Platform CMS APIs are external observations, not dependency candidates for canonical execution.
+
 ## Refresh procedure
 
 Refresh this ledger whenever a dependency version changes and at every release milestone:

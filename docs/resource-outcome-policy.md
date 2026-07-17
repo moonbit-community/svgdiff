@@ -42,6 +42,8 @@ The first matching row determines the report-level outcome. Family-specific Diag
 | Invalid unused SVG definition | `partial` | Exact authored definition evidence and family Diagnostic | Activity does not make authored visual-resource syntax valid or prove source-semantic equality. |
 | Unused caller-bundle entry with valid global configuration | No report difference | None; bytes remain caller acquisition context | Do not decode content or compare bundles independently of SVG references. |
 
+The accepted [color-management profile boundary](color-management-profiles.md) leaves the current color and HDR outcomes unchanged. Any future profile that retires one must admit the exact metadata precedence, transform, precision, reference output, limits, and measurement semantics rather than weakening these guards globally.
+
 `complete`-eligible means this resource condition does not itself force a lower status. The overall comparison can still be partial because another feature or rendered-evidence layer is guarded.
 
 ## Ordering of decisions

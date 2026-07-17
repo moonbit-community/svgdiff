@@ -2,7 +2,7 @@
 
 Status: current maintenance procedure
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 Renderer, parser, metric, schema, same-domain ordering-policy, and Impact Assessment policy versions influence the meaning of a report. They must not be upgraded as isolated dependency edits. This document defines the evidence and synchronized changes required before an upgrade may be merged.
 
@@ -120,6 +120,19 @@ Use this procedure for the project-owned raster codec, its zlib dependency, or a
 - Package and validate the codec archive independently, then compile the root archive against it. Publish the codec version before any root module that declares it.
 
 The codec is a resource decoder, not the production SVG renderer. Its intrinsic pixels must never be substituted into `RenderedEvidence` without placement, clipping, interpolation, stacking, opacity, and compositing semantics.
+
+## Color execution profile admission or upgrade
+
+No beyond-sRGB profile currently exists. Before admitting or changing one under `svgdiff-color-execution-profile/1`:
+
+1. select one complete source-admission, conversion, interpolation, working/compositing, reference-output, measurement, limit, and build identity rather than a generic gamut flag;
+2. preserve the old profile as a separately accepted identity and require before and after to use the same profile;
+3. add exact conversion and interpolation vectors, extended-range and alpha cases, malformed and adversarial resources, negative controls, browser observations, and supported-target byte/numeric determinism evidence;
+4. prove that every current out-of-profile Diagnostic is either retained or retired by a positive supported-path test without silently clipping, retagging, ignoring ICC data, or tone mapping;
+5. review Perceptual Background, DeltaEOK, FLIP, raw raster magnitude, Impact inputs, renderer identity, renderer conformance, Schema, Agent guidance, resource limits, dependency licenses, and release artifacts independently; and
+6. run the full Schema, compatibility, renderer, resource, metric, Agent, fuzz, performance, and cross-platform gates before release.
+
+ICC dependency selection and HDR reference/display semantics require their own accepted decisions before implementation. Platform or physical-display captures remain external `svgdiff-color-observation/1` artifacts and cannot substitute for this gate.
 
 ## Metric upgrade
 

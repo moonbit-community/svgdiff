@@ -21,6 +21,8 @@ Last verified: 2026-07-17
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
+`svgdiff-color-execution-profile/1` is reserved by the accepted [color-management boundary](color-management-profiles.md) but is not a current version domain because no beyond-sRGB profile is implemented or serialized. A future admission must add an explicit Comparison Profile reference and compatibility policy separately from Schema, renderer, and renderer-conformance identities. Reports with different color execution identities are not rendered-equality-compatible by default.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:
