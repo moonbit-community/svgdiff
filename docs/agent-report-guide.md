@@ -8,6 +8,8 @@ This guide explains how an agent without image access should turn a Structured R
 
 The accepted [report-only language-model observation](../evaluation/language-model-benchmark/README.md) demonstrates that a pinned text-only model can recover the currently scored evidence under explicit normalized-answer rules. Those rules flatten only Atomic Difference magnitude fields; event regions, rendered outcomes, perceptual statistics, source values, and Diagnostics must not be invented as magnitude claims. The observation does not turn this guide into report evidence, relax any coverage rule below, or guarantee another model/version will produce the same answer.
 
+The [terminal Agent reliability gate](../evaluation/terminal-agent-reliability-gate/README.md) binds that exact observation to separate change-recall, accepted-main-event, localization, possible-cause, coverage, traceability, and hard-safety obligations. “Important” therefore means accepted by the benchmark's hidden main-event labels, not severe under a universal score. Possible-cause success requires faithful candidate handling and independent report-layer soundness; it never proves that every candidate uniquely caused pixels.
+
 When input arrives as `svgdiff-agent-projection/1` JSONL, validate its header, sequence, section counts, and source Schema identity first, then follow the same reading order across the corresponding records. The projection partitions the report but does not change field meanings or permit omitted records in a complete answer.
 
 An optional Markdown summary may help with orientation, but it is derived and incomplete presentation. Do not use it as the evidence source for an Agent answer; resolve every statement against canonical JSON or a validated complete Agent projection.

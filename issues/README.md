@@ -186,6 +186,7 @@ graph TD
   ISS_168["ISS-168: Validate terminal evidence-or-Diagnostic completeness"]
   ISS_169["ISS-169: Accept additive textarea attributes in fuzz validation"]
   ISS_170["ISS-170: Validate terminal multidimensional magnitude preservation"]
+  ISS_171["ISS-171: Validate terminal text-only Agent reliability"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -657,6 +658,23 @@ graph TD
   ISS_144 --> ISS_170
   ISS_164 --> ISS_170
   ISS_168 --> ISS_170
+  ISS_024 --> ISS_171
+  ISS_028 --> ISS_171
+  ISS_029 --> ISS_171
+  ISS_030 --> ISS_171
+  ISS_031 --> ISS_171
+  ISS_032 --> ISS_171
+  ISS_033 --> ISS_171
+  ISS_060 --> ISS_171
+  ISS_132 --> ISS_171
+  ISS_140 --> ISS_171
+  ISS_141 --> ISS_171
+  ISS_142 --> ISS_171
+  ISS_163 --> ISS_171
+  ISS_164 --> ISS_171
+  ISS_165 --> ISS_171
+  ISS_168 --> ISS_171
+  ISS_170 --> ISS_171
 ```
 
 ## Warnings

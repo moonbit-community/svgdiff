@@ -264,6 +264,8 @@ The [performance suites](evaluation/performance/README.md) independently time pa
 
 The opt-in [report-only language-model benchmark](evaluation/language-model-benchmark/README.md) evaluates an isolated actual model against the same thirteen-case corpus and strict machine thresholds. Its retained v1 observation passes all accepted Agent metrics with zero hard safety failures. The deterministic evidence adapter remains the default CI regression fixture; rerunning the model benchmark requires the pinned Codex CLI, authentication, and network access.
 
+The [terminal Agent reliability gate](evaluation/terminal-agent-reliability-gate/README.md) binds that retained observation to explicit change-inventory, accepted-main-event, localization, possible-cause, coverage, traceability, and safety targets while checking report-region and Cause Envelope soundness independently. Its claim is limited to the pinned observation and is not a guarantee for another model or future run.
+
 The [M3 compact-summary traceability gate](evaluation/m3-summary-traceability-gate/README.md) verifies that compact JSON remains the complete report, Agent projection streams reconstruct it exactly, and Impact/Markdown summary IDs lead into the closed evidence graph without making Markdown a second source of truth.
 
 ## Documentation

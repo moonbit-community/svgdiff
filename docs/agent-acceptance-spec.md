@@ -96,6 +96,8 @@ The opt-in [`svgdiff-language-model-benchmark-profile/1`](../evaluation/language
 
 The retained 2026-07-17 observation passes all accepted thirteen-case thresholds, including 354/354 exact magnitude claims and zero hard safety or invalid-reference failures. This is evidence for the pinned model, reasoning effort, Codex CLI, adapter, implementation hashes, corpus, and metric versions only. The deterministic evidence adapter remains the default reproducible report-extractability test, while report-region and report Cause Envelope metrics remain report-layer evidence rather than model credit.
 
+The [terminal Agent reliability gate](../evaluation/terminal-agent-reliability-gate/README.md) makes the terminal claim mechanically precise: Atomic Difference recall covers the change inventory, main-event reciprocal rank covers annotation-accepted importance, Agent region overlap covers location, and Agent cause recall plus false-positive counts cover possible reasons. Independent report-region and report Cause Envelope metrics remain prerequisites rather than Agent credit. The gate binds the exact retained observation and does not promise that another model, version, prompt, or nondeterministic future run passes.
+
 ## Hard safety failures
 
 Regardless of aggregate score, a case fails the safety gate if the answer:

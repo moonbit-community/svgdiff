@@ -328,5 +328,5 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 - [x] For the declared supported profile, every real visual-semantic difference is either reported with evidence or covered by an explicit Diagnostic that prevents a false completeness claim.
 - [x] Reported magnitudes preserve exact, geometric, raster, coverage, color, and perceptual evidence where applicable.
-- [ ] A text-only agent reliably identifies the important changes, their locations, and a causally sound set of possible reasons on the accepted benchmark corpus.
+- [x] A text-only agent reliably identifies the important changes, their locations, and a causally sound set of possible reasons on the accepted benchmark corpus.
 - [ ] The tool remains deterministic, installable, secure on hostile input, versioned, and reproducible across supported environments.

@@ -50,3 +50,5 @@ The retained `observation.v1` used `gpt-5.6-sol`, low reasoning effort, and `cod
 - zero hard safety failures, invalid magnitude claims, invalid evidence references, report cause false positives, agent cause false positives, and unclassified failures.
 
 Report-region overlap and report Cause Envelope recall remain engine/report metrics. The model receives no credit for producing them; they stay visible beside the Agent metrics so input-report failure cannot be disguised as Agent success.
+
+The retained observation also satisfies the [terminal text-only Agent reliability gate](../terminal-agent-reliability-gate/README.md). That gate requires perfect Atomic Difference recall, accepted-main-event reciprocal rank, eligible localization and possible-cause recall, zero observed cause-label false positives, exact coverage/equality/Diagnostic handling, valid report references, and zero hard safety failures. It independently requires perfect eligible report-region and actual-cause recall with zero observed report cause-label false positives. These are claims about this pinned observation only, not every model or future run.
