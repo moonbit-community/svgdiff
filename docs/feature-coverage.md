@@ -179,6 +179,8 @@ The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/
 
 Multi-renderer aggregation is not SVG-authored input, so it has no per-input Diagnostic. One current report remains one renderer/profile cell; a separately identified future experiment container cannot change that cell's coverage or become canonical by majority vote.
 
+The [terminal evidence-or-Diagnostic coverage gate](../evaluation/terminal-coverage-gate/README.md) composes this matrix with centralized proof, renderer, soundness, admission, adversarial, fuzz, and advanced-profile gates. The resulting terminal statement is profile-scoped: a feature absent from the admitted rows does not become supported because a finite corpus passes; encountering its semantics must still constrain completeness.
+
 ## Maintenance rule
 
 Every new complete-eligible feature must add a positive complete-status test and a mutation test for its supported facts. Every unsupported boundary must have a stable Diagnostic and a generated negative case proving it cannot produce complete equality. When a partial row becomes complete-eligible, update this matrix, [`unsupported-input-properties.md`](unsupported-input-properties.md), [`v1-scope.md`](v1-scope.md), the relevant tests, and the roadmap in the same item commit.

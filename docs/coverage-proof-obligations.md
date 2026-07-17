@@ -2,7 +2,7 @@
 
 Status: enforced engine contract
 
-Last verified: 2026-07-14
+Last verified: 2026-07-17
 
 No analyzer may contribute a `complete` Structured Report merely by returning `analysis_status: "complete"`. Every analyzer result passes through one engine-owned proof gate after alignment, regions, Cause Envelopes, magnitudes, and feature coverage have been attached.
 
@@ -27,3 +27,5 @@ These obligations establish conservative coverage bookkeeping, not browser confo
 If any obligation fails, the gate emits one or more `coverage_proof_incomplete` Diagnostics, adds a guard row limiting all three evidence layers, and prevents `complete`. Failure identifiers name the violated obligation so tests and maintainers can locate the missing declaration. The gate never invents missing evidence or converts an unavailable measurement to zero.
 
 The proof gate is centralized behind the engine module interface. Individual analyzers construct their normal report slices; callers and tests observe only the validated final Structured Report.
+
+The [terminal evidence-or-Diagnostic coverage gate](../evaluation/terminal-coverage-gate/README.md) composes these obligations with the declared feature inventory, renderer dispositions, unsupported-input properties, failed admission, sound evidence graph, hostile-boundary checks, and M5 profile boundaries. Its terminal claim remains limited to the recorded Comparison Profile and implemented support contract; it does not promote coverage bookkeeping or finite tests into full SVG or browser conformance.

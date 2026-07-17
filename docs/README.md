@@ -27,6 +27,7 @@ This directory separates the current product contract from future plans and hist
 | Which gate validates alignment, regions, and causal soundness together? | [`m2-soundness-gate/README.md`](../evaluation/m2-soundness-gate/README.md) |
 | How are all currently unadopted advanced capabilities kept explicit and unable to imply equality? | [`m5-nongoal-coverage-gate/README.md`](../evaluation/m5-nongoal-coverage-gate/README.md) |
 | How does M5 prove the adopted advanced-profile set and require pinned environments for future additions? | [`m5-adopted-profile-gate/README.md`](../evaluation/m5-adopted-profile-gate/README.md) |
+| Which gate composes the terminal evidence-or-Diagnostic completeness claim? | [`terminal-coverage-gate/README.md`](../evaluation/terminal-coverage-gate/README.md) |
 | What must an analyzer prove before returning complete? | [`coverage-proof-obligations.md`](coverage-proof-obligations.md) |
 | How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
@@ -100,6 +101,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Unsupported semantics produce Diagnostics and prevent a false `complete` claim.
 - The M5 non-goal gate composes font, platform, color, renderer, dynamic, foreign-content, and generalized-resource decisions without adopting those future capabilities.
 - The M5 adopted-profile gate derives an empty current advanced set and rejects adoption without consistent implementation, concrete profile, and pinned environment evidence.
+- The terminal coverage gate composes admitted evidence, coverage proof, renderer and advanced guards, failed admission, and hostile-input checks without claiming full SVG or browser support.
 - Fixed resource budgets fail safely instead of returning a truncated difference inventory.
 - Cyclic or explosively expanding accepted local-reference graphs fail before renderer parsing.
 - Representative native release CLI workloads have measured wall-time and peak-RSS regression ceilings.

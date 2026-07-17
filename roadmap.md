@@ -291,6 +291,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | M3 compact-summary traceability gate | Composed compact JSON value identity, exact Agent projection reconstruction, Impact event-to-difference semantics, typed report-reference closure, and derived Markdown link checks without treating Markdown as a lossless evidence serialization. |
 | 2026-07-17 | M5 explicit non-goal coverage gate | Composed nine advanced-capability decisions with current product guards and false-equality probes; retained every capability as unadopted and kept external observations outside canonical authority. |
 | 2026-07-17 | M5 adopted-profile environment gate | Proved the current seven-family advanced adopted set is empty and required consistent implementation, concrete profile, pinned environment, and adoption-source evidence for any future addition. |
+| 2026-07-17 | Terminal evidence-or-Diagnostic coverage gate | Composed the declared feature inventory, renderer dispositions, centralized coverage proof, unsupported-input properties, failed admission, sound evidence graph, hostile-input suites, and M5 boundaries without widening the profile-scoped claim. |
 
 ## Milestone gates
 
@@ -324,7 +325,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 
 ## Terminal acceptance
 
-- [ ] For the declared supported profile, every real visual-semantic difference is either reported with evidence or covered by an explicit Diagnostic that prevents a false completeness claim.
+- [x] For the declared supported profile, every real visual-semantic difference is either reported with evidence or covered by an explicit Diagnostic that prevents a false completeness claim.
 - [ ] Reported magnitudes preserve exact, geometric, raster, coverage, color, and perceptual evidence where applicable.
 - [ ] A text-only agent reliably identifies the important changes, their locations, and a causally sound set of possible reasons on the accepted benchmark corpus.
 - [ ] The tool remains deterministic, installable, secure on hostile input, versioned, and reproducible across supported environments.

@@ -18,6 +18,8 @@ The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/
 
 The separate [M5 adopted-profile environment gate](../evaluation/m5-adopted-profile-gate/README.md) derives an empty current adopted set for platform fonts, beyond-sRGB color, multi-renderer work, scripts, interaction, animation, and foreign content. A future adoption must provide consistent implementation evidence plus a concrete versioned profile manifest and pinned environment manifest; reserving an identity format does not satisfy that rule.
 
+The [terminal evidence-or-Diagnostic coverage gate](../evaluation/terminal-coverage-gate/README.md) composes this profile boundary with the complete-eligible feature inventory, renderer dispositions, centralized coverage proof, failed admission, and hostile-input checks. It establishes terminal coverage closure for this declared contract only: encountered semantics either follow an admitted evidence path or prevent `complete` through a Diagnostic or failed admission.
+
 ## Implemented profile
 
 | Condition | Current behavior |

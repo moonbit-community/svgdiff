@@ -100,6 +100,8 @@ failed > partial > complete
 
 Before the summary is accepted, the engine enforces the [Coverage Proof Obligations](coverage-proof-obligations.md). An analyzer with missing feature rows or inconsistent Diagnostic references is downgraded through `coverage_proof_incomplete` rather than trusted.
 
+The [terminal evidence-or-Diagnostic coverage gate](../evaluation/terminal-coverage-gate/README.md) validates this production status composition together with admitted, guarded, unsupported, failed-admission, hostile, and advanced-profile boundaries. It closes the terminal claim only for the declared profile: no test count, raw pixel agreement, empty difference inventory, or future identity format can widen `complete` beyond this contract.
+
 The number or magnitude of Atomic Differences never changes this ordering. A large fully analyzed change can be `complete`; an apparently identical document pair containing one unsupported element is `partial`.
 
 ## Caller decision procedure

@@ -46,6 +46,8 @@ Read the report in this order:
 
 Never start by counting `atomic_differences`. A partial report with zero differences is not equality, while a complete report may contain a source distinction with zero visual effect.
 
+The [terminal evidence-or-Diagnostic coverage gate](../evaluation/terminal-coverage-gate/README.md) verifies this decision boundary across complete, partial, failed, hostile, renderer-limited, and advanced-profile cases. It does not let an Agent omit Diagnostics or restate a profile-scoped `complete` report as full SVG, browser, platform, interaction, animation, font, color, resource, or foreign-content equivalence.
+
 Do not search Structured Report for pure accessibility descriptions, RDF payloads, or custom-data changes. They are deliberately outside visual Atomic Differences. If the caller separately supplies a `SourceAuditReport`, describe it as a source-only audit and do not merge its records into Visual Events, magnitudes, regions, or main visual changes. A selector-mediated consequence from `data-*`, `aria-*`, or an outer descriptive element remains an ordinary visual property difference and should be reported from Structured Report.
 
 Treat `coverage_matrix` itself as the complete coverage summary. Group or filter its rows by `subject_id`, `feature_id`, or evidence-layer state when answering a question; do not infer a second summary from events, differences, or Diagnostic code names.

@@ -1,0 +1,88 @@
+{
+  "schema_version": "svgdiff-terminal-coverage-gate/1",
+  "claim_scope": "declared_supported_profile_schema_1_44",
+  "canonical_rule": "encountered_visual_semantics_require_evidence_or_completeness_revoking_diagnostic",
+  "required_analysis_statuses": ["complete", "partial", "failed"],
+  "obligations": [
+    {
+      "id": "profile_scope",
+      "claim": "complete_is_limited_to_one_recorded_profile_and_support_contract",
+      "boundary": "no_cross_browser_cross_profile_or_full_svg_claim",
+      "authorities": ["docs/v1-scope.md", "docs/analysis-status.md"],
+      "validation_commands": ["scripts/test-cli.sh", "scripts/test-schema-examples.sh"]
+    },
+    {
+      "id": "feature_inventory",
+      "claim": "named_static_capabilities_have_explicit_admitted_or_guarded_behavior",
+      "boundary": "wider_feature_families_remain_partial_or_failed",
+      "authorities": ["docs/feature-coverage.md", "evaluation/m2-core-static-coverage/gate.v1.json"],
+      "validation_commands": ["scripts/test-m2-core-static-coverage.sh", "scripts/test-mutations.sh"]
+    },
+    {
+      "id": "central_coverage_proof",
+      "claim": "missing_or_inconsistent_feature_layer_or_diagnostic_bookkeeping_prevents_complete",
+      "boundary": "coverage_bookkeeping_does_not_by_itself_prove_renderer_conformance",
+      "authorities": ["docs/coverage-proof-obligations.md", "engine/coverage_proof.mbt"],
+      "validation_commands": ["scripts/test-m2-renderer-coverage-gate.sh"]
+    },
+    {
+      "id": "unsupported_input_safety",
+      "claim": "unsupported_self_comparison_never_becomes_complete_empty_equality",
+      "boundary": "partial_reports_retain_supported_evidence_without_equality",
+      "authorities": ["docs/unsupported-input-properties.md", "engine/unsupported_input_property_test.mbt"],
+      "validation_commands": ["scripts/test-m2-renderer-coverage-gate.sh"]
+    },
+    {
+      "id": "renderer_disposition",
+      "claim": "every_measured_renderer_divergence_has_one_reviewed_normalizer_compositor_or_diagnostic_disposition",
+      "boundary": "browser_observations_do_not_authorize_canonical_completeness",
+      "authorities": ["docs/renderer-evaluation.md", "evaluation/m2-renderer-coverage-gate/gate.v1.json"],
+      "validation_commands": ["scripts/test-renderer-dispositions.sh", "scripts/test-m2-renderer-coverage-gate.sh"]
+    },
+    {
+      "id": "sound_evidence_graph",
+      "claim": "supported_differences_retain_alignment_localization_causal_and_reference_closure_evidence",
+      "boundary": "partial_reports_revoke_causal_sound_overapproximation",
+      "authorities": ["evaluation/m2-soundness-gate/gate.v1.json", "docs/influence-provenance.md"],
+      "validation_commands": ["scripts/test-m2-soundness-gate.sh"]
+    },
+    {
+      "id": "failed_admission",
+      "claim": "malformed_over_limit_cyclic_or_explosive_inputs_fail_instead_of_returning_truncated_equality",
+      "boundary": "failed_difference_arrays_are_not_absence_evidence",
+      "authorities": ["docs/resource-limits.md", "docs/reference-safety.md", "docs/analysis-status.md"],
+      "validation_commands": ["scripts/test-cli.sh"]
+    },
+    {
+      "id": "advanced_non_goal_coverage",
+      "claim": "unadopted_advanced_semantics_remain_explicit_and_revoke_completeness_when_encountered",
+      "boundary": "future_contracts_and_external_observations_are_not_current_evidence",
+      "authorities": ["evaluation/m5-nongoal-coverage-gate/manifest.v1.json", "docs/v1-scope.md"],
+      "validation_commands": ["scripts/test-m5-nongoal-coverage-gate.sh"]
+    },
+    {
+      "id": "advanced_adoption_boundary",
+      "claim": "the_current_advanced_adopted_set_is_empty_and_cannot_grow_without_profile_and_environment_evidence",
+      "boundary": "reserved_identity_formats_do_not_implement_capabilities",
+      "authorities": ["evaluation/m5-adopted-profile-gate/manifest.v1.json", "docs/renderer-evaluation.md"],
+      "validation_commands": ["scripts/test-m5-adopted-profile-gate.sh"]
+    },
+    {
+      "id": "hostile_boundary_regression",
+      "claim": "deterministic_adversarial_and_generated_boundary_cases_preserve_complete_partial_and_failed_distinctions",
+      "boundary": "finite_cases_exercise_but_do_not_expand_the_declared_contract",
+      "authorities": ["evaluation/adversarial/README.md", "evaluation/fuzz/README.md"],
+      "validation_commands": ["scripts/test-adversarial.sh", "scripts/test-fuzz-smoke.sh"]
+    }
+  ],
+  "forbidden_inferences": [
+    "complete_means_entire_svg_standard",
+    "complete_means_cross_browser_equivalence",
+    "empty_differences_override_partial_or_failed",
+    "raw_pixel_equality_overrides_diagnostics",
+    "missing_measurement_means_zero",
+    "partial_cause_envelope_is_complete",
+    "future_identity_format_means_implemented",
+    "finite_test_pass_rate_defines_semantic_coverage"
+  ]
+}
