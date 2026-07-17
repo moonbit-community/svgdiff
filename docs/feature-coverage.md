@@ -45,6 +45,8 @@ The canonical production-report examples validate nonempty and unique feature/su
 
 The matrix is validated by the [Coverage Proof Obligations](coverage-proof-obligations.md) before a report may remain complete. Missing rows, unjustified cells, dangling Diagnostics, and inconsistent status summaries emit `coverage_proof_incomplete` and reduce coverage.
 
+The first M2 gate is an aggregate traceability claim, not a wider completeness claim. Its [versioned gate inventory](../evaluation/m2-core-static-coverage/README.md) maps paths, transforms, viewports, CSS cascade, reuse, gradients, clipping, masking, and group compositing to the complete-eligible rows and partial boundaries below. Path remains explicitly partial, and every other capability retains its documented guard outside the admitted slice.
+
 ## Complete-eligible capabilities
 
 | Feature slice | Evidence layers | Diagnostic on the supported path | Executable coverage |

@@ -176,6 +176,7 @@ graph TD
   ISS_158["ISS-158: Decide the static foreignObject layout boundary"]
   ISS_159["ISS-159: Define generalized external resource snapshot bundles"]
   ISS_160["ISS-160: Investigate incremental and cached comparisons"]
+  ISS_161["ISS-161: Validate the M2 core static coverage gate"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -537,6 +538,16 @@ graph TD
   ISS_112 --> ISS_160
   ISS_141 --> ISS_160
   ISS_159 --> ISS_160
+  ISS_040 --> ISS_161
+  ISS_088 --> ISS_161
+  ISS_090 --> ISS_161
+  ISS_092 --> ISS_161
+  ISS_097 --> ISS_161
+  ISS_103 --> ISS_161
+  ISS_107 --> ISS_161
+  ISS_115 --> ISS_161
+  ISS_116 --> ISS_161
+  ISS_114 --> ISS_161
 ```
 
 ## Warnings
