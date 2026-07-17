@@ -108,6 +108,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0102](0102-keep-svg-script-execution-outside-canonical-analysis.md) | Accepted | Permanently exclude SVG script execution from canonical analysis while permitting only separately versioned external observations. |
 | [0103](0103-separate-declared-interaction-state-from-action-observations.md) | Accepted, not implemented | Derive future canonical pseudo-class state from typed checkpoints while keeping browser action replay observational. |
 | [0104](0104-compare-animation-at-explicit-logical-checkpoints.md) | Accepted, not implemented | Compare future declarative animation at explicit logical checkpoints while keeping samples, intervals, and browser observations distinct. |
+| [0105](0105-require-a-deterministic-host-language-engine-for-foreign-content.md) | Accepted, not implemented | Require a deterministic host-language engine for general foreign content while permitting only explicitly bounded canonical subsets. |
 
 ## CLI and distribution decisions
 

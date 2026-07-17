@@ -31,6 +31,8 @@ The renderer package identity and raster representation are also report semantic
 
 `svgdiff-animation-timeline-profile/1`, `svgdiff-animation-checkpoint-set/1`, and `svgdiff-animation-observation/1` are reserved by the accepted [animation-timeline boundary](animation-timeline-model.md), but none is a current version domain or implemented artifact. Future logical-time inputs, checkpoint derivation, and target-local replay must version independently from Structured Report Schema and from script, interaction, renderer, conformance, font, color, and resource identities. Point samples, sample sets, boundary/event sets, and continuous-interval questions are compatibility-distinct semantics.
 
+`svgdiff-foreign-object-layout-profile/1`, `svgdiff-foreign-object-xhtml-rect-slice/1`, and `svgdiff-foreign-object-observation/1` are reserved by the accepted [foreign-content boundary](foreign-object-layout-boundary.md), but none is a current version domain or implemented artifact. A future profile must version its namespace and tree-construction mode, host semantics, UA style, CSS/layout slice, SVG integration, fonts, resources, processing axes, color/rendering, limits, and evaluator build independently from Structured Report Schema. The rectangular slice is not compatible with an unclaimed wider HTML/CSS engine, and an observation identity is never a canonical profile alias.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:

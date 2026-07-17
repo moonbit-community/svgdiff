@@ -65,7 +65,7 @@ Directly supplied sets such as `hover_ids: ["box"]`, `focus_within: true`, or `a
 | `:hover`, `:active` | Derived from declared devices/coordinates/buttons through pinned hit testing and chain rules. |
 | Structural pseudo-classes such as `:root`, `:empty`, and `:nth-child()` | Separate static selector-grammar work; they need no interaction profile. |
 | Link history and `:visited` | Permanent canonical non-goal; no ambient history or privacy-sensitive state. |
-| HTML form, validation, autofill, media, fullscreen, modal, popover, and platform-widget states | Deferred or target-observation-only; current SVG and `foreignObject` boundaries do not supply their semantics. |
+| HTML form, validation, autofill, media, fullscreen, modal, popover, and platform-widget states | Deferred or target-observation-only; the accepted [Foreign Content boundary](foreign-object-layout-boundary.md) deliberately does not admit them by implication. |
 | Unknown or future dynamic pseudo-classes | Unsupported until independently classified and versioned. |
 
 CSS transitions or animations caused by a state change are not evaluated at an implicit instant. Without an implemented [Animation Timeline Profile](animation-timeline-model.md), the canonical checkpoint applies the final non-animated computed style with transition/animation execution disabled, or remains unsupported where the specification does not permit that separation. A future transition checkpoint must record the pre-change style, exact state-change tick, after-change style, and any reversal history.

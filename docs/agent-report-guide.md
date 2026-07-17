@@ -18,6 +18,8 @@ The current profile declares no interaction checkpoint, so an unsupported `:hove
 
 The current profile disables animation; it does not show the frame at `t = 0`. If future [animation timeline artifacts](animation-timeline-model.md) accompany a report, distinguish authored timing, generated effects, checkpoint kind, synchronization mode, requested and achieved time/state, sampled frame evidence, and interval-proof status. Matching finite samples do not mean equal animation, and effect-phase similarity does not mean same-document-time equality.
 
+The current profile does not lay out `foreignObject`. If future [foreign-content artifacts](foreign-object-layout-boundary.md) accompany a report, distinguish the outer SVG rectangle, namespace-qualified source tree, host-language handler, computed style, layout fragments, fonts and replaced resources, isolated surface, final SVG compositing, and coverage. Unknown namespaces or missing fonts/resources are not empty content, and matching browser pixels are not canonical semantic equality.
+
 ## Reading order
 
 Read the report in this order:

@@ -26,6 +26,8 @@ Interaction-state and action-replay capture are also outside this oracle. They m
 
 Animation-time and script-driven frame capture are outside this oracle. They must follow the separate [Animation Timeline boundary](../../docs/animation-timeline-model.md), record exact requested and achieved logical state, and cannot turn a wall-clock delay or finite sample set into canonical or interval evidence.
 
+`foreignObject` host-language layout is outside this oracle. A future browser capture must follow the [Foreign Content boundary](../../docs/foreign-object-layout-boundary.md), identify parsing mode, namespace tree, UA style, fonts, resources, state, target, and achieved layout, and remains observation or conformance evidence rather than canonical semantics.
+
 The workflow uses Playwright CLI commands. Exact transparent-background capture uses `run-code` because the ordinary CLI screenshot command does not expose `omitBackground`.
 
 ## Run

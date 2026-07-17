@@ -233,7 +233,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 - [x] **Decision** Decide how event-driven pseudo-classes and user-interaction state are declared and reproduced.
 - [x] **Decision** Define a timeline model for SMIL, CSS, and script-driven animation comparisons.
 - [ ] **Deferred** Compare animation keyframes, sampled times, or temporal difference intervals only after the timeline model is accepted.
-- [ ] **Decision** Decide whether static `foreignObject` requires an embedded deterministic HTML/CSS layout engine.
+- [x] **Decision** Decide whether static `foreignObject` requires an embedded deterministic HTML/CSS layout engine.
 - [ ] **Deferred** Render `foreignObject` only under a pinned layout, font, resource, and scripting profile.
 - [ ] **Decision** Define explicit resource bundles for assets beyond embedded and caller-supplied resources.
 - [ ] **Deferred** Add network-backed acquisition only as a separate prefetch step; never perform implicit comparison-time fetching.
@@ -281,6 +281,7 @@ These capabilities remain outside deterministic static v1 and require explicit p
 | 2026-07-17 | Script execution boundary | Permanently excluded SVG script execution from canonical analysis, retained secure-static coverage guards, and allowed only future separately versioned external observations after state, security, replay, and authority gates. |
 | 2026-07-17 | Interaction state boundary | Accepted typed checkpoint seeds plus derived pseudo-class state for future canonical work, while keeping WebDriver-style action scenarios and achieved-state evidence as target-local observations. |
 | 2026-07-17 | Animation timeline boundary | Accepted exact logical checkpoint questions with document-time locking by default, retained native mechanism and trigger state, and prohibited finite sampling or browser delay from proving temporal intervals. |
+| 2026-07-17 | Static foreignObject layout boundary | Required a deterministic host-language engine for general canonical XHTML, allowed smaller closed evaluators without wider claims, and kept browser layout as target-local observation evidence. |
 
 ## Milestone gates
 

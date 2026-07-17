@@ -189,6 +189,20 @@ No animation timeline profile, checkpoint set, or observation currently exists. 
 
 Follow the accepted [animation timeline semantics](animation-timeline-model.md). Animation-disabled output is not `t = 0`, a browser virtual-time harness is not canonical authority, and a finite checkpoint set cannot upgrade a static report or prove an interval.
 
+## Foreign content profile or observation admission
+
+No foreign-content profile, host-language engine, or observation currently exists. Before implementing or changing `svgdiff-foreign-object-layout-profile/1`, `svgdiff-foreign-object-xhtml-rect-slice/1`, or `svgdiff-foreign-object-observation/1`:
+
+1. state the Agent task, select one namespace and deliberately closed markup/CSS/layout slice, and reject every unlisted host language or feature without treating it as empty;
+2. version source MIME and tree construction, namespace handling, host semantics, UA style, CSS modules, SVG integration, fonts, resources, processing axes, color/rendering, limits, evaluator/build, and normalized manifest identity;
+3. preserve authored markup, computed style, box/line/glyph/replaced-content layout, isolated surfaces, final SVG compositing, coverage, alignment, and conservative provenance separately;
+4. add exact positive, equivalent, malformed, wrong-namespace, unsupported, missing font/resource, overflow, transform/effect, stacking, platform-widget, limit, and hostile-input controls;
+5. prove the applicable deterministic font, resource, cascade, selector, layout, paint, compositing, renderer-conformance, no-I/O, no-script, no-ambient-state, and process-isolation obligations;
+6. for browser observations, record parsing mode and achieved namespace tree, exact target/OS/UA style/fonts/resources/state/layout/output, repeats, divergences, failures, and target-local authority; and
+7. run compatibility, determinism, security, resource, renderer, Agent, adversarial, performance, and cross-host gates before product or release integration.
+
+Follow the accepted [foreign-content semantics](foreign-object-layout-boundary.md). A DOM or CSS parser is not layout support, a bounded evaluator is not general XHTML support, and browser pixels cannot upgrade current report coverage.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.

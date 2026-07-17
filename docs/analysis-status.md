@@ -14,6 +14,8 @@ The current profile also declares no interaction state. Unsupported pseudo-class
 
 The current profile also disables animation rather than sampling it at zero. A future [Animation Timeline Profile](animation-timeline-model.md) would scope completeness to one exact resolved checkpoint or independently proven interval; matching finite samples or an external browser replay cannot upgrade current status or establish temporal equality.
 
+The current profile has no `foreignObject` host-language layout engine. Even empty or identical foreign content keeps the affected report partial; outer geometry or matching browser pixels cannot upgrade status. A future [Foreign Object Layout Profile](foreign-object-layout-boundary.md) would establish completeness only for its exact namespace, markup, style, layout, font, resource, paint, and SVG-integration subset.
+
 ## Status summary
 
 | Status | Comparison result available | Complete equality conclusion allowed | CLI exit status |
@@ -44,7 +46,7 @@ A complete report with no Atomic Differences supports this statement:
 It does not support any of these stronger statements:
 
 - the source files are byte-for-byte or XML-identical;
-- the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource environment, background, browser, future interaction state, animation checkpoint, or temporal interval;
+- the SVGs are equivalent under another viewport, DPR, renderer, font environment, resource environment, background, browser, future interaction state, animation checkpoint, temporal interval, or foreign-content profile;
 - the SVGs would remain equivalent after the support contract expands;
 - nonvisual metadata is identical.
 

@@ -135,3 +135,11 @@ _Avoid_: Video, sampled interval proof, settled final frame
 **Animation Observation**:
 An external target-specific virtual-time and capture replay for script-driven or browser-specific animation, retaining requested and achieved time and state.
 _Avoid_: Canonical timeline result, screenshot after sleep, browser truth
+
+**Foreign Object Layout Profile**:
+A future closed host-language execution contract for one namespace and admitted markup, UA style, CSS layout, font, resource, paint, and SVG-integration subset.
+_Avoid_: Browser name, outer foreignObject rectangle, generic HTML support
+
+**Foreign Object Observation**:
+An external target-specific parse, layout, and render capture for foreign content with exact environment, achieved tree/state, and output evidence.
+_Avoid_: Canonical layout, screenshot truth, unknown-namespace fallback

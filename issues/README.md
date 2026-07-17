@@ -173,6 +173,7 @@ graph TD
   ISS_155["ISS-155: Decide the deterministic SVG scripting boundary"]
   ISS_156["ISS-156: Define reproducible interaction-state semantics"]
   ISS_157["ISS-157: Define the dynamic comparison timeline model"]
+  ISS_158["ISS-158: Decide the static foreignObject layout boundary"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -514,6 +515,11 @@ graph TD
   ISS_155 --> ISS_156
   ISS_155 --> ISS_157
   ISS_156 --> ISS_157
+  ISS_151 --> ISS_158
+  ISS_153 --> ISS_158
+  ISS_155 --> ISS_158
+  ISS_156 --> ISS_158
+  ISS_157 --> ISS_158
 ```
 
 ## Warnings

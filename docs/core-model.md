@@ -22,6 +22,8 @@ The current seam likewise has no pointer, focus, URL-target, activation, or acti
 
 The current seam has no animation timeline and disabled animation is not an animated sample at `t = 0`. The accepted [Animation Timeline Model](animation-timeline-model.md) reserves future exact logical checkpoints for closed declarative subsets, keeps same-document-time, logical-event, effect-phase, and external-frame questions distinct, and does not permit finite samples to establish interval equality.
 
+The current seam also has no host-language layout engine for `foreignObject`. Its outer SVG geometry cannot establish descendant XHTML or other namespace semantics. The accepted [Foreign Content boundary](foreign-object-layout-boundary.md) requires a separately versioned deterministic host-language engine for general canonical support, permits a smaller closed evaluator only for its named subset, and keeps browser output observational.
+
 ## Current pipeline
 
 ```text

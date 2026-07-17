@@ -83,6 +83,10 @@ The accepted [color-management profile boundary](color-management-profiles.md) a
 
 The accepted [multi-renderer boundary](multi-renderer-profiles.md) supports both same-target profile sensitivity and same-profile renderer conformance, but only as separate typed edges over independently identified cells. A target-plus-profile diagonal remains confounded, cross-environment browser output is a target observation rather than pure engine conformance, and no majority can replace the canonical report or a reviewed divergence disposition.
 
+### Future foreign-content layout
+
+The accepted [foreign-content boundary](foreign-object-layout-boundary.md) does not treat the pinned SVG renderer or Chromium oracle as a hidden HTML/CSS layout engine. General canonical XHTML requires a separately profiled deterministic host-language engine. The initial rectangular XHTML slice remains unimplemented and must prove its box and paint records plus outer SVG integration before any renderer disposition can expand coverage; browser output remains conformance or target-local observation evidence.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:
