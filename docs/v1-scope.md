@@ -16,6 +16,8 @@ When an input leaves the supported slice, the engine emits Diagnostics and chang
 
 The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) composes the current boundaries for deterministic and platform fonts, beyond-sRGB color, multi-renderer comparison, scripts, interaction, animation, `foreignObject`, and generalized external resources. None is an adopted capability. Encountered unsupported authored semantics remain `partial` or fail admission; platform and browser observations remain non-canonical; and accepted future profile identities do not widen this contract.
 
+The separate [M5 adopted-profile environment gate](../evaluation/m5-adopted-profile-gate/README.md) derives an empty current adopted set for platform fonts, beyond-sRGB color, multi-renderer work, scripts, interaction, animation, and foreign content. A future adoption must provide consistent implementation evidence plus a concrete versioned profile manifest and pinned environment manifest; reserving an identity format does not satisfy that rule.
+
 ## Implemented profile
 
 | Condition | Current behavior |

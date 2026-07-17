@@ -2,7 +2,7 @@
 
 Status: current dependency decision
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 This file records the current production decision and unresolved renderer blockers. Detailed experiment output is retained in [research](research/README.md), including the archived [Influence Provenance prototype verdict](research/influence-provenance-prototype.md).
 
@@ -95,7 +95,7 @@ The accepted [Resource Snapshot boundary](general-resource-snapshot-bundles.md) 
 
 ### Composed M5 authority boundary
 
-The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) validates these renderer-adjacent decisions together with fonts, scripts, interaction, animation, and color. Passing it does not adopt a backend or profile. A browser, platform stack, physical display, or alternate renderer remains a separately identified observation; neither exact pixels nor a majority of observations can override one canonical report's renderer identity, coverage matrix, or Diagnostics.
+The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) validates these renderer-adjacent decisions together with fonts, scripts, interaction, animation, and color. The [M5 adopted-profile environment gate](../evaluation/m5-adopted-profile-gate/README.md) independently proves that the current advanced adopted set is empty and requires implementation, concrete profile, and pinned environment manifests to agree before that set can grow. Passing either gate does not adopt a backend or profile. A browser, platform stack, physical display, or alternate renderer remains a separately identified observation; neither exact pixels nor a majority of observations can override one canonical report's renderer identity, coverage matrix, or Diagnostics.
 
 ## Escalation rule
 

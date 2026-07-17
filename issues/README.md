@@ -182,6 +182,7 @@ graph TD
   ISS_164["ISS-164: Validate the M3 report-only language-model benchmark"]
   ISS_165["ISS-165: Validate the M3 compact-summary traceability gate"]
   ISS_166["ISS-166: Validate the M5 explicit non-goal coverage gate"]
+  ISS_167["ISS-167: Validate the M5 adopted-profile environment gate"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -615,6 +616,17 @@ graph TD
   ISS_158 --> ISS_166
   ISS_159 --> ISS_166
   ISS_162 --> ISS_166
+  ISS_046 --> ISS_167
+  ISS_150 --> ISS_167
+  ISS_151 --> ISS_167
+  ISS_152 --> ISS_167
+  ISS_153 --> ISS_167
+  ISS_154 --> ISS_167
+  ISS_155 --> ISS_167
+  ISS_156 --> ISS_167
+  ISS_157 --> ISS_167
+  ISS_158 --> ISS_167
+  ISS_166 --> ISS_167
 ```
 
 ## Warnings
