@@ -27,6 +27,8 @@ The v1 contract forbids:
 
 Those execution choices require a separately versioned Font Execution Profile. The accepted [Font Runtime dependency contract](font-runtime-dependencies.md) selects a future implementation seam, but it does not weaken this resource boundary or add current execution support.
 
+Supplying the same closed bundle to CoreText, DirectWrite, or a browser can support an external [Platform Font Observation](platform-native-font-modes.md), but exact resource bytes do not make that platform stack canonical or portable.
+
 ## Manifest
 
 The manifest is strict UTF-8 JSON with exactly five top-level fields. Every string is ASCII in v1, object fields are closed, resource and provenance arrays are ordered by `resource_id`, license records are ordered by `license_id`, and face indices are ascending and contiguous from zero.

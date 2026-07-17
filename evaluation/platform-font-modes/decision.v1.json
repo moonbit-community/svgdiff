@@ -1,0 +1,69 @@
+{
+  "schema_version": "svgdiff-platform-font-mode-decision/1",
+  "observation_identity_format": "svgdiff-platform-font-observation/1",
+  "classifications": [
+    {
+      "mode": "project_runtime_closed_bundle",
+      "status": "future_canonical_candidate_after_separate_gates",
+      "structured_report_evidence": false
+    },
+    {
+      "mode": "platform_native_closed_bundle",
+      "status": "conditionally_permitted_external_observation",
+      "maximum_role": "named_target_conformance_input",
+      "structured_report_evidence": false
+    },
+    {
+      "mode": "browser_closed_bundle",
+      "status": "conditionally_permitted_external_observation",
+      "maximum_role": "named_browser_conformance_input",
+      "structured_report_evidence": false
+    },
+    {
+      "mode": "platform_or_browser_ambient_fonts",
+      "status": "ambient_unreproducible",
+      "maximum_role": "exploratory_capture",
+      "structured_report_evidence": false
+    },
+    {
+      "mode": "platform_native_canonical_execution",
+      "status": "permanent_non_goal",
+      "structured_report_evidence": false
+    }
+  ],
+  "canonical_forbidden_inputs": [
+    "automatic_font_substitution",
+    "downloadable_fonts",
+    "generic_families",
+    "local_font_sources",
+    "network_font_services",
+    "platform_fallback",
+    "system_font_discovery",
+    "user_installed_font_discovery"
+  ],
+  "required_observation_identity_groups": [
+    "capture_tool_and_output",
+    "execution_and_font_inputs",
+    "framework_os_and_target",
+    "layout_and_raster_options",
+    "locale_user_device_and_backend_state",
+    "repeatability_and_hidden_state",
+    "viewport_color_and_compositing"
+  ],
+  "canonical_claims_forbidden": [
+    "causal_completeness",
+    "complete_analysis",
+    "difference_magnitude",
+    "impact_assessment",
+    "structured_report_evidence",
+    "visual_equality",
+    "zero_rendered_difference"
+  ],
+  "conformance_effect_requires_separate_review": true,
+  "multi_renderer_semantics_still_open": true,
+  "product_backend_implemented": false,
+  "report_schema_change": false,
+  "public_api_change": false,
+  "module_dependency_change": false,
+  "default_ci_change": false
+}

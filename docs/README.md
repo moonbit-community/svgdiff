@@ -31,6 +31,7 @@ This directory separates the current product contract from future plans and hist
 | How are explicit local raster resources supplied without implicit I/O? | [`library-api.md`](library-api.md), [`resource-limits.md`](resource-limits.md), and [bundle policy research](research/local-resource-bundle-policy.md) |
 | What exact font-resource input must exist before deterministic text can be implemented? | [`font-resource-bundle.md`](font-resource-bundle.md) |
 | Which shaping and glyph-rasterization dependencies and ownership boundary are accepted for future work? | [`font-runtime-dependencies.md`](font-runtime-dependencies.md) |
+| Can CoreText, DirectWrite, browsers, or system-font output become a canonical font profile? | [`platform-native-font-modes.md`](platform-native-font-modes.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |
@@ -118,6 +119,7 @@ These files must be updated whenever behavior changes:
 - [`dependency-security.md`](dependency-security.md): resolved licenses, input/output security boundary, and live blockers.
 - [`font-resource-bundle.md`](font-resource-bundle.md): accepted future font-byte, face, fingerprint, licensing, and reproducibility input boundary; explicitly not current font execution.
 - [`font-runtime-dependencies.md`](font-runtime-dependencies.md): accepted exact-source shaping/raster stack, private workspace-module seam, initial execution slice, and implementation gates; explicitly not a current dependency or capability.
+- [`platform-native-font-modes.md`](platform-native-font-modes.md): permanent canonical exclusion of native font stacks plus the exact external-observation and ambient-capture claim boundary.
 
 ### Planning
 

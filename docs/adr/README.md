@@ -102,6 +102,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0096](0096-keep-lpips-outside-product-semantics.md) | Accepted | Retain LPIPS only as a pinned optional offline experiment, never equality, canonical evidence, Impact, or a default dependency. |
 | [0097](0097-separate-font-bundle-rendering-identity-from-legal-metadata.md) | Accepted, not implemented | Separate exact font-resource rendering identity from complete legal/provenance manifest integrity and later execution policy. |
 | [0098](0098-own-a-pinned-font-runtime-module.md) | Accepted, not implemented | Own exact-source HarfBuzz and FreeType behind a separately versioned private workspace module and bounded initial execution slice. |
+| [0099](0099-keep-platform-font-rendering-observational.md) | Accepted | Permanently exclude platform-native font stacks from canonical execution while permitting bounded external observations. |
 
 ## CLI and distribution decisions
 

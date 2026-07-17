@@ -212,7 +212,7 @@ This phase is explicitly recorded but not currently scheduled. It expands [ISS-0
 - [ ] **Deferred** Align text subjects, runs, and glyph outcomes across edits.
 - [ ] **Deferred** Compute deterministic glyph bounds, Difference Regions, magnitudes, and Cause Envelopes.
 - [ ] **Deferred** Add multilingual, fallback, emoji, ligature, vertical-text, and variable-font fixtures.
-- [ ] **Decision** Decide whether platform-native font rendering modes are supported profiles or permanent non-goals.
+- [x] **Decision** Decide whether platform-native font rendering modes are supported profiles or permanent non-goals.
 
 ## Phase 9: Color, backgrounds, and renderer profiles
 

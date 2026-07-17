@@ -167,6 +167,7 @@ graph TD
   ISS_149["ISS-149: Evaluate LPIPS as an optional offline experiment"]
   ISS_150["ISS-150: Define the deterministic font-resource bundle contract"]
   ISS_151["ISS-151: Select deterministic shaping and glyph-rasterization dependencies"]
+  ISS_152["ISS-152: Decide the platform-native font rendering boundary"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -494,6 +495,7 @@ graph TD
   ISS_133 --> ISS_149
   ISS_134 --> ISS_149
   ISS_150 --> ISS_151
+  ISS_151 --> ISS_152
 ```
 
 ## Warnings

@@ -69,6 +69,10 @@ Every divergence now has an executable disposition. A browser-invisible `1.0` to
 
 Current reports project those encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The structured records expose stable capability IDs and `guarded` or `unavailable` status without pretending to be a global renderer support inventory.
 
+### Platform font observations
+
+The accepted [platform-native font boundary](platform-native-font-modes.md) extends the same oracle separation to CoreText, DirectWrite, browser text, and comparable system stacks. They are permanently excluded from canonical Font Execution Profiles. A future exact-bundle capture may be a named-target external conformance observation; an ambient system-font capture is exploratory and unreproducible. Neither can enter Structured Report equality, magnitude, coverage, Impact, regions, or causality directly.
+
 ## Escalation rule
 
 The detailed and quantitative admission policy is the [Renderer Upstream and Ownership Gate](renderer-ownership-gate.md). For each missing capability:
@@ -93,3 +97,4 @@ One minimized dependency-owned failure is enough for a focused upstream patch. O
 - [Pinned renderer conformance baseline](../evaluation/renderer-conformance/README.md)
 - [Alternate-scale renderer QA baseline](../evaluation/alternate-scale/README.md)
 - [Dependency, security, and upstream status](dependency-security.md)
+- [Platform-native font rendering boundary](platform-native-font-modes.md)

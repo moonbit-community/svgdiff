@@ -16,6 +16,8 @@ The browser oracle renders supported deterministic SVG fixtures in headless Chro
 - SVG loaded from a base64 data URL while the browser context is offline;
 - no font, network, animation-time, or interaction-state fixture.
 
+Any future browser text capture must follow the separate [Platform Font Observation boundary](../../docs/platform-native-font-modes.md). Exact bundled-font output remains external conformance evidence; ambient browser/system-font output cannot become a reproducible baseline or complete report evidence.
+
 The workflow uses Playwright CLI commands. Exact transparent-background capture uses `run-code` because the ordinary CLI screenshot command does not expose `omitBackground`.
 
 ## Run

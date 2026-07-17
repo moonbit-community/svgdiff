@@ -96,6 +96,8 @@ A `svgdiff-font-runtime-build/1` record must include:
 
 The future Font Execution Profile must reference this build identity, the Font Bundle Fingerprint and manifest digest, `svgdiff-font-execution-slice/1`, all matching/shaping/layout/raster options and limits, and the target identity whenever cross-target output equality has not been proven. Pinning source does not by itself promise cross-compiler, cross-platform, or cross-version pixel equality.
 
+CoreText, DirectWrite, browsers, and other native font stacks cannot substitute for this build identity. The accepted [platform-native font boundary](platform-native-font-modes.md) permits them only as external target-specific observations, never canonical Font Execution Profiles or complete evidence.
+
 ## Acceptance before product use
 
 Implementation remains blocked on all of the following:

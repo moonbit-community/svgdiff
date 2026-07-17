@@ -91,3 +91,7 @@ _Avoid_: System font stack, text layout engine, upstream API
 **Font Runtime Build Identity**:
 The exact identity of font-runtime sources, patches, configuration, toolchain, target, static artifacts, shim, and linked binary.
 _Avoid_: Library name, Font Bundle Fingerprint, execution result
+
+**Platform Font Observation**:
+An external target-specific capture from CoreText, DirectWrite, a browser, or another platform stack; it is never canonical Structured Report evidence.
+_Avoid_: Font Execution Profile, renderer truth, complete analysis
