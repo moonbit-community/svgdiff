@@ -2,7 +2,7 @@
 
 Status: native packaging and publication contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 Run `sh scripts/package-release.sh`. From a clean checkout, it builds the native release executable and creates `dist/svgdiff-<version>-<os>-<architecture>/` with:
 
@@ -45,3 +45,5 @@ git push origin v0.5.30
 Replace `0.5.30` with the current `moon.mod` version. The workflow rejects any mismatch before packaging and uses `--verify-tag` before publication.
 
 This metadata is an unsigned project attestation. The release does not claim SLSA conformance, an SBOM, hermetic or cross-toolchain reproducible builds, malware scanning, code signing, or macOS notarization. The fixed hosted matrix and canonical corpus are tested; that is not exhaustive proof over all platform environments or SVG inputs.
+
+The [terminal operational gate](../evaluation/terminal-operational-gate/README.md) validates this archive and workflow contract together with local installation, report determinism, version dispatch, and the documented hostile-input boundary. Its reproducibility claim covers canonical behavior on the exact supported matrix, not identical archive or executable bytes.

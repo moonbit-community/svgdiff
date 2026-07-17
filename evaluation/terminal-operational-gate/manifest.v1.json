@@ -1,0 +1,115 @@
+{
+  "schema_version": "svgdiff-terminal-operational-gate/1",
+  "claim_scope": "documented_local_product_and_supported_native_matrix",
+  "obligations": [
+    {
+      "id": "deterministic",
+      "controls": [
+        "byte_stable_default_and_compact_reports",
+        "globally_unique_closed_report_references",
+        "deterministic_fixed_seed_fuzz_results",
+        "same_revision_platform_neutral_report_bundle"
+      ],
+      "authorities": ["docs/report-determinism.md", "evaluation/determinism/README.md", "evaluation/fuzz/README.md"],
+      "suites": ["scripts/test-report-determinism.sh", "scripts/test-fuzz-smoke.sh"]
+    },
+    {
+      "id": "installable",
+      "controls": [
+        "documented_source_install_to_path",
+        "installed_binary_runs_outside_checkout",
+        "deterministic_reinstall",
+        "checksummed_archive_with_provenance_license_and_notices"
+      ],
+      "authorities": ["README.md", "release/README.md", "scripts/install.sh", "scripts/package-release.sh"],
+      "suites": ["scripts/test-install.sh", "scripts/test-release-bundle.sh", "scripts/test-module-package.sh"]
+    },
+    {
+      "id": "hostile_input_security",
+      "controls": [
+        "strict_bounded_xml_and_semantic_admission",
+        "no_svg_script_execution_or_implicit_network_fetch",
+        "fixed_input_structure_raster_region_and_report_limits",
+        "cycle_and_transitive_reference_expansion_rejection",
+        "schema_valid_failed_reports_instead_of_truncated_inventory",
+        "sandboxed_escaped_offline_html_previews",
+        "deterministic_fuzz_and_adversarial_regressions"
+      ],
+      "authorities": ["docs/dependency-security.md", "docs/resource-limits.md", "docs/reference-safety.md", "evaluation/html-security/README.md"],
+      "suites": ["scripts/test-fuzz-smoke.sh", "scripts/test-adversarial.sh", "scripts/test-html-security.sh"]
+    },
+    {
+      "id": "versioned",
+      "controls": [
+        "module_and_cli_semver",
+        "structured_report_schema_registry",
+        "agent_projection_identity",
+        "renderer_and_conformance_identity",
+        "domain_ordering_and_impact_policy_identity",
+        "explicit_compatibility_dispatch_and_rejection"
+      ],
+      "authorities": ["docs/versioning.md", "schema/registry.v1.json", "evaluation/compatibility/README.md"],
+      "suites": ["scripts/test-versioning.sh", "scripts/test-compatibility.sh", "scripts/test-cli.sh"]
+    },
+    {
+      "id": "supported_environment_reproducibility",
+      "controls": [
+        "fixed_runner_and_architecture_matrix",
+        "native_release_candidate_tests_per_target",
+        "complete_platform_neutral_report_bundle",
+        "exact_cross_platform_report_bytes",
+        "fixed_archive_inventory_checksums_and_provenance"
+      ],
+      "authorities": [".github/workflows/ci.yml", ".github/workflows/release.yml", "release/README.md", "evaluation/determinism/README.md"],
+      "suites": ["scripts/test-cross-platform-determinism.sh", "scripts/test-release-bundle.sh"]
+    }
+  ],
+  "supported_environments": [
+    {
+      "platform": "linux-x64",
+      "runner": "ubuntu-24.04",
+      "expected_arch": "X64",
+      "executable": "svgdiff"
+    },
+    {
+      "platform": "windows-x64",
+      "runner": "windows-2025",
+      "expected_arch": "X64",
+      "executable": "svgdiff.exe"
+    },
+    {
+      "platform": "macos-arm64",
+      "runner": "macos-15",
+      "expected_arch": "ARM64",
+      "executable": "svgdiff"
+    }
+  ],
+  "security_non_guarantees": [
+    "not_process_or_multi_tenant_isolation",
+    "not_a_hard_deadline_or_peak_memory_limit_for_arbitrary_inputs",
+    "not_exhaustive_or_coverage_guided_fuzz_proof",
+    "not_safe_for_an_unauthenticated_hostile_upload_service",
+    "not_signed_notarized_or_slsa_attested",
+    "not_bit_identical_executables_or_cross_toolchain_reproducibility"
+  ],
+  "workflow_bindings": {
+    "ci": ".github/workflows/ci.yml",
+    "release": ".github/workflows/release.yml",
+    "native_release_executable": "_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe",
+    "determinism_bundle_version": "svgdiff-determinism-bundle/1",
+    "release_provenance_version": "svgdiff-release-provenance/2"
+  },
+  "suite_commands": [
+    "sh scripts/test-report-determinism.sh",
+    "sh scripts/test-cross-platform-determinism.sh",
+    "sh scripts/test-install.sh",
+    "sh scripts/test-release-bundle.sh",
+    "sh scripts/test-module-package.sh",
+    "sh scripts/test-versioning.sh",
+    "sh scripts/test-compatibility.sh",
+    "sh scripts/test-cli.sh",
+    "sh scripts/test-fuzz-smoke.sh",
+    "sh scripts/test-adversarial.sh",
+    "sh scripts/test-html-security.sh"
+  ]
+}

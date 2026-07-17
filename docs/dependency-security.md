@@ -12,6 +12,8 @@ The M3 compact-summary traceability gate adds no runtime or release dependency. 
 
 The [M5 explicit non-goal coverage gate](../evaluation/m5-nongoal-coverage-gate/README.md) likewise adds no product dependency or execution path. It validates decision artifacts, current Diagnostics, zero implicit comparison-time I/O, and production false-equality probes. Future identity strings in its manifest are reservations only: they do not vendor font, color, browser, script, interaction, animation, layout, renderer, resolver, or acquisition runtimes.
 
+The [terminal operational gate](../evaluation/terminal-operational-gate/README.md) composes the current local threat model with installation, determinism, versioning, and supported-native-matrix evidence. Its hostile-input claim is limited to strict bounded admission, no script execution or implicit network access, unsafe reference-graph rejection, bounded failed reports, deterministic fuzz/adversarial regressions, and sandboxed offline HTML previews. The known gaps below remain explicit and prevent treating the CLI as a process-isolated multi-tenant or unauthenticated upload service.
+
 ## Resolved dependencies and licenses
 
 | Dependency | Relationship | Resolved version | Manifest license | License file in installed package |

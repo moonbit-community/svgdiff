@@ -188,6 +188,7 @@ graph TD
   ISS_170["ISS-170: Validate terminal multidimensional magnitude preservation"]
   ISS_171["ISS-171: Validate terminal text-only Agent reliability"]
   ISS_172["ISS-172: Repair the cross-platform determinism executable path"]
+  ISS_173["ISS-173: Validate terminal operational readiness"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -680,6 +681,22 @@ graph TD
   ISS_022 --> ISS_172
   ISS_058 --> ISS_172
   ISS_085 --> ISS_172
+  ISS_034 --> ISS_173
+  ISS_035 --> ISS_173
+  ISS_037 --> ISS_173
+  ISS_051 --> ISS_173
+  ISS_053 --> ISS_173
+  ISS_054 --> ISS_173
+  ISS_058 --> ISS_173
+  ISS_075 --> ISS_173
+  ISS_076 --> ISS_173
+  ISS_079 --> ISS_173
+  ISS_080 --> ISS_173
+  ISS_085 --> ISS_173
+  ISS_086 --> ISS_173
+  ISS_168 --> ISS_173
+  ISS_169 --> ISS_173
+  ISS_172 --> ISS_173
 ```
 
 ## Warnings

@@ -30,6 +30,7 @@ This directory separates the current product contract from future plans and hist
 | Which gate composes the terminal evidence-or-Diagnostic completeness claim? | [`terminal-coverage-gate/README.md`](../evaluation/terminal-coverage-gate/README.md) |
 | Which gate validates terminal multidimensional magnitude preservation? | [`terminal-magnitude-gate/README.md`](../evaluation/terminal-magnitude-gate/README.md) |
 | Which gate validates terminal text-only Agent reliability? | [`terminal-agent-reliability-gate/README.md`](../evaluation/terminal-agent-reliability-gate/README.md) |
+| Which gate composes terminal operational readiness? | [`terminal-operational-gate/README.md`](../evaluation/terminal-operational-gate/README.md) |
 | What must an analyzer prove before returning complete? | [`coverage-proof-obligations.md`](coverage-proof-obligations.md) |
 | How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |
@@ -106,6 +107,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - The terminal coverage gate composes admitted evidence, coverage proof, renderer and advanced guards, failed admission, and hostile-input checks without claiming full SVG or browser support.
 - The terminal magnitude gate preserves nine named raw evidence families and unavailable states without creating a universal scalar, visibility flag, severity class, or calibrated Impact order.
 - The terminal Agent reliability gate binds the accepted thirteen-case model observation to separate change, main-event, localization, possible-cause, coverage, traceability, and hard-safety obligations while retaining report-layer soundness as an independent prerequisite.
+- The terminal operational gate composes deterministic reports, installation and release archives, the documented hostile-input boundary, compatibility identities, and the fixed three-target native matrix without claiming a multi-tenant sandbox or reproducible executable bytes.
 - Fixed resource budgets fail safely instead of returning a truncated difference inventory.
 - Cyclic or explosively expanding accepted local-reference graphs fail before renderer parsing.
 - Representative native release CLI workloads have measured wall-time and peak-RSS regression ceilings.

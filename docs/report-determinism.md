@@ -2,7 +2,7 @@
 
 Status: current schema `1.44` contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 For the same executable, exact before and after SVG bytes, exact ordered resource-bundle entries, and Comparison Profile, `svgdiff` emits the same Structured Report content, array ordering, report-local identifiers, and serialization bytes on repeated runs. Default formatted JSON and compact Agent JSON have different whitespace but decode to exactly the same report evidence.
 
@@ -63,3 +63,5 @@ Repeated identical comparisons preserve every emitted array order. Same-domain d
 Rendered entity alignments are emitted first. Equal-cardinality repeated exact visual and reportable source-semantic signatures emit one equivalence-class alignment with endpoints in source traversal order but no pairwise positional meaning. Remaining same-kind candidates are stably sorted by their visual, hierarchy, cumulative-transform, and conservative-bounds signature and source index before the deterministic Hungarian assignment minimizes `rendered_geometry_feature_distance_v1`. Equal costs retain the first candidate in that order, and selected pairs emit by before then after source index. Source-structural entity and resource alignments follow in authored traversal order: recursive semantic-signature classes, authored-ID matches, structural-path matches, stable same-kind matches in sorted kind order, deletions, then insertions. Image resource alignments follow their entity placement alignments. Every tied class or fallback remains explicitly tied and uncalibrated.
 
 The executable gate is the [determinism evaluation](../evaluation/determinism/README.md). It uses independent release-CLI processes, both JSON modes, a non-default viewport, multi-event output, partial reports, negative integrity controls, and exact bundle comparison across the supported platform matrix.
+
+The [terminal operational gate](../evaluation/terminal-operational-gate/README.md) composes this report-byte contract with installation, archive provenance, version dispatch, hostile-input controls, and the fixed CI/release matrix. It does not reinterpret report determinism as bit-identical executable or cross-toolchain reproducibility.

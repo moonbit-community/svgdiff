@@ -266,6 +266,8 @@ The opt-in [report-only language-model benchmark](evaluation/language-model-benc
 
 The [terminal Agent reliability gate](evaluation/terminal-agent-reliability-gate/README.md) binds that retained observation to explicit change-inventory, accepted-main-event, localization, possible-cause, coverage, traceability, and safety targets while checking report-region and Cause Envelope soundness independently. Its claim is limited to the pinned observation and is not a guarantee for another model or future run.
 
+The [terminal operational gate](evaluation/terminal-operational-gate/README.md) composes deterministic report bytes, installation and release archives, fixed hostile-input controls, contract identities, and the three-target native CI/release matrix. The security claim is bounded local processing, not a multi-tenant sandbox or unauthenticated upload service; the reproducibility claim covers canonical behavior, not bit-identical executables or cross-toolchain builds.
+
 The [M3 compact-summary traceability gate](evaluation/m3-summary-traceability-gate/README.md) verifies that compact JSON remains the complete report, Agent projection streams reconstruct it exactly, and Impact/Markdown summary IDs lead into the closed evidence graph without making Markdown a second source of truth.
 
 ## Documentation
