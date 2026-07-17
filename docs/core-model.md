@@ -237,6 +237,8 @@ A `CauseEnvelope` is a conservative set of Changed Fact IDs that may have caused
 
 The engine may safely widen an envelope to all Changed Facts when it lacks a sound independence rule. It must not prune candidates speculatively. The detailed contract and proof discipline live in [Influence Provenance and Causal Completeness](influence-provenance.md).
 
+For complete source-input propagation, the engine retains every fact directly linked to an event and queries a private token index built from `ChangedFact.affected_subject_ids`. Entity events use the before/after rendered identities of their Subject Alignment, including use-instance identity and one-sided presence; resource and relationship events use their direct facts' conservative affected-subject fan-out. This index covers admitted geometry, paint, resources, transforms, viewport mapping, and structural inputs. Intermediate effects and compositing may still require a broader candidate fallback; neither path is an exact contribution claim.
+
 ### Visual Event
 
 A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.44` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.

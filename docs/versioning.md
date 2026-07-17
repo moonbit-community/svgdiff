@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -10,7 +10,7 @@ Last verified: 2026-07-16
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.28` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.5.29` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.44` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
 | Diagnostics | Schema `1.44` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
@@ -134,6 +134,8 @@ Module `0.5.26` deepens the existing self-contained HTML presentation into a com
 Module `0.5.27` and raster codec `0.1.1` classify embedded PNG/JPEG color metadata before pixel interpretation. Explicit PNG `sRGB` remains admitted; embedded ICC and other non-v1 profile metadata emit `embedded_raster_color_profile_unsupported`, while HDR metadata and samples above 8 bits emit `embedded_raster_hdr_unsupported`. Both data URLs and caller bundles retain exact locator spans, encoded hashes, source kind, intrinsic dimensions, placement, and resource identity without conversion, clipping, or tone mapping. The new stable Diagnostic codes advance Structured Report schema to `1.44`; Agent projection, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 Module `0.5.28` attaches transform events only to pixel components intersecting the union of their before/after cumulative painted bounds, including admitted stroke, marker, clip, and mask effects. Incomplete same-document filter graphs retain the resolved filter region as a conservative Difference Region upper bound, so unsupported SVG shadow and other opaque primitive changes remain localizable without claiming computed pixels, magnitude, or causal completeness. Invalid or external filter functions without a resolved region remain unlocalized. Structured Report schema `1.44`, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
+
+Module `0.5.29` materializes analyzer-owned Changed Fact fan-out as a private rendered-subject influence-token index. Complete entity events retain direct tokens and query both sides of their entity-role Subject Alignment, including one-sided presence and concrete use-instance identity; resource and relationship events query the affected subjects of their direct facts. Geometry, paint, resource, transform, viewport, and structural tokens can therefore reach a Cause Envelope even when event grouping does not duplicate the same direct link, while unrelated-subject facts remain prunable. Partial reports and compositing dependency events retain their comparison-wide fallbacks. Structured Report schema `1.44`, public fields, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 ## Structured Report schema versions
 

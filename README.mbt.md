@@ -78,7 +78,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.28` with `moon add Milky2018/svgdiff@0.5.28` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.29` with `moon add Milky2018/svgdiff@0.5.29` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -225,7 +225,7 @@ or create severity, visibility, equality, or unique-cause claims.
 - role-typed set-to-set alignment for Visual Entities and Visual Resources: rendered shapes and guarded paths use transform- and conservative-painted-bounds-aware exact signatures plus bounded device-space feature distance, repeated exact subjects retain equivalence classes, `use` instances retain rendered paths, groups/text/use hosts use source-structural entity alignment, and visual definitions plus intrinsic image content use independent resource alignments referenced by every resource Atomic Difference;
 - geometry, exact normalized path parameter and topology, fill, stroke paint, canonical length-aware stroke width/caps/joins/miter limits/dashes/dash offsets/vector effects, local marker attachments and length-aware resource viewport/orientation properties, leaf and isolated container opacity, static alpha/luminance masks, bounded static `feOffset` graphs, opaque unsupported-filter source subtrees, opaque binary-alpha blend modes and isolation, insertion, deletion, and consequence-aware ancestry, instance-resolution, and stacking differences;
 - root and nested SVG viewport declarations, nearest-viewport percentage resolution, and exact cumulative coordinate mappings under one explicit common Comparison Viewport;
-- exact continuous parameter magnitudes, symmetric painted-boundary displacement distributions, alpha-only painted-coverage differences, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes for complete reports;
+- exact continuous parameter magnitudes, symmetric painted-boundary displacement distributions, alpha-only painted-coverage differences, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes that retain direct and rendered-subject-indexed source-input tokens for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
 
 Current Diagnostics also emit `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span, and source-anchored limitations merge all applicable locations under one stable Diagnostic ID. An empty array is reserved for comparison-global or derived conditions; legacy reports may omit the optional JSON field.

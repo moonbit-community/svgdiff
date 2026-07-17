@@ -172,6 +172,8 @@ A Cause Envelope is not a proven unique cause:
 - `not_established` means the report does not guarantee causal completeness;
 - `candidate_changed_fact_ids` should be described as possible causes, then resolved through `changed_facts` for property values and source spans.
 
+Under complete source-input coverage, candidates include direct event facts and other Changed Facts whose analyzer-owned `affected_subject_ids` may reach the same before/after rendered subject, including a concrete use-instance identity. Resource and relationship events may conservatively span every affected consumer. This subject-level fan-out explains why a candidate can be present without being directly listed by one event's Atomic Differences; it still does not prove that the fact contributed to each pixel. Effect and compositing events may widen further to the complete comparison fact set.
+
 Do not rewrite "possible causes include A and B" as "A and B caused the pixels" unless a future report field explicitly proves that stronger relation.
 
 ## Worked example 1: equivalent paint spelling

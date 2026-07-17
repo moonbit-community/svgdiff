@@ -162,6 +162,7 @@ graph TD
   ISS_144["ISS-144: Detect out-of-profile embedded color content"]
   ISS_145["ISS-145: Complete effect-aware Difference Region localization"]
   ISS_146["ISS-146: Preserve side-typed effect bounds before region union"]
+  ISS_147["ISS-147: Propagate source-input influence tokens to rendered subjects"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -448,6 +449,20 @@ graph TD
   ISS_116 --> ISS_146
   ISS_117 --> ISS_146
   ISS_145 --> ISS_146
+  ISS_007 --> ISS_147
+  ISS_008 --> ISS_147
+  ISS_009 --> ISS_147
+  ISS_040 --> ISS_147
+  ISS_061 --> ISS_147
+  ISS_063 --> ISS_147
+  ISS_064 --> ISS_147
+  ISS_067 --> ISS_147
+  ISS_068 --> ISS_147
+  ISS_107 --> ISS_147
+  ISS_108 --> ISS_147
+  ISS_109 --> ISS_147
+  ISS_124 --> ISS_147
+  ISS_146 --> ISS_147
 ```
 
 ## Warnings
