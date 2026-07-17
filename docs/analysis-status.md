@@ -8,6 +8,8 @@ Last verified: 2026-07-16
 
 The status belongs to one Structured Report and one exact renderer/profile execution. A future [multi-renderer experiment matrix](multi-renderer-profiles.md) may associate several reports or external observations, but it cannot upgrade a cell's `partial` or `failed` status, turn missing cells into agreement, or extend one cell's equality/completeness claim to another target or profile.
 
+The canonical profile never executes SVG scripts. Encountering script-capable content therefore prevents complete dynamic-state equality even when the two script sources are identical or a separate browser capture happens to match. A future [Script Observation](script-execution-boundary.md) cannot upgrade the report's status or turn disabled execution into measured zero.
+
 ## Status summary
 
 | Status | Comparison result available | Complete equality conclusion allowed | CLI exit status |

@@ -147,6 +147,20 @@ No multi-renderer container currently exists. Before implementing or changing `s
 
 Follow the accepted [multi-renderer semantics](multi-renderer-profiles.md). External browser or platform cells cannot acquire Source Semantics, Computed Appearance, Visual Events, Cause Envelopes, or canonical completeness merely by entering the container.
 
+## External script observation admission or upgrade
+
+Canonical script execution is a permanent non-goal and no external observer currently exists. Before implementing or changing `svgdiff-script-observation/1`:
+
+1. document the Agent task that static Structured Reports and existing observations cannot answer, then accept the prerequisite event-state, timeline, resource, API-closure, and capture-checkpoint contracts;
+2. pin exact browser/runtime, DOM/SVG, harness, OS, sandbox, rendering, font, color, and output identities without adding them to the canonical comparison process;
+3. close or reject every script-visible clock, entropy, locale, storage, permission, device, worker, network, service-worker, scheduling, and external-resource input, recording every attempted access;
+4. add deterministic instruction/fuel and DOM/task/output limits plus independently enforced process, wall-time, memory, filesystem, credential, network, and descendant isolation;
+5. preserve typed parse errors, exceptions, unsupported APIs, timeouts, kills, crashes, pending work, ambient state, and replay divergence as unavailable or failed evidence, never zero;
+6. prove byte-identical repetition on adversarial fixtures and retain exact transcripts, mutation/final-state hashes, outputs, disagreement, and closure classification; and
+7. validate mechanically that the observation cannot establish Structured Report equality, completeness, Computed Appearance, Visual Events, Impact, regions, or causal completeness.
+
+Follow the accepted [script execution boundary](script-execution-boundary.md). Passing these gates admits only a target-local external observation, not a canonical Script Execution Profile.
+
 ## Metric upgrade
 
 Use this procedure when changing raster arithmetic, adding a metric, changing a formula, or altering not-computed behavior.

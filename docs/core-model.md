@@ -16,6 +16,8 @@ compare(before_svg, after_svg, comparison_profile) -> structured_report
 
 Callers provide two SVG source strings and a Comparison Profile. Parsing, supported source normalization, subject alignment, difference extraction, rendering, magnitude calculation, region extraction, conservative causal attribution, and report assembly remain internal.
 
+The canonical seam always uses script-free secure-static processing. An encountered `<script>`, event handler, or other dynamic construct reduces coverage; the engine never executes it through the parser, renderer, browser oracle, or HTML preview. The accepted [Script Observation boundary](script-execution-boundary.md) permits only a future external target artifact and does not add a fourth evidence layer or extend current equality.
+
 ## Current pipeline
 
 ```text

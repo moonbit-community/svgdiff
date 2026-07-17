@@ -34,6 +34,7 @@ This directory separates the current product contract from future plans and hist
 | Can CoreText, DirectWrite, browsers, or system-font output become a canonical font profile? | [`platform-native-font-modes.md`](platform-native-font-modes.md) |
 | How are predefined SDR, ICC, HDR, and physical-display color behavior staged beyond v1 sRGB? | [`color-management-profiles.md`](color-management-profiles.md) |
 | How will same-engine profile sensitivity and cross-engine/browser conformance remain distinguishable? | [`multi-renderer-profiles.md`](multi-renderer-profiles.md) |
+| Will svgdiff execute SVG scripts in a sandboxed canonical runtime? | [`script-execution-boundary.md`](script-execution-boundary.md) |
 | How should a text-only agent interpret the report? | [`agent-report-guide.md`](agent-report-guide.md) |
 | How is a text-only agent evaluated? | [`agent-acceptance-spec.md`](agent-acceptance-spec.md) |
 | Which counterexamples guard adversarial engine failure modes? | [`adversarial/README.md`](../evaluation/adversarial/README.md) |

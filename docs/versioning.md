@@ -25,6 +25,8 @@ The renderer package identity and raster representation are also report semantic
 
 `svgdiff-renderer-experiment-matrix/1` and `svgdiff-renderer-experiment-cell/1` are reserved by the accepted [multi-renderer experiment boundary](multi-renderer-profiles.md), but neither is a current report version domain or implemented artifact. A future container must version cell identity, typed edges, per-evidence compatibility, cross-cell mappings, and Agent synthesis independently from Structured Report Schema and every cell's native renderer, conformance, font, color, and observation identities.
 
+`svgdiff-script-observation/1` is reserved by the accepted [script execution boundary](script-execution-boundary.md), but it is not a current version domain or implemented artifact. Any future target-local capture must version runtime, scenario, state closure, scheduling, limits, transcript, output, and replay semantics independently from Structured Report Schema and cannot become a canonical script-execution profile through versioning alone.
+
 ## MoonBit module SemVer
 
 The module version follows SemVer. While the module is below `1.0.0`, this project uses a stricter policy than “anything may change”:

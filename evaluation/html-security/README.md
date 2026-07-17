@@ -2,7 +2,7 @@
 
 Status: production security gate
 
-Last verified: 2026-07-16
+Last verified: 2026-07-17
 
 The self-contained HTML report renders original SVG source only inside two `srcdoc` iframes with an empty `sandbox` token set. Each preview starts with a fixed `default-src 'none'` Content Security Policy. The top-level report escapes both `srcdoc` attributes and the embedded Structured Report JSON before parsing the JSON with its one fixed presentation script.
 
@@ -22,3 +22,5 @@ sh scripts/test-html-security.sh
 ```
 
 This gate proves browser isolation for the generated artifact and fixed hostile classes. It does not impose input, memory, output, or execution-time budgets; those remain separate resource-limit work.
+
+The empty sandbox deliberately prevents script execution. Under the accepted [script execution boundary](../../docs/script-execution-boundary.md), this gate is presentation isolation only: it is not a deterministic runtime, script observation, or canonical evidence source.

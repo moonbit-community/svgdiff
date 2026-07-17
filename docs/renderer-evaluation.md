@@ -14,6 +14,8 @@ Use pure-MoonBit community dependencies capability by capability behind the priv
 
 Dependency-specific XML, scene, image, and raster types must not appear in the public `Milky2018/svgdiff` interface or Structured Report.
 
+No renderer or browser dependency may execute SVG script as part of canonical comparison. The accepted [script execution boundary](script-execution-boundary.md) keeps future script-enabled captures external and separately identified; sandboxing alone is not renderer conformance or deterministic execution evidence.
+
 ## Current stack
 
 | Layer | Dependency | Status |

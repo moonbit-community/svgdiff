@@ -16,9 +16,11 @@ Under the accepted [multi-renderer experiment semantics](../../docs/multi-render
 - explicit fixture CSS viewport;
 - transparent page background; PNGs retain RGBA when transparency is present, while fully opaque fixtures may be encoded as RGB;
 - SVG loaded from a base64 data URL while the browser context is offline;
-- no font, network, animation-time, or interaction-state fixture.
+- no font, script, network, animation-time, or interaction-state fixture.
 
 Any future browser text capture must follow the separate [Platform Font Observation boundary](../../docs/platform-native-font-modes.md). Exact bundled-font output remains external conformance evidence; ambient browser/system-font output cannot become a reproducible baseline or complete report evidence.
+
+Script-enabled capture is outside this oracle. It must follow the separate [Script Observation boundary](../../docs/script-execution-boundary.md) and cannot inherit conformance or canonical authority from the current static fixture harness.
 
 The workflow uses Playwright CLI commands. Exact transparent-background capture uses `run-code` because the ordinary CLI screenshot command does not expose `omitBackground`.
 

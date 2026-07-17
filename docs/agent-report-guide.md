@@ -12,6 +12,8 @@ An optional Markdown summary may help with orientation, but it is derived and in
 
 The current report contains one renderer/profile execution and no multi-renderer matrix. Do not infer cross-browser stability, profile invariance, or renderer consensus from it. If a future [`svgdiff-renderer-experiment-matrix/1`](multi-renderer-profiles.md) accompanies reports, preserve its separate authority: use only versioned cross-cell mappings, retain every disagreeing or unavailable cell, and never extend one cell's equality or completeness to the matrix.
 
+The current profile also never executes SVG scripts. A script Diagnostic means the realized dynamic state was not computed, even when script bytes are identical or an external browser capture shows no changed pixels. If a future [`svgdiff-script-observation/1`](script-execution-boundary.md) accompanies the report, describe its exact target and scenario separately; never turn its DOM, transcript, or pixels into canonical Atomic Differences, equality, Impact, regions, or causes.
+
 ## Reading order
 
 Read the report in this order:

@@ -111,3 +111,7 @@ _Avoid_: Renderer vote, canonical aggregate, screenshot alone
 **Renderer Experiment Edge**:
 A typed relation between compatible cells that states which target/profile axes are fixed or varied and what claims follow.
 _Avoid_: Generic renderer diff, diagonal attribution, majority result
+
+**Script Observation**:
+An external target-specific artifact for one exact script-enabled runtime, scenario, state closure, and capture checkpoint; it is never canonical Structured Report evidence.
+_Avoid_: Script Execution Profile, sandboxed truth, complete analysis
