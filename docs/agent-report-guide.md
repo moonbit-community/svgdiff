@@ -168,6 +168,8 @@ Use `domain_ordering.components` only to order items from the exact same domain 
 
 The named raw magnitude fields remain authoritative; `domain_ordering.components` is only a derived projection of those fields. Corpus categories and human annotation tiers are hidden evaluation data, not engine severity labels. The complete current and future-policy boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 
+The [terminal multidimensional magnitude gate](../evaluation/terminal-magnitude-gate/README.md) verifies that a text-only consumer can retain these named dimensions, including all 354 expected exact magnitude claims in the accepted report-only observation. This is fidelity to reported evidence, not proof that every event has every measurement or that the measurements define importance.
+
 ### Caller-supplied semantic concerns
 
 Semantic importance can come from the caller even when visual magnitude is small. Start from every event and Atomic Difference, not only `impact_assessment.frontier_groups`. If caller context resolves to a report subject, event, difference, Changed Fact, source location, or region, report every matching item. A dominated match remains required; cite its domination witness to explain only why it is not a context-free main event.

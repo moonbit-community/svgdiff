@@ -234,6 +234,8 @@ These parameter fields are exact continuous evidence and do not depend on render
 
 The raw magnitude fields remain authoritative beneath the required Impact Assessment. The current policy uses only named Visual Event rendered fields, retains missing evidence instead of inventing zero, and cannot create, erase, or redefine an Atomic Difference. The complete boundary is defined in [Raw Magnitudes and Impact Assessment](impact-assessment.md).
 
+The [terminal multidimensional magnitude gate](../evaluation/terminal-magnitude-gate/README.md) validates this preservation boundary across exact parameter scales, tagged transforms, painted boundary, alpha coverage, presence, scene and intrinsic raster, DeltaEOK, and LDR-FLIP evidence. Its production `1.0` to `0.99999` probe retains the approximate `0.00001` CSS-pixel parameter displacement beside a separately measured 1-pixel pinned-raster boundary maximum; neither value replaces the other.
+
 ### Difference Region
 
 A `DifferenceRegion` localizes an event using either a connected pixel-mask component or conservative computed bounds. It records pixel-space and CSS-space bounds, changed-pixel count, viewport fraction, and a Cause Envelope.

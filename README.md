@@ -238,6 +238,8 @@ The [M5 explicit non-goal coverage gate](evaluation/m5-nongoal-coverage-gate/REA
 
 The [terminal evidence-or-Diagnostic coverage gate](evaluation/terminal-coverage-gate/README.md) composes current feature, renderer, proof, admission, hostile-input, and advanced-profile boundaries. Its terminal guarantee remains limited to the recorded profile and support contract; it is not a claim of full SVG or cross-browser equivalence.
 
+The [terminal multidimensional magnitude gate](evaluation/terminal-magnitude-gate/README.md) validates exact parameter, transform, boundary, coverage, presence, raster, intrinsic-resource, DeltaEOK, and LDR-FLIP evidence in their own units and availability states. It does not collapse them into one importance score.
+
 Container opacity, admitted container masks, bounded filter graphs, and opaque binary-alpha blend/isolation paths are rendered by project-owned compositors with deterministic RGBA8 arithmetic. Fractional geometry, fractional leaf opacity, continuous-alpha blending, and referenced gradient or pattern raster measurements remain numeric pinned-renderer observations whose Rendered Evidence coverage is limited by stable conformance Diagnostics; each admitted compositor path is a separate product capability.
 
 Current reports project renderer-specific limitations encountered by the inputs into `renderer_capability_gaps`. Each record provides a stable capability ID, `guarded` or `unavailable` support status, and establishing Diagnostic IDs. An empty array does not claim that the renderer supports all SVG features; the coverage matrix remains authoritative.

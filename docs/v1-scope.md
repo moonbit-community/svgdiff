@@ -20,6 +20,8 @@ The separate [M5 adopted-profile environment gate](../evaluation/m5-adopted-prof
 
 The [terminal evidence-or-Diagnostic coverage gate](../evaluation/terminal-coverage-gate/README.md) composes this profile boundary with the complete-eligible feature inventory, renderer dispositions, centralized coverage proof, failed admission, and hostile-input checks. It establishes terminal coverage closure for this declared contract only: encountered semantics either follow an admitted evidence path or prevent `complete` through a Diagnostic or failed admission.
 
+The [terminal multidimensional magnitude gate](../evaluation/terminal-magnitude-gate/README.md) separately proves preservation of every applicable current raw magnitude family and explicit unavailability. It does not require every difference to have every field, compare unlike denominators, or turn DeltaEOK, FLIP, raster error, boundary distance, or exact parameter displacement into a visibility or severity decision.
+
 ## Implemented profile
 
 | Condition | Current behavior |

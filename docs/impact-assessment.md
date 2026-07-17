@@ -23,6 +23,8 @@ Unavailable observations remain null or explicitly not computed. Numeric zero is
 
 `ComparisonProfile.perceptual_background`, `flip_viewing_conditions`, and `flip_error_threshold` are explicit measurement inputs, not impact signals. Parameter, boundary, coverage, DeltaEOK, and FLIP channels retain their own units and denominators. The Impact Assessment does not silently normalize or combine them.
 
+The [terminal multidimensional magnitude gate](../evaluation/terminal-magnitude-gate/README.md) composes all nine current raw-evidence families and their unavailable states. It validates canonical examples, production probes, mutation controls, Agent scoring, and the retained report-only model observation without calibrating Impact or introducing a shared score.
+
 `AtomicDifference.domain_ordering` remains a separate versioned view for ordering only differences from the exact same domain. Its tuples are not cross-domain scores and do not determine the Impact Assessment.
 
 ## `event_rendered_pareto/v1`

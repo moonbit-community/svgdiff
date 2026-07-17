@@ -185,6 +185,7 @@ graph TD
   ISS_167["ISS-167: Validate the M5 adopted-profile environment gate"]
   ISS_168["ISS-168: Validate terminal evidence-or-Diagnostic completeness"]
   ISS_169["ISS-169: Accept additive textarea attributes in fuzz validation"]
+  ISS_170["ISS-170: Validate terminal multidimensional magnitude preservation"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -642,6 +643,20 @@ graph TD
   ISS_075 --> ISS_169
   ISS_076 --> ISS_169
   ISS_143 --> ISS_169
+  ISS_060 --> ISS_170
+  ISS_066 --> ISS_170
+  ISS_125 --> ISS_170
+  ISS_126 --> ISS_170
+  ISS_127 --> ISS_170
+  ISS_128 --> ISS_170
+  ISS_129 --> ISS_170
+  ISS_130 --> ISS_170
+  ISS_131 --> ISS_170
+  ISS_132 --> ISS_170
+  ISS_140 --> ISS_170
+  ISS_144 --> ISS_170
+  ISS_164 --> ISS_170
+  ISS_168 --> ISS_170
 ```
 
 ## Warnings
