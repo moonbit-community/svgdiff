@@ -178,6 +178,7 @@ graph TD
   ISS_160["ISS-160: Investigate incremental and cached comparisons"]
   ISS_161["ISS-161: Validate the M2 core static coverage gate"]
   ISS_162["ISS-162: Validate the M2 renderer and coverage safety gate"]
+  ISS_163["ISS-163: Validate M2 alignment, region, and cause soundness"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -558,6 +559,24 @@ graph TD
   ISS_049 --> ISS_162
   ISS_077 --> ISS_162
   ISS_161 --> ISS_162
+  ISS_058 --> ISS_163
+  ISS_061 --> ISS_163
+  ISS_063 --> ISS_163
+  ISS_064 --> ISS_163
+  ISS_067 --> ISS_163
+  ISS_068 --> ISS_163
+  ISS_069 --> ISS_163
+  ISS_070 --> ISS_163
+  ISS_120 --> ISS_163
+  ISS_121 --> ISS_163
+  ISS_122 --> ISS_163
+  ISS_123 --> ISS_163
+  ISS_124 --> ISS_163
+  ISS_145 --> ISS_163
+  ISS_146 --> ISS_163
+  ISS_147 --> ISS_163
+  ISS_148 --> ISS_163
+  ISS_162 --> ISS_163
 ```
 
 ## Warnings

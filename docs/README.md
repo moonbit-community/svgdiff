@@ -23,6 +23,7 @@ This directory separates the current product contract from future plans and hist
 | Which tests and Diagnostics enforce that boundary? | [`feature-coverage.md`](feature-coverage.md) |
 | Which evidence closes the M2 core static complete-or-partial gate? | [`m2-core-static-coverage/README.md`](../evaluation/m2-core-static-coverage/README.md) |
 | How do renderer observations and coverage proof prevent false complete equality? | [`m2-renderer-coverage-gate/README.md`](../evaluation/m2-renderer-coverage-gate/README.md) |
+| Which gate validates alignment, regions, and causal soundness together? | [`m2-soundness-gate/README.md`](../evaluation/m2-soundness-gate/README.md) |
 | What must an analyzer prove before returning complete? | [`coverage-proof-obligations.md`](coverage-proof-obligations.md) |
 | How is false equality over unsupported inputs tested? | [`unsupported-input-properties.md`](unsupported-input-properties.md) |
 | What do `complete`, `partial`, and `failed` guarantee? | [`analysis-status.md`](analysis-status.md) |

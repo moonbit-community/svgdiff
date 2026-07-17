@@ -49,6 +49,8 @@ The first M2 gate is an aggregate traceability claim, not a wider completeness c
 
 The second M2 gate composes renderer observations with coverage safety rather than treating them as one score. Its [renderer and coverage inventory](../evaluation/m2-renderer-coverage-gate/README.md) requires every measured divergence to have one production disposition, every encountered renderer limitation to constrain its evidence layer, centralized coverage proof to validate the matrix, and unsupported self-comparisons to remain non-complete.
 
+The third M2 gate validates the downstream evidence graph. Its [soundness inventory](../evaluation/m2-soundness-gate/README.md) requires bounded alignment claims, side-typed localization, complete actual-cause containment or conservative fallback, partial guarantee revocation, and closed event/difference/region/fact/Diagnostic references across focused, mutation, annotation, and adversarial suites.
+
 ## Complete-eligible capabilities
 
 | Feature slice | Evidence layers | Diagnostic on the supported path | Executable coverage |
