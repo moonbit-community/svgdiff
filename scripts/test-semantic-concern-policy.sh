@@ -16,7 +16,7 @@ grep -Fx 'Semantic concern policy: dominated 1-pixel target preserved in full an
 
 jq -e '
   .schema_version == "svgdiff-semantic-concern-results/1" and
-  .report_schema_version == "1.44" and
+  .report_schema_version == "1.45" and
   .impact_policy_id == "event_rendered_pareto/v1" and
   .analysis_status == "complete" and
   .caller_concern_source == "external_evaluation_query" and

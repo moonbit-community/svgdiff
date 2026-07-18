@@ -24,6 +24,43 @@ test "single-region magnitude scans its bounds and still excludes equal pixels" 
 }
 
 ///|
+test "canvas outcome measures the complete rendered comparison once" {
+  let before = "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>"
+  let after = "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  assert_eq(report.canvas_outcome.status, "computed")
+  assert_true(report.canvas_outcome.reason_code is None)
+  guard report.canvas_outcome.magnitude is Some(magnitude) else {
+    fail("expected whole-canvas rendered magnitude")
+  }
+  assert_eq(magnitude.changed_pixels, 64)
+  assert_eq(magnitude.changed_pixel_fraction, 0.25)
+  assert_true(magnitude.linear_premultiplied_rgba_rmse > 0.0)
+  assert_eq(report.canvas_outcome.perceptual_flip.status, "not_computed")
+  assert_eq(
+    report.canvas_outcome.perceptual_flip.reason_code,
+    Some("flip_not_requested"),
+  )
+}
+
+///|
+test "canvas outcome exposes an optional whole-canvas FLIP percentage input" {
+  let before = "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>"
+  let after = "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>"
+  let report = compare(before, after, flip_test_profile())
+  assert_eq(report.canvas_outcome.perceptual_flip.status, "computed")
+  assert_eq(
+    report.canvas_outcome.perceptual_flip.method_id,
+    Some("nvlabs_ldr_flip/v1.7-b475eb4b"),
+  )
+  guard report.canvas_outcome.perceptual_flip.canvas_mean is Some(canvas_mean) else {
+    fail("expected whole-canvas FLIP mean")
+  }
+  assert_true(canvas_mean > 0.0)
+  assert_true(canvas_mean <= 1.0)
+}
+
+///|
 test "side bounds preserve movement insertion and deletion before union" {
   let profile = ComparisonProfile::v1_default()
   let before = "<svg width='20' height='20'><rect id='box' x='1' y='2' width='4' height='5'/></svg>"

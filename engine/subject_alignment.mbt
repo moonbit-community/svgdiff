@@ -2278,6 +2278,7 @@ fn attach_subject_alignments(
   {
     schema_version: report.schema_version,
     analysis_status: report.analysis_status,
+    canvas_outcome: report.canvas_outcome,
     impact_assessment: report.impact_assessment,
     coverage_matrix: report.coverage_matrix,
     renderer_capability_gaps: report.renderer_capability_gaps,

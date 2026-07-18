@@ -1524,6 +1524,52 @@ fn attach_difference_regions(
       difference_regions: regions,
     })
   }
+  let canvas_outcome = match rendered_images {
+    Some((before_image, after_image)) => {
+      let perceptual_flip = match report.profile.flip_viewing_conditions {
+        None =>
+          not_computed_canvas_perceptual_flip_evidence("flip_not_requested")
+        Some(viewing) =>
+          match report.profile.perceptual_background {
+            None =>
+              not_computed_canvas_perceptual_flip_evidence(
+                "perceptual_background_absent",
+              )
+            Some(background) => {
+              let computation = event_local_perceptual_flip_evidence(
+                before_image,
+                after_image,
+                pixel_regions,
+                background,
+                viewing,
+                report.profile.flip_error_threshold,
+                limits.max_perceptual_map_pixels - perceptual_map_pixels,
+                limits.max_perceptual_flip_samples - perceptual_flip_samples,
+              )
+              match computation.evidence.statistics {
+                None =>
+                  not_computed_canvas_perceptual_flip_evidence(
+                    computation.evidence.reason_code.unwrap_or(
+                      "rendered_evidence_unavailable",
+                    ),
+                  )
+                Some(statistics) =>
+                  computed_canvas_perceptual_flip_evidence(
+                    statistics.canvas_mean,
+                  )
+              }
+            }
+          }
+      }
+      {
+        status: "computed",
+        reason_code: None,
+        magnitude: Some(rendered_image_difference(before_image, after_image)),
+        perceptual_flip,
+      }
+    }
+    None => not_computed_canvas_outcome("rendered_evidence_unavailable")
+  }
   let differences : Array[AtomicDifference] = []
   for difference in report.atomic_differences {
     comparison_guard.checkpoint()
@@ -1539,5 +1585,10 @@ fn attach_difference_regions(
     })
   }
   comparison_guard.checkpoint()
-  RegionsAttached({ ..report, atomic_differences: differences, events })
+  RegionsAttached({
+    ..report,
+    canvas_outcome,
+    atomic_differences: differences,
+    events,
+  })
 }

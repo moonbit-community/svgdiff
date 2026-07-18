@@ -1,6 +1,14 @@
 {
-  "schema_version": "1.44",
+  "schema_version": "1.45",
   "analysis_status": "failed",
+  "canvas_outcome": {
+    "status": "not_computed",
+    "reason_code": "rendered_evidence_unavailable",
+    "perceptual_flip": {
+      "status": "not_computed",
+      "reason_code": "rendered_evidence_unavailable"
+    }
+  },
   "impact_assessment": {
     "policy_id": "event_rendered_pareto/v1",
     "status": "not_applicable",

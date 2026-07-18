@@ -53,6 +53,20 @@ pub(all) struct AtomicDifference {
 }
 pub impl ToJson for AtomicDifference
 
+pub(all) struct CanvasOutcome {
+  status : String
+  reason_code : String?
+  magnitude : RenderedMagnitude?
+  perceptual_flip : CanvasPerceptualFlipEvidence
+} derive(ToJson)
+
+pub(all) struct CanvasPerceptualFlipEvidence {
+  status : String
+  reason_code : String?
+  method_id : String?
+  canvas_mean : Double?
+} derive(ToJson)
+
 pub(all) struct CauseEnvelope {
   guarantee : String
   coverage : String
@@ -397,6 +411,7 @@ pub(all) struct SourceResolutionPair {
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
+  canvas_outcome : CanvasOutcome
   impact_assessment : ImpactAssessment
   coverage_matrix : Array[FeatureCoverage]
   renderer_capability_gaps : Array[RendererCapabilityGap]

@@ -4,7 +4,7 @@ Status: current transport contract
 
 Projection identity: `svgdiff-agent-projection/1`
 
-Source report identity: Structured Report Schema `1.44`
+Source report identity: Structured Report Schema `1.45`
 
 Last verified: 2026-07-17
 
@@ -28,7 +28,7 @@ Every line is one object validated by [`svgdiff-agent-projection.schema.json`](.
 
 Every record carries `projection_version`, `source_schema_version`, and a global zero-based `sequence`. Item records additionally carry their canonical `section`, zero-based section `index`, and exact canonical JSON `value`.
 
-The header retains `schema_version`, `analysis_status`, `impact_assessment`, and `profile`, plus an exact count for every array section. Counts distinguish a valid empty section from a truncated stream.
+The header retains `schema_version`, `analysis_status`, `canvas_outcome`, `impact_assessment`, and `profile`, plus an exact count for every array section. Counts distinguish a valid empty section from a truncated stream.
 
 ## Lossless reconstruction
 

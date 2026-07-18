@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `1.44`
+Status: current model for Structured Report schema `1.45`
 
 Last verified: 2026-07-17
 
@@ -37,7 +37,7 @@ SVG source
   -> conservative cause envelopes
   -> visual events
   -> uncalibrated event Impact Assessment
-  -> Structured Report 1.44
+  -> Structured Report 1.45
 ```
 
 Compact canonical JSON preserves this entire value, while the Agent projection partitions it for exact reconstruction. Impact and derived Markdown are navigation summaries whose stable IDs lead back into the same typed report graph. The [M3 summary-traceability gate](../evaluation/m3-summary-traceability-gate/README.md) validates those distinctions and never treats Markdown as a complete evidence serialization.
@@ -46,7 +46,7 @@ Source, computed, and rendered evidence are related but never interchangeable. F
 
 ## Comparison Profile
 
-Schema `1.44` records:
+Schema `1.45` records:
 
 - `viewport_width` and `viewport_height`;
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
@@ -60,7 +60,7 @@ Schema `1.44` records:
 
 The root `compare` function preserves the caller-supplied viewport dimensions, optional Perceptual Background, optional FLIP Viewing Conditions, and optional FLIP error threshold while canonicalizing the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16`, accepts explicit positive dimensions through `--width` and `--height`, records an opaque deterministic sRGB color through `--perceptual-background COLOR`, opts into LDR-FLIP through `--flip-pixels-per-degree PPD`, and records thresholded area only through `--flip-error-threshold VALUE`. It never guesses display geometry or a perceptual threshold.
 
-The Perceptual Background is profile evidence, not SVG paint and not a renderer clear color. Schema `1.44` continues to compute all raw pixels, magnitudes, regions, equality, and coverage on the transparent canvas. Event-local DeltaEOK and LDR-FLIP independently composite both raw event pixels over exactly this normalized color in linear sRGB. When the background is null, both channels remain explicitly not computed rather than guessing white or black; when FLIP Viewing Conditions are null, only FLIP is not requested.
+The Perceptual Background is profile evidence, not SVG paint and not a renderer clear color. Schema `1.45` continues to compute all raw pixels, magnitudes, regions, equality, and coverage on the transparent canvas. Event-local DeltaEOK and LDR-FLIP independently composite both raw event pixels over exactly this normalized color in linear sRGB. When the background is null, both channels remain explicitly not computed rather than guessing white or black; when FLIP Viewing Conditions are null, only FLIP is not requested.
 
 `schema_version` identifies the serialized report shape, `renderer_id` identifies the complete production rendering implementation including project-owned adapters, and `renderer_conformance_profile_id` identifies the reviewed fixture, disposition, guard, and future tolerance policy that bounds Rendered Evidence claims. None can substitute for another. JSON Schema verifies that renderer identities are present and structurally valid; the versioned compatibility policy decides which concrete identities a consumer accepts.
 
@@ -179,7 +179,7 @@ A `SubjectAlignment` relates sets of before and after subjects and declares whet
 
 Schema `1.32` adds a separate source-structural alignment inventory for `g`, `text`, `use`, and visual definitions. Schema `1.33` makes rendered-leaf correspondence transform- and bounds-aware. Schema `1.34` groups equal-cardinality duplicates with the same exact rendered and reportable source-semantic signatures into one set-to-set equivalence class and matches structural subjects by an ID- and sibling-order-independent recursive semantic signature before authored-ID, path, or stable-order fallback. The source-semantic guard retains visually equivalent authoring differences as reportable one-to-one changes. Array order preserves provenance only; it does not define pairwise identity inside a repeated class. The production corpus validates one-to-one, insertion, deletion, split, merge, and exact many-to-many cardinalities without adding identity claims.
 
-Schema `1.44` gives every alignment a closed `entity` or `resource` role. Groups, text, use hosts, rendered shapes, and image placement remain entity alignments. Symbols, gradients, patterns, markers, clip paths, masks, filters, and intrinsic image content use independent resource alignments. Every resource Atomic Difference names a resource-role alignment; resource-mediated entity outcomes keep their entity alignments and Changed Fact fan-out. Matching resource definitions, including renamed definitions, is correspondence evidence only and does not prove computed consumer equality or rendered equality. An SVG `image` therefore legitimately has both alignments over the same source reference: one for acquired or decoded content and one for placement. Text correspondence still does not imply font, shaping, glyph, or rendered equality. Unequal-cardinality or mixed-change repeated clusters remain roadmap work.
+Schema `1.45` gives every alignment a closed `entity` or `resource` role. Groups, text, use hosts, rendered shapes, and image placement remain entity alignments. Symbols, gradients, patterns, markers, clip paths, masks, filters, and intrinsic image content use independent resource alignments. Every resource Atomic Difference names a resource-role alignment; resource-mediated entity outcomes keep their entity alignments and Changed Fact fan-out. Matching resource definitions, including renamed definitions, is correspondence evidence only and does not prove computed consumer equality or rendered equality. An SVG `image` therefore legitimately has both alignments over the same source reference: one for acquired or decoded content and one for placement. Text correspondence still does not imply font, shaping, glyph, or rendered equality. Unequal-cardinality or mixed-change repeated clusters remain roadmap work.
 
 Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). Schema `1.1` adds optional selection `evidence`, and current producers always emit its score kind, nullable selected score, local candidate counts, and `unique`, `tied`, or `not_assessed` ambiguity. `confidence` remains null with `confidence_status: "not_calibrated"`. The selected pairing is repeatable, but local uniqueness does not imply authoritative identity or global assignment uniqueness.
 
@@ -222,7 +222,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.44` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are `null`, not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are null because schema `1.45` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 For an admitted scalar spatial parameter, `parameter_abs_user_units` is the canonical local numeric delta; exact authored spelling and units remain in `source_fact_before` and `source_fact_after`. `parameter_abs_css_px` applies one complete cumulative directional mapping only when that mapping is equal on both sides; equality means the relevant horizontal or vertical basis vector is equal, or the complete linear part is equal for an undirected radial parameter. It never takes the maximum of conflicting before and after mappings. Non-scaling stroke scalars use an identity mapping, while ordinary stroke width and dash offset require the same isotropic linear scale because an anisotropic transform has no direction-independent scalar conversion. `parameter_viewport_fraction` divides the same CSS value by `hypot(profile.viewport_width, profile.viewport_height)`. `parameter_entity_fraction` divides it by the maximum nonzero diagonal of the before and after conservative painted bounds, measured separately so movement does not inflate its own denominator. Basic-shape coordinates and dimensions, image placement and size, scalar stroke lengths, normalized path coordinates or radii, and decomposed transform translation populate these fields where the mapping is complete and common. A zero-size or unavailable entity, incomplete or conflicting transform, non-spatial scalar, angle, scale, list, categorical value, residual matrix, or context-shared resource parameter leaves the inapplicable fields null.
 
@@ -257,7 +257,7 @@ For complete source-input propagation, the engine retains every fact directly li
 
 ### Visual Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.44` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualEvent` is the primary agent-facing grouping unit. In schema `1.45` it records one primary subject ID, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together.
 
@@ -281,13 +281,14 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `1.44` top-level object contains exactly these conceptual sections:
+The schema `1.45` top-level object contains exactly these conceptual sections:
 
 ```json
 {
-  "schema_version": "1.44",
-  "impact_assessment": {},
+  "schema_version": "1.45",
   "analysis_status": "complete | partial | failed",
+  "canvas_outcome": {},
+  "impact_assessment": {},
   "coverage_matrix": [],
   "renderer_capability_gaps": [],
   "profile": {},
@@ -299,6 +300,16 @@ The schema `1.44` top-level object contains exactly these conceptual sections:
   "diagnostics": []
 }
 ```
+
+`canvas_outcome` compares the two final rendered canvases exactly once. Its
+`RenderedMagnitude` records changed pixels, changed-pixel fraction, RGBA8 RMSE,
+and linear-premultiplied-RGBA RMSE without summing or deduplicating Visual
+Events. When an explicit Perceptual Background and FLIP Viewing Conditions are
+present, it also records a comparison-wide LDR-FLIP observation whose
+`canvas_mean` is the full-canvas perceptual response. Missing
+profile inputs or resource limits remain explicit `not_computed` states rather
+than numeric zero. These independent measurements are not a universal severity
+score.
 
 Each `coverage_matrix` row names one encountered feature and subject, records `covered`, `limited`, `not_applicable`, or `failed` independently for Source Semantics, Computed Appearance, and Rendered Evidence, and references the Diagnostics that justify limitations. `analysis_status` is the summary of those rows, not a separate severity judgment. A `complete` report may contain no differences, small differences, or large differences. A `partial` report can still contain useful supported evidence, but consumers must respect its matrix and Diagnostics. A resource-rejected report contains only failed `resource.<dimension>` rows plus Diagnostics and deliberately empty semantic inventories. The exact caller obligations are defined in the [Analysis Status Contract](analysis-status.md).
 
@@ -318,7 +329,7 @@ Each `coverage_matrix` row names one encountered feature and subject, records `c
 12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every declared report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 1.44
+## Not implemented in schema 1.45
 
 The following concepts are intentional future work rather than hidden current fields:
 

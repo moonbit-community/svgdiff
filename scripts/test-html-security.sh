@@ -156,6 +156,12 @@ pw --raw run-code \
   "async (page) => {
     await page.goto($interactive_url_json, { waitUntil: 'load' });
     const embedded = JSON.parse(await page.locator('#report-data').inputValue());
+    const canvasScores = await page.locator('#overview .score-card').evaluateAll(cards =>
+      cards.map(card => ({
+        label: card.querySelector('.score-label')?.textContent,
+        value: card.querySelector('.score-value')?.textContent,
+      })),
+    );
     const diffCount = await page.locator('[data-diff-id]').count();
     const eventCount = await page.locator('.event-card[data-event-id]').count();
     const firstEvent = page.locator('.event-card[data-event-id]').first();
@@ -206,7 +212,7 @@ pw --raw run-code \
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
       hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
-      hasCompatibility: eventEvidenceText.includes('Schema 1.44 provides bounds only'),
+      hasCompatibility: eventEvidenceText.includes('Schema 1.45 provides bounds only'),
     };
     await page.locator('#outcome-filter').selectOption('zero');
     const hiddenSelection = {
@@ -282,6 +288,7 @@ pw --raw run-code \
       eventCount,
       reportDiffCount: embedded.atomic_differences.length,
       reportEventCount: embedded.events.length,
+      canvasScores,
       impactPolicy: embedded.impact_assessment.policy_id,
       groupOrder: await page.locator('.group-header h3').allTextContents().catch(() => []),
       defaultDisclosure,
@@ -311,6 +318,11 @@ jq -e '
   .diffCount == .reportDiffCount and
   .eventCount == .reportEventCount and
   .reportDiffCount == 1 and
+  .canvasScores == [
+    {"label": "Changed area", "value": "25.00%"},
+    {"label": "Linear RGBA error", "value": "35.36%"},
+    {"label": "Perceptual difference", "value": "Not measured"}
+  ] and
   .impactPolicy == "event_rendered_pareto/v1" and
   .defaultDisclosure == {"event": false, "atomic": false, "raw": false} and
   .hoverOverlayCount == 2 and

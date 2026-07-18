@@ -78,7 +78,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.30` with `moon add Milky2018/svgdiff@0.5.30` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.5.31` with `moon add Milky2018/svgdiff@0.5.31` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -89,7 +89,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.44`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The v1 profile records the common viewport, optional normalized opaque sRGB8 Perceptual Background, optional bounded FLIP pixels-per-degree Viewing Conditions, an optional explicit FLIP error threshold, DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`. With the background and raw event pixels, each event reports changed-pixel mean DeltaEOK; with Viewing Conditions too, it reports a bounded event-local LDR-FLIP map plus separate whole-canvas mean, selected-event mean, response p95, and response maximum statistics. A supplied threshold additionally reports strict-above pixel count and whole-canvas fraction; no threshold is assumed, and none of these values is a severity or visibility label. Both perceptual channels composite over exactly the recorded background without changing transparent-canvas evidence. The conformance profile versions accepted renderer fixtures, dispositions, and guards independently from the report shape and renderer package. Reports retain renderer-native RGBA8 RMSE alongside the canonical linear metric.
+The current JSON contract is version `1.45`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The top-level `canvas_outcome` compares the final before/after canvases exactly once and records changed-pixel fraction plus linear-premultiplied-RGBA RMSE. With an explicit normalized opaque sRGB8 Perceptual Background and bounded FLIP pixels-per-degree Viewing Conditions it also records a comparison-wide LDR-FLIP `canvas_mean`; the HTML presents these three independent bounded measurements as percentages without combining them into severity. Event-local DeltaEOK and FLIP evidence remain available for explanation and localization. Missing profile inputs stay explicitly unmeasured rather than zero. The v1 profile also records DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`.
 
 Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
 
@@ -134,7 +134,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.44")
+  assert_eq(report.schema_version, "1.45")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -201,7 +201,7 @@ test "serialize JSON and build the HTML presentation" {
   let projection_jsonl = report.to_agent_projection_json_lines()
   let html = @svgdiff.render_html_report(before, after, report)
   let summary = @svgdiff.render_markdown_summary(report)
-  assert_true(json.find("\"schema_version\": \"1.44\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.45\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(projection_jsonl.find("svgdiff-agent-projection/1") is Some(_))
   assert_true(html.find("<!doctype html>") is Some(_))

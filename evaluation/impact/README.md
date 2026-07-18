@@ -1,6 +1,6 @@
 # Impact Assessment Frontier Evaluation
 
-Status: active schema `1.44` regression suite
+Status: active schema `1.45` regression suite
 
 Last verified: 2026-07-16
 

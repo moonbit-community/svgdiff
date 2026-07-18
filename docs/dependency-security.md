@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-17
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.44`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.45`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 The opt-in report-only language-model benchmark uses a separately installed pinned Codex CLI and authenticated remote model. Neither is linked, vendored, resolved by MoonBit, shipped in release archives, or used by the comparison engine. Each evaluated case gets an empty working directory and isolated temporary Codex home containing only authentication; user configuration, project rules, prior sessions, and model caches are excluded. Strict feature overrides disable shell, browser, apps, MCP, memory, and related tools before the request, while any residual tool event rejects the run. This protects benchmark validity, not hostile multi-tenant execution: the benchmark requires trusted operator credentials and network access and must not be exposed as an unauthenticated service.
 
@@ -71,7 +71,7 @@ The private MoonBit LDR-FLIP implementation follows the equations and constants 
 
 ## Known security gaps
 
-Schema `1.44` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
+Schema `1.45` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
 - the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;

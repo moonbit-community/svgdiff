@@ -11,7 +11,7 @@
 
 name = "Milky2018/svgdiff"
 
-version = "0.5.30"
+version = "0.5.31"
 
 readme = "PACKAGE.mbt.md"
 

@@ -85,7 +85,7 @@ pub fn FlipErrorThreshold::value(self : FlipErrorThreshold) -> Double {
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.44` API accepts caller-provided viewport dimensions,
+/// The root schema `1.45` API accepts caller-provided viewport dimensions,
 /// Perceptual Background, FLIP Viewing Conditions, and FLIP error threshold,
 /// and canonicalizes the
 /// remaining fields to `v1_default`.
@@ -125,7 +125,7 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
 }
 
 ///|
-/// Return the fixed schema `1.44` profile with a `16 x 16` viewport.
+/// Return the fixed schema `1.45` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions,
 /// an explicitly parsed Perceptual Background, invariant-checked FLIP Viewing
@@ -181,7 +181,8 @@ pub(all) struct IntrinsicRasterMagnitude {
 } derive(ToJson)
 
 ///|
-/// Event-local displayed-color magnitude after explicit background compositing.
+/// Displayed-color magnitude for one selected rendered outcome after explicit
+/// background compositing.
 pub(all) struct PerceptualColorMagnitude {
   method_id : String
   sample_count : Int
@@ -197,7 +198,7 @@ pub(all) struct PerceptualColorEvidence {
 } derive(ToJson, Eq)
 
 ///|
-/// Deterministic quantized event-local LDR-FLIP map.
+/// Deterministic quantized LDR-FLIP map for one selected rendered outcome.
 pub(all) struct PerceptualFlipMap {
   method_id : String
   pixel_x : Int
@@ -218,7 +219,7 @@ pub(all) struct PerceptualFlipAreaAboveThreshold {
 } derive(ToJson, Eq)
 
 ///|
-/// Separate pooled domains over one unquantized event-local LDR-FLIP map.
+/// Separate pooled domains over one unquantized LDR-FLIP map.
 pub(all) struct PerceptualFlipStatistics {
   method_id : String
   canvas_pixel_count : Int
@@ -267,6 +268,24 @@ pub(all) struct RenderedEvidence {
   magnitude : RenderedMagnitude?
   perceptual_color : PerceptualColorEvidence
   perceptual_flip : PerceptualFlipEvidence
+} derive(ToJson)
+
+///|
+/// Availability and comparison-wide LDR-FLIP mean.
+pub(all) struct CanvasPerceptualFlipEvidence {
+  status : String
+  reason_code : String?
+  method_id : String?
+  canvas_mean : Double?
+} derive(ToJson)
+
+///|
+/// Measurements computed once from the final before and after canvases.
+pub(all) struct CanvasOutcome {
+  status : String
+  reason_code : String?
+  magnitude : RenderedMagnitude?
+  perceptual_flip : CanvasPerceptualFlipEvidence
 } derive(ToJson)
 
 ///|
@@ -973,13 +992,14 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.44` result of one SVG comparison.
+/// Complete schema `1.45` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
 pub(all) struct StructuredReport {
   schema_version : String
   analysis_status : String
+  canvas_outcome : CanvasOutcome
   impact_assessment : ImpactAssessment
   coverage_matrix : Array[FeatureCoverage]
   renderer_capability_gaps : Array[RendererCapabilityGap]
@@ -993,13 +1013,13 @@ pub(all) struct StructuredReport {
 } derive(ToJson)
 
 ///|
-/// Serialize this report as indented schema `1.44` JSON.
+/// Serialize this report as indented schema `1.45` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.44` JSON.
+/// Serialize this report as whitespace-free schema `1.45` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.
@@ -1886,8 +1906,9 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "1.44",
+    schema_version: "1.45",
     analysis_status: "failed",
+    canvas_outcome: not_computed_canvas_outcome("rendered_evidence_unavailable"),
     impact_assessment: empty_impact_assessment(),
     coverage_matrix: [
       {
@@ -1929,6 +1950,7 @@ fn apply_preflight_diagnostics(
     } else {
       "partial"
     },
+    canvas_outcome: report.canvas_outcome,
     impact_assessment: report.impact_assessment,
     coverage_matrix: report.coverage_matrix,
     renderer_capability_gaps: report.renderer_capability_gaps,
@@ -2147,6 +2169,42 @@ fn not_computed_rendered_evidence(reason_code : String) -> RenderedEvidence {
 }
 
 ///|
+fn not_computed_canvas_perceptual_flip_evidence(
+  reason_code : String,
+) -> CanvasPerceptualFlipEvidence {
+  {
+    status: "not_computed",
+    reason_code: Some(reason_code),
+    method_id: None,
+    canvas_mean: None,
+  }
+}
+
+///|
+fn computed_canvas_perceptual_flip_evidence(
+  canvas_mean : Double,
+) -> CanvasPerceptualFlipEvidence {
+  {
+    status: "computed",
+    reason_code: None,
+    method_id: Some("nvlabs_ldr_flip/v1.7-b475eb4b"),
+    canvas_mean: Some(canvas_mean),
+  }
+}
+
+///|
+fn not_computed_canvas_outcome(reason_code : String) -> CanvasOutcome {
+  {
+    status: "not_computed",
+    reason_code: Some(reason_code),
+    magnitude: None,
+    perceptual_flip: not_computed_canvas_perceptual_flip_evidence(
+      "rendered_evidence_unavailable",
+    ),
+  }
+}
+
+///|
 fn computed_perceptual_color_evidence(
   magnitude : PerceptualColorMagnitude,
 ) -> PerceptualColorEvidence {
@@ -2196,8 +2254,11 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.44",
+        schema_version: "1.45",
         analysis_status: "partial",
+        canvas_outcome: not_computed_canvas_outcome(
+          "rendered_evidence_unavailable",
+        ),
         impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2277,8 +2338,11 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.44",
+        schema_version: "1.45",
         analysis_status: "complete",
+        canvas_outcome: not_computed_canvas_outcome(
+          "rendered_evidence_unavailable",
+        ),
         impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2328,8 +2392,11 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.44",
+        schema_version: "1.45",
         analysis_status: "complete",
+        canvas_outcome: not_computed_canvas_outcome(
+          "rendered_evidence_unavailable",
+        ),
         impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
@@ -2466,8 +2533,11 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.44",
+            schema_version: "1.45",
             analysis_status: "complete",
+            canvas_outcome: not_computed_canvas_outcome(
+              "rendered_evidence_unavailable",
+            ),
             impact_assessment: empty_impact_assessment(),
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2507,8 +2577,11 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.44",
+            schema_version: "1.45",
             analysis_status: "partial",
+            canvas_outcome: not_computed_canvas_outcome(
+              "rendered_evidence_unavailable",
+            ),
             impact_assessment: empty_impact_assessment(),
             coverage_matrix: [],
             renderer_capability_gaps: [],
@@ -2568,8 +2641,11 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.44",
+              schema_version: "1.45",
               analysis_status: "partial",
+              canvas_outcome: not_computed_canvas_outcome(
+                "rendered_evidence_unavailable",
+              ),
               impact_assessment: empty_impact_assessment(),
               coverage_matrix: [],
               renderer_capability_gaps: [],

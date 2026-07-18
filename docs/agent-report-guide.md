@@ -1,6 +1,6 @@
 # Text-Only Agent Report Guide
 
-Status: current schema `1.44` interpretation guide
+Status: current schema `1.45` interpretation guide
 
 Last verified: 2026-07-17
 
@@ -68,7 +68,7 @@ Local uniqueness is not proof of authored identity or global assignment uniquene
 
 Keep alignment ambiguity separate from interpretation uncertainty. Alignment `ambiguity` describes the local correspondence-selection evidence. An Atomic Difference with `computed_relation.status: indeterminate` instead means supported semantics cannot establish equivalence or difference; follow its `diagnostic_ids` and the limited coverage cells. Do not invent a shared numeric confidence scale across these two questions.
 
-Schema `1.44` distinguishes entity and resource alignments with `subject_role`. `use_instance_path`, transform- and bounds-aware visual signatures, and `rendered_geometry_feature_distance_v1` concern rendered entities. `resource_semantic_signature`, `resource_authored_id`, `resource_path`, and `resource_stable_kind_order` concern resource definitions; an image may have both a resource alignment for its content and an entity alignment for its placement. Every resource Atomic Difference references a resource-role alignment, but that correspondence does not prove that consumers, computed paints, or rendered pixels agree. Preserve separately reported mediated entity differences and Changed Fact fan-out.
+Schema `1.45` distinguishes entity and resource alignments with `subject_role`. `use_instance_path`, transform- and bounds-aware visual signatures, and `rendered_geometry_feature_distance_v1` concern rendered entities. `resource_semantic_signature`, `resource_authored_id`, `resource_path`, and `resource_stable_kind_order` concern resource definitions; an image may have both a resource alignment for its content and an entity alignment for its placement. Every resource Atomic Difference references a resource-role alignment, but that correspondence does not prove that consumers, computed paints, or rendered pixels agree. Preserve separately reported mediated entity differences and Changed Fact fan-out.
 
 Read `profile.perceptual_background` as display policy, not SVG content or raw-render state. Null means no background was declared and `rendered_outcome.perceptual_color` must say `not_computed/perceptual_background_absent`. With a present background and available raw event pixels, quote the recorded color, method ID, sample count, and mean DeltaEOK. The metric composites both sides over that color without changing transparent-canvas evidence. It is not a visibility boolean, JND threshold, severity label, FLIP score, or proof that the SVG authored a background.
 

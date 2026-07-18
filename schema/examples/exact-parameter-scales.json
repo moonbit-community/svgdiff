@@ -1,6 +1,19 @@
 {
-  "schema_version": "1.44",
+  "schema_version": "1.45",
   "analysis_status": "complete",
+  "canvas_outcome": {
+    "status": "computed",
+    "magnitude": {
+      "changed_pixels": 48,
+      "changed_pixel_fraction": 0.1875,
+      "rgba8_rmse": 0.21650635094610965,
+      "linear_premultiplied_rgba_rmse": 0.21650635094610965
+    },
+    "perceptual_flip": {
+      "status": "not_computed",
+      "reason_code": "flip_not_requested"
+    }
+  },
   "impact_assessment": {
     "policy_id": "event_rendered_pareto/v1",
     "status": "complete",

@@ -11,7 +11,7 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.44")
+  assert_eq(report.schema_version, "1.45")
   assert_eq(report.atomic_differences.length(), 1)
   let impact : @svgdiff.ImpactAssessment = report.impact_assessment
   assert_eq(impact.policy_id, "event_rendered_pareto/v1")
@@ -34,11 +34,11 @@ test "root package exposes the stable comparison seam" {
   let witnesses : Array[@svgdiff.ImpactDominationWitness] = impact.domination_witnesses
   assert_true(witnesses.is_empty())
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.44", "events": [_], .. } => ()
+    { "schema_version": "1.45", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.44", "events": [_], .. } => ()
+    { "schema_version": "1.45", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -403,6 +403,10 @@ test "root package exposes optional event-local LDR-FLIP maps" {
       flip_viewing_conditions: None,
       flip_error_threshold: None,
     },
+    canvas_outcome: {
+      ..report.canvas_outcome,
+      perceptual_flip: without_flip.canvas_outcome.perceptual_flip,
+    },
     events,
   }
   assert_eq(
@@ -557,11 +561,16 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("difference_regions") is Some(_))
   assert_true(html.find("v2_domain_lexicographic") is Some(_))
   assert_true(html.find("id=\"impact\"") is Some(_))
-  assert_true(html.find("All Atomic Differences") is Some(_))
-  assert_true(html.find("How much · non-null magnitude evidence") is Some(_))
-  assert_true(html.find("Where and why · Visual Events") is Some(_))
-  assert_true(html.find("Possible Changed Fact causes") is Some(_))
-  assert_true(html.find("data-locate") is Some(_))
+  assert_true(html.find("Changed area") is Some(_))
+  assert_true(html.find("Linear RGBA error") is Some(_))
+  assert_true(html.find("Perceptual difference") is Some(_))
+  assert_true(html.find("(value*100).toFixed(2)") is Some(_))
+  assert_true(html.find("Not measured") is Some(_))
+  assert_true(html.find("Visual Events") is Some(_))
+  assert_true(html.find("Magnitude · raw") is Some(_))
+  assert_true(html.find("Canvas Response") is Some(_))
+  assert_true(html.find("Possible Causes & Limitations") is Some(_))
+  assert_true(html.find("data-locate-event") is Some(_))
   assert_true(html.find("aria-pressed") is Some(_))
   assert_true(html.find("innerHTML") is None)
   assert_true(html.find("<script>alert('unsafe')</script>") is None)
@@ -620,7 +629,10 @@ test "HTML report preserves explicit Impact presentation states" {
     html.find("&quot;frontier_relation&quot;: &quot;incomparable&quot;")
     is Some(_),
   )
-  assert_true(html.find("Measurements unavailable; not zero.") is Some(_))
+  assert_true(
+    html.find("At least one candidate lacks required Impact measurements")
+    is Some(_),
+  )
   assert_true(html.find("displayed order is not an impact ranking") is Some(_))
   assert_true(
     html.find("empty evidence inventories do not establish equality") is Some(_),

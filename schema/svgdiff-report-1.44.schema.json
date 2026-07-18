@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/1.45",
-  "title": "SVG Diff Structured Report 1.45",
+  "$id": "https://example.invalid/svgdiff/schema/1.44",
+  "title": "SVG Diff Structured Report 1.44",
   "type": "object",
   "required": [
     "schema_version",
@@ -16,9 +16,8 @@
     "diagnostics"
   ],
   "properties": {
-    "schema_version": { "const": "1.45" },
+    "schema_version": { "const": "1.44" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
-    "canvas_outcome": { "$ref": "#/$defs/canvasOutcome" },
     "impact_assessment": { "$ref": "#/$defs/impactAssessment" },
     "coverage_matrix": {
       "type": "array",
@@ -260,105 +259,6 @@
         },
         {
           "type": "object",
-          "required": ["status", "reason_code"],
-          "properties": { "status": { "const": "not_computed" } }
-        }
-      ],
-      "additionalProperties": false
-    },
-    "renderedMagnitude": {
-      "type": "object",
-      "required": [
-        "changed_pixels",
-        "changed_pixel_fraction",
-        "rgba8_rmse",
-        "linear_premultiplied_rgba_rmse"
-      ],
-      "properties": {
-        "changed_pixels": { "type": "integer", "minimum": 0 },
-        "changed_pixel_fraction": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "rgba8_rmse": { "type": "number", "minimum": 0, "maximum": 255 },
-        "linear_premultiplied_rgba_rmse": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        }
-      },
-      "additionalProperties": false
-    },
-    "renderedEvidence": {
-      "type": "object",
-      "required": ["status", "perceptual_color", "perceptual_flip"],
-      "properties": {
-        "status": { "enum": ["computed", "not_computed"] },
-        "reason_code": { "type": "string", "minLength": 1 },
-        "magnitude": { "$ref": "#/$defs/renderedMagnitude" },
-        "perceptual_color": {
-          "$ref": "#/$defs/perceptualColorEvidence"
-        },
-        "perceptual_flip": { "$ref": "#/$defs/perceptualFlipEvidence" }
-      },
-      "anyOf": [
-        {
-          "required": ["status", "magnitude"],
-          "properties": { "status": { "const": "computed" } }
-        },
-        {
-          "required": ["status", "reason_code"],
-          "properties": { "status": { "const": "not_computed" } }
-        }
-      ],
-      "additionalProperties": false
-    },
-    "canvasPerceptualFlipEvidence": {
-      "type": "object",
-      "required": ["status"],
-      "properties": {
-        "status": { "enum": ["computed", "not_computed"] },
-        "reason_code": {
-          "enum": [
-            "flip_not_requested",
-            "perceptual_background_absent",
-            "rendered_evidence_unavailable",
-            "perceptual_map_budget_exceeded"
-          ]
-        },
-        "method_id": { "const": "nvlabs_ldr_flip/v1.7-b475eb4b" },
-        "canvas_mean": { "type": "number", "minimum": 0, "maximum": 1 }
-      },
-      "anyOf": [
-        {
-          "required": ["status", "method_id", "canvas_mean"],
-          "properties": { "status": { "const": "computed" } }
-        },
-        {
-          "required": ["status", "reason_code"],
-          "properties": { "status": { "const": "not_computed" } }
-        }
-      ],
-      "additionalProperties": false
-    },
-    "canvasOutcome": {
-      "type": "object",
-      "required": ["status", "perceptual_flip"],
-      "properties": {
-        "status": { "enum": ["computed", "not_computed"] },
-        "reason_code": { "type": "string", "minLength": 1 },
-        "magnitude": { "$ref": "#/$defs/renderedMagnitude" },
-        "perceptual_flip": {
-          "$ref": "#/$defs/canvasPerceptualFlipEvidence"
-        }
-      },
-      "anyOf": [
-        {
-          "required": ["status", "magnitude"],
-          "properties": { "status": { "const": "computed" } }
-        },
-        {
           "required": ["status", "reason_code"],
           "properties": { "status": { "const": "not_computed" } }
         }
@@ -931,7 +831,18 @@
         "id": { "type": "string" },
         "primary_subject_id": { "type": "string" },
         "atomic_difference_ids": { "type": "array", "items": { "type": "string" } },
-        "rendered_outcome": { "$ref": "#/$defs/renderedEvidence" },
+        "rendered_outcome": {
+          "type": "object",
+          "required": ["perceptual_color", "perceptual_flip"],
+          "properties": {
+            "perceptual_color": {
+              "$ref": "#/$defs/perceptualColorEvidence"
+            },
+            "perceptual_flip": {
+              "$ref": "#/$defs/perceptualFlipEvidence"
+            }
+          }
+        },
         "difference_regions": { "type": "array", "items": { "$ref": "#/$defs/differenceRegion" } }
       }
     },

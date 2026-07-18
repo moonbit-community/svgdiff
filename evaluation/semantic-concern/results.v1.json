@@ -2,7 +2,7 @@
   "schema_version": "svgdiff-semantic-concern-results/1",
   "input_version": "svgdiff-semantic-concern-input/1",
   "source_pair_sha256": "864faafefc7682fd8dd4abcc0d638fbc45550d9833db40121166e4aa1589fec7",
-  "report_schema_version": "1.44",
+  "report_schema_version": "1.45",
   "impact_policy_id": "event_rendered_pareto/v1",
   "analysis_status": "complete",
   "caller_concern_source": "external_evaluation_query",

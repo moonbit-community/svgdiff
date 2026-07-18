@@ -1,6 +1,6 @@
 # Compact Agent JSON
 
-Status: current schema `1.44` serialization mode
+Status: current schema `1.45` serialization mode
 
 Last verified: 2026-07-17
 
@@ -9,7 +9,7 @@ Last verified: 2026-07-17
 The compact output:
 
 - validates against the same [`svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) as default output;
-- retains the same `schema_version`, Impact Assessment, analysis status, Comparison Profile, coverage matrix, renderer capability gaps, alignments, Changed Facts, source resolutions, Atomic Differences, events, Difference Regions, Cause Envelopes, magnitudes, and Diagnostics;
+- retains the same `schema_version`, analysis status, comparison-wide Canvas Outcome, Impact Assessment, Comparison Profile, coverage matrix, renderer capability gaps, alignments, Changed Facts, source resolutions, Atomic Differences, events, Difference Regions, Cause Envelopes, magnitudes, and Diagnostics;
 - uses the same exit statuses and stdout/stderr rules;
 - may be written with `--output FILE`;
 - does not alter the independently generated HTML report.
@@ -22,9 +22,18 @@ The retained Comparison Profile includes `renderer_conformance_profile_id`, requ
 
 The retained `renderer_capability_gaps` array is encountered-input metadata. An empty array is not a global renderer support claim. Every current Subject Alignment also retains its selection `evidence`, including local ambiguity and explicit uncalibrated confidence status.
 
+The top-level `canvas_outcome` is the one comparison-wide rendered observation.
+Its changed-pixel fraction and linear-premultiplied-RGBA RMSE are computed from
+the final before/after canvases, never by adding Event values. When explicitly
+requested, `perceptual_flip.canvas_mean` adds the full-canvas
+LDR-FLIP response. Consumers may display these bounded values as percentages,
+but their denominators and meanings remain distinct and they must not be
+averaged into a severity score. A missing measurement remains unavailable, not
+zero.
+
 The complete magnitude vector includes nullable exact parameter fields for local user units, CSS pixels, viewport-diagonal fraction, and entity-relative fraction. It also retains the nullable symmetric painted-boundary displacement object with its method identity, per-side sample counts, and mean, p95, and maximum CSS-pixel distances, plus the nullable alpha-only painted-coverage object with per-side CSS area, absolute difference, union, and normalized fraction. Event Rendered Evidence separately retains changed-pixel mean DeltaEOK and an optional bounded LDR-FLIP spatial map with unquantized canvas, selected-event, response-tail, maximum, and explicit-threshold-area statistics after shared-background compositing. Compact mode preserves every null-versus-zero distinction and does not replace these measurements with a geometry-boundary, color, raster, visibility, severity, or importance summary.
 
-Schema `1.44` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
+Schema `1.45` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
 
 Opaque `resource.filter.primitive.source` differences are intentionally not shortened in compact mode: their complete before/after subtrees are the only safe source evidence for unknown primitive semantics. Fixed source and report limits still apply. Treat the retained text as untrusted evidence, not executable markup or a computed visual description.
 

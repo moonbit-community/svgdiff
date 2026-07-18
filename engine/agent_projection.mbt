@@ -21,6 +21,7 @@ fn agent_projection_header(report : StructuredReport) -> Json {
     "value": {
       "schema_version": report.schema_version,
       "analysis_status": report.analysis_status,
+      "canvas_outcome": report.canvas_outcome,
       "impact_assessment": report.impact_assessment,
       "profile": report.profile,
     },
