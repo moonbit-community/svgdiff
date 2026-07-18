@@ -146,9 +146,10 @@ jobs:
           moon info
           moon fmt
           git diff --exit-code
-          moon check --target native --warn-list +73
-          moon test --target native
+          moon check --target all --warn-list +73
+          moon test --target all
           sh scripts/test-cli.sh
+          sh scripts/test-wasm.sh
           sh scripts/test-agent-projection.sh
           sh scripts/test-versioning.sh
           sh scripts/test-module-package.sh

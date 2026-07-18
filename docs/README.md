@@ -112,7 +112,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Cyclic or explosively expanding accepted local-reference graphs fail before renderer parsing.
 - Representative native release CLI workloads have measured wall-time and peak-RSS regression ceilings.
 - Persistent and graph-incremental caches are intentionally absent; only measured within-call memoization is accepted until a repeated-workload study justifies the versioned exact-result boundary.
-- Embedding callers can cooperatively cancel or set an elapsed-time budget without creating a truncated report.
+- Embedding callers can cooperatively cancel or set a deterministic checkpoint budget without creating a truncated report.
 - Font-dependent analysis and the broader SVG feature set are future work recorded in the roadmap.
 - The future font input boundary is accepted and executable as contract vectors, but no font loader, matcher, shaper, text layout, or glyph renderer is part of the product.
 

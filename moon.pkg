@@ -2,5 +2,3 @@ import {
   "Milky2018/svgdiff/engine",
   "moonbitlang/core/json",
 }
-
-supported_targets = "+native"

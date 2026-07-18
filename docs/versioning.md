@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-17
+Last verified: 2026-07-18
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -10,7 +10,7 @@ Last verified: 2026-07-17
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.5.31` | `moon.mod` | Public MoonBit declarations, root-package behavior, CLI syntax, stream behavior, and exit statuses. |
+| MoonBit module and CLI | `0.6.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
 | Structured Report | `1.45` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
 | Diagnostics | Schema `1.45` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
@@ -156,6 +156,8 @@ Module `0.5.29` materializes analyzer-owned Changed Fact fan-out as a private re
 Module `0.5.30` classifies complete group-surface, clip, mask, filter, blend, isolation, and stacking events as supported influence operations. These events union before/after alignment identities with analyzer-owned affected-subject participants before querying the private token index, and every event sharing the exact Difference Region contributes its tokens. Overlapping backdrop and concurrent stacking causes therefore remain candidates while a disjoint later subject can be pruned. The unconditional comparison-wide fallback for complete supported compositing events is removed; partial, unsupported, and empty-candidate paths retain their wider fallback. Structured Report schema `1.44`, public fields, Diagnostics, renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 Module `0.5.31` adds the comparison-wide `canvas_outcome`. It measures the final before/after canvas exactly once, records changed-pixel fraction and linear-premultiplied-RGBA RMSE, and optionally records a full-comparison LDR-FLIP canvas mean under explicit background and Viewing Conditions. The HTML presents these three independent bounded measurements as percentages without combining them into severity. This backward-readable additive field advances Structured Report schema to `1.45`; renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
+
+Module `0.6.0` removes wall-clock time from the core engine and replaces `ComparisonControl.max_elapsed_milliseconds` plus `TimeBudgetExceeded` with the deterministic `max_checkpoints` plus `CheckpointBudgetExceeded`. The root, engine, color, and raster-codec packages now support wasm, wasm-gc, JavaScript, and native; the filesystem/stdin/stdout CLI remains native-only. The new wasm-only `cmd/svgdiff_wasm` entry exposes `svgdiff-wasm-abi/1`, a fixed-memory UTF-8 JSON transaction accepting two SVG strings and optional viewport dimensions and returning compact Structured Report JSON. Cross-target tests cover the complete library suite, while the wasm smoke gate requires one canonical report to be exactly equal to native output. This intentional public control-API break advances the module minor line; Structured Report schema `1.45`, renderer identity, conformance profile `/25`, Diagnostics, ordering policy, and Impact policy remain unchanged.
 
 ## Structured Report schema versions
 

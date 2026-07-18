@@ -24,7 +24,7 @@ pub fn render_markdown_summary(@engine.StructuredReport) -> String
 // Errors
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  TimeBudgetExceeded(max_elapsed_milliseconds~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int)
 } derive(Eq, @debug.Debug)
 
 // Types and methods

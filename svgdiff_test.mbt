@@ -176,7 +176,7 @@ test "root controlled resource API preserves typed cancellation" {
       @svgdiff.ComparisonProfile::v1_default(),
       @svgdiff.ResourceBundle::empty(),
       @svgdiff.ResourceBundle::empty(),
-      { should_cancel: () => true, max_elapsed_milliseconds: None },
+      { should_cancel: () => true, max_checkpoints: None },
     )
   catch {
     Cancelled => ()
@@ -429,7 +429,7 @@ test "controlled comparison cancels immediately without a report" {
   let should_cancel : () -> Bool = () => true
   let control : @svgdiff.ComparisonControl = {
     should_cancel,
-    max_elapsed_milliseconds: None,
+    max_checkpoints: None,
   }
   try
     @svgdiff.compare_with_control(
@@ -456,7 +456,7 @@ test "controlled comparison observes cancellation at a later checkpoint" {
   }
   let control : @svgdiff.ComparisonControl = {
     should_cancel,
-    max_elapsed_milliseconds: None,
+    max_checkpoints: None,
   }
   try
     @svgdiff.compare_with_control(
@@ -475,12 +475,12 @@ test "controlled comparison observes cancellation at a later checkpoint" {
 }
 
 ///|
-test "zero elapsed-time budget expires before comparison" {
+test "zero checkpoint budget expires before comparison" {
   let (before, after) = controlled_comparison_sources()
   let should_cancel : () -> Bool = () => false
   let control : @svgdiff.ComparisonControl = {
     should_cancel,
-    max_elapsed_milliseconds: Some(0),
+    max_checkpoints: Some(0),
   }
   try
     @svgdiff.compare_with_control(
@@ -490,11 +490,35 @@ test "zero elapsed-time budget expires before comparison" {
       control,
     )
   catch {
-    TimeBudgetExceeded(max_elapsed_milliseconds=0) => ()
+    CheckpointBudgetExceeded(max_checkpoints=0) => ()
     _ => fail("expected zero-budget expiry")
   } noraise {
     _ => fail("expired comparison returned a report")
   }
+}
+
+///|
+test "checkpoint budget counts deterministic engine work" {
+  let (before, after) = controlled_comparison_sources()
+  let mut checkpoints = 0
+  let should_cancel : () -> Bool = () => {
+    checkpoints += 1
+    false
+  }
+  try
+    @svgdiff.compare_with_control(
+      before,
+      after,
+      @svgdiff.ComparisonProfile::v1_default(),
+      { should_cancel, max_checkpoints: Some(1) },
+    )
+  catch {
+    CheckpointBudgetExceeded(max_checkpoints=1) => ()
+    _ => fail("expected deterministic checkpoint-budget exhaustion")
+  } noraise {
+    _ => fail("checkpoint-budgeted comparison returned a report")
+  }
+  assert_eq(checkpoints, 2)
 }
 
 ///|
@@ -503,7 +527,7 @@ test "cancellation precedes expiry at the same checkpoint" {
   let should_cancel : () -> Bool = () => true
   let control : @svgdiff.ComparisonControl = {
     should_cancel,
-    max_elapsed_milliseconds: Some(0),
+    max_checkpoints: Some(0),
   }
   try
     @svgdiff.compare_with_control(
@@ -534,7 +558,7 @@ test "sufficiently budgeted comparison is byte-identical" {
   let should_cancel : () -> Bool = () => false
   let actual = @svgdiff.compare_with_control(before, after, profile, {
     should_cancel,
-    max_elapsed_milliseconds: Some(10_000),
+    max_checkpoints: Some(10_000),
   })
   assert_eq(unlimited.to_json_string(), expected.to_json_string())
   assert_eq(

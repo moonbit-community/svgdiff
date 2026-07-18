@@ -2729,7 +2729,7 @@ pub fn compare_with_resources(
 }
 
 ///|
-/// Compare with cooperative cancellation and elapsed-time interruption.
+/// Compare with cooperative cancellation and checkpoint-budget interruption.
 pub fn compare_with_control(
   before_svg : String,
   after_svg : String,

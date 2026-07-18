@@ -78,7 +78,7 @@ The command exits with status `2` for invalid arguments or file I/O errors and s
 
 ## Library API
 
-Install module version `0.5.31` with `moon add Milky2018/svgdiff@0.5.31` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.6.0` with `moon add Milky2018/svgdiff@0.6.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -117,7 +117,9 @@ Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exa
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
-Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional elapsed-time budget. `compare_with_control` raises typed `Cancelled` or `TimeBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. Checks are cooperative, so a synchronous dependency parse or render call may finish before expiry is observed. The ordinary `compare` and CLI remain unlimited.
+Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional deterministic checkpoint budget. `compare_with_control` raises typed `Cancelled` or `CheckpointBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. The budget counts engine checkpoints rather than elapsed time, so the same input and engine version exhaust it independently of machine speed. Checks remain cooperative, so one synchronous dependency call may finish before the next checkpoint. The ordinary `compare` and native CLI remain unlimited.
+
+The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. File, stdin, stdout, and process handling remain isolated in the native-only `cmd/svgdiff` package. The wasm-only [`cmd/svgdiff_wasm`](cmd/svgdiff_wasm/README.md) package exposes a versioned in-memory JSON transaction ABI for future browser products; it accepts SVG strings and returns Structured Report JSON without paths, files, network access, or ambient browser state.
 
 ### Compare SVG sources
 

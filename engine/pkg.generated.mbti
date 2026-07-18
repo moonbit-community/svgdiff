@@ -19,7 +19,7 @@ pub fn compare_with_resources(String, String, ComparisonProfile, ResourceBundle,
 // Errors
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  TimeBudgetExceeded(max_elapsed_milliseconds~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int)
 } derive(Eq, @debug.Debug)
 
 // Types and methods
@@ -87,7 +87,7 @@ pub impl ToJson for ChangedFact
 
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
-  max_elapsed_milliseconds : Int?
+  max_checkpoints : Int?
 }
 pub fn ComparisonControl::unlimited() -> Self
 

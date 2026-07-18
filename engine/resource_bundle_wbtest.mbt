@@ -250,7 +250,7 @@ test "controlled bundle comparison observes cancellation" {
       ComparisonProfile::v1_default(),
       bundle,
       bundle,
-      { should_cancel: () => true, max_elapsed_milliseconds: None },
+      { should_cancel: () => true, max_checkpoints: None },
     )
   catch {
     Cancelled => ()

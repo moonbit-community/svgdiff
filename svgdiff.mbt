@@ -99,7 +99,7 @@ pub fn compare_with_resources(
 /// The controlled comparison stopped before a report was established.
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  TimeBudgetExceeded(max_elapsed_milliseconds~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int)
 } derive(Debug, Eq)
 
 ///|
@@ -134,11 +134,11 @@ pub fn compare(
 }
 
 ///|
-/// Compare with cooperative cancellation and an optional elapsed-time budget.
+/// Compare with cooperative cancellation and a deterministic checkpoint budget.
 ///
 /// Interruption raises `ComparisonInterrupted` and returns no report. Checks
-/// occur at deterministic engine checkpoints; one dependency parse or render
-/// call cannot be preempted and may complete before expiry is observed.
+/// occur at deterministic engine checkpoints; one dependency call cannot be
+/// preempted and may complete before the next checkpoint is observed.
 pub fn compare_with_control(
   before_svg : String,
   after_svg : String,
@@ -159,15 +159,15 @@ pub fn compare_with_control(
     )
   catch {
     Cancelled => raise Cancelled
-    TimeBudgetExceeded(max_elapsed_milliseconds~) =>
-      raise TimeBudgetExceeded(max_elapsed_milliseconds~)
+    CheckpointBudgetExceeded(max_checkpoints~) =>
+      raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
     report => { ..report, schema_version: "1.45" }
   }
 }
 
 ///|
-/// Compare explicit resources with cooperative cancellation and elapsed time.
+/// Compare explicit resources with cooperative cancellation and checkpoint work.
 pub fn compare_with_control_and_resources(
   before_svg : String,
   after_svg : String,
@@ -191,8 +191,8 @@ pub fn compare_with_control_and_resources(
     )
   catch {
     Cancelled => raise Cancelled
-    TimeBudgetExceeded(max_elapsed_milliseconds~) =>
-      raise TimeBudgetExceeded(max_elapsed_milliseconds~)
+    CheckpointBudgetExceeded(max_checkpoints~) =>
+      raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
     report => { ..report, schema_version: "1.45" }
   }

@@ -24,7 +24,7 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | markdown_summary.mbt | css_color | css_color/moon.pkg | css_color/pkg.generated.mbti | engine | engine/moon.pkg | engine/pkg.generated.mbti)
+    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt | css_color | css_color/moon.pkg | css_color/pkg.generated.mbti | engine | engine/moon.pkg | engine/pkg.generated.mbti)
       ;;
     css_color/*.mbt)
       case "$path" in
@@ -60,7 +60,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt markdown_summary.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
+for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 
@@ -92,8 +92,6 @@ import {
 }
 
 pkgtype(kind: "executable")
-
-supported_targets = "+native"
 EOF
 
 cat >"$tmp/consumer/main.mbt" <<'EOF'
@@ -143,7 +141,7 @@ EOF
 
 (
   cd "$tmp"
-  moon check --target native
+  moon check --target all
   moon run --target native consumer
 )
 

@@ -2,5 +2,3 @@ import {
   "moonbitlang/core/math",
   "moonbitlang/core/string",
 }
-
-supported_targets = "+native"

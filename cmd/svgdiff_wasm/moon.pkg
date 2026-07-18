@@ -1,0 +1,29 @@
+import {
+  "Milky2018/svgdiff",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+}
+
+import {
+  "moonbitlang/core/debug",
+} for "wbtest"
+
+supported_targets = "wasm"
+
+options(
+  link: {
+    "wasm": {
+      "exports": [
+        "abi_version:abi_version",
+        "transfer_ptr:transfer_ptr",
+        "transfer_capacity:transfer_capacity",
+        "compare:compare",
+        "result_len:result_len",
+        "result_error_kind:result_error_kind",
+        "result_required_len:result_required_len",
+      ],
+      "export-memory-name": "memory",
+      "heap-start-address": 50331648,
+    },
+  },
+)

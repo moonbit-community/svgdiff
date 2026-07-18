@@ -4,7 +4,6 @@ import {
   "Milky2018/xml",
   "mizchi/pixelmatch",
   "mizchi/svg",
-  "moonbitlang/async",
   "moonbitlang/x/codec/base64",
   "moonbitlang/x/crypto",
   "moonbitlang/core/json",
@@ -13,5 +12,3 @@ import {
   "moonbitlang/core/math",
   "moonbitlang/core/string",
 }
-
-supported_targets = "+native"

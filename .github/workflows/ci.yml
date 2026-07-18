@@ -35,11 +35,14 @@ jobs:
           moon fmt
           git diff --exit-code
 
-      - name: Check native warnings
-        run: moon check --target native --warn-list +73
+      - name: Check all library targets
+        run: moon check --target all --warn-list +73
 
       - name: Run MoonBit tests
-        run: moon test --target native
+        run: moon test --target all
+
+      - name: Validate WebAssembly entry
+        run: sh scripts/test-wasm.sh
 
       - name: Validate CLI and version identity
         run: |
