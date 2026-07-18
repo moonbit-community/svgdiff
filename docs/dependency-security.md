@@ -2,7 +2,7 @@
 
 Status: current maintenance ledger
 
-Last verified: 2026-07-17
+Last verified: 2026-07-19
 
 This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.45`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
@@ -62,6 +62,8 @@ The private MoonBit LDR-FLIP implementation follows the equations and constants 
 - The preview document applies `default-src 'none'`; the top-level report allows only its own inline presentation script and styles.
 - The pinned Chromium [HTML security gate](../evaluation/html-security/README.md) verifies that hostile scripts and event handlers do not execute, the parent report is not mutated, and hostile external resource URLs produce no requests.
 - Semantic classification comes only from the Structured Report. Browser rendering in the report cannot promote unsupported input to complete analysis.
+- The static GitHub Pages product performs comparison in a dedicated Worker through the no-I/O wasm entry. It has no upload, remote-URL acquisition, account, history, analytics, or telemetry path; only same-origin static application assets and the wasm binary are fetched.
+- The page accepts local file bytes through an explicit browser file picker or drop action and keeps them in tab-local memory. Input and report previews retain empty iframe sandboxes and restrictive nested CSP documents. The top-level page permits same-origin scripts, styles, Worker, and wasm compilation plus the inline styles required by the shared Inspector; it does not authorize input scripts or remote resources.
 
 ### CLI and data access
 

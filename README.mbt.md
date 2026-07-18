@@ -76,6 +76,27 @@ the Structured Report JSON remains authoritative for complete evidence.
 
 The command exits with status `2` for invalid arguments or file I/O errors and status `1` when SVG analysis fails, including malformed input, a fixed resource-limit rejection, or an unsafe local-reference graph. A `partial` report is still emitted successfully because its Diagnostics describe exactly which evidence layers are unavailable. Admission failures return a small report rather than a truncated difference inventory; fixed budgets are documented in [`docs/resource-limits.md`](docs/resource-limits.md), and cycle plus transitive `<use>` expansion handling is documented in [`docs/reference-safety.md`](docs/reference-safety.md).
 
+## Browser playground
+
+The static [`web`](web/README.md) product runs the same comparison engine in a
+dedicated Web Worker. Users can paste or drop two SVGs, choose the explicit
+viewport and perceptual background, inspect all three canvas measurements,
+locate report-defined regions, and copy or download the complete Structured
+Report. Sources remain in the browser tab; the page has no upload, remote URL
+fetch, account, history, or telemetry path. Comparison uses a user-configurable
+deterministic checkpoint budget rather than a wall-clock timeout.
+
+Build the GitHub Pages artifact locally with:
+
+```sh
+sh scripts/build-pages.sh
+python3 -m http.server 4173 --directory _site
+```
+
+The self-contained CLI HTML and browser page share the same Report Inspector
+script and styles extracted from `html_report_assets.mbt`. The generated
+`_site` directory is ignored and must not be edited directly.
+
 ## Library API
 
 Install module version `0.6.0` with `moon add Milky2018/svgdiff@0.6.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
@@ -119,7 +140,7 @@ The root package is the stable product seam. Its implementation lives in the for
 
 Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional deterministic checkpoint budget. `compare_with_control` raises typed `Cancelled` or `CheckpointBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. The budget counts engine checkpoints rather than elapsed time, so the same input and engine version exhaust it independently of machine speed. Checks remain cooperative, so one synchronous dependency call may finish before the next checkpoint. The ordinary `compare` and native CLI remain unlimited.
 
-The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. File, stdin, stdout, and process handling remain isolated in the native-only `cmd/svgdiff` package. The wasm-only [`cmd/svgdiff_wasm`](cmd/svgdiff_wasm/README.md) package exposes a versioned in-memory JSON transaction ABI for future browser products; it accepts SVG strings and returns Structured Report JSON without paths, files, network access, or ambient browser state.
+The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. File, stdin, stdout, and process handling remain isolated in the native-only `cmd/svgdiff` package. The wasm-only [`cmd/svgdiff_wasm`](cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
 
 ### Compare SVG sources
 
@@ -287,8 +308,11 @@ The [performance suites](evaluation/performance/README.md) independently time pa
 Run the MoonBit suite and CLI integration test:
 
 ```sh
-moon test --target native
+moon check --target all --warn-list +73
+moon test --target all
 sh scripts/test-cli.sh
+sh scripts/test-wasm.sh
+sh scripts/test-pages.sh
 sh scripts/test-install.sh
 sh scripts/test-browser-oracle.sh
 sh scripts/test-renderer-conformance.sh

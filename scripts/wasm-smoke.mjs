@@ -43,6 +43,10 @@ const result = invoke({
   after_svg: afterSvg,
   viewport_width: 16,
   viewport_height: 16,
+  perceptual_background: "#ffffff",
+  flip_pixels_per_degree: 60,
+  flip_error_threshold: 0.05,
+  max_checkpoints: 1000000,
 });
 assert.equal(result.status, 0, result.text);
 assert.equal(result.errorKind, 0);
@@ -56,6 +60,12 @@ const invalid = invoke({
   version: 1,
   before_svg: "<svg/>",
   after_svg: "<svg/>",
+  viewport_width: 16,
+  viewport_height: 16,
+  perceptual_background: null,
+  flip_pixels_per_degree: null,
+  flip_error_threshold: null,
+  max_checkpoints: 1000000,
   path: "before.svg",
 });
 assert.equal(invalid.status, 1);

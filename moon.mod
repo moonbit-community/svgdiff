@@ -46,6 +46,7 @@ options(
     "schema",
     "scripts",
     "testdata",
+    "web",
     "modules",
     "moon.work",
     "AGENTS.md",

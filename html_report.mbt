@@ -57,6 +57,7 @@ pub fn render_html_report(
     $|<details class="json-panel"><summary>Raw Report JSON</summary><p class="raw-help">Canonical evidence for programs and text-only Agents. Search, copy, or download it directly.</p><div class="raw-actions"><button type="button" id="copy-json">Copy JSON</button><button type="button" id="download-json">Download JSON</button><span id="raw-status" role="status"></span></div><textarea id="report-data" readonly aria-label="Complete Structured Report JSON">\{report_json}</textarea></details>
     $|</aside></main><script>
     $|\{script}
+    $|SvgdiffReportInspector.mount(document);
     $|</script></body></html>
   html
 }

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Compare the visual meaning of two SVG files locally in your browser.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>SVGDiff — visual-semantic SVG comparison</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./assets/report-inspector.css">
+    <link rel="stylesheet" href="./app.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="./" aria-label="SVGDiff home">
+        <span class="brand-mark" aria-hidden="true">∆</span>
+        <span>SVGDiff</span>
+      </a>
+      <p>Compare visual meaning, not XML text.</p>
+      <nav aria-label="Project links">
+        <a href="https://github.com/moonbit-community/svgdiff">GitHub</a>
+        <a href="https://github.com/moonbit-community/svgdiff/tree/main/docs">Docs</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Deterministic static SVG comparison</p>
+          <h1 id="hero-title">See what changed, how much, where, and why.</h1>
+          <p class="hero-copy">Both SVG sources stay in this browser tab. The WebAssembly engine returns the same Structured Report as the native CLI.</p>
+        </div>
+        <div class="privacy-note">
+          <span class="privacy-dot" aria-hidden="true"></span>
+          Local-only processing<br>
+          <small>No upload, account, or network fetch</small>
+        </div>
+      </section>
+
+      <section id="input-section" class="input-section" aria-labelledby="input-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Comparison input</p>
+            <h2 id="input-heading">Two SVG sources</h2>
+          </div>
+          <label class="example-control">Example
+            <select id="example-select">
+              <option value="color">Visible color change</option>
+              <option value="subtle">Tiny geometry change</option>
+              <option value="equivalent">Equivalent color spelling</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="source-grid">
+          <article class="source-card" data-drop-side="before">
+            <header>
+              <div><span class="source-index">A</span><h3>Before</h3></div>
+              <label class="file-button">Open SVG<input id="before-file" type="file" accept=".svg,image/svg+xml"></label>
+            </header>
+            <textarea id="before-source" spellcheck="false" aria-label="Before SVG source"></textarea>
+            <div class="source-preview"><iframe id="before-preview" title="Before input preview" sandbox=""></iframe></div>
+            <p>Drop an SVG file anywhere on this panel or paste complete source.</p>
+          </article>
+
+          <article class="source-card" data-drop-side="after">
+            <header>
+              <div><span class="source-index">B</span><h3>After</h3></div>
+              <label class="file-button">Open SVG<input id="after-file" type="file" accept=".svg,image/svg+xml"></label>
+            </header>
+            <textarea id="after-source" spellcheck="false" aria-label="After SVG source"></textarea>
+            <div class="source-preview"><iframe id="after-preview" title="After input preview" sandbox=""></iframe></div>
+            <p>Drop an SVG file anywhere on this panel or paste complete source.</p>
+          </article>
+        </div>
+
+        <div class="comparison-controls">
+          <label>Viewport width<input id="viewport-width" type="number" min="1" step="1" value="256"></label>
+          <span class="dimension-separator" aria-hidden="true">×</span>
+          <label>Viewport height<input id="viewport-height" type="number" min="1" step="1" value="256"></label>
+          <label>Perceptual background
+            <select id="background-select">
+              <option value="#ffffff">White</option>
+              <option value="#000000">Black</option>
+              <option value="transparent">Transparent — no FLIP</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <label id="custom-background-label" hidden>Custom color<input id="custom-background" type="color" value="#ffffff"></label>
+          <details class="advanced-controls">
+            <summary>Perceptual settings</summary>
+            <div>
+              <label>FLIP pixels per degree<input id="flip-ppd" type="number" min="1" max="4096" step="1" value="60"></label>
+              <label>FLIP error threshold<input id="flip-threshold" type="number" min="0" max="1" step="0.01" value="0.05"></label>
+              <label>Checkpoint budget<input id="max-checkpoints" type="number" min="1" step="1" value="1000000"></label>
+            </div>
+          </details>
+          <button id="compare-button" class="compare-button" type="button">Compare SVGs</button>
+        </div>
+        <div id="run-status" class="run-status" role="status" aria-live="polite">Ready. The sample is loaded locally.</div>
+      </section>
+
+      <section id="result-section" class="result-section" aria-labelledby="result-heading" hidden>
+        <header class="result-toolbar">
+          <div>
+            <p class="eyebrow">Structured Report</p>
+            <h2 id="result-heading">Comparison result</h2>
+          </div>
+          <button id="edit-inputs" class="secondary-button" type="button">Edit inputs</button>
+        </header>
+        <div id="report-root" class="report-root"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>SVGDiff reports profile-scoped evidence. Unsupported semantics remain explicit Diagnostics, never silent equality.</p>
+      <a href="https://github.com/moonbit-community/svgdiff">Source and license</a>
+    </footer>
+
+    <template id="report-template">
+      <div class="layout"><section class="visuals" aria-label="SVG previews">
+        <header class="visual-header"><div><h1>SVG previews</h1><p id="selection-status">No localization selected</p></div><div class="view-controls" aria-label="Synchronized preview controls"><button type="button" id="fit-selection">Fit selected</button><button type="button" id="fit-canvas">Fit canvas</button><button type="button" id="reset-view">Reset</button><button type="button" id="clear-selection-global">Clear selection</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-value">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div></header>
+        <div class="preview-grid"><article class="preview"><h2>Before</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="Before SVG" sandbox=""></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
+        <article class="preview"><h2>After</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="After SVG" sandbox=""></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article></div>
+        <div class="localization-legend"><span><i class="observed"></i>Observed bounds</span><span><i class="conservative"></i>Conservative outcome</span><span><i class="before-footprint"></i>Before footprint unavailable in Schema 1.45</span><span><i class="after-footprint"></i>After footprint unavailable in Schema 1.45</span></div>
+        <aside id="selection-hidden" class="selection-hidden" hidden><span>The selected Event is hidden by filters; its overlay is suspended.</span><button type="button" id="show-selection">Show selected</button><button type="button" id="clear-selection">Clear</button></aside>
+      </section><aside class="sidebar" aria-label="Visual-semantic review">
+        <header class="report-header"><div><h1>Visual-semantic review</h1><p id="summary" class="summary"></p></div><span id="compatibility" class="compatibility">Schema compatibility</span></header>
+        <section id="overview" aria-labelledby="overview-heading"><h2 id="overview-heading" class="section-title">Report overview</h2><div id="impact"></div></section>
+        <section id="filters" class="filters" aria-label="Review filters"></section>
+        <section id="diffs" aria-labelledby="events-heading"><h2 id="events-heading" class="section-title">Visual Events</h2></section>
+        <details class="diagnostics-panel"><summary id="diagnostics-summary">Diagnostics</summary><div id="diagnostics"></div></details>
+        <details class="json-panel"><summary>Raw Report JSON</summary><p class="raw-help">Canonical evidence for programs and text-only Agents. Search, copy, or download it directly.</p><div class="raw-actions"><button type="button" id="copy-json">Copy JSON</button><button type="button" id="download-json">Download JSON</button><span id="raw-status" role="status"></span></div><textarea id="report-data" readonly aria-label="Complete Structured Report JSON"></textarea></details>
+      </aside></div>
+    </template>
+
+    <script src="./assets/report-inspector.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

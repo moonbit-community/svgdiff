@@ -41,6 +41,9 @@ let error_invalid_request : Int = 5
 let error_result_too_large : Int = 6
 
 ///|
+let error_checkpoint_budget : Int = 7
+
+///|
 priv struct WasmResultState {
   mut length : Int
   mut error_kind : Int
@@ -102,8 +105,25 @@ pub fn compare(request_len : Int) -> Int {
     ..@svgdiff.ComparisonProfile::v1_default(),
     viewport_width: request.viewport_width,
     viewport_height: request.viewport_height,
+    perceptual_background: request.perceptual_background,
+    flip_viewing_conditions: request.flip_viewing_conditions,
+    flip_error_threshold: request.flip_error_threshold,
   }
-  let report = @svgdiff.compare(request.before_svg, request.after_svg, profile)
+  let should_cancel : () -> Bool = () => false
+  let report = @svgdiff.compare_with_control(
+    request.before_svg,
+    request.after_svg,
+    profile,
+    { should_cancel, max_checkpoints: Some(request.max_checkpoints) },
+  ) catch {
+    CheckpointBudgetExceeded(max_checkpoints~) =>
+      return finish_error(
+        error_checkpoint_budget,
+        "deterministic checkpoint budget \{max_checkpoints} exhausted",
+      )
+    Cancelled =>
+      return finish_error(error_checkpoint_budget, "comparison cancelled")
+  }
   finish_success(report.to_compact_json_string())
 }
 

@@ -44,6 +44,9 @@ jobs:
       - name: Validate WebAssembly entry
         run: sh scripts/test-wasm.sh
 
+      - name: Validate GitHub Pages browser product
+        run: sh scripts/test-pages.sh
+
       - name: Validate CLI and version identity
         run: |
           sh scripts/test-cli.sh

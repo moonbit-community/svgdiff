@@ -11,6 +11,8 @@ moon build cmd/svgdiff --target native --release
 moon build cmd/svgdiff_wasm --target wasm --release
 native_cli=_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 "$native_cli" testdata/before.svg testdata/after.svg --agent-json \
+  --perceptual-background '#ffffff' --flip-pixels-per-degree 60 \
+  --flip-error-threshold 0.05 \
   >"$tmp/native-report.json"
 node scripts/wasm-smoke.mjs \
   _build/wasm/release/build/Milky2018/svgdiff/cmd/svgdiff_wasm/svgdiff_wasm.wasm \

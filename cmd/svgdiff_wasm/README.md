@@ -25,11 +25,25 @@ ABI version 1 accepts:
   "before_svg": "<svg>...</svg>",
   "after_svg": "<svg>...</svg>",
   "viewport_width": 800,
-  "viewport_height": 600
+  "viewport_height": 600,
+  "perceptual_background": "#ffffff",
+  "flip_pixels_per_degree": 60,
+  "flip_error_threshold": 0.05,
+  "max_checkpoints": 1000000
 }
 ```
 
-Viewport fields are optional and default to 16. Unknown fields are rejected.
-The entry accepts no paths, URLs, files, network handles, or ambient browser
-state. Explicit resource bundles and perceptual-profile options are not part of
-ABI version 1.
+Every field shown above is required. `perceptual_background` may instead be
+`null`; `flip_pixels_per_degree` and `flip_error_threshold` must then also be
+`null`. A background may be supplied without FLIP, but FLIP requires a
+background and a threshold requires FLIP Viewing Conditions. Colors use the
+same opaque deterministic sRGB parser as the public MoonBit interface; PPD is
+bounded to `[1, 4096]` and the threshold to `[0, 1]`. `max_checkpoints` must be
+positive and applies the core engine's deterministic work budget; exhaustion
+returns host error kind `7` and no partial report.
+
+This is the only accepted ABI version 1 request shape. The earlier request
+shape with optional viewport fields and no perceptual-profile fields was
+removed without a compatibility path. Unknown or missing fields are rejected.
+The entry accepts no paths, URLs, files, network handles, resource bundles, or
+ambient browser state.

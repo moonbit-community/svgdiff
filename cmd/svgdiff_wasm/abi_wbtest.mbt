@@ -24,7 +24,7 @@ test "wasm ABI compares two in-memory SVG strings" {
   @debug.assert_eq(transfer_ptr(), 1048576)
   @debug.assert_eq(transfer_capacity(), 41943040)
   let length = write_test_request(
-    "{\"version\":1,\"before_svg\":\"<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='red'/></svg>\",\"after_svg\":\"<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='blue'/></svg>\"}",
+    "{\"version\":1,\"before_svg\":\"<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='red'/></svg>\",\"after_svg\":\"<svg width='16' height='16'><rect x='2' y='2' width='8' height='8' fill='blue'/></svg>\",\"viewport_width\":16,\"viewport_height\":16,\"perceptual_background\":\"#ffffff\",\"flip_pixels_per_degree\":60,\"flip_error_threshold\":0.05,\"max_checkpoints\":1000000}",
   )
   @debug.assert_eq(compare(length), status_ok)
   @debug.assert_eq(result_error_kind(), error_none)
@@ -37,13 +37,63 @@ test "wasm ABI compares two in-memory SVG strings" {
 ///|
 test "wasm ABI applies explicit viewport dimensions" {
   let length = write_test_request(
-    "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"viewport_width\":32,\"viewport_height\":24}",
+    "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"viewport_width\":32,\"viewport_height\":24,\"perceptual_background\":\"#336699\",\"flip_pixels_per_degree\":60,\"flip_error_threshold\":0.05,\"max_checkpoints\":1000000}",
   )
   @debug.assert_eq(compare(length), status_ok)
   match @json.parse(read_test_result()) {
-    { "profile": { "viewport_width": 32, "viewport_height": 24, .. }, .. } => ()
+    {
+      "profile": {
+        "viewport_width": 32,
+        "viewport_height": 24,
+        "perceptual_background": { "red": 51, "green": 102, "blue": 153, .. },
+        "flip_viewing_conditions": { "pixels_per_degree": 60, .. },
+        "flip_error_threshold": { "value": 0.05, .. },
+        ..
+      },
+      ..
+    } => ()
     _ => fail("expected request viewport in the report profile")
   }
+}
+
+///|
+test "wasm ABI requires the complete request shape" {
+  let incomplete = write_test_request(
+    "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\"}",
+  )
+  @debug.assert_eq(compare(incomplete), status_error)
+  @debug.assert_eq(result_error_kind(), error_invalid_request)
+  assert_true(read_test_result().contains("missing required field"))
+}
+
+///|
+test "wasm ABI accepts an explicit raw transparent profile" {
+  let request = write_test_request(
+    "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"viewport_width\":16,\"viewport_height\":16,\"perceptual_background\":null,\"flip_pixels_per_degree\":null,\"flip_error_threshold\":null,\"max_checkpoints\":1000000}",
+  )
+  @debug.assert_eq(compare(request), status_ok)
+  match @json.parse(read_test_result()) {
+    {
+      "profile": {
+        "perceptual_background": Null,
+        "flip_viewing_conditions": Null,
+        "flip_error_threshold": Null,
+        ..
+      },
+      ..
+    } => ()
+    _ => fail("expected an explicit raw transparent comparison profile")
+  }
+}
+
+///|
+test "wasm ABI enforces deterministic checkpoint work" {
+  let request = write_test_request(
+    "{\"version\":1,\"before_svg\":\"<svg><rect/></svg>\",\"after_svg\":\"<svg><rect fill='red'/></svg>\",\"viewport_width\":16,\"viewport_height\":16,\"perceptual_background\":null,\"flip_pixels_per_degree\":null,\"flip_error_threshold\":null,\"max_checkpoints\":1}",
+  )
+  @debug.assert_eq(compare(request), status_error)
+  @debug.assert_eq(result_error_kind(), error_checkpoint_budget)
+  assert_true(read_test_result().contains("checkpoint budget 1 exhausted"))
 }
 
 ///|
@@ -57,12 +107,12 @@ test "wasm ABI rejects malformed host requests without trapping" {
   @debug.assert_eq(compare(invalid_json), status_error)
   @debug.assert_eq(result_error_kind(), error_invalid_json)
   let invalid_version = write_test_request(
-    "{\"version\":2,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\"}",
+    "{\"version\":99,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"viewport_width\":16,\"viewport_height\":16,\"perceptual_background\":null,\"flip_pixels_per_degree\":null,\"flip_error_threshold\":null,\"max_checkpoints\":1000000}",
   )
   @debug.assert_eq(compare(invalid_version), status_error)
   @debug.assert_eq(result_error_kind(), error_unsupported_version)
   let unknown_field = write_test_request(
-    "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"path\":\"before.svg\"}",
+    "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"viewport_width\":16,\"viewport_height\":16,\"perceptual_background\":null,\"flip_pixels_per_degree\":null,\"flip_error_threshold\":null,\"max_checkpoints\":1000000,\"path\":\"before.svg\"}",
   )
   @debug.assert_eq(compare(unknown_field), status_error)
   @debug.assert_eq(result_error_kind(), error_invalid_request)
