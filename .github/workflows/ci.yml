@@ -29,6 +29,9 @@ jobs:
       - name: Record toolchain
         run: moon version --all
 
+      - name: Update MoonBit registry
+        run: moon update
+
       - name: Verify generated interfaces and formatting
         run: |
           moon info
@@ -139,6 +142,9 @@ jobs:
 
       - name: Record toolchain
         run: moon version --all
+
+      - name: Update MoonBit registry
+        run: moon update
 
       - name: Capture canonical report bundle
         run: |
