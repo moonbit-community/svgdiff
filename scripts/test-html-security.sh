@@ -27,6 +27,10 @@ cleanup() {
       echo "Browser security state:" >&2
       cat "$tmp/browser.json" >&2
     fi
+    if [ -f "$tmp/browser-interaction.json" ]; then
+      echo "Browser interaction state:" >&2
+      cat "$tmp/browser-interaction.json" >&2
+    fi
     tail -80 "$log" >&2 || true
   fi
   rm -rf "$tmp"
@@ -69,6 +73,16 @@ printf '%s\n' \
   evaluation/schema-examples/cases/marker-equivalent/after.svg \
   --agent-json --output "$tmp/partial.json" --html "$tmp/partial.html"
 
+"$cli" \
+  evaluation/corpus/cases/equivalent-color-spelling/before.svg \
+  evaluation/corpus/cases/equivalent-color-spelling/after.svg \
+  --agent-json --output "$tmp/equivalent.json" --html "$tmp/equivalent.html"
+
+"$cli" \
+  evaluation/corpus/cases/subtle-geometry-shift/before.svg \
+  evaluation/corpus/cases/subtle-geometry-shift/after.svg \
+  --agent-json --output "$tmp/subtle.json" --html "$tmp/subtle.html"
+
 "$cli" testdata/before.svg testdata/before.svg \
   --agent-json --output "$tmp/empty.json" --html "$tmp/empty.html"
 
@@ -92,6 +106,10 @@ incomparable_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[
 incomparable_url_json=$(printf '%s' "$incomparable_url" | jq -Rs .)
 partial_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/partial.html")
 partial_url_json=$(printf '%s' "$partial_url" | jq -Rs .)
+equivalent_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/equivalent.html")
+equivalent_url_json=$(printf '%s' "$equivalent_url" | jq -Rs .)
+subtle_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/subtle.html")
+subtle_url_json=$(printf '%s' "$subtle_url" | jq -Rs .)
 empty_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/empty.html")
 empty_url_json=$(printf '%s' "$empty_url" | jq -Rs .)
 failed_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/failed.html")
@@ -139,77 +157,151 @@ pw --raw run-code \
     await page.goto($interactive_url_json, { waitUntil: 'load' });
     const embedded = JSON.parse(await page.locator('#report-data').inputValue());
     const diffCount = await page.locator('[data-diff-id]').count();
-    const first = page.locator('[data-diff-id]').first();
-    const firstId = await first.getAttribute('data-diff-id');
-    await first.hover();
+    const eventCount = await page.locator('.event-card[data-event-id]').count();
+    const firstEvent = page.locator('.event-card[data-event-id]').first();
+    const firstDiff = firstEvent.locator('[data-diff-id]').first();
+    const firstEventId = await firstEvent.getAttribute('data-event-id');
+    const firstDiffId = await firstDiff.getAttribute('data-diff-id');
+    const defaultDisclosure = {
+      event: await firstEvent.locator('details.evidence').evaluate(node => node.open),
+      atomic: await firstDiff.locator('details.atomic-evidence').evaluate(node => node.open),
+      raw: await page.locator('details.json-panel').evaluate(node => node.open),
+    };
+    await firstDiff.hover();
     const hoverOverlayCount = await page.locator('.overlay .region').count();
-    await page.locator('#impact-heading').hover();
+    const observedOverlayCount = await page.locator('.overlay .region.observed').count();
+    await page.locator('#overview-heading').hover();
     const afterHoverOverlayCount = await page.locator('.overlay .region').count();
-    const checkbox = first.locator('input[type=checkbox]');
+    const checkbox = firstDiff.locator('[data-atomic-check]');
     await checkbox.click();
+    const eventCheckbox = firstEvent.locator('[data-event-check]');
+    const groupCheckbox = firstEvent.locator('xpath=ancestor::section[@data-outcome-group]/*[1]/*[@data-group-check]');
     const checkboxIndependent = {
       checked: await checkbox.isChecked(),
-      active: await first.evaluate(node => node.classList.contains('active')),
-      pressed: await first.locator('[data-locate]').getAttribute('aria-pressed'),
+      eventChecked: await eventCheckbox.isChecked(),
+      groupChecked: await groupCheckbox.isChecked(),
+      active: await firstEvent.evaluate(node => node.classList.contains('active')),
+      pressed: await firstEvent.locator('[data-locate-event]').getAttribute('aria-pressed'),
     };
-    await first.locator('[data-locate]').click();
+    await firstEvent.locator('[data-locate-event]').click();
     const selected = {
-      active: await first.evaluate(node => node.classList.contains('active')),
-      pressed: await first.locator('[data-locate]').getAttribute('aria-pressed'),
+      active: await firstEvent.evaluate(node => node.classList.contains('active')),
+      pressed: await firstEvent.locator('[data-locate-event]').getAttribute('aria-pressed'),
       overlayCount: await page.locator('.overlay .region').count(),
       status: await page.locator('#selection-status').textContent(),
     };
-    await first.locator('details.evidence > summary').click();
-    const evidenceText = await first.locator('details.evidence').textContent();
-    const evidence = {
-      open: await first.locator('details.evidence').evaluate(node => node.open),
-      hasMagnitude: evidenceText.includes('magnitude.raster_changed_pixel_fraction'),
-      hasEvent: await first.locator('.event-card').count() > 0,
-      hasRegion: await first.locator('.region-card').count() > 0,
-      hasFact: await first.locator('.fact-card').count() > 0,
-      hasCause: evidenceText.includes('Possible Changed Fact causes'),
+    await firstEvent.locator('[data-locate-event]').click();
+    const repeatedSelection = {
+      active: await firstEvent.evaluate(node => node.classList.contains('active')),
+      pressed: await firstEvent.locator('[data-locate-event]').getAttribute('aria-pressed'),
     };
-    await page.locator('#clear-selection').click();
+    await firstDiff.locator('details.atomic-evidence > summary').click();
+    await firstEvent.locator('details.evidence > summary').click();
+    const atomicEvidenceText = await firstDiff.locator('details.atomic-evidence').textContent();
+    const eventEvidenceText = await firstEvent.locator('details.evidence').textContent();
+    const evidence = {
+      atomicOpen: await firstDiff.locator('details.atomic-evidence').evaluate(node => node.open),
+      eventOpen: await firstEvent.locator('details.evidence').evaluate(node => node.open),
+      hasMagnitude: atomicEvidenceText.includes('raster_changed_pixel_fraction'),
+      hasRegion: await firstEvent.locator('.region-card').count() > 0,
+      hasFact: await firstEvent.locator('.fact-card').count() > 0,
+      hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
+      hasCompatibility: eventEvidenceText.includes('Schema 1.44 provides bounds only'),
+    };
+    await page.locator('#outcome-filter').selectOption('zero');
+    const hiddenSelection = {
+      visible: await page.locator('#selection-hidden').isVisible(),
+      events: await page.locator('.event-card[data-event-id]').count(),
+      overlays: await page.locator('.overlay .region').count(),
+      status: await page.locator('#selection-status').textContent(),
+    };
+    await page.locator('#show-selection').click();
+    const restoredSelection = {
+      visible: await firstEvent.isVisible(),
+      overlays: await page.locator('.overlay .region').count(),
+    };
+    await page.locator('#zoom-in').click();
+    const transforms = await page.locator('.preview-content').evaluateAll(nodes => nodes.map(node => node.style.transform));
+    const zoom = await page.locator('#zoom-value').textContent();
+    await page.locator('#clear-selection-global').click();
     const clearedOverlayCount = await page.locator('.overlay .region').count();
-    await first.focus();
-    await first.press('Enter');
+    await firstEvent.locator('.event-identity').click();
+    const cardSelection = {
+      active: await firstEvent.evaluate(node => node.classList.contains('active')),
+      overlayCount: await page.locator('.overlay .region').count(),
+    };
+    await page.locator('#clear-selection-global').click();
+    await firstEvent.focus();
+    await firstEvent.press('Enter');
     const keyboard = {
-      active: await first.evaluate(node => node.classList.contains('active')),
+      active: await firstEvent.evaluate(node => node.classList.contains('active')),
       overlayCount: await page.locator('.overlay .region').count(),
     };
     const accessible = {
       checkboxLabel: await checkbox.getAttribute('aria-label'),
-      locateLabel: await first.locator('[data-locate]').getAttribute('aria-label'),
+      eventCheckboxLabel: await eventCheckbox.getAttribute('aria-label'),
+      groupCheckboxLabel: await groupCheckbox.getAttribute('aria-label'),
+      locateLabel: await firstEvent.locator('[data-locate-event]').getAttribute('aria-label'),
       jsonLabel: await page.locator('#report-data').getAttribute('aria-label'),
+      copyLabel: await page.locator('#copy-json').textContent(),
+      downloadLabel: await page.locator('#download-json').textContent(),
     };
+    await page.locator('details.json-panel > summary').click();
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.locator('#download-json').click(),
+    ]);
+    const rawActions = {
+      open: await page.locator('details.json-panel').evaluate(node => node.open),
+      filename: download.suggestedFilename(),
+    };
+    await page.reload({ waitUntil: 'load' });
+    const sessionReset = await page.locator('[data-atomic-check]').first().isChecked();
     const states = {};
     for (const [name, url] of Object.entries({
       tied: $tied_url_json,
       incomparable: $incomparable_url_json,
       partial: $partial_url_json,
+      equivalent: $equivalent_url_json,
+      subtle: $subtle_url_json,
       empty: $empty_url_json,
       failed: $failed_url_json,
     })) {
       await page.goto(url, { waitUntil: 'load' });
       states[name] = {
-        impact: await page.locator('#impact').textContent(),
+        overview: await page.locator('#overview').textContent(),
         diffs: await page.locator('#diffs').textContent(),
-        groups: await page.locator('.frontier-group').count(),
+        groups: await page.locator('.outcome-group').count(),
+        points: await page.locator('.impact-point').count(),
       };
     }
     return {
-      firstId,
+      firstEventId,
+      firstDiffId,
       diffCount,
+      eventCount,
       reportDiffCount: embedded.atomic_differences.length,
+      reportEventCount: embedded.events.length,
       impactPolicy: embedded.impact_assessment.policy_id,
+      groupOrder: await page.locator('.group-header h3').allTextContents().catch(() => []),
+      defaultDisclosure,
       hoverOverlayCount,
+      observedOverlayCount,
       afterHoverOverlayCount,
       checkboxIndependent,
       selected,
+      repeatedSelection,
       evidence,
+      hiddenSelection,
+      restoredSelection,
+      transforms,
+      zoom,
       clearedOverlayCount,
+      cardSelection,
       keyboard,
       accessible,
+      rawActions,
+      sessionReset,
       states,
     };
   }" >"$tmp/browser-interaction.json" 2>>"$log"
@@ -217,37 +309,70 @@ pw --raw run-code \
 jq -e '
   . as $result |
   .diffCount == .reportDiffCount and
+  .eventCount == .reportEventCount and
   .reportDiffCount == 1 and
   .impactPolicy == "event_rendered_pareto/v1" and
+  .defaultDisclosure == {"event": false, "atomic": false, "raw": false} and
   .hoverOverlayCount == 2 and
+  .observedOverlayCount == 2 and
   .afterHoverOverlayCount == 0 and
-  .checkboxIndependent == {"checked": true, "active": false, "pressed": "false"} and
+  .checkboxIndependent == {
+    "checked": true,
+    "eventChecked": true,
+    "groupChecked": true,
+    "active": false,
+    "pressed": "false"
+  } and
   .selected.active == true and
   .selected.pressed == "true" and
   .selected.overlayCount == 2 and
-  (.selected.status | contains($result.firstId)) and
+  (.selected.status | contains($result.firstEventId)) and
+  .repeatedSelection == {"active": true, "pressed": "true"} and
   .evidence == {
-    "open": true,
+    "atomicOpen": true,
+    "eventOpen": true,
     "hasMagnitude": true,
-    "hasEvent": true,
     "hasRegion": true,
     "hasFact": true,
-    "hasCause": true
+    "hasCause": true,
+    "hasCompatibility": true
   } and
+  .hiddenSelection.visible == true and
+  .hiddenSelection.events == 0 and
+  .hiddenSelection.overlays == 0 and
+  (.hiddenSelection.status | contains("selected but hidden")) and
+  .restoredSelection == {"visible": true, "overlays": 2} and
+  (.transforms | length == 2 and .[0] == .[1]) and
+  .zoom == "125%" and
   .clearedOverlayCount == 0 and
+  .cardSelection == {"active": true, "overlayCount": 2} and
   .keyboard == {"active": true, "overlayCount": 2} and
   (.accessible.checkboxLabel | startswith("Mark ")) and
+  (.accessible.eventCheckboxLabel | startswith("Mark all Atomic Differences")) and
+  (.accessible.groupCheckboxLabel | startswith("Mark all ")) and
   (.accessible.locateLabel | startswith("Persistently highlight")) and
   .accessible.jsonLabel == "Complete Structured Report JSON" and
-  (.states.tied.impact | contains("exactly tied")) and
+  .accessible.copyLabel == "Copy JSON" and
+  .accessible.downloadLabel == "Download JSON" and
+  .rawActions == {"open": true, "filename": "svgdiff-report.json"} and
+  .sessionReset == false and
+  (.states.tied.overview | contains("exactly tied")) and
   .states.tied.groups == 1 and
-  (.states.incomparable.impact | contains("incomparable under this policy")) and
-  .states.incomparable.groups == 2 and
-  (.states.partial.impact | contains("Analysis is partial")) and
-  (.states.partial.impact | contains("unavailable is not zero")) and
-  (.states.empty.impact | contains("No candidate Visual Events")) and
+  (.states.incomparable.overview | contains("incomparable under this policy")) and
+  .states.incomparable.points == 2 and
+  (.states.partial.overview | contains("Analysis is partial")) and
+  (.states.partial.overview | contains("unavailable is not zero")) and
+  (.states.equivalent.diffs | contains("Measured zero")) and
+  (.states.equivalent.diffs | contains("red → #ff0000")) and
+  (.states.equivalent.diffs | contains("equivalent · same_resolved_color")) and
+  (.states.equivalent.diffs | contains("Canvas: 0 changed fraction")) and
+  (.states.subtle.diffs | contains("Measured nonzero")) and
+  (.states.subtle.diffs | contains("1.0 → 0.99999")) and
+  (.states.subtle.diffs | contains("Parameter: ≈1.000e-5 CSS px")) and
+  (.states.subtle.diffs | contains("16 pixels (0.0625)")) and
+  (.states.empty.overview | contains("No candidate Visual Events")) and
   (.states.empty.diffs | contains("No Atomic Differences")) and
-  (.states.failed.impact | contains("Analysis failed")) and
+  (.states.failed.overview | contains("Analysis failed")) and
   (.states.failed.diffs | contains("No Atomic Differences"))
 ' "$tmp/browser-interaction.json" >/dev/null
 

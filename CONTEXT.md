@@ -2,7 +2,7 @@
 
 Status: current orientation
 
-Last verified: 2026-07-17
+Last verified: 2026-07-18
 
 ## Terminal goal
 
@@ -57,6 +57,154 @@ _Avoid_: Cause, event
 **Visual Event**:
 The agent-facing grouping of Atomic Differences that describe one primary aligned-subject outcome, including its rendered outcome and regions.
 _Avoid_: Source change, Changed Fact
+
+**Review Classification Axes**:
+The orthogonal factual coordinates used to organize a report for review: Visual Event rendered-outcome state, Atomic Difference Computed Relation, and Atomic Difference Difference Domain. None is a magnitude or severity class.
+_Avoid_: Difference type, severity class, single outcome category
+
+**Rendered Outcome Group**:
+A review grouping of Visual Events whose canonical rendered outcome is measured nonzero, not computed, or measured zero under the Comparison Profile. It is not a visibility, severity, importance, or equality class.
+_Avoid_: Visible, invisible, minor, major, impact tier
+
+**Event Relation Summary**:
+The counts of an event's Atomic Differences by Computed Relation. It is a multi-valued child summary, not a Computed Relation assigned to the Visual Event.
+_Avoid_: Event relation, dominant relation, mixed relation class
+
+**Domain Family**:
+A review-facing grouping of exact Difference Domains for scanning and filtering while every Atomic Difference retains its complete domain. Unknown domains remain explicit rather than entering a catch-all family.
+_Avoid_: Other, visual outcome type, replacement domain
+
+**Evidence Availability Summary**:
+A review summary of declared Atomic Difference evidence-layer counts, exact rendered-outcome status, and linked Diagnostic count. It is not an event completeness ratio or confidence score.
+_Avoid_: Event completeness, coverage percentage, confidence
+
+**Magnitude Channel**:
+One named, unit-preserving magnitude family: Parameter Change, Spatial Outcome, Canvas Response, Perceptual Observation, or Intrinsic Resource Response. Channels answer different measurement questions and never combine into a universal score or severity.
+_Avoid_: Magnitude score, severity bar, overall percentage
+
+**Comparable Magnitude Set**:
+A set whose members share an explicit comparison policy: Visual Events related by one Impact Assessment, or Atomic Differences sharing one exact domain and Domain Ordering policy. Ordering claims do not cross the set boundary.
+_Avoid_: Global ranking, cross-domain order, overall leaderboard
+
+**Magnitude Display Value**:
+A scan-oriented unit-bearing rendering of one raw report number, paired with that raw value and its scope or denominator. Rounding is marked as approximate and may never turn a nonzero value into displayed zero.
+_Avoid_: Rounded evidence, unlabeled percentage, threshold bucket
+
+**Magnitude Availability State**:
+The explicit disposition of one Magnitude Channel: measured, not computed, not requested, not applicable by a declared rule, or reported null without a known reason. Only measured may carry numeric zero.
+_Avoid_: Empty value, implicit zero, generic unavailable
+
+**Impact Map**:
+A two-axis navigation view of the declared Impact Assessment measurements, preserving frontier membership, exact ties, incomparability, domination, null measurements, and calibration status. It is not a score chart or total ranking.
+_Avoid_: Severity plot, leaderboard, overall impact score
+
+**Magnitude Graphic**:
+A visual encoding with an explicit absolute scale, unit, scope, and accompanying Magnitude Display Value. It may encode only a declared measurement, never a report-relative severity invented by presentation.
+_Avoid_: Relative severity bar, unlabeled meter, color-only magnitude
+
+**Side Footprint**:
+The side-qualified spatial extent of one subject or effect in the before or after input. An absent side remains absent and is never filled from the opposite side.
+_Avoid_: Difference Region, copied union bounds, ghost subject
+
+**Difference Outcome Surface**:
+The canvas-space localization of an observed or conservatively bounded result difference. It does not identify side occupancy, exact contribution, or a unique cause.
+_Avoid_: Side Footprint, contribution mask, causal region
+
+**Observed Difference Mask**:
+The exact binary map of canonical rendered pixels that differ between the two inputs under one Comparison Profile. It is result evidence, not per-event contribution, visibility, or causal attribution.
+_Avoid_: Contribution mask, perceptual mask, cause map
+
+**Side Footprint State**:
+The explicit per-side disposition of a Side Footprint: bounded, absent, proven empty, unavailable, or not applicable. Missing bounds never borrow evidence from the opposite side.
+_Avoid_: Nullable side bounds, copied footprint, zero-area placeholder
+
+**Shared Event Localization**:
+The owning Visual Event's localization shown while inspecting one of its Atomic Differences. It never claims that the selected child independently contributed the highlighted outcome.
+_Avoid_: Atomic contribution region, property mask, child-specific pixels
+
+**Localization Visual Grammar**:
+The fixed multimodal mapping from localization evidence kind to outline, fill, pattern, label, and region identity. Color supplements but never solely carries the evidence distinction.
+_Avoid_: Generic red box, color-only region, decorative overlay
+
+**Localization Fallback Ladder**:
+The strict outcome-localization preference from exact observed mask to observed bounds-only, conservative outcome bounds, and finally no outcome surface. Side Footprints remain independent and never substitute for a missing outcome.
+_Avoid_: Guessed region, whole-canvas fallback, footprint-as-outcome
+
+**Review Information Layers**:
+The five question-driven presentation depths: Report Overview, Event Scan Summary, Atomic Difference Inventory, Evidence Drill-down, and Raw Report. Schema object type alone never determines prominence.
+_Avoid_: Schema-order UI, flat evidence list, JSON-shaped navigation
+
+**Event Scan Summary**:
+The always-visible three-row Event summary of subject and classification, Canvas Response and Impact relation, then child-relation, localization, and Diagnostic counts. Detailed evidence never enters this scan layer.
+_Avoid_: Event evidence dump, severity card, schema record preview
+
+**Atomic Difference Summary Row**:
+The default-visible child row containing exact domain, source before and after, Computed Relation, declared evidence layers, one direct Magnitude Display Value or availability state, and Shared Event Localization status.
+_Avoid_: Hidden child, full evidence card, event-outcome duplicate
+
+**Evidence Ownership**:
+The rule that Event measurements, localization, regions, causes, and Event Diagnostics render once at Event level, while child source, computed, magnitude, provenance, and ordering evidence render at Atomic Difference level and link upward.
+_Avoid_: Repeated event tree, duplicated Diagnostic, child-owned outcome
+
+**Compact Report Overview**:
+The global status and navigation layer containing report counts, Schema and Profile identity, a compact Impact Map, and Rendered Outcome Group links without duplicating Event or evidence detail.
+_Avoid_: Impact evidence wall, report dump, duplicate inventory
+
+**Default Disclosure State**:
+The deterministic initial review depth where overview, outcome groups, Event summaries, and complete Atomic Difference inventories are visible while owned evidence details, Diagnostics, and Raw Report remain collapsed with every limitation summarized outside.
+_Avoid_: Adaptive auto-collapse, hidden warning, evidence-first default
+
+**HTML Projection Seam**:
+The interface where canonical report facts become deterministic lossless presentation while review state stays local and missing semantic evidence remains upstream. Original SVG source crosses only for sandboxed preview and never supplies diff evidence.
+_Avoid_: HTML semantic model, browser recomparison, UI-derived evidence
+
+**HTML Projection Policy**:
+The versioned mapping from known Structured Report schemas, domains, methods, and policy identities to lossless review grouping, labels, counts, formatting, and navigation. Unknown input remains explicit and is never guessed.
+_Avoid_: Hidden UI heuristic, schema extension, Agent protocol
+
+**Canonical Localization Evidence**:
+Report-owned typed Side Footprints and optional encoded Observed Difference Masks consumed identically by JSON, Agent, Markdown, and HTML projections. Original SVG previews and presentation-private blobs cannot supply it.
+_Avoid_: HTML overlay data, recomputed mask, loose evidence asset
+
+**Measurement Availability**:
+The report-owned status, reason, Diagnostic references, and optional raw-value reference for one canonical measurement family. Human Magnitude Channels remain projection and never replace these family facts.
+_Avoid_: Null interpretation, channel availability, completeness percentage
+
+**Event Diagnostic Closure**:
+The deduplicated set of Diagnostics reached only through explicit references from an Event's owned child, measurement, localization, region, cause, and rendered evidence. It is projection, not a duplicate Event field or inferred subject match.
+_Avoid_: Event diagnostic array, heuristic linkage, global-warning count
+
+**Projection Compatibility Mode**:
+The explicit degraded presentation for a known legacy report schema, preserving all available facts while naming localization and availability evidence that the schema cannot represent. It never reconstructs missing facts from SVG source or legacy nulls.
+_Avoid_: Silent backfill, browser upgrade, legacy reinterpretation
+
+**Minimal Report Increment**:
+The only report-interface growth authorized by the HTML redesign: Canonical Localization Evidence, Measurement Availability, and missing Diagnostic references on their actual evidence owners. Review summaries, formatting, graphics, labels, and state remain projection.
+_Avoid_: UI-ready report, duplicate summary field, presentation schema
+
+**Review Mark**:
+The local human assertion that one Atomic Difference has been reviewed. Event and Rendered Outcome Group checkboxes are derived three-state controls over descendant Review Marks and never mean accepted, ignored, equal, resolved, or unimportant.
+_Avoid_: Acceptance state, ignore flag, diff result
+
+**Localization Selection**:
+The one persistent Visual Event whose localization surfaces are displayed, optionally carrying an Atomic Difference inspection context. Hover or focus may temporarily preview another Event and then restores this selection.
+_Avoid_: Multi-event overlay, checked selection, Atomic contribution selection
+
+**Review Filter**:
+A local predicate over Event or Atomic Difference projection that changes visibility only while preserving complete-inventory counts, ordering, Review Marks, evidence, and hidden Localization Selection context.
+_Avoid_: Evidence suppression, filtered report, importance policy
+
+**Evidence Disclosure State**:
+The independent local expansion state of one owned evidence section. It never selects localization, changes Review Marks or filters, or closes unrelated evidence automatically.
+_Avoid_: Accordion mode, card selection, evidence mutation
+
+**Review Session**:
+The in-memory lifetime of Review Marks, Localization Selection, Review Filters, Evidence Disclosure State, search, and preview view state for one open HTML report. Reload deterministically resets it and no state enters report evidence or ambient storage.
+_Avoid_: Persistent review record, report mutation, localStorage state
+
+**Synchronized Preview View**:
+The shared zoom and pan transform applied to both SVG previews in Comparison Viewport coordinates. Localization overlays never move it automatically; explicit fit commands change view state without changing evidence or selection.
+_Avoid_: Auto-zoom hover, mismatched scales, localization mutation
 
 **Primary Subject Alignment**:
 The one before/after subject relationship that owns a current Visual Event and fixes its outcome boundary.

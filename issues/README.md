@@ -190,6 +190,16 @@ graph TD
   ISS_172["ISS-172: Repair the cross-platform determinism executable path"]
   ISS_173["ISS-173: Validate terminal operational readiness"]
   ISS_174["ISS-174: Record the deferred blocker register"]
+  ISS_175["ISS-175: Redesign the HTML report around visual review"]
+  ISS_176["ISS-176: Classify events without collapsing evidence dimensions"]
+  ISS_177["ISS-177: Present magnitude without inventing severity"]
+  ISS_178["ISS-178: Choose the localization surface for both previews"]
+  ISS_179["ISS-179: Define the Visual Event card information hierarchy"]
+  ISS_180["ISS-180: Define review-control and selection semantics"]
+  ISS_181["ISS-181: Fix the boundary between report facts and HTML projection"]
+  ISS_182["ISS-182: Prototype the event-centered review workflow"]
+  ISS_183["ISS-183: Define acceptance for the redesigned HTML report"]
+  ISS_184["ISS-184: Implement the event-centered production HTML report"]
   ISS_005 --> ISS_006
   ISS_006 --> ISS_007
   ISS_007 --> ISS_008
@@ -709,6 +719,19 @@ graph TD
   ISS_158 --> ISS_174
   ISS_159 --> ISS_174
   ISS_173 --> ISS_174
+  ISS_176 --> ISS_179
+  ISS_177 --> ISS_179
+  ISS_176 --> ISS_180
+  ISS_179 --> ISS_180
+  ISS_176 --> ISS_181
+  ISS_177 --> ISS_181
+  ISS_178 --> ISS_181
+  ISS_178 --> ISS_182
+  ISS_179 --> ISS_182
+  ISS_180 --> ISS_182
+  ISS_181 --> ISS_182
+  ISS_182 --> ISS_183
+  ISS_183 --> ISS_184
 ```
 
 ## Warnings
