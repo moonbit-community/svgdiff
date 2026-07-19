@@ -864,7 +864,8 @@ fn structural_resource_content(
       kind == "pattern" ||
       kind == "marker" ||
       kind == "clipPath" ||
-      kind == "mask" {
+      kind == "mask" ||
+      kind == "filter" {
       return true
     }
     current = document.nodes[index].parent_index
@@ -1022,14 +1023,16 @@ fn attach_unused_definition_differences(
       }
     }
     if matched < 0 {
-      append_unused_definition_fact_difference(
-        report,
-        before_node.source_id,
-        "presence",
-        None,
-        None,
-        Some("after"),
-      )
+      if before_node.kind != "defs" {
+        append_unused_definition_fact_difference(
+          report,
+          before_node.source_id,
+          "presence",
+          None,
+          None,
+          Some("after"),
+        )
+      }
       continue
     }
     after_used[matched] = true
@@ -1068,14 +1071,17 @@ fn attach_unused_definition_differences(
   }
   for candidate, after_index in after_indices {
     if !after_used[candidate] {
-      append_unused_definition_fact_difference(
-        report,
-        after_document.nodes[after_index].source_id,
-        "presence",
-        None,
-        None,
-        Some("before"),
-      )
+      let after_node = after_document.nodes[after_index]
+      if after_node.kind != "defs" {
+        append_unused_definition_fact_difference(
+          report,
+          after_node.source_id,
+          "presence",
+          None,
+          None,
+          Some("before"),
+        )
+      }
     }
   }
   report

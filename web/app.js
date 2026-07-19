@@ -39,7 +39,7 @@ let requestId = 0;
 let comparing = false;
 
 function previewDocument(source) {
-  return `<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body{display:grid;place-items:center}body>svg{display:block;width:100%;height:100%}</style>${source}`;
+  return `<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body{display:grid;place-items:center}body>svg{display:block;width:100%!important;height:100%!important}</style>${source}`;
 }
 
 function refreshPreviews() {
@@ -155,17 +155,13 @@ function comparisonRequest() {
   };
 }
 
-function sandboxReportDocument(source, width, height) {
-  return `<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%;height:100%}</style><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet"><g>${source}</g></svg>`;
-}
-
 function renderReport(report, reportText) {
   const fragment = elements.reportTemplate.content.cloneNode(true);
   elements.resultRoot.replaceChildren(fragment);
   elements.resultRoot.style.setProperty("--canvas-ratio", `${report.profile.viewport_width}/${report.profile.viewport_height}`);
   const frames = elements.resultRoot.querySelectorAll(".preview-content iframe");
-  frames[0].srcdoc = sandboxReportDocument(elements.beforeSource.value, report.profile.viewport_width, report.profile.viewport_height);
-  frames[1].srcdoc = sandboxReportDocument(elements.afterSource.value, report.profile.viewport_width, report.profile.viewport_height);
+  frames[0].srcdoc = previewDocument(elements.beforeSource.value);
+  frames[1].srcdoc = previewDocument(elements.afterSource.value);
   elements.resultRoot.querySelector("#report-data").value = JSON.stringify(report, null, 2);
   window.SvgdiffReportInspector.mount(elements.resultRoot);
   elements.resultSection.hidden = false;

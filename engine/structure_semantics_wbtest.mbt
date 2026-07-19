@@ -419,12 +419,35 @@ test "unused definitions remain source visible without rendered subjects" {
     ComparisonProfile::v1_default(),
   )
   assert_eq(inserted.analysis_status, "complete")
-  assert_eq(inserted.atomic_differences.length(), 2)
+  assert_eq(inserted.atomic_differences.length(), 1)
   assert_true(
     inserted.atomic_differences.all(difference => {
       difference.source_before == "" &&
       difference.source_after == "present" &&
       difference.computed_relation.missing_side == Some("before")
+    }),
+  )
+}
+
+///|
+test "active filter resources are not duplicated as unused definitions" {
+  let before =
+    #|<svg width="8" height="8"><rect id="box" width="4" height="4" fill="red"/></svg>
+  let after =
+    #|<svg width="8" height="8"><defs><filter id="shift"><feOffset dx="1"/></filter></defs><rect id="box" width="4" height="4" fill="red" filter="url(#shift)"/></svg>
+  let report = compare(before, after, {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: 8,
+    viewport_height: 8,
+  })
+  assert_true(
+    report.atomic_differences.all(difference => {
+      !difference.id.has_prefix("diff:unused-definition:")
+    }),
+  )
+  assert_true(
+    report.atomic_differences.any(difference => {
+      difference.domain.has_prefix("resource.filter.")
     }),
   )
 }

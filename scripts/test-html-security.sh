@@ -129,6 +129,12 @@ pw --raw run-code \
     const previews = page.frames().filter(frame => frame !== page.mainFrame());
     const previewStates = await Promise.all(previews.map(async frame => ({
       hasSvg: await frame.evaluate(() => document.querySelector('svg') !== null),
+      svgCount: await frame.locator('svg').count(),
+      rootFillsViewport: await frame.locator('body > svg').evaluate(svg => {
+        const bounds = svg.getBoundingClientRect();
+        return Math.abs(bounds.left) < 0.5 && Math.abs(bounds.top) < 0.5 &&
+          Math.abs(bounds.width - innerWidth) < 0.5 && Math.abs(bounds.height - innerHeight) < 0.5;
+      }),
       scriptExecuted: await frame.evaluate(() => document.documentElement.getAttribute('data-script-executed')),
       handlerExecuted: await frame.evaluate(() => document.documentElement.getAttribute('data-handler-executed')),
     })));
@@ -147,6 +153,8 @@ jq -e '
   (.previewStates | length) == 2 and
   all(.previewStates[];
     .hasSvg == true and
+    .svgCount == 1 and
+    .rootFillsViewport == true and
     .scriptExecuted == null and
     .handlerExecuted == null
   )

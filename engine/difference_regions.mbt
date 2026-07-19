@@ -30,6 +30,80 @@ priv enum DifferenceRegionAttachment {
 }
 
 ///|
+fn pixel_regions_within_gap(
+  left : DifferenceRegion,
+  right : DifferenceRegion,
+  gap : Int,
+) -> Bool {
+  left.pixel_x <= right.pixel_x + right.pixel_width + gap &&
+  right.pixel_x <= left.pixel_x + left.pixel_width + gap &&
+  left.pixel_y <= right.pixel_y + right.pixel_height + gap &&
+  right.pixel_y <= left.pixel_y + left.pixel_height + gap
+}
+
+///|
+fn merge_pixel_regions(
+  left : DifferenceRegion,
+  right : DifferenceRegion,
+  total_pixels : Int,
+) -> DifferenceRegion {
+  let min_x = left.pixel_x.min(right.pixel_x)
+  let min_y = left.pixel_y.min(right.pixel_y)
+  let max_x = (left.pixel_x + left.pixel_width).max(
+    right.pixel_x + right.pixel_width,
+  )
+  let max_y = (left.pixel_y + left.pixel_height).max(
+    right.pixel_y + right.pixel_height,
+  )
+  let changed_pixels = left.changed_pixels + right.changed_pixels
+  {
+    ..left,
+    pixel_x: min_x,
+    pixel_y: min_y,
+    pixel_width: max_x - min_x,
+    pixel_height: max_y - min_y,
+    css_x: min_x.to_double(),
+    css_y: min_y.to_double(),
+    css_width: (max_x - min_x).to_double(),
+    css_height: (max_y - min_y).to_double(),
+    changed_pixels,
+    viewport_fraction: changed_pixels.to_double() / total_pixels.to_double(),
+  }
+}
+
+///|
+fn coalesce_pixel_regions(
+  input : Array[DifferenceRegion],
+  total_pixels : Int,
+  gap : Int,
+) -> Array[DifferenceRegion] {
+  // Treat nearby tiny antialias islands as one observed outcome. The exact
+  // changed-pixel count is preserved; only its bounds are coalesced, so
+  // independent substantial regions remain separately locatable.
+  let regions : Array[DifferenceRegion] = []
+  for source in input {
+    let mut merged = source
+    let mut index = 0
+    while index < regions.length() {
+      if merged.changed_pixels <= 4 &&
+        regions[index].changed_pixels <= 4 &&
+        pixel_regions_within_gap(merged, regions[index], gap) {
+        merged = merge_pixel_regions(merged, regions[index], total_pixels)
+        ignore(regions.remove(index))
+        index = 0
+      } else {
+        index += 1
+      }
+    }
+    regions.push(merged)
+  }
+  for index, region in regions {
+    regions[index] = { ..region, id: "region:pixel:\{index}" }
+  }
+  regions
+}
+
+///|
 fn union_bounds(left : CssBounds?, right : CssBounds?) -> CssBounds? {
   match (left, right) {
     (None, None) => None
@@ -423,7 +497,7 @@ fn pixel_difference_regions(
       },
     })
   }
-  Regions(regions)
+  Regions(coalesce_pixel_regions(regions, width * height, 4))
 }
 
 ///|
@@ -499,11 +573,65 @@ fn rendered_magnitude_for_regions(
 }
 
 ///|
-fn regions_intersect(region : DifferenceRegion, bounds : CssBounds) -> Bool {
-  region.css_x < bounds.x + bounds.width &&
-  region.css_x + region.css_width > bounds.x &&
-  region.css_y < bounds.y + bounds.height &&
-  region.css_y + region.css_height > bounds.y
+fn clip_pixel_region_to_bounds(
+  region : DifferenceRegion,
+  bounds : CssBounds,
+  before : @svg.Image,
+  after : @svg.Image,
+) -> DifferenceRegion? {
+  let region_bounds = {
+    x: region.css_x,
+    y: region.css_y,
+    width: region.css_width,
+    height: region.css_height,
+  }
+  guard intersect_bounds(region_bounds, bounds) is Some(intersection) else {
+    return None
+  }
+  let start_x = intersection.x.floor().to_int().max(0)
+  let start_y = intersection.y.floor().to_int().max(0)
+  let end_x = (intersection.x + intersection.width)
+    .ceil()
+    .to_int()
+    .min(before.width)
+  let end_y = (intersection.y + intersection.height)
+    .ceil()
+    .to_int()
+    .min(before.height)
+  let mut min_x = end_x
+  let mut min_y = end_y
+  let mut max_x = start_x - 1
+  let mut max_y = start_y - 1
+  let mut changed_pixels = 0
+  for y in start_y..<end_y {
+    for x in start_x..<end_x {
+      let index = y * before.width + x
+      if pixels_differ(before, after, index) {
+        changed_pixels += 1
+        min_x = min_x.min(x)
+        min_y = min_y.min(y)
+        max_x = max_x.max(x)
+        max_y = max_y.max(y)
+      }
+    }
+  }
+  if changed_pixels == 0 {
+    return None
+  }
+  Some({
+    ..region,
+    pixel_x: min_x,
+    pixel_y: min_y,
+    pixel_width: max_x - min_x + 1,
+    pixel_height: max_y - min_y + 1,
+    css_x: min_x.to_double(),
+    css_y: min_y.to_double(),
+    css_width: (max_x - min_x + 1).to_double(),
+    css_height: (max_y - min_y + 1).to_double(),
+    changed_pixels,
+    viewport_fraction: changed_pixels.to_double() /
+    before.pixels.length().to_double(),
+  })
 }
 
 ///|
@@ -1409,12 +1537,21 @@ fn attach_difference_regions(
       match bounds {
         Some(bounds) =>
           for region in pixel_regions {
-            if regions_intersect(region, bounds) {
-              if attached_region_count >= limits.max_regions {
-                return AttachmentRegionLimitExceeded
+            match
+              rendered_images.bind(images => {
+                let (before_image, after_image) = images
+                clip_pixel_region_to_bounds(
+                  region, bounds, before_image, after_image,
+                )
+              }) {
+              Some(clipped) => {
+                if attached_region_count >= limits.max_regions {
+                  return AttachmentRegionLimitExceeded
+                }
+                regions.push(clipped)
+                attached_region_count += 1
               }
-              regions.push(region)
-              attached_region_count += 1
+              None => ()
             }
           }
         None =>

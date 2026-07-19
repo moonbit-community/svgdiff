@@ -2502,14 +2502,7 @@ fn compare_without_resource_limits(
     ) => alignment
   ]
   comparison_guard.checkpoint()
-  match inherited_fill_report(before_svg, after_svg, profile) {
-    Some(report) =>
-      return finish_report(
-        report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-        limits, resources, comparison_guard,
-      )
-    None => ()
-  }
+  let inherited_report = inherited_fill_report(before_svg, after_svg, profile)
   let documents = (
     @svg.parse_svg_document(
       normalize_renderer_input_with_profile(before_svg, profile),
@@ -2606,6 +2599,20 @@ fn compare_without_resource_limits(
         generic_basic_shape_report(
           before_svg, after_svg, before_document, after_document, profile, rendered_subject_alignments,
         ) {
+        Some(report) => {
+          let report = match inherited_report {
+            Some(inherited) =>
+              compose_analysis_reports(report, inherited, subject_alignments)
+            None => report
+          }
+          return finish_report(
+            report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
+            limits, resources, comparison_guard,
+          )
+        }
+        None => ()
+      }
+      match inherited_report {
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,

@@ -9,9 +9,9 @@ fn escape_html(value : String) -> String {
 }
 
 ///|
-fn sandbox_document(source : String, width : Int, height : Int) -> String {
+fn sandbox_document(source : String) -> String {
   escape_html(
-    "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%;height:100%}</style><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 \{width} \{height}' preserveAspectRatio='xMidYMid meet'><g>\{source}</g></svg>",
+    "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%!important;height:100%!important}</style>\{source}",
   )
 }
 
@@ -30,8 +30,8 @@ pub fn render_html_report(
   let width = report.profile.viewport_width
   let height = report.profile.viewport_height
   let report_json = escape_html(report.to_json_string())
-  let before_document = sandbox_document(before_svg, width, height)
-  let after_document = sandbox_document(after_svg, width, height)
+  let before_document = sandbox_document(before_svg)
+  let after_document = sandbox_document(after_svg)
   let styles = html_report_styles()
   let script = html_report_script()
   let html =

@@ -93,6 +93,18 @@ pw --raw run-code \
       label: card.querySelector('.score-label').textContent,
       value: card.querySelector('.score-value').textContent,
     })));
+    const previewSvgCounts = [];
+    const previewRootsFillViewport = [];
+    const reportFrames = page.locator('#report-root .preview-content iframe');
+    for (let index = 0; index < await reportFrames.count(); index += 1) {
+      const frame = reportFrames.nth(index).contentFrame();
+      previewSvgCounts.push(await frame.locator('svg').count());
+      previewRootsFillViewport.push(await frame.locator('body > svg').evaluate(svg => {
+        const bounds = svg.getBoundingClientRect();
+        return Math.abs(bounds.left) < 0.5 && Math.abs(bounds.top) < 0.5 &&
+          Math.abs(bounds.width - innerWidth) < 0.5 && Math.abs(bounds.height - innerHeight) < 0.5;
+      }));
+    }
     await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
     return {
       title: await page.title(),
@@ -107,8 +119,11 @@ pw --raw run-code \
       atomicDifferences: report.atomic_differences.length,
       diagnostics: report.diagnostics.length,
       scores,
+      previewSvgCounts,
+      previewRootsFillViewport,
       effectiveValues: await page.locator('.effective-value').allTextContents(),
       overlays: await page.locator('.region').count(),
+      overlayLabels: await page.locator('.region-label').count(),
       rawReportAvailable: reportText.length > 100,
       wasmBytes: Number(await page.locator('#report-root').getAttribute('data-compact-report-bytes')),
       errors: await page.evaluate(() => window.__svgdiffTestErrors),
@@ -141,7 +156,11 @@ jq -e '
   [.scores[].label] == ["Changed area","Linear RGBA error","Perceptual difference"] and
   all(.scores[]; (.value | endswith("%"))) and
   all(.scores[]; .value != "0.00%") and
+  .previewSvgCounts == [1, 1] and
+  .previewRootsFillViewport == [true, true] and
   .overlays > 0 and
+  .overlayLabels > 0 and
+  .overlayLabels <= .overlays and
   .rawReportAvailable == true and
   .wasmBytes > 100
 ' "$tmp/browser.json" >/dev/null
