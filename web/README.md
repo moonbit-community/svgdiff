@@ -24,8 +24,8 @@ sh scripts/test-pages.sh
 
 - `app.js` owns input, profile controls, file/drop admission, page state, and
   mounting the Inspector over a completed report.
-- `examples.js` embeds the seven pinned before/after examples and their source
-  metadata. Selecting an example performs no third-party fetch.
+- `app.js` embeds one local before/after example with a color change on one
+  rectangle and a size change on another.
 - `svgdiff-worker.js` is the only browser adapter for the fixed-memory ABI 1
   transaction. It accepts one complete request with a deterministic checkpoint
   budget and returns compact Structured Report JSON or a host error without a

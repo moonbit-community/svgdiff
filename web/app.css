@@ -62,10 +62,8 @@ a { color: inherit; }
 .input-section, .result-section { border: 1px solid var(--app-line); border-radius: 20px; background: var(--app-panel); box-shadow: 0 18px 60px #1833260b; overflow: hidden; }
 .section-heading, .result-toolbar { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 22px 24px; border-bottom: 1px solid var(--app-line); }
 .section-heading h2, .result-toolbar h2 { margin: 0; font-size: 22px; }
-.example-picker { display: grid; justify-items: end; gap: 5px; }
-.example-control { display: grid; gap: 5px; color: var(--app-muted); font-size: 10px; font-weight: 680; letter-spacing: .06em; text-transform: uppercase; }
-.example-attribution { margin: 0; color: var(--app-muted); font-size: 10px; }
-.example-attribution a { color: var(--app-accent-dark); }
+.example-label { margin: 0; color: var(--app-ink); font-size: 12px; font-weight: 650; }
+.example-label span { display: block; margin-bottom: 5px; color: var(--app-muted); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
 
 select, input[type="number"], input[type="color"] { min-height: 39px; border: 1px solid #b9c6bf; border-radius: 8px; background: white; color: var(--app-ink); padding: 7px 10px; }
 select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px solid #20865d32; outline-offset: 2px; border-color: var(--app-accent); }
@@ -127,7 +125,6 @@ select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px s
   .source-card { padding: 15px; }
   .section-heading, .result-toolbar { align-items: start; padding: 17px; }
   .section-heading { flex-direction: column; }
-  .example-picker { width: 100%; justify-items: stretch; }
   .comparison-controls { padding: 16px; }
   .app-footer { flex-direction: column; }
 }

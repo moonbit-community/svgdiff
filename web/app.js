@@ -1,4 +1,13 @@
-import { examples } from "./examples.js";
+const example = {
+  before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <rect id="color-box" x="24" y="44" width="72" height="72" fill="#2563eb" />
+  <rect id="size-box" x="152" y="52" width="56" height="56" fill="#16a34a" />
+</svg>`,
+  after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <rect id="color-box" x="24" y="44" width="72" height="72" fill="#dc2626" />
+  <rect id="size-box" x="152" y="52" width="72" height="72" fill="#16a34a" />
+</svg>`,
+};
 
 const elements = {
   beforeSource: document.querySelector("#before-source"),
@@ -7,9 +16,6 @@ const elements = {
   afterFile: document.querySelector("#after-file"),
   beforePreview: document.querySelector("#before-preview"),
   afterPreview: document.querySelector("#after-preview"),
-  example: document.querySelector("#example-select"),
-  exampleSource: document.querySelector("#example-source"),
-  exampleLicense: document.querySelector("#example-license"),
   width: document.querySelector("#viewport-width"),
   height: document.querySelector("#viewport-height"),
   background: document.querySelector("#background-select"),
@@ -41,13 +47,9 @@ function refreshPreviews() {
   elements.afterPreview.srcdoc = previewDocument(elements.afterSource.value);
 }
 
-function loadExample(name) {
-  const example = examples[name] || examples.bell;
+function loadExample() {
   elements.beforeSource.value = example.before;
   elements.afterSource.value = example.after;
-  elements.exampleSource.textContent = example.source.name;
-  elements.exampleSource.href = example.source.url;
-  elements.exampleLicense.textContent = example.source.license;
   refreshPreviews();
 }
 
@@ -200,7 +202,6 @@ async function compare() {
   }
 }
 
-elements.example.addEventListener("change", () => loadExample(elements.example.value));
 elements.beforeSource.addEventListener("input", refreshPreviews);
 elements.afterSource.addEventListener("input", refreshPreviews);
 elements.beforeFile.addEventListener("change", () => readSvgFile(elements.beforeFile.files[0], "before"));
@@ -215,4 +216,4 @@ elements.editInputs.addEventListener("click", () => {
 });
 for (const panel of document.querySelectorAll("[data-drop-side]")) bindDropPanel(panel);
 
-loadExample("bell");
+loadExample();
