@@ -209,6 +209,7 @@ pw --raw run-code \
       atomicOpen: await firstDiff.locator('details.atomic-evidence').evaluate(node => node.open),
       eventOpen: await firstEvent.locator('details.evidence').evaluate(node => node.open),
       hasMagnitude: atomicEvidenceText.includes('raster_changed_pixel_fraction'),
+      hasComputedReason: atomicEvidenceText.includes('computed_reason'),
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
       hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
@@ -277,6 +278,8 @@ pw --raw run-code \
       states[name] = {
         overview: await page.locator('#overview').textContent(),
         diffs: await page.locator('#diffs').textContent(),
+        effectiveValues: await page.locator('.effective-value').allTextContents(),
+        effectiveValueTitles: await page.locator('.effective-value').evaluateAll(nodes => nodes.map(node => node.title)),
         groups: await page.locator('.outcome-group').count(),
         points: await page.locator('.impact-point').count(),
       };
@@ -344,6 +347,7 @@ jq -e '
     "atomicOpen": true,
     "eventOpen": true,
     "hasMagnitude": true,
+    "hasComputedReason": true,
     "hasRegion": true,
     "hasFact": true,
     "hasCause": true,
@@ -376,10 +380,12 @@ jq -e '
   (.states.partial.overview | contains("unavailable is not zero")) and
   (.states.equivalent.diffs | contains("Measured zero")) and
   (.states.equivalent.diffs | contains("red → #ff0000")) and
-  (.states.equivalent.diffs | contains("equivalent · same_resolved_color")) and
+  .states.equivalent.effectiveValues == ["Same effective value"] and
+  .states.equivalent.effectiveValueTitles == ["Effective values are compared after applying supported SVG rules; this does not describe final pixels."] and
   (.states.equivalent.diffs | contains("Canvas: 0 changed fraction")) and
   (.states.subtle.diffs | contains("Measured nonzero")) and
   (.states.subtle.diffs | contains("1.0 → 0.99999")) and
+  .states.subtle.effectiveValues == ["Different effective value"] and
   (.states.subtle.diffs | contains("Parameter: ≈1.000e-5 CSS px")) and
   (.states.subtle.diffs | contains("16 pixels (0.0625)")) and
   (.states.empty.overview | contains("No candidate Visual Events")) and

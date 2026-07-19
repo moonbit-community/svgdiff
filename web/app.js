@@ -1,17 +1,4 @@
-const examples = {
-  color: {
-    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect x="40" y="40" width="176" height="176" fill="#e63946"/></svg>`,
-    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect x="40" y="40" width="176" height="176" fill="#3274d9"/></svg>`,
-  },
-  subtle: {
-    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><circle cx="128" cy="128" r="80" fill="#176b4d"/></svg>`,
-    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><circle cx="128.01" cy="128" r="80" fill="#176b4d"/></svg>`,
-  },
-  equivalent: {
-    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path d="M48 128L108 188L208 68" fill="none" stroke="red" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path d="M48 128L108 188L208 68" fill="none" stroke="#ff0000" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  },
-};
+import { examples } from "./examples.js";
 
 const elements = {
   beforeSource: document.querySelector("#before-source"),
@@ -21,6 +8,8 @@ const elements = {
   beforePreview: document.querySelector("#before-preview"),
   afterPreview: document.querySelector("#after-preview"),
   example: document.querySelector("#example-select"),
+  exampleSource: document.querySelector("#example-source"),
+  exampleLicense: document.querySelector("#example-license"),
   width: document.querySelector("#viewport-width"),
   height: document.querySelector("#viewport-height"),
   background: document.querySelector("#background-select"),
@@ -53,9 +42,12 @@ function refreshPreviews() {
 }
 
 function loadExample(name) {
-  const example = examples[name] || examples.color;
+  const example = examples[name] || examples.bell;
   elements.beforeSource.value = example.before;
   elements.afterSource.value = example.after;
+  elements.exampleSource.textContent = example.source.name;
+  elements.exampleSource.href = example.source.url;
+  elements.exampleLicense.textContent = example.source.license;
   refreshPreviews();
 }
 
@@ -223,4 +215,4 @@ elements.editInputs.addEventListener("click", () => {
 });
 for (const panel of document.querySelectorAll("[data-drop-side]")) bindDropPanel(panel);
 
-loadExample("color");
+loadExample("bell");

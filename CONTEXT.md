@@ -135,11 +135,11 @@ The five question-driven presentation depths: Report Overview, Event Scan Summar
 _Avoid_: Schema-order UI, flat evidence list, JSON-shaped navigation
 
 **Event Scan Summary**:
-The always-visible three-row Event summary of subject and classification, Canvas Response and Impact relation, then child-relation, localization, and Diagnostic counts. Detailed evidence never enters this scan layer.
+The always-visible three-row Event summary of subject and classification, Canvas Response and Impact relation, then localization, Diagnostic, and evidence-availability counts. Detailed evidence never enters this scan layer.
 _Avoid_: Event evidence dump, severity card, schema record preview
 
 **Atomic Difference Summary Row**:
-The default-visible child row containing exact domain, source before and after, Computed Relation, declared evidence layers, one direct Magnitude Display Value or availability state, and Shared Event Localization status.
+The default-visible child row containing exact domain, source before and after, a human-readable Effective Value result derived losslessly from Computed Relation, declared evidence layers, one direct Magnitude Display Value or availability state, and Shared Event Localization status.
 _Avoid_: Hidden child, full evidence card, event-outcome duplicate
 
 **Evidence Ownership**:

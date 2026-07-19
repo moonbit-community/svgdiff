@@ -27,6 +27,7 @@ function extractRawBinding(name) {
 await rm(output, { recursive: true, force: true });
 await mkdir(assetOutput, { recursive: true });
 await cp(join(root, "web"), output, { recursive: true });
+await cp(join(root, "LICENSE"), join(output, "LICENSE.txt"));
 await writeFile(join(assetOutput, "report-inspector.css"), extractRawBinding("styles"));
 await writeFile(join(assetOutput, "report-inspector.js"), extractRawBinding("script"));
 await cp(
