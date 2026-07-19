@@ -59,6 +59,23 @@ test "currentColor path repair retains geometry beside stacking" {
       difference.domain == "document.structure.stacking_order"
     }),
   )
+  let path_events = report.events.filter(event => {
+    event.atomic_difference_ids.any(id => {
+      report.atomic_differences.any(difference => {
+        difference.id == id && difference.domain.has_prefix("geometry.path.")
+      })
+    })
+  })
+  assert_eq(path_events.length(), 2)
+  assert_true(path_events.all(event => !event.difference_regions.is_empty()))
+  assert_true(
+    path_events[0].difference_regions.fold(init=0, (sum, region) => {
+      sum + region.changed_pixels
+    }) !=
+    path_events[1].difference_regions.fold(init=0, (sum, region) => {
+      sum + region.changed_pixels
+    }),
+  )
 }
 
 ///|
@@ -117,5 +134,37 @@ test "overlapping Event bounds crop one shared canvas component" {
     first.pixel_width != second.pixel_width ||
     first.pixel_height != second.pixel_height ||
     first.changed_pixels != second.changed_pixels,
+  )
+}
+
+///|
+test "disjoint arc Events do not inherit the whole canvas difference mask" {
+  let before =
+    #|<svg width="40" height="20" viewBox="0 0 40 20" fill="none" stroke="black" stroke-width="2"><path id="a" d="M2 8A4 4 0 0 1 10 8"/><path id="b" d="M22 8A4 4 0 0 1 30 8"/></svg>
+  let after =
+    #|<svg width="40" height="20" viewBox="0 0 40 20" fill="none" stroke="black" stroke-width="2"><path id="a" d="M2 8A5 5 0 0 1 12 8"/><path id="b" d="M22 8A3 3 0 0 1 28 8"/></svg>
+  let report = compare(before, after, production_example_profile())
+  let path_events = report.events.filter(event => {
+    event.atomic_difference_ids.any(id => {
+      report.atomic_differences.any(difference => {
+        difference.id == id && difference.domain.has_prefix("geometry.path.")
+      })
+    })
+  })
+  assert_eq(path_events.length(), 2)
+  assert_true(path_events.all(event => !event.difference_regions.is_empty()))
+  let first = path_events[0].difference_regions
+  let second = path_events[1].difference_regions
+  assert_true(
+    first.length() != second.length() ||
+    first.any(region => {
+      !second.any(other => {
+        region.pixel_x == other.pixel_x &&
+        region.pixel_y == other.pixel_y &&
+        region.pixel_width == other.pixel_width &&
+        region.pixel_height == other.pixel_height &&
+        region.changed_pixels == other.changed_pixels
+      })
+    }),
   )
 }

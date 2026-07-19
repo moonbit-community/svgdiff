@@ -258,7 +258,9 @@ test "path arc radii expose spatial scales while rotation remains angular" {
   assert_eq(radius.magnitude.parameter_abs_user_units, Some(1.0))
   assert_eq(radius.magnitude.parameter_abs_css_px, Some(2.0))
   assert_true(radius.magnitude.parameter_viewport_fraction is Some(_))
-  assert_true(radius.magnitude.parameter_entity_fraction is None)
+  assert_true(
+    radius.magnitude.parameter_entity_fraction is Some(value) && value > 0.0,
+  )
   let rotation = path_domain_differences(
       compare(
         "<svg width='16' height='16'><path d='M1 1A2 3 0 0 0 8 8' transform='scale(2)'/></svg>",

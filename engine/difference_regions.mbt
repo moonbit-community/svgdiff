@@ -170,6 +170,10 @@ fn path_control_hull_bounds(subject : SourceSubject) -> CssBounds? {
   let mut max_y = -1.7976931348623157e308
   let mut point_count = 0
   let mut drawable = false
+  let mut current_x = 0.0
+  let mut current_y = 0.0
+  let mut subpath_x = 0.0
+  let mut subpath_y = 0.0
   fn include_point(x : Double, y : Double) -> Unit {
     min_x = min_x.min(x)
     min_y = min_y.min(y)
@@ -177,26 +181,59 @@ fn path_control_hull_bounds(subject : SourceSubject) -> CssBounds? {
     max_y = max_y.max(y)
     point_count += 1
   }
+  fn include_bounds(bounds : CssBounds) -> Unit {
+    include_point(bounds.x, bounds.y)
+    include_point(bounds.x + bounds.width, bounds.y + bounds.height)
+  }
   for segment in subject.path_segments {
     match segment.normalized {
-      MoveTo(x, y) => include_point(x, y)
+      MoveTo(x, y) => {
+        include_point(x, y)
+        current_x = x
+        current_y = y
+        subpath_x = x
+        subpath_y = y
+      }
       LineTo(x, y) => {
         include_point(x, y)
         drawable = true
+        current_x = x
+        current_y = y
       }
       CubicTo(x1, y1, x2, y2, x, y) => {
         include_point(x1, y1)
         include_point(x2, y2)
         include_point(x, y)
         drawable = true
+        current_x = x
+        current_y = y
       }
       QuadraticTo(x1, y1, x, y) => {
         include_point(x1, y1)
         include_point(x, y)
         drawable = true
+        current_x = x
+        current_y = y
       }
-      ArcTo(_, _, _, _, _, _, _) => return None
-      ClosePath => drawable = true
+      ArcTo(rx, ry, rotation, large, sweep, x, y) => {
+        if current_x != x || current_y != y {
+          match
+            svg_arc_bounds(
+              current_x, current_y, rx, ry, rotation, large, sweep, x, y,
+            ) {
+            Some(bounds) => include_bounds(bounds)
+            None => include_point(x, y)
+          }
+          drawable = true
+        }
+        current_x = x
+        current_y = y
+      }
+      ClosePath => {
+        drawable = true
+        current_x = subpath_x
+        current_y = subpath_y
+      }
     }
   }
   if !drawable || point_count == 0 {
@@ -376,6 +413,26 @@ fn alignment_side_bounds(
     before: subjects_bounds(subjects_for_references(before, alignment.before)),
     after: subjects_bounds(subjects_for_references(after, alignment.after)),
   }
+}
+
+///|
+fn event_influence_side_bounds(
+  event : VisualEvent,
+  report : StructuredReport,
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> SideBounds? {
+  let direct_fact_ids = event_changed_fact_ids(event, report.atomic_differences)
+  let subject_ids = event_influence_subject_ids(event, report, direct_fact_ids)
+  if subject_ids.is_empty() {
+    return None
+  }
+  nonempty_side_bounds(
+    Some({
+      before: group_opacity_subject_bounds(before, subject_ids),
+      after: group_opacity_subject_bounds(after, subject_ids),
+    }),
+  )
 }
 
 ///|
@@ -1440,14 +1497,28 @@ fn event_side_bounds(
   }
   match alignment_for_event(event, alignments) {
     Some(alignment) if alignment.id.has_prefix("alignment:image:") =>
-      Some(
-        embedded_image_alignment_side_bounds(
-          alignment, before_images, after_images,
-        ),
-      )
-    Some(alignment) => Some(alignment_side_bounds(alignment, before, after))
-    None => None
+      match
+        nonempty_side_bounds(
+          Some(
+            embedded_image_alignment_side_bounds(
+              alignment, before_images, after_images,
+            ),
+          ),
+        ) {
+        Some(bounds) => return Some(bounds)
+        None => ()
+      }
+    Some(alignment) =>
+      match
+        nonempty_side_bounds(
+          Some(alignment_side_bounds(alignment, before, after)),
+        ) {
+        Some(bounds) => return Some(bounds)
+        None => ()
+      }
+    None => ()
   }
+  event_influence_side_bounds(event, report, before, after)
 }
 
 ///|
@@ -1554,14 +1625,7 @@ fn attach_difference_regions(
               None => ()
             }
           }
-        None =>
-          for region in pixel_regions {
-            if attached_region_count >= limits.max_regions {
-              return AttachmentRegionLimitExceeded
-            }
-            regions.push(region)
-            attached_region_count += 1
-          }
+        None => ()
       }
     } else {
       match bounds {
@@ -1584,9 +1648,13 @@ fn attach_difference_regions(
     let rendered_outcome = if event.rendered_outcome.status == "computed" {
       match rendered_images {
         Some((before_image, after_image)) =>
-          computed_rendered_evidence(
-            rendered_magnitude_for_regions(before_image, after_image, regions),
-          )
+          if bounds is Some(_) || pixel_regions.is_empty() {
+            computed_rendered_evidence(
+              rendered_magnitude_for_regions(before_image, after_image, regions),
+            )
+          } else {
+            not_computed_rendered_evidence("event_localization_unavailable")
+          }
         None => event.rendered_outcome
       }
     } else {

@@ -326,7 +326,7 @@ test "stroke bounds distinguish ordinary and non-scaling expansion" {
 }
 
 ///|
-test "complete non-arc path bounds use a transformed conservative control hull" {
+test "complete path bounds include exact elliptical arc extrema" {
   let subject = extract_source_subjects_or_raise(
       "<svg><path d='M1 2 C3 10 7 -2 9 4' transform='translate(5 6)'/></svg>",
     )[0]
@@ -338,7 +338,74 @@ test "complete non-arc path bounds use a transformed conservative control hull" 
   assert_eq(bounds.width, 8.0)
   assert_eq(bounds.height, 12.0)
   let arc = extract_source_subjects_or_raise(
-      "<svg><path d='M1 2 A4 5 0 0 1 9 4'/></svg>",
+      "<svg><path d='M0 0 A5 5 0 0 1 10 0'/></svg>",
     )[0]
-  assert_true(source_subject_bounds(arc) is None)
+  guard source_subject_bounds(arc) is Some(bounds) else {
+    fail("expected elliptical arc bounds")
+  }
+  assert_true(bounds.x.abs() < 0.000000000001)
+  assert_true((bounds.y + 5.0).abs() < 0.000000000001)
+  assert_true((bounds.width - 10.0).abs() < 0.000000000001)
+  assert_true((bounds.height - 5.0).abs() < 0.000000000001)
+}
+
+///|
+fn assert_arc_samples_inside_bounds(
+  start_x : Double,
+  start_y : Double,
+  radius_x : Double,
+  radius_y : Double,
+  rotation : Double,
+  large : Bool,
+  sweep : Bool,
+  end_x : Double,
+  end_y : Double,
+) -> Unit raise {
+  guard svg_arc_center_parameters(
+      start_x, start_y, radius_x, radius_y, rotation, large, sweep, end_x, end_y,
+    )
+    is Some(arc) else {
+    fail("expected non-degenerate arc parameters")
+  }
+  guard svg_arc_bounds(
+      start_x, start_y, radius_x, radius_y, rotation, large, sweep, end_x, end_y,
+    )
+    is Some(bounds) else {
+    fail("expected non-degenerate arc bounds")
+  }
+  let tolerance = 0.0000000001
+  for index in 0..<=512 {
+    let theta = arc.start_theta + arc.sweep_theta * index.to_double() / 512.0
+    let (x, y) = arc.point(theta)
+    assert_true(x >= bounds.x - tolerance)
+    assert_true(x <= bounds.x + bounds.width + tolerance)
+    assert_true(y >= bounds.y - tolerance)
+    assert_true(y <= bounds.y + bounds.height + tolerance)
+  }
+}
+
+///|
+test "arc bounds contain rotated corrected arcs for every flag combination" {
+  for large in [false, true] {
+    for sweep in [false, true] {
+      assert_arc_samples_inside_bounds(
+        1.0, 2.0, 2.0, 1.0, 37.0, large, sweep, 13.0, 8.0,
+      )
+    }
+  }
+}
+
+///|
+test "degenerate SVG arcs follow line and omitted-segment rules" {
+  let line = extract_source_subjects_or_raise(
+      "<svg><path d='M1 2 A0 5 30 1 1 9 4'/></svg>",
+    )[0]
+  assert_true(
+    source_subject_bounds(line)
+    is Some({ x: 1.0, y: 2.0, width: 8.0, height: 2.0 }),
+  )
+  let omitted = extract_source_subjects_or_raise(
+      "<svg><path d='M1 2 A5 5 0 1 1 1 2'/></svg>",
+    )[0]
+  assert_true(source_subject_bounds(omitted) is None)
 }

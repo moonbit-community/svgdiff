@@ -802,56 +802,22 @@ fn marker_arc_endpoint_angles(
   if start_x == end_x && start_y == end_y {
     return None
   }
-  let mut rx = raw_rx.abs()
-  let mut ry = raw_ry.abs()
+  let rx = raw_rx.abs()
+  let ry = raw_ry.abs()
   if rx == 0.0 || ry == 0.0 {
     let angle = @math.atan2(end_y - start_y, end_x - start_x) *
       180.0 /
       3.141592653589793
     return Some((angle, angle))
   }
-  let phi = rotation * 3.141592653589793 / 180.0
-  let cosine = @math.cos(phi)
-  let sine = @math.sin(phi)
-  let half_dx = (start_x - end_x) / 2.0
-  let half_dy = (start_y - end_y) / 2.0
-  let prime_x = cosine * half_dx + sine * half_dy
-  let prime_y = -sine * half_dx + cosine * half_dy
-  let radii_ratio = prime_x * prime_x / (rx * rx) +
-    prime_y * prime_y / (ry * ry)
-  if radii_ratio > 1.0 {
-    let scale = radii_ratio.sqrt()
-    rx *= scale
-    ry *= scale
-  }
-  let numerator = (rx * rx * ry * ry -
-  rx * rx * prime_y * prime_y -
-  ry * ry * prime_x * prime_x).max(0.0)
-  let denominator = rx * rx * prime_y * prime_y + ry * ry * prime_x * prime_x
-  let coefficient = if denominator == 0.0 {
-    0.0
-  } else {
-    (if large == sweep { -1.0 } else { 1.0 }) * (numerator / denominator).sqrt()
-  }
-  let center_x = coefficient * rx * prime_y / ry
-  let center_y = coefficient * -ry * prime_x / rx
-  let start_theta = @math.atan2(
-    (prime_y - center_y) / ry,
-    (prime_x - center_x) / rx,
-  )
-  let end_theta = @math.atan2(
-    (-prime_y - center_y) / ry,
-    (-prime_x - center_x) / rx,
-  )
-  let direction = if sweep { 1.0 } else { -1.0 }
-  fn tangent(theta : Double) -> Double {
-    let dx = direction *
-      (-rx * cosine * @math.sin(theta) - ry * sine * @math.cos(theta))
-    let dy = direction *
-      (-rx * sine * @math.sin(theta) + ry * cosine * @math.cos(theta))
-    @math.atan2(dy, dx) * 180.0 / 3.141592653589793
-  }
-  Some((tangent(start_theta), tangent(end_theta)))
+  svg_arc_center_parameters(
+    start_x, start_y, rx, ry, rotation, large, sweep, end_x, end_y,
+  ).map(arc => {
+    (
+      arc.tangent_angle_degrees(arc.start_theta),
+      arc.tangent_angle_degrees(arc.start_theta + arc.sweep_theta),
+    )
+  })
 }
 
 ///|
