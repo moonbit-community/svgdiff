@@ -1,0 +1,2 @@
+///|
+using @model {type ReportSourceSpan}

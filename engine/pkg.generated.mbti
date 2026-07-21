@@ -2,19 +2,21 @@
 package "Milky2018/svgdiff/engine"
 
 import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/svgdiff/engine/source",
   "moonbitlang/core/debug",
 }
 
 // Values
-pub fn audit_nonvisual_metadata(String, String) -> SourceAuditReport
+pub fn audit_nonvisual_metadata(String, String) -> @source.SourceAuditReport
 
-pub fn compare(String, String, ComparisonProfile) -> StructuredReport
+pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
-pub fn compare_with_control(String, String, ComparisonProfile, ComparisonControl) -> StructuredReport raise ComparisonInterrupted
+pub fn compare_with_control(String, String, @model.ComparisonProfile, ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
-pub fn compare_with_control_and_resources(String, String, ComparisonProfile, ResourceBundle, ResourceBundle, ComparisonControl) -> StructuredReport raise ComparisonInterrupted
+pub fn compare_with_control_and_resources(String, String, @model.ComparisonProfile, ResourceBundle, ResourceBundle, ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
-pub fn compare_with_resources(String, String, ComparisonProfile, ResourceBundle, ResourceBundle) -> StructuredReport
+pub fn compare_with_resources(String, String, @model.ComparisonProfile, ResourceBundle, ResourceBundle) -> @model.StructuredReport
 
 // Errors
 pub(all) suberror ComparisonInterrupted {
@@ -23,340 +25,11 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Eq, @debug.Debug)
 
 // Types and methods
-pub(all) struct AlignmentEvidence {
-  score_kind : String
-  selected_score : Double?
-  candidate_count : Int
-  equal_score_candidate_count : Int
-  ambiguity : String
-  confidence : Double?
-  confidence_status : String
-}
-pub impl ToJson for AlignmentEvidence
-
-pub(all) struct AtomicDifference {
-  id : String
-  subject_role : String
-  subject_alignment_id : String?
-  domain : String
-  source_before : String
-  source_after : String
-  source_fact_before : DeclaredVisualFact?
-  source_fact_after : DeclaredVisualFact?
-  changed_fact_ids : Array[String]
-  evidence_layers : Array[String]
-  computed_relation : ComputedRelation
-  parameter_delta_css_px : Double?
-  presence_magnitude : PresenceMagnitude?
-  magnitude : DifferenceMagnitude
-  domain_ordering : DomainOrdering
-}
-pub impl ToJson for AtomicDifference
-
-pub(all) struct CanvasOutcome {
-  status : String
-  reason_code : String?
-  magnitude : RenderedMagnitude?
-  perceptual_flip : CanvasPerceptualFlipEvidence
-} derive(ToJson)
-
-pub(all) struct CanvasPerceptualFlipEvidence {
-  status : String
-  reason_code : String?
-  method_id : String?
-  canvas_mean : Double?
-} derive(ToJson)
-
-pub(all) struct CauseEnvelope {
-  guarantee : String
-  coverage : String
-  fallback_scope : String
-  candidate_changed_fact_ids : Array[String]
-  diagnostic_ids : Array[String]
-} derive(ToJson)
-
-pub(all) struct ChangedFact {
-  id : String
-  subject_id : String
-  property : String
-  before : DeclaredVisualFact?
-  after : DeclaredVisualFact?
-  affected_subject_ids : Array[String]
-}
-pub impl ToJson for ChangedFact
-
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
   max_checkpoints : Int?
 }
 pub fn ComparisonControl::unlimited() -> Self
-
-pub(all) struct ComparisonProfile {
-  viewport_width : Int
-  viewport_height : Int
-  comparison_dpr : Double
-  color_interpretation : String
-  raster_representation : String
-  renderer_id : String
-  renderer_conformance_profile_id : String
-  perceptual_background : PerceptualBackground?
-  flip_viewing_conditions : FlipViewingConditions?
-  flip_error_threshold : FlipErrorThreshold?
-}
-pub fn ComparisonProfile::v1_default() -> Self
-pub impl ToJson for ComparisonProfile
-
-pub(all) struct ComputedRelation {
-  status : String
-  reason_code : String
-  missing_side : String?
-  diagnostic_ids : Array[String]
-} derive(ToJson)
-
-pub(all) struct DeclaredVisualFact {
-  property : String
-  authored_value : String
-  declared_value : String
-  origin : String
-  source_span : ReportSourceSpan
-} derive(ToJson)
-
-pub(all) struct Diagnostic {
-  id : String
-  code : String
-  subject_id : String
-  affected_evidence_layers : Array[String]
-  source_locations : Array[DiagnosticSourceLocation]
-} derive(ToJson)
-
-pub(all) struct DiagnosticSourceLocation {
-  source_role : String
-  source_span : ReportSourceSpan
-} derive(ToJson)
-
-pub(all) struct DifferenceMagnitude {
-  parameter_abs_user_units : Double?
-  parameter_signed_user_units : Double?
-  symmetric_relative : Double?
-  parameter_abs_css_px : Double?
-  parameter_viewport_fraction : Double?
-  parameter_entity_fraction : Double?
-  geometry_displacement_css_px : Double?
-  painted_boundary_displacement : PaintedBoundaryDisplacementMagnitude?
-  painted_coverage_difference : PaintedCoverageDifferenceMagnitude?
-  geometry_viewport_fraction : Double?
-  presence_painted_viewport_fraction : Double?
-  raster_changed_pixel_fraction : Double?
-  raster_rgba8_rmse : Double?
-  raster_linear_premultiplied_rgba_rmse : Double?
-  intrinsic_raster : IntrinsicRasterMagnitude?
-  transform_effect : TransformEffectMagnitude?
-}
-pub impl ToJson for DifferenceMagnitude
-
-pub(all) struct DifferenceRegion {
-  id : String
-  source : String
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
-  css_x : Double
-  css_y : Double
-  css_width : Double
-  css_height : Double
-  changed_pixels : Int
-  viewport_fraction : Double
-  cause_envelope : CauseEnvelope
-} derive(ToJson)
-
-pub(all) struct DomainOrdering {
-  policy_id : String
-  components : Array[Double]
-} derive(ToJson)
-
-pub(all) struct FeatureCoverage {
-  feature_id : String
-  subject_id : String
-  source_semantics : String
-  computed_appearance : String
-  rendered_evidence : String
-  diagnostic_ids : Array[String]
-} derive(ToJson)
-
-pub struct FlipErrorThreshold {
-  value : Double
-} derive(Eq, ToJson)
-pub fn FlipErrorThreshold::from_value(Double) -> Self?
-pub fn FlipErrorThreshold::value(Self) -> Double
-
-pub struct FlipViewingConditions {
-  pixels_per_degree : Double
-} derive(Eq, ToJson)
-pub fn FlipViewingConditions::from_pixels_per_degree(Double) -> Self?
-pub fn FlipViewingConditions::pixels_per_degree(Self) -> Double
-
-pub(all) struct ImpactAssessment {
-  policy_id : String
-  status : String
-  calibration_status : String
-  input_fields : Array[String]
-  candidate_event_count : Int
-  frontier_relation : String
-  frontier_groups : Array[ImpactFrontierGroup]
-  domination_witnesses : Array[ImpactDominationWitness]
-} derive(Eq, ToJson)
-
-pub(all) struct ImpactDominationWitness {
-  dominant_event_id : String
-  dominated_event_id : String
-  rule_id : String
-} derive(Eq, ToJson)
-
-pub(all) struct ImpactFrontierGroup {
-  event_ids : Array[String]
-  atomic_difference_ids : Array[String]
-  measurements : ImpactMeasurement?
-} derive(Eq)
-pub impl ToJson for ImpactFrontierGroup
-
-pub(all) struct ImpactMeasurement {
-  changed_pixel_fraction : Double
-  linear_premultiplied_rgba_rmse : Double
-} derive(Eq, ToJson)
-
-pub(all) struct IntrinsicRasterMagnitude {
-  before_width : Int
-  before_height : Int
-  after_width : Int
-  after_height : Int
-  compared_pixels : Int?
-  changed_pixels : Int?
-  changed_pixel_fraction : Double?
-  rgba8_rmse : Double?
-  linear_premultiplied_rgba_rmse : Double?
-} derive(ToJson)
-
-pub(all) struct PaintedBoundaryDisplacementMagnitude {
-  method_id : String
-  before_sample_count : Int
-  after_sample_count : Int
-  mean_css_px : Double
-  p95_css_px : Double
-  max_css_px : Double
-} derive(Eq, ToJson)
-
-pub(all) struct PaintedCoverageDifferenceMagnitude {
-  method_id : String
-  before_coverage_css_px2 : Double
-  after_coverage_css_px2 : Double
-  absolute_difference_css_px2 : Double
-  union_coverage_css_px2 : Double
-  fraction : Double
-} derive(Eq, ToJson)
-
-pub struct PerceptualBackground {
-  red : Int
-  green : Int
-  blue : Int
-} derive(Eq, ToJson)
-pub fn PerceptualBackground::blue(Self) -> Int
-pub fn PerceptualBackground::green(Self) -> Int
-pub fn PerceptualBackground::parse_srgb(String) -> Self?
-pub fn PerceptualBackground::red(Self) -> Int
-
-pub(all) struct PerceptualColorEvidence {
-  status : String
-  reason_code : String?
-  magnitude : PerceptualColorMagnitude?
-} derive(Eq, ToJson)
-
-pub(all) struct PerceptualColorMagnitude {
-  method_id : String
-  sample_count : Int
-  mean_delta_e_ok : Double
-} derive(Eq, ToJson)
-
-pub(all) struct PerceptualFlipAreaAboveThreshold {
-  threshold : Double
-  pixel_count : Int
-  canvas_fraction : Double
-} derive(Eq, ToJson)
-
-pub(all) struct PerceptualFlipEvidence {
-  status : String
-  reason_code : String?
-  map : PerceptualFlipMap?
-  statistics : PerceptualFlipStatistics?
-} derive(Eq, ToJson)
-
-pub(all) struct PerceptualFlipMap {
-  method_id : String
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
-  encoding : String
-  quantization_step : Double
-  values_base64 : String
-} derive(Eq, ToJson)
-
-pub(all) struct PerceptualFlipStatistics {
-  method_id : String
-  canvas_pixel_count : Int
-  event_region_sample_count : Int
-  response_sample_count : Int
-  canvas_mean : Double
-  event_region_mean : Double
-  response_p95 : Double
-  response_maximum : Double
-  area_above_threshold : PerceptualFlipAreaAboveThreshold?
-} derive(Eq)
-pub impl ToJson for PerceptualFlipStatistics
-
-pub(all) struct PresenceMagnitude {
-  affected_entity_count : Int
-  bounds_area_css_px2 : Double
-  bounds_viewport_fraction : Double
-  painted_area_css_px2 : Double
-  painted_viewport_fraction : Double
-} derive(ToJson)
-
-pub(all) struct RenderedEvidence {
-  status : String
-  reason_code : String?
-  magnitude : RenderedMagnitude?
-  perceptual_color : PerceptualColorEvidence
-  perceptual_flip : PerceptualFlipEvidence
-} derive(ToJson)
-
-pub(all) struct RenderedMagnitude {
-  changed_pixels : Int
-  changed_pixel_fraction : Double
-  rgba8_rmse : Double
-  linear_premultiplied_rgba_rmse : Double
-} derive(ToJson)
-
-pub(all) struct RendererCapabilityGap {
-  capability_id : String
-  support_status : String
-  diagnostic_ids : Array[String]
-} derive(ToJson)
-
-pub(all) struct ReportSourceSpan {
-  start_offset : Int
-  end_offset : Int
-} derive(ToJson)
-
-pub(all) struct ResolvedVisualFact {
-  subject_id : String
-  property : String
-  resolved_value : String
-  resolution : String
-  declaration_owner_id : String?
-  declaration : DeclaredVisualFact?
-  inheritance_depth : Int
-} derive(ToJson)
 
 pub(all) struct ResourceBundle {
   entries : Array[ResourceBundleEntry]
@@ -369,145 +42,108 @@ pub(all) struct ResourceBundleEntry {
   bytes : Bytes
 }
 
-pub(all) struct SourceAuditDiagnostic {
-  code : String
-  source_role : String
-  source_span : ReportSourceSpan?
-} derive(ToJson)
-
-pub(all) struct SourceAuditDifference {
-  id : String
-  kind : String
-  path : String
-  name : String
-  before : SourceAuditFact?
-  after : SourceAuditFact?
-} derive(ToJson)
-
-pub(all) struct SourceAuditFact {
-  kind : String
-  path : String
-  name : String
-  authored_value : String
-  source_span : ReportSourceSpan
-} derive(ToJson)
-
-pub(all) struct SourceAuditReport {
-  audit_schema_version : String
-  analysis_status : String
-  differences : Array[SourceAuditDifference]
-  diagnostics : Array[SourceAuditDiagnostic]
-} derive(ToJson)
-pub fn SourceAuditReport::to_compact_json_string(Self) -> String
-pub fn SourceAuditReport::to_json_string(Self) -> String
-
-pub(all) struct SourceResolutionPair {
-  subject_id : String
-  property : String
-  before : ResolvedVisualFact?
-  after : ResolvedVisualFact?
-} derive(ToJson)
-
-pub(all) struct StructuredReport {
-  schema_version : String
-  analysis_status : String
-  canvas_outcome : CanvasOutcome
-  impact_assessment : ImpactAssessment
-  coverage_matrix : Array[FeatureCoverage]
-  renderer_capability_gaps : Array[RendererCapabilityGap]
-  profile : ComparisonProfile
-  subject_alignments : Array[SubjectAlignment]
-  changed_facts : Array[ChangedFact]
-  source_resolutions : Array[SourceResolutionPair]
-  atomic_differences : Array[AtomicDifference]
-  events : Array[VisualEvent]
-  diagnostics : Array[Diagnostic]
-} derive(ToJson)
-pub fn StructuredReport::to_agent_projection_json_lines(Self) -> String
-pub fn StructuredReport::to_compact_json_string(Self) -> String
-pub fn StructuredReport::to_json_string(Self) -> String
-
-pub(all) struct SubjectAlignment {
-  id : String
-  subject_role : String
-  relation : String
-  before : Array[SubjectReference]
-  after : Array[SubjectReference]
-  basis : String
-  evidence : AlignmentEvidence
-} derive(ToJson)
-
-pub(all) struct SubjectInstanceContext {
-  instance_id : String
-  definition_subject_id : String
-  use_path : Array[String]
-} derive(ToJson)
-
-pub(all) struct SubjectReference {
-  source_index : Int
-  kind : String
-  authored_id : String?
-  instance_context : SubjectInstanceContext?
-}
-pub impl ToJson for SubjectReference
-
-pub(all) enum TransformEffectMagnitude {
-  TranslationEffect(TransformTranslationMagnitude)
-  RotationEffect(TransformRotationMagnitude)
-  ScaleEffect(TransformScaleMagnitude)
-  SkewEffect(TransformSkewMagnitude)
-  ResidualMatrixEffect(TransformResidualMagnitude)
-}
-pub impl ToJson for TransformEffectMagnitude
-
-pub(all) struct TransformResidualMagnitude {
-  before_matrix : Array[Double]
-  after_matrix : Array[Double]
-  before_determinant : Double
-  after_determinant : Double
-} derive(ToJson)
-
-pub(all) struct TransformRotationMagnitude {
-  before_degrees : Double
-  after_degrees : Double
-  signed_delta_degrees : Double
-  abs_delta_degrees : Double
-} derive(ToJson)
-
-pub(all) struct TransformScaleMagnitude {
-  before_x : Double
-  before_y : Double
-  after_x : Double
-  after_y : Double
-  max_abs_delta : Double
-} derive(ToJson)
-
-pub(all) struct TransformSkewMagnitude {
-  before_degrees : Double
-  after_degrees : Double
-  signed_delta_degrees : Double
-  abs_delta_degrees : Double
-} derive(ToJson)
-
-pub(all) struct TransformTranslationMagnitude {
-  before_x_css_px : Double
-  before_y_css_px : Double
-  after_x_css_px : Double
-  after_y_css_px : Double
-  delta_x_css_px : Double
-  delta_y_css_px : Double
-  norm_css_px : Double
-} derive(ToJson)
-
-pub(all) struct VisualEvent {
-  id : String
-  primary_subject_id : String
-  atomic_difference_ids : Array[String]
-  rendered_outcome : RenderedEvidence
-  difference_regions : Array[DifferenceRegion]
-} derive(ToJson)
-
 // Type aliases
+pub using @model {type AlignmentEvidence}
+
+pub using @model {type AtomicDifference}
+
+pub using @model {type CauseEnvelope}
+
+pub using @model {type ChangedFact}
+
+pub using @model {type ComparisonProfile}
+
+pub using @model {type ComputedRelation}
+
+pub using @model {type DeclaredVisualFact}
+
+pub using @model {type Diagnostic}
+
+pub using @model {type DiagnosticSourceLocation}
+
+pub using @model {type DifferenceMagnitude}
+
+pub using @model {type DifferenceRegion}
+
+pub using @model {type DomainOrdering}
+
+pub using @model {type FeatureCoverage}
+
+pub using @model {type FlipErrorThreshold}
+
+pub using @model {type FlipViewingConditions}
+
+pub using @model {type ImpactAssessment}
+
+pub using @model {type ImpactDominationWitness}
+
+pub using @model {type ImpactFrontierGroup}
+
+pub using @model {type ImpactMeasurement}
+
+pub using @model {type IntrinsicRasterMagnitude}
+
+pub using @model {type PaintedBoundaryDisplacementMagnitude}
+
+pub using @model {type PaintedCoverageDifferenceMagnitude}
+
+pub using @model {type PerceptualBackground}
+
+pub using @model {type PerceptualColorEvidence}
+
+pub using @model {type PerceptualColorMagnitude}
+
+pub using @model {type PerceptualFlipAreaAboveThreshold}
+
+pub using @model {type PerceptualFlipEvidence}
+
+pub using @model {type PerceptualFlipMap}
+
+pub using @model {type PerceptualFlipStatistics}
+
+pub using @model {type PresenceMagnitude}
+
+pub using @model {type RenderedEvidence}
+
+pub using @model {type RenderedMagnitude}
+
+pub using @model {type RendererCapabilityGap}
+
+pub using @model {type ReportSourceSpan}
+
+pub using @model {type ResolvedVisualFact}
+
+pub using @source {type SourceAuditDiagnostic}
+
+pub using @source {type SourceAuditDifference}
+
+pub using @source {type SourceAuditFact}
+
+pub using @source {type SourceAuditReport}
+
+pub using @model {type SourceResolutionPair}
+
+pub using @model {type StructuredReport}
+
+pub using @model {type SubjectAlignment}
+
+pub using @model {type SubjectInstanceContext}
+
+pub using @model {type SubjectReference}
+
+pub using @model {type TransformEffectMagnitude}
+
+pub using @model {type TransformResidualMagnitude}
+
+pub using @model {type TransformRotationMagnitude}
+
+pub using @model {type TransformScaleMagnitude}
+
+pub using @model {type TransformSkewMagnitude}
+
+pub using @model {type TransformTranslationMagnitude}
+
+pub using @model {type VisualEvent}
 
 // Traits
 

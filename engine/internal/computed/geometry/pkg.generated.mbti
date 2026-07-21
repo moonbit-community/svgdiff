@@ -1,0 +1,117 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/computed/geometry"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/source/path_data",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn append_basic_shape_geometry_diagnostics(Array[@ir.SourceSubject], String, Array[@model.Diagnostic]) -> Unit
+
+pub fn append_basic_shape_renderer_diagnostics(Array[@ir.SourceSubject], String, Array[@model.Diagnostic]) -> Unit
+
+pub fn append_stroke_geometry_diagnostics(Array[@ir.SourceSubject], String, Array[@model.Diagnostic]) -> Unit
+
+pub fn append_stroke_renderer_diagnostics(Array[@ir.SourceSubject], String, Array[@model.Diagnostic]) -> Unit
+
+pub fn basic_shape_geometry_property(String, String) -> Bool
+
+pub fn basic_shape_length_direction(String) -> @computed.SvgLengthDirection
+
+pub fn bounds_number(@ir.SourceSubject, String) -> Double?
+
+pub fn canonical_shape_number(Double) -> String
+
+pub fn canonical_shape_points(Array[Double]) -> String
+
+pub fn canonical_stroke_dasharray(Array[Double]) -> String
+
+pub fn effective_dash_offset(Double, Array[Double]) -> Double
+
+pub fn normalized_dash_pattern(Array[@model.DeclaredVisualFact], Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> Array[Double]
+
+pub fn normalized_stroke_keyword(Array[@model.DeclaredVisualFact], String, String, Array[String], Array[@model.DeclaredVisualFact]) -> String
+
+pub fn normalized_stroke_length(Array[@model.DeclaredVisualFact], String, Double, Bool, Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> Double
+
+pub fn normalized_stroke_number(Array[@model.DeclaredVisualFact], String, Double, Bool, Array[@model.DeclaredVisualFact]) -> Double
+
+pub fn parse_alignment_number(String?) -> Double?
+
+pub fn parse_shape_number(String) -> Double?
+
+pub fn parse_shape_points(String) -> (Array[Double], Bool, Bool)
+
+pub fn parse_stroke_dasharray_with_context(String, @computed.ViewportContext, @model.ComparisonProfile) -> (Array[Double], Bool)
+
+pub fn path_control_hull_bounds(@ir.SourceSubject) -> @computed.CssBounds?
+
+pub fn point_sequence_has_nonzero_segment(Array[Double]) -> Bool
+
+pub fn points_bounds(@ir.SourceSubject) -> @computed.CssBounds?
+
+pub fn push_invalid_shape_fact(Array[@model.DeclaredVisualFact], @model.DeclaredVisualFact?) -> Unit
+
+pub fn push_invalid_stroke_fact(Array[@model.DeclaredVisualFact], @model.DeclaredVisualFact?) -> Unit
+
+pub fn push_shape_value(Array[(String, String)], String, Double) -> Unit
+
+pub fn resolve_basic_shape_geometry_with_context(String, Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> BasicShapeGeometryResolution
+
+pub fn resolve_stroke_geometry_with_context(Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> StrokeGeometryResolution
+
+pub fn resolved_auto_shape_radius(Array[@model.DeclaredVisualFact], String, Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> Double?
+
+pub fn resolved_shape_dimension(Array[@model.DeclaredVisualFact], String, Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> Double
+
+pub fn resolved_shape_number(Array[@model.DeclaredVisualFact], String, Double, Bool, Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile) -> Double
+
+pub fn resolved_shape_number_value(BasicShapeGeometryResolution, String) -> Double
+
+pub fn resolved_shape_value(BasicShapeGeometryResolution, String) -> String
+
+pub fn resolved_stroke_expansion(String, BasicShapeGeometryResolution, StrokeGeometryResolution) -> Double
+
+pub fn resolved_stroke_paint_present(Array[@model.DeclaredVisualFact]) -> Bool
+
+pub fn resolved_stroke_path_present(String, BasicShapeGeometryResolution, Array[@path_data.PathSegmentEvidence], StrokeGeometryResolution) -> Bool
+
+pub fn resolved_stroke_value(StrokeGeometryResolution, String) -> String
+
+pub fn shape_fact(Array[@model.DeclaredVisualFact], String) -> @model.DeclaredVisualFact?
+
+pub fn source_subject_geometry_bounds(@ir.SourceSubject) -> @computed.CssBounds?
+
+pub fn stroke_geometry_number(StrokeGeometryResolution, String) -> Double
+
+pub fn stroke_geometry_property(String) -> Bool
+
+pub fn stroke_subject_has_join(@ir.SourceSubject) -> Bool
+
+pub fn stroke_subject_width(@ir.SourceSubject) -> Double
+
+// Errors
+
+// Types and methods
+pub(all) struct BasicShapeGeometryResolution {
+  values : Array[(String, String)]
+  invalid_facts : Array[@model.DeclaredVisualFact]
+  complete : Bool
+  fillable_interior : Bool
+  renders_geometry : Bool
+}
+
+pub(all) struct StrokeGeometryResolution {
+  values : Array[(String, String)]
+  invalid_facts : Array[@model.DeclaredVisualFact]
+  complete : Bool
+  conservative_expansion : Double
+}
+
+// Type aliases
+
+// Traits
+

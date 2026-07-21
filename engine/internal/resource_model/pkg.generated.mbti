@@ -1,0 +1,76 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/resource_model"
+
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn default_resource_limits() -> ResourceLimits
+
+pub fn invalid_resource_bundle_diagnostic(String, String) -> @model.Diagnostic
+
+pub fn limit_subject(String, String?) -> String
+
+pub fn normalized_bundle_media_type(String) -> String
+
+pub fn resource_bundle_entry(ResourceBundle, String) -> ResourceBundleEntry?
+
+pub fn resource_limit_diagnostic(String, String?, @xml.SourceSpan?) -> @model.Diagnostic
+
+pub fn utf8_byte_length(String) -> Int
+
+pub fn utf8_byte_length_exceeds(String, Int) -> Bool
+
+pub fn utf8_character_bytes(Char) -> Int
+
+pub fn validate_resource_bundle(ResourceBundle, String, ResourceLimits) -> @model.Diagnostic?
+
+// Errors
+
+// Types and methods
+pub(all) struct ComparisonResourceBundles {
+  before : ResourceBundle
+  after : ResourceBundle
+}
+pub fn ComparisonResourceBundles::empty() -> Self
+
+pub(all) struct ResourceBundle {
+  entries : Array[ResourceBundleEntry]
+}
+pub fn ResourceBundle::empty() -> Self
+
+pub(all) struct ResourceBundleEntry {
+  locator : String
+  media_type : String
+  bytes : Bytes
+}
+
+pub(all) struct ResourceLimits {
+  max_input_bytes : Int
+  max_elements : Int
+  max_path_data_units : Int
+  max_nesting_depth : Int
+  max_references : Int
+  max_reference_graph_edges : Int
+  max_expanded_elements : Int
+  max_embedded_data_uri_bytes : Int
+  max_embedded_data_bytes : Int
+  max_embedded_raster_dimension : Int
+  max_embedded_raster_pixels : Int
+  max_resource_bundle_entries : Int
+  max_resource_bundle_entry_bytes : Int
+  max_resource_bundle_bytes : Int
+  max_raster_dimension : Int
+  max_raster_pixels : Int
+  max_regions : Int
+  max_perceptual_map_pixels : Int
+  max_perceptual_flip_samples : Int
+  max_report_bytes : Int
+}
+
+// Type aliases
+
+// Traits
+

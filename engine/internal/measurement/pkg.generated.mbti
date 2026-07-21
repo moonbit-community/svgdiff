@@ -1,0 +1,81 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/measurement"
+
+import {
+  "Milky2018/svg",
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/affine_transform",
+  "Milky2018/svgdiff/engine/internal/computed/effects",
+  "Milky2018/svgdiff/engine/internal/control",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/resource_model",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn alignment_bounds(@model.SubjectAlignment, Array[@ir.SourceSubject], Array[@ir.SourceSubject]) -> @computed.CssBounds?
+
+pub fn alignment_side_bounds(@model.SubjectAlignment, Array[@ir.SourceSubject], Array[@ir.SourceSubject]) -> SideBounds
+
+pub fn append_path_geometry_differences(@model.SubjectAlignment, @ir.SourceSubject, @ir.SourceSubject, @model.ComparisonProfile, PathBoundaryBudget, Array[@model.ChangedFact], Array[@model.AtomicDifference], Array[String]) -> Unit
+
+pub fn attach_difference_magnitudes(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn attach_difference_regions(@model.StructuredReport, String, String, Array[@model.SubjectAlignment], @resource_model.ComparisonResourceBundles, @resource_model.ResourceLimits, @control.ComparisonGuard) -> DifferenceRegionAttachment raise @control.ComparisonInterrupted
+
+pub fn common_parameter_directional_css_scale(@affine_transform.AffineTransform, @affine_transform.AffineTransform, @computed.SvgLengthDirection) -> Double?
+
+pub fn common_scalar_parameter_css_scale(@ir.SourceSubject, @ir.SourceSubject, String) -> Double?
+
+pub fn filter_event_side_bounds(@model.VisualEvent, Array[@effects.ResolvedFilterHost], Array[@effects.ResolvedFilterHost]) -> SideBounds?
+
+pub fn isolated_subjects_painted_measurements(Array[@ir.SourceSubject], Array[@ir.SourceSubject], @model.ComparisonProfile) -> IsolatedPaintMeasurements?
+
+pub fn painted_boundary_displacement_distribution(@svg.Image, @svg.Image, Double) -> @model.PaintedBoundaryDisplacementMagnitude?
+
+pub fn painted_coverage_difference(@svg.Image, @svg.Image, Double) -> @model.PaintedCoverageDifferenceMagnitude?
+
+pub fn parameter_entity_fraction_from_bounds(Double, Array[@computed.CssBounds?]) -> Double?
+
+pub fn pixel_difference_regions(@svg.Image, @svg.Image, Int) -> DifferenceRegionExtraction
+
+pub fn rendered_magnitude_for_regions(@svg.Image, @svg.Image, Array[@model.DifferenceRegion]) -> @model.RenderedMagnitude
+
+pub fn side_bounds_union(SideBounds) -> @computed.CssBounds?
+
+pub fn symmetric_relative_delta(Double, Double) -> Double
+
+// Errors
+
+// Types and methods
+pub(all) enum DifferenceRegionAttachment {
+  RegionsAttached(@model.StructuredReport)
+  AttachmentRegionLimitExceeded
+}
+
+pub(all) enum DifferenceRegionExtraction {
+  Regions(Array[@model.DifferenceRegion])
+  RegionLimitExceeded
+}
+
+pub(all) struct IsolatedPaintMeasurements {
+  boundary_displacement : @model.PaintedBoundaryDisplacementMagnitude?
+  coverage_difference : @model.PaintedCoverageDifferenceMagnitude
+}
+
+pub(all) struct PathBoundaryBudget {
+  mut comparisons : Int
+  mut raster_pixels : Int
+}
+pub fn PathBoundaryBudget::measure(Self, @ir.SourceSubject, @ir.SourceSubject, @model.ComparisonProfile) -> IsolatedPaintMeasurements?
+pub fn PathBoundaryBudget::new() -> Self
+
+pub(all) struct SideBounds {
+  before : @computed.CssBounds?
+  after : @computed.CssBounds?
+}
+
+// Type aliases
+
+// Traits
+

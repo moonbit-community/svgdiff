@@ -1,4 +1,0 @@
-import {
-  "Milky2018/svgdiff/engine/internal/number_parser",
-  "moonbitlang/core/math",
-}

@@ -1,0 +1,89 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/ir"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/affine_transform",
+  "Milky2018/svgdiff/engine/internal/source/path_data",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn source_subject_fact(SourceSubject, String) -> @model.DeclaredVisualFact?
+
+pub fn source_subject_id(SourceSubject) -> String
+
+pub fn source_subject_ids(Array[SourceSubject], Array[SourceSubject]) -> Array[String]
+
+pub fn source_subject_resolution(SourceSubject, String) -> @model.ResolvedVisualFact?
+
+pub fn subject_value(SourceSubject, String) -> String?
+
+pub fn subjects_for_references(Array[SourceSubject], Array[@model.SubjectReference]) -> Array[SourceSubject]
+
+// Errors
+
+// Types and methods
+pub(all) struct MarkerPlacement {
+  resource_id : String
+  bounds : @computed.CssBounds
+}
+
+pub(all) struct SourceSubject {
+  reference : @model.SubjectReference
+  signature : String
+  hierarchy_signature : String
+  structural_parent_path_signature : String
+  instance_resolution_signature : String
+  kind : String
+  values : Array[(String, String)]
+  facts : Array[@model.DeclaredVisualFact]
+  resolved_visual_facts : Array[@model.ResolvedVisualFact]
+  geometry_invalid_facts : Array[@model.DeclaredVisualFact]
+  geometry_complete : Bool
+  fillable_interior : Bool
+  renders_geometry : Bool
+  stroke_invalid_facts : Array[@model.DeclaredVisualFact]
+  stroke_complete : Bool
+  stroke_paint_present : Bool
+  stroke_path_present : Bool
+  stroke_active : Bool
+  stroke_conservative_expansion : Double
+  stroke_non_scaling : Bool
+  marker_invalid_facts : Array[@model.DeclaredVisualFact]
+  marker_effective_facts : Array[@model.DeclaredVisualFact]
+  marker_complete : Bool
+  marker_active : Bool
+  marker_placements : Array[MarkerPlacement]
+  path_segments : Array[@path_data.PathSegmentEvidence]
+  path_data_complete : Bool
+  transform_chain : Array[@computed.SourceTransformSite]
+  cumulative_transform : @affine_transform.AffineTransform
+  transform_complete : Bool
+  viewport : @computed.ViewportContext
+  resource_owner_id : String?
+  clip_path_owner_id : String?
+  clip_resource_id : String?
+  clip_complete : Bool
+  clip_effect_bounds : @computed.CssBounds?
+  clip_issue_codes : Array[String]
+  mask_owner_id : String?
+  mask_resource_id : String?
+  mask_mode : String?
+  mask_outcome : String?
+  mask_complete : Bool
+  mask_effect_bounds : @computed.CssBounds?
+  mask_issue_codes : Array[String]
+  source_offset : Int
+}
+
+pub(all) struct StructuralAlignmentSubject {
+  reference : @model.SubjectReference
+  path_signature : String
+  semantic_signature : String
+}
+
+// Type aliases
+
+// Traits
+

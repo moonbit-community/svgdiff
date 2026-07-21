@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/source/path_data"
+
+// Values
+pub fn normalized_path_segment_kind(NormalizedPathSegment) -> String
+
+pub fn normalized_path_segment_parameters(NormalizedPathSegment) -> Array[NormalizedPathParameter]
+
+pub fn normalized_path_segment_signature(NormalizedPathSegment) -> String
+
+pub fn parse_path_attribute_data(String, Int) -> PathDataParse
+
+pub fn parse_path_data(String, Int) -> PathDataParse
+
+pub fn path_segments_signature(Array[PathSegmentEvidence]) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct NormalizedPathParameter {
+  name : String
+  value : String
+  numeric_value : Double?
+}
+
+pub(all) enum NormalizedPathSegment {
+  MoveTo(Double, Double)
+  LineTo(Double, Double)
+  CubicTo(Double, Double, Double, Double, Double, Double)
+  QuadraticTo(Double, Double, Double, Double)
+  ArcTo(Double, Double, Double, Bool, Bool, Double, Double)
+  ClosePath
+}
+
+pub(all) enum PathDataParse {
+  Valid(Array[PathSegmentEvidence])
+  Invalid
+}
+
+pub(all) struct PathSegmentEvidence {
+  authored_command : String
+  explicit_command : Bool
+  authored_value : String
+  source_span : PathSourceSpan
+  normalized : NormalizedPathSegment
+}
+
+pub(all) struct PathSourceSpan {
+  start_offset : Int
+  end_offset : Int
+}
+
+// Type aliases
+
+// Traits
+

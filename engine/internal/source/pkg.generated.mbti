@@ -1,0 +1,298 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/source"
+
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn add_structural_source_node(String, @xml.NamespaceElement, Int, Int?, Array[StructuralSourceNode], Map[String, Int]) -> Int
+
+pub fn append_rendered_subject_plans(StructuralDocument, Int, Array[Int], Array[String], Array[RenderedSubjectPlan], Array[Int]) -> Unit
+
+pub fn ascii_reference_whitespace(Char) -> Bool
+
+pub fn ascii_url_start(String, Int) -> Bool
+
+pub fn authored_subject_id(@xml.NamespaceElement) -> String?
+
+pub fn canonical_clip_path_reference(String) -> String?
+
+pub fn canonical_marker_reference(String) -> String?
+
+pub fn canonical_mask_reference(String) -> String?
+
+pub fn canonical_paint_order(String) -> String?
+
+pub fn canonical_winding_rule(String) -> String?
+
+pub fn cascade_visual_declarations(Array[CssCascadeCandidate]) -> Array[@model.DeclaredVisualFact]
+
+pub fn css_custom_property_name(String) -> Bool
+
+pub fn css_stylesheet_match_for_source(CssStaticDocument, Int) -> CssStylesheetMatch
+
+pub fn declared_fact(RectDeclaredFacts, String) -> @model.DeclaredVisualFact?
+
+pub fn declared_fact_changed(@model.DeclaredVisualFact?, @model.DeclaredVisualFact?) -> Bool
+
+pub fn declared_fact_in_array(Array[@model.DeclaredVisualFact], String) -> @model.DeclaredVisualFact?
+
+pub fn decode_local_fragment(String) -> String
+
+pub fn empty_css_stylesheet_match() -> CssStylesheetMatch
+
+pub fn extract_rect_declared_facts(String) -> RectFactExtraction
+
+pub fn extract_structural_document_or_raise(String) -> StructuralDocument raise
+
+pub fn fill_hierarchy_kind(String) -> Bool
+
+pub fn generated_subject_id(String, Int) -> String
+
+pub fn group_opacity_container(String) -> Bool
+
+pub fn inline_style_facts(String, @xml.NamespaceAttribute) -> InlineStyleFacts
+
+pub fn known_source_element(String) -> Bool
+
+pub fn local_href_target(String) -> String?
+
+pub fn marker_attachment_property(String) -> Bool
+
+pub fn paint_fallback_value(String) -> PaintFallbackValue?
+
+pub fn paint_order_signature(Array[String]) -> String
+
+pub fn paint_rule_issue_code(String) -> String
+
+pub fn paint_rule_tokens(String) -> Array[String]
+
+pub fn paint_rule_value_valid(String, String) -> Bool
+
+pub fn paint_server_reference(String) -> String?
+
+pub fn paint_value_uses_url(String) -> Bool
+
+pub fn parse_clip_path_reference(String) -> ClipPathReference
+
+pub fn parse_document_stylesheets_or_raise(String) -> CssStylesheetParse raise
+
+pub fn parse_filter_reference(String) -> FilterReference
+
+pub fn parse_marker_reference(String) -> MarkerReferenceParse
+
+pub fn parse_mask_reference(String) -> MaskReference
+
+pub fn parse_paint_order_value(String) -> ParsedPaintOrder
+
+pub fn parse_paint_url(String) -> ParsedPaintValue
+
+pub fn parse_paint_value(String) -> ParsedPaintValue
+
+pub fn parse_resource_locator(String) -> ParsedResourceLocator
+
+pub fn parse_static_css_document_or_raise(String) -> CssStaticDocument raise
+
+pub fn presentation_cascade_candidate(@model.DeclaredVisualFact, Int) -> CssCascadeCandidate
+
+pub fn presentation_fact(String, String, @xml.NamespaceAttribute) -> @model.DeclaredVisualFact
+
+pub fn push_unique(Array[String], String) -> Unit
+
+pub fn rect_declared_facts_from_element(String, @xml.NamespaceElement, CssStylesheetMatch) -> RectDeclaredFacts
+
+pub fn rect_property_order() -> Array[String]
+
+pub fn rendered_instance_id(String, Array[String]) -> String
+
+pub fn rendered_plan_instance_resolution_signature(RenderedSubjectPlan) -> String
+
+pub fn rendered_subject_plans(StructuralDocument) -> Array[RenderedSubjectPlan]
+
+pub fn resource_url_locators(String) -> Array[ParsedResourceLocator]
+
+pub fn source_range_slice(String, Int, Int) -> String
+
+pub fn source_slice(String, @xml.SourceSpan) -> String
+
+pub fn structural_definition_container(String) -> Bool
+
+pub fn structural_href_fact(String, @xml.NamespaceElement) -> @model.DeclaredVisualFact?
+
+pub fn structural_parent_path_signature(StructuralDocument, RenderedSubjectPlan) -> String
+
+pub fn structural_path_segment(StructuralDocument, Int) -> String
+
+pub fn structural_same_kind_ordinal(StructuralDocument, Int) -> Int
+
+pub fn structural_source_kind(String) -> Bool
+
+pub fn supported_css_declaration_property(String) -> Bool
+
+pub fn supported_presentation_property(String) -> Bool
+
+pub fn supported_use_target(String) -> Bool
+
+pub fn trim_range(String, Int, Int) -> (Int, Int)
+
+pub fn upsert_declared_fact(Array[@model.DeclaredVisualFact], @model.DeclaredVisualFact) -> Unit
+
+pub fn use_target_index(StructuralDocument, StructuralSourceNode) -> Int?
+
+pub fn visual_subject_kind(String) -> Bool
+
+// Errors
+
+// Types and methods
+pub(all) enum ClipPathReference {
+  ClipNone
+  ClipLocal(String)
+  ClipExternal
+  ClipInvalid
+}
+
+pub(all) struct CssCascadeCandidate {
+  declaration : @model.DeclaredVisualFact
+  important : Bool
+  specificity : CssSpecificity
+  cascade_source : Int
+  source_order : Int
+}
+
+pub(all) struct CssSelectorAttribute {
+  local_name : String
+  unprefixed : Bool
+  value : String
+}
+
+pub(all) struct CssSelectorNode {
+  local_name : String
+  attributes : Array[CssSelectorAttribute]
+  parent_index : Int?
+  previous_sibling_index : Int?
+  source_offset : Int
+}
+
+pub(all) struct CssSpecificity {
+  inline_style : Int
+  ids : Int
+  classes : Int
+  types : Int
+}
+
+pub(all) struct CssStaticDocument {
+  nodes : Array[CssSelectorNode]
+  stylesheets : CssStylesheetParse
+  complete : Bool
+}
+
+pub(all) struct CssStylesheetMatch {
+  candidates : Array[CssCascadeCandidate]
+  complete : Bool
+}
+
+pub(all) struct CssStylesheetParse {
+  rules : Array[CssStylesheetRule]
+  complete : Bool
+}
+
+pub(all) struct CssStylesheetRule {
+  selector : String
+  selector_span : @model.ReportSourceSpan
+  specificity : CssSpecificity
+  declarations : Array[CssCascadeCandidate]
+}
+
+pub(all) enum FilterReference {
+  FilterNone
+  FilterLocal(String)
+  FilterExternal
+  FilterInvalid
+}
+
+pub(all) struct InlineStyleFacts {
+  facts : Array[@model.DeclaredVisualFact]
+  candidates : Array[CssCascadeCandidate]
+  complete : Bool
+}
+
+pub(all) enum MarkerReferenceParse {
+  NoMarker
+  LocalMarker(String)
+  InvalidMarkerReference
+}
+
+pub(all) enum MaskReference {
+  MaskNone
+  MaskLocal(String)
+  MaskExternal
+  MaskInvalid
+}
+
+pub(all) enum PaintFallbackValue {
+  PaintFallbackNone
+  PaintFallbackColor(String)
+}
+
+pub(all) enum ParsedPaintOrder {
+  ValidPaintOrder(Array[String])
+  InvalidPaintOrder
+}
+
+pub(all) enum ParsedPaintValue {
+  NoPaint
+  SolidPaint(String)
+  LocalPaintServer(String, PaintFallbackValue?)
+  ExternalPaintServer
+  ContextPaint
+  InvalidPaint
+}
+
+pub(all) struct ParsedResourceLocator {
+  kind : String
+  locator : String
+  target_id : String?
+}
+
+pub(all) struct RectDeclaredFacts {
+  subject_id : String
+  facts : Array[@model.DeclaredVisualFact]
+  coverage_codes : Array[String]
+}
+
+pub(all) enum RectFactExtraction {
+  Parsed(RectDeclaredFacts?)
+  Failed
+}
+
+pub(all) struct RenderedSubjectPlan {
+  source_node_index : Int
+  rendered_ancestry : Array[Int]
+  use_path : Array[String]
+  instance_id : String?
+  definition_subject_id : String
+}
+
+pub(all) struct StructuralDocument {
+  nodes : Array[StructuralSourceNode]
+  id_indices : Map[String, Int]
+}
+
+pub(all) struct StructuralSourceNode {
+  source_id : String
+  kind : String
+  source_offset : Int
+  parent_index : Int?
+  children : Array[Int]
+  element : @xml.NamespaceElement
+  direct_text : String
+  definition_content : Bool
+  href_fact : @model.DeclaredVisualFact?
+}
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,116 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/attribution"
+
+import {
+  "Milky2018/svgdiff/engine/internal/resource_model",
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn alignment_influence_subject_ids(@model.SubjectAlignment) -> Array[String]
+
+pub fn attach_cause_envelopes(@model.StructuredReport) -> @model.StructuredReport
+
+pub fn attach_impact_assessment(@model.StructuredReport) -> @model.StructuredReport
+
+pub fn build_resource_dependency_graph(String, Int) -> ResourceDependencyGraph raise
+
+pub fn build_subject_influence_index(Array[@model.ChangedFact]) -> SubjectInfluenceIndex
+
+pub fn empty_impact_assessment() -> @model.ImpactAssessment
+
+pub fn event_changed_fact_ids(@model.VisualEvent, Array[@model.AtomicDifference]) -> Array[String]
+
+pub fn event_influence_subject_ids(@model.VisualEvent, @model.StructuredReport, Array[String]) -> Array[String]
+
+pub fn event_may_influence_fact_ids(@model.VisualEvent, @model.StructuredReport, SubjectInfluenceIndex) -> Array[String]
+
+pub fn impact_assessment_for_events(Array[@model.VisualEvent]) -> @model.ImpactAssessment
+
+pub fn influence_operation_for_domain(String) -> InfluenceOperation
+
+pub fn reference_cycle_diagnostic(ResourceDependencyGraph, String) -> @model.Diagnostic?
+
+pub fn reference_expansion_diagnostic(ResourceDependencyGraph, String, Int) -> @model.Diagnostic?
+
+pub fn reference_safety_diagnostic(String, String, @resource_model.ResourceLimits) -> @model.Diagnostic? raise
+
+pub fn resource_dependency_forward_targets(ResourceDependencyGraph, String) -> Array[String]
+
+pub fn resource_dependency_reverse_subjects(ResourceDependencyGraph, String) -> Array[String]
+
+pub fn resource_dependency_target_kinds(ResourceDependencyGraph, String) -> Array[String]
+
+pub fn subject_influence_fact_ids(SubjectInfluenceIndex, Array[String]) -> Array[String]
+
+// Errors
+
+// Types and methods
+pub(all) enum InfluenceOperation {
+  LeafInput
+  GroupSurface
+  ClipEffect
+  MaskEffect
+  FilterEffect
+  BlendEffect
+  IsolationEffect
+  CompositingOrder
+}
+
+pub(all) struct ReferenceDefinition {
+  id : String
+  node_indices : Array[Int]
+  resource_kinds : Array[String]
+  mut descendant_elements : Int
+  edge_indices : Array[Int]
+}
+
+pub(all) struct ResourceDependencyEdge {
+  source_node_index : Int
+  owner_definition_indices : Array[Int]
+  relation : String
+  locator_kind : String
+  locator : String
+  target_id : String?
+  span : @xml.SourceSpan
+  expands : Bool
+  resource_dependency : Bool
+}
+
+pub(all) struct ResourceDependencyGraph {
+  nodes : Array[ResourceDependencyNode]
+  edges : Array[ResourceDependencyEdge]
+  definitions : Array[ReferenceDefinition]
+  indices : Map[String, Int]
+  global_use_edge_indices : Array[Int]
+  mut total_elements : Int
+  mut edge_instances : Int
+  mut edge_limit_span : @xml.SourceSpan?
+}
+pub fn ResourceDependencyGraph::definition_index(Self, String, String, Int) -> Int
+pub fn ResourceDependencyGraph::new() -> Self
+
+pub(all) struct ResourceDependencyNode {
+  subject_id : String
+  kind : String
+  authored_id : String?
+  source_offset : Int
+  span : @xml.SourceSpan
+  definition_index : Int?
+}
+
+pub(all) struct SubjectInfluenceEntry {
+  subject_id : String
+  fact_ids : Array[String]
+}
+
+pub(all) struct SubjectInfluenceIndex {
+  fact_order : Array[String]
+  entries : Array[SubjectInfluenceEntry]
+}
+
+// Type aliases
+
+// Traits
+

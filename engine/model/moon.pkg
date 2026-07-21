@@ -1,0 +1,6 @@
+import {
+  "Milky2018/svgdiff/engine/internal/source/css_color",
+  "moonbitlang/core/json",
+  "moonbitlang/core/math",
+  "moonbitlang/core/string",
+}

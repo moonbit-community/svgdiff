@@ -1,0 +1,170 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/computed/style"
+
+import {
+  "Milky2018/svg",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/source",
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn add_fill_source_element(String, @xml.NamespaceElement, Int, @source.CssStylesheetMatch, Int?, Array[FillSourceElement], Array[String], Array[String], Array[String], Int, Int, Int) -> Int
+
+pub fn append_renderer_paint_overrides(FillHierarchy, String, String, String, Array[@model.DeclaredVisualFact]) -> Unit
+
+pub fn append_style_dependencies(Array[StyleDependency], Array[StyleDependency]) -> Unit
+
+pub fn append_style_dependency(Array[StyleDependency], StyleDependency) -> Unit
+
+pub fn blend_mode_from_keyword(String) -> @svg.BlendMode?
+
+pub fn canonical_computed_visual_value(FillHierarchy, String, String) -> (String, Bool)
+
+pub fn canonical_paint_color(FillHierarchy, String) -> CanonicalPaintValue
+
+pub fn canonical_paint_fallback(FillHierarchy, @source.PaintFallbackValue?) -> CanonicalPaintValue
+
+pub fn canonical_paint_value(FillHierarchy, String) -> CanonicalPaintValue
+
+pub fn computed_fact_from_resolution(String, String, @model.DeclaredVisualFact?) -> @model.DeclaredVisualFact?
+
+pub fn computed_visual_facts_for_subject(FillHierarchy, String) -> Array[@model.DeclaredVisualFact]
+
+pub fn computed_visual_for_index(FillHierarchy, Int, String) -> ComputedVisualResolution
+
+pub fn computed_visual_for_subject(FillHierarchy, String, String) -> ComputedVisualResolution?
+
+pub fn css_wide_keyword(String) -> Bool
+
+pub fn custom_property_declaration(FillSourceElement, String) -> @model.DeclaredVisualFact?
+
+pub fn explicit_defaulted_visual(FillHierarchy, Int, String, @model.DeclaredVisualFact, String, Array[StyleDependency]) -> ComputedVisualResolution
+
+pub fn extract_fill_hierarchy(String) -> FillHierarchyExtraction
+
+pub fn extract_fill_hierarchy_or_raise(String) -> FillHierarchy raise
+
+pub fn fill_entity_kind(String) -> Bool
+
+pub fn fill_source_element(FillHierarchy, String) -> (Int, FillSourceElement)?
+
+pub fn generic_computed_string(String, String) -> String
+
+pub fn generic_computed_value(String, @model.DeclaredVisualFact?) -> String?
+
+pub fn generic_default_value(String) -> String?
+
+pub fn generic_effective_paint(@ir.SourceSubject, String, @model.DeclaredVisualFact?) -> String?
+
+pub fn generic_subject_alpha(@ir.SourceSubject, String) -> Double?
+
+pub fn inherited_computed_visual(FillHierarchy, Int, String) -> ComputedVisualResolution
+
+pub fn inherited_visual_properties() -> Array[String]
+
+pub fn initial_computed_visual(String, String, @model.DeclaredVisualFact?, String, Array[StyleDependency]) -> ComputedVisualResolution
+
+pub fn initial_visual_value(String) -> String
+
+pub fn local_property_declaration(FillHierarchy, String, String) -> @model.DeclaredVisualFact?
+
+pub fn local_visual_declaration(FillSourceElement, String) -> @model.DeclaredVisualFact?
+
+pub fn paint_color_issue_code(String) -> String
+
+pub fn record_paint_server_target(@xml.NamespaceElement, Array[PaintServerTarget]) -> Unit
+
+pub fn renderer_computed_override_facts_for_subject(FillHierarchy, String) -> Array[@model.DeclaredVisualFact]
+
+pub fn resolution_source_changed(@model.ResolvedVisualFact?, @model.ResolvedVisualFact?) -> Bool
+
+pub fn resolve_custom_property(FillHierarchy, Int, String, Array[String]) -> CustomValueResolution
+
+pub fn resolved_style_property(String) -> Bool
+
+pub fn resolved_visual_facts_for_subject(FillHierarchy, String) -> Array[@model.ResolvedVisualFact]
+
+pub fn resolved_visual_for_subject(FillHierarchy, String, String) -> @model.ResolvedVisualFact?
+
+pub fn resolved_visual_properties() -> Array[String]
+
+pub fn substitute_css_variables(FillHierarchy, Int, String, Array[String]) -> CssSubstitutionResult
+
+pub fn substituted_paint_value_valid(String, String) -> Bool
+
+pub fn substituted_visual_value_valid(String, String) -> Bool
+
+pub fn valid_local_paint_server(FillHierarchy, String) -> Bool
+
+pub fn var_function_at(String, Int) -> Bool
+
+pub fn visual_declarations_from_element(String, @xml.NamespaceElement, @source.CssStylesheetMatch, Array[String]) -> Array[@model.DeclaredVisualFact]
+
+// Errors
+
+// Types and methods
+pub(all) struct CanonicalPaintValue {
+  value : String
+  complete : Bool
+  uses_current_color : Bool
+}
+
+pub(all) struct ComputedVisualResolution {
+  reported : @model.ResolvedVisualFact
+  computed_fact : @model.DeclaredVisualFact?
+  dependencies : Array[StyleDependency]
+  complete : Bool
+}
+
+pub(all) enum CssSubstitutionResult {
+  Substituted(String, Array[StyleDependency])
+  InvalidSubstitution(Array[StyleDependency])
+  UnsupportedSubstitution(Array[StyleDependency])
+}
+
+pub(all) struct CustomValueResolution {
+  value : String?
+  dependencies : Array[StyleDependency]
+  complete : Bool
+}
+
+pub(all) struct FillHierarchy {
+  elements : Array[FillSourceElement]
+  paint_server_targets : Array[PaintServerTarget]
+  rect_subject_ids : Array[String]
+  all_entity_subject_ids : Array[String]
+  coverage_codes : Array[String]
+  mut has_inherited_visual : Bool
+}
+
+pub(all) enum FillHierarchyExtraction {
+  ParsedFillHierarchy(FillHierarchy)
+  FillHierarchyFailed
+}
+
+pub(all) struct FillSourceElement {
+  subject_id : String
+  has_authored_id : Bool
+  kind : String
+  source_offset : Int
+  parent_index : Int?
+  visual_declarations : Array[@model.DeclaredVisualFact]
+  resource_content : Bool
+}
+
+pub(all) struct PaintServerTarget {
+  id : String
+  kind : String
+}
+
+pub(all) struct StyleDependency {
+  owner_id : String
+  property : String
+}
+
+// Type aliases
+
+// Traits
+

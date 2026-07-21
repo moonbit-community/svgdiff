@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/rendered/effects"
+
+import {
+  "Milky2018/svg",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn render_product_source_to_image(String, @model.ComparisonProfile) -> @svg.Image?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/report_support"
+
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn append_unique_subjects(Array[String], Array[String]) -> Unit
+
+pub fn attach_diagnostic_fact_locations(@model.StructuredReport) -> @model.StructuredReport
+
+pub fn declared_value_or_empty(@model.DeclaredVisualFact?) -> String
+
+pub fn diagnostic_ids(Array[@model.Diagnostic]) -> Array[String]
+
+pub fn diagnostic_location(String, @model.ReportSourceSpan) -> @model.DiagnosticSourceLocation
+
+pub fn diagnostic_location_from_xml(String, @xml.SourceSpan) -> @model.DiagnosticSourceLocation
+
+pub fn element_diagnostic_locations(String, String, String) -> Array[@model.DiagnosticSourceLocation]
+
+pub fn empty_difference_magnitude() -> @model.DifferenceMagnitude
+
+pub fn empty_domain_ordering() -> @model.DomainOrdering
+
+pub fn located_diagnostic(String, String, String, Array[String], String, @xml.SourceSpan) -> @model.Diagnostic
+
+pub fn merge_diagnostic_into(Array[@model.Diagnostic], @model.Diagnostic) -> Unit
+
+pub fn same_diagnostic_location(@model.DiagnosticSourceLocation, @model.DiagnosticSourceLocation) -> Bool
+
+pub fn unlocated_diagnostic(String, String, String, Array[String]) -> @model.Diagnostic
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

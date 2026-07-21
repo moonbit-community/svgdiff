@@ -1,0 +1,8 @@
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/svgdiff/engine/internal/rendered/ldr_flip",
+  "Milky2018/svg",
+  "mizchi/pixelmatch",
+  "moonbitlang/x/codec/base64",
+  "moonbitlang/core/math",
+}
