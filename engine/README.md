@@ -18,12 +18,17 @@ compare(before_svg, after_svg, comparison_profile) -> structured_report
 
 Callers should normally import `Milky2018/svgdiff`; the root package pins v1 comparison conditions and exposes the stable report interface. The engine package owns source, computed, and rendered analysis, subject alignment, magnitudes, regions, cause envelopes, and conservative diagnostics.
 
-Implementation-only algorithms live below `engine/internal`:
+The engine stays one deep public package. Its source files are grouped by pipeline responsibility, while implementation-only leaf algorithms live below `engine/internal`:
+
+- `comparison_profile.mbt`, `report_model.mbt`, `source_preflight.mbt`, `rendered_comparison.mbt`, and `comparison_pipeline.mbt` define and assemble the report pipeline.
+- `subject_model.mbt`, `subject_extraction.mbt`, `subject_similarity.mbt`, `alignment_algorithm.mbt`, and `report_completion.mbt` inventory, align, and localize visual subjects.
 
 ```text
 engine
+├── internal/number_parser     finite SVG-style numeric scanning
 ├── internal/affine_transform  affine math and transform-list parsing
 ├── internal/arc_geometry     SVG elliptical-arc parameterization and bounds
+├── internal/css_color        deterministic supported solid-color parsing
 ├── internal/embedded_data_url strict embedded PNG/JPEG data-URL parsing
 ├── internal/ldr_flip         pure LDR-FLIP computation
 └── internal/path_data        normalized path-data parsing with source offsets

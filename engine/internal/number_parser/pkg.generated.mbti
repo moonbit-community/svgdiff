@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/number_parser"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct NumberParser {
+  data : String
+  mut position : Int
+}
+pub fn NumberParser::parse_number(Self) -> Double?
+pub fn NumberParser::skip_whitespace(Self) -> Bool
+
+// Type aliases
+
+// Traits
+

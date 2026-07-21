@@ -44,7 +44,7 @@ fn canonical_shape_number(value : Double) -> String {
 
 ///|
 fn parse_shape_number(source : String) -> Double? {
-  let parser : TransformListParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0 }
   ignore(parser.skip_whitespace())
   guard parser.parse_number() is Some(value) else { return None }
   ignore(parser.skip_whitespace())
@@ -206,7 +206,7 @@ fn resolved_shape_number_value(
 
 ///|
 fn parse_shape_points(source : String) -> (Array[Double], Bool, Bool) {
-  let parser : TransformListParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0 }
   let values : Array[Double] = []
   ignore(parser.skip_whitespace())
   while parser.position < source.length() {

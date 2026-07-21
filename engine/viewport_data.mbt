@@ -59,7 +59,7 @@ fn default_preserve_aspect_ratio() -> PreserveAspectRatioValue {
 
 ///|
 fn parse_view_box_value(source : String) -> ViewBoxValue? {
-  let parser : TransformListParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0 }
   let values : Array[Double] = []
   ignore(parser.skip_whitespace())
   while parser.position < source.length() {

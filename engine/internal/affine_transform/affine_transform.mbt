@@ -21,12 +21,6 @@ pub(all) enum TransformListParse {
 }
 
 ///|
-pub(all) struct TransformListParser {
-  data : String
-  mut position : Int
-}
-
-///|
 pub fn AffineTransform::identity() -> AffineTransform {
   { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: 0.0, f: 0.0 }
 }
@@ -182,139 +176,60 @@ pub fn AffineTransform::has_proven_renderer_conformance(
 }
 
 ///|
-fn transform_is_whitespace(unit : UInt16) -> Bool {
-  unit == ' ' || unit == '\t' || unit == '\n' || unit == '\r'
-}
-
-///|
-fn transform_is_digit(unit : UInt16) -> Bool {
-  unit >= '0' && unit <= '9'
-}
-
-///|
-pub fn TransformListParser::skip_whitespace(self : TransformListParser) -> Bool {
-  let start = self.position
-  while self.position < self.data.length() &&
-        transform_is_whitespace(self.data[self.position]) {
-    self.position += 1
-  }
-  self.position > start
-}
-
-///|
-pub fn TransformListParser::parse_number(self : TransformListParser) -> Double? {
-  let start = self.position
-  if self.position < self.data.length() &&
-    (self.data[self.position] == '+' || self.data[self.position] == '-') {
-    self.position += 1
-  }
-  let mut digits = 0
-  while self.position < self.data.length() &&
-        transform_is_digit(self.data[self.position]) {
-    self.position += 1
-    digits += 1
-  }
-  if self.position < self.data.length() && self.data[self.position] == '.' {
-    self.position += 1
-    while self.position < self.data.length() &&
-          transform_is_digit(self.data[self.position]) {
-      self.position += 1
-      digits += 1
-    }
-  }
-  if digits == 0 {
-    self.position = start
-    return None
-  }
-  if self.position < self.data.length() &&
-    (self.data[self.position] == 'e' || self.data[self.position] == 'E') {
-    self.position += 1
-    if self.position < self.data.length() &&
-      (self.data[self.position] == '+' || self.data[self.position] == '-') {
-      self.position += 1
-    }
-    let exponent_start = self.position
-    while self.position < self.data.length() &&
-          transform_is_digit(self.data[self.position]) {
-      self.position += 1
-    }
-    if self.position == exponent_start {
-      self.position = start
-      return None
-    }
-  }
-  let value = try
-    @string.parse_double(
-      self.data.view(start_offset=start, end_offset=self.position),
-    )
-  catch {
-    _ => {
-      self.position = start
-      return None
-    }
-  } noraise {
-    value => value
-  }
-  if value.is_inf() || value.is_nan() {
-    self.position = start
-    None
-  } else {
-    Some(value)
-  }
-}
-
-///|
-fn TransformListParser::parse_name(self : TransformListParser) -> String? {
-  let start = self.position
-  while self.position < self.data.length() {
-    let unit = self.data[self.position]
+fn parse_transform_name(parser : @number_parser.NumberParser) -> String? {
+  let start = parser.position
+  while parser.position < parser.data.length() {
+    let unit = parser.data[parser.position]
     if (unit >= 'a' && unit <= 'z') || (unit >= 'A' && unit <= 'Z') {
-      self.position += 1
+      parser.position += 1
     } else {
       break
     }
   }
-  if self.position == start {
+  if parser.position == start {
     None
   } else {
     Some(
-      self.data.view(start_offset=start, end_offset=self.position).to_owned(),
+      parser.data
+      .view(start_offset=start, end_offset=parser.position)
+      .to_owned(),
     )
   }
 }
 
 ///|
-fn TransformListParser::parse_arguments(
-  self : TransformListParser,
+fn parse_transform_arguments(
+  parser : @number_parser.NumberParser,
 ) -> Array[Double]? {
   let arguments : Array[Double] = []
-  ignore(self.skip_whitespace())
-  if self.position < self.data.length() && self.data[self.position] == ')' {
-    self.position += 1
+  ignore(parser.skip_whitespace())
+  if parser.position < parser.data.length() &&
+    parser.data[parser.position] == ')' {
+    parser.position += 1
     return Some(arguments)
   }
-  while self.position < self.data.length() {
-    guard self.parse_number() is Some(value) else { return None }
+  while parser.position < parser.data.length() {
+    guard parser.parse_number() is Some(value) else { return None }
     arguments.push(value)
-    let had_whitespace = self.skip_whitespace()
-    if self.position >= self.data.length() {
+    let had_whitespace = parser.skip_whitespace()
+    if parser.position >= parser.data.length() {
       return None
     }
-    if self.data[self.position] == ')' {
-      self.position += 1
+    if parser.data[parser.position] == ')' {
+      parser.position += 1
       return Some(arguments)
     }
-    if self.data[self.position] == ',' {
-      self.position += 1
-      ignore(self.skip_whitespace())
-      if self.position >= self.data.length() ||
-        self.data[self.position] == ',' ||
-        self.data[self.position] == ')' {
+    if parser.data[parser.position] == ',' {
+      parser.position += 1
+      ignore(parser.skip_whitespace())
+      if parser.position >= parser.data.length() ||
+        parser.data[parser.position] == ',' ||
+        parser.data[parser.position] == ')' {
         return None
       }
     } else if !had_whitespace &&
-      self.data[self.position] != '+' &&
-      self.data[self.position] != '-' {
+      parser.data[parser.position] != '+' &&
+      parser.data[parser.position] != '-' {
       return None
     }
   }
@@ -359,19 +274,21 @@ fn transform_function_matrix(
 
 ///|
 pub fn parse_transform_list(value : String) -> TransformListParse {
-  let parser = { data: value, position: 0 }
+  let parser : @number_parser.NumberParser = { data: value, position: 0 }
   let mut matrix = AffineTransform::identity()
   let signature = StringBuilder::new()
   let mut function_count = 0
   ignore(parser.skip_whitespace())
   while parser.position < value.length() {
-    guard parser.parse_name() is Some(name) else { return InvalidTransformList }
+    guard parse_transform_name(parser) is Some(name) else {
+      return InvalidTransformList
+    }
     ignore(parser.skip_whitespace())
     guard parser.position < value.length() && value[parser.position] == '(' else {
       return InvalidTransformList
     }
     parser.position += 1
-    guard parser.parse_arguments() is Some(arguments) else {
+    guard parse_transform_arguments(parser) is Some(arguments) else {
       return InvalidTransformList
     }
     guard transform_function_matrix(name, arguments) is Some(function_matrix) else {

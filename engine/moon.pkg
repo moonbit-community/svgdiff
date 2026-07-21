@@ -1,9 +1,10 @@
 import {
-  "Milky2018/svgdiff/css_color",
   "Milky2018/svgdiff/engine/internal/affine_transform",
   "Milky2018/svgdiff/engine/internal/arc_geometry",
+  "Milky2018/svgdiff/engine/internal/css_color",
   "Milky2018/svgdiff/engine/internal/embedded_data_url",
   "Milky2018/svgdiff/engine/internal/ldr_flip",
+  "Milky2018/svgdiff/engine/internal/number_parser",
   "Milky2018/svgdiff/engine/internal/path_data",
   "Milky2018/svgdiff-raster-codec" @raster_codec,
   "Milky2018/xml",

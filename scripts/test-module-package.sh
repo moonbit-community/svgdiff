@@ -24,9 +24,11 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt | css_color | css_color/moon.pkg | css_color/pkg.generated.mbti | engine | engine/moon.pkg | engine/pkg.generated.mbti)
+    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt | engine | engine/moon.pkg | engine/pkg.generated.mbti)
       ;;
-    css_color/*.mbt)
+    engine/internal/affine_transform/moon.pkg | engine/internal/affine_transform/pkg.generated.mbti | engine/internal/arc_geometry/moon.pkg | engine/internal/arc_geometry/pkg.generated.mbti | engine/internal/css_color/moon.pkg | engine/internal/css_color/pkg.generated.mbti | engine/internal/embedded_data_url/moon.pkg | engine/internal/embedded_data_url/pkg.generated.mbti | engine/internal/ldr_flip/moon.pkg | engine/internal/ldr_flip/pkg.generated.mbti | engine/internal/number_parser/moon.pkg | engine/internal/number_parser/pkg.generated.mbti | engine/internal/path_data/moon.pkg | engine/internal/path_data/pkg.generated.mbti)
+      ;;
+    engine/internal/affine_transform/*.mbt | engine/internal/arc_geometry/*.mbt | engine/internal/css_color/*.mbt | engine/internal/embedded_data_url/*.mbt | engine/internal/ldr_flip/*.mbt | engine/internal/number_parser/*.mbt | engine/internal/path_data/*.mbt)
       case "$path" in
         *_test.mbt | *_wbtest.mbt)
           printf 'Registry package contains a test source: %s\n' "$path" >&2
@@ -60,7 +62,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
+for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/css_color/moon.pkg engine/internal/css_color/color.mbt engine/internal/number_parser/moon.pkg engine/internal/number_parser/number_parser.mbt engine/report_model.mbt engine/comparison_pipeline.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 

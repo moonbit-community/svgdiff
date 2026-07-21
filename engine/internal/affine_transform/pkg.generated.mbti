@@ -41,13 +41,6 @@ pub(all) enum TransformListParse {
   InvalidTransformList
 }
 
-pub(all) struct TransformListParser {
-  data : String
-  mut position : Int
-}
-pub fn TransformListParser::parse_number(Self) -> Double?
-pub fn TransformListParser::skip_whitespace(Self) -> Bool
-
 // Type aliases
 
 // Traits
