@@ -25,12 +25,12 @@ description = "Deterministic visual-semantic SVG comparison with typed reports f
 
 import {
   "moonbitlang/async@0.19.1",
-  "mizchi/svg@0.2.1",
   "mizchi/pixelmatch@0.6.1",
   "Milky2018/xml@0.4.0",
   "moonbitlang/x@0.4.40",
   "moonbitlang/quickcheck@0.14.0",
   "Milky2018/svgdiff-raster-codec@0.1.1",
+  "Milky2018/svg@0.3.0",
 }
 
 options(

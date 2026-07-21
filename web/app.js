@@ -1,13 +1,79 @@
-const example = {
-  before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+const examples = [
+  {
+    id: "color-size",
+    label: "Local color + size changes",
+    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
   <rect id="color-box" x="24" y="44" width="72" height="72" fill="#2563eb" />
   <rect id="size-box" x="152" y="52" width="56" height="56" fill="#16a34a" />
 </svg>`,
-  after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
   <rect id="color-box" x="24" y="44" width="72" height="72" fill="#dc2626" />
   <rect id="size-box" x="152" y="52" width="72" height="72" fill="#16a34a" />
 </svg>`,
-};
+  },
+  {
+    id: "translation",
+    label: "Affine · translation",
+    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <rect x="16" y="16" width="224" height="128" rx="12" fill="#f8fafc" stroke="#cbd5e1" />
+  <path id="target" d="M36 54h68v18H82v34H58V72H36Z" fill="#2563eb" transform="translate(0 0)" />
+</svg>`,
+    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <rect x="16" y="16" width="224" height="128" rx="12" fill="#f8fafc" stroke="#cbd5e1" />
+  <path id="target" d="M36 54h68v18H82v34H58V72H36Z" fill="#2563eb" transform="translate(96 18)" />
+</svg>`,
+  },
+  {
+    id: "rotation",
+    label: "Affine · rotation around a pivot",
+    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <circle cx="128" cy="80" r="3" fill="#94a3b8" />
+  <path id="target" d="M76 66h64V50l40 30-40 30V94H76Z" fill="#7c3aed" transform="rotate(0 128 80)" />
+</svg>`,
+    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <circle cx="128" cy="80" r="3" fill="#94a3b8" />
+  <path id="target" d="M76 66h64V50l40 30-40 30V94H76Z" fill="#7c3aed" transform="rotate(90 128 80)" />
+</svg>`,
+  },
+  {
+    id: "scale",
+    label: "Affine · non-uniform scale",
+    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <rect x="16" y="16" width="224" height="128" rx="12" fill="none" stroke="#cbd5e1" />
+  <g transform="translate(128 80)">
+    <path id="target" d="M-48-30H18L48 0 18 30H-48Z" fill="#059669" transform="scale(0.8 1.15)" />
+  </g>
+</svg>`,
+    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <rect x="16" y="16" width="224" height="128" rx="12" fill="none" stroke="#cbd5e1" />
+  <g transform="translate(128 80)">
+    <path id="target" d="M-48-30H18L48 0 18 30H-48Z" fill="#059669" transform="scale(1.35 0.72)" />
+  </g>
+</svg>`,
+  },
+  {
+    id: "skew",
+    label: "Affine · skew",
+    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <path d="M36 128H220" stroke="#cbd5e1" stroke-dasharray="5 5" />
+  <path id="target" d="M82 38H158V122H82Z" fill="#ea580c" transform="skewX(-8)" />
+</svg>`,
+    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <path d="M36 128H220" stroke="#cbd5e1" stroke-dasharray="5 5" />
+  <path id="target" d="M82 38H158V122H82Z" fill="#ea580c" transform="skewX(22)" />
+</svg>`,
+  },
+  {
+    id: "combined-affine",
+    label: "Affine · combined decomposition",
+    before: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <path id="target" d="M42 42H104V58H78V110H42Z" fill="#db2777" transform="matrix(1 0 0 1 0 0)" />
+</svg>`,
+    after: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 160">
+  <path id="target" d="M42 42H104V58H78V110H42Z" fill="#db2777" transform="translate(42 8) rotate(18) skewX(14) scale(1.12 0.86)" />
+</svg>`,
+  },
+];
 
 const elements = {
   beforeSource: document.querySelector("#before-source"),
@@ -31,6 +97,7 @@ const elements = {
   resultRoot: document.querySelector("#report-root"),
   reportTemplate: document.querySelector("#report-template"),
   editInputs: document.querySelector("#edit-inputs"),
+  exampleSelect: document.querySelector("#example-select"),
 };
 
 let worker = null;
@@ -48,9 +115,15 @@ function refreshPreviews() {
 }
 
 function loadExample() {
+  const example = examples.find((candidate) => candidate.id === elements.exampleSelect.value) || examples[0];
   elements.beforeSource.value = example.before;
   elements.afterSource.value = example.after;
+  elements.width.value = "256";
+  elements.height.value = "160";
   refreshPreviews();
+  elements.resultSection.hidden = true;
+  elements.resultRoot.replaceChildren();
+  setStatus(`${example.label} loaded locally.`, "");
 }
 
 async function readSvgFile(file, side) {
@@ -206,10 +279,17 @@ elements.background.addEventListener("change", () => {
   elements.customBackgroundLabel.hidden = elements.background.value !== "custom";
 });
 elements.compare.addEventListener("click", compare);
+elements.exampleSelect.addEventListener("change", loadExample);
 elements.editInputs.addEventListener("click", () => {
   elements.inputSection.scrollIntoView({ behavior: "smooth", block: "start" });
   elements.beforeSource.focus();
 });
 for (const panel of document.querySelectorAll("[data-drop-side]")) bindDropPanel(panel);
 
+for (const example of examples) {
+  const option = document.createElement("option");
+  option.value = example.id;
+  option.textContent = example.label;
+  elements.exampleSelect.append(option);
+}
 loadExample();

@@ -373,6 +373,24 @@ test "use transform plus supplemental translation retains a renderer guard" {
 }
 
 ///|
+test "use currentColor inheritance retains a renderer guard" {
+  let source =
+    #|<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    #|  <defs><g id="tile" fill="currentColor"><rect width="4" height="4"/></g></defs>
+    #|  <use id="placed" href="#tile" x="2" y="3" color="#f00"/>
+    #|</svg>
+  let report = compare(source, source, ComparisonProfile::v1_default())
+  assert_eq(report.analysis_status, "partial")
+  assert_true(
+    report.diagnostics.any(diagnostic => {
+      diagnostic.code == "renderer_use_inherited_paint_raster_unproven" &&
+      diagnostic.affected_evidence_layers == ["rendered_evidence"] &&
+      !diagnostic.source_locations.is_empty()
+    }),
+  )
+}
+
+///|
 test "unused definitions remain source visible without rendered subjects" {
   let before =
     #|<svg xmlns="http://www.w3.org/2000/svg">

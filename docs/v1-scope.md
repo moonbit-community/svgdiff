@@ -2,7 +2,7 @@
 
 Status: implementation-aligned contract
 
-Last verified: 2026-07-17
+Last verified: 2026-07-20
 
 This document states what schema `1.45` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
@@ -30,8 +30,8 @@ The [terminal multidimensional magnitude gate](../evaluation/terminal-magnitude-
 | DPR | Fixed to `1.0`. |
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
-| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1`. |
-| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/25`. |
+| Renderer identity | Pinned as `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0`. |
+| Renderer conformance profile | Pinned independently as `svgdiff-renderer-conformance-profile/26`. |
 | Perceptual inputs | Raw rendering remains transparent. The profile may separately record one optional normalized opaque sRGB8 Perceptual Background and finite `[1, 4096]` FLIP pixels per degree; event-local changed-pixel mean DeltaEOK and optional LDR-FLIP consume them through exact shared linear-sRGB compositing. |
 | Resources | Bounded 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied `image` bundles; no SVG-authored path loading or implicit network fetching. |
 | Reference admission | Accepted local fragment edges are checked for cycles and bounded transitive `<use>` expansion before renderer parsing. |
@@ -109,7 +109,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 | Variable syntax outside the admitted balanced component-text subset | Independently supported declarations, dependencies, and Source Spans | `css_variable_syntax_unsupported` prevents excluded strings, escapes, comments, malformed `var()`, or invalid custom-property names from being approximated. |
 | Excessive custom-property expansion | Independently supported declarations, dependencies, and Source Spans | `css_variable_expansion_limit` bounds recursion and output size rather than returning a truncated computed value. |
 | Path geometry | Strict normalized segment inventory with authored Source Spans, geometry-aware one-to-one correspondence, exact normalized command/parameter/topology differences, continuous parameter deltas, and bounded isolated alpha-boundary and alpha-coverage observations | Transformed-path boundary measurement, continuous-curve boundary distance, complete stroke and paint semantics, and accepted path renderer conformance are not implemented; `unsupported_visual_subject` continues to limit computed/rendered claims. |
-| General affine transform rasterization | Exact authored transform-list and cumulative-matrix differences plus a pinned-renderer measurement | Only integer axis-aligned matrices, translations, scales, and quadrant rotations have accepted browser fixtures; `renderer_transform_raster_unproven` limits other affine Rendered Evidence. |
+| General affine transform rasterization | Exact authored transform-list and cumulative-matrix differences plus a pinned-renderer measurement | Only integer axis-preserving matrices with no off-diagonal terms are accepted under `Milky2018/svg@0.3.0`; `renderer_transform_raster_unproven` limits quadrant rotations, skew, and other affine Rendered Evidence. |
 | Non-integer viewport mapping | Exact viewport declarations, resolved cumulative matrices, typed transform effects, and a pinned-renderer measurement | Root and nested `none`, meet, slice, and integer-axis mappings have exact browser fixtures; `renderer_viewport_raster_unproven` limits other viewport Rendered Evidence. |
 | Invalid, non-positive, or unsupported-unit viewport declaration | Exact authored declaration and Source Span when available | `viewport_semantics_unsupported` prevents a complete coordinate mapping. |
 | Invalid or unsupported basic-shape geometry | Authored facts, exact Source Spans, and any independently resolved geometry | `basic_shape_geometry_unsupported` prevents source, computed, and rendered completeness; valid zero-size geometry is not an error. |
@@ -167,7 +167,7 @@ For unsupported or unresolved content, the engine must:
 
 - `Milky2018/xml@0.4.0` owns XML well-formedness, namespaces, entities, and source locations.
 - Private project code owns SVG-aware Source Semantics and mapping into report facts.
-- `mizchi/svg@0.2.1` supplies the pinned scene and raster implementation behind the engine seam.
+- `Milky2018/svg@0.3.0` supplies the pinned scene and raster implementation behind the engine seam.
 - A future separate `Milky2018/svgdiff-font-runtime` workspace module is selected to own pinned HarfBuzz/FreeType sources and project-owned font records; it is not present in the current dependency graph or engine.
 - The project owns comparison, coverage guards, alignment, magnitudes, regions, conservative Cause Envelopes, report serialization, and HTML projection.
 - Dependency-specific types remain private.

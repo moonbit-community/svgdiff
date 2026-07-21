@@ -1,12 +1,12 @@
 ///|
-priv struct EmbeddedRasterDataUrl {
+pub(all) struct EmbeddedRasterDataUrl {
   media_type : String
   encoding : String
   bytes : Bytes
 }
 
 ///|
-priv enum EmbeddedRasterDataUrlResult {
+pub(all) enum EmbeddedRasterDataUrlResult {
   EmbeddedRasterDataUrlAccepted(EmbeddedRasterDataUrl)
   EmbeddedRasterDataUrlUnsupported(String)
   EmbeddedRasterDataUrlInvalid(String)
@@ -98,7 +98,7 @@ fn decode_base64_data_url_payload(source : String) -> Bytes? {
 }
 
 ///|
-fn parse_embedded_raster_data_url(
+pub fn parse_embedded_raster_data_url(
   authored : String,
 ) -> EmbeddedRasterDataUrlResult {
   let source = authored.trim().to_owned()

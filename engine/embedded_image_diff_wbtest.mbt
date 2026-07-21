@@ -458,7 +458,7 @@ test "embedded raster admission enforces decoded byte limit" {
 test "embedded raster resource boundaries are exact and cumulative" {
   let href = embedded_png_url(embedded_red_png_base64)
   let svg = embedded_image_svg(href)
-  guard parse_embedded_raster_data_url(href)
+  guard @embedded_data_url.parse_embedded_raster_data_url(href)
     is EmbeddedRasterDataUrlAccepted(data) else {
     fail("fixture data URL must decode")
   }

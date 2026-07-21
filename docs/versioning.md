@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-18
+Last verified: 2026-07-20
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -17,7 +17,7 @@ Last verified: 2026-07-18
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
 | Impact Assessment | `event_rendered_pareto/v1` | emitted `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Candidate events, measurement inputs, dominance, ties, incomparability, missing evidence, frontier representation, and witnesses. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/25` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/26` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 

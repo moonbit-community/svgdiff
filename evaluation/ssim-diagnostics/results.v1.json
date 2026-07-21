@@ -1,6 +1,6 @@
 {
   "accepted_role": "qa_only_secondary_structural_observation",
-  "adapter_implementation_sha256": "88b005bb69fbdc3df469fd583832c81f039aae804ca78e9afd059951738641ee",
+  "adapter_implementation_sha256": "ba9720d3397b72d6e9de1b351466da22a8813696c13d6794eb8fda56c2794d0e",
   "annotation_review_status": "initial_single_pass",
   "canonical_report_evidence": false,
   "cases": [
@@ -22,16 +22,16 @@
       "ssim_scale_absolute_delta": 0
     },
     {
-      "canonical_dissimilarity": 0.385220290551763,
-      "canonical_exact_rgba8": false,
-      "canonical_ssim": 0.614779709448237,
+      "canonical_dissimilarity": 0.0,
+      "canonical_exact_rgba8": true,
+      "canonical_ssim": 1,
       "case_id": "subtle-geometry-shift",
-      "enlarged_dissimilarity": 0.02492261013717023,
-      "enlarged_exact_rgba8": false,
-      "enlarged_ssim": 0.9750773898628298,
+      "enlarged_dissimilarity": 0.0,
+      "enlarged_exact_rgba8": true,
+      "enlarged_ssim": 1,
       "human_tier": "low",
-      "ms_ssim": 0.9921736821793399,
-      "ms_ssim_dissimilarity": 0.007826317820660122,
+      "ms_ssim": 1,
+      "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "partial",
       "production_renderer_capability_gaps": [
@@ -44,7 +44,7 @@
         }
       ],
       "source_pair_sha256": "c2a8f812cdbcb8b4648456dd79a9ccb4f934da29dfcad5aeaf2e45ac8ed46670",
-      "ssim_scale_absolute_delta": 0.36029768041459276
+      "ssim_scale_absolute_delta": 0
     },
     {
       "canonical_dissimilarity": 0.33079209819711575,
@@ -81,16 +81,16 @@
       "ssim_scale_absolute_delta": 0.8822864472627288
     },
     {
-      "canonical_dissimilarity": 0.00026620083720763077,
+      "canonical_dissimilarity": 0.00021762959481463895,
       "canonical_exact_rgba8": false,
-      "canonical_ssim": 0.9997337991627924,
+      "canonical_ssim": 0.9997823704051854,
       "case_id": "resource-gradient-stop-change",
-      "enlarged_dissimilarity": 0.00036973866618972284,
+      "enlarged_dissimilarity": 0.0003392998117751622,
       "enlarged_exact_rgba8": false,
-      "enlarged_ssim": 0.9996302613338103,
+      "enlarged_ssim": 0.9996607001882248,
       "human_tier": "high",
-      "ms_ssim": 0.9999033958415103,
-      "ms_ssim_dissimilarity": 9.660415848966597e-05,
+      "ms_ssim": 0.999928923847808,
+      "ms_ssim_dissimilarity": 7.107615219204e-05,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "partial",
       "production_renderer_capability_gaps": [
@@ -103,7 +103,7 @@
         }
       ],
       "source_pair_sha256": "b1c2e7e3b59a87fcc5c510a7c4d54dc2aaa6404dcaf8190fe0404a79d5e960ba",
-      "ssim_scale_absolute_delta": 0.00010353782898209207
+      "ssim_scale_absolute_delta": 0.00012167021696052327
     },
     {
       "canonical_dissimilarity": 0.0,
@@ -123,9 +123,9 @@
       "ssim_scale_absolute_delta": 0
     },
     {
-      "canonical_dissimilarity": 0.8864992288419771,
+      "canonical_dissimilarity": 0.9654963165371789,
       "canonical_exact_rgba8": false,
-      "canonical_ssim": 0.1135007711580229,
+      "canonical_ssim": 0.034503683462821025,
       "case_id": "unsupported-path-change",
       "enlarged_dissimilarity": 0.3425338528956011,
       "enlarged_exact_rgba8": false,
@@ -152,7 +152,7 @@
         }
       ],
       "source_pair_sha256": "3114be8b05064d6b532a946d327b62e02728728a6463bcf2ae3e52f6d8caa887",
-      "ssim_scale_absolute_delta": 0.543965375946376
+      "ssim_scale_absolute_delta": 0.6229624636415778
     },
     {
       "canonical_dissimilarity": 0.9792476463151139,
@@ -304,9 +304,9 @@
     "ms_ssim_product_can_be_unavailable_for_non_positive_components",
     "human_importance_order_contains_inversions_and_ties"
   ],
-  "production_renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
-  "raster_source_id": "direct_mizchi_svg@0.2.1",
-  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "production_renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0",
+  "raster_source_id": "direct_Milky2018_svg@0.3.0",
+  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
   "schema_version": "svgdiff-ssim-diagnostic-results/1",
   "ssim_profile": {
     "canonical_output_scale": 1,
@@ -320,27 +320,9 @@
   },
   "summary": {
     "canonical_ssim_ordering": {
-      "concordant_pair_count": 39,
+      "concordant_pair_count": 36,
       "different_tier_pair_count": 59,
       "inversion_examples": [
-        {
-          "higher_tier_case_id": "salient-fill-change",
-          "higher_tier_score": 0.33079209819711575,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.385220290551763
-        },
-        {
-          "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00026620083720763077,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.385220290551763
-        },
-        {
-          "higher_tier_case_id": "embedded-raster-change",
-          "higher_tier_score": 0.0,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.385220290551763
-        },
         {
           "higher_tier_case_id": "salient-fill-change",
           "higher_tier_score": 0.33079209819711575,
@@ -351,7 +333,7 @@
           "higher_tier_case_id": "salient-fill-change",
           "higher_tier_score": 0.33079209819711575,
           "lower_tier_case_id": "unsupported-path-change",
-          "lower_tier_score": 0.8864992288419771
+          "lower_tier_score": 0.9654963165371789
         },
         {
           "higher_tier_case_id": "salient-fill-change",
@@ -367,39 +349,39 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00026620083720763077,
+          "higher_tier_score": 0.00021762959481463895,
           "lower_tier_case_id": "structural-rect-insertion",
           "lower_tier_score": 0.9923608136945772
-        }
-      ],
-      "inverted_pair_count": 15,
-      "measured_case_count": 13,
-      "pair_accuracy": 0.6610169491525424,
-      "tied_pair_count": 5
-    },
-    "case_count": 13,
-    "enlarged_ssim_ordering": {
-      "concordant_pair_count": 42,
-      "different_tier_pair_count": 59,
-      "inversion_examples": [
-        {
-          "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00036973866618972284,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.02492261013717023
-        },
-        {
-          "higher_tier_case_id": "group-transform-change",
-          "higher_tier_score": 0.0013121590822513518,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.02492261013717023
         },
         {
           "higher_tier_case_id": "embedded-raster-change",
           "higher_tier_score": 0.0,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.02492261013717023
+          "lower_tier_case_id": "structural-rect-insertion",
+          "lower_tier_score": 0.9923608136945772
         },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00021762959481463895,
+          "lower_tier_case_id": "unsupported-path-change",
+          "lower_tier_score": 0.9654963165371789
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.00021762959481463895,
+          "lower_tier_case_id": "group-transform-change",
+          "lower_tier_score": 0.9792476463151139
+        }
+      ],
+      "inverted_pair_count": 12,
+      "measured_case_count": 13,
+      "pair_accuracy": 0.6101694915254238,
+      "tied_pair_count": 11
+    },
+    "case_count": 13,
+    "enlarged_ssim_ordering": {
+      "concordant_pair_count": 39,
+      "different_tier_pair_count": 59,
+      "inversion_examples": [
         {
           "higher_tier_case_id": "salient-fill-change",
           "higher_tier_score": 0.1978854394403292,
@@ -408,7 +390,7 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00036973866618972284,
+          "higher_tier_score": 0.0003392998117751622,
           "lower_tier_case_id": "structural-rect-insertion",
           "lower_tier_score": 0.11007436643184842
         },
@@ -420,23 +402,42 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00036973866618972284,
+          "higher_tier_score": 0.0003392998117751622,
           "lower_tier_case_id": "unsupported-path-change",
           "lower_tier_score": 0.3425338528956011
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00036973866618972284,
+          "higher_tier_score": 0.0003392998117751622,
+          "lower_tier_case_id": "group-transform-change",
+          "lower_tier_score": 0.0013121590822513518
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 0.0003392998117751622,
+          "lower_tier_case_id": "subject-deletion",
+          "lower_tier_score": 0.12939969744378021
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "unsupported-path-change",
+          "lower_tier_score": 0.3425338528956011
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
           "lower_tier_case_id": "group-transform-change",
           "lower_tier_score": 0.0013121590822513518
         }
       ],
-      "inverted_pair_count": 12,
+      "inverted_pair_count": 9,
       "measured_case_count": 13,
-      "pair_accuracy": 0.711864406779661,
-      "tied_pair_count": 5
+      "pair_accuracy": 0.6610169491525424,
+      "tied_pair_count": 11
     },
     "human_non_none_false_exact_case_ids": [
+      "subtle-geometry-shift",
       "embedded-raster-change"
     ],
     "human_tier_case_counts": {
@@ -446,27 +447,9 @@
       "none": 5
     },
     "ms_ssim_ordering": {
-      "concordant_pair_count": 34,
+      "concordant_pair_count": 31,
       "different_tier_pair_count": 50,
       "inversion_examples": [
-        {
-          "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 9.660415848966597e-05,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.007826317820660122
-        },
-        {
-          "higher_tier_case_id": "group-transform-change",
-          "higher_tier_score": 0.0003124243072438748,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.007826317820660122
-        },
-        {
-          "higher_tier_case_id": "embedded-raster-change",
-          "higher_tier_score": 0.0,
-          "lower_tier_case_id": "subtle-geometry-shift",
-          "lower_tier_score": 0.007826317820660122
-        },
         {
           "higher_tier_case_id": "salient-fill-change",
           "higher_tier_score": 0.06086847967685227,
@@ -481,7 +464,7 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 9.660415848966597e-05,
+          "higher_tier_score": 7.107615219204e-05,
           "lower_tier_case_id": "structural-rect-insertion",
           "lower_tier_score": 0.6713375866864739
         },
@@ -493,20 +476,38 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 9.660415848966597e-05,
+          "higher_tier_score": 7.107615219204e-05,
           "lower_tier_case_id": "group-transform-change",
           "lower_tier_score": 0.0003124243072438748
+        },
+        {
+          "higher_tier_case_id": "resource-gradient-stop-change",
+          "higher_tier_score": 7.107615219204e-05,
+          "lower_tier_case_id": "subject-deletion",
+          "lower_tier_score": 0.6921034315157449
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "group-transform-change",
+          "lower_tier_score": 0.0003124243072438748
+        },
+        {
+          "higher_tier_case_id": "embedded-raster-change",
+          "higher_tier_score": 0.0,
+          "lower_tier_case_id": "subject-deletion",
+          "lower_tier_score": 0.6921034315157449
         }
       ],
-      "inverted_pair_count": 11,
+      "inverted_pair_count": 8,
       "measured_case_count": 12,
-      "pair_accuracy": 0.68,
-      "tied_pair_count": 5
+      "pair_accuracy": 0.62,
+      "tied_pair_count": 11
     },
     "ms_ssim_unavailable_case_ids": [
       "unsupported-path-change"
     ],
     "ssim_scale_absolute_delta_maximum": 0.9779354872328625,
-    "ssim_scale_absolute_delta_mean": 0.289427532465898
+    "ssim_scale_absolute_delta_mean": 0.2677904201327124
   }
 }

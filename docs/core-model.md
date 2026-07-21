@@ -2,7 +2,7 @@
 
 Status: current model for Structured Report schema `1.45`
 
-Last verified: 2026-07-17
+Last verified: 2026-07-20
 
 This document defines the concepts and invariants implemented by the current comparison engine. The checked-in [JSON Schema](../schema/svgdiff-report.schema.json) and public MoonBit report types are authoritative for serialized field names. The [current v1 scope](v1-scope.md) defines which SVG features may receive complete analysis; the [roadmap](../roadmap.md) contains future extensions.
 
@@ -52,8 +52,8 @@ Schema `1.45` records:
 - `comparison_dpr`, fixed to `1.0` by the root v1 seam;
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
-- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/25`.
+- `renderer_id`, currently fixed by the producer to `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/26`.
 - `perceptual_background`, either null or one explicit normalized opaque sRGB8 color for display-dependent measurements.
 - `flip_viewing_conditions`, either null or one explicit finite `pixels_per_degree` value in the supported `[1, 4096]` range.
 - `flip_error_threshold`, either null or one explicit finite FLIP reporting threshold in `[0, 1]`.

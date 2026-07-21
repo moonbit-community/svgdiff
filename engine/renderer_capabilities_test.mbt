@@ -22,6 +22,10 @@ test "current renderer diagnostics expose stable capability gaps" {
       "raster.use_transform_placement", "guarded",
     ),
     (
+      "<svg width='16' height='16'><defs><g id='shape' fill='currentColor'><rect width='3' height='2'/></g></defs><use id='placed' href='#shape' color='red'/></svg>",
+      "raster.use_inherited_paint", "guarded",
+    ),
+    (
       "<svg width='16' height='16' viewBox='0 0 10 10'><rect id='box' width='8' height='8' fill='red'/></svg>",
       "raster.viewport_mapping", "guarded",
     ),

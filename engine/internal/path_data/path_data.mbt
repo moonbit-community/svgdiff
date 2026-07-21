@@ -1,5 +1,5 @@
 ///|
-priv enum NormalizedPathSegment {
+pub(all) enum NormalizedPathSegment {
   MoveTo(Double, Double)
   LineTo(Double, Double)
   CubicTo(Double, Double, Double, Double, Double, Double)
@@ -9,23 +9,23 @@ priv enum NormalizedPathSegment {
 }
 
 ///|
-priv struct PathSegmentEvidence {
+pub(all) struct PathSegmentEvidence {
   authored_command : String
   explicit_command : Bool
   authored_value : String
-  source_span : ReportSourceSpan
+  source_span : PathSourceSpan
   normalized : NormalizedPathSegment
 }
 
 ///|
-priv struct NormalizedPathParameter {
+pub(all) struct NormalizedPathParameter {
   name : String
   value : String
   numeric_value : Double?
 }
 
 ///|
-priv enum PathDataParse {
+pub(all) enum PathDataParse {
   Valid(Array[PathSegmentEvidence])
   Invalid
 }
@@ -46,6 +46,22 @@ priv struct PathDataParser {
   mut quadratic_x : Double
   mut quadratic_y : Double
   mut previous_kind : String
+}
+
+///|
+/// Authored byte offsets retained by the path sub-syntax parser.
+pub(all) struct PathSourceSpan {
+  start_offset : Int
+  end_offset : Int
+}
+
+///|
+fn source_range_slice(
+  input : String,
+  start_offset : Int,
+  end_offset : Int,
+) -> String {
+  input.view(start_offset~, end_offset~).to_owned()
 }
 
 ///|
@@ -493,7 +509,7 @@ fn parse_mapped_path_data(
 }
 
 ///|
-fn parse_path_data(data : String, base_offset : Int) -> PathDataParse {
+pub fn parse_path_data(data : String, base_offset : Int) -> PathDataParse {
   let boundaries : Array[Int] = []
   for offset in 0..<=data.length() {
     boundaries.push(offset)
@@ -502,7 +518,7 @@ fn parse_path_data(data : String, base_offset : Int) -> PathDataParse {
 }
 
 ///|
-fn parse_path_attribute_data(
+pub fn parse_path_attribute_data(
   raw_data : String,
   base_offset : Int,
 ) -> PathDataParse {
@@ -552,7 +568,9 @@ fn parse_path_attribute_data(
 }
 
 ///|
-fn normalized_path_segment_signature(segment : NormalizedPathSegment) -> String {
+pub fn normalized_path_segment_signature(
+  segment : NormalizedPathSegment,
+) -> String {
   match segment {
     MoveTo(x, y) => "M \{x} \{y}"
     LineTo(x, y) => "L \{x} \{y}"
@@ -565,7 +583,7 @@ fn normalized_path_segment_signature(segment : NormalizedPathSegment) -> String 
 }
 
 ///|
-fn normalized_path_segment_kind(segment : NormalizedPathSegment) -> String {
+pub fn normalized_path_segment_kind(segment : NormalizedPathSegment) -> String {
   match segment {
     MoveTo(_, _) => "move"
     LineTo(_, _) => "line"
@@ -590,7 +608,7 @@ fn flag_path_parameter(name : String, value : Bool) -> NormalizedPathParameter {
 }
 
 ///|
-fn normalized_path_segment_parameters(
+pub fn normalized_path_segment_parameters(
   segment : NormalizedPathSegment,
 ) -> Array[NormalizedPathParameter] {
   match segment {
@@ -627,7 +645,7 @@ fn normalized_path_segment_parameters(
 }
 
 ///|
-fn path_segments_signature(segments : Array[PathSegmentEvidence]) -> String {
+pub fn path_segments_signature(segments : Array[PathSegmentEvidence]) -> String {
   let mut signature = ""
   for segment in segments {
     if segment.authored_command == "" ||

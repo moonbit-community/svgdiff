@@ -218,10 +218,16 @@ fn path_control_hull_bounds(subject : SourceSubject) -> CssBounds? {
       ArcTo(rx, ry, rotation, large, sweep, x, y) => {
         if current_x != x || current_y != y {
           match
-            svg_arc_bounds(
+            @arc_geometry.svg_arc_bounds(
               current_x, current_y, rx, ry, rotation, large, sweep, x, y,
             ) {
-            Some(bounds) => include_bounds(bounds)
+            Some(bounds) =>
+              include_bounds({
+                x: bounds.x,
+                y: bounds.y,
+                width: bounds.width,
+                height: bounds.height,
+              })
             None => include_point(x, y)
           }
           drawable = true

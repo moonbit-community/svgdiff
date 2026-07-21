@@ -125,6 +125,41 @@ test "integer axis transforms are complete while general affine raster stays gua
 }
 
 ///|
+test "skew functions render identically to their equivalent matrices" {
+  let cases = [
+    ("skewX(0)", "skewX(45)", "matrix(1 0 0 1 0 0)", "matrix(1 0 1 1 0 0)"),
+    ("skewY(0)", "skewY(45)", "matrix(1 0 0 1 0 0)", "matrix(1 1 0 1 0 0)"),
+  ]
+  let profiles = [
+    ComparisonProfile::v1_default(),
+    {
+      ..ComparisonProfile::v1_default(),
+      viewport_width: 32,
+      viewport_height: 24,
+    },
+  ]
+  for profile in profiles {
+    for case in cases {
+      let (before_function, after_function, before_matrix, after_matrix) = case
+      let function_report = compare(
+        "<svg width='16' height='16'><rect id='box' x='2' y='2' width='4' height='6' fill='red' transform='\{before_function}'/></svg>",
+        "<svg width='16' height='16'><rect id='box' x='2' y='2' width='4' height='6' fill='red' transform='\{after_function}'/></svg>",
+        profile,
+      )
+      let matrix_report = compare(
+        "<svg width='16' height='16'><rect id='box' x='2' y='2' width='4' height='6' fill='red' transform='\{before_matrix}'/></svg>",
+        "<svg width='16' height='16'><rect id='box' x='2' y='2' width='4' height='6' fill='red' transform='\{after_matrix}'/></svg>",
+        profile,
+      )
+      let function_pixels = function_report.events.last().unwrap().rendered_outcome.magnitude.unwrap().changed_pixels
+      let matrix_pixels = matrix_report.events.last().unwrap().rendered_outcome.magnitude.unwrap().changed_pixels
+      assert_true(matrix_pixels > 0)
+      assert_eq(function_pixels, matrix_pixels)
+    }
+  }
+}
+
+///|
 test "ancestor affine guard constrains each affected transform domain row" {
   let before = "<svg><g id='layer' transform='skewX(10)'><rect id='box' width='4' height='4'/></g></svg>"
   let after = "<svg><g id='layer' transform='skewX(20)'><rect id='box' width='4' height='4'/></g></svg>"

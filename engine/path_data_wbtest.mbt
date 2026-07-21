@@ -1,7 +1,7 @@
 ///|
 test "path data normalizes repeated relative and shorthand segments" {
   let source = "M1 2 3 4h5v-2c1 2 3 4 5 6s7 8 9 10q1 2 3 4t5 6a7 8 45 0 1 9 10z"
-  guard parse_path_data(source, 100) is Valid(segments) else {
+  guard @path_data.parse_path_data(source, 100) is Valid(segments) else {
     fail("complete path command inventory must parse")
   }
   assert_eq(segments.length(), 10)
@@ -28,13 +28,13 @@ test "path data accepts every absolute command family" {
     "M0 0T1 1", "M0 0A1 2 0 0 1 3 4", "M0 0Z",
   ]
   for source in valid {
-    assert_true(parse_path_data(source, 0) is Valid(_))
+    assert_true(@path_data.parse_path_data(source, 0) is Valid(_))
   }
 }
 
 ///|
 test "path segment evidence retains authored commands slices and spans" {
-  guard parse_path_data("M1 2 3 4", 20) is Valid(segments) else {
+  guard @path_data.parse_path_data("M1 2 3 4", 20) is Valid(segments) else {
     fail("repeated moveto coordinates must parse")
   }
   assert_eq(segments.length(), 2)
@@ -66,7 +66,7 @@ test "path segment spans map decoded XML entities back to authored source" {
 
 ///|
 test "path data accepts compact numbers flags and multiple subpaths" {
-  guard parse_path_data("m.5.5 1e1-2e0z m1 1A2 3 45 013 4", 0)
+  guard @path_data.parse_path_data("m.5.5 1e1-2e0z m1 1A2 3 45 013 4", 0)
     is Valid(segments) else {
     fail("compact valid path syntax must parse")
   }
@@ -82,13 +82,13 @@ test "path data accepts compact numbers flags and multiple subpaths" {
 
 ///|
 test "path data distinguishes empty from invalid and rejects partial prefixes" {
-  assert_true(parse_path_data("", 0) is Valid([]))
+  assert_true(@path_data.parse_path_data("", 0) is Valid([]))
   let invalid = [
     "L0 0", "M", "M0", "M,0 0", "M0 0,", "M0 0 X", "M0 0 L1e 2", "M0 0 L1,,2", "M0 0 A-1 2 0 0 0 3 4",
     "M0 0 A1 2 0 2 0 3 4", "M1e9999 0",
   ]
   for source in invalid {
-    assert_true(parse_path_data(source, 0) is Invalid)
+    assert_true(@path_data.parse_path_data(source, 0) is Invalid)
   }
 }
 

@@ -144,7 +144,7 @@ fn decode_embedded_raster(
     source[:5].to_lower() == "data:" {
     return EmbeddedRasterLimitExceeded("embedded_raster_data_uri_bytes")
   }
-  match parse_embedded_raster_data_url(source) {
+  match @embedded_data_url.parse_embedded_raster_data_url(source) {
     NotEmbeddedRasterDataUrl =>
       match resource_bundle_entry(bundle, source) {
         None => EmbeddedRasterBundleMissing

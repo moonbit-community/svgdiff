@@ -82,7 +82,7 @@ fn expand_flip_bounds(
 fn displayed_linear_flip_color(
   pixel : @svg.Color,
   background : PerceptualBackground,
-) -> FlipLinearRgb {
+) -> @ldr_flip.FlipLinearRgb {
   let alpha = pixel.a.to_double() / 255.0
   {
     red: composite_linear_srgb_channel(pixel.r, alpha, background.red),
@@ -95,7 +95,7 @@ fn displayed_linear_flip_color(
 fn encode_flip_u16_base64(values : Array[Double]) -> String {
   let encoded = FixedArray::make(values.length() * 2, b'\x00')
   for index, value in values {
-    let quantized = quantize_flip_u16(value)
+    let quantized = @ldr_flip.quantize_flip_u16(value)
     encoded[index * 2] = ((quantized >> 8) & 0xff).to_byte()
     encoded[index * 2 + 1] = (quantized & 0xff).to_byte()
   }
@@ -215,7 +215,7 @@ fn event_local_perceptual_flip_evidence(
     Some(bounds) => bounds
   }
   let pixels_per_degree = viewing.pixels_per_degree
-  let response_radius = flip_response_radius(pixels_per_degree)
+  let response_radius = @ldr_flip.flip_response_radius(pixels_per_degree)
   let output_bounds = expand_flip_bounds(
     selected,
     response_radius,
@@ -230,8 +230,12 @@ fn event_local_perceptual_flip_evidence(
   )
   let output_pixels = output_bounds.pixel_width * output_bounds.pixel_height
   let context_pixels = context_bounds.pixel_width * context_bounds.pixel_height
-  let spatial_width = 2 * flip_spatial_filter_radius(pixels_per_degree) + 1
-  let feature_width = 2 * flip_feature_filter_radius(pixels_per_degree) + 1
+  let spatial_width = 2 *
+    @ldr_flip.flip_spatial_filter_radius(pixels_per_degree) +
+    1
+  let feature_width = 2 *
+    @ldr_flip.flip_feature_filter_radius(pixels_per_degree) +
+    1
   let samples_per_pixel = 4 * (spatial_width + feature_width)
   if output_pixels > remaining_output_pixels ||
     (
@@ -246,8 +250,8 @@ fn event_local_perceptual_flip_evidence(
       convolution_samples: 0,
     }
   }
-  let reference : Array[FlipLinearRgb] = []
-  let candidate : Array[FlipLinearRgb] = []
+  let reference : Array[@ldr_flip.FlipLinearRgb] = []
+  let candidate : Array[@ldr_flip.FlipLinearRgb] = []
   for local_y in 0..<context_bounds.pixel_height {
     let y = context_bounds.pixel_y + local_y
     for local_x in 0..<context_bounds.pixel_width {
@@ -268,7 +272,7 @@ fn event_local_perceptual_flip_evidence(
       )
     }
   }
-  let error_map = ldr_flip_error_map(
+  let error_map = @ldr_flip.ldr_flip_error_map(
     reference,
     candidate,
     context_bounds.pixel_width,

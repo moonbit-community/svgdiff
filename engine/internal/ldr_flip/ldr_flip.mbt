@@ -6,7 +6,7 @@
 /// ship the reference implementation.
 ///
 /// Linear-light RGB sample used by the private LDR-FLIP implementation.
-priv struct FlipLinearRgb {
+pub(all) struct FlipLinearRgb {
   red : Double
   green : Double
   blue : Double
@@ -55,7 +55,7 @@ priv struct FlipFeatureIntermediate {
 }
 
 ///|
-priv struct FlipErrorMap {
+pub(all) struct FlipErrorMap {
   values : Array[Double]
 }
 
@@ -174,19 +174,19 @@ fn flip_gaussian_sqrt(x_squared : Double, a : Double, b : Double) -> Double {
 }
 
 ///|
-fn flip_spatial_filter_radius(pixels_per_degree : Double) -> Int {
+pub fn flip_spatial_filter_radius(pixels_per_degree : Double) -> Int {
   (3.0 * (0.04 / (2.0 * @math.PI * @math.PI)).sqrt() * pixels_per_degree)
   .ceil()
   .to_int()
 }
 
 ///|
-fn flip_feature_filter_radius(pixels_per_degree : Double) -> Int {
+pub fn flip_feature_filter_radius(pixels_per_degree : Double) -> Int {
   (3.0 * 0.5 * 0.082 * pixels_per_degree).ceil().to_int()
 }
 
 ///|
-fn flip_response_radius(pixels_per_degree : Double) -> Int {
+pub fn flip_response_radius(pixels_per_degree : Double) -> Int {
   flip_spatial_filter_radius(pixels_per_degree) +
   flip_feature_filter_radius(pixels_per_degree)
 }
@@ -479,7 +479,7 @@ fn flip_feature_magnitude(
 }
 
 ///|
-fn ldr_flip_error_map(
+pub fn ldr_flip_error_map(
   reference : Array[FlipLinearRgb],
   candidate : Array[FlipLinearRgb],
   width : Int,
@@ -525,6 +525,6 @@ fn ldr_flip_error_map(
 }
 
 ///|
-fn quantize_flip_u16(value : Double) -> Int {
+pub fn quantize_flip_u16(value : Double) -> Int {
   (flip_clamp_unit(value) * 65535.0).round().to_int()
 }

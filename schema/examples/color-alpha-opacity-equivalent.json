@@ -162,8 +162,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
     "perceptual_background": null,
     "flip_viewing_conditions": null,
     "flip_error_threshold": null
@@ -375,10 +375,10 @@
         "painted_boundary_displacement": null,
         "painted_coverage_difference": {
           "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 17.50588235294113,
-          "after_coverage_css_px2": 17.50588235294113,
+          "before_coverage_css_px2": 18.070588235294068,
+          "after_coverage_css_px2": 18.070588235294068,
           "absolute_difference_css_px2": 0,
-          "union_coverage_css_px2": 17.50588235294113,
+          "union_coverage_css_px2": 18.070588235294068,
           "fraction": 0
         },
         "geometry_viewport_fraction": null,

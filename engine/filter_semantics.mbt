@@ -1253,8 +1253,9 @@ fn filter_render_leaf(
   width : Int,
   height : Int,
 ) -> @svg.Image {
+  let unfiltered_leaf = { ..leaf, filters: [], filter_graph_id: None }
   let source = group_compositor_render_leaf(
-    document, ancestors, leaf, width, height,
+    document, ancestors, unfiltered_leaf, width, height,
   )
   match filter_host_for_node(hosts, leaf) {
     Some(host) => filter_evaluate_host(source, host)

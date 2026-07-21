@@ -106,14 +106,57 @@ pw --raw run-code \
       }));
     }
     await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
+    const baselineUi = {
+      status: await page.locator('#run-status').textContent(),
+      effectiveValues: await page.locator('.effective-value').allTextContents(),
+      overlays: await page.locator('.region').count(),
+      overlayLabels: await page.locator('.region-label').count(),
+      effectiveValueOptions: await page.locator('#relation-filter option').allTextContents(),
+    };
+    const affineExpectations = [
+      ['translation', ['geometry.transform.translation']],
+      ['rotation', ['geometry.transform.rotation']],
+      ['scale', ['geometry.transform.scale']],
+      ['skew', ['geometry.transform.skew']],
+      ['combined-affine', [
+        'geometry.transform.translation',
+        'geometry.transform.rotation',
+        'geometry.transform.scale',
+        'geometry.transform.skew',
+      ]],
+    ];
+    const affineExamples = [];
+    for (const [id, expectedDomains] of affineExpectations) {
+      await page.locator('#example-select').selectOption(id);
+      const transforms = await page.evaluate(() => {
+        const parse = source => new DOMParser().parseFromString(source, 'image/svg+xml');
+        return [
+          parse(document.querySelector('#before-source').value).getElementById('target').getAttribute('transform'),
+          parse(document.querySelector('#after-source').value).getElementById('target').getAttribute('transform'),
+        ];
+      });
+      await page.getByRole('button', { name: 'Compare SVGs' }).click();
+      await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
+      await page.locator('#result-section').waitFor({ state: 'visible' });
+      const affineReport = JSON.parse(await page.locator('#report-data').inputValue());
+      affineExamples.push({
+        id,
+        expectedDomains,
+        transforms,
+        analysisStatus: affineReport.analysis_status,
+        domains: affineReport.atomic_differences.map(difference => difference.domain),
+        unexpectedScale: id === 'rotation' && affineReport.atomic_differences.some(difference => difference.domain === 'geometry.transform.scale'),
+        changedScores: await page.locator('.score-card .score-value').allTextContents(),
+      });
+    }
     return {
       title: await page.title(),
-      exampleLabel: await page.locator('.example-label').textContent(),
+      exampleOptions: await page.locator('#example-select option').allTextContents(),
       exampleSelectCount: await page.locator('#example-select').count(),
       noticesLinkCount: await page.getByRole('link', { name: 'Example notices' }).count(),
       checkpointBudget: Number(await page.locator('#max-checkpoints').inputValue()),
       sourceFacts,
-      status: await page.locator('#run-status').textContent(),
+      status: baselineUi.status,
       analysisStatus: report.analysis_status,
       schemaVersion: report.schema_version,
       atomicDifferences: report.atomic_differences.length,
@@ -121,9 +164,9 @@ pw --raw run-code \
       scores,
       previewSvgCounts,
       previewRootsFillViewport,
-      effectiveValues: await page.locator('.effective-value').allTextContents(),
-      overlays: await page.locator('.region').count(),
-      overlayLabels: await page.locator('.region-label').count(),
+      effectiveValues: baselineUi.effectiveValues,
+      overlays: baselineUi.overlays,
+      overlayLabels: baselineUi.overlayLabels,
       rawReportAvailable: reportText.length > 100,
       wasmBytes: Number(await page.locator('#report-root').getAttribute('data-compact-report-bytes')),
       errors: await page.evaluate(() => window.__svgdiffTestErrors),
@@ -131,7 +174,8 @@ pw --raw run-code \
         const url = new URL(value);
         return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== '127.0.0.1';
       })),
-      effectiveValueOptions: await page.locator('#relation-filter option').allTextContents(),
+      effectiveValueOptions: baselineUi.effectiveValueOptions,
+      affineExamples,
     };
   }" >"$tmp/browser.json" 2>>"$log"
 
@@ -139,8 +183,15 @@ jq -e '
   .errors == [] and
   .foreignRequests == [] and
   .title == "SVGDiff — visual-semantic SVG comparison" and
-  (.exampleLabel | contains("Local color + size changes")) and
-  .exampleSelectCount == 0 and
+  .exampleOptions == [
+    "Local color + size changes",
+    "Affine · translation",
+    "Affine · rotation around a pivot",
+    "Affine · non-uniform scale",
+    "Affine · skew",
+    "Affine · combined decomposition"
+  ] and
+  .exampleSelectCount == 1 and
   .noticesLinkCount == 0 and
   .checkpointBudget == 1000000 and
   .sourceFacts.beforeColor == {"x":"24","y":"44","width":"72","height":"72","fill":"#2563eb"} and
@@ -162,7 +213,15 @@ jq -e '
   .overlayLabels > 0 and
   .overlayLabels <= .overlays and
   .rawReportAvailable == true and
-  .wasmBytes > 100
+  .wasmBytes > 100 and
+  (.affineExamples | length) == 5 and
+  all(.affineExamples[];
+    .transforms[0] != .transforms[1] and
+    (.analysisStatus == "complete" or .analysisStatus == "partial") and
+    ((.expectedDomains - .domains) | length == 0) and
+    (.unexpectedScale | not) and
+    all(.changedScores[]; endswith("%") and . != "0.00%")
+  )
 ' "$tmp/browser.json" >/dev/null
 
-printf 'GitHub Pages browser flow: local color-and-size example, WASM report, Inspector, JSON: ok\n'
+printf 'GitHub Pages browser flow: base and affine examples, WASM reports, Inspector, JSON: ok\n'

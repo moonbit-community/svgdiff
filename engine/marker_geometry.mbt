@@ -810,7 +810,7 @@ fn marker_arc_endpoint_angles(
       3.141592653589793
     return Some((angle, angle))
   }
-  svg_arc_center_parameters(
+  @arc_geometry.svg_arc_center_parameters(
     start_x, start_y, rx, ry, rotation, large, sweep, end_x, end_y,
   ).map(arc => {
     (

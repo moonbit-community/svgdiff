@@ -95,13 +95,13 @@ jq -e \
   .product.module_version == $version and
   .product.report_schema_version == "1.45" and
   .product.agent_projection_version == "svgdiff-agent-projection/1" and
-  .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/25" and
+  .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/26" and
   .product.ordering_policy_id == "v2_domain_lexicographic" and
   .product.impact_policy_id == "event_rendered_pareto/v1" and
-  (.resolved_dependencies | length) == 9
+  (.resolved_dependencies | length) == 10
 ' "$bundle/provenance.json" >/dev/null
 
-test "$(jq '.dependencies | length' release/dependencies.v1.json)" = 9
+test "$(jq '.dependencies | length' release/dependencies.v1.json)" = 10
 moon tree >"$tmp/tree.txt"
 jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
   while IFS= read -r dependency; do

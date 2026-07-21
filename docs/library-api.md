@@ -2,7 +2,7 @@
 
 Status: current public interface for module version `0.6.0`
 
-Last verified: 2026-07-18
+Last verified: 2026-07-20
 
 Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.45` comparison conditions.
 
@@ -93,7 +93,7 @@ Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as t
 
 The root API preserves viewport width, viewport height, `perceptual_background`, `flip_viewing_conditions`, and `flip_error_threshold`, and canonicalizes every other profile field. Construct Viewing Conditions with `FlipViewingConditions::from_pixels_per_degree`; only finite values in `[1, 4096]` are accepted. Construct the optional reporting threshold with `FlipErrorThreshold::from_value`; only finite values in `[0, 1]` are accepted. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.45`. The optional background enables event-local DeltaEOK, background plus Viewing Conditions enable event-local LDR-FLIP and its unquantized pooled statistics, and the threshold enables only strict-above area, without affecting transparent-canvas raw rendering.
 
-The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/25"`. This ID versions accepted renderer claims and guards independently from both report schema `1.45` and the production `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1` renderer identity.
+The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/26"`. This ID versions accepted renderer claims and guards independently from both report schema `1.45` and the production `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0` renderer identity.
 
 ## Generated documentation
 

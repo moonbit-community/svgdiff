@@ -1,5 +1,5 @@
 ///|
-priv struct SvgArcCenterParameters {
+pub(all) struct SvgArcCenterParameters {
   center_x : Double
   center_y : Double
   radius_x : Double
@@ -11,13 +11,22 @@ priv struct SvgArcCenterParameters {
 }
 
 ///|
+/// Axis-aligned bounds of one non-degenerate SVG elliptical arc.
+pub(all) struct ArcBounds {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+}
+
+///|
 fn normalized_positive_angle(angle : Double) -> Double {
   let turn = 2.0 * 3.141592653589793
   angle - turn * (angle / turn).floor()
 }
 
 ///|
-fn svg_arc_center_parameters(
+pub fn svg_arc_center_parameters(
   start_x : Double,
   start_y : Double,
   raw_rx : Double,
@@ -96,7 +105,7 @@ fn svg_arc_center_parameters(
 }
 
 ///|
-fn SvgArcCenterParameters::point(
+pub fn SvgArcCenterParameters::point(
   self : SvgArcCenterParameters,
   theta : Double,
 ) -> (Double, Double) {
@@ -128,7 +137,7 @@ fn SvgArcCenterParameters::contains_angle(
 }
 
 ///|
-fn SvgArcCenterParameters::tangent_angle_degrees(
+pub fn SvgArcCenterParameters::tangent_angle_degrees(
   self : SvgArcCenterParameters,
   theta : Double,
 ) -> Double {
@@ -147,7 +156,7 @@ fn SvgArcCenterParameters::tangent_angle_degrees(
 }
 
 ///|
-fn svg_arc_bounds(
+pub fn svg_arc_bounds(
   start_x : Double,
   start_y : Double,
   raw_rx : Double,
@@ -157,7 +166,7 @@ fn svg_arc_bounds(
   sweep : Bool,
   end_x : Double,
   end_y : Double,
-) -> CssBounds? {
+) -> ArcBounds? {
   guard svg_arc_center_parameters(
       start_x, start_y, raw_rx, raw_ry, rotation, large, sweep, end_x, end_y,
     )

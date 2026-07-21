@@ -1,5 +1,7 @@
 ///|
-fn parsed_transform(value : String) -> NormalizedTransformList {
+fn parsed_transform(
+  value : String,
+) -> @affine_transform.NormalizedTransformList {
   match parse_transform_list(value) {
     ValidTransformList(result) => result
     InvalidTransformList => abort("expected valid transform list")
@@ -104,7 +106,7 @@ test "renderer conformance slice admits integer axis transforms only" {
     parsed_transform("translate(2) scale(3)").matrix.has_proven_renderer_conformance(),
   )
   assert_true(
-    parsed_transform("rotate(90 4 5)").matrix.has_proven_renderer_conformance(),
+    !parsed_transform("rotate(90 4 5)").matrix.has_proven_renderer_conformance(),
   )
   assert_true(
     !parsed_transform("translate(0.5)").matrix.has_proven_renderer_conformance(),

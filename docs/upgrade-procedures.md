@@ -2,7 +2,7 @@
 
 Status: current maintenance procedure
 
-Last verified: 2026-07-17
+Last verified: 2026-07-20
 
 Renderer, parser, metric, schema, same-domain ordering-policy, and Impact Assessment policy versions influence the meaning of a report. They must not be upgraded as isolated dependency edits. This document defines the evidence and synchronized changes required before an upgrade may be merged.
 
@@ -10,8 +10,8 @@ Renderer, parser, metric, schema, same-domain ordering-policy, and Impact Assess
 
 | Component | Current identity | Contract surface |
 | --- | --- | --- |
-| SVG scene and canonical renderer | `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
-| Renderer conformance profile | `svgdiff-renderer-conformance-profile/25` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
+| SVG scene and canonical renderer | `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0` | `profile.renderer_id`, rendered magnitudes, Difference Regions, coverage guards |
+| Renderer conformance profile | `svgdiff-renderer-conformance-profile/26` | conformance fixtures, dispositions, guards, thresholds, and Rendered Evidence claims |
 | Authored XML parser | `Milky2018/xml@0.4.0` | well-formedness, namespaces, entity behavior, UTF-16 Source Spans |
 | Baseline pixel comparison | `mizchi/pixelmatch@0.6.1` | connected pixel-mask regions and renderer comparison support |
 | Embedded raster codec | `Milky2018/svgdiff-raster-codec@0.1.1` plus `mizchi/zlib@0.4.6` | admitted PNG/JPEG bytes, format-level color metadata, dimensions, normalized RGBA8 pixels, and intrinsic magnitude inputs |

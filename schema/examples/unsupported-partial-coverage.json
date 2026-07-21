@@ -4,10 +4,10 @@
   "canvas_outcome": {
     "status": "computed",
     "magnitude": {
-      "changed_pixels": 22,
-      "changed_pixel_fraction": 0.0859375,
-      "rgba8_rmse": 0.14657549249448218,
-      "linear_premultiplied_rgba_rmse": 0.14657549249448218
+      "changed_pixels": 98,
+      "changed_pixel_fraction": 0.3828125,
+      "rgba8_rmse": 0.30935921676911454,
+      "linear_premultiplied_rgba_rmse": 0.30935921676911454
     },
     "perceptual_flip": {
       "status": "not_computed",
@@ -34,8 +34,8 @@
           "diff:alignment:0:d:segment:1:parameter:y"
         ],
         "measurements": {
-          "changed_pixel_fraction": 0.0859375,
-          "linear_premultiplied_rgba_rmse": 0.14657549249448218
+          "changed_pixel_fraction": 0.3828125,
+          "linear_premultiplied_rgba_rmse": 0.30935921676911454
         }
       }
     ],
@@ -174,8 +174,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
     "perceptual_background": null,
     "flip_viewing_conditions": null,
     "flip_error_threshold": null
@@ -321,36 +321,36 @@
         "parameter_abs_css_px": 12,
         "parameter_viewport_fraction": 0.5303300858899106,
         "parameter_entity_fraction": 0.4242640687119285,
-        "geometry_displacement_css_px": 8.48528137423857,
+        "geometry_displacement_css_px": 7.0710678118654755,
         "painted_boundary_displacement": {
           "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 12,
-          "after_sample_count": 12,
-          "mean_css_px": 4.242640687119285,
-          "p95_css_px": 8.48528137423857,
-          "max_css_px": 8.48528137423857
+          "before_sample_count": 28,
+          "after_sample_count": 28,
+          "mean_css_px": 3.6126940327296517,
+          "p95_css_px": 7.0710678118654755,
+          "max_css_px": 7.0710678118654755
         },
         "painted_coverage_difference": {
           "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 12,
-          "after_coverage_css_px2": 12,
-          "absolute_difference_css_px2": 22,
-          "union_coverage_css_px2": 23,
-          "fraction": 0.9565217391304348
+          "before_coverage_css_px2": 62,
+          "after_coverage_css_px2": 62,
+          "absolute_difference_css_px2": 98,
+          "union_coverage_css_px2": 111,
+          "fraction": 0.8828828828828829
         },
-        "geometry_viewport_fraction": 0.37499999999999994,
+        "geometry_viewport_fraction": 0.3125,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.0859375,
-        "raster_rgba8_rmse": 0.14657549249448218,
-        "raster_linear_premultiplied_rgba_rmse": 0.14657549249448218,
+        "raster_changed_pixel_fraction": 0.3828125,
+        "raster_rgba8_rmse": 0.30935921676911454,
+        "raster_linear_premultiplied_rgba_rmse": 0.30935921676911454,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          8.48528137423857,
-          0.37499999999999994,
-          0.0859375
+          7.0710678118654755,
+          0.3125,
+          0.3828125
         ]
       }
     },
@@ -402,36 +402,36 @@
         "parameter_abs_css_px": 12,
         "parameter_viewport_fraction": 0.5303300858899106,
         "parameter_entity_fraction": 0.4242640687119285,
-        "geometry_displacement_css_px": 8.48528137423857,
+        "geometry_displacement_css_px": 7.0710678118654755,
         "painted_boundary_displacement": {
           "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 12,
-          "after_sample_count": 12,
-          "mean_css_px": 4.242640687119285,
-          "p95_css_px": 8.48528137423857,
-          "max_css_px": 8.48528137423857
+          "before_sample_count": 28,
+          "after_sample_count": 28,
+          "mean_css_px": 3.6126940327296517,
+          "p95_css_px": 7.0710678118654755,
+          "max_css_px": 7.0710678118654755
         },
         "painted_coverage_difference": {
           "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 12,
-          "after_coverage_css_px2": 12,
-          "absolute_difference_css_px2": 22,
-          "union_coverage_css_px2": 23,
-          "fraction": 0.9565217391304348
+          "before_coverage_css_px2": 62,
+          "after_coverage_css_px2": 62,
+          "absolute_difference_css_px2": 98,
+          "union_coverage_css_px2": 111,
+          "fraction": 0.8828828828828829
         },
-        "geometry_viewport_fraction": 0.37499999999999994,
+        "geometry_viewport_fraction": 0.3125,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.0859375,
-        "raster_rgba8_rmse": 0.14657549249448218,
-        "raster_linear_premultiplied_rgba_rmse": 0.14657549249448218,
+        "raster_changed_pixel_fraction": 0.3828125,
+        "raster_rgba8_rmse": 0.30935921676911454,
+        "raster_linear_premultiplied_rgba_rmse": 0.30935921676911454,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          8.48528137423857,
-          0.37499999999999994,
-          0.0859375
+          7.0710678118654755,
+          0.3125,
+          0.3828125
         ]
       }
     }
@@ -447,10 +447,10 @@
       "rendered_outcome": {
         "status": "computed",
         "magnitude": {
-          "changed_pixels": 22,
-          "changed_pixel_fraction": 0.0859375,
-          "rgba8_rmse": 0.14657549249448218,
-          "linear_premultiplied_rgba_rmse": 0.14657549249448218
+          "changed_pixels": 98,
+          "changed_pixel_fraction": 0.3828125,
+          "rgba8_rmse": 0.30935921676911454,
+          "linear_premultiplied_rgba_rmse": 0.30935921676911454
         },
         "perceptual_color": {
           "status": "not_computed",
@@ -465,16 +465,16 @@
         {
           "id": "region:pixel:0",
           "source": "pixel_mask",
-          "pixel_x": 2,
-          "pixel_y": 2,
-          "pixel_width": 6,
-          "pixel_height": 6,
-          "css_x": 2,
-          "css_y": 2,
-          "css_width": 6,
-          "css_height": 6,
-          "changed_pixels": 6,
-          "viewport_fraction": 0.0234375,
+          "pixel_x": 1,
+          "pixel_y": 1,
+          "pixel_width": 7,
+          "pixel_height": 7,
+          "css_x": 1,
+          "css_y": 1,
+          "css_width": 7,
+          "css_height": 7,
+          "changed_pixels": 25,
+          "viewport_fraction": 0.09765625,
           "cause_envelope": {
             "guarantee": "not_established",
             "coverage": "partial",
@@ -494,15 +494,15 @@
           "id": "region:pixel:1",
           "source": "pixel_mask",
           "pixel_x": 9,
-          "pixel_y": 2,
-          "pixel_width": 6,
-          "pixel_height": 6,
+          "pixel_y": 1,
+          "pixel_width": 7,
+          "pixel_height": 7,
           "css_x": 9,
-          "css_y": 2,
-          "css_width": 6,
-          "css_height": 6,
-          "changed_pixels": 6,
-          "viewport_fraction": 0.0234375,
+          "css_y": 1,
+          "css_width": 7,
+          "css_height": 7,
+          "changed_pixels": 25,
+          "viewport_fraction": 0.09765625,
           "cause_envelope": {
             "guarantee": "not_established",
             "coverage": "partial",
@@ -521,16 +521,16 @@
         {
           "id": "region:pixel:2",
           "source": "pixel_mask",
-          "pixel_x": 3,
+          "pixel_x": 1,
           "pixel_y": 9,
-          "pixel_width": 5,
-          "pixel_height": 5,
-          "css_x": 3,
+          "pixel_width": 7,
+          "pixel_height": 6,
+          "css_x": 1,
           "css_y": 9,
-          "css_width": 5,
-          "css_height": 5,
-          "changed_pixels": 5,
-          "viewport_fraction": 0.01953125,
+          "css_width": 7,
+          "css_height": 6,
+          "changed_pixels": 24,
+          "viewport_fraction": 0.09375,
           "cause_envelope": {
             "guarantee": "not_established",
             "coverage": "partial",
@@ -551,14 +551,14 @@
           "source": "pixel_mask",
           "pixel_x": 9,
           "pixel_y": 9,
-          "pixel_width": 5,
-          "pixel_height": 5,
+          "pixel_width": 7,
+          "pixel_height": 6,
           "css_x": 9,
           "css_y": 9,
-          "css_width": 5,
-          "css_height": 5,
-          "changed_pixels": 5,
-          "viewport_fraction": 0.01953125,
+          "css_width": 7,
+          "css_height": 6,
+          "changed_pixels": 24,
+          "viewport_fraction": 0.09375,
           "cause_envelope": {
             "guarantee": "not_established",
             "coverage": "partial",

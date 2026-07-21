@@ -361,13 +361,13 @@ fn assert_arc_samples_inside_bounds(
   end_x : Double,
   end_y : Double,
 ) -> Unit raise {
-  guard svg_arc_center_parameters(
+  guard @arc_geometry.svg_arc_center_parameters(
       start_x, start_y, radius_x, radius_y, rotation, large, sweep, end_x, end_y,
     )
     is Some(arc) else {
     fail("expected non-degenerate arc parameters")
   }
-  guard svg_arc_bounds(
+  guard @arc_geometry.svg_arc_bounds(
       start_x, start_y, radius_x, radius_y, rotation, large, sweep, end_x, end_y,
     )
     is Some(bounds) else {

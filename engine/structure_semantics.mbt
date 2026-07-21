@@ -661,6 +661,25 @@ fn use_rendered_diagnostic(
 }
 
 ///|
+fn structural_subtree_uses_current_color(
+  document : StructuralDocument,
+  node_index : Int,
+) -> Bool {
+  let node = document.nodes[node_index]
+  for attribute in node.element.attributes {
+    if attribute.value.to_lower().find("currentcolor") is Some(_) {
+      return true
+    }
+  }
+  for child in node.children {
+    if structural_subtree_uses_current_color(document, child) {
+      return true
+    }
+  }
+  false
+}
+
+///|
 fn append_use_structure_diagnostics(
   input : String,
   profile : ComparisonProfile,
@@ -791,6 +810,19 @@ fn append_use_structure_diagnostics(
           ),
         )
       }
+    }
+    match use_target_index(document, node) {
+      Some(target) if structural_subtree_uses_current_color(document, target) =>
+        merge_diagnostic_into(
+          diagnostics,
+          use_rendered_diagnostic(
+            "renderer_use_inherited_paint_raster_unproven",
+            node.source_id,
+            source_role,
+            node.href_fact.unwrap().source_span,
+          ),
+        )
+      _ => ()
     }
     match use_target_index(document, node) {
       Some(target) if document.nodes[target].kind == "symbol" ||

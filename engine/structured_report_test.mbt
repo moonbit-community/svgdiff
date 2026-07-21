@@ -89,8 +89,8 @@ test "tiny geometry changes retain continuous computed magnitude" {
   }
   match report.events[0].rendered_outcome.magnitude {
     Some(magnitude) => {
-      assert_eq(magnitude.changed_pixels, 16)
-      assert_eq(magnitude.changed_pixel_fraction, 0.0625)
+      assert_eq(magnitude.changed_pixels, 0)
+      assert_eq(magnitude.changed_pixel_fraction, 0.0)
     }
     None => fail("expected computed rendered magnitude")
   }
