@@ -81,14 +81,14 @@ pub fn render_html_report(
     $|<!doctype html>
     $|<html lang="en"><head><meta charset="utf-8">
     $|<meta name="viewport" content="width=device-width,initial-scale=1">
-    $|<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; frame-src 'self'; img-src blob:">
+    $|<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; frame-src 'self'; img-src data:">
     $|<title>SVG Diff Report</title><style>
     $|\{styles}
     $|</style></head><body style="--canvas-ratio:\{width}/\{height}">
     $|<main class="layout"><section class="visuals" aria-label="SVG previews">
     $|<header class="visual-header"><div><h1>SVG previews</h1><p id="selection-status">No localization selected</p></div><div class="view-controls" aria-label="Synchronized preview controls"><button type="button" id="fit-selection">Fit selected</button><button type="button" id="fit-canvas">Fit canvas</button><button type="button" id="reset-view">Reset</button><button type="button" id="clear-selection-global">Clear selection</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-value">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div></header>
     $|<div class="preview-grid"><article class="preview"><h2>Before</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="Before SVG" sandbox="" srcdoc="\{before_document}"></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
-    $|<article class="preview"><h2>Difference</h2><div class="canvas difference-canvas" data-canvas><div class="preview-content"><canvas data-difference-canvas aria-label="RGB channel difference; black pixels are equal" aria-busy="true"></canvas></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
+    $|<article class="preview"><h2>Difference</h2><div class="canvas difference-canvas" data-canvas><div class="preview-content"><canvas data-difference-canvas aria-label="RGB channel difference; black pixels are equal" aria-busy="true"></canvas></div><div class="difference-status" data-difference-status role="status">Rendering difference…</div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
     $|<article class="preview"><h2>After</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="After SVG" sandbox="" srcdoc="\{after_document}"></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article></div>
     $|<div class="localization-legend"><span><i class="observed"></i>Observed bounds</span><span><i class="conservative"></i>Conservative outcome</span></div>
     $|<aside id="selection-hidden" class="selection-hidden" hidden><span>The selected Event is hidden by filters; its overlay is suspended.</span><button type="button" id="show-selection">Show selected</button><button type="button" id="clear-selection">Clear</button></aside>

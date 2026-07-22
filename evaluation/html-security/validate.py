@@ -11,7 +11,7 @@ from pathlib import Path
 PREVIEW_CSP = "default-src 'none'; style-src 'unsafe-inline'"
 REPORT_CSP = (
     "default-src 'none'; style-src 'unsafe-inline'; "
-    "script-src 'unsafe-inline'; frame-src 'self'; img-src blob:"
+    "script-src 'unsafe-inline'; frame-src 'self'; img-src data:"
 )
 
 

@@ -177,6 +177,8 @@ pw --raw run-code \
         headings: [...document.querySelectorAll('.preview h2')].map(node => node.textContent),
         width: canvas.width,
         height: canvas.height,
+        state: canvas.dataset.state,
+        statusHidden: document.querySelector('[data-difference-status]').hidden,
         equalPixel: [...context.getImageData(0, 0, 1, 1).data],
         changedPixel: [...context.getImageData(4, 4, 1, 1).data],
       };
@@ -364,6 +366,8 @@ jq -e '
     "headings": ["Before", "Difference", "After"],
     "width": 16,
     "height": 16,
+    "state": "ready",
+    "statusHidden": true,
     "equalPixel": [0, 0, 0, 255],
     "changedPixel": [255, 0, 255, 255]
   } and
