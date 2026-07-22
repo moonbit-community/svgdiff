@@ -43,7 +43,10 @@
             <p class="eyebrow">Comparison input</p>
             <h2 id="input-heading">Two SVG sources</h2>
           </div>
-          <label class="example-label"><span>Example</span><select id="example-select" aria-label="Example comparison"></select></label>
+          <div class="example-picker">
+            <label class="example-label"><span>Example</span><select id="example-select" aria-label="Example comparison"></select></label>
+            <p id="example-attribution" class="example-attribution" hidden>Source: <a id="example-source" target="_blank" rel="noreferrer"></a> · <span id="example-license"></span></p>
+          </div>
         </div>
 
         <div class="source-grid">
@@ -108,14 +111,14 @@
 
     <footer class="app-footer">
       <p>SVGDiff reports profile-scoped evidence. Unsupported semantics remain explicit Diagnostics, never silent equality.</p>
-      <a href="https://github.com/moonbit-community/svgdiff">Source and license</a>
+      <div><a href="./THIRD_PARTY_NOTICES.md">Example notices</a> · <a href="https://github.com/moonbit-community/svgdiff">Source and license</a></div>
     </footer>
 
     <template id="report-template">
       <div class="layout"><section class="visuals" aria-label="SVG previews">
         <header class="visual-header"><div><h1>SVG previews</h1><p id="selection-status">No localization selected</p></div><div class="view-controls" aria-label="Synchronized preview controls"><button type="button" id="fit-selection">Fit selected</button><button type="button" id="fit-canvas">Fit canvas</button><button type="button" id="reset-view">Reset</button><button type="button" id="clear-selection-global">Clear selection</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-value">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div></header>
         <div class="preview-grid"><article class="preview"><h2>Before</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="Before SVG" sandbox=""></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
-        <article class="preview"><h2>Difference</h2><div class="canvas difference-canvas" data-canvas><div class="preview-content"><canvas data-difference-canvas aria-label="RGB channel difference; black pixels are equal" aria-busy="true"></canvas></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
+        <article class="preview"><h2>Difference</h2><div class="canvas difference-canvas" data-canvas><div class="preview-content"><canvas data-difference-canvas aria-label="RGB channel difference; black pixels are equal" aria-busy="true"></canvas></div><div class="difference-status" data-difference-status role="status">Rendering difference…</div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
         <article class="preview"><h2>After</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="After SVG" sandbox=""></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article></div>
         <div class="localization-legend"><span><i class="observed"></i>Observed bounds</span><span><i class="conservative"></i>Conservative outcome</span><span><i class="before-footprint"></i>Before footprint unavailable in Schema 1.45</span><span><i class="after-footprint"></i>After footprint unavailable in Schema 1.45</span></div>
         <aside id="selection-hidden" class="selection-hidden" hidden><span>The selected Event is hidden by filters; its overlay is suspended.</span><button type="button" id="show-selection">Show selected</button><button type="button" id="clear-selection">Clear</button></aside>

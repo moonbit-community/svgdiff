@@ -1,3 +1,5 @@
+import { examples as thirdPartyExamples } from "./examples.js";
+
 const examples = [
   {
     id: "color-size",
@@ -73,6 +75,21 @@ const examples = [
   <path id="target" d="M42 42H104V58H78V110H42Z" fill="#db2777" transform="translate(42 8) rotate(18) skewX(14) scale(1.12 0.86)" />
 </svg>`,
   },
+  ...[
+    ["bell", "Real-world · Lucide Bell repair"],
+    ["battery", "Real-world · Lucide Battery Charging repair"],
+    ["circleDot", "Real-world · Lucide Circle → Circle Dot"],
+    ["heart", "Real-world · Heroicons Heart outline → solid"],
+    ["rocket", "Real-world · Fluent Emoji Rocket flat → color"],
+    ["visibility", "Real-world · Material Visibility → Visibility Off"],
+    ["viewBoxScale", "Equivalent · scaled coordinates, same rendering"],
+  ].map(([id, label]) => ({
+    id,
+    label,
+    width: 256,
+    height: 256,
+    ...thirdPartyExamples[id],
+  })),
 ];
 
 const elements = {
@@ -98,6 +115,9 @@ const elements = {
   reportTemplate: document.querySelector("#report-template"),
   editInputs: document.querySelector("#edit-inputs"),
   exampleSelect: document.querySelector("#example-select"),
+  exampleAttribution: document.querySelector("#example-attribution"),
+  exampleSource: document.querySelector("#example-source"),
+  exampleLicense: document.querySelector("#example-license"),
 };
 
 let worker = null;
@@ -131,8 +151,14 @@ function loadExample() {
   const example = examples.find((candidate) => candidate.id === elements.exampleSelect.value) || examples[0];
   elements.beforeSource.value = example.before;
   elements.afterSource.value = example.after;
-  elements.width.value = "256";
-  elements.height.value = "160";
+  elements.width.value = String(example.width || 256);
+  elements.height.value = String(example.height || 160);
+  elements.exampleAttribution.hidden = !example.source;
+  if (example.source) {
+    elements.exampleSource.textContent = example.source.name;
+    elements.exampleSource.href = example.source.url;
+    elements.exampleLicense.textContent = example.source.license;
+  }
   refreshPreviews();
   elements.resultSection.hidden = true;
   elements.resultRoot.replaceChildren();

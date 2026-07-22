@@ -182,6 +182,48 @@ pw --raw run-code \
         changedScores: await page.locator('.score-card .score-value').allTextContents(),
       });
     }
+    const realExampleIds = ['bell', 'battery', 'circleDot', 'heart', 'rocket', 'visibility', 'viewBoxScale'];
+    const realExamples = [];
+    for (const id of realExampleIds) {
+      await page.locator('#example-select').selectOption(id);
+      const beforeSource = await page.locator('#before-source').inputValue();
+      const afterSource = await page.locator('#after-source').inputValue();
+      const source = {
+        name: await page.locator('#example-source').textContent(),
+        href: await page.locator('#example-source').getAttribute('href'),
+        license: await page.locator('#example-license').textContent(),
+        attributionVisible: await page.locator('#example-attribution').isVisible(),
+        beforeBytes: await page.evaluate(value => new TextEncoder().encode(value).length, beforeSource),
+        afterBytes: await page.evaluate(value => new TextEncoder().encode(value).length, afterSource),
+      };
+      await page.getByRole('button', { name: 'Compare SVGs' }).click();
+      await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
+      await page.locator('#result-section').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => document.querySelector('#report-root [data-difference-canvas]')?.dataset.state === 'ready');
+      const exampleReport = JSON.parse(await page.locator('#report-data').inputValue());
+      const differencePixels = await page.locator('#report-root [data-difference-canvas]').evaluate(canvas => {
+        const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+        let nonBlack = 0;
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index] !== 0 || pixels[index + 1] !== 0 || pixels[index + 2] !== 0) nonBlack += 1;
+        }
+        return {
+          state: canvas.dataset.state,
+          statusHidden: document.querySelector('#report-root [data-difference-status]').hidden,
+          nonBlack,
+        };
+      });
+      realExamples.push({
+        id,
+        source,
+        viewport: exampleReport.comparison.viewport,
+        analysisStatus: exampleReport.analysis_status,
+        atomicDifferences: exampleReport.difference_groups.flatMap(group => group.items).length,
+        diagnostics: exampleReport.limitations.length,
+        scores: await page.locator('.score-card .score-value').allTextContents(),
+        differencePixels,
+      });
+    }
     return {
       title: await page.title(),
       exampleOptions: await page.locator('#example-select option').allTextContents(),
@@ -211,6 +253,7 @@ pw --raw run-code \
       effectiveValueOptions: baselineUi.effectiveValueOptions,
       noViewBoxLocalizationGeometryError,
       affineExamples,
+      realExamples,
     };
   }" >"$tmp/browser.json" 2>>"$log"
 
@@ -224,10 +267,17 @@ jq -e '
     "Affine · rotation around a pivot",
     "Affine · non-uniform scale",
     "Affine · skew",
-    "Affine · combined decomposition"
+    "Affine · combined decomposition",
+    "Real-world · Lucide Bell repair",
+    "Real-world · Lucide Battery Charging repair",
+    "Real-world · Lucide Circle → Circle Dot",
+    "Real-world · Heroicons Heart outline → solid",
+    "Real-world · Fluent Emoji Rocket flat → color",
+    "Real-world · Material Visibility → Visibility Off",
+    "Equivalent · scaled coordinates, same rendering"
   ] and
   .exampleSelectCount == 1 and
-  .noticesLinkCount == 0 and
+  .noticesLinkCount == 1 and
   .checkpointBudget == 1000000 and
   .sourceFacts.beforeColor == {"x":"24","y":"44","width":"72","height":"72","fill":"#2563eb"} and
   .sourceFacts.afterColor == {"x":"24","y":"44","width":"72","height":"72","fill":"#dc2626"} and
@@ -265,7 +315,30 @@ jq -e '
     ((.expectedDomains - .domains) | length == 0) and
     (.unexpectedScale | not) and
     all(.changedScores[]; endswith("%") and . != "0.00%")
+  ) and
+  (.realExamples | map(.id)) == ["bell","battery","circleDot","heart","rocket","visibility","viewBoxScale"] and
+  all(.realExamples[];
+    .source.attributionVisible == true and
+    (.source.href | startswith("https://github.com/")) and
+    (.source.name | length) > 0 and
+    (.source.license | length) > 0 and
+    .source.beforeBytes > 100 and
+    .source.afterBytes > 100 and
+    .viewport == {"width":256,"height":256} and
+    (.analysisStatus == "complete" or .analysisStatus == "partial") and
+    .differencePixels.state == "ready" and
+    .differencePixels.statusHidden == true and
+    [.scores[] | endswith("%")] == [true,true,true]
+  ) and
+  all(.realExamples[] | select(.id != "viewBoxScale");
+    .atomicDifferences > 0 and
+    .differencePixels.nonBlack > 0 and
+    any(.scores[]; . != "0.00%")
+  ) and
+  (.realExamples[] | select(.id == "viewBoxScale") |
+    .differencePixels.nonBlack == 0 and
+    .scores == ["0.00%","0.00%","0.00%"]
   )
 ' "$tmp/browser.json" >/dev/null
 
-printf 'GitHub Pages browser flow: base and affine examples, WASM reports, Inspector, JSON: ok\n'
+printf 'GitHub Pages browser flow: base, affine, and seven pinned examples, WASM reports, Difference, attribution, JSON: ok\n'
