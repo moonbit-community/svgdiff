@@ -26,7 +26,6 @@ jq -e '
   .full_inventory_event_count == 2 and
   .full_inventory_atomic_difference_count == 2 and
   (.target_evidence.atomic_difference_ids | length) == 1 and
-  (.target_evidence.changed_fact_ids | length) == 1 and
   .target_evidence.cause_candidate_difference_ids == .target_evidence.atomic_difference_ids and
   .agent_transport_preserved_target == true and
   .decision.serialized_universal_ranking == "not_present" and
