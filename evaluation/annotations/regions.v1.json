@@ -44,13 +44,13 @@
     {
       "case_id": "resource-gradient-stop-change",
       "localization_status": "localizable",
-      "reason": "The first-stop edit changes every raster column except the unchanged blue endpoint column.",
+      "reason": "The first-stop edit changes every raster column because pixel-center sampling does not reach the unchanged blue endpoint.",
       "regions": [
         {
           "id": "region-ref:resource-gradient-stop-change:box",
           "reference_kind": "exact_painted_bounds",
           "comparison_rule": "intersection_over_union",
-          "bounds": { "x": 2.0, "y": 2.0, "width": 11.0, "height": 12.0 }
+          "bounds": { "x": 2.0, "y": 2.0, "width": 12.0, "height": 12.0 }
         }
       ]
     },
