@@ -88,83 +88,83 @@
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.48046875,
-      "changed_pixels": 123,
+      "changed_pixel_fraction": 0.28125,
+      "changed_pixels": 72,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-stop-before",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.153102231848
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.001039862914
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.3828125,
-      "changed_pixels": 98,
+      "changed_pixel_fraction": 0.2265625,
+      "changed_pixels": 58,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-stop-after",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.153099583313
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.00102531866
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.3671875,
-      "changed_pixels": 94,
+      "changed_pixel_fraction": 0.37890625,
+      "changed_pixels": 97,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-linear-object-bbox",
-      "max_channel_delta": 254,
-      "premultiplied_rgba8_rmse": 0.124311106316
+      "max_channel_delta": 231,
+      "premultiplied_rgba8_rmse": 0.06925591961
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.484375,
-      "changed_pixels": 124,
+      "changed_pixel_fraction": 0.33203125,
+      "changed_pixels": 85,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-linear-user-space",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.151367685476
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.001348039216
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.3515625,
-      "changed_pixels": 90,
+      "changed_pixel_fraction": 0.34375,
+      "changed_pixels": 88,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-radial-object-bbox",
-      "max_channel_delta": 254,
-      "premultiplied_rgba8_rmse": 0.101516755624
+      "max_channel_delta": 95,
+      "premultiplied_rgba8_rmse": 0.043085174945
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.8203125,
-      "changed_pixels": 210,
+      "changed_pixel_fraction": 0.765625,
+      "changed_pixels": 196,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-radial-user-space",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.203539902836
+      "max_channel_delta": 128,
+      "premultiplied_rgba8_rmse": 0.16681181504
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.46484375,
-      "changed_pixels": 119,
+      "changed_pixel_fraction": 0.23828125,
+      "changed_pixels": 61,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-template-inheritance",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.118781297096
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.001054206528
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.53125,
-      "changed_pixels": 136,
+      "changed_pixel_fraction": 0.41796875,
+      "changed_pixels": 107,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-multi-stop-opacity",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.201418438518
+      "max_channel_delta": 237,
+      "premultiplied_rgba8_rmse": 0.171046781653
     },
     {
       "category": "alpha",
@@ -278,33 +278,33 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.0234375,
-      "changed_pixels": 6,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "transform-rotate",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.103832798286
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.046875,
-      "changed_pixels": 12,
+      "changed_pixel_fraction": 0.04296875,
+      "changed_pixels": 11,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "transform-skew-x",
-      "max_channel_delta": 191,
-      "premultiplied_rgba8_rmse": 0.05317413117
+      "max_channel_delta": 7,
+      "premultiplied_rgba8_rmse": 0.00182182215
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.06640625,
-      "changed_pixels": 17,
+      "changed_pixel_fraction": 0.04296875,
+      "changed_pixels": 11,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "transform-skew-y",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.100648339217
+      "max_channel_delta": 22,
+      "premultiplied_rgba8_rmse": 0.006665134628
     },
     {
       "category": "geometry",
@@ -348,13 +348,13 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.125,
-      "changed_pixels": 32,
+      "changed_pixel_fraction": 0.109375,
+      "changed_pixels": 28,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "basic-shape-rounded-rect",
-      "max_channel_delta": 38,
-      "premultiplied_rgba8_rmse": 0.023030739993
+      "max_channel_delta": 20,
+      "premultiplied_rgba8_rmse": 0.011342241139
     },
     {
       "category": "geometry",
@@ -368,33 +368,33 @@
     },
     {
       "category": "geometry",
+      "changed_pixel_fraction": 0.046875,
+      "changed_pixels": 12,
+      "comparison": "divergent",
+      "coverage_claim": "guarded",
+      "id": "basic-shape-polygon",
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.000600365133
+    },
+    {
+      "category": "geometry",
       "changed_pixel_fraction": 0.140625,
       "changed_pixels": 36,
       "comparison": "divergent",
       "coverage_claim": "guarded",
-      "id": "basic-shape-polygon",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.179390166652
-    },
-    {
-      "category": "geometry",
-      "changed_pixel_fraction": 0.1328125,
-      "changed_pixels": 34,
-      "comparison": "divergent",
-      "coverage_claim": "guarded",
       "id": "basic-shape-circle",
-      "max_channel_delta": 38,
-      "premultiplied_rgba8_rmse": 0.020458713735
+      "max_channel_delta": 27,
+      "premultiplied_rgba8_rmse": 0.011963445943
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.125,
-      "changed_pixels": 32,
+      "changed_pixel_fraction": 0.109375,
+      "changed_pixels": 28,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "basic-shape-ellipse",
-      "max_channel_delta": 38,
-      "premultiplied_rgba8_rmse": 0.023030739993
+      "max_channel_delta": 20,
+      "premultiplied_rgba8_rmse": 0.011342241139
     },
     {
       "category": "geometry",
@@ -408,103 +408,103 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.140625,
-      "changed_pixels": 36,
+      "changed_pixel_fraction": 0.046875,
+      "changed_pixels": 12,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "basic-shape-polyline-fill",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.179390166652
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.000600365133
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.015625,
-      "changed_pixels": 4,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "stroke-cap-butt",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.0625
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.0546875,
-      "changed_pixels": 14,
+      "changed_pixel_fraction": 0.046875,
+      "changed_pixels": 12,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-cap-round",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.056708822267
+      "max_channel_delta": 29,
+      "premultiplied_rgba8_rmse": 0.00666963962
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.015625,
-      "changed_pixels": 4,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "stroke-cap-square",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.0625
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.22265625,
-      "changed_pixels": 57,
+      "changed_pixel_fraction": 0.203125,
+      "changed_pixels": 52,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-join-miter",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.11758072323
+      "max_channel_delta": 14,
+      "premultiplied_rgba8_rmse": 0.006254803998
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.20703125,
-      "changed_pixels": 53,
+      "changed_pixel_fraction": 0.1953125,
+      "changed_pixels": 50,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-join-round",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.115017657509
+      "max_channel_delta": 14,
+      "premultiplied_rgba8_rmse": 0.00551606737
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.20703125,
-      "changed_pixels": 53,
+      "changed_pixel_fraction": 0.1875,
+      "changed_pixels": 48,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-join-bevel",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.114715701566
+      "max_channel_delta": 14,
+      "premultiplied_rgba8_rmse": 0.005767620895
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.20703125,
-      "changed_pixels": 53,
+      "changed_pixel_fraction": 0.1875,
+      "changed_pixels": 48,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-miterlimit",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.114715701566
+      "max_channel_delta": 14,
+      "premultiplied_rgba8_rmse": 0.005767620895
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.0234375,
-      "changed_pixels": 6,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "stroke-dasharray",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.076546554462
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.0234375,
-      "changed_pixels": 6,
+      "changed_pixel_fraction": 0.0390625,
+      "changed_pixels": 10,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-dashoffset",
       "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.076546554462
+      "premultiplied_rgba8_rmse": 0.09882117688
     },
     {
       "category": "geometry",
@@ -518,53 +518,53 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.22265625,
-      "changed_pixels": 57,
+      "changed_pixel_fraction": 0.203125,
+      "changed_pixels": 52,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-join-miter-clip",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.11758072323
+      "max_channel_delta": 14,
+      "premultiplied_rgba8_rmse": 0.006254803998
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.22265625,
-      "changed_pixels": 57,
+      "changed_pixel_fraction": 0.203125,
+      "changed_pixels": 52,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "stroke-join-arcs",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.11758072323
+      "max_channel_delta": 14,
+      "premultiplied_rgba8_rmse": 0.006254803998
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.3125,
-      "changed_pixels": 80,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "stroke-non-scaling",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.279508497187
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.19140625,
-      "changed_pixels": 49,
+      "changed_pixel_fraction": 0.2265625,
+      "changed_pixels": 58,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "marker-roles",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.103422151921
+      "max_channel_delta": 76,
+      "premultiplied_rgba8_rmse": 0.046690372336
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.11328125,
-      "changed_pixels": 29,
+      "changed_pixel_fraction": 0.1015625,
+      "changed_pixels": 26,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "marker-auto-start-reverse",
       "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.169242370178
+      "premultiplied_rgba8_rmse": 0.130225042181
     },
     {
       "category": "geometry",
@@ -573,28 +573,28 @@
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "marker-stroke-width-units",
-      "max_channel_delta": 128,
-      "premultiplied_rgba8_rmse": 0.054127003933
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.000424522257
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.078125,
-      "changed_pixels": 20,
+      "changed_pixel_fraction": 0.0390625,
+      "changed_pixels": 10,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "marker-viewport-ref",
-      "max_channel_delta": 127,
-      "premultiplied_rgba8_rmse": 0.069603096358
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.000387534027
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.15625,
-      "changed_pixels": 40,
+      "changed_pixel_fraction": 0.109375,
+      "changed_pixels": 28,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "marker-zero-size",
       "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.192518854212
+      "premultiplied_rgba8_rmse": 0.176777205033
     },
     {
       "category": "geometry",
@@ -638,23 +638,23 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.546875,
-      "changed_pixels": 140,
+      "changed_pixel_fraction": 0.59375,
+      "changed_pixels": 152,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "length-stroke",
       "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.372211857235
+      "premultiplied_rgba8_rmse": 0.357994864422
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.125,
-      "changed_pixels": 32,
+      "changed_pixel_fraction": 0.12109375,
+      "changed_pixels": 31,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "length-marker",
       "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.124400776817
+      "premultiplied_rgba8_rmse": 0.095732749607
     },
     {
       "category": "geometry",
@@ -918,53 +918,53 @@
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.046875,
-      "changed_pixels": 12,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "pattern-object-bbox",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.151210394264
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.046875,
-      "changed_pixels": 12,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "pattern-user-space",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.146841751556
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.44921875,
-      "changed_pixels": 115,
+      "changed_pixel_fraction": 0.4609375,
+      "changed_pixels": 118,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "pattern-content-object-bbox",
       "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.345074037747
+      "premultiplied_rgba8_rmse": 0.329989422423
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.171875,
-      "changed_pixels": 44,
+      "changed_pixel_fraction": 0.140625,
+      "changed_pixels": 36,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "pattern-viewbox",
-      "max_channel_delta": 239,
-      "premultiplied_rgba8_rmse": 0.096885986931
+      "max_channel_delta": 38,
+      "premultiplied_rgba8_rmse": 0.027809718276
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.2109375,
-      "changed_pixels": 54,
+      "changed_pixel_fraction": 0.046875,
+      "changed_pixels": 12,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "pattern-transform",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.138380256178
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.000424522257
     },
     {
       "category": "paint",
@@ -1018,23 +1018,23 @@
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.0390625,
-      "changed_pixels": 10,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "paint-order-inherited",
-      "max_channel_delta": 221,
-      "premultiplied_rgba8_rmse": 0.100562653218
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.0390625,
-      "changed_pixels": 10,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "paint-order-inherited-canonical",
-      "max_channel_delta": 221,
-      "premultiplied_rgba8_rmse": 0.100562653218
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "paint",
@@ -1058,43 +1058,43 @@
     },
     {
       "category": "clipping",
-      "changed_pixel_fraction": 0.1875,
-      "changed_pixels": 48,
+      "changed_pixel_fraction": 0.2265625,
+      "changed_pixels": 58,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "clip-rule-inherited",
-      "max_channel_delta": 143,
-      "premultiplied_rgba8_rmse": 0.090317546619
+      "max_channel_delta": 10,
+      "premultiplied_rgba8_rmse": 0.004717739352
     },
     {
       "category": "clipping",
-      "changed_pixel_fraction": 0.1875,
-      "changed_pixels": 48,
+      "changed_pixel_fraction": 0.2265625,
+      "changed_pixels": 58,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "clip-rule-inherited-canonical",
-      "max_channel_delta": 143,
-      "premultiplied_rgba8_rmse": 0.090317546619
+      "max_channel_delta": 10,
+      "premultiplied_rgba8_rmse": 0.004717739352
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.2109375,
-      "changed_pixels": 54,
+      "changed_pixel_fraction": 0.1796875,
+      "changed_pixels": 46,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "fill-rule-nonzero",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.174965583341
+      "max_channel_delta": 4,
+      "premultiplied_rgba8_rmse": 0.001945405376
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.2578125,
-      "changed_pixels": 66,
+      "changed_pixel_fraction": 0.21875,
+      "changed_pixels": 56,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "fill-rule-evenodd",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.204094639862
+      "max_channel_delta": 9,
+      "premultiplied_rgba8_rmse": 0.003129202288
     },
     {
       "category": "geometry",
@@ -1417,10 +1417,10 @@
       "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "fixture_source_set_sha256": "493865ec8a2e89d7edbddd1563deed9111af55ca874ee40832d6206ef2787528",
   "raster_representation": "premultiplied_rgba8",
-  "renderer_id": "Milky2018/svg@0.3.0",
+  "renderer_id": "Milky2018/svg@0.3.1",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
     "cases": 141,
@@ -1442,17 +1442,17 @@
       },
       "geometry": {
         "cases": 54,
-        "divergent": 31,
-        "exact": 23
+        "divergent": 26,
+        "exact": 28
       },
       "paint": {
         "cases": 49,
-        "divergent": 20,
-        "exact": 29
+        "divergent": 16,
+        "exact": 33
       }
     },
-    "divergent": 56,
-    "exact": 85,
+    "divergent": 47,
+    "exact": 94,
     "exploratory": 0,
     "guarded": 58,
     "supported": 83

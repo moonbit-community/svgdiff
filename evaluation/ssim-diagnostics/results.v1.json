@@ -81,16 +81,16 @@
       "ssim_scale_absolute_delta": 0.8822864472627288
     },
     {
-      "canonical_dissimilarity": 0.00021762959481463895,
+      "canonical_dissimilarity": 0.00016186158133124628,
       "canonical_exact_rgba8": false,
-      "canonical_ssim": 0.9997823704051854,
+      "canonical_ssim": 0.9998381384186688,
       "case_id": "resource-gradient-stop-change",
-      "enlarged_dissimilarity": 0.0003392998117751622,
+      "enlarged_dissimilarity": 0.00032293192723387154,
       "enlarged_exact_rgba8": false,
-      "enlarged_ssim": 0.9996607001882248,
+      "enlarged_ssim": 0.9996770680727661,
       "human_tier": "high",
-      "ms_ssim": 0.999928923847808,
-      "ms_ssim_dissimilarity": 7.107615219204e-05,
+      "ms_ssim": 0.9999329847354979,
+      "ms_ssim_dissimilarity": 6.701526450214601e-05,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "partial",
       "production_renderer_capability_gaps": [
@@ -103,7 +103,7 @@
         }
       ],
       "source_pair_sha256": "b1c2e7e3b59a87fcc5c510a7c4d54dc2aaa6404dcaf8190fe0404a79d5e960ba",
-      "ssim_scale_absolute_delta": 0.00012167021696052327
+      "ssim_scale_absolute_delta": 0.00016107034590262526
     },
     {
       "canonical_dissimilarity": 0.0,
@@ -123,13 +123,13 @@
       "ssim_scale_absolute_delta": 0
     },
     {
-      "canonical_dissimilarity": 0.9654963165371789,
+      "canonical_dissimilarity": 1.0131239167566144,
       "canonical_exact_rgba8": false,
-      "canonical_ssim": 0.034503683462821025,
+      "canonical_ssim": -0.013123916756614309,
       "case_id": "unsupported-path-change",
-      "enlarged_dissimilarity": 0.3425338528956011,
+      "enlarged_dissimilarity": 0.3413952941485293,
       "enlarged_exact_rgba8": false,
-      "enlarged_ssim": 0.6574661471043989,
+      "enlarged_ssim": 0.6586047058514707,
       "human_tier": "medium",
       "ms_ssim": null,
       "ms_ssim_dissimilarity": null,
@@ -152,7 +152,7 @@
         }
       ],
       "source_pair_sha256": "3114be8b05064d6b532a946d327b62e02728728a6463bcf2ae3e52f6d8caa887",
-      "ssim_scale_absolute_delta": 0.6229624636415778
+      "ssim_scale_absolute_delta": 0.671728622608085
     },
     {
       "canonical_dissimilarity": 0.9792476463151139,
@@ -304,9 +304,9 @@
     "ms_ssim_product_can_be_unavailable_for_non_positive_components",
     "human_importance_order_contains_inversions_and_ties"
   ],
-  "production_renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0",
-  "raster_source_id": "direct_Milky2018_svg@0.3.0",
-  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
+  "production_renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
+  "raster_source_id": "direct_Milky2018_svg@0.3.1",
+  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "schema_version": "svgdiff-ssim-diagnostic-results/1",
   "ssim_profile": {
     "canonical_output_scale": 1,
@@ -333,7 +333,7 @@
           "higher_tier_case_id": "salient-fill-change",
           "higher_tier_score": 0.33079209819711575,
           "lower_tier_case_id": "unsupported-path-change",
-          "lower_tier_score": 0.9654963165371789
+          "lower_tier_score": 1.0131239167566144
         },
         {
           "higher_tier_case_id": "salient-fill-change",
@@ -349,7 +349,7 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00021762959481463895,
+          "higher_tier_score": 0.00016186158133124628,
           "lower_tier_case_id": "structural-rect-insertion",
           "lower_tier_score": 0.9923608136945772
         },
@@ -361,13 +361,13 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00021762959481463895,
+          "higher_tier_score": 0.00016186158133124628,
           "lower_tier_case_id": "unsupported-path-change",
-          "lower_tier_score": 0.9654963165371789
+          "lower_tier_score": 1.0131239167566144
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.00021762959481463895,
+          "higher_tier_score": 0.00016186158133124628,
           "lower_tier_case_id": "group-transform-change",
           "lower_tier_score": 0.9792476463151139
         }
@@ -386,11 +386,11 @@
           "higher_tier_case_id": "salient-fill-change",
           "higher_tier_score": 0.1978854394403292,
           "lower_tier_case_id": "unsupported-path-change",
-          "lower_tier_score": 0.3425338528956011
+          "lower_tier_score": 0.3413952941485293
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.0003392998117751622,
+          "higher_tier_score": 0.00032293192723387154,
           "lower_tier_case_id": "structural-rect-insertion",
           "lower_tier_score": 0.11007436643184842
         },
@@ -402,19 +402,19 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.0003392998117751622,
+          "higher_tier_score": 0.00032293192723387154,
           "lower_tier_case_id": "unsupported-path-change",
-          "lower_tier_score": 0.3425338528956011
+          "lower_tier_score": 0.3413952941485293
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.0003392998117751622,
+          "higher_tier_score": 0.00032293192723387154,
           "lower_tier_case_id": "group-transform-change",
           "lower_tier_score": 0.0013121590822513518
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 0.0003392998117751622,
+          "higher_tier_score": 0.00032293192723387154,
           "lower_tier_case_id": "subject-deletion",
           "lower_tier_score": 0.12939969744378021
         },
@@ -422,7 +422,7 @@
           "higher_tier_case_id": "embedded-raster-change",
           "higher_tier_score": 0.0,
           "lower_tier_case_id": "unsupported-path-change",
-          "lower_tier_score": 0.3425338528956011
+          "lower_tier_score": 0.3413952941485293
         },
         {
           "higher_tier_case_id": "embedded-raster-change",
@@ -464,7 +464,7 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 7.107615219204e-05,
+          "higher_tier_score": 6.701526450214601e-05,
           "lower_tier_case_id": "structural-rect-insertion",
           "lower_tier_score": 0.6713375866864739
         },
@@ -476,13 +476,13 @@
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 7.107615219204e-05,
+          "higher_tier_score": 6.701526450214601e-05,
           "lower_tier_case_id": "group-transform-change",
           "lower_tier_score": 0.0003124243072438748
         },
         {
           "higher_tier_case_id": "resource-gradient-stop-change",
-          "higher_tier_score": 7.107615219204e-05,
+          "higher_tier_score": 6.701526450214601e-05,
           "lower_tier_case_id": "subject-deletion",
           "lower_tier_score": 0.6921034315157449
         },
@@ -508,6 +508,6 @@
       "unsupported-path-change"
     ],
     "ssim_scale_absolute_delta_maximum": 0.9779354872328625,
-    "ssim_scale_absolute_delta_mean": 0.2677904201327124
+    "ssim_scale_absolute_delta_mean": 0.27154469390928543
   }
 }

@@ -22,12 +22,12 @@ assert_status() {
 cd "$root"
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
-jq -e '.schema_version == "1.45" and .profile.perceptual_background == null and .profile.flip_viewing_conditions == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/26" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1 and all(.events[]; .rendered_outcome.perceptual_color == {"status":"not_computed","reason_code":"perceptual_background_absent"} and .rendered_outcome.perceptual_flip == {"status":"not_computed","reason_code":"flip_not_requested"}) and .impact_assessment.policy_id == "event_rendered_pareto/v1" and .impact_assessment.status == "complete" and .impact_assessment.calibration_status == "not_calibrated" and .impact_assessment.candidate_event_count == 1 and .impact_assessment.frontier_relation == "unique" and .impact_assessment.frontier_groups[0].event_ids == [.events[0].id] and .impact_assessment.frontier_groups[0].atomic_difference_ids == .events[0].atomic_difference_ids and .impact_assessment.domination_witnesses == []' "$tmp/report.json" >/dev/null
+jq -e '.schema_version == "1.45" and .profile.perceptual_background == null and .profile.flip_viewing_conditions == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and .analysis_status == "complete" and (.coverage_matrix | length) > 0 and .renderer_capability_gaps == [] and (all(.coverage_matrix[]; (.source_semantics != "limited" and .computed_appearance != "limited" and .rendered_evidence != "limited"))) and (.atomic_differences | length) == 1 and all(.events[]; .rendered_outcome.perceptual_color == {"status":"not_computed","reason_code":"perceptual_background_absent"} and .rendered_outcome.perceptual_flip == {"status":"not_computed","reason_code":"flip_not_requested"}) and .impact_assessment.policy_id == "event_rendered_pareto/v1" and .impact_assessment.status == "complete" and .impact_assessment.calibration_status == "not_calibrated" and .impact_assessment.candidate_event_count == 1 and .impact_assessment.frontier_relation == "unique" and .impact_assessment.frontier_groups[0].event_ids == [.events[0].id] and .impact_assessment.frontier_groups[0].atomic_difference_ids == .events[0].atomic_difference_ids and .impact_assessment.domination_witnesses == []' "$tmp/report.json" >/dev/null
 
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
 test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.45" and .profile.perceptual_background == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/26" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
+jq -e '.schema_version == "1.45" and .profile.perceptual_background == null and .profile.flip_error_threshold == null and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and .analysis_status == "complete" and (.atomic_differences | length) == 1' "$tmp/agent.json" >/dev/null
 test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
 test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
 
@@ -80,7 +80,7 @@ test "$(jq -S -c '.profile.flip_viewing_conditions = null | .profile.flip_error_
 moon run --target native cmd/svgdiff -- testdata/before.svg testdata/after.svg --width 32 --height 24 --output "$tmp/output.json" --html "$tmp/report.html" --summary "$tmp/summary.md" >"$tmp/output.stdout" 2>"$tmp/output.err"
 test ! -s "$tmp/output.stdout"
 test ! -s "$tmp/output.err"
-jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24 and .profile.comparison_dpr == 1 and .profile.color_interpretation == "srgb" and .profile.raster_representation == "linear_srgb_premultiplied_rgba_f64" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/26" and (.events[0].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse > 0)' "$tmp/output.json" >/dev/null
+jq -e '.profile.viewport_width == 32 and .profile.viewport_height == 24 and .profile.comparison_dpr == 1 and .profile.color_interpretation == "srgb" and .profile.raster_representation == "linear_srgb_premultiplied_rgba_f64" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and (.events[0].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse > 0)' "$tmp/output.json" >/dev/null
 grep -q '<!doctype html>' "$tmp/report.html"
 grep -q 'sandbox=""' "$tmp/report.html"
 grep -q 'id="report-data"' "$tmp/report.html"
@@ -236,8 +236,8 @@ grep -q '^svgdiff 0.6.0$' "$tmp/version.txt"
 grep -q '^engine: 0.6.0$' "$tmp/version.txt"
 grep -q '^schema: 1.45$' "$tmp/version.txt"
 grep -q '^agent-projection: svgdiff-agent-projection/1$' "$tmp/version.txt"
-grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0$' "$tmp/version.txt"
-grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/26$' "$tmp/version.txt"
+grep -q '^renderer: svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1$' "$tmp/version.txt"
+grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/27$' "$tmp/version.txt"
 grep -q '^ordering-policy: v2_domain_lexicographic$' "$tmp/version.txt"
 grep -q '^impact-policy: event_rendered_pareto/v1$' "$tmp/version.txt"
 

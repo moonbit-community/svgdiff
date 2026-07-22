@@ -20,7 +20,7 @@ test ! -s report.err
 jq -e '
   .schema_version == "1.45" and
   .profile.renderer_conformance_profile_id ==
-    "svgdiff-renderer-conformance-profile/26" and
+    "svgdiff-renderer-conformance-profile/27" and
   .analysis_status == "complete" and
   .renderer_capability_gaps == [] and
   (.atomic_differences | length) == 1 and
@@ -34,8 +34,8 @@ grep -q '^Usage: svgdiff ' help.txt
 grep -q '^svgdiff 0.6.0$' version.txt
 grep -q '^schema: 1.45$' version.txt
 grep -q '^agent-projection: svgdiff-agent-projection/1$' version.txt
-grep -q '^renderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0$' version.txt
-grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/26$' version.txt
+grep -q '^renderer: svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1$' version.txt
+grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/27$' version.txt
 grep -q '^impact-policy: event_rendered_pareto/v1$' version.txt
 
 PATH="$bindir:$PATH" svgdiff \
@@ -43,7 +43,7 @@ PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/after.svg" --agent-json >agent.json 2>agent.err
 test ! -s agent.err
 test "$(wc -l <agent.json | tr -d ' ')" -eq 1
-jq -e '.schema_version == "1.45" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/26" and (.atomic_differences | length) == 1 and .impact_assessment.policy_id == "event_rendered_pareto/v1"' agent.json >/dev/null
+jq -e '.schema_version == "1.45" and .profile.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and (.atomic_differences | length) == 1 and .impact_assessment.policy_id == "event_rendered_pareto/v1"' agent.json >/dev/null
 
 PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/before.svg" \

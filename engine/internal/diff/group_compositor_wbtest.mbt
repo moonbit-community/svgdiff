@@ -98,6 +98,27 @@ test "group compositor nests opacity layers and composites over backdrop" {
 }
 
 ///|
+test "group compositor activation preserves an unchanged opaque backdrop" {
+  let before =
+    #|<svg width="16" height="16">
+    #|  <rect width="16" height="16" fill="lime"/>
+    #|  <g id="layer" opacity="1"><rect x="2" y="2" width="10" height="10" fill="red"/><rect x="6" y="6" width="8" height="8" fill="blue"/></g>
+    #|</svg>
+  let after = before.replace_all(old="opacity=\"1\"", new="opacity=\"0.5\"")
+  let profile = ComparisonProfile::v1_default()
+  guard render_group_compositor_test_source(before, profile) is Some(left) &&
+    render_group_compositor_test_source(after, profile) is Some(right) else {
+    fail("expected product renders")
+  }
+  let left_pixel = group_compositor_test_pixel(left, 0, 0)
+  let right_pixel = group_compositor_test_pixel(right, 0, 0)
+  assert_eq(
+    (left_pixel.r, left_pixel.g, left_pixel.b, left_pixel.a),
+    (right_pixel.r, right_pixel.g, right_pixel.b, right_pixel.a),
+  )
+}
+
+///|
 test "group compositor preserves transformed and sibling layer order" {
   let source =
     #|<svg width="12" height="8">

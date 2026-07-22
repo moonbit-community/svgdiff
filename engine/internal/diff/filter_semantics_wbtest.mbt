@@ -39,7 +39,7 @@ test "filter graph resolves defaults named intermediates and conservative bounds
 }
 
 ///|
-test "filter compositor evaluates named intermediate surfaces" {
+test "upstream filter renderer evaluates named intermediate surfaces" {
   let source =
     #|<svg width="8" height="8">
     #|  <defs><filter id="shift" x="-100%" y="-100%" width="400%" height="400%">
@@ -83,7 +83,7 @@ test "filtered leaf keeps ordinary sibling stacking" {
 }
 
 ///|
-test "filter compositor derives SourceAlpha and clips every intermediate" {
+test "upstream filter renderer derives SourceAlpha and clips every intermediate" {
   let source =
     #|<svg width="8" height="8">
     #|  <defs><filter id="alpha" x="0" y="0" width="150%" height="100%">

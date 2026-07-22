@@ -230,21 +230,12 @@ fn blend_binary_source_over(
 ///|
 fn blend_render_inactive_subtree(
   document : @svg.SVGDocument,
-  filter_hosts : Array[ResolvedFilterHost],
   ancestors : Array[@svg.SVGNode],
   node : @svg.SVGNode,
   width : Int,
   height : Int,
 ) -> @svg.Image {
-  if filter_subtree_active(filter_hosts, node) {
-    if group_compositor_container(node) {
-      filter_render_container(
-        document, filter_hosts, ancestors, node, width, height,
-      )
-    } else {
-      filter_render_leaf(document, filter_hosts, ancestors, node, width, height)
-    }
-  } else if group_compositor_atomic_container(node) {
+  if group_compositor_atomic_container(node) {
     group_compositor_render_masked_container(
       document, ancestors, node, width, height,
     )
@@ -259,7 +250,6 @@ fn blend_render_inactive_subtree(
 fn blend_render_node_into(
   destination : @svg.Image,
   document : @svg.SVGDocument,
-  filter_hosts : Array[ResolvedFilterHost],
   sites : Array[BlendSite],
   ancestors : Array[@svg.SVGNode],
   node : @svg.SVGNode,
@@ -269,9 +259,7 @@ fn blend_render_node_into(
   if !blend_subtree_active(sites, node) {
     group_compositor_over_image(
       destination,
-      blend_render_inactive_subtree(
-        document, filter_hosts, ancestors, node, width, height,
-      ),
+      blend_render_inactive_subtree(document, ancestors, node, width, height),
     )
     return true
   }
@@ -288,7 +276,7 @@ fn blend_render_node_into(
     }
     for child in group_compositor_children(node) {
       if !blend_render_node_into(
-          target, document, filter_hosts, sites, child_ancestors, child, width, height,
+          target, document, sites, child_ancestors, child, width, height,
         ) {
         return false
       }
@@ -298,8 +286,8 @@ fn blend_render_node_into(
     }
     return true
   }
-  let source = filter_render_leaf(
-    document, filter_hosts, ancestors, node, width, height,
+  let source = group_compositor_render_leaf(
+    document, ancestors, node, width, height,
   )
   match blend_site_for_node(sites, node) {
     Some(site) if site.blend_mode != "normal" =>
@@ -328,16 +316,10 @@ fn render_blend_product_source_to_image(
     is Some(document) else {
     return None
   }
-  let filter_hosts = try resolve_filter_hosts_or_raise(source, profile) catch {
-    _ => return None
-  } noraise {
-    value => value.1.filter(host => host.complete)
-  }
   let output = @svg.Image::new(profile.viewport_width, profile.viewport_height)
   if blend_render_node_into(
       output,
       document,
-      filter_hosts,
       semantic.sites,
       [],
       document.root,

@@ -36,15 +36,13 @@ test "path geometry enumerates exact normalized parameter differences" {
 }
 
 ///|
-test "diagonal path pixels use visual eight-neighbor connectivity" {
+test "antialiased crossing path differences remain one connected region" {
   let before = "<svg width='16' height='16'><path d='M2 2L14 14' fill='none' stroke='black'/></svg>"
   let after = "<svg width='16' height='16'><path d='M2 14L14 2' fill='none' stroke='black'/></svg>"
   let report = compare(before, after, ComparisonProfile::v1_default())
   assert_eq(report.events.length(), 1)
-  assert_eq(report.events[0].difference_regions.length(), 4)
-  assert_true(
-    report.events[0].difference_regions.all(region => region.changed_pixels > 1),
-  )
+  assert_eq(report.events[0].difference_regions.length(), 1)
+  assert_eq(report.events[0].difference_regions[0].changed_pixels, 72)
 }
 
 ///|
@@ -140,7 +138,7 @@ test "painted path boundary uses symmetric maximum pixel distance" {
       difference.magnitude.painted_coverage_difference.map(coverage => {
         coverage.fraction
       }) ==
-      Some(4.0 / 7.0)
+      Some(2.0 / 3.0)
     }),
   )
 }

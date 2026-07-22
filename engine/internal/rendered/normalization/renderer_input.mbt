@@ -27,203 +27,17 @@ fn canonical_renderer_inline_style(facts : Array[DeclaredVisualFact]) -> String 
 }
 
 ///|
-fn renderer_inline_value_edits_for_element(
-  input : String,
-  element : @xml.NamespaceElement,
-  edits : Array[RendererValueEdit],
-) -> Unit {
-  let presentations : Array[@xml.NamespaceAttribute] = []
-  let mut style_attribute : @xml.NamespaceAttribute? = None
-  for attribute in element.attributes {
-    let name = attribute.name.local_name
-    if name == "style" {
-      style_attribute = Some(attribute)
-    } else if supported_presentation_property(name) {
-      presentations.push(attribute)
-    }
-  }
-  match style_attribute {
-    Some(attribute) => {
-      let style = inline_style_facts(input, attribute)
-      if !style.complete {
-        return
-      }
-      edits.push({
-        start_offset: attribute.value_span.start.offset,
-        end_offset: attribute.value_span.end.offset,
-        replacement: escape_renderer_attribute_value(
-          canonical_renderer_inline_style(style.facts),
-        ),
-      })
-      for fact in style.facts {
-        for presentation in presentations {
-          if presentation.name.local_name == fact.property {
-            edits.push({
-              start_offset: presentation.value_span.start.offset,
-              end_offset: presentation.value_span.end.offset,
-              replacement: escape_renderer_attribute_value(fact.declared_value),
-            })
-          }
-        }
-      }
-    }
-    None => ()
-  }
-}
-
-///|
-fn renderer_cascade_value_edits_for_element(
-  input : String,
-  element : @xml.NamespaceElement,
-  span : @xml.SourceSpan,
-  stylesheet_match : CssStylesheetMatch,
-  edits : Array[RendererValueEdit],
-) -> Unit {
-  if !stylesheet_match.complete {
-    return
-  }
-  let presentations : Array[@xml.NamespaceAttribute] = []
-  let candidates : Array[CssCascadeCandidate] = []
-  let style_properties : Array[String] = []
-  let mut style_attribute : @xml.NamespaceAttribute? = None
-  for attribute in element.attributes {
-    let name = attribute.name.local_name
-    if name == "style" {
-      style_attribute = Some(attribute)
-    } else if supported_presentation_property(name) {
-      presentations.push(attribute)
-      candidates.push(
-        presentation_cascade_candidate(
-          presentation_fact(input, name, attribute),
-          attribute.span.start.offset,
-        ),
-      )
-    }
-  }
-  match style_attribute {
-    Some(attribute) => {
-      let style = inline_style_facts(input, attribute)
-      if !style.complete {
-        return
-      }
-      candidates.push_iter(style.candidates.iter())
-      for candidate in style.candidates {
-        push_unique(style_properties, candidate.declaration.property)
-      }
-    }
-    None => ()
-  }
-  candidates.push_iter(stylesheet_match.candidates.iter())
-  for candidate in stylesheet_match.candidates {
-    push_unique(style_properties, candidate.declaration.property)
-  }
-  let facts = cascade_visual_declarations(candidates)
-  let style_facts = [
-    for fact in facts if style_properties.contains(fact.property) => fact
-  ]
-  if style_attribute is Some(attribute) {
-    edits.push({
-      start_offset: attribute.value_span.start.offset,
-      end_offset: attribute.value_span.end.offset,
-      replacement: escape_renderer_attribute_value(
-        canonical_renderer_inline_style(style_facts),
-      ),
-    })
-  } else if !stylesheet_match.candidates.is_empty() {
-    edits.push({
-      start_offset: renderer_element_insert_offset(input, span),
-      end_offset: renderer_element_insert_offset(input, span),
-      replacement: " style=\"" +
-      escape_renderer_attribute_value(
-        canonical_renderer_inline_style(style_facts),
-      ) +
-      "\"",
-    })
-  }
-  for fact in facts {
-    for presentation in presentations {
-      if presentation.name.local_name == fact.property {
-        edits.push({
-          start_offset: presentation.value_span.start.offset,
-          end_offset: presentation.value_span.end.offset,
-          replacement: escape_renderer_attribute_value(fact.declared_value),
-        })
-      }
-    }
-  }
-}
-
-///|
-fn normalize_renderer_style_precedence(input : String) -> String {
-  let css_document = try parse_static_css_document_or_raise(input) catch {
-    _ => return input
-  } noraise {
-    document => document
-  }
-  let reader = @xml.NamespaceReader::from_string(input)
-  let events = reader.read_events_until_eof() catch { _ => return input }
-  let edits : Array[RendererValueEdit] = []
-  let mut in_stylesheet = false
-  for event in events {
-    match event.kind {
-      Start(element) => {
-        if element.name.local_name == "style" {
-          in_stylesheet = true
-        }
-        if css_document.complete {
-          renderer_cascade_value_edits_for_element(
-            input,
-            element,
-            event.span,
-            css_stylesheet_match_for_source(
-              css_document,
-              event.span.start.offset,
-            ),
-            edits,
-          )
-        } else {
-          renderer_inline_value_edits_for_element(input, element, edits)
-        }
-      }
-      Empty(element) =>
-        if css_document.complete {
-          renderer_cascade_value_edits_for_element(
-            input,
-            element,
-            event.span,
-            css_stylesheet_match_for_source(
-              css_document,
-              event.span.start.offset,
-            ),
-            edits,
-          )
-        } else {
-          renderer_inline_value_edits_for_element(input, element, edits)
-        }
-      Text(_) if in_stylesheet && css_document.complete =>
-        edits.push({
-          start_offset: event.span.start.offset,
-          end_offset: event.span.end.offset,
-          replacement: "",
-        })
-      End(name) if name.local_name == "style" => in_stylesheet = false
-      _ => ()
-    }
-  }
-  apply_renderer_value_edits(input, edits)
-}
-
-///|
-fn renderer_inherited_value_edits_for_element(
+fn renderer_residual_paint_edits_for_element(
   input : String,
   element : @xml.NamespaceElement,
   span : @xml.SourceSpan,
   hierarchy : FillHierarchy,
   subject_id : String,
+  materialize_opaque_paint : Bool,
   edits : Array[RendererValueEdit],
 ) -> Unit {
-  let overrides = renderer_computed_override_facts_for_subject(
-    hierarchy, subject_id,
+  let overrides = renderer_residual_paint_override_facts_for_subject(
+    hierarchy, subject_id, materialize_opaque_paint,
   )
   if overrides.is_empty() {
     return
@@ -265,7 +79,107 @@ fn renderer_inherited_value_edits_for_element(
 }
 
 ///|
-fn normalize_renderer_ordinary_inheritance(input : String) -> String {
+fn renderer_residual_paint_override_facts_for_subject(
+  hierarchy : FillHierarchy,
+  subject_id : String,
+  materialize_opaque_paint : Bool,
+) -> Array[DeclaredVisualFact] {
+  let all = renderer_computed_override_facts_for_subject(hierarchy, subject_id)
+  let required : Array[String] = []
+  for
+    pair in [
+      ("fill", "fill-opacity"),
+      ("stroke", "stroke-opacity"),
+      ("stop-color", "stop-opacity"),
+    ] {
+    if materialize_opaque_paint {
+      required.push(pair.0)
+      required.push(pair.1)
+      continue
+    }
+    guard computed_visual_for_subject(hierarchy, subject_id, pair.0)
+      is Some(color_resolution) &&
+      color_resolution.complete &&
+      @css_color.parse_solid_color(color_resolution.reported.resolved_value)
+      is Resolved(color) else {
+      continue
+    }
+    let inherited_opacity = computed_visual_for_subject(
+        hierarchy,
+        subject_id,
+        pair.1,
+      )
+      .map(resolution => {
+        resolution.complete && resolution.reported.resolution == "inherited"
+      })
+      .unwrap_or(false)
+    let unsupported_color_syntax = color_resolution.reported.declaration
+      .map(declaration => {
+        !renderer_native_solid_color_syntax(declaration.declared_value)
+      })
+      .unwrap_or(false)
+    if color.alpha == 1.0 && !inherited_opacity && !unsupported_color_syntax {
+      continue
+    }
+    required.push(pair.0)
+    required.push(pair.1)
+  }
+  all.filter(fact => required.contains(fact.property))
+}
+
+///|
+fn renderer_native_solid_color_syntax(value : String) -> Bool {
+  let value = value.trim().to_owned().to_lower()
+  [
+    "black", "white", "red", "green", "blue", "yellow", "cyan", "magenta", "gray",
+    "grey", "orange", "purple", "pink", "brown", "transparent", "currentcolor", "inherit",
+    "initial", "unset", "revert",
+  ].contains(value) ||
+  value.has_prefix("#") ||
+  value.has_prefix("rgb(") ||
+  value.has_prefix("rgba(") ||
+  value.has_prefix("hsl(") ||
+  value.has_prefix("hsla(") ||
+  value.has_prefix("var(")
+}
+
+///|
+fn renderer_branch_compositor_active(
+  input : String,
+  profile : ComparisonProfile,
+  hierarchy : FillHierarchy,
+) -> Bool {
+  for element in hierarchy.elements {
+    if !group_opacity_container(element.kind) {
+      continue
+    }
+    if computed_visual_for_subject(hierarchy, element.subject_id, "opacity")
+      is Some(opacity) &&
+      opacity.complete &&
+      @css_color.parse_alpha_value(opacity.reported.resolved_value)
+      is Some(value) &&
+      value != 1.0 {
+      return true
+    }
+    if computed_visual_for_subject(hierarchy, element.subject_id, "mask")
+      is Some(mask) &&
+      mask.complete &&
+      mask.reported.resolved_value != "none" {
+      return true
+    }
+  }
+  try resolve_blend_semantic_document_or_raise(input, profile) catch {
+    _ => false
+  } noraise {
+    blend => blend.active
+  }
+}
+
+///|
+fn normalize_renderer_residual_paint(
+  input : String,
+  profile : ComparisonProfile,
+) -> String {
   guard extract_fill_hierarchy(input) is ParsedFillHierarchy(hierarchy) else {
     return input
   }
@@ -284,8 +198,12 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
   let reader = @xml.NamespaceReader::from_string(input)
   let events = reader.read_events_until_eof() catch { _ => return input }
   let edits : Array[RendererValueEdit] = []
+  let materialize_opaque_paint = renderer_branch_compositor_active(
+    input, profile, hierarchy,
+  )
   let mut hierarchy_index = 0
   let mut marker_depth = 0
+  let mut mask_depth = 0
   for event in events {
     match event.kind {
       Start(element) => {
@@ -293,18 +211,25 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
         if kind == "marker" {
           marker_depth += 1
         }
+        if kind == "mask" {
+          mask_depth += 1
+        }
         if marker_depth == 0 && fill_hierarchy_kind(kind) {
-          match hierarchy.elements.get(hierarchy_index) {
-            Some(source_element) if visual_subject_kind(kind) || kind == "stop" =>
-              renderer_inherited_value_edits_for_element(
-                input,
-                element,
-                event.span,
-                hierarchy,
-                source_element.subject_id,
-                edits,
-              )
-            _ => ()
+          if mask_depth == 0 {
+            match hierarchy.elements.get(hierarchy_index) {
+              Some(source_element) if visual_subject_kind(kind) ||
+                kind == "stop" =>
+                renderer_residual_paint_edits_for_element(
+                  input,
+                  element,
+                  event.span,
+                  hierarchy,
+                  source_element.subject_id,
+                  materialize_opaque_paint,
+                  edits,
+                )
+              _ => ()
+            }
           }
           hierarchy_index += 1
         }
@@ -312,22 +237,27 @@ fn normalize_renderer_ordinary_inheritance(input : String) -> String {
       Empty(element) => {
         let kind = element.name.local_name
         if marker_depth == 0 && fill_hierarchy_kind(kind) {
-          match hierarchy.elements.get(hierarchy_index) {
-            Some(source_element) if visual_subject_kind(kind) || kind == "stop" =>
-              renderer_inherited_value_edits_for_element(
-                input,
-                element,
-                event.span,
-                hierarchy,
-                source_element.subject_id,
-                edits,
-              )
-            _ => ()
+          if mask_depth == 0 && kind != "mask" {
+            match hierarchy.elements.get(hierarchy_index) {
+              Some(source_element) if visual_subject_kind(kind) ||
+                kind == "stop" =>
+                renderer_residual_paint_edits_for_element(
+                  input,
+                  element,
+                  event.span,
+                  hierarchy,
+                  source_element.subject_id,
+                  materialize_opaque_paint,
+                  edits,
+                )
+              _ => ()
+            }
           }
           hierarchy_index += 1
         }
       }
       End(name) if name.local_name == "marker" => marker_depth -= 1
+      End(name) if name.local_name == "mask" => mask_depth -= 1
       _ => ()
     }
   }
@@ -584,86 +514,6 @@ fn renderer_effective_mask_mode(
 }
 
 ///|
-fn renderer_mask_resource_at_content_offset(
-  document : MaskSemanticDocument,
-  offset : Int,
-) -> MaskRectResource? {
-  for resource in document.resources {
-    if resource.rect_source_offset == Some(offset) {
-      return Some(resource)
-    }
-  }
-  None
-}
-
-///|
-fn renderer_mask_content_style_edit(
-  input : String,
-  element : @xml.NamespaceElement,
-  span : @xml.SourceSpan,
-  resource : MaskRectResource,
-  edits : Array[RendererValueEdit],
-) -> Unit {
-  let alpha_byte = (resource.content_alpha * 255.0 + 0.5)
-    .floor()
-    .to_int()
-    .max(0)
-    .min(255)
-  let renderer_alpha = if alpha_byte == 255 {
-    1.0
-  } else {
-    (alpha_byte.to_double() + 0.25) / 255.0
-  }
-  let facts : Array[DeclaredVisualFact] = []
-  match renderer_attribute(element, "style") {
-    Some(attribute) => {
-      let style = inline_style_facts(input, attribute)
-      if !style.complete {
-        return
-      }
-      facts.push_iter(style.facts.iter())
-    }
-    None => ()
-  }
-  for
-    entry in [
-      (
-        "fill",
-        "rgb(\{resource.color_red},\{resource.color_green},\{resource.color_blue})",
-      ),
-      ("fill-opacity", renderer_alpha.to_string()),
-      ("opacity", "1"),
-      ("stroke", "none"),
-    ] {
-    upsert_declared_fact(facts, {
-      ..resource.presence_fact,
-      property: entry.0,
-      declared_value: entry.1,
-    })
-  }
-  facts.sort_by(fn(left, right) { left.property.compare(right.property) })
-  let replacement = escape_renderer_attribute_value(
-    canonical_renderer_inline_style(facts),
-  )
-  match renderer_attribute(element, "style") {
-    Some(attribute) =>
-      edits.push({
-        start_offset: attribute.value_span.start.offset,
-        end_offset: attribute.value_span.end.offset,
-        replacement,
-      })
-    None => {
-      let offset = renderer_element_insert_offset(input, span)
-      edits.push({
-        start_offset: offset,
-        end_offset: offset,
-        replacement: " style=\"\{replacement}\"",
-      })
-    }
-  }
-}
-
-///|
 fn normalize_renderer_mask_semantics(
   input : String,
   profile : ComparisonProfile,
@@ -685,21 +535,6 @@ fn normalize_renderer_mask_semantics(
         if fill_hierarchy_kind(kind) {
           match document.hierarchy.elements.get(hierarchy_index) {
             Some(source_element) => {
-              match
-                renderer_mask_resource_at_content_offset(
-                  document,
-                  event.span.start.offset,
-                ) {
-                Some(resource) if resource.complete =>
-                  renderer_mask_content_style_edit(
-                    input,
-                    element,
-                    event.span,
-                    resource,
-                    edits,
-                  )
-                _ => ()
-              }
               if kind == "mask" {
                 renderer_mask_region_edits(input, element, event.span, edits)
                 let resource_id = authored_subject_id(element)
@@ -825,7 +660,9 @@ fn renderer_canonical_fact_edits(
 ) -> Unit {
   for property in properties {
     match (renderer_attribute(element, property), shape_fact(facts, property)) {
-      (Some(attribute), Some(fact)) =>
+      (Some(attribute), Some(fact)) if renderer_geometry_value_requires_materialization(
+          attribute.value,
+        ) =>
         edits.push({
           start_offset: attribute.value_span.start.offset,
           end_offset: attribute.value_span.end.offset,
@@ -973,20 +810,28 @@ fn renderer_shape_geometry_edits(
         })
       _ => ()
     }
-    match renderer_attribute(element, property) {
-      Some(attribute) =>
+    match (renderer_attribute(element, property), shape_fact(facts, property)) {
+      (Some(attribute), Some(fact)) if kind == "polyline" ||
+        kind == "polygon" ||
+        renderer_geometry_value_requires_materialization(fact.declared_value) =>
         edits.push({
           start_offset: attribute.value_span.start.offset,
           end_offset: attribute.value_span.end.offset,
           replacement: value,
         })
-      None => ()
+      _ => ()
     }
   }
   if kind == "rect" || kind == "ellipse" {
-    let has_radius = shape_fact(facts, "rx") is Some(_) ||
-      shape_fact(facts, "ry") is Some(_)
-    if has_radius {
+    let radius_requires_materialization = ["rx", "ry"].any(property => {
+      match shape_fact(facts, property) {
+        Some(fact) =>
+          fact.origin == "inline_style" ||
+          renderer_geometry_value_requires_materialization(fact.declared_value)
+        None => false
+      }
+    })
+    if radius_requires_materialization {
       let additions : Array[String] = []
       for property in ["rx", "ry"] {
         if renderer_attribute(element, property) is None {
@@ -1005,6 +850,11 @@ fn renderer_shape_geometry_edits(
       }
     }
   }
+}
+
+///|
+fn renderer_geometry_value_requires_materialization(value : String) -> Bool {
+  parse_alignment_number(Some(value.trim().to_owned())) is None
 }
 
 ///|
@@ -1122,14 +972,6 @@ fn normalize_renderer_shape_geometry_with_profile(
 }
 
 ///|
-fn normalize_renderer_shape_geometry(input : String) -> String {
-  normalize_renderer_shape_geometry_with_profile(
-    input,
-    ComparisonProfile::v1_default(),
-  )
-}
-
-///|
 fn renderer_stroke_geometry_edits(
   input : String,
   element : @xml.NamespaceElement,
@@ -1163,16 +1005,39 @@ fn renderer_stroke_geometry_edits(
         })
       _ => ()
     }
-    match renderer_attribute(element, property) {
-      Some(attribute) =>
+    match (renderer_attribute(element, property), shape_fact(facts, property)) {
+      (Some(attribute), Some(fact)) if renderer_stroke_value_requires_materialization(
+          fact.declared_value,
+        ) =>
         edits.push({
           start_offset: attribute.value_span.start.offset,
           end_offset: attribute.value_span.end.offset,
           replacement: value,
         })
-      None => ()
+      _ => ()
     }
   }
+}
+
+///|
+fn renderer_stroke_value_requires_materialization(value : String) -> Bool {
+  let normalized = value
+    .replace_all(old=",", new=" ")
+    .replace_all(old="\t", new=" ")
+    .replace_all(old="\n", new=" ")
+    .replace_all(old="\r", new=" ")
+  let mut saw_number = false
+  for token in normalized.split(" ") {
+    let token = token.trim()
+    if token == "" {
+      continue
+    }
+    if parse_alignment_number(Some(token.to_owned())) is None {
+      return token != "none"
+    }
+    saw_number = true
+  }
+  !saw_number
 }
 
 ///|
@@ -1238,29 +1103,16 @@ fn normalize_renderer_stroke_geometry_with_profile(
 }
 
 ///|
-fn normalize_renderer_stroke_geometry(input : String) -> String {
-  normalize_renderer_stroke_geometry_with_profile(
-    input,
-    ComparisonProfile::v1_default(),
-  )
-}
-
-///|
 pub fn normalize_renderer_input_with_profile(
   input : String,
   profile : ComparisonProfile,
 ) -> String {
-  if profile.viewport_width == 16 && profile.viewport_height == 16 {
-    return normalize_renderer_input(input)
-  }
   normalize_renderer_shape_geometry_with_profile(
     normalize_renderer_stroke_geometry_with_profile(
       normalize_renderer_context_lengths_with_profile(
         normalize_renderer_group_opacity(
           normalize_renderer_mask_semantics(
-            normalize_renderer_ordinary_inheritance(
-              normalize_renderer_style_precedence(input),
-            ),
+            normalize_renderer_residual_paint(input, profile),
             profile,
           ),
         ),
@@ -1274,19 +1126,22 @@ pub fn normalize_renderer_input_with_profile(
 
 ///|
 pub fn normalize_renderer_input(input : String) -> String {
-  normalize_renderer_shape_geometry(
-    normalize_renderer_stroke_geometry(
+  normalize_renderer_shape_geometry_with_profile(
+    normalize_renderer_stroke_geometry_with_profile(
       normalize_renderer_context_lengths_with_profile(
         normalize_renderer_group_opacity(
           normalize_renderer_mask_semantics(
-            normalize_renderer_ordinary_inheritance(
-              normalize_renderer_style_precedence(input),
+            normalize_renderer_residual_paint(
+              input,
+              ComparisonProfile::v1_default(),
             ),
             ComparisonProfile::v1_default(),
           ),
         ),
         ComparisonProfile::v1_default(),
       ),
+      ComparisonProfile::v1_default(),
     ),
+    ComparisonProfile::v1_default(),
   )
 }

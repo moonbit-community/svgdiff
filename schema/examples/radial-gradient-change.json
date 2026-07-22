@@ -4,10 +4,10 @@
   "canvas_outcome": {
     "status": "computed",
     "magnitude": {
-      "changed_pixels": 124,
-      "changed_pixel_fraction": 0.484375,
-      "rgba8_rmse": 0.1755020055726298,
-      "linear_premultiplied_rgba_rmse": 0.13368489541436887
+      "changed_pixels": 132,
+      "changed_pixel_fraction": 0.515625,
+      "rgba8_rmse": 0.18907979379299014,
+      "linear_premultiplied_rgba_rmse": 0.12648487603218694
     },
     "perceptual_flip": {
       "status": "not_computed",
@@ -38,8 +38,8 @@
           "diff:alignment:0:fill:gradient"
         ],
         "measurements": {
-          "changed_pixel_fraction": 0.46484375,
-          "linear_premultiplied_rgba_rmse": 0.1323461229882394
+          "changed_pixel_fraction": 0.515625,
+          "linear_premultiplied_rgba_rmse": 0.12648487603218694
         }
       }
     ],
@@ -226,8 +226,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
+    "renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
     "perceptual_background": null,
     "flip_viewing_conditions": null,
     "flip_error_threshold": null
@@ -463,17 +463,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.46484375,
-        "raster_rgba8_rmse": 0.17521012951542939,
-        "raster_linear_premultiplied_rgba_rmse": 0.1323461229882394,
+        "raster_changed_pixel_fraction": 0.515625,
+        "raster_rgba8_rmse": 0.18907979379299014,
+        "raster_linear_premultiplied_rgba_rmse": 0.12648487603218694,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.46484375,
-          0.1323461229882394,
-          0.17521012951542939
+          0.515625,
+          0.12648487603218694,
+          0.18907979379299014
         ]
       }
     },
@@ -528,17 +528,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.46484375,
-        "raster_rgba8_rmse": 0.17521012951542939,
-        "raster_linear_premultiplied_rgba_rmse": 0.1323461229882394,
+        "raster_changed_pixel_fraction": 0.515625,
+        "raster_rgba8_rmse": 0.18907979379299014,
+        "raster_linear_premultiplied_rgba_rmse": 0.12648487603218694,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.46484375,
-          0.1323461229882394,
-          0.17521012951542939
+          0.515625,
+          0.12648487603218694,
+          0.18907979379299014
         ]
       }
     },
@@ -593,17 +593,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.46484375,
-        "raster_rgba8_rmse": 0.17521012951542939,
-        "raster_linear_premultiplied_rgba_rmse": 0.1323461229882394,
+        "raster_changed_pixel_fraction": 0.515625,
+        "raster_rgba8_rmse": 0.18907979379299014,
+        "raster_linear_premultiplied_rgba_rmse": 0.12648487603218694,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.46484375,
-          0.1323461229882394,
-          0.17521012951542939
+          0.515625,
+          0.12648487603218694,
+          0.18907979379299014
         ]
       }
     },
@@ -639,17 +639,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.46484375,
-        "raster_rgba8_rmse": 0.17521012951542939,
-        "raster_linear_premultiplied_rgba_rmse": 0.1323461229882394,
+        "raster_changed_pixel_fraction": 0.515625,
+        "raster_rgba8_rmse": 0.18907979379299014,
+        "raster_linear_premultiplied_rgba_rmse": 0.12648487603218694,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.46484375,
-          0.1323461229882394,
-          0.17521012951542939
+          0.515625,
+          0.12648487603218694,
+          0.18907979379299014
         ]
       }
     },
@@ -704,17 +704,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.46484375,
-        "raster_rgba8_rmse": 0.17521012951542939,
-        "raster_linear_premultiplied_rgba_rmse": 0.1323461229882394,
+        "raster_changed_pixel_fraction": 0.515625,
+        "raster_rgba8_rmse": 0.18907979379299014,
+        "raster_linear_premultiplied_rgba_rmse": 0.12648487603218694,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.46484375,
-          0.1323461229882394,
-          0.17521012951542939
+          0.515625,
+          0.12648487603218694,
+          0.18907979379299014
         ]
       }
     },
@@ -772,17 +772,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.46484375,
-        "raster_rgba8_rmse": 0.17521012951542939,
-        "raster_linear_premultiplied_rgba_rmse": 0.1323461229882394,
+        "raster_changed_pixel_fraction": 0.515625,
+        "raster_rgba8_rmse": 0.18907979379299014,
+        "raster_linear_premultiplied_rgba_rmse": 0.12648487603218694,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.1323461229882394,
-          0.17521012951542939,
-          0.46484375
+          0.12648487603218694,
+          0.18907979379299014,
+          0.515625
         ]
       }
     }
@@ -802,10 +802,10 @@
       "rendered_outcome": {
         "status": "computed",
         "magnitude": {
-          "changed_pixels": 119,
-          "changed_pixel_fraction": 0.46484375,
-          "rgba8_rmse": 0.17521012951542939,
-          "linear_premultiplied_rgba_rmse": 0.1323461229882394
+          "changed_pixels": 132,
+          "changed_pixel_fraction": 0.515625,
+          "rgba8_rmse": 0.18907979379299014,
+          "linear_premultiplied_rgba_rmse": 0.12648487603218694
         },
         "perceptual_color": {
           "status": "not_computed",
@@ -828,8 +828,8 @@
           "css_y": 2,
           "css_width": 12,
           "css_height": 12,
-          "changed_pixels": 119,
-          "viewport_fraction": 0.46484375,
+          "changed_pixels": 132,
+          "viewport_fraction": 0.515625,
           "cause_envelope": {
             "guarantee": "not_established",
             "coverage": "partial",

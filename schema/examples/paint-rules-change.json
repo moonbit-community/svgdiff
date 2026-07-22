@@ -4,10 +4,10 @@
   "canvas_outcome": {
     "status": "computed",
     "magnitude": {
-      "changed_pixels": 67,
-      "changed_pixel_fraction": 0.26171875,
-      "rgba8_rmse": 0.2576604138956718,
-      "linear_premultiplied_rgba_rmse": 0.26087972492700356
+      "changed_pixels": 80,
+      "changed_pixel_fraction": 0.3125,
+      "rgba8_rmse": 0.19454655897792164,
+      "linear_premultiplied_rgba_rmse": 0.1890332336387133
     },
     "perceptual_flip": {
       "status": "not_computed",
@@ -35,8 +35,8 @@
           "diff:entity:star:clip-rule"
         ],
         "measurements": {
-          "changed_pixel_fraction": 0.26171875,
-          "linear_premultiplied_rgba_rmse": 0.26087972492700356
+          "changed_pixel_fraction": 0.3125,
+          "linear_premultiplied_rgba_rmse": 0.1890332336387133
         }
       }
     ],
@@ -215,8 +215,8 @@
     "comparison_dpr": 1,
     "color_interpretation": "srgb",
     "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+Milky2018/svg@0.3.0",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
+    "renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
+    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
     "perceptual_background": null,
     "flip_viewing_conditions": null,
     "flip_error_threshold": null
@@ -545,25 +545,25 @@
         "painted_boundary_displacement": null,
         "painted_coverage_difference": {
           "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 147,
-          "after_coverage_css_px2": 146,
-          "absolute_difference_css_px2": 1,
-          "union_coverage_css_px2": 147,
-          "fraction": 0.006802721088435374
+          "before_coverage_css_px2": 116.88627450980388,
+          "after_coverage_css_px2": 111.49019607843134,
+          "absolute_difference_css_px2": 5.3960784313725485,
+          "union_coverage_css_px2": 116.88627450980388,
+          "fraction": 0.04616520163725425
         },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.26171875,
-        "raster_rgba8_rmse": 0.2576604138956718,
-        "raster_linear_premultiplied_rgba_rmse": 0.26087972492700356,
+        "raster_changed_pixel_fraction": 0.3125,
+        "raster_rgba8_rmse": 0.19454655897792164,
+        "raster_linear_premultiplied_rgba_rmse": 0.1890332336387133,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.26087972492700356,
-          0.2576604138956718,
-          0.26171875
+          0.1890332336387133,
+          0.19454655897792164,
+          0.3125
         ]
       }
     },
@@ -618,25 +618,25 @@
         "painted_boundary_displacement": null,
         "painted_coverage_difference": {
           "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 147,
-          "after_coverage_css_px2": 146,
-          "absolute_difference_css_px2": 1,
-          "union_coverage_css_px2": 147,
-          "fraction": 0.006802721088435374
+          "before_coverage_css_px2": 116.88627450980388,
+          "after_coverage_css_px2": 111.49019607843134,
+          "absolute_difference_css_px2": 5.3960784313725485,
+          "union_coverage_css_px2": 116.88627450980388,
+          "fraction": 0.04616520163725425
         },
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.26171875,
-        "raster_rgba8_rmse": 0.2576604138956718,
-        "raster_linear_premultiplied_rgba_rmse": 0.26087972492700356,
+        "raster_changed_pixel_fraction": 0.3125,
+        "raster_rgba8_rmse": 0.19454655897792164,
+        "raster_linear_premultiplied_rgba_rmse": 0.1890332336387133,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.26087972492700356,
-          0.2576604138956718,
-          0.26171875
+          0.1890332336387133,
+          0.19454655897792164,
+          0.3125
         ]
       }
     },
@@ -691,17 +691,17 @@
         "painted_coverage_difference": null,
         "geometry_viewport_fraction": null,
         "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.26171875,
-        "raster_rgba8_rmse": 0.2576604138956718,
-        "raster_linear_premultiplied_rgba_rmse": 0.26087972492700356,
+        "raster_changed_pixel_fraction": 0.3125,
+        "raster_rgba8_rmse": 0.19454655897792164,
+        "raster_linear_premultiplied_rgba_rmse": 0.1890332336387133,
         "intrinsic_raster": null
       },
       "domain_ordering": {
         "policy_id": "v2_domain_lexicographic",
         "components": [
-          0.26171875,
-          0.26087972492700356,
-          0.2576604138956718
+          0.3125,
+          0.1890332336387133,
+          0.19454655897792164
         ]
       }
     }
@@ -718,10 +718,10 @@
       "rendered_outcome": {
         "status": "computed",
         "magnitude": {
-          "changed_pixels": 67,
-          "changed_pixel_fraction": 0.26171875,
-          "rgba8_rmse": 0.2576604138956718,
-          "linear_premultiplied_rgba_rmse": 0.26087972492700356
+          "changed_pixels": 80,
+          "changed_pixel_fraction": 0.3125,
+          "rgba8_rmse": 0.19454655897792164,
+          "linear_premultiplied_rgba_rmse": 0.1890332336387133
         },
         "perceptual_color": {
           "status": "not_computed",
@@ -738,14 +738,14 @@
           "source": "pixel_mask",
           "pixel_x": 1,
           "pixel_y": 1,
-          "pixel_width": 15,
+          "pixel_width": 14,
           "pixel_height": 13,
           "css_x": 1,
           "css_y": 1,
-          "css_width": 15,
+          "css_width": 14,
           "css_height": 13,
-          "changed_pixels": 67,
-          "viewport_fraction": 0.26171875,
+          "changed_pixels": 80,
+          "viewport_fraction": 0.3125,
           "cause_envelope": {
             "guarantee": "not_established",
             "coverage": "partial",

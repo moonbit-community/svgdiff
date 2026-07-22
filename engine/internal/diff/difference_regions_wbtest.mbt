@@ -24,6 +24,26 @@ test "single-region magnitude scans its bounds and still excludes equal pixels" 
 }
 
 ///|
+test "diagonally adjacent pixels use visual eight-neighbor connectivity" {
+  let before = @svg.Image::new(3, 3)
+  let after = @svg.Image::new(3, 3)
+  let changed = @svg.Color::rgb(255, 0, 0)
+  after.set_pixel(0, 0, changed)
+  after.set_pixel(1, 1, changed)
+  after.set_pixel(2, 2, changed)
+  match pixel_difference_regions(before, after, 1) {
+    Regions([region]) => {
+      assert_eq(region.pixel_x, 0)
+      assert_eq(region.pixel_y, 0)
+      assert_eq(region.pixel_width, 3)
+      assert_eq(region.pixel_height, 3)
+      assert_eq(region.changed_pixels, 3)
+    }
+    _ => fail("expected one diagonally connected region")
+  }
+}
+
+///|
 test "canvas outcome measures the complete rendered comparison once" {
   let before = "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>"
   let after = "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>"

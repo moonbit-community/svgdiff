@@ -7,6 +7,7 @@ import {
   "Milky2018/svgdiff/engine/internal/computed/geometry",
   "Milky2018/svgdiff/engine/internal/computed/style",
   "Milky2018/svgdiff/engine/internal/computed/resources",
+  "Milky2018/svgdiff/engine/internal/computed/effects",
   "Milky2018/xml",
 }
 

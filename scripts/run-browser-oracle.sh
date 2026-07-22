@@ -39,6 +39,17 @@ log="$work/playwright.log"
 session="svgdiff-browser-oracle-$$"
 
 pw() {
+  if [ "$1" = open ]; then
+    if [ -n "$playwright_cli_bin" ]; then
+      "$playwright_cli_bin" --session "$session" "$@" \
+        --config "$root/.playwright/cli.config.json"
+      return
+    fi
+    npx --yes --package "@playwright/cli@$playwright_version" \
+      playwright-cli --session "$session" "$@" \
+      --config "$root/.playwright/cli.config.json"
+    return
+  fi
   if [ -n "$playwright_cli_bin" ]; then
     "$playwright_cli_bin" --session "$session" "$@"
     return

@@ -283,7 +283,7 @@ test "polyline fill differences use implicit subpath closure" {
   assert_eq(report.atomic_differences[0].computed_relation.status, "different")
   assert_eq(
     report.events[0].rendered_outcome.magnitude.unwrap().changed_pixels,
-    88,
+    84,
   )
   assert_true(
     report.diagnostics.any(diagnostic => {

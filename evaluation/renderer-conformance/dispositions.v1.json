@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/26",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "cases": [
     {
       "id": "gradient-stop-before",
@@ -51,12 +51,6 @@
       "reason": "The pinned and browser renderers differ for a four-stop gradient with stop opacity."
     },
     {
-      "id": "transform-rotate",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_transform_raster_unproven",
-      "reason": "Milky2018/svg@0.3.0 differs from Chromium for the previously exact 90-degree rotation fixture; production now guards axis-swapping transforms."
-    },
-    {
       "id": "transform-skew-x",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_transform_raster_unproven",
@@ -99,22 +93,10 @@
       "reason": "The pinned renderer and Chromium disagree on 36 pixels for the implicitly closed polyline fill."
     },
     {
-      "id": "stroke-cap-butt",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 4 pixels for a butt-capped stroke outline."
-    },
-    {
       "id": "stroke-cap-round",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_outline_raster_unproven",
       "reason": "The pinned renderer and Chromium disagree on 14 pixels for a round-capped stroke outline."
-    },
-    {
-      "id": "stroke-cap-square",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 4 pixels for a square-capped stroke outline."
     },
     {
       "id": "stroke-join-miter",
@@ -141,12 +123,6 @@
       "reason": "The pinned renderer and Chromium disagree on 53 pixels for a miter-limit-controlled join."
     },
     {
-      "id": "stroke-dasharray",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_dash_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 6 pixels for a dashed stroke."
-    },
-    {
       "id": "stroke-dashoffset",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_dash_raster_unproven",
@@ -163,12 +139,6 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
       "reason": "The pinned renderer and Chromium disagree on 57 pixels for an arcs join."
-    },
-    {
-      "id": "stroke-non-scaling",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_non_scaling_stroke_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 80 pixels for a transformed non-scaling stroke."
     },
     {
       "id": "marker-roles",
@@ -203,28 +173,28 @@
     {
       "id": "length-absolute",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-absolute-canonical",
       "reason": "Chromium renders the authored absolute units identically to the canonical user-unit fixture, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "length-percentage",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-percentage-canonical",
       "reason": "Chromium renders the SVG percentages identically to their nearest-viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "length-viewport-relative",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-viewport-relative-canonical",
       "reason": "Chromium renders the viewport-relative units identically to their Comparison Viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "length-nested-viewport",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-nested-viewport-canonical",
       "reason": "Chromium renders nested SVG percentages identically to their nearest-viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
@@ -253,18 +223,6 @@
       "reason": "Production resolves the inherited paint opacity and color alpha, but the normalized fractional-alpha result still requires the existing renderer guard."
     },
     {
-      "id": "pattern-object-bbox",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_pattern_raster_unproven",
-      "reason": "The pinned and browser renderers differ for an object-bounding-box pattern tile and content mapping."
-    },
-    {
-      "id": "pattern-user-space",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_pattern_raster_unproven",
-      "reason": "Milky2018/svg@0.3.0 regresses the previously exact user-space pattern fixture, so referenced-pattern raster evidence remains guarded."
-    },
-    {
       "id": "pattern-content-object-bbox",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_pattern_raster_unproven",
@@ -281,18 +239,6 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_pattern_raster_unproven",
       "reason": "The pinned and browser renderers differ for a transformed pattern tile."
-    },
-    {
-      "id": "paint-order-inherited",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "Production expands and inherits the stroke-first order, but the active stroke outline remains guarded; the canonical leaf form is exact in both renderers."
-    },
-    {
-      "id": "paint-order-inherited-canonical",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "Milky2018/svg@0.3.0 differs from Chromium on the canonical active-stroke paint-order fixture; the existing stroke-outline guard limits rendered evidence."
     },
     {
       "id": "clip-rule-inherited",
@@ -322,7 +268,7 @@
       "id": "use-group-inheritance",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_use_inherited_paint_raster_unproven",
-      "reason": "Milky2018/svg@0.3.0 regresses currentColor inheritance from a use host into a referenced group; production guards that instance-rendering path."
+      "reason": "Milky2018/svg@0.3.1 still differs from Chromium when currentColor is inherited from a use host into a referenced group; production guards that instance-rendering path."
     },
     {
       "id": "embedded-raster-png",
