@@ -454,6 +454,34 @@ test "filter resource outcomes stay deterministic and source located" {
     fail("expected deterministic transparent empty-filter render")
   }
   assert_group_compositor_pixel(image, 1, 1, 0, 0, 0, 0)
+
+  let empty_without_id = "<svg width='8' height='8'><defs><filter id='empty'/></defs><rect x='1' y='1' width='2' height='2' fill='red' filter='url(#empty)'/></svg>"
+  let (_, empty_without_id_hosts) = resolve_filter_hosts_or_raise(
+    empty_without_id,
+    ComparisonProfile::v1_default(),
+  )
+  assert_true(empty_without_id_hosts[0].complete)
+  guard render_product_source_to_image(empty_without_id, {
+      ..ComparisonProfile::v1_default(),
+      viewport_width: 8,
+      viewport_height: 8,
+    })
+    is Some(image) else {
+    fail("expected id-less empty-filter host to render transparently")
+  }
+  assert_group_compositor_pixel(image, 1, 1, 0, 0, 0, 0)
+
+  let empty_without_id_after_sibling = "<svg width='8' height='8'><defs><filter id='empty'/></defs><rect id='keep' x='1' y='1' width='2' height='2' fill='blue'/><rect x='4' y='1' width='2' height='2' fill='red' filter='url(#empty)'/></svg>"
+  guard render_product_source_to_image(empty_without_id_after_sibling, {
+      ..ComparisonProfile::v1_default(),
+      viewport_width: 8,
+      viewport_height: 8,
+    })
+    is Some(image) else {
+    fail("expected empty-filter host after ordinary sibling to render")
+  }
+  assert_group_compositor_pixel(image, 1, 1, 0, 0, 255, 255)
+  assert_group_compositor_pixel(image, 4, 1, 0, 0, 0, 0)
 }
 
 ///|

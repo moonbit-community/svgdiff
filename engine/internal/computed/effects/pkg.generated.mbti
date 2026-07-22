@@ -121,6 +121,8 @@ pub(all) struct FilterSemanticIssue {
 
 pub(all) struct ResolvedFilterHost {
   owner_id : String
+  owner_authored_id : String?
+  owner_render_index : Int?
   filter_fact : @model.DeclaredVisualFact
   resource_id : String?
   resource : FilterResource?

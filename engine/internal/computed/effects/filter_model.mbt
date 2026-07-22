@@ -79,6 +79,8 @@ pub(all) struct FilterSemanticDocument {
 ///|
 pub(all) struct ResolvedFilterHost {
   owner_id : String
+  owner_authored_id : String?
+  owner_render_index : Int?
   filter_fact : DeclaredVisualFact
   resource_id : String?
   resource : FilterResource?
@@ -843,10 +845,11 @@ fn filter_translate_bounds(bounds : CssBounds, dx : Int, dy : Int) -> CssBounds 
 ///|
 fn filter_source_subject(
   subjects : Array[SourceSubject],
-  owner_id : String,
+  source_offset : Int,
 ) -> SourceSubject? {
   for subject in subjects {
-    if source_subject_id(subject) == owner_id {
+    if subject.source_offset == source_offset &&
+      subject.reference.instance_context is None {
       return Some(subject)
     }
   }
@@ -890,7 +893,7 @@ pub fn resolve_filter_hosts_or_raise(
       FilterInvalid => push_unique(issues, "filter_reference_invalid")
       FilterNone => ()
     }
-    let subject = filter_source_subject(subjects, element.subject_id)
+    let subject = filter_source_subject(subjects, element.source_offset)
     let target_bounds = subject.bind(source_subject_bounds)
     let instance_host = element.kind == "use" ||
       subject
@@ -898,9 +901,7 @@ pub fn resolve_filter_hosts_or_raise(
       .unwrap_or(false)
     if instance_host {
       push_unique(issues, "filter_instance_unsupported")
-    } else if subject is None ||
-      subject.bind(value => value.reference.authored_id) is None ||
-      !visual_subject_kind(element.kind) {
+    } else if subject is None || !visual_subject_kind(element.kind) {
       push_unique(issues, "filter_host_unsupported")
     }
     match subject {
@@ -1000,6 +1001,8 @@ pub fn resolve_filter_hosts_or_raise(
     }
     hosts.push({
       owner_id: element.subject_id,
+      owner_authored_id: subject.bind(value => value.reference.authored_id),
+      owner_render_index: subject.map(value => value.reference.source_index),
       filter_fact,
       resource_id,
       resource,

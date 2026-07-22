@@ -2,15 +2,41 @@
 fn hide_empty_filter_hosts(
   node : @svg.SVGNode,
   owner_ids : Array[String],
-) -> @svg.SVGNode {
-  let children = node.children.map(child => {
-    hide_empty_filter_hosts(child, owner_ids)
-  })
-  if owner_ids.contains(node.id) {
+  owner_render_indices : Array[Int],
+  next_render_index : Int,
+) -> (@svg.SVGNode, Int) {
+  let render_index = match node.shape {
+    Rect(..)
+    | Circle(..)
+    | Ellipse(..)
+    | Line(..)
+    | Polyline(..)
+    | Polygon(..)
+    | Path(..) => Some(next_render_index)
+    _ => None
+  }
+  let mut next_render_index = if render_index is Some(_) {
+    next_render_index + 1
+  } else {
+    next_render_index
+  }
+  let children : Array[@svg.SVGNode] = []
+  for child in node.children {
+    let (child, next) = hide_empty_filter_hosts(
+      child, owner_ids, owner_render_indices, next_render_index,
+    )
+    children.push(child)
+    next_render_index = next
+  }
+  let hidden_by_render_index = render_index
+    .map(index => owner_render_indices.contains(index))
+    .unwrap_or(false)
+  let node = if owner_ids.contains(node.id) || hidden_by_render_index {
     { ..node, opacity: 0.0, filters: [], filter_graph_id: None, children }
   } else {
     { ..node, children, }
   }
+  (node, next_render_index)
 }
 
 ///|
@@ -24,7 +50,7 @@ fn render_filter_product_source_to_image(
     is Some(document) else {
     return None
   }
-  let empty_filter_owner_ids = try
+  let empty_filter_hosts = try
     resolve_filter_hosts_or_raise(source, profile)
   catch {
     _ => []
@@ -33,17 +59,33 @@ fn render_filter_product_source_to_image(
       value.1.filter_map(host => {
         match host.resource {
           Some(resource) if host.complete && resource.primitives.is_empty() =>
-            Some(host.owner_id)
+            Some(host)
           _ => None
         }
       })
   }
-  let document = if empty_filter_owner_ids.is_empty() {
+  let empty_filter_owner_ids = empty_filter_hosts.filter_map(host => {
+    host.owner_authored_id
+  })
+  let empty_filter_owner_render_indices = empty_filter_hosts.filter_map(host => {
+    if host.owner_authored_id is None {
+      host.owner_render_index
+    } else {
+      None
+    }
+  })
+  let document = if empty_filter_owner_ids.is_empty() &&
+    empty_filter_owner_render_indices.is_empty() {
     document
   } else {
     {
       ..document,
-      root: hide_empty_filter_hosts(document.root, empty_filter_owner_ids),
+      root: hide_empty_filter_hosts(
+        document.root,
+        empty_filter_owner_ids,
+        empty_filter_owner_render_indices,
+        0,
+      ).0,
     }
   }
   Some(
