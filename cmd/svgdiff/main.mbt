@@ -340,7 +340,7 @@ async fn main {
           @sys.exit(2)
         }
       }
-    None => println(json)
+    None => @stdio.stdout.write(json + "\n")
   }
   match config.html_path {
     Some(path) => {

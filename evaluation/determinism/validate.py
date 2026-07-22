@@ -168,15 +168,20 @@ def main() -> None:
         ],
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(output, indent=2, sort_keys=True) + "\n")
+    args.output.write_bytes(
+        (json.dumps(output, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    )
     if bundle:
-        (bundle / "bundle.v1.json").write_text(
-            json.dumps({
+        encoded_bundle = json.dumps(
+            {
                 "schema_version": "svgdiff-determinism-bundle/1",
                 "corpus_version": manifest["schema_version"],
                 "reports": bundled,
-            }, indent=2, sort_keys=True) + "\n"
-        )
+            },
+            indent=2,
+            sort_keys=True,
+        ) + "\n"
+        (bundle / "bundle.v1.json").write_bytes(encoded_bundle.encode("utf-8"))
 
 
 if __name__ == "__main__":
