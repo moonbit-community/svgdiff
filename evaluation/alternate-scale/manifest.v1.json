@@ -1,7 +1,7 @@
 {
   "schema_version": "svgdiff-alternate-scale-input/1",
-  "renderer_id": "mizchi/svg@0.2.1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "renderer_id": "Milky2018/svg@0.3.1",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "scales": [1, 2, 4, 8],
   "pairs": [
     {

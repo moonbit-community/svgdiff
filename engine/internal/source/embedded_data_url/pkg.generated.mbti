@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/source/embedded_data_url"
+
+// Values
+pub fn parse_embedded_raster_data_url(String) -> EmbeddedRasterDataUrlResult
+
+// Errors
+
+// Types and methods
+pub(all) struct EmbeddedRasterDataUrl {
+  media_type : String
+  encoding : String
+  bytes : Bytes
+}
+
+pub(all) enum EmbeddedRasterDataUrlResult {
+  EmbeddedRasterDataUrlAccepted(EmbeddedRasterDataUrl)
+  EmbeddedRasterDataUrlUnsupported(String)
+  EmbeddedRasterDataUrlInvalid(String)
+  NotEmbeddedRasterDataUrl
+}
+
+// Type aliases
+
+// Traits
+

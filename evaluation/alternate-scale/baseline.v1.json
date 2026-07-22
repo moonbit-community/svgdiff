@@ -1,28 +1,28 @@
 {
   "canonical_report_evidence": false,
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "directional_checks": [
     {
       "id": "micro-movement-around-one",
       "scales": [
         {
-          "changed_pixel_fraction_delta": 0.0625,
-          "classification": "asymmetric",
+          "changed_pixel_fraction_delta": 0.0,
+          "classification": "symmetric",
           "scale": 1
         },
         {
-          "changed_pixel_fraction_delta": 0.03125,
-          "classification": "asymmetric",
+          "changed_pixel_fraction_delta": 0.0,
+          "classification": "symmetric",
           "scale": 2
         },
         {
-          "changed_pixel_fraction_delta": 0.015625,
-          "classification": "asymmetric",
+          "changed_pixel_fraction_delta": 0.0,
+          "classification": "symmetric",
           "scale": 4
         },
         {
-          "changed_pixel_fraction_delta": 0.0078125,
-          "classification": "asymmetric",
+          "changed_pixel_fraction_delta": 0.0,
+          "classification": "symmetric",
           "scale": 8
         }
       ]
@@ -77,39 +77,39 @@
       "id": "micro-negative",
       "measurements": [
         {
-          "changed_pixel_fraction": 0.0625,
-          "changed_pixels": 16,
-          "max_channel_delta": 255,
+          "changed_pixel_fraction": 0.0,
+          "changed_pixels": 0,
+          "max_channel_delta": 0,
           "output_height": 16,
           "output_width": 16,
-          "premultiplied_rgba8_rmse": 0.176776695297,
+          "premultiplied_rgba8_rmse": 0.0,
           "scale": 1
         },
         {
-          "changed_pixel_fraction": 0.03125,
-          "changed_pixels": 32,
-          "max_channel_delta": 255,
+          "changed_pixel_fraction": 0.0,
+          "changed_pixels": 0,
+          "max_channel_delta": 0,
           "output_height": 32,
           "output_width": 32,
-          "premultiplied_rgba8_rmse": 0.125,
+          "premultiplied_rgba8_rmse": 0.0,
           "scale": 2
         },
         {
-          "changed_pixel_fraction": 0.015625,
-          "changed_pixels": 64,
-          "max_channel_delta": 255,
+          "changed_pixel_fraction": 0.0,
+          "changed_pixels": 0,
+          "max_channel_delta": 0,
           "output_height": 64,
           "output_width": 64,
-          "premultiplied_rgba8_rmse": 0.088388347648,
+          "premultiplied_rgba8_rmse": 0.0,
           "scale": 4
         },
         {
-          "changed_pixel_fraction": 0.0078125,
-          "changed_pixels": 128,
-          "max_channel_delta": 255,
+          "changed_pixel_fraction": 0.0,
+          "changed_pixels": 0,
+          "max_channel_delta": 0,
           "output_height": 128,
           "output_width": 128,
-          "premultiplied_rgba8_rmse": 0.0625,
+          "premultiplied_rgba8_rmse": 0.0,
           "scale": 8
         }
       ]
@@ -200,6 +200,6 @@
     }
   ],
   "raster_representation": "premultiplied_rgba8",
-  "renderer_id": "mizchi/svg@0.2.1",
+  "renderer_id": "Milky2018/svg@0.3.1",
   "schema_version": "svgdiff-alternate-scale-renderer-qa/1"
 }

@@ -1,5 +1,5 @@
 import {
-  "mizchi/svg",
+  "Milky2018/svg",
   "moonbitlang/async",
   "moonbitlang/async/fs",
   "moonbitlang/async/stdio",

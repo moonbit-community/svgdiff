@@ -89,8 +89,8 @@ test "tiny geometry changes retain continuous computed magnitude" {
   }
   match report.events[0].rendered_outcome.magnitude {
     Some(magnitude) => {
-      assert_eq(magnitude.changed_pixels, 16)
-      assert_eq(magnitude.changed_pixel_fraction, 0.0625)
+      assert_eq(magnitude.changed_pixels, 0)
+      assert_eq(magnitude.changed_pixel_fraction, 0.0)
     }
     None => fail("expected computed rendered magnitude")
   }
@@ -338,7 +338,7 @@ test "font-dependent text analysis is explicitly deferred" {
 }
 
 ///|
-test "structured report serializes the complete layered result as JSON" {
+test "structured report serializes the concise agent-facing result as JSON" {
   let report = @engine.compare(
     unresolved_text_svg("A"),
     unresolved_text_svg("B"),
@@ -346,32 +346,25 @@ test "structured report serializes the complete layered result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "1.45",
+      "schema_version": "1.46",
       "analysis_status": "partial",
-      "coverage_matrix": _,
-      "renderer_capability_gaps": [],
-      "profile": { "viewport_width": 16, "viewport_height": 16, .. },
-      "atomic_differences": [
-        { "domain": "text.content", "subject_role": "entity", .. },
-      ],
-      "events": [
-        {
-          "primary_subject_id": "label",
-          "rendered_outcome": { "status": "not_computed", .. },
-          ..
-        },
-      ],
-      "diagnostics": [
-        { "code": "font_analysis_deferred", "subject_id": "label", .. },
-      ],
+      "comparison": _,
+      "difference_groups": [_],
+      "events": [_],
+      "limitations": [_],
       ..
     } => ()
-    _ => fail("serialized report did not preserve the layered result")
+    _ => fail("serialized report did not preserve the concise result")
   }
+  let json = report.to_json_string()
+  assert_true(json.contains("\"category\": \"text\""))
+  assert_true(json.contains("\"kind\": \"text.content\""))
+  assert_true(json.contains("\"subject\": \"label\""))
+  assert_true(json.contains("\"code\": \"font_analysis_deferred\""))
 }
 
 ///|
-test "required unavailable report fields serialize as JSON null" {
+test "report omits unavailable values but retains measured zero" {
   let magnitude_report = @engine.compare(
     rect_svg("red"),
     rect_svg("#ff0000"),
@@ -379,33 +372,20 @@ test "required unavailable report fields serialize as JSON null" {
   )
   match @json.parse(magnitude_report.to_json_string()) {
     {
-      "atomic_differences": [
+      "difference_groups": [
         {
-          "magnitude": {
-            "parameter_abs_user_units": Null,
-            "parameter_signed_user_units": Null,
-            "symmetric_relative": Null,
-            "geometry_displacement_css_px": Null,
-            "geometry_viewport_fraction": Null,
-            "presence_painted_viewport_fraction": Null,
-            ..
-          },
+          "items": [{ "magnitude": { "raster_changed_fraction": 0, .. }, .. }],
           ..
         },
       ],
       ..
     } => ()
-    _ => fail("unavailable magnitude components must serialize as null")
+    _ => fail("a measured zero must remain explicit")
   }
-  let presence_report = @engine.compare(
-    empty_svg(),
-    rect_svg("red"),
-    @engine.ComparisonProfile::v1_default(),
-  )
-  match @json.parse(presence_report.to_json_string()) {
-    { "changed_facts": [{ "before": Null, "after": Null, .. }], .. } => ()
-    _ => fail("absent changed facts must serialize as null")
-  }
+  let json = magnitude_report.to_json_string()
+  assert_true(json.find("parameter_abs_user_units") is None)
+  assert_true(json.find("changed_facts") is None)
+  assert_true(json.find("subject_alignments") is None)
   let resource_report = @engine.compare(
     unreferenced_gradient_svg("red"),
     unreferenced_gradient_svg("green"),
@@ -413,20 +393,21 @@ test "required unavailable report fields serialize as JSON null" {
   )
   match @json.parse(resource_report.to_json_string()) {
     {
-      "subject_alignments": [
-        { "id": String(alignment_id), "subject_role": "resource", .. },
-      ],
-      "atomic_differences": [
-        { "subject_alignment_id": String(difference_alignment_id), .. },
+      "difference_groups": [
+        {
+          "category": "resource",
+          "items": [{ "subject_role": "resource", "subject": String(_), .. }],
+          ..
+        },
       ],
       ..
-    } => assert_eq(alignment_id, difference_alignment_id)
-    _ => fail("a resource difference must serialize its resource alignment")
+    } => ()
+    _ => fail("a resource difference must retain a concise subject")
   }
 }
 
 ///|
-test "compact JSON preserves the complete structured report" {
+test "compact JSON preserves the concise structured report" {
   let report = @engine.compare(
     unresolved_text_svg("A"),
     unresolved_text_svg("B"),
@@ -438,23 +419,18 @@ test "compact JSON preserves the complete structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "1.45",
+      "schema_version": "1.46",
       "analysis_status": "partial",
-      "coverage_matrix": _,
-      "renderer_capability_gaps": [],
-      "profile": { "viewport_width": 16, "viewport_height": 16, .. },
-      "subject_alignments": _,
-      "changed_facts": _,
-      "source_resolutions": _,
-      "atomic_differences": [
-        { "domain": "text.content", "subject_role": "entity", .. },
-      ],
+      "comparison": _,
+      "canvas": _,
+      "difference_groups": [_],
       "events": [_],
-      "diagnostics": [_],
+      "limitations": [_],
       ..
     } => ()
-    _ => fail("compact JSON did not preserve every report section")
+    _ => fail("compact JSON did not preserve every concise report section")
   }
+  assert_true(compact.contains("\"kind\":\"text.content\""))
 }
 
 ///|

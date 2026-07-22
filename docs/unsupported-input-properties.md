@@ -2,7 +2,7 @@
 
 Status: current correctness regression suite
 
-Last verified: 2026-07-15
+Last verified: 2026-07-20
 
 The central safety property is:
 
@@ -29,7 +29,7 @@ Self-comparison is deliberate. An unchanged unsupported feature is the easiest p
 - invalid and unsupported basic-shape geometry, including negative radii, malformed or odd point lists, and environment-dependent or arithmetic lengths;
 - invalid or unsupported stroke geometry, including negative widths or miter limits, invalid cap/join keywords, negative or malformed dash lists, environment-dependent or arithmetic lengths, and unsupported vector effects;
 - invalid or unsupported marker attachments and resources, including missing, wrong-kind, external, malformed, environment-dependent lengths, negative sizes, invalid orientations, unresolved reference points, and visible overflow;
-- renderer-conformance guards for fractional geometry, rounded rectangles, polygons, active stroke outlines/joins/dashes/non-scaling-stroke, markers, fractional leaf opacity, general affine transforms outside the integer axis slice, transformed use placement, and referenced gradient or pattern rasterization.
+- renderer-conformance guards for fractional geometry, rounded rectangles, polygons, active stroke outlines/joins/dashes/non-scaling-stroke, markers, fractional leaf opacity, affine transforms outside the integer axis-preserving slice, inherited paint through referenced `use` subtrees, transformed use placement, and referenced gradient or pattern rasterization.
 
 Every generated case also asserts that the report contains Diagnostics and at least one limited or failed coverage cell. The generator is intentionally small and reviewable; adding a supported feature requires removing or narrowing its old unsupported generator only in the same change that adds complete-path mutation coverage.
 

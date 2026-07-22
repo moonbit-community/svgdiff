@@ -1,9 +1,0 @@
-{
-  "schema_version": "svgdiff-schema-examples/1",
-  "cases": [
-    {
-      "id": "legacy-1.6-group-transform-change",
-      "output": "schema/examples/legacy-1.6-group-transform-change.json"
-    }
-  ]
-}

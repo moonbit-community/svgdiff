@@ -1,46 +1,7 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "cases": [
-    {
-      "id": "mask-container",
-      "disposition": "compositor",
-      "compositor_id": "static-mask-compositor@1",
-      "validation_before": "evaluation/renderer-conformance/fixtures/mask-container.svg",
-      "validation_after": "evaluation/renderer-conformance/fixtures/mask-container-more-opaque.svg",
-      "validation_domain": "resource.mask.alpha",
-      "reason": "The raw renderer differs from Chromium by one premultiplied channel level; the product isolates the container and mask surfaces before multiplying alpha."
-    },
-    {
-      "id": "embedded-raster-png",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_embedded_raster_unavailable",
-      "reason": "The pinned renderer does not composite admitted PNG image resources; production retains intrinsic decoded evidence and guards final-canvas rendering."
-    },
-    {
-      "id": "embedded-raster-jpeg",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_embedded_raster_unavailable",
-      "reason": "The pinned renderer does not composite admitted JPEG image resources; production retains intrinsic decoded evidence and guards final-canvas rendering."
-    },
-    {
-      "id": "use-nested-transform",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_use_transform_raster_unproven",
-      "reason": "The pinned renderer composes a transformed use host with its supplemental x and y translation differently from Chromium; nested expansion itself is exact."
-    },
-    {
-      "id": "use-transform",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_use_transform_raster_unproven",
-      "reason": "The pinned renderer diverges when a use host combines an authored transform with nonzero supplemental x or y translation."
-    },
-    {
-      "id": "subtle-geometry-after",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_fractional_geometry_unproven",
-      "reason": "The pinned renderer turns a browser-invisible 0.00001 CSS-pixel movement into sixteen full-channel pixel changes."
-    },
     {
       "id": "gradient-stop-before",
       "disposition": "diagnostic",
@@ -90,36 +51,22 @@
       "reason": "The pinned and browser renderers differ for a four-stop gradient with stop opacity."
     },
     {
-      "id": "leaf-alpha",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_fractional_opacity_unproven",
-      "reason": "Opacity 0.5 becomes alpha 127 in the pinned renderer and alpha 128 in Chromium."
-    },
-    {
-      "id": "group-opacity",
-      "disposition": "compositor",
-      "compositor_id": "svgdiff/isolated-group-compositor@1",
-      "validation_before": "evaluation/schema-examples/cases/group-opacity-change/before.svg",
-      "validation_after": "evaluation/schema-examples/cases/group-opacity-change/after.svg",
-      "reason": "Production renders ordered group children into a transparent layer, applies container opacity once, and source-over composites the completed layer; the raw pinned-renderer divergence remains recorded."
-    },
-    {
       "id": "transform-skew-x",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_transform_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 26 antialiased pixels for skewX(20)."
+      "reason": "The pinned renderer and Chromium disagree on 12 antialiased pixels for skewX(20)."
     },
     {
       "id": "transform-skew-y",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_transform_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 26 antialiased pixels for skewY(20)."
+      "reason": "The pinned renderer and Chromium disagree on 17 antialiased pixels for skewY(20)."
     },
     {
       "id": "basic-shape-rounded-rect",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_curved_shape_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 28 antialiased boundary pixels for the explicit used rounded rectangle."
+      "reason": "The pinned renderer and Chromium disagree on 32 antialiased boundary pixels for the explicit used rounded rectangle."
     },
     {
       "id": "basic-shape-polygon",
@@ -131,103 +78,79 @@
       "id": "basic-shape-circle",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_curved_shape_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 40 boundary pixels for the filled circle."
+      "reason": "The pinned renderer and Chromium disagree on 34 boundary pixels for the filled circle."
     },
     {
       "id": "basic-shape-ellipse",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_curved_shape_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 31 boundary pixels for the filled ellipse."
+      "reason": "The pinned renderer and Chromium disagree on 32 boundary pixels for the filled ellipse."
     },
     {
       "id": "basic-shape-polyline-fill",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_point_shape_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 84 pixels for the implicitly closed polyline fill."
-    },
-    {
-      "id": "stroke-cap-butt",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 4 pixels for a butt-capped stroke outline."
+      "reason": "The pinned renderer and Chromium disagree on 36 pixels for the implicitly closed polyline fill."
     },
     {
       "id": "stroke-cap-round",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 21 pixels for a round-capped stroke outline."
-    },
-    {
-      "id": "stroke-cap-square",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 4 pixels for a square-capped stroke outline."
+      "reason": "The pinned renderer and Chromium disagree on 14 pixels for a round-capped stroke outline."
     },
     {
       "id": "stroke-join-miter",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 44 pixels for a miter join."
+      "reason": "The pinned renderer and Chromium disagree on 57 pixels for a miter join."
     },
     {
       "id": "stroke-join-round",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 42 pixels for a round join."
+      "reason": "The pinned renderer and Chromium disagree on 53 pixels for a round join."
     },
     {
       "id": "stroke-join-bevel",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 43 pixels for a bevel join."
+      "reason": "The pinned renderer and Chromium disagree on 53 pixels for a bevel join."
     },
     {
       "id": "stroke-miterlimit",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 43 pixels for a miter-limit-controlled join."
-    },
-    {
-      "id": "stroke-dasharray",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_dash_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 9 pixels for a dashed stroke."
+      "reason": "The pinned renderer and Chromium disagree on 53 pixels for a miter-limit-controlled join."
     },
     {
       "id": "stroke-dashoffset",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_dash_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 13 pixels for a dash-offset stroke."
+      "reason": "The pinned renderer and Chromium disagree on 6 pixels for a dash-offset stroke."
     },
     {
       "id": "stroke-join-miter-clip",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 44 pixels for a miter-clip join."
+      "reason": "The pinned renderer and Chromium disagree on 57 pixels for a miter-clip join."
     },
     {
       "id": "stroke-join-arcs",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_stroke_join_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 44 pixels for an arcs join."
-    },
-    {
-      "id": "stroke-non-scaling",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_non_scaling_stroke_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 64 pixels for a transformed non-scaling stroke."
+      "reason": "The pinned renderer and Chromium disagree on 57 pixels for an arcs join."
     },
     {
       "id": "marker-roles",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_marker_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 36 pixels for start, mid, and end marker attachment roles."
+      "reason": "The pinned renderer and Chromium disagree on 49 pixels for start, mid, and end marker attachment roles."
     },
     {
       "id": "marker-auto-start-reverse",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_marker_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on 31 pixels for auto-start-reverse orientation."
+      "reason": "The pinned renderer and Chromium disagree on 29 pixels for auto-start-reverse orientation."
     },
     {
       "id": "marker-stroke-width-units",
@@ -250,28 +173,28 @@
     {
       "id": "length-absolute",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-absolute-canonical",
       "reason": "Chromium renders the authored absolute units identically to the canonical user-unit fixture, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "length-percentage",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-percentage-canonical",
       "reason": "Chromium renders the SVG percentages identically to their nearest-viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "length-viewport-relative",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-viewport-relative-canonical",
       "reason": "Chromium renders the viewport-relative units identically to their Comparison Viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
     {
       "id": "length-nested-viewport",
       "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-used-value-normalizer@1",
+      "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-nested-viewport-canonical",
       "reason": "Chromium renders nested SVG percentages identically to their nearest-viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
     },
@@ -288,90 +211,16 @@
       "reason": "The pinned renderer and Chromium disagree on the marker raster after resolving percentage marker viewport lengths."
     },
     {
-      "id": "cascade-inline-origin",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/style-precedence-normalizer@3",
-      "canonical_case_id": "cascade-inline-origin-canonical",
-      "reason": "Chromium renders inline style over a later presentation attribute identically to the canonical winner, and the production cascade normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "cascade-inline-important",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/style-precedence-normalizer@3",
-      "canonical_case_id": "cascade-inline-important-canonical",
-      "reason": "Chromium renders the important inline declaration identically to the canonical winner, and the production cascade normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "cascade-stylesheet-specificity",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/style-precedence-normalizer@3",
-      "canonical_case_id": "cascade-stylesheet-specificity-canonical",
-      "reason": "Chromium renders the ID-specificity winner identically to the canonical paint, and the production static-selector plus cascade normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "cascade-stylesheet-source-order",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/style-precedence-normalizer@3",
-      "canonical_case_id": "cascade-stylesheet-source-order-canonical",
-      "reason": "Chromium renders the later equal-specificity rule identically to the canonical paint, and the production static-selector plus cascade normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "inheritance-stylesheet-fill",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/ordinary-inheritance-normalizer@1",
-      "canonical_case_id": "inheritance-stylesheet-fill-canonical",
-      "reason": "Chromium renders a matched stylesheet fill inherited from a group identically to the canonical leaf-local fill, and the production cascade plus ordinary-inheritance normalizers prove that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "css-wide-fill",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/css-computed-value-normalizer@3",
-      "canonical_case_id": "css-wide-fill-canonical",
-      "reason": "Chromium renders explicit inherit identically to the canonical inherited paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "custom-currentcolor-fill",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/css-computed-value-normalizer@3",
-      "canonical_case_id": "custom-currentcolor-fill-canonical",
-      "reason": "Chromium renders an inherited custom property containing currentColor identically to the canonical paint, and the production computed-value normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "css-color3-syntax",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/css-color3-opacity-normalizer@1",
-      "canonical_case_id": "css-color3-syntax-canonical",
-      "reason": "Chromium renders the CSS Color 3 HSL spelling identically to canonical sRGB, and the production solid-color normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
       "id": "color-alpha-opacity",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_fractional_opacity_unproven",
       "reason": "Production canonicalizes the color and multiplies its alpha into paint opacity, but the remaining one-level fractional-alpha divergence still requires the existing renderer guard."
     },
     {
-      "id": "color-alpha-opacity-canonical",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_fractional_opacity_unproven",
-      "reason": "The canonical effective alpha differs from Chromium by one premultiplied RGBA8 level and remains guarded."
-    },
-    {
       "id": "inherited-paint-opacity",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_fractional_opacity_unproven",
       "reason": "Production resolves the inherited paint opacity and color alpha, but the normalized fractional-alpha result still requires the existing renderer guard."
-    },
-    {
-      "id": "inherited-paint-opacity-canonical",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_fractional_opacity_unproven",
-      "reason": "The canonical inherited effective alpha differs from Chromium by one premultiplied RGBA8 level and remains guarded."
-    },
-    {
-      "id": "pattern-object-bbox",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_pattern_raster_unproven",
-      "reason": "The pinned and browser renderers differ for an object-bounding-box pattern tile and content mapping."
     },
     {
       "id": "pattern-content-object-bbox",
@@ -390,18 +239,6 @@
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_pattern_raster_unproven",
       "reason": "The pinned and browser renderers differ for a transformed pattern tile."
-    },
-    {
-      "id": "pattern-template-inheritance",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_pattern_raster_unproven",
-      "reason": "The pinned and browser renderers differ for recursive same-document pattern template inheritance."
-    },
-    {
-      "id": "paint-order-inherited",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "Production expands and inherits the stroke-first order, but the active stroke outline remains guarded; the canonical leaf form is exact in both renderers."
     },
     {
       "id": "clip-rule-inherited",
@@ -428,44 +265,22 @@
       "reason": "The evenodd interior is resolved, but the pinned renderer differs from Chromium on the self-intersecting point-shape raster."
     },
     {
-      "id": "filter-offset-user-space",
-      "disposition": "compositor",
-      "compositor_id": "static-filter-graph-compositor@1",
-      "canonical_case_id": "filter-offset-user-space-canonical",
-      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
-      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
-      "validation_domain": "resource.filter.primitive.offset",
-      "reason": "The raw renderer ignores SVG filter graphs; the product compositor evaluates the admitted user-space feOffset graph and matches the canonical shifted geometry."
+      "id": "use-group-inheritance",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_use_inherited_paint_raster_unproven",
+      "reason": "Milky2018/svg@0.3.1 still differs from Chromium when currentColor is inherited from a use host into a referenced group; production guards that instance-rendering path."
     },
     {
-      "id": "filter-offset-object-bbox",
-      "disposition": "compositor",
-      "compositor_id": "static-filter-graph-compositor@1",
-      "canonical_case_id": "filter-offset-object-bbox-canonical",
-      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
-      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
-      "validation_domain": "resource.filter.primitive.offset",
-      "reason": "The raw renderer ignores SVG filter graphs; the product resolves object-bounding-box primitive units before evaluating an integer-pixel offset surface."
+      "id": "embedded-raster-png",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_embedded_raster_unavailable",
+      "reason": "The pinned renderer does not composite admitted PNG image resources; production retains intrinsic decoded evidence and guards final-canvas rendering."
     },
     {
-      "id": "filter-offset-named-chain",
-      "disposition": "compositor",
-      "compositor_id": "static-filter-graph-compositor@1",
-      "canonical_case_id": "filter-offset-named-chain-canonical",
-      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
-      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
-      "validation_domain": "resource.filter.primitive.offset",
-      "reason": "The raw renderer ignores SVG filter graphs; the product allocates and resolves each named intermediate surface in source order."
-    },
-    {
-      "id": "filter-offset-source-alpha",
-      "disposition": "compositor",
-      "compositor_id": "static-filter-graph-compositor@1",
-      "canonical_case_id": "filter-offset-source-alpha-canonical",
-      "validation_before": "evaluation/renderer-conformance/fixtures/filter-offset-user-space-before.svg",
-      "validation_after": "evaluation/renderer-conformance/fixtures/filter-offset-user-space.svg",
-      "validation_domain": "resource.filter.primitive.offset",
-      "reason": "The raw renderer ignores SVG filter graphs; the product derives the alpha-only standard input before applying the admitted offset graph."
+      "id": "embedded-raster-jpeg",
+      "disposition": "diagnostic",
+      "diagnostic_code": "renderer_embedded_raster_unavailable",
+      "reason": "The pinned renderer does not composite admitted JPEG image resources; production retains intrinsic decoded evidence and guards final-canvas rendering."
     },
     {
       "id": "blend-modes",
@@ -476,16 +291,6 @@
       "validation_after": "evaluation/schema-examples/cases/blend-mode-change/after.svg",
       "validation_domain": "compositing.blend_mode",
       "reason": "The raw renderer ignores CSS blend modes; the product compositor implements all sixteen opaque binary-alpha formulas and matches the Chromium canonical colors."
-    },
-    {
-      "id": "blend-isolation-auto",
-      "disposition": "compositor",
-      "compositor_id": "static-blend-compositor@1",
-      "canonical_case_id": "blend-isolation-auto-canonical",
-      "validation_before": "evaluation/schema-examples/cases/blend-mode-change/before.svg",
-      "validation_after": "evaluation/schema-examples/cases/blend-mode-change/after.svg",
-      "validation_domain": "compositing.blend_mode",
-      "reason": "The raw renderer ignores CSS blending and therefore misses the ordinary group's parent backdrop; the product compositor preserves the non-isolated stacking context and matches the canonical black overlap."
     }
   ]
 }

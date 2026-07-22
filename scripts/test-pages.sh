@@ -87,28 +87,118 @@ pw --raw run-code \
     await page.getByRole('button', { name: 'Compare SVGs' }).click();
     await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
     await page.locator('#result-section').waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('#report-root [data-difference-canvas]')?.dataset.state === 'ready');
     const reportText = await page.locator('#report-data').inputValue();
     const report = JSON.parse(reportText);
     const scores = await page.locator('.score-card').evaluateAll(cards => cards.map(card => ({
       label: card.querySelector('.score-label').textContent,
       value: card.querySelector('.score-value').textContent,
     })));
+    const previewSvgCounts = [];
+    const previewRootsFillViewport = [];
+    const reportFrames = page.locator('#report-root .preview-content iframe');
+    for (let index = 0; index < await reportFrames.count(); index += 1) {
+      const frame = reportFrames.nth(index).contentFrame();
+      previewSvgCounts.push(await frame.locator('svg').count());
+      previewRootsFillViewport.push(await frame.locator('body > svg').evaluate(svg => {
+        const bounds = svg.getBoundingClientRect();
+        return Math.abs(bounds.left) < 0.5 && Math.abs(bounds.top) < 0.5 &&
+          Math.abs(bounds.width - innerWidth) < 0.5 && Math.abs(bounds.height - innerHeight) < 0.5;
+      }));
+    }
+    const difference = await page.locator('#report-root [data-difference-canvas]').evaluate(canvas => {
+      const context = canvas.getContext('2d');
+      return {
+        headings: [...document.querySelectorAll('#report-root .preview h2')].map(node => node.textContent),
+        width: canvas.width,
+        height: canvas.height,
+        equalPixel: [...context.getImageData(0, 0, 1, 1).data],
+        changedPixel: [...context.getImageData(40, 60, 1, 1).data],
+      };
+    });
     await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
+    const baselineUi = {
+      status: await page.locator('#run-status').textContent(),
+      effectiveValues: await page.locator('.effective-value').allTextContents(),
+      overlays: await page.locator('.region').count(),
+      overlayLabels: await page.locator('.region-label').count(),
+      effectiveValueOptions: await page.locator('#relation-filter option').allTextContents(),
+    };
+    await page.locator('#before-source').fill('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"256\"><rect id=\"no-viewbox-target\" x=\"32\" y=\"32\" width=\"64\" height=\"64\" fill=\"red\"/></svg>');
+    await page.locator('#after-source').fill('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"256\"><rect id=\"no-viewbox-target\" x=\"32\" y=\"32\" width=\"64\" height=\"64\" fill=\"blue\"/></svg>');
+    await page.getByRole('button', { name: 'Compare SVGs' }).click();
+    await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
+    await page.locator('#result-section').waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
+    const noViewBoxFrameHost = page.locator('#report-root .preview-content iframe').first();
+    const noViewBoxFrameBounds = await noViewBoxFrameHost.boundingBox();
+    const noViewBoxSubjectBounds = await noViewBoxFrameHost.contentFrame().locator('#no-viewbox-target').evaluate(node => {
+      const bounds = node.getBoundingClientRect();
+      return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+    });
+    const noViewBoxOverlayBounds = await page.locator('#report-root .overlay').first().locator('.region.observed').boundingBox();
+    const noViewBoxLocalizationGeometryError = Math.max(
+      Math.abs(noViewBoxFrameBounds.x + noViewBoxSubjectBounds.x - noViewBoxOverlayBounds.x),
+      Math.abs(noViewBoxFrameBounds.y + noViewBoxSubjectBounds.y - noViewBoxOverlayBounds.y),
+      Math.abs(noViewBoxSubjectBounds.width - noViewBoxOverlayBounds.width),
+      Math.abs(noViewBoxSubjectBounds.height - noViewBoxOverlayBounds.height),
+    );
+    const affineExpectations = [
+      ['translation', ['geometry.transform.translation']],
+      ['rotation', ['geometry.transform.rotation']],
+      ['scale', ['geometry.transform.scale']],
+      ['skew', ['geometry.transform.skew']],
+      ['combined-affine', [
+        'geometry.transform.translation',
+        'geometry.transform.rotation',
+        'geometry.transform.scale',
+        'geometry.transform.skew',
+      ]],
+    ];
+    const affineExamples = [];
+    for (const [id, expectedDomains] of affineExpectations) {
+      await page.locator('#example-select').selectOption(id);
+      const transforms = await page.evaluate(() => {
+        const parse = source => new DOMParser().parseFromString(source, 'image/svg+xml');
+        return [
+          parse(document.querySelector('#before-source').value).getElementById('target').getAttribute('transform'),
+          parse(document.querySelector('#after-source').value).getElementById('target').getAttribute('transform'),
+        ];
+      });
+      await page.getByRole('button', { name: 'Compare SVGs' }).click();
+      await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
+      await page.locator('#result-section').waitFor({ state: 'visible' });
+      const affineReport = JSON.parse(await page.locator('#report-data').inputValue());
+      const affineDifferences = affineReport.difference_groups.flatMap(group => group.items);
+      affineExamples.push({
+        id,
+        expectedDomains,
+        transforms,
+        analysisStatus: affineReport.analysis_status,
+        domains: affineDifferences.map(difference => difference.kind),
+        unexpectedScale: id === 'rotation' && affineDifferences.some(difference => difference.kind === 'geometry.transform.scale'),
+        changedScores: await page.locator('.score-card .score-value').allTextContents(),
+      });
+    }
     return {
       title: await page.title(),
-      exampleLabel: await page.locator('.example-label').textContent(),
+      exampleOptions: await page.locator('#example-select option').allTextContents(),
       exampleSelectCount: await page.locator('#example-select').count(),
       noticesLinkCount: await page.getByRole('link', { name: 'Example notices' }).count(),
       checkpointBudget: Number(await page.locator('#max-checkpoints').inputValue()),
       sourceFacts,
-      status: await page.locator('#run-status').textContent(),
+      status: baselineUi.status,
       analysisStatus: report.analysis_status,
       schemaVersion: report.schema_version,
-      atomicDifferences: report.atomic_differences.length,
-      diagnostics: report.diagnostics.length,
+      atomicDifferences: report.difference_groups.flatMap(group => group.items).length,
+      diagnostics: report.limitations.length,
       scores,
-      effectiveValues: await page.locator('.effective-value').allTextContents(),
-      overlays: await page.locator('.region').count(),
+      previewSvgCounts,
+      previewRootsFillViewport,
+      difference,
+      effectiveValues: baselineUi.effectiveValues,
+      overlays: baselineUi.overlays,
+      overlayLabels: baselineUi.overlayLabels,
       rawReportAvailable: reportText.length > 100,
       wasmBytes: Number(await page.locator('#report-root').getAttribute('data-compact-report-bytes')),
       errors: await page.evaluate(() => window.__svgdiffTestErrors),
@@ -116,7 +206,9 @@ pw --raw run-code \
         const url = new URL(value);
         return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== '127.0.0.1';
       })),
-      effectiveValueOptions: await page.locator('#relation-filter option').allTextContents(),
+      effectiveValueOptions: baselineUi.effectiveValueOptions,
+      noViewBoxLocalizationGeometryError,
+      affineExamples,
     };
   }" >"$tmp/browser.json" 2>>"$log"
 
@@ -124,8 +216,15 @@ jq -e '
   .errors == [] and
   .foreignRequests == [] and
   .title == "SVGDiff — visual-semantic SVG comparison" and
-  (.exampleLabel | contains("Local color + size changes")) and
-  .exampleSelectCount == 0 and
+  .exampleOptions == [
+    "Local color + size changes",
+    "Affine · translation",
+    "Affine · rotation around a pivot",
+    "Affine · non-uniform scale",
+    "Affine · skew",
+    "Affine · combined decomposition"
+  ] and
+  .exampleSelectCount == 1 and
   .noticesLinkCount == 0 and
   .checkpointBudget == 1000000 and
   .sourceFacts.beforeColor == {"x":"24","y":"44","width":"72","height":"72","fill":"#2563eb"} and
@@ -134,16 +233,35 @@ jq -e '
   .sourceFacts.afterSize == {"x":"152","y":"52","width":"72","height":"72","fill":"#16a34a"} and
   .effectiveValueOptions == ["Any effective value","Different","Same","Unknown"] and
   .analysisStatus == "complete" and
-  .schemaVersion == "1.45" and
+  .schemaVersion == "1.46" and
   .atomicDifferences == 3 and
   .diagnostics == 0 and
   .effectiveValues == ["Different effective value","Different effective value","Different effective value"] and
   [.scores[].label] == ["Changed area","Linear RGBA error","Perceptual difference"] and
   all(.scores[]; (.value | endswith("%"))) and
   all(.scores[]; .value != "0.00%") and
+  .previewSvgCounts == [1, 1] and
+  .previewRootsFillViewport == [true, true] and
+  .difference == {
+    "headings": ["Before", "Difference", "After"],
+    "width": 256,
+    "height": 160,
+    "equalPixel": [0, 0, 0, 255],
+    "changedPixel": [255, 255, 255, 255]
+  } and
   .overlays > 0 and
+  .overlayLabels == 0 and
+  .noViewBoxLocalizationGeometryError <= 1 and
   .rawReportAvailable == true and
-  .wasmBytes > 100
+  .wasmBytes > 100 and
+  (.affineExamples | length) == 5 and
+  all(.affineExamples[];
+    .transforms[0] != .transforms[1] and
+    (.analysisStatus == "complete" or .analysisStatus == "partial") and
+    ((.expectedDomains - .domains) | length == 0) and
+    (.unexpectedScale | not) and
+    all(.changedScores[]; endswith("%") and . != "0.00%")
+  )
 ' "$tmp/browser.json" >/dev/null
 
-printf 'GitHub Pages browser flow: local color-and-size example, WASM report, Inspector, JSON: ok\n'
+printf 'GitHub Pages browser flow: base and affine examples, WASM reports, Inspector, JSON: ok\n'

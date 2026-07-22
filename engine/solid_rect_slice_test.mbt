@@ -209,7 +209,7 @@ test "stylesheet specificity winner is renderer-equivalent to canonical paint" {
 }
 
 ///|
-test "declared fact provenance is serialized into JSON" {
+test "declared fact implementation provenance is not serialized" {
   let before = solid_rect_document(
     "id='box' x='2' y='2' width='8' height='8' fill='red'",
   )
@@ -221,28 +221,8 @@ test "declared fact provenance is serialized into JSON" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  match @json.parse(report.to_json_string()) {
-    {
-      "schema_version": "1.45",
-      "atomic_differences": [
-        {
-          "source_fact_before": {
-            "property": "fill",
-            "declared_value": "red",
-            "origin": "presentation_attribute",
-            "source_span": {
-              "start_offset": Number(_),
-              "end_offset": Number(_),
-              ..
-            },
-            ..
-          },
-          "source_fact_after": { "origin": "inline_style", .. },
-          ..
-        },
-      ],
-      ..
-    } => ()
-    _ => fail("serialized report did not retain declared fact provenance")
-  }
+  let json = report.to_json_string()
+  assert_true(json.find("source_span") is None)
+  assert_true(json.find("presentation_attribute") is None)
+  assert_true(json.find("inline_style") is None)
 }

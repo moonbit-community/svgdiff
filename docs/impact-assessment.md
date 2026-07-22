@@ -1,12 +1,12 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: current schema `1.45` contract
+Status: internal typed-model policy; not serialized by schema `1.46`
 
 Last verified: 2026-07-17
 
-Schema `1.45` retains every raw measurement and adds one required top-level `ImpactAssessment`. The assessment identifies the current main Visual Events without replacing the evidence that produced them. It is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
+The engine retains a typed `ImpactAssessment` for internal experiments and legacy library callers. Schema `1.46` deliberately does not serialize it. The assessment is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
 
-This required assessment is the machine-readable main-event summary for the Agent-oriented Structured Report. The complete `events` and `atomic_differences` arrays remain authoritative inventories; no second summary surface is defined.
+The concise report instead exposes independent raw measurements on grouped differences and events. Agents must enumerate those inventories without assuming that the internal Pareto frontier is a product-level importance judgment.
 
 ## Authoritative measurement surface
 

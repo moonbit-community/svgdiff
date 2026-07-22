@@ -110,7 +110,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.45`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). The top-level `canvas_outcome` compares the final before/after canvases exactly once and records changed-pixel fraction plus linear-premultiplied-RGBA RMSE. With an explicit normalized opaque sRGB8 Perceptual Background and bounded FLIP pixels-per-degree Viewing Conditions it also records a comparison-wide LDR-FLIP `canvas_mean`; the HTML presents these three independent bounded measurements as percentages without combining them into severity. Event-local DeltaEOK and FLIP evidence remain available for explanation and localization. Missing profile inputs stay explicitly unmeasured rather than zero. The v1 profile also records DPR `1.0`, sRGB interpretation, canonical linear-sRGB premultiplied-RGBA arithmetic, versioned production renderer identity, and `svgdiff-renderer-conformance-profile/25`.
+The current JSON contract is version `1.46`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). It is deliberately smaller than the typed engine result: `comparison`, `canvas`, categorized `difference_groups`, `events`, and actual `limitations` are the complete serialized surface. Successful coverage rows, alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
 
 Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
 
@@ -157,19 +157,14 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.45")
+  assert_eq(report.schema_version, "1.46")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
-  assert_eq(report.impact_assessment.policy_id, "event_rendered_pareto/v1")
-  assert_eq(
-    report.impact_assessment.candidate_event_count,
-    report.events.length(),
-  )
 }
 ```
 
-`impact_assessment.frontier_groups` identifies every current main Visual Event under the uncalibrated two-dimensional Pareto policy. Exact ties stay grouped, tradeoffs remain incomparable, and missing rendered measurements remain explicit rather than becoming zero. Follow each group to its event and Atomic Difference IDs; do not interpret group order as a severity ranking.
+The JSON does not serialize a universal impact rank. Consumers may compare the independent changed-area and linear-RGBA measurements, but must not collapse them into an invented severity score.
 
 Always inspect `analysis_status` and `diagnostics` before treating an empty difference list as equality:
 
@@ -221,12 +216,10 @@ test "serialize JSON and build the HTML presentation" {
   )
   let json = report.to_json_string()
   let compact_json = report.to_compact_json_string()
-  let projection_jsonl = report.to_agent_projection_json_lines()
   let html = @svgdiff.render_html_report(before, after, report)
   let summary = @svgdiff.render_markdown_summary(report)
-  assert_true(json.find("\"schema_version\": \"1.45\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"1.46\"") is Some(_))
   assert_true(compact_json.length() < json.length())
-  assert_true(projection_jsonl.find("svgdiff-agent-projection/1") is Some(_))
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
   assert_true(summary.find("Derived presentation only") is Some(_))
@@ -235,7 +228,7 @@ test "serialize JSON and build the HTML presentation" {
 
 The [public API guide](docs/library-api.md) groups all exported report types and documents how to inspect generated MoonBit API documentation.
 
-The CLI option `--agent-json` emits the same schema and evidence without formatting whitespace. `--agent-projection` emits the separately versioned lossless JSONL projection so limited-context consumers can read one header or canonical section item at a time. Both modes can be combined with `--output`, are mutually exclusive with each other, and leave default indented JSON unchanged.
+The CLI option `--agent-json` emits the same concise schema without formatting whitespace. It can be combined with `--output`; default JSON remains indented.
 
 `render_markdown_summary` and CLI `--summary FILE` provide optional derived
 presentation. They do not add report fields, recompute comparison, replace JSON,
@@ -251,7 +244,7 @@ or create severity, visibility, equality, or unique-cause claims.
 - exact continuous parameter magnitudes, symmetric painted-boundary displacement distributions, alpha-only painted-coverage differences, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes that retain direct, rendered-subject-indexed, and supported operation-participant source-input tokens for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
 
-Current Diagnostics also emit `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span, and source-anchored limitations merge all applicable locations under one stable Diagnostic ID. An empty array is reserved for comparison-global or derived conditions; legacy reports may omit the optional JSON field.
+The typed engine Diagnostics retain `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span. The concise JSON deliberately omits source spans and exposes only the condition code, subject, and affected evidence layers in `limitations`.
 
 Scripts, animation, event state, `foreignObject`, selectors outside the documented deterministic static scope, cascade layers and non-author origins, complete CSS tokenization and registered custom properties, system colors, complete path semantics, marker child paint/cascade/context paint, external marker references, path-length calibration, font- or environment-relative lengths, arithmetic length syntax, filter primitives beyond direct static `feOffset`, CSS filter functions, general mask content, CSS image or multi-layer masks, and deterministic font shaping are not currently evaluated. `revert-layer`, malformed or excluded variable syntax, and excessive variable expansion remain explicitly guarded. Local marker attachments and admitted marker lengths are parsed into deterministic placements and conservative clipped envelopes, but marker Chromium fixtures diverge from the pinned renderer and remain guarded. Path data is strictly parsed into normalized absolute segments with authored spans. SVG `transform` lists and root or nested viewport mappings are strictly parsed into cumulative affine matrices; authored declarations remain visible even when mappings are equivalent. Canonical typed transform effects separately report translation, rotation, signed scale, skew, or an exact singular residual matrix. Integer axis-aligned transforms and viewport mappings have accepted browser-conformance fixtures, while general affine rasterization and non-integer viewport mappings remain guarded. Transform events select pixel components through cumulative before/after conservative painted bounds; exact continuous transformed outlines remain deferred. Root intrinsic `width` and `height` never select separate before/after canvases: the profile supplies one common Comparison Viewport. Resource-local transforms and automatic viewport inference remain later roadmap items. Unsupported content is never silently treated as equal.
 
@@ -263,9 +256,9 @@ The [terminal multidimensional magnitude gate](evaluation/terminal-magnitude-gat
 
 Container opacity, admitted container masks, bounded filter graphs, and opaque binary-alpha blend/isolation paths are rendered by project-owned compositors with deterministic RGBA8 arithmetic. Fractional geometry, fractional leaf opacity, continuous-alpha blending, and referenced gradient or pattern raster measurements remain numeric pinned-renderer observations whose Rendered Evidence coverage is limited by stable conformance Diagnostics; each admitted compositor path is a separate product capability.
 
-Current reports project renderer-specific limitations encountered by the inputs into `renderer_capability_gaps`. Each record provides a stable capability ID, `guarded` or `unavailable` support status, and establishing Diagnostic IDs. An empty array does not claim that the renderer supports all SVG features; the coverage matrix remains authoritative.
+The typed engine model retains renderer capability-gap and coverage records for proof and conformance tests. The concise JSON does not expose those implementation inventories; it emits only encountered consequences through `limitations`. An empty limitation list does not claim global SVG support.
 
-The production renderer identity includes private style-precedence, ordinary-inheritance, CSS-computed-value, color/opacity, length-used-value, stroke-used-geometry, basic-shape-used-geometry, and static-mask normalizers plus isolated opacity, mask, filter-graph, and blend/isolation compositors in front of `mizchi/svg@0.2.1`. These adapters rewrite only the renderer-input copy; the original source remains authoritative for authored facts, provenance, and spans. Incomplete or unsupported syntax remains unchanged and keeps the affected evidence partial through stable Diagnostics.
+The production renderer is `Milky2018/svg@0.3.1`. Cascade, ordinary inheritance, native numeric geometry and stroke semantics, mask content paint, missing-filter behavior, and valid admitted filter graphs are delegated directly to that dependency. Private adapters remain only for reproduced gaps: unsupported named colors, fractional and inherited paint opacity, computed container opacity, unsupported length units, inline CSS geometry, compact point syntax, mask edge cases, detached-branch paint state, isolated group/mask composition, empty-filter outcome, and opaque blend composition. They rewrite only the renderer-input copy; the original source remains authoritative for authored facts, provenance, and spans.
 
 The complete implementation boundary, including guarded partial cases, is in the [current v1 support contract](docs/v1-scope.md).
 

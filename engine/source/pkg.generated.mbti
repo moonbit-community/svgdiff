@@ -1,0 +1,53 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/source"
+
+import {
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn audit_nonvisual_metadata(String, String) -> SourceAuditReport
+
+pub fn report_span_slice(String, @model.ReportSourceSpan) -> String
+
+pub fn visual_semantic_input(String) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct SourceAuditDiagnostic {
+  code : String
+  source_role : String
+  source_span : @model.ReportSourceSpan?
+} derive(ToJson)
+
+pub(all) struct SourceAuditDifference {
+  id : String
+  kind : String
+  path : String
+  name : String
+  before : SourceAuditFact?
+  after : SourceAuditFact?
+} derive(ToJson)
+
+pub(all) struct SourceAuditFact {
+  kind : String
+  path : String
+  name : String
+  authored_value : String
+  source_span : @model.ReportSourceSpan
+} derive(ToJson)
+
+pub(all) struct SourceAuditReport {
+  audit_schema_version : String
+  analysis_status : String
+  differences : Array[SourceAuditDifference]
+  diagnostics : Array[SourceAuditDiagnostic]
+} derive(ToJson)
+pub fn SourceAuditReport::to_compact_json_string(Self) -> String
+pub fn SourceAuditReport::to_json_string(Self) -> String
+
+// Type aliases
+
+// Traits
+

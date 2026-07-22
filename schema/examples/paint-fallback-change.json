@@ -1,313 +1,84 @@
 {
-  "schema_version": "1.45",
+  "schema_version": "1.46",
   "analysis_status": "complete",
-  "canvas_outcome": {
+  "comparison": {
+    "viewport": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "canvas": {
     "status": "computed",
-    "magnitude": {
-      "changed_pixels": 144,
-      "changed_pixel_fraction": 0.5625,
-      "rgba8_rmse": 0.5303300858899106,
-      "linear_premultiplied_rgba_rmse": 0.5303300858899106
-    },
-    "perceptual_flip": {
-      "status": "not_computed",
-      "reason_code": "flip_not_requested"
-    }
+    "changed_pixels": 144,
+    "changed_fraction": 0.5625,
+    "linear_rgba_rmse": 0.5303300858899106
   },
-  "impact_assessment": {
-    "policy_id": "event_rendered_pareto/v1",
-    "status": "complete",
-    "calibration_status": "not_calibrated",
-    "input_fields": [
-      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
-    ],
-    "candidate_event_count": 1,
-    "frontier_relation": "unique",
-    "frontier_groups": [
-      {
-        "event_ids": [
-          "event:alignment:0"
-        ],
-        "atomic_difference_ids": [
-          "diff:alignment:0:fill"
-        ],
-        "measurements": {
-          "changed_pixel_fraction": 0.5625,
-          "linear_premultiplied_rgba_rmse": 0.5303300858899106
-        }
-      }
-    ],
-    "domination_witnesses": []
-  },
-  "coverage_matrix": [
+  "difference_groups": [
     {
-      "feature_id": "property.x",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.y",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "document.xml",
-      "subject_id": "document",
-      "source_semantics": "covered",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "not_applicable",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.rect",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.fill",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.width",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.height",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "domain.paint.fill",
-      "subject_id": "alignment:0",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    }
-  ],
-  "renderer_capability_gaps": [],
-  "profile": {
-    "viewport_width": 16,
-    "viewport_height": 16,
-    "comparison_dpr": 1,
-    "color_interpretation": "srgb",
-    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
-    "perceptual_background": null,
-    "flip_viewing_conditions": null,
-    "flip_error_threshold": null
-  },
-  "subject_alignments": [
-    {
-      "id": "alignment:0",
-      "subject_role": "entity",
-      "relation": "correspondence",
-      "before": [
+      "category": "paint",
+      "items": [
         {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "box",
-          "instance_context": null
-        }
-      ],
-      "after": [
-        {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "box",
-          "instance_context": null
-        }
-      ],
-      "basis": "minimum_rendered_geometry_distance",
-      "evidence": {
-        "score_kind": "rendered_geometry_feature_distance_v1",
-        "selected_score": 0.027777777777777776,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    }
-  ],
-  "changed_facts": [
-    {
-      "id": "fact:alignment:0:fill",
-      "subject_id": "alignment:0",
-      "property": "fill",
-      "before": {
-        "property": "fill",
-        "authored_value": "url(#missing) red",
-        "declared_value": "url(#missing) red",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 159
-        }
-      },
-      "after": {
-        "property": "fill",
-        "authored_value": "url(#missing) blue",
-        "declared_value": "url(#missing) blue",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 160
-        }
-      },
-      "affected_subject_ids": [
-        "box"
-      ]
-    }
-  ],
-  "source_resolutions": [],
-  "atomic_differences": [
-    {
-      "id": "diff:alignment:0:fill",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "paint.fill",
-      "source_before": "url(#missing) red",
-      "source_after": "url(#missing) blue",
-      "source_fact_before": {
-        "property": "fill",
-        "authored_value": "url(#missing) red",
-        "declared_value": "url(#missing) red",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 159
-        }
-      },
-      "source_fact_after": {
-        "property": "fill",
-        "authored_value": "url(#missing) blue",
-        "declared_value": "url(#missing) blue",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 160
-        }
-      },
-      "changed_fact_ids": [
-        "fact:alignment:0:fill"
-      ],
-      "evidence_layers": [
-        "source_semantics",
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "resolved_facts_differ",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": null,
-        "parameter_viewport_fraction": null,
-        "parameter_entity_fraction": null,
-        "geometry_displacement_css_px": null,
-        "painted_boundary_displacement": null,
-        "painted_coverage_difference": {
-          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 144,
-          "after_coverage_css_px2": 144,
-          "absolute_difference_css_px2": 0,
-          "union_coverage_css_px2": 144,
-          "fraction": 0
-        },
-        "geometry_viewport_fraction": null,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.5625,
-        "raster_rgba8_rmse": 0.5303300858899106,
-        "raster_linear_premultiplied_rgba_rmse": 0.5303300858899106,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          0.5303300858899106,
-          0.5303300858899106,
-          0.5625
-        ]
-      }
-    }
-  ],
-  "events": [
-    {
-      "id": "event:alignment:0",
-      "primary_subject_id": "alignment:0",
-      "atomic_difference_ids": [
-        "diff:alignment:0:fill"
-      ],
-      "rendered_outcome": {
-        "status": "computed",
-        "magnitude": {
-          "changed_pixels": 144,
-          "changed_pixel_fraction": 0.5625,
-          "rgba8_rmse": 0.5303300858899106,
-          "linear_premultiplied_rgba_rmse": 0.5303300858899106
-        },
-        "perceptual_color": {
-          "status": "not_computed",
-          "reason_code": "perceptual_background_absent"
-        },
-        "perceptual_flip": {
-          "status": "not_computed",
-          "reason_code": "flip_not_requested"
-        }
-      },
-      "difference_regions": [
-        {
-          "id": "region:pixel:0",
-          "source": "pixel_mask",
-          "pixel_x": 2,
-          "pixel_y": 2,
-          "pixel_width": 12,
-          "pixel_height": 12,
-          "css_x": 2,
-          "css_y": 2,
-          "css_width": 12,
-          "css_height": 12,
-          "changed_pixels": 144,
-          "viewport_fraction": 0.5625,
-          "cause_envelope": {
-            "guarantee": "sound_overapproximation",
-            "coverage": "complete",
-            "fallback_scope": "comparison",
-            "candidate_changed_fact_ids": [
-              "fact:alignment:0:fill"
-            ],
-            "diagnostic_ids": []
+          "id": "diff:alignment:0:fill",
+          "subject": "alignment:0",
+          "subject_role": "entity",
+          "kind": "paint.fill",
+          "source": {
+            "before": "url(#missing) red",
+            "after": "url(#missing) blue"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "painted_coverage_difference": {
+              "before_css_px2": 144,
+              "after_css_px2": 144,
+              "absolute_difference_css_px2": 0,
+              "union_css_px2": 144,
+              "fraction": 0
+            },
+            "raster_changed_fraction": 0.5625,
+            "raster_linear_rgba_rmse": 0.5303300858899106
           }
         }
       ]
     }
   ],
-  "diagnostics": []
+  "events": [
+    {
+      "id": "event:alignment:0",
+      "subject": "alignment:0",
+      "difference_ids": [
+        "diff:alignment:0:fill"
+      ],
+      "outcome": {
+        "status": "computed",
+        "changed_pixels": 144,
+        "changed_fraction": 0.5625,
+        "linear_rgba_rmse": 0.5303300858899106
+      },
+      "regions": [
+        {
+          "id": "region:pixel:0",
+          "kind": "observed",
+          "bounds": {
+            "x": 2,
+            "y": 2,
+            "width": 12,
+            "height": 12
+          },
+          "changed_pixels": 144,
+          "viewport_fraction": 0.5625,
+          "possible_causes": {
+            "guarantee": "sound_overapproximation",
+            "coverage": "complete",
+            "candidate_difference_ids": [
+              "diff:alignment:0:fill"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "limitations": []
 }

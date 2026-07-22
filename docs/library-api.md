@@ -2,9 +2,9 @@
 
 Status: current public interface for module version `0.6.0`
 
-Last verified: 2026-07-18
+Last verified: 2026-07-20
 
-Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.45` comparison conditions.
+Consumers should import the root package `Milky2018/svgdiff`. The `engine` package owns the concrete report types, while the root package deliberately re-exports them and pins the schema `1.46` comparison conditions.
 
 Install the published module with:
 
@@ -12,7 +12,7 @@ Install the published module with:
 moon add Milky2018/svgdiff@0.6.0
 ```
 
-The root registry archive contains only the root, `engine`, and internal `css_color` production packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. These library packages support wasm, wasm-gc, JavaScript, and native. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.1` before root `0.6.0`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
+The root registry archive contains only the root, `engine`, and `engine/internal/*` implementation packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. These library packages support wasm, wasm-gc, JavaScript, and native. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.1` before root `0.6.0`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
 
 Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
 
@@ -46,7 +46,7 @@ SourceAuditReport::to_compact_json_string() -> String
 
 `audit_nonvisual_metadata` is deliberately separate from comparison. It inventories exact authored inner content for outermost SVG `title`, `desc`, and `metadata` elements plus unprefixed `aria-*` and `data-*` attributes. It returns `SourceAuditReport` under independent audit schema `1.0`; its records never appear in Structured Report, Agent JSON, Visual Events, magnitudes, or regions. See the [Nonvisual Source Audit](source-audit.md) and its separate [JSON Schema](../schema/svgdiff-source-audit.schema.json).
 
-The two canonical JSON methods serialize schema `1.45`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value. `to_agent_projection_json_lines` emits the independent `svgdiff-agent-projection/1` JSONL transport: one header plus exact canonical section items that reconstruct the same report without loss.
+The two canonical JSON methods serialize schema `1.46`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value. `to_agent_projection_json_lines` emits the independent `svgdiff-agent-projection/1` JSONL transport: one header plus exact canonical section items that reconstruct the same report without loss.
 
 Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.6.0`.
 
@@ -54,7 +54,7 @@ Every call uses the fixed [comparison resource limits](resource-limits.md) and [
 
 Executable IO is outside the library seam. [`cmd/svgdiff`](../cmd/svgdiff) is the native filesystem/stdin/stdout CLI. [`cmd/svgdiff_wasm`](../cmd/svgdiff_wasm/README.md) is the wasm-only, in-memory UTF-8 JSON transaction used by the static browser product. Its ABI 1 request explicitly supplies both SVG strings, viewport dimensions, nullable Perceptual Background, nullable FLIP pixels-per-degree, nullable FLIP threshold, and a positive deterministic checkpoint budget; missing and unknown fields are rejected.
 
-An interruption returns no Structured Report: callers must handle `ComparisonInterrupted` as request control flow rather than infer evidence from missing arrays. Checks occur before and after admission, alignment work, per-event region work, report-finishing stages, and built-in serialization enforcement. Third-party XML parsing and SVG rendering are synchronous and cannot be preempted; each call may finish before the engine reaches its next counted checkpoint. The ordinary `compare` and CLI behavior remain unchanged; current reports use Schema `1.45` and its Diagnostic catalog.
+An interruption returns no Structured Report: callers must handle `ComparisonInterrupted` as request control flow rather than infer evidence from missing arrays. Checks occur before and after admission, alignment work, per-event region work, report-finishing stages, and built-in serialization enforcement. Third-party XML parsing and SVG rendering are synchronous and cannot be preempted; each call may finish before the engine reaches its next counted checkpoint. The ordinary `compare` and CLI behavior remain unchanged; current reports use Schema `1.46` and its Diagnostic catalog.
 
 ## Public report types
 
@@ -70,11 +70,11 @@ An interruption returns no Structured Report: callers must handle `ComparisonInt
 
 All are project-owned serializable records. Parser, SVG scene, image, pixelmatch, and filesystem dependency types do not cross the public seam.
 
-`DifferenceMagnitude` keeps unavailable observations as JSON `null`. Admitted scalar spatial parameters retain canonical local-user-unit deltas, exact CSS-pixel displacement under one complete mapping shared by both sides, viewport-diagonal fraction, and an entity-relative fraction when nonzero conservative bounds exist. Conflicting mappings and direction-dependent anisotropic stroke scalars keep the contextual fields null. Exact authored spelling and units remain in source facts. `painted_boundary_displacement`, when measured, records the fixed method ID, before/after boundary sample counts, and symmetric nearest-boundary mean, nearest-rank p95, and maximum CSS-pixel distances from isolated pinned-renderer alpha support. `painted_coverage_difference` reuses that isolated render pair and records per-side alpha area, absolute alpha difference, alpha union, and their bounded ratio. Equal alpha coverage is zero regardless of RGB color. Both objects remain separate from exact parameters, analytic geometry outcomes, event changed pixels, color error, visibility, and severity. The optional `intrinsic_raster` describes decoded resource-local RGBA8 content and is not final-canvas Rendered Evidence. The optional tagged `transform_effect` is emitted only for canonical transform-component differences: translation uses CSS pixels, rotation and skew use degrees, scale retains signed axis factors, and singular linear changes retain exact affine coefficients without a coefficient-distance score. Consumers must dispatch on the exact difference domain rather than compare unlike units.
+The typed `DifferenceMagnitude` retains every internal optional measurement. Schema `1.46` JSON serializes only computed components and preserves computed zero. Admitted scalar spatial parameters retain canonical local-user-unit deltas, exact CSS-pixel displacement under one complete mapping shared by both sides, viewport-diagonal fraction, and an entity-relative fraction when nonzero conservative bounds exist. Painted-boundary, painted-coverage, intrinsic-raster, and transform measurements remain separate; consumers must dispatch on the exact difference kind rather than compare unlike units.
 
-Every report contains a comparison-wide `canvas_outcome` computed directly from the final rendered before/after canvases. It records changed-pixel fraction and linear-premultiplied-RGBA RMSE, and records `perceptual_flip.canvas_mean` when the caller supplies both a Perceptual Background and FLIP Viewing Conditions. These values remain independent measurements; the library does not combine them into severity.
+Every typed result contains a comparison-wide `canvas_outcome`. Its JSON projection is `canvas`, with changed fraction, linear-premultiplied-RGBA RMSE, and optional requested perceptual response. These values remain independent measurements; the library does not combine them into severity.
 
-Every report also contains `impact_assessment`. Policy `event_rendered_pareto/v1` exposes all Visual Events not dominated on both whole-canvas changed-pixel fraction and linear-premultiplied RGBA RMSE. Equal vectors are tied, tradeoffs remain incomparable, missing rendered magnitudes remain null and make the assessment partial, and every dominated event receives one deterministic witness. The result links back to complete event and Atomic Difference IDs and declares `not_calibrated`; it is not a severity label, scalar, visibility decision, or total order.
+The typed engine result still carries internal Impact Assessment state used by existing analysis and Markdown presentation. Schema `1.46` does not serialize its policy inputs, frontier groups, or domination witnesses. The formal JSON exposes the actual measurements and complete event inventory without presenting an internal selection mechanism as product evidence.
 
 ## Basic use
 
@@ -83,17 +83,17 @@ Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as t
 1. start from `ComparisonProfile::v1_default`;
 2. set the common viewport dimensions if the `16 x 16` default is not appropriate, optionally set a parsed opaque sRGB Perceptual Background for event-local DeltaEOK, optionally add invariant-checked FLIP Viewing Conditions for an event-local LDR-FLIP map and pooled statistics, and optionally set an invariant-checked FLIP error threshold for strict-above area;
 3. call `compare` with the two complete SVG source strings, or `compare_with_resources` with explicitly acquired before/after PNG/JPEG bytes;
-4. inspect `analysis_status` and Diagnostics;
-5. read `canvas_outcome` for comparison-wide rendered measurements;
-6. read every Impact Assessment frontier group for main events, then interpret the linked Visual Events and Atomic Differences;
+4. inspect typed `analysis_status` and Diagnostics, or JSON `analysis_status` and `limitations`;
+5. read typed `canvas_outcome`, or JSON `canvas`, for comparison-wide rendered measurements;
+6. read every event and categorized Atomic Difference; apply caller-specific priorities outside the report;
 7. serialize JSON, build HTML, or derive a non-authoritative Markdown orientation if needed;
 8. independently call `audit_nonvisual_metadata` only when source governance also needs nonvisual metadata changes.
 
 `DiagnosticSourceLocation.source_role` is `before` or `after`; its `source_span` uses half-open UTF-16 offsets into that exact input. Current producers always emit `Diagnostic.source_locations`. The field is optional in JSON for legacy compatibility, where absence means “not reported”; an emitted empty array means the Diagnostic is comparison-global or derived and has no non-fabricated source anchor.
 
-The root API preserves viewport width, viewport height, `perceptual_background`, `flip_viewing_conditions`, and `flip_error_threshold`, and canonicalizes every other profile field. Construct Viewing Conditions with `FlipViewingConditions::from_pixels_per_degree`; only finite values in `[1, 4096]` are accepted. Construct the optional reporting threshold with `FlipErrorThreshold::from_value`; only finite values in `[0, 1]` are accepted. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.45`. The optional background enables event-local DeltaEOK, background plus Viewing Conditions enable event-local LDR-FLIP and its unquantized pooled statistics, and the threshold enables only strict-above area, without affecting transparent-canvas raw rendering.
+The root API preserves viewport width, viewport height, `perceptual_background`, `flip_viewing_conditions`, and `flip_error_threshold`, and canonicalizes every other profile field. Construct Viewing Conditions with `FlipViewingConditions::from_pixels_per_degree`; only finite values in `[1, 4096]` are accepted. Construct the optional reporting threshold with `FlipErrorThreshold::from_value`; only finite values in `[0, 1]` are accepted. Setting a different DPR, color interpretation, raster representation, renderer ID, or renderer conformance profile ID in the input record does not select another backend in schema `1.46`. The optional background enables event-local DeltaEOK, background plus Viewing Conditions enable event-local LDR-FLIP and its unquantized pooled statistics, and the threshold enables only strict-above area, without affecting transparent-canvas raw rendering.
 
-The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/25"`. This ID versions accepted renderer claims and guards independently from both report schema `1.45` and the production `svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+mizchi/svg@0.2.1` renderer identity.
+The current profile emits `renderer_conformance_profile_id = "svgdiff-renderer-conformance-profile/27"`. This ID versions the retained conservative claim and guard set independently from both report schema `1.46` and the production `svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1` renderer identity. Its checked-in raw Chromium 151 baseline measures that exact dependency version; improved individual fixtures do not automatically retire wider capability guards.
 
 ## Generated documentation
 

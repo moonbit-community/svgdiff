@@ -5,7 +5,12 @@ import json
 from pathlib import Path
 import sys
 
-from harness import read_json_lines, validate_answer
+from harness import (
+    read_json_lines,
+    report_differences,
+    report_limitation_ids,
+    validate_answer,
+)
 from magnitude_claims import claim_key, difference_magnitude_claims
 
 
@@ -63,13 +68,13 @@ def region_score(predicted, reference, comparison_rule):
 def report_regions(report):
     return {
         region["id"]: {
-            "x": region["css_x"],
-            "y": region["css_y"],
-            "width": region["css_width"],
-            "height": region["css_height"],
+            "x": region["bounds"]["x"],
+            "y": region["bounds"]["y"],
+            "width": region["bounds"]["width"],
+            "height": region["bounds"]["height"],
         }
         for event in report["events"]
-        for region in event["difference_regions"]
+        for region in event["regions"]
     }
 
 
@@ -77,16 +82,16 @@ def report_envelope_candidates(report):
     return {
         fact_id
         for event in report["events"]
-        for region in event["difference_regions"]
-        for fact_id in region["cause_envelope"]["candidate_changed_fact_ids"]
+        for region in event["regions"]
+        for fact_id in region["possible_causes"]["candidate_difference_ids"]
     }
 
 
 def report_envelope_volume(report):
     candidate_sets = [
-        set(region["cause_envelope"]["candidate_changed_fact_ids"])
+        set(region["possible_causes"]["candidate_difference_ids"])
         for event in report["events"]
-        for region in event["difference_regions"]
+        for region in event["regions"]
     ]
     occurrences = sum(len(candidates) for candidates in candidate_sets)
     return {
@@ -100,29 +105,30 @@ def report_envelope_volume(report):
 
 def actual_fact_ids(report, cause_label):
     matched = set()
+    differences = report_differences(report)
     for actual in cause_label["actual_causes"]:
         locator = actual["fact_locator"]
         candidates = []
-        for fact in report["changed_facts"]:
-            if fact["property"] != locator["report_property"]:
+        for difference in differences:
+            if locator["report_property"] not in difference["kind"]:
                 continue
-            if set(fact["affected_subject_ids"]) != set(locator["affected_subject_ids"]):
+            if (
+                not difference["subject"].startswith("alignment:")
+                and {difference["subject"]} != set(locator["affected_subject_ids"])
+            ):
                 continue
-            before = fact.get("before")
-            after = fact.get("after")
-            if before is not None and locator["source_property"] is not None:
-                if before["property"] != locator["source_property"]:
-                    continue
-            if after is not None and locator["source_property"] is not None:
-                if after["property"] != locator["source_property"]:
-                    continue
-            if before is not None and locator["before_declared_value"] is not None:
-                if before["declared_value"] != locator["before_declared_value"]:
-                    continue
-            if after is not None and locator["after_declared_value"] is not None:
-                if after["declared_value"] != locator["after_declared_value"]:
-                    continue
-            candidates.append(fact["id"])
+            source = difference["source"]
+            if (
+                locator["before_declared_value"] is not None
+                and source.get("before") != locator["before_declared_value"]
+            ):
+                continue
+            if (
+                locator["after_declared_value"] is not None
+                and source.get("after") != locator["after_declared_value"]
+            ):
+                continue
+            candidates.append(difference["id"])
         if len(candidates) != 1:
             raise ValueError(
                 f"{cause_label['case_id']}: actual cause {actual['id']} matched {len(candidates)} Changed Facts"
@@ -151,6 +157,7 @@ def reciprocal_rank(answer, target):
 def score_case(task, answer, ranking, region_label, cause_label):
     case_id = task["case_id"]
     report = task["report"]
+    report_difference_items = report_differences(report)
     validate_answer(answer, case_id)
 
     coverage = answer["coverage"]
@@ -159,14 +166,14 @@ def score_case(task, answer, ranking, region_label, cause_label):
     )
     if report["analysis_status"] != "complete":
         expected_equality = "not_established"
-    elif report["atomic_differences"]:
+    elif report_difference_items:
         expected_equality = "different"
     else:
         expected_equality = "established"
     equality_accuracy = (
         1.0 if coverage["equality_conclusion"] == expected_equality else 0.0
     )
-    required_diagnostic_ids = {item["id"] for item in report["diagnostics"]}
+    required_diagnostic_ids = set(report_limitation_ids(report))
     agent_diagnostic_ids = set(coverage["diagnostic_ids"])
     if required_diagnostic_ids:
         diagnostic_recall = len(required_diagnostic_ids & agent_diagnostic_ids) / len(
@@ -183,7 +190,7 @@ def score_case(task, answer, ranking, region_label, cause_label):
     )
 
     expected_difference_ids = {
-        difference["id"] for difference in report["atomic_differences"]
+        difference["id"] for difference in report_difference_items
     }
     agent_difference_ids = {
         difference_id
@@ -201,7 +208,7 @@ def score_case(task, answer, ranking, region_label, cause_label):
         difference["id"]: {
             claim_key(claim) for claim in difference_magnitude_claims(difference)
         }
-        for difference in report["atomic_differences"]
+        for difference in report_difference_items
     }
     matched_magnitude_claims = set()
     invalid_magnitude_claim_count = 0
@@ -270,7 +277,7 @@ def score_case(task, answer, ranking, region_label, cause_label):
         for difference in answer["differences"]
         for fact_id in difference["possible_cause_changed_fact_ids"]
     }
-    changed_fact_ids = {fact["id"] for fact in report["changed_facts"]}
+    changed_fact_ids = {difference["id"] for difference in report_difference_items}
     invalid_cause_ids = sorted(agent_candidates - changed_fact_ids)
     if cause_label["evaluation_status"] == "eligible":
         actual_ids = actual_fact_ids(report, cause_label)

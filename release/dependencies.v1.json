@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-release-dependencies/1",
-  "last_verified": "2026-07-15",
+  "last_verified": "2026-07-20",
   "dependencies": [
     {
       "name": "Milky2018/xml",
@@ -11,10 +11,18 @@
       "packaged_license_file": true
     },
     {
-      "name": "mizchi/svg",
-      "version": "0.2.1",
+      "name": "Milky2018/svg",
+      "version": "0.3.1",
       "relationship": "direct",
-      "repository": "https://github.com/mizchi/svg",
+      "repository": "https://github.com/Milky2018/svg",
+      "license": "Apache-2.0",
+      "packaged_license_file": false
+    },
+    {
+      "name": "mizchi/css",
+      "version": "0.7.3",
+      "relationship": "transitive through Milky2018/svg",
+      "repository": "https://github.com/mizchi/css",
       "license": "Apache-2.0",
       "packaged_license_file": false
     },

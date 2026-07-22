@@ -72,7 +72,7 @@ fn scanline_to_rgba(
     _ =>
       raise UnsupportedFeature(
         "unsupported color type/bit depth: " +
-        color_type.to_string() +
+        Show::to_string(color_type) +
         "/" +
         bit_depth.to_string(),
       )

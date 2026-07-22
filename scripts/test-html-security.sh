@@ -129,6 +129,12 @@ pw --raw run-code \
     const previews = page.frames().filter(frame => frame !== page.mainFrame());
     const previewStates = await Promise.all(previews.map(async frame => ({
       hasSvg: await frame.evaluate(() => document.querySelector('svg') !== null),
+      svgCount: await frame.locator('svg').count(),
+      rootFillsViewport: await frame.locator('body > svg').evaluate(svg => {
+        const bounds = svg.getBoundingClientRect();
+        return Math.abs(bounds.left) < 0.5 && Math.abs(bounds.top) < 0.5 &&
+          Math.abs(bounds.width - innerWidth) < 0.5 && Math.abs(bounds.height - innerHeight) < 0.5;
+      }),
       scriptExecuted: await frame.evaluate(() => document.documentElement.getAttribute('data-script-executed')),
       handlerExecuted: await frame.evaluate(() => document.documentElement.getAttribute('data-handler-executed')),
     })));
@@ -147,6 +153,8 @@ jq -e '
   (.previewStates | length) == 2 and
   all(.previewStates[];
     .hasSvg == true and
+    .svgCount == 1 and
+    .rootFillsViewport == true and
     .scriptExecuted == null and
     .handlerExecuted == null
   )
@@ -162,6 +170,17 @@ pw --raw run-code \
         value: card.querySelector('.score-value')?.textContent,
       })),
     );
+    await page.waitForFunction(() => document.querySelector('[data-difference-canvas]')?.dataset.state === 'ready');
+    const difference = await page.locator('[data-difference-canvas]').evaluate(canvas => {
+      const context = canvas.getContext('2d');
+      return {
+        headings: [...document.querySelectorAll('.preview h2')].map(node => node.textContent),
+        width: canvas.width,
+        height: canvas.height,
+        equalPixel: [...context.getImageData(0, 0, 1, 1).data],
+        changedPixel: [...context.getImageData(4, 4, 1, 1).data],
+      };
+    });
     const diffCount = await page.locator('[data-diff-id]').count();
     const eventCount = await page.locator('.event-card[data-event-id]').count();
     const firstEvent = page.locator('.event-card[data-event-id]').first();
@@ -194,8 +213,22 @@ pw --raw run-code \
       active: await firstEvent.evaluate(node => node.classList.contains('active')),
       pressed: await firstEvent.locator('[data-locate-event]').getAttribute('aria-pressed'),
       overlayCount: await page.locator('.overlay .region').count(),
+      overlayLabelCount: await page.locator('.overlay .region-label').count(),
       status: await page.locator('#selection-status').textContent(),
     };
+    const beforeFrameHost = page.locator('.preview-content iframe').first();
+    const beforeFrameBounds = await beforeFrameHost.boundingBox();
+    const beforeSubjectBounds = await beforeFrameHost.contentFrame().locator('#box').evaluate(node => {
+      const bounds = node.getBoundingClientRect();
+      return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+    });
+    const beforeOverlayBounds = await page.locator('.overlay').first().locator('.region.observed').boundingBox();
+    const localizationGeometryError = Math.max(
+      Math.abs(beforeFrameBounds.x + beforeSubjectBounds.x - beforeOverlayBounds.x),
+      Math.abs(beforeFrameBounds.y + beforeSubjectBounds.y - beforeOverlayBounds.y),
+      Math.abs(beforeSubjectBounds.width - beforeOverlayBounds.width),
+      Math.abs(beforeSubjectBounds.height - beforeOverlayBounds.height),
+    );
     await firstEvent.locator('[data-locate-event]').click();
     const repeatedSelection = {
       active: await firstEvent.evaluate(node => node.classList.contains('active')),
@@ -213,7 +246,7 @@ pw --raw run-code \
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
       hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
-      hasCompatibility: eventEvidenceText.includes('Schema 1.45 provides bounds only'),
+      hasCompatibility: eventEvidenceText.includes('Schema 1.46 reports CSS-space bounds'),
     };
     await page.locator('#outcome-filter').selectOption('zero');
     const hiddenSelection = {
@@ -289,10 +322,10 @@ pw --raw run-code \
       firstDiffId,
       diffCount,
       eventCount,
-      reportDiffCount: embedded.atomic_differences.length,
+      reportDiffCount: embedded.difference_groups.reduce((count, group) => count + group.items.length, 0),
       reportEventCount: embedded.events.length,
       canvasScores,
-      impactPolicy: embedded.impact_assessment.policy_id,
+      difference,
       groupOrder: await page.locator('.group-header h3').allTextContents().catch(() => []),
       defaultDisclosure,
       hoverOverlayCount,
@@ -300,6 +333,7 @@ pw --raw run-code \
       afterHoverOverlayCount,
       checkboxIndependent,
       selected,
+      localizationGeometryError,
       repeatedSelection,
       evidence,
       hiddenSelection,
@@ -326,7 +360,13 @@ jq -e '
     {"label": "Linear RGBA error", "value": "35.36%"},
     {"label": "Perceptual difference", "value": "Not measured"}
   ] and
-  .impactPolicy == "event_rendered_pareto/v1" and
+  .difference == {
+    "headings": ["Before", "Difference", "After"],
+    "width": 16,
+    "height": 16,
+    "equalPixel": [0, 0, 0, 255],
+    "changedPixel": [255, 0, 255, 255]
+  } and
   .defaultDisclosure == {"event": false, "atomic": false, "raw": false} and
   .hoverOverlayCount == 2 and
   .observedOverlayCount == 2 and
@@ -341,13 +381,15 @@ jq -e '
   .selected.active == true and
   .selected.pressed == "true" and
   .selected.overlayCount == 2 and
+  .selected.overlayLabelCount == 0 and
   (.selected.status | contains($result.firstEventId)) and
+  .localizationGeometryError <= 1 and
   .repeatedSelection == {"active": true, "pressed": "true"} and
   .evidence == {
     "atomicOpen": true,
     "eventOpen": true,
     "hasMagnitude": true,
-    "hasComputedReason": true,
+    "hasComputedReason": false,
     "hasRegion": true,
     "hasFact": true,
     "hasCause": true,
@@ -358,7 +400,7 @@ jq -e '
   .hiddenSelection.overlays == 0 and
   (.hiddenSelection.status | contains("selected but hidden")) and
   .restoredSelection == {"visible": true, "overlays": 2} and
-  (.transforms | length == 2 and .[0] == .[1]) and
+  (.transforms | length == 3 and .[0] == .[1] and .[1] == .[2]) and
   .zoom == "125%" and
   .clearedOverlayCount == 0 and
   .cardSelection == {"active": true, "overlayCount": 2} and
@@ -372,27 +414,18 @@ jq -e '
   .accessible.downloadLabel == "Download JSON" and
   .rawActions == {"open": true, "filename": "svgdiff-report.json"} and
   .sessionReset == false and
-  (.states.tied.overview | contains("exactly tied")) and
-  .states.tied.groups == 1 and
-  (.states.incomparable.overview | contains("incomparable under this policy")) and
+  (.states.tied.overview | contains("does not invent a universal severity ranking")) and
+  (.states.incomparable.overview | contains("does not invent a universal severity ranking")) and
   .states.incomparable.points == 2 and
   (.states.partial.overview | contains("Analysis is partial")) and
-  (.states.partial.overview | contains("unavailable is not zero")) and
-  (.states.equivalent.diffs | contains("Measured zero")) and
   (.states.equivalent.diffs | contains("red → #ff0000")) and
-  .states.equivalent.effectiveValues == ["Same effective value"] and
-  .states.equivalent.effectiveValueTitles == ["Effective values are compared after applying supported SVG rules; this does not describe final pixels."] and
   (.states.equivalent.diffs | contains("Canvas: 0 changed fraction")) and
-  (.states.subtle.diffs | contains("Measured nonzero")) and
   (.states.subtle.diffs | contains("1.0 → 0.99999")) and
-  .states.subtle.effectiveValues == ["Different effective value"] and
   (.states.subtle.diffs | contains("Parameter: ≈1.000e-5 CSS px")) and
-  (.states.subtle.diffs | contains("16 pixels (0.0625)")) and
-  (.states.empty.overview | contains("No candidate Visual Events")) and
   (.states.empty.diffs | contains("No Atomic Differences")) and
   (.states.failed.overview | contains("Analysis failed")) and
   (.states.failed.diffs | contains("No Atomic Differences"))
 ' "$tmp/browser-interaction.json" >/dev/null
 
 printf 'HTML security browser validation: scripts, handlers, parent, network: isolated\n'
-printf 'HTML evidence browser validation: impact, details, causes, regions, controls: ok\n'
+printf 'HTML evidence browser validation: measurements, details, causes, regions, controls: ok\n'

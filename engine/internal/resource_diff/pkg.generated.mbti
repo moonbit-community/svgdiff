@@ -1,0 +1,53 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/resource_diff"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed/effects",
+  "Milky2018/svgdiff/engine/internal/computed/resources",
+  "Milky2018/svgdiff/engine/internal/resource_model",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn append_marker_resource_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn attach_blend_differences(@model.StructuredReport, String, String) -> (@model.StructuredReport, Array[@model.SubjectAlignment])
+
+pub fn attach_clip_path_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn attach_embedded_image_differences(@model.StructuredReport, String, String, Array[@model.SubjectAlignment], @resource_model.ComparisonResourceBundles, @resource_model.ResourceLimits) -> @model.StructuredReport
+
+pub fn attach_filter_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn attach_gradient_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn attach_group_opacity_differences(@model.StructuredReport, String, String) -> (@model.StructuredReport, Array[@model.SubjectAlignment])
+
+pub fn attach_marker_resource_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn attach_mask_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn attach_pattern_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
+
+pub fn embedded_image_alignment(Int, String, @resources.EmbeddedImageSubject?, @resources.EmbeddedImageSubject?, String) -> @model.SubjectAlignment
+
+pub fn embedded_image_alignments(Array[@resources.EmbeddedImageSubject], Array[@resources.EmbeddedImageSubject]) -> Array[@model.SubjectAlignment]
+
+pub fn embedded_image_alignments_for_sources(String, String, @model.ComparisonProfile, @resource_model.ResourceBundle, @resource_model.ResourceBundle, @resource_model.ResourceLimits) -> Array[@model.SubjectAlignment]
+
+pub fn embedded_image_diagnostic(String, @resources.EmbeddedImageSubject, String, Array[String]) -> @model.Diagnostic
+
+pub fn embedded_image_diagnostic_location(String, @resources.EmbeddedImageSubject) -> Array[@model.DiagnosticSourceLocation]
+
+pub fn embedded_image_preflight_diagnostics(String, @model.ComparisonProfile, String, @resource_model.ResourceBundle, @resource_model.ResourceLimits) -> Array[@model.Diagnostic] raise
+
+pub fn filter_primitive_source_fact(String, @effects.FilterPrimitiveSource?) -> @model.DeclaredVisualFact?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

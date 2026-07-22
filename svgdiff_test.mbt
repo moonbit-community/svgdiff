@@ -11,7 +11,7 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "1.45")
+  assert_eq(report.schema_version, "1.46")
   assert_eq(report.atomic_differences.length(), 1)
   let impact : @svgdiff.ImpactAssessment = report.impact_assessment
   assert_eq(impact.policy_id, "event_rendered_pareto/v1")
@@ -34,11 +34,11 @@ test "root package exposes the stable comparison seam" {
   let witnesses : Array[@svgdiff.ImpactDominationWitness] = impact.domination_witnesses
   assert_true(witnesses.is_empty())
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "1.45", "events": [_], .. } => ()
+    { "schema_version": "1.46", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "1.45", "events": [_], .. } => ()
+    { "schema_version": "1.46", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -201,7 +201,7 @@ test "v1 profile records canonical rendering conditions" {
   )
   assert_eq(
     report.profile.renderer_id,
-    "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
+    "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
   )
   match report.events[0].rendered_outcome.magnitude {
     Some(magnitude) =>
@@ -226,7 +226,7 @@ test "comparison normalizes fixed v1 rendering conditions" {
   assert_eq(report.profile.color_interpretation, "srgb")
   assert_eq(
     report.profile.renderer_id,
-    "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
+    "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
   )
 }
 
@@ -582,26 +582,34 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
   assert_true(html.find("default-src &#39;none&#39;") is Some(_))
-  assert_true(html.find("difference_regions") is Some(_))
-  assert_true(html.find("v2_domain_lexicographic") is Some(_))
+  assert_true(html.find("&lt;g&gt;&lt;svg") is None)
+  assert_true(html.find("&quot;regions&quot;") is Some(_))
+  assert_true(html.find("v2_domain_lexicographic") is None)
   assert_true(html.find("id=\"impact\"") is Some(_))
   assert_true(html.find("Changed area") is Some(_))
   assert_true(html.find("Linear RGBA error") is Some(_))
   assert_true(html.find("Perceptual difference") is Some(_))
+  assert_true(html.find("data-difference-canvas") is Some(_))
+  assert_true(
+    html.find("RGB channel difference; black pixels are equal") is Some(_),
+  )
+  assert_true(html.find("before[index]===after[index]?0:255") is Some(_))
   assert_true(html.find("(value*100).toFixed(2)") is Some(_))
   assert_true(html.find("Not measured") is Some(_))
   assert_true(html.find("Visual Events") is Some(_))
   assert_true(html.find("Same effective value") is Some(_))
   assert_true(html.find("Different effective value") is Some(_))
   assert_true(html.find("Effective value unknown") is Some(_))
-  assert_true(html.find("Technical evidence") is Some(_))
-  assert_true(html.find("computed_reason") is Some(_))
+  assert_true(html.find("Reported values") is Some(_))
+  assert_true(html.find("effective_relation") is Some(_))
   assert_true(html.find("Atomic relation") is None)
-  assert_true(html.find("Magnitude · raw") is Some(_))
+  assert_true(html.find("Magnitude") is Some(_))
   assert_true(html.find("Canvas Response") is Some(_))
   assert_true(html.find("Possible Causes & Limitations") is Some(_))
   assert_true(html.find("data-locate-event") is Some(_))
   assert_true(html.find("aria-pressed") is Some(_))
+  assert_true(html.find("labelRegions") is None)
+  assert_true(html.find("box.append(node('span','region-label'") is None)
   assert_true(html.find("innerHTML") is None)
   assert_true(html.find("<script>alert('unsafe')</script>") is None)
   assert_true(html.find("<details class=\"json-panel\">") is Some(_))
@@ -621,7 +629,7 @@ test "HTML report escapes textarea termination in source evidence" {
 }
 
 ///|
-test "HTML report preserves explicit Impact presentation states" {
+test "HTML report presents partial analysis without serialized impact internals" {
   let base = @svgdiff.compare(
     "<svg width='16' height='16'><rect width='8' height='8' fill='red'/></svg>",
     "<svg width='16' height='16'><rect width='8' height='8' fill='blue'/></svg>",
@@ -655,15 +663,8 @@ test "HTML report preserves explicit Impact presentation states" {
   assert_true(
     html.find("&quot;analysis_status&quot;: &quot;partial&quot;") is Some(_),
   )
-  assert_true(
-    html.find("&quot;frontier_relation&quot;: &quot;incomparable&quot;")
-    is Some(_),
-  )
-  assert_true(
-    html.find("At least one candidate lacks required Impact measurements")
-    is Some(_),
-  )
-  assert_true(html.find("displayed order is not an impact ranking") is Some(_))
+  assert_true(html.find("&quot;frontier_relation&quot;") is None)
+  assert_true(html.find("universal severity ranking") is Some(_))
   assert_true(
     html.find("empty evidence inventories do not establish equality") is Some(_),
   )

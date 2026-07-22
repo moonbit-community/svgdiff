@@ -5,6 +5,8 @@ import os
 import sys
 import time
 
+from harness import report_differences, report_limitation_ids
+
 
 task = json.load(sys.stdin)
 if set(task) != {"case_id", "acceptance_version", "prompt", "report"}:
@@ -23,7 +25,7 @@ report = task["report"]
 status = report["analysis_status"]
 if status != "complete":
     equality = "not_established"
-elif report["atomic_differences"]:
+elif report_differences(report):
     equality = "different"
 else:
     equality = "established"
@@ -35,7 +37,7 @@ json.dump(
         "coverage": {
             "analysis_status": status,
             "equality_conclusion": equality,
-            "diagnostic_ids": [item["id"] for item in report["diagnostics"]],
+            "diagnostic_ids": report_limitation_ids(report),
         },
         "differences": [],
         "main_changes": [],

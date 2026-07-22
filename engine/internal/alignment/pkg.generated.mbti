@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/alignment"
+
+import {
+  "Milky2018/svgdiff/engine/internal/control",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/source",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn align_source_subjects_with_guard(Array[@ir.SourceSubject], Array[@ir.SourceSubject], @model.ComparisonProfile, @control.ComparisonGuard) -> Array[@model.SubjectAlignment] raise @control.ComparisonInterrupted
+
+pub fn align_structural_subjects_with_guard(Array[@ir.StructuralAlignmentSubject], Array[@ir.StructuralAlignmentSubject], Int, @control.ComparisonGuard) -> Array[@model.SubjectAlignment] raise @control.ComparisonInterrupted
+
+pub fn alignment_evidence(String, Double?, Int, Int, String) -> @model.AlignmentEvidence
+
+pub fn source_structural_alignment_basis(String) -> Bool
+
+pub fn structural_alignment_subjects(@source.StructuralDocument) -> Array[@ir.StructuralAlignmentSubject]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

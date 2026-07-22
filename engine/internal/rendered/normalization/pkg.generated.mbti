@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/rendered/normalization"
+
+import {
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn normalize_renderer_input(String) -> String
+
+pub fn normalize_renderer_input_with_profile(String, @model.ComparisonProfile) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

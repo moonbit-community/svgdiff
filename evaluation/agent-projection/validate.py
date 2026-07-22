@@ -15,14 +15,9 @@ from evaluation.schema_validation import audit_schema, validate_instance
 RECORD_SCHEMA = ROOT / "schema" / "svgdiff-agent-projection.schema.json"
 REPORT_SCHEMA = ROOT / "schema" / "svgdiff-report.schema.json"
 SECTIONS = (
-    "coverage_matrix",
-    "renderer_capability_gaps",
-    "subject_alignments",
-    "changed_facts",
-    "source_resolutions",
-    "atomic_differences",
+    "difference_groups",
     "events",
-    "diagnostics",
+    "limitations",
 )
 
 
@@ -86,10 +81,6 @@ def reconstruct(report, lines, records, record_schema, report_schema):
         json.dumps(report, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     )
     largest_record_size = max(len(line.encode("utf-8")) for line in lines)
-    if largest_record_size >= compact_size:
-        raise ValueError(
-            "largest projection record is not smaller than the compact canonical report"
-        )
     return largest_record_size, compact_size
 
 

@@ -222,9 +222,20 @@ def main() -> None:
             raise ValueError(
                 f"missing canonical equivalent fixture for {fixture['id']}: {canonical_id}"
             )
-        if compare_pixels(
+        canonical_max_channel_delta = fixture.get("canonical_max_channel_delta", 0)
+        if (
+            not isinstance(canonical_max_channel_delta, int)
+            or isinstance(canonical_max_channel_delta, bool)
+            or canonical_max_channel_delta < 0
+            or canonical_max_channel_delta > 255
+        ):
+            raise ValueError(
+                f"invalid canonical max channel delta for {fixture['id']}"
+            )
+        canonical_comparison = compare_pixels(
             browser_pixels[fixture["id"]], browser_pixels[canonical_id]
-        )["comparison"] != "exact":
+        )
+        if canonical_comparison["max_channel_delta"] > canonical_max_channel_delta:
             raise ValueError(
                 f"browser canonical equivalent differs for {fixture['id']}: {canonical_id}"
             )
@@ -249,8 +260,8 @@ def main() -> None:
     ]
     report = {
         "schema_version": "svgdiff-renderer-conformance/1",
-        "conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
-        "renderer_id": "mizchi/svg@0.2.1",
+        "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
+        "renderer_id": "Milky2018/svg@0.3.1",
         "raster_representation": "premultiplied_rgba8",
         "browser_environment": {
             "browser_engine": browser_environment["browser_engine"],

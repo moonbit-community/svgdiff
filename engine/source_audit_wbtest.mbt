@@ -15,7 +15,7 @@ fn source_audit_difference(
 ///|
 test "nonvisual content masking preserves UTF-16 offsets and outer structure" {
   let source = "<svg xmlns='http://www.w3.org/2000/svg'><text>😀</text><metadata>😀<foreign:rect xmlns:foreign='urn:test' width='bad'/></metadata><rect id='box' width='8' height='8'/></svg>"
-  let masked = visual_semantic_input(source)
+  let masked = @source.visual_semantic_input(source)
   assert_eq(masked.length(), source.length())
   assert_true(masked.contains("<metadata>"))
   assert_true(masked.contains("</metadata>"))
@@ -157,7 +157,7 @@ test "source audit reports deterministic metadata changes with exact spans" {
   assert_eq(title.before.unwrap().authored_value, "😀 Before")
   assert_eq(title.after.unwrap().authored_value, "😀 After")
   assert_eq(
-    report_span_slice(before, title.before.unwrap().source_span),
+    @source.report_span_slice(before, title.before.unwrap().source_span),
     "😀 Before",
   )
   guard source_audit_difference(
@@ -190,7 +190,10 @@ test "source audit reports deterministic metadata changes with exact spans" {
     empty_desc.source_span.start_offset,
     empty_desc.source_span.end_offset,
   )
-  assert_eq(report_span_slice("<svg><desc/></svg>", empty_desc.source_span), "")
+  assert_eq(
+    @source.report_span_slice("<svg><desc/></svg>", empty_desc.source_span),
+    "",
+  )
 }
 
 ///|

@@ -20,6 +20,18 @@ CAUSE_GUARANTEES = {
 MAGNITUDE_STATUSES = {"measured", "not_computed", "indeterminate"}
 
 
+def report_differences(report):
+    return [
+        difference
+        for group in report.get("difference_groups", [])
+        for difference in group.get("items", [])
+    ]
+
+
+def report_limitation_ids(report):
+    return [item["id"] for item in report.get("limitations", [])]
+
+
 def read_json_lines(path: Path):
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if not line.strip():
@@ -46,9 +58,12 @@ def validate_report(report, source: Path) -> None:
         raise ValueError(f"{source}: report lacks schema_version")
     if report.get("analysis_status") not in ANALYSIS_STATUSES:
         raise ValueError(f"{source}: invalid analysis_status")
-    for field in ("atomic_differences", "events", "diagnostics"):
+    for field in ("difference_groups", "events", "limitations"):
         if not isinstance(report.get(field), list):
             raise ValueError(f"{source}: report field {field} must be an array")
+    for group in report["difference_groups"]:
+        if not isinstance(group, dict) or not isinstance(group.get("items"), list):
+            raise ValueError(f"{source}: every difference group must contain items")
 
 
 def validate_answer(answer, expected_case_id: str) -> None:

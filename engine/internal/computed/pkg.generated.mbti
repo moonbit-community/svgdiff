@@ -1,0 +1,159 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/computed"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed/affine_transform",
+  "Milky2018/svgdiff/engine/internal/source/number_parser",
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn append_viewport_preflight_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn append_viewport_resolution_diagnostic(Array[@model.Diagnostic], String, String, String, Array[String], Array[@model.DeclaredVisualFact]) -> Unit
+
+pub fn cumulative_transform(Array[SourceTransformSite]) -> (@affine_transform.AffineTransform, Bool, Bool)
+
+pub fn decompose_affine_transform(@affine_transform.AffineTransform) -> CanonicalAffineTransform
+
+pub fn default_preserve_aspect_ratio() -> PreserveAspectRatioValue
+
+pub fn equivalent_viewport_transform(ViewBoxValue, Double, Double, Double, Double, PreserveAspectRatioValue) -> @affine_transform.AffineTransform
+
+pub fn inflate_bounds(CssBounds, Double) -> CssBounds
+
+pub fn intersect_bounds(CssBounds, CssBounds) -> CssBounds?
+
+pub fn normalized_view_box_signature(ViewBoxValue) -> String
+
+pub fn normalized_viewport_fact(String, String, @xml.NamespaceAttribute, String) -> @model.DeclaredVisualFact
+
+pub fn normalized_viewport_tokens(String) -> Array[String]
+
+pub fn parse_preserve_aspect_ratio_value(String) -> PreserveAspectRatioValue?
+
+pub fn parse_svg_length(String, SvgLengthDirection, ViewportContext, @model.ComparisonProfile) -> Double?
+
+pub fn parse_svg_length_at(@number_parser.NumberParser, SvgLengthDirection, ViewportContext, @model.ComparisonProfile) -> Double?
+
+pub fn parse_view_box_value(String) -> ViewBoxValue?
+
+pub fn parse_viewport_length(String, SvgLengthDirection, ViewportContext, @model.ComparisonProfile) -> ResolvedViewportLength?
+
+pub fn preserve_aspect_ratio_signature(PreserveAspectRatioValue) -> String
+
+pub fn shortest_transform_angle_delta(Double, Double) -> Double
+
+pub fn source_transform_site(String, @xml.NamespaceElement, Int) -> SourceTransformSite
+
+pub fn source_transform_site_with_viewport(String, @xml.NamespaceElement, Int, @model.ComparisonProfile, ViewportContext?) -> (SourceTransformSite, ViewportContext?)
+
+pub fn source_viewport_resolution(String, @xml.NamespaceElement, @model.ComparisonProfile, ViewportContext?) -> SourceViewportResolution
+
+pub fn svg_length_percentage_basis(SvgLengthDirection, ViewportContext) -> Double
+
+pub fn transform_bounds(CssBounds, @affine_transform.AffineTransform) -> CssBounds
+
+pub fn union_bounds(CssBounds?, CssBounds?) -> CssBounds?
+
+pub fn viewport_alignment(String) -> ViewportAlignment?
+
+pub fn viewport_alignment_offset(ViewportAlignment, Double, Double) -> (Double, Double)
+
+pub fn viewport_diagnostic_locations(String, Array[@model.DeclaredVisualFact]) -> Array[@model.DiagnosticSourceLocation]
+
+// Errors
+
+// Types and methods
+pub(all) struct CanonicalAffineTransform {
+  translation_x_css_px : Double
+  translation_y_css_px : Double
+  linear : CanonicalLinearTransform?
+}
+
+pub(all) struct CanonicalLinearTransform {
+  rotation_degrees : Double
+  scale_x : Double
+  scale_y : Double
+  skew_x_degrees : Double
+}
+
+pub(all) struct CssBounds {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+}
+
+pub(all) struct PreserveAspectRatioValue {
+  alignment : ViewportAlignment
+  fit : ViewportFit
+}
+
+pub(all) struct ResolvedViewportLength {
+  value : Double
+}
+
+pub(all) struct SourceTransformSite {
+  node_index : Int
+  subject_id : String
+  authored_id : String?
+  kind : String
+  fact : @model.DeclaredVisualFact?
+  normalized_signature : String
+  matrix : @affine_transform.AffineTransform
+  complete : Bool
+  viewport_facts : Array[@model.DeclaredVisualFact]
+  viewport_matrix : @affine_transform.AffineTransform
+  viewport_complete : Bool
+}
+
+pub(all) struct SourceViewportResolution {
+  facts : Array[@model.DeclaredVisualFact]
+  invalid_facts : Array[@model.DeclaredVisualFact]
+  matrix : @affine_transform.AffineTransform
+  child_context : ViewportContext
+  complete : Bool
+}
+
+pub(all) enum SvgLengthDirection {
+  Horizontal
+  Vertical
+  Unspecified
+} derive(Eq)
+
+pub(all) struct ViewBoxValue {
+  min_x : Double
+  min_y : Double
+  width : Double
+  height : Double
+}
+
+pub(all) enum ViewportAlignment {
+  ViewportNone
+  XMinYMin
+  XMidYMin
+  XMaxYMin
+  XMinYMid
+  XMidYMid
+  XMaxYMid
+  XMinYMax
+  XMidYMax
+  XMaxYMax
+}
+
+pub(all) struct ViewportContext {
+  width : Double
+  height : Double
+}
+
+pub(all) enum ViewportFit {
+  Meet
+  Slice
+}
+
+// Type aliases
+
+// Traits
+

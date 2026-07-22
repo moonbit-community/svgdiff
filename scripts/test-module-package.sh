@@ -24,17 +24,9 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt | css_color | css_color/moon.pkg | css_color/pkg.generated.mbti | engine | engine/moon.pkg | engine/pkg.generated.mbti)
+    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt)
       ;;
-    css_color/*.mbt)
-      case "$path" in
-        *_test.mbt | *_wbtest.mbt)
-          printf 'Registry package contains a test source: %s\n' "$path" >&2
-          exit 1
-          ;;
-      esac
-      ;;
-    engine/*.mbt)
+    engine/*)
       case "$path" in
         *_test.mbt | *_wbtest.mbt)
           printf 'Registry package contains a test source: %s\n' "$path" >&2
@@ -60,7 +52,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt css_color/moon.pkg css_color/color.mbt engine/moon.pkg engine/structured_report.mbt; do
+for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 
@@ -104,7 +96,7 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "1.45" else { abort("wrong schema") }
+  guard report.schema_version == "1.46" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
   guard report.impact_assessment.policy_id == "event_rendered_pareto/v1" else {

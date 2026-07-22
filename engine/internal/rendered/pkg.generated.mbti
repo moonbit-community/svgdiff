@@ -1,0 +1,117 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/rendered"
+
+import {
+  "Milky2018/svg",
+  "Milky2018/svgdiff/engine/internal/rendered/ldr_flip",
+  "Milky2018/svgdiff/engine/model",
+  "mizchi/pixelmatch",
+}
+
+// Values
+pub fn composite_linear_srgb_channel(Int, Double, Int) -> Double
+
+pub fn computed_canvas_perceptual_flip_evidence(Double) -> @model.CanvasPerceptualFlipEvidence
+
+pub fn computed_perceptual_color_evidence(@model.PerceptualColorMagnitude) -> @model.PerceptualColorEvidence
+
+pub fn computed_perceptual_flip_evidence(@model.PerceptualFlipMap, @model.PerceptualFlipStatistics) -> @model.PerceptualFlipEvidence
+
+pub fn computed_rendered_evidence(@model.RenderedMagnitude) -> @model.RenderedEvidence
+
+pub fn delta_e_ok_after_background(@svg.Color, @svg.Color, @model.PerceptualBackground) -> Double
+
+pub fn displayed_linear_flip_color(@svg.Color, @model.PerceptualBackground) -> @ldr_flip.FlipLinearRgb
+
+pub fn displayed_oklab(@svg.Color, @model.PerceptualBackground) -> OklabColor
+
+pub fn empty_perceptual_flip_map() -> @model.PerceptualFlipMap
+
+pub fn encode_flip_u16_base64(Array[Double]) -> String
+
+pub fn event_local_perceptual_color_evidence(@svg.Image, @svg.Image, Array[@model.DifferenceRegion], @model.PerceptualBackground) -> @model.PerceptualColorEvidence
+
+pub fn event_local_perceptual_flip_evidence(@svg.Image, @svg.Image, Array[@model.DifferenceRegion], @model.PerceptualBackground, @model.FlipViewingConditions, @model.FlipErrorThreshold?, Int, Int) -> PerceptualFlipComputation
+
+pub fn exact_pixel_options() -> @pixelmatch.Options
+
+pub fn expand_flip_bounds(FlipPixelBounds, Int, Int, Int) -> FlipPixelBounds
+
+pub fn group_compositor_apply_opacity(@svg.Image, Double) -> Unit
+
+pub fn group_compositor_atomic_container(@svg.SVGNode) -> Bool
+
+pub fn group_compositor_children(@svg.SVGNode) -> Array[@svg.SVGNode]
+
+pub fn group_compositor_clear_outside_bounds(@svg.Image, @svg.BoundingBox) -> Unit
+
+pub fn group_compositor_container(@svg.SVGNode) -> Bool
+
+pub fn group_compositor_over_image(@svg.Image, @svg.Image) -> Unit
+
+pub fn group_compositor_render_container(@svg.SVGDocument, Array[@svg.SVGNode], @svg.SVGNode, Int, Int) -> @svg.Image
+
+pub fn group_compositor_render_leaf(@svg.SVGDocument, Array[@svg.SVGNode], @svg.SVGNode, Int, Int) -> @svg.Image
+
+pub fn group_compositor_render_masked_container(@svg.SVGDocument, Array[@svg.SVGNode], @svg.SVGNode, Int, Int) -> @svg.Image
+
+pub fn linear_premultiplied_rgba_squared_error(@svg.Color, @svg.Color) -> Double
+
+pub fn linear_srgb_to_oklab(Double, Double, Double) -> OklabColor
+
+pub fn not_computed_canvas_outcome(String) -> @model.CanvasOutcome
+
+pub fn not_computed_canvas_perceptual_flip_evidence(String) -> @model.CanvasPerceptualFlipEvidence
+
+pub fn not_computed_perceptual_color_evidence(String) -> @model.PerceptualColorEvidence
+
+pub fn not_computed_perceptual_flip_evidence(String) -> @model.PerceptualFlipEvidence
+
+pub fn not_computed_rendered_evidence(String) -> @model.RenderedEvidence
+
+pub fn perceptual_flip_statistics(Array[Double], Array[Double], Int, @model.FlipErrorThreshold?) -> @model.PerceptualFlipStatistics
+
+pub fn pixel_in_regions(Int, Int, Array[@model.DifferenceRegion]) -> Bool
+
+pub fn pixels_differ(@svg.Image, @svg.Image, Int) -> Bool
+
+pub fn raw_rgba8_squared_error(@svg.Color, @svg.Color) -> Double
+
+pub fn render_product_document_to_image(@svg.SVGDocument, Int, Int) -> @svg.Image
+
+pub fn rendered_difference(@svg.SVGDocument, @svg.SVGDocument, @model.ComparisonProfile) -> @model.RenderedMagnitude
+
+pub fn rendered_image_difference(@svg.Image, @svg.Image) -> @model.RenderedMagnitude
+
+pub fn selected_raw_difference_bounds(@svg.Image, @svg.Image, Array[@model.DifferenceRegion]) -> FlipPixelBounds?
+
+pub fn srgb8_to_linear(Int) -> Double
+
+pub fn to_pixelmatch_image(@svg.Image) -> @pixelmatch.Image
+
+// Errors
+
+// Types and methods
+pub(all) struct FlipPixelBounds {
+  pixel_x : Int
+  pixel_y : Int
+  pixel_width : Int
+  pixel_height : Int
+}
+
+pub(all) struct OklabColor {
+  lightness : Double
+  green_red : Double
+  blue_yellow : Double
+}
+
+pub(all) struct PerceptualFlipComputation {
+  evidence : @model.PerceptualFlipEvidence
+  output_pixels : Int
+  convolution_samples : Int
+}
+
+// Type aliases
+
+// Traits
+

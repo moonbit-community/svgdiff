@@ -3,23 +3,25 @@ package "Milky2018/svgdiff"
 
 import {
   "Milky2018/svgdiff/engine",
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/svgdiff/engine/source",
   "moonbitlang/core/debug",
 }
 
 // Values
-pub fn audit_nonvisual_metadata(String, String) -> @engine.SourceAuditReport
+pub fn audit_nonvisual_metadata(String, String) -> @source.SourceAuditReport
 
-pub fn compare(String, String, @engine.ComparisonProfile) -> @engine.StructuredReport
+pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
-pub fn compare_with_control(String, String, @engine.ComparisonProfile, @engine.ComparisonControl) -> @engine.StructuredReport raise ComparisonInterrupted
+pub fn compare_with_control(String, String, @model.ComparisonProfile, @engine.ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
-pub fn compare_with_control_and_resources(String, String, @engine.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle, @engine.ComparisonControl) -> @engine.StructuredReport raise ComparisonInterrupted
+pub fn compare_with_control_and_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle, @engine.ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
-pub fn compare_with_resources(String, String, @engine.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle) -> @engine.StructuredReport
+pub fn compare_with_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport
 
-pub fn render_html_report(String, String, @engine.StructuredReport) -> String
+pub fn render_html_report(String, String, @model.StructuredReport) -> String
 
-pub fn render_markdown_summary(@engine.StructuredReport) -> String
+pub fn render_markdown_summary(@model.StructuredReport) -> String
 
 // Errors
 pub(all) suberror ComparisonInterrupted {
@@ -30,113 +32,113 @@ pub(all) suberror ComparisonInterrupted {
 // Types and methods
 
 // Type aliases
-pub using @engine {type AlignmentEvidence}
+pub using @model {type AlignmentEvidence}
 
-pub using @engine {type AtomicDifference}
+pub using @model {type AtomicDifference}
 
-pub using @engine {type CauseEnvelope}
+pub using @model {type CauseEnvelope}
 
-pub using @engine {type ChangedFact}
+pub using @model {type ChangedFact}
 
 pub using @engine {type ComparisonControl}
 
-pub using @engine {type ComparisonProfile}
+pub using @model {type ComparisonProfile}
 
-pub using @engine {type ComputedRelation}
+pub using @model {type ComputedRelation}
 
-pub using @engine {type DeclaredVisualFact}
+pub using @model {type DeclaredVisualFact}
 
-pub using @engine {type Diagnostic}
+pub using @model {type Diagnostic}
 
-pub using @engine {type DiagnosticSourceLocation}
+pub using @model {type DiagnosticSourceLocation}
 
-pub using @engine {type DifferenceMagnitude}
+pub using @model {type DifferenceMagnitude}
 
-pub using @engine {type DifferenceRegion}
+pub using @model {type DifferenceRegion}
 
-pub using @engine {type DomainOrdering}
+pub using @model {type DomainOrdering}
 
-pub using @engine {type FeatureCoverage}
+pub using @model {type FeatureCoverage}
 
-pub using @engine {type FlipErrorThreshold}
+pub using @model {type FlipErrorThreshold}
 
-pub using @engine {type FlipViewingConditions}
+pub using @model {type FlipViewingConditions}
 
-pub using @engine {type ImpactAssessment}
+pub using @model {type ImpactAssessment}
 
-pub using @engine {type ImpactDominationWitness}
+pub using @model {type ImpactDominationWitness}
 
-pub using @engine {type ImpactFrontierGroup}
+pub using @model {type ImpactFrontierGroup}
 
-pub using @engine {type ImpactMeasurement}
+pub using @model {type ImpactMeasurement}
 
-pub using @engine {type IntrinsicRasterMagnitude}
+pub using @model {type IntrinsicRasterMagnitude}
 
-pub using @engine {type PaintedBoundaryDisplacementMagnitude}
+pub using @model {type PaintedBoundaryDisplacementMagnitude}
 
-pub using @engine {type PaintedCoverageDifferenceMagnitude}
+pub using @model {type PaintedCoverageDifferenceMagnitude}
 
-pub using @engine {type PerceptualBackground}
+pub using @model {type PerceptualBackground}
 
-pub using @engine {type PerceptualColorEvidence}
+pub using @model {type PerceptualColorEvidence}
 
-pub using @engine {type PerceptualColorMagnitude}
+pub using @model {type PerceptualColorMagnitude}
 
-pub using @engine {type PerceptualFlipAreaAboveThreshold}
+pub using @model {type PerceptualFlipAreaAboveThreshold}
 
-pub using @engine {type PerceptualFlipEvidence}
+pub using @model {type PerceptualFlipEvidence}
 
-pub using @engine {type PerceptualFlipMap}
+pub using @model {type PerceptualFlipMap}
 
-pub using @engine {type PerceptualFlipStatistics}
+pub using @model {type PerceptualFlipStatistics}
 
-pub using @engine {type PresenceMagnitude}
+pub using @model {type PresenceMagnitude}
 
-pub using @engine {type RenderedEvidence}
+pub using @model {type RenderedEvidence}
 
-pub using @engine {type RenderedMagnitude}
+pub using @model {type RenderedMagnitude}
 
-pub using @engine {type RendererCapabilityGap}
+pub using @model {type RendererCapabilityGap}
 
-pub using @engine {type ReportSourceSpan}
+pub using @model {type ReportSourceSpan}
 
-pub using @engine {type ResolvedVisualFact}
+pub using @model {type ResolvedVisualFact}
 
 pub using @engine {type ResourceBundle}
 
 pub using @engine {type ResourceBundleEntry}
 
-pub using @engine {type SourceAuditDiagnostic}
+pub using @source {type SourceAuditDiagnostic}
 
-pub using @engine {type SourceAuditDifference}
+pub using @source {type SourceAuditDifference}
 
-pub using @engine {type SourceAuditFact}
+pub using @source {type SourceAuditFact}
 
-pub using @engine {type SourceAuditReport}
+pub using @source {type SourceAuditReport}
 
-pub using @engine {type SourceResolutionPair}
+pub using @model {type SourceResolutionPair}
 
-pub using @engine {type StructuredReport}
+pub using @model {type StructuredReport}
 
-pub using @engine {type SubjectAlignment}
+pub using @model {type SubjectAlignment}
 
-pub using @engine {type SubjectInstanceContext}
+pub using @model {type SubjectInstanceContext}
 
-pub using @engine {type SubjectReference}
+pub using @model {type SubjectReference}
 
-pub using @engine {type TransformEffectMagnitude}
+pub using @model {type TransformEffectMagnitude}
 
-pub using @engine {type TransformResidualMagnitude}
+pub using @model {type TransformResidualMagnitude}
 
-pub using @engine {type TransformRotationMagnitude}
+pub using @model {type TransformRotationMagnitude}
 
-pub using @engine {type TransformScaleMagnitude}
+pub using @model {type TransformScaleMagnitude}
 
-pub using @engine {type TransformSkewMagnitude}
+pub using @model {type TransformSkewMagnitude}
 
-pub using @engine {type TransformTranslationMagnitude}
+pub using @model {type TransformTranslationMagnitude}
 
-pub using @engine {type VisualEvent}
+pub using @model {type VisualEvent}
 
 // Traits
 

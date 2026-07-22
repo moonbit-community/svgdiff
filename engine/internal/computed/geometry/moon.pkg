@@ -1,0 +1,10 @@
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/arc_geometry",
+  "Milky2018/svgdiff/engine/internal/report_support",
+  "Milky2018/svgdiff/engine/internal/source" @source_semantics,
+  "Milky2018/svgdiff/engine/internal/source/number_parser",
+  "Milky2018/svgdiff/engine/internal/source/path_data",
+}

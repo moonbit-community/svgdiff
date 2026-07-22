@@ -264,7 +264,7 @@ test "inherited hierarchy context participates in exact alignment" {
 }
 
 ///|
-test "a visual merge is represented set to set and serialized" {
+test "a visual merge stays internal to subject alignment" {
   let before = alignment_svg(
     "<rect x='0' y='0' width='5' height='4' fill='red'/><rect x='5' y='0' width='5' height='4' fill='red'/>",
   )
@@ -283,10 +283,7 @@ test "a visual merge is represented set to set and serialized" {
       alignment.after.length() == 1
     }),
   )
-  match @json.parse(report.to_json_string()) {
-    { "subject_alignments": [{ "relation": "merge", .. }], .. } => ()
-    _ => fail("expected serialized set-to-set alignment")
-  }
+  assert_true(report.to_json_string().find("subject_alignments") is None)
 }
 
 ///|

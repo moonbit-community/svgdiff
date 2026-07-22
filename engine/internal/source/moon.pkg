@@ -1,0 +1,5 @@
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/svgdiff/engine/internal/source/css_color",
+  "Milky2018/xml",
+}

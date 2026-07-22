@@ -15,7 +15,7 @@ python3 evaluation/ssim-diagnostics/evaluate.py \
 python3 evaluation/ssim-diagnostics/evaluate.py \
   --adapter "$adapter" --cli "$cli" >"$tmp/second.txt"
 cmp "$tmp/first.txt" "$tmp/second.txt"
-grep -Fx 'SSIM diagnostics: 13 cases, 1 non-none false identity, 1 MS-SSIM unavailable; production integration rejected' "$tmp/first.txt" >/dev/null
+grep -Fx 'SSIM diagnostics: 13 cases, 2 non-none false identity, 1 MS-SSIM unavailable; production integration rejected' "$tmp/first.txt" >/dev/null
 
 jq -e '
   .schema_version == "svgdiff-ssim-diagnostic-results/1" and
@@ -24,7 +24,7 @@ jq -e '
   .accepted_role == "qa_only_secondary_structural_observation" and
   .production_integration == "rejected" and
   .summary.case_count == 13 and
-  .summary.human_non_none_false_exact_case_ids == ["embedded-raster-change"] and
+  .summary.human_non_none_false_exact_case_ids == ["subtle-geometry-shift", "embedded-raster-change"] and
   .summary.ms_ssim_unavailable_case_ids == ["unsupported-path-change"] and
   .summary.ssim_scale_absolute_delta_maximum > 0.8 and
   .summary.canonical_ssim_ordering.inverted_pair_count > 0 and
@@ -35,8 +35,7 @@ jq -e '
     .enlarged_exact_rgba8 == true and .ms_ssim == 1) and
   (.cases[] | select(.case_id == "embedded-raster-change") |
     .human_tier == "high" and .canonical_exact_rgba8 == true and
-    .production_renderer_capability_gaps[0].capability_id ==
-      "raster.embedded_images") and
+    any(.production_limitations[]; .code == "renderer_embedded_raster_unavailable")) and
   (.cases[] | select(.case_id == "unsupported-path-change") |
     .ms_ssim == null and .ms_ssim_reason_code != null)
 ' evaluation/ssim-diagnostics/results.v1.json >/dev/null
@@ -44,8 +43,7 @@ jq -e '
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
-  .schema_version == "1.45" and
-  .impact_assessment.policy_id == "event_rendered_pareto/v1" and
+  .schema_version == "1.46" and
   ([paths | map(tostring) | join(".") |
     select(test("(^|\\.)(ssim|ms_ssim)($|\\.)"))] | length) == 0
 ' "$tmp/report.json" >/dev/null

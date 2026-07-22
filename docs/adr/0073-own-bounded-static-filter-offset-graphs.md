@@ -1,6 +1,6 @@
 # ADR 0073: Own bounded static filter-offset graphs
 
-- Status: accepted
+- Status: rendering ownership superseded by ADR 0108; source/computed semantics remain accepted
 - Date: 2026-07-15
 - Decision owners: svgdiff maintainers
 - Supersedes: the blanket filter deferral in the v1 scope

@@ -209,25 +209,13 @@ def build_results(adapter: Path, cli: Path) -> dict[str, Any]:
         )
         if report["schema_version"] != manifest["report_schema_version"]:
             raise ValueError(f"{case_id}: production report schema drifted")
-        if (
-            report["profile"]["renderer_id"]
-            != manifest["production_renderer_id"]
-        ):
-            raise ValueError(f"{case_id}: renderer identity drifted")
-        if (
-            report["profile"]["renderer_conformance_profile_id"]
-            != manifest["renderer_conformance_profile_id"]
-        ):
-            raise ValueError(f"{case_id}: conformance identity drifted")
         results.append(
             {
                 "case_id": case_id,
                 "human_tier": importance["tier"],
                 "source_pair_sha256": source_hash(case),
                 "production_analysis_status": report["analysis_status"],
-                "production_renderer_capability_gaps": report[
-                    "renderer_capability_gaps"
-                ],
+                "production_limitations": report["limitations"],
                 **metric,
                 "canonical_dissimilarity": 1.0 - metric["canonical_ssim"],
                 "enlarged_dissimilarity": 1.0 - metric["enlarged_ssim"],

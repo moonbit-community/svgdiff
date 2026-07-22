@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-18
+Last verified: 2026-07-20
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -11,13 +11,13 @@ Last verified: 2026-07-18
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
 | MoonBit module and CLI | `0.6.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.45` | `schema/svgdiff-report.schema.json` and public report types | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Structured Report | `1.46` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
-| Diagnostics | Schema `1.45` plus each stable `Diagnostic.code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable limitation or failure meanings, source locations, and the evidence layers they constrain. |
+| Limitations | Schema `1.46` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
-| Same-domain ordering | `v2_domain_lexicographic` | emitted `DomainOrdering.policy_id` and its tests | Component construction, order, direction, null behavior, and tie-breaking. |
-| Impact Assessment | `event_rendered_pareto/v1` | emitted `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Candidate events, measurement inputs, dominance, ties, incomparability, missing evidence, frontier representation, and witnesses. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/25` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
+| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `1.46`. |
+| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `1.46`. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/27` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -158,6 +158,8 @@ Module `0.5.30` classifies complete group-surface, clip, mask, filter, blend, is
 Module `0.5.31` adds the comparison-wide `canvas_outcome`. It measures the final before/after canvas exactly once, records changed-pixel fraction and linear-premultiplied-RGBA RMSE, and optionally records a full-comparison LDR-FLIP canvas mean under explicit background and Viewing Conditions. The HTML presents these three independent bounded measurements as percentages without combining them into severity. This backward-readable additive field advances Structured Report schema to `1.45`; renderer identity, conformance profile `/25`, ordering policy, and Impact policy remain unchanged.
 
 Module `0.6.0` removes wall-clock time from the core engine and replaces `ComparisonControl.max_elapsed_milliseconds` plus `TimeBudgetExceeded` with the deterministic `max_checkpoints` plus `CheckpointBudgetExceeded`. The root, engine, color, and raster-codec packages now support wasm, wasm-gc, JavaScript, and native; the filesystem/stdin/stdout CLI remains native-only. The wasm-only `cmd/svgdiff_wasm` entry exposes `svgdiff-wasm-abi/1`, a fixed-memory UTF-8 JSON transaction accepting two SVG strings plus explicit viewport, nullable perceptual-profile inputs, and a positive checkpoint budget and returning compact Structured Report JSON. The final ABI 1 shape deliberately removes the earlier optional-viewport/no-perceptual request without a legacy decoder. The static GitHub Pages product runs this transaction in a dedicated Worker and shares the self-contained HTML Report Inspector presentation assets without recomputing semantics. Cross-target tests cover the complete library suite, while the wasm smoke gate requires one canonical report to be exactly equal to native output and the Pages browser gate verifies the three canvas measurements, localization, and raw JSON. This intentional public control-API break advances the module minor line; Structured Report schema `1.45`, renderer identity, conformance profile `/25`, Diagnostics, ordering policy, and Impact policy remain unchanged.
+
+Schema `1.46` intentionally contracts the product JSON. It keeps comparison inputs, whole-canvas measurements, grouped Atomic Differences, Visual Events, CSS-space localization, possible-cause Atomic Difference links, and encountered limitations. Successful coverage rows, renderer adapter identity chains, alignment scoring, Changed Facts, source spans, source-resolution tables, evidence bookkeeping, ordering vectors, Impact frontier internals, duplicate raster metrics, unrequested statuses, and null placeholders remain available only in the typed engine model or are omitted. Obsolete schemas and examples are not retained; current consumers either understand `1.46` or reject the report.
 
 ## Structured Report schema versions
 

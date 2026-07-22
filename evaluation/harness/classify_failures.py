@@ -40,7 +40,7 @@ def classify(tasks, gate, policy):
     diagnostic_counts = Counter()
     for task in sorted(tasks, key=lambda item: item["case_id"]):
         observations = []
-        for diagnostic in task["report"]["diagnostics"]:
+        for diagnostic in task["report"]["limitations"]:
             domain = diagnostic_domain(diagnostic["code"], policy)
             diagnostic_counts[domain] += 1
             observations.append(

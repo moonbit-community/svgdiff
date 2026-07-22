@@ -2,9 +2,9 @@
 
 Status: current maintenance ledger
 
-Last verified: 2026-07-19
+Last verified: 2026-07-21
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.45`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.46`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 The opt-in report-only language-model benchmark uses a separately installed pinned Codex CLI and authenticated remote model. Neither is linked, vendored, resolved by MoonBit, shipped in release archives, or used by the comparison engine. Each evaluated case gets an empty working directory and isolated temporary Codex home containing only authentication; user configuration, project rules, prior sessions, and model caches are excluded. Strict feature overrides disable shell, browser, apps, MCP, memory, and related tools before the request, while any residual tool event rejects the run. This protects benchmark validity, not hostile multi-tenant execution: the benchmark requires trusted operator credentials and network access and must not be exposed as an unauthenticated service.
 
@@ -19,7 +19,8 @@ The [terminal operational gate](../evaluation/terminal-operational-gate/README.m
 | Dependency | Relationship | Resolved version | Manifest license | License file in installed package |
 | --- | --- | ---: | --- | --- |
 | `Milky2018/xml` | Direct; authored XML and Source Spans | `0.4.0` | Apache-2.0 | Yes |
-| `mizchi/svg` | Direct; scene and canonical v1 renderer | `0.2.1` | Apache-2.0 | No |
+| `Milky2018/svg` | Direct; scene and canonical v1 renderer | `0.3.1` | Apache-2.0 | No |
+| `mizchi/css` | Transitive through `Milky2018/svg` | `0.7.3` | Apache-2.0 | No |
 | `mizchi/pixelmatch` | Direct; baseline image difference support | `0.6.1` | Apache-2.0 | Yes |
 | `moonbitlang/async` | Direct module dependency | `0.19.1` | Apache-2.0 | Yes |
 | `moonbitlang/x` | Direct module dependency | `0.4.40` | Apache-2.0 | No |
@@ -28,9 +29,9 @@ The [terminal operational gate](../evaluation/terminal-operational-gate/README.m
 | `mizchi/image` | Transitive through `pixelmatch` | `0.1.2` | Apache-2.0 | No |
 | `mizchi/zlib` | Transitive through `image` and the raster-codec module | `0.4.6` | Apache-2.0 | Yes |
 
-Evidence comes from `moon tree`, the resolved `.mooncakes` manifests, the local workspace module, and packaged LICENSE files on 2026-07-15. The root project declares Apache-2.0 and includes its own [`LICENSE`](../LICENSE).
+Evidence comes from `moon tree`, the resolved `.mooncakes` manifests, the local workspace module, and packaged LICENSE files on 2026-07-20. The root project declares Apache-2.0 and includes its own [`LICENSE`](../LICENSE).
 
-All resolved manifests declare Apache-2.0, but three installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all nine resolved packages. This is transparent packaging evidence, not a legal opinion.
+All resolved manifests declare Apache-2.0, but four installed package archives omit a LICENSE file. The current [release dependency manifest](../release/dependencies.v1.json) preserves that evidence distinction instead of pretending every archive carried its own text. The [native release bundle](../release/README.md) includes the complete Apache-2.0 text and generates versioned third-party notices for all ten resolved packages. This is transparent packaging evidence, not a legal opinion.
 
 `mizchi/canvas@0.9.0` and its `mizchi/image@0.4.2` dependency were used only in an experiment. They are not part of the production dependency graph above. The project-owned raster-codec module is derived from the Apache-2.0 production decoder sources in `mizchi/image@0.1.2`; its narrow bounded API and attribution are documented in [`modules/raster_codec/README.mbt.md`](../modules/raster_codec/README.mbt.md).
 
@@ -90,7 +91,7 @@ These gaps do not permit false complete analysis, and fixed limits plus local-re
 
 | Item | Live upstream status on 2026-07-14 | Project impact | Current safe behavior |
 | --- | --- | --- | --- |
-| [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Open, ready for review; the pinned `0.2.1` package does not contain the change | The raw dependency can resolve conflicting presentation and inline declarations in XML attribute order | Normalize complete supported overlaps in a private renderer-input copy; retain `renderer_style_precedence_unresolved` only when a safe rewrite is unproven |
+| [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Superseded for this project by `Milky2018/svg@0.3.1` | The current raw dependency passes the focused style-precedence fixtures, but that does not establish complete CSS conformance | Delegate the passing cascade path to the dependency; retain analyzer-side unsupported-syntax Diagnostics without a renderer precedence normalizer |
 | [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Direct `mizchi/image` dependencies fail while compiling packaged upstream tests, but the decoder implementation remains usable | Keep canvas and direct image dependencies out of production; maintain the narrow attributed workspace codec without patching the dependency cache |
 | `moonbitlang/x@0.4.40` `Rational[Int64]` lacks `Debug` in dependency `assert_eq` tests | No matching open upstream PR found in the 2026-07-14 check | `moon doc` fails while checking transitive dependency tests | Use `moon ide doc` and `moon info`; project check, tests, and CLI remain green |
 

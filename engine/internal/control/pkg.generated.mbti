@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/control"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+pub(all) suberror ComparisonInterrupted {
+  Cancelled
+  CheckpointBudgetExceeded(max_checkpoints~ : Int)
+} derive(Eq, @debug.Debug)
+
+// Types and methods
+pub(all) struct ComparisonControl {
+  should_cancel : () -> Bool
+  max_checkpoints : Int?
+}
+pub fn ComparisonControl::unlimited() -> Self
+
+pub(all) struct ComparisonGuard {
+  control : ComparisonControl
+  mut completed_checkpoints : Int
+}
+pub fn ComparisonGuard::checkpoint(Self) -> Unit raise ComparisonInterrupted
+pub fn ComparisonGuard::new(ComparisonControl) -> Self
+
+// Type aliases
+
+// Traits
+

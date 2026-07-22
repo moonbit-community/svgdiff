@@ -54,7 +54,8 @@ fn help_text() -> String {
 
 ///|
 fn version_text() -> String {
-  "svgdiff 0.6.0\nengine: 0.6.0\nschema: 1.45\nagent-projection: svgdiff-agent-projection/1\nrenderer: svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/25\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
+  let profile = @lib.ComparisonProfile::v1_default()
+  "svgdiff 0.6.0\nengine: 0.6.0\nschema: 1.46\nagent-projection: svgdiff-agent-projection/1\nrenderer: \{profile.renderer_id}\nrenderer-conformance-profile: \{profile.renderer_conformance_profile_id}\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
 }
 
 ///|
@@ -339,7 +340,7 @@ async fn main {
           @sys.exit(2)
         }
       }
-    None => println(json)
+    None => @stdio.stdout.write(json + "\n")
   }
   match config.html_path {
     Some(path) => {

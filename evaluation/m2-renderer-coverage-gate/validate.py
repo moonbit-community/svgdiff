@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT = Path(__file__).with_name("gate.v1.json")
-EXPECTED_PROFILE = "svgdiff-renderer-conformance-profile/25"
+EXPECTED_PROFILE = "svgdiff-renderer-conformance-profile/27"
 EXPECTED_CHAINS = {
     "renderer_observation",
     "divergence_disposition",
@@ -46,11 +46,11 @@ def validate(document: object) -> None:
     exact = [case for case in cases if case.get("comparison") == "exact"]
     divergent = [case for case in cases if case.get("comparison") == "divergent"]
     require(len(cases) == baseline_spec.get("total_cases") == 141, "baseline case count drifted")
-    require(len(exact) == baseline_spec.get("exact_cases") == 67, "exact count drifted")
-    require(len(divergent) == baseline_spec.get("divergent_cases") == 74, "divergence count drifted")
+    require(len(exact) == baseline_spec.get("exact_cases") == 94, "exact count drifted")
+    require(len(divergent) == baseline_spec.get("divergent_cases") == 47, "divergence count drifted")
     disposition_cases = dispositions.get("cases")
     require(isinstance(disposition_cases, list), "disposition cases missing")
-    require(len(disposition_cases) == dispositions_spec.get("required_cases") == 74, "disposition count drifted")
+    require(len(disposition_cases) == dispositions_spec.get("required_cases") == 47, "disposition count drifted")
     divergent_ids = {case.get("id") for case in divergent}
     disposition_ids = [case.get("id") for case in disposition_cases]
     require(len(disposition_ids) == len(set(disposition_ids)), "duplicate disposition")
@@ -59,7 +59,7 @@ def validate(document: object) -> None:
     require(allowed == {"diagnostic", "normalizer", "compositor"}, "disposition kinds drifted")
     require(all(case.get("disposition") in allowed for case in disposition_cases), "unknown disposition kind")
 
-    production = (ROOT / "engine" / "structured_report.mbt").read_text(encoding="utf-8")
+    production = (ROOT / "engine" / "model" / "comparison_profile.mbt").read_text(encoding="utf-8")
     require(f'renderer_conformance_profile_id: "{EXPECTED_PROFILE}"' in production, "production profile drifted")
     chains = document.get("safety_chains")
     require(isinstance(chains, list), "safety chains missing")
@@ -85,7 +85,7 @@ def negative_controls(document: dict) -> None:
     wrong_profile = copy.deepcopy(document)
     wrong_profile["renderer_conformance_profile_id"] = "svgdiff-renderer-conformance-profile/mismatch"
     wrong_count = copy.deepcopy(document)
-    wrong_count["dispositions"]["required_cases"] = 73
+    wrong_count["dispositions"]["required_cases"] = 46
     for index, mutation in enumerate([missing_chain, wrong_profile, wrong_count]):
         try:
             validate(mutation)
@@ -98,7 +98,7 @@ def main() -> None:
     document = json.loads(ARTIFACT.read_text(encoding="utf-8"))
     validate(document)
     negative_controls(document)
-    print("M2 renderer and coverage gate: 141 observations, 74 dispositions, and 6 false-equality safety links validated")
+    print("M2 renderer and coverage gate: 141 observations, 47 dispositions, and 6 false-equality safety links validated")
 
 
 if __name__ == "__main__":

@@ -1,423 +1,99 @@
 {
-  "schema_version": "1.45",
+  "schema_version": "1.46",
   "analysis_status": "partial",
-  "canvas_outcome": {
+  "comparison": {
+    "viewport": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "canvas": {
     "status": "computed",
-    "magnitude": {
-      "changed_pixels": 0,
-      "changed_pixel_fraction": 0,
-      "rgba8_rmse": 0,
-      "linear_premultiplied_rgba_rmse": 0
-    },
-    "perceptual_flip": {
-      "status": "not_computed",
-      "reason_code": "flip_not_requested"
-    }
+    "changed_pixels": 0,
+    "changed_fraction": 0,
+    "linear_rgba_rmse": 0
   },
-  "impact_assessment": {
-    "policy_id": "event_rendered_pareto/v1",
-    "status": "partial",
-    "calibration_status": "not_calibrated",
-    "input_fields": [
-      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
-    ],
-    "candidate_event_count": 1,
-    "frontier_relation": "unique",
-    "frontier_groups": [
-      {
-        "event_ids": [
-          "event:alignment:image:0"
-        ],
-        "atomic_difference_ids": [
-          "diff:alignment:image-resource:0:href",
-          "diff:alignment:image-resource:0:decoded_content"
-        ],
-        "measurements": null
-      }
-    ],
-    "domination_witnesses": []
-  },
-  "coverage_matrix": [
+  "difference_groups": [
     {
-      "feature_id": "document.xml",
-      "subject_id": "document",
-      "source_semantics": "covered",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "not_applicable",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.image",
-      "subject_id": "photo",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer_embedded_raster_unavailable:after:0",
-        "diagnostic:renderer_embedded_raster_unavailable:before:0"
-      ]
-    },
-    {
-      "feature_id": "domain.resource.image.source",
-      "subject_id": "alignment:image:0",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer_embedded_raster_unavailable:after:0",
-        "diagnostic:renderer_embedded_raster_unavailable:before:0"
-      ]
-    },
-    {
-      "feature_id": "domain.resource.image.content",
-      "subject_id": "alignment:image:0",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer_embedded_raster_unavailable:after:0",
-        "diagnostic:renderer_embedded_raster_unavailable:before:0"
-      ]
-    },
-    {
-      "feature_id": "guard.renderer_embedded_raster_unavailable",
-      "subject_id": "photo",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer_embedded_raster_unavailable:after:0",
-        "diagnostic:renderer_embedded_raster_unavailable:before:0"
-      ]
-    }
-  ],
-  "renderer_capability_gaps": [
-    {
-      "capability_id": "raster.embedded_images",
-      "support_status": "unavailable",
-      "diagnostic_ids": [
-        "diagnostic:renderer_embedded_raster_unavailable:after:0",
-        "diagnostic:renderer_embedded_raster_unavailable:before:0"
-      ]
-    }
-  ],
-  "profile": {
-    "viewport_width": 16,
-    "viewport_height": 16,
-    "comparison_dpr": 1,
-    "color_interpretation": "srgb",
-    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/style-precedence-normalizer@3+ordinary-inheritance-normalizer@1+css-computed-value-normalizer@3+css-color3-opacity-normalizer@1+length-used-value-normalizer@1+stroke-used-geometry-normalizer@1+basic-shape-used-geometry-normalizer@1+isolated-group-compositor@1+static-mask-normalizer@1+static-mask-compositor@1+static-filter-graph-compositor@1+static-blend-compositor@1+mizchi/svg@0.2.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
-    "perceptual_background": null,
-    "flip_viewing_conditions": null,
-    "flip_error_threshold": null
-  },
-  "subject_alignments": [
-    {
-      "id": "alignment:image:0",
-      "subject_role": "entity",
-      "relation": "correspondence",
-      "before": [
+      "category": "resource",
+      "items": [
         {
-          "source_index": 0,
-          "kind": "image",
-          "authored_id": "photo",
-          "instance_context": null
-        }
-      ],
-      "after": [
+          "id": "diff:alignment:image-resource:0:href",
+          "subject": "alignment:image:0",
+          "subject_role": "resource",
+          "kind": "resource.image.source",
+          "source": {
+            "before": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
+            "after": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23"
+          },
+          "effective": {
+            "relation": "different"
+          }
+        },
         {
-          "source_index": 0,
-          "kind": "image",
-          "authored_id": "photo",
-          "instance_context": null
+          "id": "diff:alignment:image-resource:0:decoded_content",
+          "subject": "alignment:image:0",
+          "subject_role": "resource",
+          "kind": "resource.image.content",
+          "source": {
+            "before": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
+            "after": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "intrinsic_raster": {
+              "before_size": [
+                1,
+                1
+              ],
+              "after_size": [
+                1,
+                1
+              ],
+              "compared_pixels": 1,
+              "changed_pixels": 1,
+              "changed_fraction": 1,
+              "linear_rgba_rmse": 0.7071067811865476
+            }
+          }
         }
-      ],
-      "basis": "unique_authored_id",
-      "evidence": {
-        "score_kind": "embedded_image_source_order_v1",
-        "selected_score": 0,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    },
-    {
-      "id": "alignment:image-resource:0",
-      "subject_role": "resource",
-      "relation": "correspondence",
-      "before": [
-        {
-          "source_index": 0,
-          "kind": "image",
-          "authored_id": "photo",
-          "instance_context": null
-        }
-      ],
-      "after": [
-        {
-          "source_index": 0,
-          "kind": "image",
-          "authored_id": "photo",
-          "instance_context": null
-        }
-      ],
-      "basis": "resource_unique_authored_id",
-      "evidence": {
-        "score_kind": "embedded_image_source_order_v1",
-        "selected_score": 0,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    }
-  ],
-  "changed_facts": [
-    {
-      "id": "fact:alignment:image-resource:0:href",
-      "subject_id": "alignment:image-resource:0",
-      "property": "href",
-      "before": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "after": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "affected_subject_ids": [
-        "photo"
       ]
-    },
-    {
-      "id": "fact:alignment:image-resource:0:decoded_content",
-      "subject_id": "alignment:image-resource:0",
-      "property": "decoded_content",
-      "before": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "after": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "affected_subject_ids": [
-        "photo"
-      ]
-    }
-  ],
-  "source_resolutions": [],
-  "atomic_differences": [
-    {
-      "id": "diff:alignment:image-resource:0:href",
-      "subject_role": "resource",
-      "subject_alignment_id": "alignment:image-resource:0",
-      "domain": "resource.image.source",
-      "source_before": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-      "source_after": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-      "source_fact_before": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "source_fact_after": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "changed_fact_ids": [
-        "fact:alignment:image-resource:0:href"
-      ],
-      "evidence_layers": [
-        "source_semantics",
-        "computed_appearance"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "decoded_intrinsic_rasters_differ",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": null,
-        "parameter_viewport_fraction": null,
-        "parameter_entity_fraction": null,
-        "geometry_displacement_css_px": null,
-        "painted_boundary_displacement": null,
-        "painted_coverage_difference": null,
-        "geometry_viewport_fraction": null,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": null,
-        "raster_rgba8_rmse": null,
-        "raster_linear_premultiplied_rgba_rmse": null,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": []
-      }
-    },
-    {
-      "id": "diff:alignment:image-resource:0:decoded_content",
-      "subject_role": "resource",
-      "subject_alignment_id": "alignment:image-resource:0",
-      "domain": "resource.image.content",
-      "source_before": "34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-      "source_after": "b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-      "source_fact_before": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "source_fact_after": {
-        "property": "href",
-        "authored_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "declared_value": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 125,
-          "end_offset": 243
-        }
-      },
-      "changed_fact_ids": [
-        "fact:alignment:image-resource:0:decoded_content"
-      ],
-      "evidence_layers": [
-        "source_semantics",
-        "computed_appearance"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "decoded_intrinsic_rasters_differ",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": null,
-        "parameter_viewport_fraction": null,
-        "parameter_entity_fraction": null,
-        "geometry_displacement_css_px": null,
-        "painted_boundary_displacement": null,
-        "painted_coverage_difference": null,
-        "geometry_viewport_fraction": null,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": null,
-        "raster_rgba8_rmse": null,
-        "raster_linear_premultiplied_rgba_rmse": null,
-        "intrinsic_raster": {
-          "before_width": 1,
-          "before_height": 1,
-          "after_width": 1,
-          "after_height": 1,
-          "compared_pixels": 1,
-          "changed_pixels": 1,
-          "changed_pixel_fraction": 1,
-          "rgba8_rmse": 0.7071067811865476,
-          "linear_premultiplied_rgba_rmse": 0.7071067811865476
-        }
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          0.7071067811865476,
-          0.7071067811865476,
-          1
-        ]
-      }
     }
   ],
   "events": [
     {
       "id": "event:alignment:image:0",
-      "primary_subject_id": "alignment:image:0",
-      "atomic_difference_ids": [
+      "subject": "alignment:image:0",
+      "difference_ids": [
         "diff:alignment:image-resource:0:href",
         "diff:alignment:image-resource:0:decoded_content"
       ],
-      "rendered_outcome": {
+      "outcome": {
         "status": "not_computed",
-        "reason_code": "renderer_embedded_raster_unavailable",
-        "perceptual_color": {
-          "status": "not_computed",
-          "reason_code": "perceptual_background_absent"
-        },
-        "perceptual_flip": {
-          "status": "not_computed",
-          "reason_code": "flip_not_requested"
-        }
+        "reason": "renderer_embedded_raster_unavailable"
       },
-      "difference_regions": [
+      "regions": [
         {
           "id": "region:bounds:event:alignment:image:0",
-          "source": "computed_bounds",
-          "pixel_x": 2,
-          "pixel_y": 2,
-          "pixel_width": 12,
-          "pixel_height": 12,
-          "css_x": 2,
-          "css_y": 2,
-          "css_width": 12,
-          "css_height": 12,
+          "kind": "conservative",
+          "bounds": {
+            "x": 2,
+            "y": 2,
+            "width": 12,
+            "height": 12
+          },
           "changed_pixels": 0,
           "viewport_fraction": 0.5625,
-          "cause_envelope": {
+          "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "fallback_scope": "comparison",
-            "candidate_changed_fact_ids": [
-              "fact:alignment:image-resource:0:href",
-              "fact:alignment:image-resource:0:decoded_content"
+            "candidate_difference_ids": [
+              "diff:alignment:image-resource:0:href",
+              "diff:alignment:image-resource:0:decoded_content"
             ],
-            "diagnostic_ids": [
+            "limitation_ids": [
               "diagnostic:renderer_embedded_raster_unavailable:before:0",
               "diagnostic:renderer_embedded_raster_unavailable:after:0"
             ]
@@ -426,39 +102,21 @@
       ]
     }
   ],
-  "diagnostics": [
+  "limitations": [
     {
       "id": "diagnostic:renderer_embedded_raster_unavailable:before:0",
       "code": "renderer_embedded_raster_unavailable",
-      "subject_id": "photo",
-      "affected_evidence_layers": [
+      "subject": "photo",
+      "affects": [
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "before",
-          "source_span": {
-            "start_offset": 125,
-            "end_offset": 243
-          }
-        }
       ]
     },
     {
       "id": "diagnostic:renderer_embedded_raster_unavailable:after:0",
       "code": "renderer_embedded_raster_unavailable",
-      "subject_id": "photo",
-      "affected_evidence_layers": [
+      "subject": "photo",
+      "affects": [
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "after",
-          "source_span": {
-            "start_offset": 125,
-            "end_offset": 243
-          }
-        }
       ]
     }
   ]

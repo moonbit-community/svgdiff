@@ -1,0 +1,701 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/computed/resources"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/affine_transform",
+  "Milky2018/svgdiff/engine/internal/computed/style",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/resource_model",
+  "Milky2018/svgdiff/engine/internal/source",
+  "Milky2018/svgdiff/engine/internal/source/css_color",
+  "Milky2018/svgdiff/engine/internal/source/path_data",
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn alignment_property_order() -> Array[String]
+
+pub fn append_clip_path_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn append_gradient_color_interpolation_facts(String, @xml.NamespaceElement, Array[@model.DeclaredVisualFact]) -> Unit
+
+pub fn append_marker_geometry_diagnostics(Array[@ir.SourceSubject], String, Array[@model.Diagnostic]) -> Unit
+
+pub fn append_mask_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn authored_paint_server_reference(@ir.SourceSubject, String) -> String?
+
+pub fn clip_active_resolution_for_subject(@style.FillHierarchy, @ir.SourceSubject) -> (String, String, @model.ResolvedVisualFact, Int)?
+
+pub fn clip_application_bounds(@ir.SourceSubject, Int, ClipRectResource) -> (@computed.CssBounds?, Bool)
+
+pub fn clip_attribute(@xml.NamespaceElement, String) -> @xml.NamespaceAttribute?
+
+pub fn clip_bbox_number(String) -> Double?
+
+pub fn clip_hierarchy_subject_id_at(@style.FillHierarchy, Int, String) -> String
+
+pub fn clip_issue(ClipSemanticDocument, String, String, @model.DeclaredVisualFact?) -> Unit
+
+pub fn clip_owner_transform(@ir.SourceSubject, Int) -> (@affine_transform.AffineTransform, Bool)
+
+pub fn clip_record_direct_child(String, @xml.NamespaceElement, Int, Int, @model.ComparisonProfile, ClipSemanticDocument, Int) -> Unit
+
+pub fn clip_resolved_number(@style.FillHierarchy, String, String, String, @model.ComparisonProfile) -> (Double, Bool)
+
+pub fn clip_resource_for_id(ClipSemanticDocument, String) -> ClipRectResource?
+
+pub fn clip_resource_from_element(String, @xml.NamespaceElement, Int, Int, @style.FillHierarchy) -> ClipRectResource
+
+pub fn clip_source_fact(String, String, Int, Int) -> @model.DeclaredVisualFact
+
+pub fn clip_target_kind(ClipSemanticDocument, String) -> String?
+
+pub fn clip_transform_from_fact(@model.DeclaredVisualFact?) -> (@affine_transform.AffineTransform, Bool)
+
+pub fn compact_embedded_image_href_fact(@model.DeclaredVisualFact?, EmbeddedRasterDecodeResult) -> @model.DeclaredVisualFact?
+
+pub fn computed_gradient_number(Array[ComputedGradientField], String) -> Double
+
+pub fn computed_gradient_paint_mode(String, Array[ComputedGradientField], Array[ComputedGradientStop]) -> String
+
+pub fn computed_gradient_stop(GradientDocument, GradientSource, GradientStopSource, Int, Double) -> ComputedGradientStop
+
+pub fn computed_gradient_stops(GradientDocument, GradientSource) -> Array[ComputedGradientStop]
+
+pub fn computed_pattern_child(PatternDocument, PatternSource, PatternSource, @ir.SourceSubject, @computed.ViewportContext, @affine_transform.AffineTransform) -> ComputedPatternChild
+
+pub fn computed_pattern_children(PatternDocument, PatternSource, @computed.ViewportContext, @affine_transform.AffineTransform) -> Array[ComputedPatternChild]
+
+pub fn computed_pattern_field(String, String, Double?, @model.DeclaredVisualFact?, Bool) -> ComputedPatternField
+
+pub fn decode_embedded_raster(String, @resource_model.ResourceBundle, Int, Int, Int, Int, Int) -> EmbeddedRasterDecodeResult
+
+pub fn decode_raster_bytes(Bytes, String, String, String, Int, Int, Int) -> EmbeddedRasterDecodeResult
+
+pub fn effective_hierarchy_visual_facts(Array[@model.DeclaredVisualFact], Array[@model.DeclaredVisualFact]) -> Array[@model.DeclaredVisualFact]
+
+pub fn embedded_image_attribute_fact(String, @xml.NamespaceElement, String) -> @model.DeclaredVisualFact?
+
+pub fn embedded_image_cascade_facts(String, @xml.NamespaceElement, Int, @source.CssStaticDocument) -> Array[@model.DeclaredVisualFact]
+
+pub fn embedded_image_definition_container(String) -> Bool
+
+pub fn embedded_image_explicit_dimension(@model.DeclaredVisualFact?, @computed.SvgLengthDirection, @computed.ViewportContext, @model.ComparisonProfile) -> (Double?, Bool)
+
+pub fn embedded_image_fact(Array[@model.DeclaredVisualFact], String) -> @model.DeclaredVisualFact?
+
+pub fn embedded_image_href_summary(EmbeddedRasterDecodeResult) -> String
+
+pub fn embedded_image_intrinsic_size(EmbeddedRasterDecodeResult) -> (Double, Double)?
+
+pub fn embedded_image_only_scene(String) -> Bool raise
+
+pub fn embedded_image_opacity(@model.DeclaredVisualFact?) -> (Double, Bool)
+
+pub fn embedded_image_position(@model.DeclaredVisualFact?, @computed.SvgLengthDirection, @computed.ViewportContext, @model.ComparisonProfile) -> (Double, Bool)
+
+pub fn embedded_image_preserve_aspect_ratio(@model.DeclaredVisualFact?) -> (String, Bool)
+
+pub fn embedded_image_property(String) -> Bool
+
+pub fn embedded_image_subject_bounds(EmbeddedImageSubject) -> @computed.CssBounds?
+
+pub fn embedded_image_subject_for_reference(Array[EmbeddedImageSubject], Array[@model.SubjectReference]) -> EmbeddedImageSubject?
+
+pub fn embedded_image_subject_from_element(String, @xml.NamespaceElement, Int, Int, Array[@computed.SourceTransformSite], @computed.ViewportContext, @model.ComparisonProfile, @source.CssStaticDocument, Bool, @resource_model.ResourceBundle, @resource_model.ResourceLimits) -> EmbeddedImageSubject
+
+pub fn embedded_image_unique_id_count(Array[EmbeddedImageSubject], String) -> Int
+
+pub fn embedded_image_used_size(EmbeddedRasterDecodeResult, @model.DeclaredVisualFact?, @model.DeclaredVisualFact?, @computed.ViewportContext, @model.ComparisonProfile) -> (Double, Double, Bool)
+
+pub fn embedded_raster_source_limit(String, String, @resource_model.ResourceBundle, @resource_model.ResourceLimits) -> @model.Diagnostic? raise
+
+pub fn extract_clip_semantic_document_or_raise(String, @model.ComparisonProfile) -> ClipSemanticDocument raise
+
+pub fn extract_embedded_image_subjects_or_raise(String, @model.ComparisonProfile, @resource_model.ResourceBundle, @resource_model.ResourceLimits) -> Array[EmbeddedImageSubject] raise
+
+pub fn extract_gradient_document(String, @model.ComparisonProfile) -> GradientDocument?
+
+pub fn extract_gradient_document_or_raise(String, @model.ComparisonProfile) -> GradientDocument raise
+
+pub fn extract_marker_resources_or_raise(String, @model.ComparisonProfile) -> Array[MarkerResource] raise
+
+pub fn extract_mask_semantic_document_or_raise(String, @model.ComparisonProfile) -> MaskSemanticDocument raise
+
+pub fn extract_pattern_child_subjects_with_profile_or_raise(String, @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn extract_pattern_document(String, @model.ComparisonProfile) -> PatternDocument?
+
+pub fn extract_pattern_document_or_raise(String, @model.ComparisonProfile) -> PatternDocument raise
+
+pub fn extract_source_subjects_internal_or_raise(String, @model.ComparisonProfile, Bool) -> Array[@ir.SourceSubject] raise
+
+pub fn extract_source_subjects_or_raise(String, profile? : @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn extract_source_subjects_streaming_internal_or_raise(String, @model.ComparisonProfile, Bool) -> Array[@ir.SourceSubject] raise
+
+pub fn extract_source_subjects_with_profile_or_raise(String, @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn extract_source_subjects_without_clip_internal_or_raise(String, @model.ComparisonProfile, Bool) -> Array[@ir.SourceSubject] raise
+
+pub fn extract_source_subjects_without_clip_or_raise(String, @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn gradient_attribute_from_chain(GradientDocument, GradientSource, String, Array[String]) -> @model.DeclaredVisualFact?
+
+pub fn gradient_attribute_names(String) -> Array[String]
+
+pub fn gradient_by_id(GradientDocument, String) -> GradientSource?
+
+pub fn gradient_coordinate_transform(String, @affine_transform.AffineTransform, @ir.SourceSubject?) -> (@affine_transform.AffineTransform, Bool, String)
+
+pub fn gradient_descriptive_child(String) -> Bool
+
+pub fn gradient_dynamic_child(String) -> Bool
+
+pub fn gradient_field(String, String, Double?, @model.DeclaredVisualFact?, Bool) -> ComputedGradientField
+
+pub fn gradient_hierarchy_index(@style.FillHierarchy, String, Int) -> Int?
+
+pub fn gradient_keyword_field(GradientDocument, GradientSource, String, String, Array[String], String) -> ComputedGradientField
+
+pub fn gradient_length_field(GradientDocument, GradientSource, String, String, @computed.SvgLengthDirection, @computed.ViewportContext, Bool) -> ComputedGradientField
+
+pub fn gradient_source_attribute(String, @xml.NamespaceAttribute, String) -> GradientAttributeSource
+
+pub fn gradient_source_attribute_fact(GradientSource, String) -> @model.DeclaredVisualFact?
+
+pub fn gradient_source_from_element(String, @xml.NamespaceElement, Int, @style.FillHierarchy) -> GradientSource?
+
+pub fn gradient_stop_from_element(String, @xml.NamespaceElement, Int, @style.FillHierarchy) -> GradientStopSource?
+
+pub fn gradient_stop_provider(GradientDocument, GradientSource, Array[String]) -> GradientSource?
+
+pub fn gradient_template_chain(GradientDocument, GradientSource) -> Array[String]
+
+pub fn gradient_transform_field(GradientDocument, GradientSource) -> (ComputedGradientField, @affine_transform.AffineTransform)
+
+pub fn hierarchy_element_signature(String, @xml.NamespaceElement, @source.CssStylesheetMatch) -> String
+
+pub fn hierarchy_visual_declarations(String, @xml.NamespaceElement, @source.CssStylesheetMatch) -> Array[@model.DeclaredVisualFact]
+
+pub fn joined_hierarchy_signature(Array[String]) -> String
+
+pub fn marker_angle_degrees(String) -> Double?
+
+pub fn marker_arc_endpoint_angles(Double, Double, Double, Double, Double, Bool, Bool, Double, Double) -> (Double, Double)?
+
+pub fn marker_arc_segment(Double, Double, Double, Double, Double, Bool, Bool, Double, Double) -> MarkerSegment?
+
+pub fn marker_attribute(@xml.NamespaceElement, String) -> @xml.NamespaceAttribute?
+
+pub fn marker_closed_polyline_subpath(Array[(Double, Double)], Bool) -> MarkerSubpath?
+
+pub fn marker_cubic_segment(Double, Double, Double, Double, Double, Double, Double, Double) -> MarkerSegment
+
+pub fn marker_curve_angle(Array[(Double, Double)]) -> Double?
+
+pub fn marker_effective_end_angle(Array[MarkerSegment], Int) -> Double
+
+pub fn marker_effective_start_angle(Array[MarkerSegment], Int) -> Double
+
+pub fn marker_ellipse_subpath(Double, Double, Double, Double) -> MarkerSubpath
+
+pub fn marker_empty_content_fact(Int) -> @model.DeclaredVisualFact
+
+pub fn marker_fact(String, String, @xml.NamespaceAttribute) -> @model.DeclaredVisualFact
+
+pub fn marker_fact_for_property(@ir.SourceSubject, String) -> @model.DeclaredVisualFact?
+
+pub fn marker_inherited_facts_for_element(String, @xml.NamespaceElement, @source.CssStylesheetMatch, Array[@model.DeclaredVisualFact]) -> Array[@model.DeclaredVisualFact]
+
+pub fn marker_line_segment(Double, Double, Double, Double) -> MarkerSegment
+
+pub fn marker_midpoint_angle(Double, Double) -> Double
+
+pub fn marker_placement_bounds(@affine_transform.AffineTransform, Double, Double) -> @computed.CssBounds
+
+pub fn marker_placements_for_subject(@ir.SourceSubject, Array[MarkerResource]) -> Array[@ir.MarkerPlacement]
+
+pub fn marker_quadratic_segment(Double, Double, Double, Double, Double, Double) -> MarkerSegment
+
+pub fn marker_reference_coordinate(String, String, @computed.ViewBoxValue?, @computed.ViewportContext, @model.ComparisonProfile) -> Double?
+
+pub fn marker_reference_id(String?) -> String?
+
+pub fn marker_resource(Array[MarkerResource], String) -> MarkerResource?
+
+pub fn marker_resource_from_element(String, @xml.NamespaceElement, Int, Int, @computed.ViewportContext, @model.ComparisonProfile) -> MarkerResource
+
+pub fn marker_rounded_rect_subpath(Double, Double, Double, Double, Double, Double) -> MarkerSubpath
+
+pub fn marker_subject_bounds(@ir.SourceSubject) -> @computed.CssBounds?
+
+pub fn marker_subpaths_for_path(Array[@path_data.PathSegmentEvidence]) -> Array[MarkerSubpath]
+
+pub fn marker_subpaths_for_subject(@ir.SourceSubject) -> Array[MarkerSubpath]
+
+pub fn marker_vertices_for_subject(@ir.SourceSubject) -> Array[MarkerVertex]
+
+pub fn mask_active_resolution_for_subject(@style.FillHierarchy, @ir.SourceSubject) -> (String, String, String, @model.ResolvedVisualFact, Int)?
+
+pub fn mask_application_bounds(@ir.SourceSubject, Int, MaskRectResource, String) -> (@computed.CssBounds?, Bool)
+
+pub fn mask_content_number(String, String, String, @model.ComparisonProfile) -> Double?
+
+pub fn mask_content_resolved_number(@style.FillHierarchy, String, String, String, @model.ComparisonProfile) -> (Double, Bool)
+
+pub fn mask_default_length(String) -> MaskLength
+
+pub fn mask_dynamic_kind(String) -> Bool
+
+pub fn mask_issue(MaskSemanticDocument, String, String, @model.DeclaredVisualFact?) -> Unit
+
+pub fn mask_length_from_fact(@model.DeclaredVisualFact?, String, String, @model.ComparisonProfile) -> (MaskLength, Bool)
+
+pub fn mask_owner_has_group_opacity(@style.FillHierarchy, String) -> Bool
+
+pub fn mask_record_direct_child(String, @xml.NamespaceElement, Int, Int, @model.ComparisonProfile, MaskSemanticDocument, Int) -> Unit
+
+pub fn mask_region_local_bounds(MaskRectResource, @computed.CssBounds) -> @computed.CssBounds
+
+pub fn mask_resource_for_id(MaskSemanticDocument, String) -> MaskRectResource?
+
+pub fn mask_resource_from_element(String, @xml.NamespaceElement, Int, Int, @style.FillHierarchy, @model.ComparisonProfile) -> MaskRectResource
+
+pub fn mask_target_kind(MaskSemanticDocument, String) -> String?
+
+pub fn normalize_pattern_child_paint_rules(@ir.SourceSubject, Array[@model.DeclaredVisualFact]) -> Unit
+
+pub fn parse_gradient_offset(String) -> Double?
+
+pub fn pattern_attribute_fact(PatternSource, String) -> @model.DeclaredVisualFact?
+
+pub fn pattern_attribute_from_chain(PatternDocument, PatternSource, String, Array[String]) -> @model.DeclaredVisualFact?
+
+pub fn pattern_attribute_names() -> Array[String]
+
+pub fn pattern_by_id(PatternDocument, String) -> PatternSource?
+
+pub fn pattern_child_fact_value(Array[@model.DeclaredVisualFact], String, String) -> String
+
+pub fn pattern_child_paint_active(@ir.SourceSubject, Array[@model.DeclaredVisualFact], String) -> Bool
+
+pub fn pattern_cloned_child_hierarchy(PatternDocument, PatternSource, PatternSource, @ir.SourceSubject) -> (@style.FillHierarchy, Int)?
+
+pub fn pattern_content_provider(PatternDocument, PatternSource, Array[String]) -> PatternSource?
+
+pub fn pattern_coordinate_base(String, @affine_transform.AffineTransform, @ir.SourceSubject?) -> (@affine_transform.AffineTransform, Bool, String)
+
+pub fn pattern_descriptive_child(String) -> Bool
+
+pub fn pattern_dynamic_child(String) -> Bool
+
+pub fn pattern_field_number(Array[ComputedPatternField], String) -> Double
+
+pub fn pattern_from_element(String, @xml.NamespaceElement, Int, @style.FillHierarchy) -> PatternSource?
+
+pub fn pattern_keyword_field(PatternDocument, PatternSource, String, String) -> ComputedPatternField
+
+pub fn pattern_length_field(PatternDocument, PatternSource, String, String, @computed.SvgLengthDirection, @computed.ViewportContext, Bool) -> ComputedPatternField
+
+pub fn pattern_supported_container(String) -> Bool
+
+pub fn pattern_template_chain(PatternDocument, PatternSource) -> Array[String]
+
+pub fn pattern_transform_field(PatternDocument, PatternSource) -> (ComputedPatternField, @affine_transform.AffineTransform)
+
+pub fn preferred_gradient_href(String, @xml.NamespaceElement) -> @model.DeclaredVisualFact?
+
+pub fn preferred_image_href_attribute(@xml.NamespaceElement) -> @xml.NamespaceAttribute?
+
+pub fn preferred_pattern_href(String, @xml.NamespaceElement) -> @model.DeclaredVisualFact?
+
+pub fn push_gradient_issue(Array[GradientSemanticIssue], String, String, @model.DeclaredVisualFact?) -> Unit
+
+pub fn push_pattern_issue(Array[PatternSemanticIssue], String, String, @model.DeclaredVisualFact?) -> Unit
+
+pub fn raster_sha256(Bytes) -> String
+
+pub fn resolve_clip_subjects_or_raise(String, Array[@ir.SourceSubject], @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn resolve_computed_gradient(GradientDocument, GradientSource, @ir.SourceSubject?) -> ComputedGradient
+
+pub fn resolve_computed_pattern(PatternDocument, PatternSource, @ir.SourceSubject?) -> ComputedPattern
+
+pub fn resolve_gradient_by_id(GradientDocument, String, @ir.SourceSubject?) -> GradientSemanticResolution
+
+pub fn resolve_marker_attachments(Array[@model.DeclaredVisualFact], Array[@model.DeclaredVisualFact]) -> MarkerAttachmentResolution
+
+pub fn resolve_marker_subjects_or_raise(String, Array[@ir.SourceSubject], @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn resolve_mask_subjects_or_raise(String, Array[@ir.SourceSubject], @model.ComparisonProfile) -> Array[@ir.SourceSubject] raise
+
+pub fn resolve_pattern_by_id(PatternDocument, String, @ir.SourceSubject?) -> PatternSemanticResolution
+
+pub fn resolved_mask_length(MaskLength, Double, Double, Bool) -> Double
+
+pub fn same_document_gradient_target(GradientDocument, GradientSource) -> GradientSource?
+
+pub fn same_document_pattern_target(PatternDocument, PatternSource) -> PatternSource?
+
+pub fn source_has_clip_resources(String, @model.ComparisonProfile) -> Bool
+
+pub fn source_has_mask_resources(String, @model.ComparisonProfile) -> Bool
+
+pub fn source_subject_bounds(@ir.SourceSubject) -> @computed.CssBounds?
+
+pub fn source_subject_from_rendered_plan(String, @model.ComparisonProfile, @source.CssStaticDocument, @source.StructuralDocument, @source.RenderedSubjectPlan, Int) -> @ir.SourceSubject
+
+pub fn source_subject_unclipped_bounds(@ir.SourceSubject) -> @computed.CssBounds?
+
+pub fn subject_from_element(String, @xml.NamespaceElement, @source.CssStylesheetMatch, Int, String, String, String, Array[@computed.SourceTransformSite], Array[@model.DeclaredVisualFact], Array[@model.ResolvedVisualFact], Array[@model.DeclaredVisualFact], @computed.ViewportContext, @model.ComparisonProfile, String?, String?, Int, @model.SubjectInstanceContext?) -> @ir.SourceSubject
+
+pub fn subject_references_marker(@ir.SourceSubject, String?) -> Bool
+
+// Errors
+
+// Types and methods
+pub(all) struct ClipRectResource {
+  subject_id : String
+  authored_id : String?
+  presence_fact : @model.DeclaredVisualFact
+  units : String
+  units_fact : @model.DeclaredVisualFact?
+  transform_fact : @model.DeclaredVisualFact?
+  transform : @affine_transform.AffineTransform
+  transform_complete : Bool
+  mut child_count : Int
+  mut rect_source_offset : Int?
+  mut rect_facts : Array[@model.DeclaredVisualFact]
+  mut rect_transform_fact : @model.DeclaredVisualFact?
+  mut rect_transform : @affine_transform.AffineTransform
+  mut rect_bounds : @computed.CssBounds?
+  mut complete : Bool
+}
+
+pub(all) struct ClipSemanticDocument {
+  hierarchy : @style.FillHierarchy
+  resources : Array[ClipRectResource]
+  id_kinds : Array[(String, String)]
+  issues : Array[ClipSemanticIssue]
+}
+
+pub(all) struct ClipSemanticIssue {
+  code : String
+  subject_id : String
+  fact : @model.DeclaredVisualFact?
+}
+
+pub(all) struct ComputedGradient {
+  kind : String
+  template_chain : Array[String]
+  fields : Array[ComputedGradientField]
+  stops : Array[ComputedGradientStop]
+  units : String
+  spread_method : String
+  coordinate_transform : @affine_transform.AffineTransform
+  paint_mode : String
+  complete : Bool
+}
+pub fn ComputedGradient::signature(Self) -> String
+
+pub(all) struct ComputedGradientField {
+  name : String
+  value : String
+  number : Double?
+  fact : @model.DeclaredVisualFact?
+  complete : Bool
+}
+
+pub(all) struct ComputedGradientStop {
+  subject_id : String
+  offset : Double
+  color : @css_color.SrgbaColor
+  stop_opacity : Double
+  effective_alpha : Double
+  offset_fact : @model.DeclaredVisualFact?
+  color_fact : @model.DeclaredVisualFact?
+  opacity_fact : @model.DeclaredVisualFact?
+  dependencies : Array[@style.StyleDependency]
+  complete : Bool
+}
+pub fn ComputedGradientStop::signature(Self) -> String
+
+pub(all) struct ComputedPattern {
+  template_chain : Array[String]
+  fields : Array[ComputedPatternField]
+  children : Array[ComputedPatternChild]
+  tile_matrix : @affine_transform.AffineTransform
+  content_matrix : @affine_transform.AffineTransform
+  paint_mode : String
+  complete : Bool
+}
+pub fn ComputedPattern::signature(Self) -> String
+
+pub(all) struct ComputedPatternChild {
+  subject_id : String
+  kind : String
+  signature : String
+  facts : Array[@model.DeclaredVisualFact]
+  computed_facts : Array[@model.DeclaredVisualFact]
+  transforms : Array[ComputedPatternChildTransform]
+  complete : Bool
+}
+
+pub(all) struct ComputedPatternChildTransform {
+  key : String
+  fact : @model.DeclaredVisualFact
+  computed : String
+}
+
+pub(all) struct ComputedPatternField {
+  name : String
+  value : String
+  number : Double?
+  fact : @model.DeclaredVisualFact?
+  complete : Bool
+}
+
+pub(all) struct DecodedEmbeddedRaster {
+  source_kind : String
+  media_type : String
+  encoding : String
+  encoded_bytes : Int
+  encoded_sha256 : String
+  width : Int
+  height : Int
+  rgba8 : Bytes
+  rgba8_sha256 : String
+}
+
+pub(all) struct EmbeddedImageSubject {
+  reference : @model.SubjectReference
+  subject_id : String
+  href_fact : @model.DeclaredVisualFact?
+  compact_href_fact : @model.DeclaredVisualFact?
+  href_authored : String?
+  raster : EmbeddedRasterDecodeResult
+  x_fact : @model.DeclaredVisualFact?
+  y_fact : @model.DeclaredVisualFact?
+  width_fact : @model.DeclaredVisualFact?
+  height_fact : @model.DeclaredVisualFact?
+  opacity_fact : @model.DeclaredVisualFact?
+  preserve_aspect_ratio_fact : @model.DeclaredVisualFact?
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+  opacity : Double
+  preserve_aspect_ratio : String
+  cumulative_transform : @affine_transform.AffineTransform
+  placement_complete : Bool
+  direct_visual : Bool
+}
+
+pub(all) enum EmbeddedRasterDecodeResult {
+  EmbeddedRasterDecoded(DecodedEmbeddedRaster)
+  EmbeddedRasterColorUnsupported(UnsupportedEmbeddedRasterColor)
+  EmbeddedRasterUnsupported(String)
+  EmbeddedRasterInvalid(String)
+  EmbeddedRasterLimitExceeded(String)
+  EmbeddedRasterBundleMissing
+}
+
+pub(all) struct GradientAttributeSource {
+  name : String
+  fact : @model.DeclaredVisualFact
+}
+
+pub(all) struct GradientDocument {
+  profile : @model.ComparisonProfile
+  hierarchy : @style.FillHierarchy
+  gradients : Array[GradientSource]
+  issues : Array[GradientSemanticIssue]
+}
+
+pub(all) struct GradientSemanticIssue {
+  code : String
+  subject_id : String
+  fact : @model.DeclaredVisualFact?
+}
+
+pub(all) enum GradientSemanticResolution {
+  GradientResolved(ComputedGradient)
+  GradientUnavailable
+}
+
+pub(all) struct GradientSource {
+  subject_id : String
+  authored_id : String?
+  kind : String
+  hierarchy_index : Int
+  source_index : Int
+  attributes : Array[GradientAttributeSource]
+  href_fact : @model.DeclaredVisualFact?
+  stops : Array[GradientStopSource]
+  mut has_non_descriptive_child : Bool
+}
+
+pub(all) struct GradientStopSource {
+  subject_id : String
+  hierarchy_index : Int
+  offset_fact : @model.DeclaredVisualFact?
+}
+
+pub(all) struct MarkerAttachmentResolution {
+  values : Array[(String, String)]
+  effective_facts : Array[@model.DeclaredVisualFact]
+  invalid_facts : Array[@model.DeclaredVisualFact]
+  complete : Bool
+}
+
+pub(all) struct MarkerResource {
+  node_index : Int
+  subject_id : String
+  authored_id : String?
+  facts : Array[@model.DeclaredVisualFact]
+  invalid_facts : Array[@model.DeclaredVisualFact]
+  complete : Bool
+  marker_units : String
+  marker_width : Double
+  marker_height : Double
+  ref_x : Double
+  ref_y : Double
+  orient_kind : String
+  orient_angle : Double
+  view_box : @computed.ViewBoxValue?
+  preserve_aspect_ratio : @computed.PreserveAspectRatioValue
+  viewport_matrix : @affine_transform.AffineTransform
+  overflow : String
+  mut content_fact : @model.DeclaredVisualFact
+}
+
+pub(all) struct MarkerSegment {
+  end_x : Double
+  end_y : Double
+  start_angle : Double?
+  end_angle : Double?
+}
+
+pub(all) struct MarkerSubpath {
+  start_x : Double
+  start_y : Double
+  segments : Array[MarkerSegment]
+}
+
+pub(all) struct MarkerVertex {
+  x : Double
+  y : Double
+  auto_angle : Double
+}
+
+pub(all) struct MaskHostAttachment {
+  subject_id : String
+  mask_fact : @model.DeclaredVisualFact
+  mask_value : String
+  mode_fact : @model.DeclaredVisualFact?
+  mode_value : String
+}
+
+pub(all) struct MaskLength {
+  value : Double
+  percentage : Bool
+}
+
+pub(all) struct MaskRectResource {
+  subject_id : String
+  authored_id : String?
+  presence_fact : @model.DeclaredVisualFact
+  mask_units : String
+  mask_units_fact : @model.DeclaredVisualFact?
+  content_units : String
+  content_units_fact : @model.DeclaredVisualFact?
+  region_x : MaskLength
+  region_y : MaskLength
+  region_width : MaskLength
+  region_height : MaskLength
+  region_facts : Array[@model.DeclaredVisualFact]
+  mask_type : String
+  mask_type_fact : @model.DeclaredVisualFact?
+  color_interpolation : String
+  color_interpolation_fact : @model.DeclaredVisualFact?
+  mut child_count : Int
+  mut rect_source_offset : Int?
+  mut rect_facts : Array[@model.DeclaredVisualFact]
+  mut rect_transform_fact : @model.DeclaredVisualFact?
+  mut rect_transform : @affine_transform.AffineTransform
+  mut rect_bounds : @computed.CssBounds?
+  mut color_signature : String
+  mut color_red : Int
+  mut color_green : Int
+  mut color_blue : Int
+  mut content_alpha : Double
+  mut content_luminance : Double
+  mut complete : Bool
+}
+
+pub(all) struct MaskSemanticDocument {
+  hierarchy : @style.FillHierarchy
+  resources : Array[MaskRectResource]
+  id_kinds : Array[(String, String)]
+  issues : Array[MaskSemanticIssue]
+}
+
+pub(all) struct MaskSemanticIssue {
+  code : String
+  subject_id : String
+  fact : @model.DeclaredVisualFact?
+}
+
+pub(all) struct PatternAttributeSource {
+  name : String
+  fact : @model.DeclaredVisualFact
+}
+
+pub(all) struct PatternDocument {
+  profile : @model.ComparisonProfile
+  hierarchy : @style.FillHierarchy
+  patterns : Array[PatternSource]
+  child_subjects : Array[@ir.SourceSubject]
+  issues : Array[PatternSemanticIssue]
+}
+
+pub(all) struct PatternSemanticIssue {
+  code : String
+  subject_id : String
+  fact : @model.DeclaredVisualFact?
+}
+
+pub(all) enum PatternSemanticResolution {
+  PatternResolved(ComputedPattern)
+  PatternUnavailable
+}
+
+pub(all) struct PatternSource {
+  subject_id : String
+  authored_id : String?
+  hierarchy_index : Int
+  attributes : Array[PatternAttributeSource]
+  href_fact : @model.DeclaredVisualFact?
+  mut has_non_descriptive_child : Bool
+}
+
+pub(all) struct UnsupportedEmbeddedRasterColor {
+  source_kind : String
+  media_type : String
+  encoding : String
+  encoded_bytes : Int
+  encoded_sha256 : String
+  width : Int
+  height : Int
+  diagnostic_code : String
+  detail : String
+}
+
+// Type aliases
+
+// Traits
+

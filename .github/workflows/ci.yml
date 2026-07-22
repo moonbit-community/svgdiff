@@ -47,6 +47,9 @@ jobs:
       - name: Validate WebAssembly entry
         run: sh scripts/test-wasm.sh
 
+      - name: Install Chromium for browser validation
+        run: npx --yes --package "@playwright/cli@0.1.17" playwright-cli install-browser chromium --with-deps
+
       - name: Validate GitHub Pages browser product
         run: sh scripts/test-pages.sh
 

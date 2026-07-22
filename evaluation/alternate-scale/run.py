@@ -115,11 +115,11 @@ def main() -> None:
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != "svgdiff-alternate-scale-input/1":
         raise ValueError("unsupported alternate-scale manifest schema")
-    if manifest.get("renderer_id") != "mizchi/svg@0.2.1":
+    if manifest.get("renderer_id") != "Milky2018/svg@0.3.1":
         raise ValueError("manifest does not identify the pinned renderer")
     if (
         manifest.get("conformance_profile_id")
-        != "svgdiff-renderer-conformance-profile/25"
+        != "svgdiff-renderer-conformance-profile/27"
     ):
         raise ValueError("unsupported renderer conformance profile")
     scales = manifest.get("scales")

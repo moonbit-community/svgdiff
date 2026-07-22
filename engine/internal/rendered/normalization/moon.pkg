@@ -1,0 +1,16 @@
+import {
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/source" @source_semantics,
+  "Milky2018/svgdiff/engine/internal/source/css_color",
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/geometry",
+  "Milky2018/svgdiff/engine/internal/computed/style",
+  "Milky2018/svgdiff/engine/internal/computed/resources",
+  "Milky2018/svgdiff/engine/internal/computed/effects",
+  "Milky2018/xml",
+}
+
+import {
+  "Milky2018/svg",
+} for "wbtest"

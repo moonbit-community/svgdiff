@@ -1,0 +1,48 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/computed/structure"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/style",
+  "Milky2018/svgdiff/engine/internal/source",
+  "Milky2018/svgdiff/engine/model",
+  "Milky2018/xml",
+}
+
+// Values
+pub fn append_use_structure_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn empty_rendered_scene_supported(String) -> Bool raise
+
+pub fn namespace_attribute(@xml.NamespaceElement, String) -> @xml.NamespaceAttribute?
+
+pub fn rendered_plan_contains_node(Array[@source.RenderedSubjectPlan], Int) -> Bool
+
+pub fn rendered_plan_fill_hierarchy(String, @source.CssStaticDocument, @source.StructuralDocument, @source.RenderedSubjectPlan) -> @style.FillHierarchy
+
+pub fn source_instanced_viewport_resolution(String, @source.StructuralSourceNode, @source.StructuralSourceNode, @model.ComparisonProfile, @computed.ViewportContext) -> @computed.SourceViewportResolution
+
+pub fn source_instanced_viewport_site(String, @source.StructuralSourceNode, @source.StructuralSourceNode, Int, @model.ComparisonProfile, @computed.ViewportContext) -> (@computed.SourceTransformSite, @computed.ViewportContext)
+
+pub fn source_use_transform_site(String, @source.StructuralSourceNode, Int, @model.ComparisonProfile, @computed.ViewportContext) -> @computed.SourceTransformSite
+
+pub fn structural_definition_facts(String, @source.CssStaticDocument, @source.StructuralSourceNode) -> Array[@model.DeclaredVisualFact]
+
+pub fn structural_resource_content(@source.StructuralDocument, Int) -> Bool
+
+pub fn structural_subtree_uses_current_color(@source.StructuralDocument, Int) -> Bool
+
+pub fn unused_definition_indices(@source.StructuralDocument) -> Array[Int]
+
+pub fn use_diagnostic(String, String, String, @model.ReportSourceSpan) -> @model.Diagnostic
+
+pub fn use_rendered_diagnostic(String, String, String, @model.ReportSourceSpan) -> @model.Diagnostic
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,16 +1,16 @@
 {
   "schema_version": "svgdiff-m2-renderer-coverage-gate/1",
   "milestone": "M2",
-  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/25",
+  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
   "baseline": {
     "path": "evaluation/renderer-conformance/baseline.v1.json",
     "total_cases": 141,
-    "exact_cases": 67,
-    "divergent_cases": 74
+    "exact_cases": 94,
+    "divergent_cases": 47
   },
   "dispositions": {
     "path": "evaluation/renderer-conformance/dispositions.v1.json",
-    "required_cases": 74,
+    "required_cases": 47,
     "allowed_kinds": ["diagnostic", "normalizer", "compositor"]
   },
   "safety_chains": [
@@ -27,17 +27,17 @@
     {
       "id": "capability_projection",
       "contract": "encountered_renderer_diagnostics_are_projected_without_claiming_global_support",
-      "evidence": ["engine/renderer_capabilities.mbt", "engine/renderer_capabilities_test.mbt", "docs/feature-coverage.md"]
+      "evidence": ["engine/internal/diff/renderer_capabilities.mbt", "engine/renderer_capabilities_test.mbt", "docs/feature-coverage.md"]
     },
     {
       "id": "coverage_proof",
       "contract": "missing_or_inconsistent_coverage_prevents_complete",
-      "evidence": ["engine/coverage_proof.mbt", "engine/coverage_proof_wbtest.mbt", "docs/coverage-proof-obligations.md"]
+      "evidence": ["engine/internal/diff/coverage_proof.mbt", "engine/internal/diff/coverage_proof_wbtest.mbt", "docs/coverage-proof-obligations.md"]
     },
     {
       "id": "status_composition",
       "contract": "failed_outweighs_limited_and_only_fully_covered_reports_are_complete",
-      "evidence": ["engine/feature_coverage.mbt", "engine/feature_coverage_wbtest.mbt", "docs/analysis-status.md"]
+      "evidence": ["engine/internal/diff/feature_coverage.mbt", "engine/internal/diff/feature_coverage_wbtest.mbt", "docs/analysis-status.md"]
     },
     {
       "id": "unsupported_equality_property",

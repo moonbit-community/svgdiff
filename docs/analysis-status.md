@@ -1,10 +1,10 @@
 # Analysis Status Contract
 
-Status: current schema `1.45` caller contract
+Status: current schema `1.46` caller contract
 
 Last verified: 2026-07-16
 
-`analysis_status` summarizes the report's per-feature, per-evidence-layer `coverage_matrix` under the recorded Comparison Profile. It does not describe whether the SVGs are equal, how many differences exist, or how visually important a difference is.
+`analysis_status` summarizes the engine's internal per-feature, per-evidence-layer coverage under the recorded comparison inputs. Successful coverage rows are not serialized; actual gaps appear in `limitations`. The status does not describe how many differences exist or how visually important a difference is.
 
 The status belongs to one Structured Report and one exact renderer/profile execution. A future [multi-renderer experiment matrix](multi-renderer-profiles.md) may associate several reports or external observations, but it cannot upgrade a cell's `partial` or `failed` status, turn missing cells into agreement, or extend one cell's equality/completeness claim to another target or profile.
 
@@ -36,14 +36,14 @@ A `complete` report guarantees all of the following:
 
 1. Both inputs were parsed successfully.
 2. Every encountered visual semantic falls within the current [complete-eligible feature coverage](feature-coverage.md), or is nonvisual metadata outside visual difference enumeration.
-3. Every changed supported authored fact discovered by the accepted analyzers is represented in `changed_facts` and is not silently discarded because its computed or rendered effect is zero.
+3. Every changed supported authored fact discovered by the accepted analyzers is represented by an item in `difference_groups` and is not silently discarded because its computed or rendered effect is zero.
 4. Every resulting Atomic Difference preserves its available source, computed, and rendered evidence according to the feature analyzer.
 5. No known unsupported feature, unresolved environment input, or failed measurement could invalidate the report's conclusions under the recorded profile.
 6. Every Difference Region's Cause Envelope is a `sound_overapproximation`: it may contain false-positive candidates but must contain every actual changed cause within the supported coverage boundary.
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.45`'s implemented support contract under the recorded Comparison Profile.
+> No visual-semantic difference was found within schema `1.46`'s implemented support contract under the recorded comparison inputs.
 
 It does not support any of these stronger statements:
 
@@ -64,21 +64,21 @@ A `partial` report guarantees all of the following:
 
 1. Both inputs were parsed sufficiently to return a Structured Report.
 2. Independently supported evidence is retained, including source-level differences that can be established before the unsupported layer.
-3. Every known coverage gap is represented by one or more Diagnostics with affected evidence layers.
+3. Every known coverage gap is represented by one or more `limitations` entries with affected evidence layers.
 4. Computed relations blocked by a coverage gap use `indeterminate` rather than being coerced to `equivalent` or `different`.
 5. Unavailable measurements remain absent or `not_computed`; they are not serialized as measured zero. A numeric pinned-renderer observation may remain present when only renderer conformance is limited, but the relevant coverage cell and Diagnostic prevent treating it as browser-conformant evidence.
-6. Cause Envelopes whose completeness cannot be proven use `not_established` and retain the relevant Diagnostic IDs.
+6. Cause Envelopes whose completeness cannot be proven use `not_established` and retain the relevant limitation IDs.
 
 A partial report does not permit an equality conclusion, even when:
 
-- `atomic_differences` is empty;
+- every `difference_groups[].items` array is empty;
 - all available raster metrics are zero;
 - the two renderer outputs happen to match;
 - the unsupported construct appears unchanged in the two source files.
 
-Consumers may use the supported differences, magnitudes, regions, and candidates that are present, but must qualify any summary with the Diagnostics that constrain it. The CLI returns status `0` because partial analysis is a successfully produced result, not a process failure.
+Consumers may use the supported differences, magnitudes, regions, and candidates that are present, but must qualify any summary with the limitations that constrain it. The CLI returns status `0` because partial analysis is a successfully produced result, not a process failure.
 
-An unsupported direct filter primitive demonstrates this rule: schema `1.45` emits its complete position-aligned subtree as a source-only Atomic Difference and names affected consumers, while leaving computed relation indeterminate, magnitude empty, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
+An unsupported direct filter primitive demonstrates this rule: schema `1.46` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
 
 ## `failed`
 
@@ -107,13 +107,12 @@ The number or magnitude of Atomic Differences never changes this ordering. A lar
 ## Caller decision procedure
 
 1. Verify `schema_version` before interpreting fields.
-2. Verify `profile.renderer_conformance_profile_id` before treating rendered evidence as a known conformance claim; older schema `1.0` reports may omit it and require an explicit legacy policy.
-3. Read `analysis_status` before inspecting difference counts or magnitudes.
-4. Read `renderer_capability_gaps` as an encountered-only projection of renderer Diagnostics; do not treat an empty array as global support.
-5. If `failed`, report Diagnostics and stop.
-6. If `partial`, retain supported findings but state the coverage limitation and do not claim equality.
-7. If `complete`, interpret all Atomic Differences; claim profile-scoped equality only when the list is empty.
-8. Use magnitude and Domain Ordering for prioritization, never `analysis_status`.
+2. Read `analysis_status` before inspecting difference counts or magnitudes.
+3. Read `limitations`; an empty list means no encountered limitation, not global SVG support.
+4. If `failed`, report limitations and stop.
+5. If `partial`, retain supported findings but state the limitation and do not claim equality.
+6. If `complete`, interpret every `difference_groups[].items[]` entry; claim profile-scoped equality only when all groups are empty.
+7. Use comparable measurements for prioritization, never `analysis_status` or cross-domain values with unlike units.
 
 ## Executable enforcement
 

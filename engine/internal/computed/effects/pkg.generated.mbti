@@ -1,0 +1,141 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/computed/effects"
+
+import {
+  "Milky2018/svgdiff/engine/internal/computed",
+  "Milky2018/svgdiff/engine/internal/computed/style",
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn append_blend_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn append_filter_diagnostics(String, @model.ComparisonProfile, String, Array[@model.Diagnostic]) -> Unit raise
+
+pub fn extract_filter_semantic_document_or_raise(String, @model.ComparisonProfile) -> FilterSemanticDocument raise
+
+pub fn resolve_blend_semantic_document_or_raise(String, @model.ComparisonProfile) -> BlendSemanticDocument raise
+
+pub fn resolve_filter_hosts_or_raise(String, @model.ComparisonProfile) -> (FilterSemanticDocument, Array[ResolvedFilterHost]) raise
+
+// Errors
+
+// Types and methods
+pub(all) struct BlendSemanticDocument {
+  hierarchy : @style.FillHierarchy
+  sites : Array[BlendSite]
+  issues : Array[BlendSemanticIssue]
+  active : Bool
+  complete : Bool
+}
+
+pub(all) struct BlendSemanticIssue {
+  code : String
+  subject_id : String
+  fact : @model.DeclaredVisualFact?
+}
+
+pub(all) struct BlendSite {
+  owner_id : String
+  source_index : Int
+  kind : String
+  blend_fact : @model.DeclaredVisualFact?
+  blend_resolution : @model.ResolvedVisualFact
+  blend_dependencies : Array[@style.StyleDependency]
+  blend_mode : String
+  isolation_fact : @model.DeclaredVisualFact?
+  isolation_resolution : @model.ResolvedVisualFact
+  isolation_dependencies : Array[@style.StyleDependency]
+  isolation : String
+  affected_subject_ids : Array[String]
+  complete : Bool
+}
+
+pub(all) struct FilterHostAttachment {
+  owner_id : String
+  fact : @model.DeclaredVisualFact
+  value : String
+}
+
+pub(all) struct FilterLength {
+  value : Double
+  percentage : Bool
+}
+
+pub(all) struct FilterOffsetPrimitive {
+  index : Int
+  subject_id : String
+  presence_fact : @model.DeclaredVisualFact
+  input : String
+  input_fact : @model.DeclaredVisualFact?
+  result : String?
+  result_fact : @model.DeclaredVisualFact?
+  dx : Double
+  dx_fact : @model.DeclaredVisualFact?
+  dy : Double
+  dy_fact : @model.DeclaredVisualFact?
+  region_fact : @model.DeclaredVisualFact?
+  complete : Bool
+}
+
+pub(all) struct FilterPrimitiveSource {
+  position : Int
+  kind : String
+  subject_id : String
+  start_offset : Int
+  end_offset : Int
+  offset_index : Int?
+}
+
+pub(all) struct FilterResource {
+  subject_id : String
+  authored_id : String?
+  presence_fact : @model.DeclaredVisualFact
+  filter_units : String
+  filter_units_fact : @model.DeclaredVisualFact?
+  primitive_units : String
+  primitive_units_fact : @model.DeclaredVisualFact?
+  template_fact : @model.DeclaredVisualFact?
+  region_x : FilterLength
+  region_y : FilterLength
+  region_width : FilterLength
+  region_height : FilterLength
+  region_facts : Array[@model.DeclaredVisualFact]
+  primitives : Array[FilterOffsetPrimitive]
+  primitive_sources : Array[FilterPrimitiveSource]
+  mut complete : Bool
+}
+
+pub(all) struct FilterSemanticDocument {
+  hierarchy : @style.FillHierarchy
+  resources : Array[FilterResource]
+  id_kinds : Array[(String, String)]
+  issues : Array[FilterSemanticIssue]
+}
+
+pub(all) struct FilterSemanticIssue {
+  code : String
+  subject_id : String
+  fact : @model.DeclaredVisualFact?
+}
+
+pub(all) struct ResolvedFilterHost {
+  owner_id : String
+  owner_authored_id : String?
+  owner_render_index : Int?
+  filter_fact : @model.DeclaredVisualFact
+  resource_id : String?
+  resource : FilterResource?
+  target_bounds : @computed.CssBounds?
+  filter_region : @computed.CssBounds?
+  primitive_offsets : Array[(Int, Int)]
+  primitive_bounds : Array[@computed.CssBounds?]
+  effect_bounds : @computed.CssBounds?
+  complete : Bool
+  issue_codes : Array[String]
+}
+
+// Type aliases
+
+// Traits
+

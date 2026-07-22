@@ -9,9 +9,52 @@ fn escape_html(value : String) -> String {
 }
 
 ///|
+fn preview_element_insert_offset(
+  source : String,
+  span : @xml.SourceSpan,
+) -> Int {
+  let mut offset = span.end.offset - 1
+  while offset > span.start.offset && source[offset] != '>' {
+    offset -= 1
+  }
+  if offset > span.start.offset && source[offset - 1] == '/' {
+    offset - 1
+  } else {
+    offset
+  }
+}
+
+///|
+fn preview_source(source : String, width : Int, height : Int) -> String {
+  let reader = @xml.NamespaceReader::from_string(source)
+  let events = reader.read_events_until_eof() catch { _ => return source }
+  for event in events {
+    match event.kind {
+      Start(element) | Empty(element) => {
+        if element.name.local_name != "svg" {
+          return source
+        }
+        for attribute in element.attributes {
+          if attribute.name.local_name == "viewBox" &&
+            attribute.name.namespace_uri is None {
+            return source
+          }
+        }
+        // CSS sizing alone does not scale the user space of a root SVG without
+        // viewBox. Adapt only the sandbox copy to the Comparison Viewport.
+        let offset = preview_element_insert_offset(source, event.span)
+        return "\{source.view(end_offset=offset)} viewBox=\"0 0 \{width} \{height}\"\{source.view(start_offset=offset)}"
+      }
+      _ => ()
+    }
+  }
+  source
+}
+
+///|
 fn sandbox_document(source : String, width : Int, height : Int) -> String {
   escape_html(
-    "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%;height:100%}</style><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 \{width} \{height}' preserveAspectRatio='xMidYMid meet'><g>\{source}</g></svg>",
+    "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%!important;height:100%!important}</style>\{preview_source(source, width, height)}",
   )
 }
 
@@ -38,15 +81,16 @@ pub fn render_html_report(
     $|<!doctype html>
     $|<html lang="en"><head><meta charset="utf-8">
     $|<meta name="viewport" content="width=device-width,initial-scale=1">
-    $|<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; frame-src 'self'">
+    $|<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; frame-src 'self'; img-src blob:">
     $|<title>SVG Diff Report</title><style>
     $|\{styles}
     $|</style></head><body style="--canvas-ratio:\{width}/\{height}">
     $|<main class="layout"><section class="visuals" aria-label="SVG previews">
     $|<header class="visual-header"><div><h1>SVG previews</h1><p id="selection-status">No localization selected</p></div><div class="view-controls" aria-label="Synchronized preview controls"><button type="button" id="fit-selection">Fit selected</button><button type="button" id="fit-canvas">Fit canvas</button><button type="button" id="reset-view">Reset</button><button type="button" id="clear-selection-global">Clear selection</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-value">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div></header>
     $|<div class="preview-grid"><article class="preview"><h2>Before</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="Before SVG" sandbox="" srcdoc="\{before_document}"></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
+    $|<article class="preview"><h2>Difference</h2><div class="canvas difference-canvas" data-canvas><div class="preview-content"><canvas data-difference-canvas aria-label="RGB channel difference; black pixels are equal" aria-busy="true"></canvas></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article>
     $|<article class="preview"><h2>After</h2><div class="canvas" data-canvas><div class="preview-content"><iframe title="After SVG" sandbox="" srcdoc="\{after_document}"></iframe><div class="overlay" data-overlay aria-hidden="true"></div></div><div class="pan-shield" title="Drag to pan synchronized previews"></div></div></article></div>
-    $|<div class="localization-legend"><span><i class="observed"></i>Observed bounds</span><span><i class="conservative"></i>Conservative outcome</span><span><i class="before-footprint"></i>Before footprint unavailable in Schema 1.45</span><span><i class="after-footprint"></i>After footprint unavailable in Schema 1.45</span></div>
+    $|<div class="localization-legend"><span><i class="observed"></i>Observed bounds</span><span><i class="conservative"></i>Conservative outcome</span></div>
     $|<aside id="selection-hidden" class="selection-hidden" hidden><span>The selected Event is hidden by filters; its overlay is suspended.</span><button type="button" id="show-selection">Show selected</button><button type="button" id="clear-selection">Clear</button></aside>
     $|</section><aside class="sidebar" aria-label="Visual-semantic review">
     $|<header class="report-header"><div><h1>Visual-semantic review</h1><p id="summary" class="summary"></p></div><span id="compatibility" class="compatibility">Schema compatibility</span></header>

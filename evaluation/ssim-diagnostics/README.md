@@ -2,7 +2,7 @@
 
 Status: versioned QA-only evaluation
 
-Last verified: 2026-07-16
+Last verified: 2026-07-20
 
 This evaluation measures what single-scale SSIM and five-level MS-SSIM can contribute as secondary raster diagnostics. It deliberately does not add either metric to Structured Report, Difference Magnitude, equality, Impact Assessment, Agent tasks, or release acceptance.
 
@@ -15,10 +15,11 @@ Five-level MS-SSIM uses the published product weights `0.0448`, `0.2856`, `0.300
 The thirteen-case corpus supports only a QA-only role. Its ordinal tiers remain an initial single-pass evaluation reference, not product truth:
 
 - exact-equivalent and zero-contribution direct-renderer pairs remain at identity;
-- the embedded-raster `high` case is falsely identical because the pinned raster source does not paint embedded images, matching the production `raster.embedded_images` capability gap;
-- canonical and enlarged SSIM differ by `0.289427532465898` on average and by as much as `0.9779354872328625`;
+- the subtle-geometry `low` case is falsely identical because both `0.99999` and `1.0` quantize to the same pixels, matching the production fractional-geometry guard;
+- the embedded-raster `high` case is falsely identical because svgdiff has not yet connected its bounded resource bundle to the dependency's host image resolver, matching the production `raster.embedded_images` capability gap;
+- canonical and enlarged SSIM differ by `0.2677904201327124` on average and by as much as `0.9779354872328625`;
 - the unsupported-path five-level product is not computed because a final component is non-positive;
-- canonical SSIM dissimilarity agrees with only `39/59` different-tier pairs, enlarged SSIM with `42/59`, and MS-SSIM with `34/50`; the remaining pairs are inverted or tied;
+- canonical SSIM dissimilarity agrees with only `36/59` different-tier pairs, enlarged SSIM with `39/59`, and MS-SSIM with `31/50`; the remaining pairs are inverted or tied;
 - whole-canvas pooling supplies no subject, region, changed fact, or cause link.
 
 SSIM and MS-SSIM are therefore accepted only as optional development observations for a fixed, fully recorded raster source and scale. They must inherit renderer coverage, and their values may help characterize structural raster drift. They cannot prove equality, replace raw pixel or vector evidence, rank human importance, localize a change, identify a cause, or enter the current Impact policy.
