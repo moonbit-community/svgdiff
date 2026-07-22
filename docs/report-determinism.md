@@ -1,6 +1,6 @@
 # Structured Report Determinism and Local Identifiers
 
-Status: current schema `1.45` contract
+Status: current schema `1.46` contract
 
 Last verified: 2026-07-17
 

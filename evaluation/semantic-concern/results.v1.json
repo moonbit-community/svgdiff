@@ -2,29 +2,22 @@
   "schema_version": "svgdiff-semantic-concern-results/1",
   "input_version": "svgdiff-semantic-concern-input/1",
   "source_pair_sha256": "864faafefc7682fd8dd4abcc0d638fbc45550d9833db40121166e4aa1589fec7",
-  "report_schema_version": "1.45",
-  "impact_policy_id": "event_rendered_pareto/v1",
+  "report_schema_version": "1.46",
   "analysis_status": "complete",
   "caller_concern_source": "external_evaluation_query",
   "engine_inferred_semantic_importance": false,
   "target_event_id": "event:alignment:1",
   "target_measurements": {
+    "status": "computed",
     "changed_pixels": 1,
-    "changed_pixel_fraction": 0.00390625,
-    "rgba8_rmse": 0.05412658773652741,
-    "linear_premultiplied_rgba_rmse": 0.05412658773652741
-  },
-  "target_frontier_member": false,
-  "domination_witness": {
-    "dominant_event_id": "event:alignment:0",
-    "dominated_event_id": "event:alignment:1",
-    "rule_id": "both_rendered_metrics_no_less_and_one_greater"
+    "changed_fraction": 0.00390625,
+    "linear_rgba_rmse": 0.05412658773652741
   },
   "dominant_event_measurements": {
+    "status": "computed",
     "changed_pixels": 64,
-    "changed_pixel_fraction": 0.25,
-    "rgba8_rmse": 0.3535533905932738,
-    "linear_premultiplied_rgba_rmse": 0.3535533905932738
+    "changed_fraction": 0.25,
+    "linear_rgba_rmse": 0.3535533905932738
   },
   "full_inventory_event_count": 2,
   "full_inventory_atomic_difference_count": 2,
@@ -32,17 +25,14 @@
     "atomic_difference_ids": [
       "diff:alignment:1:fill"
     ],
-    "changed_fact_ids": [
-      "fact:alignment:1:fill"
-    ],
-    "cause_candidate_changed_fact_ids": [
-      "fact:alignment:1:fill"
+    "cause_candidate_difference_ids": [
+      "diff:alignment:1:fill"
     ]
   },
   "agent_transport_preserved_target": true,
   "decision": {
-    "context_free_main_change_policy": "retained",
-    "query_matching_dominated_event": "must_be_reported",
+    "serialized_universal_ranking": "not_present",
+    "query_matching_small_event": "must_be_reported",
     "missing_query_context_semantic_importance": "unknown",
     "source_derived_semantic_priority": "rejected",
     "threshold_suppression_of_small_events": "rejected",

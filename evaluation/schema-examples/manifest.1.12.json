@@ -1,9 +1,0 @@
-{
-  "schema_version": "svgdiff-schema-examples/1",
-  "cases": [
-    {
-      "id": "legacy-1.12-cascade-inline-important-equivalent",
-      "output": "schema/examples/legacy-1.12-cascade-inline-important-equivalent.json"
-    }
-  ]
-}

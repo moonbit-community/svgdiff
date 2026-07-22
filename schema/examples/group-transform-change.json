@@ -1,526 +1,187 @@
 {
-  "schema_version": "1.45",
+  "schema_version": "1.46",
   "analysis_status": "complete",
-  "canvas_outcome": {
+  "comparison": {
+    "viewport": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "canvas": {
     "status": "computed",
-    "magnitude": {
-      "changed_pixels": 40,
-      "changed_pixel_fraction": 0.15625,
-      "rgba8_rmse": 0.2795084971874737,
-      "linear_premultiplied_rgba_rmse": 0.2795084971874737
-    },
-    "perceptual_flip": {
-      "status": "not_computed",
-      "reason_code": "flip_not_requested"
-    }
+    "changed_pixels": 40,
+    "changed_fraction": 0.15625,
+    "linear_rgba_rmse": 0.2795084971874737
   },
-  "impact_assessment": {
-    "policy_id": "event_rendered_pareto/v1",
-    "status": "complete",
-    "calibration_status": "not_calibrated",
-    "input_fields": [
-      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
-    ],
-    "candidate_event_count": 1,
-    "frontier_relation": "unique",
-    "frontier_groups": [
-      {
-        "event_ids": [
-          "event:alignment:0:transform"
-        ],
-        "atomic_difference_ids": [
-          "diff:alignment:0:transform:list:fact:transform:1:1:transform",
-          "diff:alignment:0:transform:cumulative",
-          "diff:alignment:0:transform:effect:translation"
-        ],
-        "measurements": {
-          "changed_pixel_fraction": 0.15625,
-          "linear_premultiplied_rgba_rmse": 0.2795084971874737
-        }
-      }
-    ],
-    "domination_witnesses": []
-  },
-  "coverage_matrix": [
+  "difference_groups": [
     {
-      "feature_id": "subject.g",
-      "subject_id": "layer",
-      "source_semantics": "covered",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "not_applicable",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.x",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.y",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "document.xml",
-      "subject_id": "document",
-      "source_semantics": "covered",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "not_applicable",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.rect",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.fill",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.width",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.height",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "domain.geometry.transform.list",
-      "subject_id": "alignment:0",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "domain.geometry.transform.translation",
-      "subject_id": "alignment:0",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "domain.geometry.transform.cumulative_matrix",
-      "subject_id": "alignment:0",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    }
-  ],
-  "renderer_capability_gaps": [],
-  "profile": {
-    "viewport_width": 16,
-    "viewport_height": 16,
-    "comparison_dpr": 1,
-    "color_interpretation": "srgb",
-    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
-    "perceptual_background": null,
-    "flip_viewing_conditions": null,
-    "flip_error_threshold": null
-  },
-  "subject_alignments": [
-    {
-      "id": "alignment:0",
-      "subject_role": "entity",
-      "relation": "correspondence",
-      "before": [
+      "category": "geometry",
+      "items": [
         {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "box",
-          "instance_context": null
-        }
-      ],
-      "after": [
+          "id": "diff:alignment:0:transform:list:fact:transform:1:1:transform",
+          "subject": "alignment:0",
+          "subject_role": "entity",
+          "kind": "geometry.transform.list",
+          "source": {
+            "before": "translate(1 0)",
+            "after": "translate(5 0)"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "painted_boundary_displacement": {
+              "mean_css_px": 2,
+              "p95_css_px": 4,
+              "max_css_px": 4
+            },
+            "painted_coverage_difference": {
+              "before_css_px2": 25,
+              "after_css_px2": 25,
+              "absolute_difference_css_px2": 40,
+              "union_css_px2": 45,
+              "fraction": 0.8888888888888888
+            },
+            "raster_changed_fraction": 0.15625,
+            "raster_linear_rgba_rmse": 0.2795084971874737
+          }
+        },
         {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "box",
-          "instance_context": null
-        }
-      ],
-      "basis": "minimum_rendered_geometry_distance",
-      "evidence": {
-        "score_kind": "rendered_geometry_feature_distance_v1",
-        "selected_score": 0.012518425401861237,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    },
-    {
-      "id": "alignment:1",
-      "subject_role": "entity",
-      "relation": "correspondence",
-      "before": [
+          "id": "diff:alignment:0:transform:cumulative",
+          "subject": "alignment:0",
+          "subject_role": "entity",
+          "kind": "geometry.transform.cumulative_matrix",
+          "source": {
+            "before": "matrix(1,0,0,1,1,0)",
+            "after": "matrix(1,0,0,1,5,0)"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "painted_boundary_displacement": {
+              "mean_css_px": 2,
+              "p95_css_px": 4,
+              "max_css_px": 4
+            },
+            "painted_coverage_difference": {
+              "before_css_px2": 25,
+              "after_css_px2": 25,
+              "absolute_difference_css_px2": 40,
+              "union_css_px2": 45,
+              "fraction": 0.8888888888888888
+            },
+            "raster_changed_fraction": 0.15625,
+            "raster_linear_rgba_rmse": 0.2795084971874737
+          }
+        },
         {
-          "source_index": 66,
-          "kind": "g",
-          "authored_id": "layer",
-          "instance_context": null
+          "id": "diff:alignment:0:transform:effect:translation",
+          "subject": "alignment:0",
+          "subject_role": "entity",
+          "kind": "geometry.transform.translation",
+          "source": {
+            "before": "translate(1,0)",
+            "after": "translate(5,0)"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "parameter_abs_css_px": 4,
+            "parameter_viewport_fraction": 0.17677669529663687,
+            "parameter_entity_fraction": 0.565685424949238,
+            "geometry_displacement_css_px": 4,
+            "painted_boundary_displacement": {
+              "mean_css_px": 2,
+              "p95_css_px": 4,
+              "max_css_px": 4
+            },
+            "painted_coverage_difference": {
+              "before_css_px2": 25,
+              "after_css_px2": 25,
+              "absolute_difference_css_px2": 40,
+              "union_css_px2": 45,
+              "fraction": 0.8888888888888888
+            },
+            "geometry_viewport_fraction": 0.17677669529663687,
+            "raster_changed_fraction": 0.15625,
+            "raster_linear_rgba_rmse": 0.2795084971874737,
+            "transform": {
+              "kind": "translation",
+              "before_x_css_px": 1,
+              "before_y_css_px": 0,
+              "after_x_css_px": 5,
+              "after_y_css_px": 0,
+              "delta_x_css_px": 4,
+              "delta_y_css_px": 0,
+              "norm_css_px": 4
+            }
+          }
         }
-      ],
-      "after": [
-        {
-          "source_index": 66,
-          "kind": "g",
-          "authored_id": "layer",
-          "instance_context": null
-        }
-      ],
-      "basis": "structural_authored_id",
-      "evidence": {
-        "score_kind": "structural_authored_id",
-        "selected_score": null,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    }
-  ],
-  "changed_facts": [
-    {
-      "id": "fact:transform:1:1:transform",
-      "subject_id": "layer",
-      "property": "transform",
-      "before": {
-        "property": "transform",
-        "authored_value": "translate(1 0)",
-        "declared_value": "translate(1 0)",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 91,
-          "end_offset": 105
-        }
-      },
-      "after": {
-        "property": "transform",
-        "authored_value": "translate(5 0)",
-        "declared_value": "translate(5 0)",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 91,
-          "end_offset": 105
-        }
-      },
-      "affected_subject_ids": [
-        "box"
       ]
-    }
-  ],
-  "source_resolutions": [],
-  "atomic_differences": [
-    {
-      "id": "diff:alignment:0:transform:list:fact:transform:1:1:transform",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "geometry.transform.list",
-      "source_before": "translate(1 0)",
-      "source_after": "translate(5 0)",
-      "source_fact_before": {
-        "property": "transform",
-        "authored_value": "translate(1 0)",
-        "declared_value": "translate(1 0)",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 91,
-          "end_offset": 105
-        }
-      },
-      "source_fact_after": {
-        "property": "transform",
-        "authored_value": "translate(5 0)",
-        "declared_value": "translate(5 0)",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 91,
-          "end_offset": 105
-        }
-      },
-      "changed_fact_ids": [
-        "fact:transform:1:1:transform"
-      ],
-      "evidence_layers": [
-        "source_semantics",
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "local_transform_matrices_differ",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": null,
-        "parameter_viewport_fraction": null,
-        "parameter_entity_fraction": null,
-        "geometry_displacement_css_px": null,
-        "painted_boundary_displacement": {
-          "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 16,
-          "after_sample_count": 16,
-          "mean_css_px": 2,
-          "p95_css_px": 4,
-          "max_css_px": 4
-        },
-        "painted_coverage_difference": {
-          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 25,
-          "after_coverage_css_px2": 25,
-          "absolute_difference_css_px2": 40,
-          "union_coverage_css_px2": 45,
-          "fraction": 0.8888888888888888
-        },
-        "geometry_viewport_fraction": null,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.15625,
-        "raster_rgba8_rmse": 0.2795084971874737,
-        "raster_linear_premultiplied_rgba_rmse": 0.2795084971874737,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          0.15625
-        ]
-      }
-    },
-    {
-      "id": "diff:alignment:0:transform:cumulative",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "geometry.transform.cumulative_matrix",
-      "source_before": "matrix(1,0,0,1,1,0)",
-      "source_after": "matrix(1,0,0,1,5,0)",
-      "changed_fact_ids": [
-        "fact:transform:1:1:transform"
-      ],
-      "evidence_layers": [
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "cumulative_transform_matrices_differ",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": null,
-        "parameter_viewport_fraction": null,
-        "parameter_entity_fraction": null,
-        "geometry_displacement_css_px": null,
-        "painted_boundary_displacement": {
-          "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 16,
-          "after_sample_count": 16,
-          "mean_css_px": 2,
-          "p95_css_px": 4,
-          "max_css_px": 4
-        },
-        "painted_coverage_difference": {
-          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 25,
-          "after_coverage_css_px2": 25,
-          "absolute_difference_css_px2": 40,
-          "union_coverage_css_px2": 45,
-          "fraction": 0.8888888888888888
-        },
-        "geometry_viewport_fraction": null,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.15625,
-        "raster_rgba8_rmse": 0.2795084971874737,
-        "raster_linear_premultiplied_rgba_rmse": 0.2795084971874737,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          0.15625
-        ]
-      }
-    },
-    {
-      "id": "diff:alignment:0:transform:effect:translation",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "geometry.transform.translation",
-      "source_before": "translate(1,0)",
-      "source_after": "translate(5,0)",
-      "changed_fact_ids": [
-        "fact:transform:1:1:transform"
-      ],
-      "evidence_layers": [
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "cumulative_transform_translation_differs",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": 4,
-        "parameter_viewport_fraction": 0.17677669529663687,
-        "parameter_entity_fraction": 0.565685424949238,
-        "geometry_displacement_css_px": 4,
-        "painted_boundary_displacement": {
-          "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 16,
-          "after_sample_count": 16,
-          "mean_css_px": 2,
-          "p95_css_px": 4,
-          "max_css_px": 4
-        },
-        "painted_coverage_difference": {
-          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 25,
-          "after_coverage_css_px2": 25,
-          "absolute_difference_css_px2": 40,
-          "union_coverage_css_px2": 45,
-          "fraction": 0.8888888888888888
-        },
-        "geometry_viewport_fraction": 0.17677669529663687,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.15625,
-        "raster_rgba8_rmse": 0.2795084971874737,
-        "raster_linear_premultiplied_rgba_rmse": 0.2795084971874737,
-        "intrinsic_raster": null,
-        "transform_effect": {
-          "kind": "translation",
-          "before_x_css_px": 1,
-          "before_y_css_px": 0,
-          "after_x_css_px": 5,
-          "after_y_css_px": 0,
-          "delta_x_css_px": 4,
-          "delta_y_css_px": 0,
-          "norm_css_px": 4
-        }
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          4,
-          0.17677669529663687,
-          0.15625
-        ]
-      }
     }
   ],
   "events": [
     {
       "id": "event:alignment:0:transform",
-      "primary_subject_id": "alignment:0",
-      "atomic_difference_ids": [
+      "subject": "alignment:0",
+      "difference_ids": [
         "diff:alignment:0:transform:list:fact:transform:1:1:transform",
         "diff:alignment:0:transform:cumulative",
         "diff:alignment:0:transform:effect:translation"
       ],
-      "rendered_outcome": {
+      "outcome": {
         "status": "computed",
-        "magnitude": {
-          "changed_pixels": 40,
-          "changed_pixel_fraction": 0.15625,
-          "rgba8_rmse": 0.2795084971874737,
-          "linear_premultiplied_rgba_rmse": 0.2795084971874737
-        },
-        "perceptual_color": {
-          "status": "not_computed",
-          "reason_code": "perceptual_background_absent"
-        },
-        "perceptual_flip": {
-          "status": "not_computed",
-          "reason_code": "flip_not_requested"
-        }
+        "changed_pixels": 40,
+        "changed_fraction": 0.15625,
+        "linear_rgba_rmse": 0.2795084971874737
       },
-      "difference_regions": [
+      "regions": [
         {
           "id": "region:pixel:0",
-          "source": "pixel_mask",
-          "pixel_x": 3,
-          "pixel_y": 4,
-          "pixel_width": 4,
-          "pixel_height": 5,
-          "css_x": 3,
-          "css_y": 4,
-          "css_width": 4,
-          "css_height": 5,
+          "kind": "observed",
+          "bounds": {
+            "x": 3,
+            "y": 4,
+            "width": 4,
+            "height": 5
+          },
           "changed_pixels": 20,
           "viewport_fraction": 0.078125,
-          "cause_envelope": {
+          "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
-            "fallback_scope": "comparison",
-            "candidate_changed_fact_ids": [
-              "fact:transform:1:1:transform"
-            ],
-            "diagnostic_ids": []
+            "candidate_difference_ids": [
+              "diff:alignment:0:transform:list:fact:transform:1:1:transform",
+              "diff:alignment:0:transform:cumulative",
+              "diff:alignment:0:transform:effect:translation"
+            ]
           }
         },
         {
           "id": "region:pixel:1",
-          "source": "pixel_mask",
-          "pixel_x": 8,
-          "pixel_y": 4,
-          "pixel_width": 4,
-          "pixel_height": 5,
-          "css_x": 8,
-          "css_y": 4,
-          "css_width": 4,
-          "css_height": 5,
+          "kind": "observed",
+          "bounds": {
+            "x": 8,
+            "y": 4,
+            "width": 4,
+            "height": 5
+          },
           "changed_pixels": 20,
           "viewport_fraction": 0.078125,
-          "cause_envelope": {
+          "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
-            "fallback_scope": "comparison",
-            "candidate_changed_fact_ids": [
-              "fact:transform:1:1:transform"
-            ],
-            "diagnostic_ids": []
+            "candidate_difference_ids": [
+              "diff:alignment:0:transform:list:fact:transform:1:1:transform",
+              "diff:alignment:0:transform:cumulative",
+              "diff:alignment:0:transform:effect:translation"
+            ]
           }
         }
       ]
     }
   ],
-  "diagnostics": []
+  "limitations": []
 }

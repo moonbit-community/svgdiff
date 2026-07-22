@@ -29,7 +29,7 @@ test "wasm ABI compares two in-memory SVG strings" {
   @debug.assert_eq(compare(length), status_ok)
   @debug.assert_eq(result_error_kind(), error_none)
   match @json.parse(read_test_result()) {
-    { "schema_version": "1.45", "analysis_status": "complete", .. } => ()
+    { "schema_version": "1.46", "analysis_status": "complete", .. } => ()
     _ => fail("expected a complete Structured Report")
   }
 }
@@ -42,12 +42,11 @@ test "wasm ABI applies explicit viewport dimensions" {
   @debug.assert_eq(compare(length), status_ok)
   match @json.parse(read_test_result()) {
     {
-      "profile": {
-        "viewport_width": 32,
-        "viewport_height": 24,
+      "comparison": {
+        "viewport": { "width": 32, "height": 24, .. },
         "perceptual_background": { "red": 51, "green": 102, "blue": 153, .. },
-        "flip_viewing_conditions": { "pixels_per_degree": 60, .. },
-        "flip_error_threshold": { "value": 0.05, .. },
+        "flip_pixels_per_degree": 60,
+        "flip_error_threshold": 0.05,
         ..
       },
       ..
@@ -72,18 +71,15 @@ test "wasm ABI accepts an explicit raw transparent profile" {
     "{\"version\":1,\"before_svg\":\"<svg/>\",\"after_svg\":\"<svg/>\",\"viewport_width\":16,\"viewport_height\":16,\"perceptual_background\":null,\"flip_pixels_per_degree\":null,\"flip_error_threshold\":null,\"max_checkpoints\":1000000}",
   )
   @debug.assert_eq(compare(request), status_ok)
-  match @json.parse(read_test_result()) {
-    {
-      "profile": {
-        "perceptual_background": Null,
-        "flip_viewing_conditions": Null,
-        "flip_error_threshold": Null,
-        ..
-      },
-      ..
-    } => ()
+  let result = read_test_result()
+  match @json.parse(result) {
+    { "comparison": { "viewport": { "width": 16, "height": 16, .. }, .. }, .. } =>
+      ()
     _ => fail("expected an explicit raw transparent comparison profile")
   }
+  assert_false(result.contains("perceptual_background"))
+  assert_false(result.contains("flip_pixels_per_degree"))
+  assert_false(result.contains("flip_error_threshold"))
 }
 
 ///|

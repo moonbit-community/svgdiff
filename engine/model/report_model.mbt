@@ -687,7 +687,7 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `1.45` result of one SVG comparison.
+/// Complete schema `1.46` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -705,16 +705,16 @@ pub(all) struct StructuredReport {
   atomic_differences : Array[AtomicDifference]
   events : Array[VisualEvent]
   diagnostics : Array[Diagnostic]
-} derive(ToJson)
+}
 
 ///|
-/// Serialize this report as indented schema `1.45` JSON.
+/// Serialize this report as indented schema `1.46` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `1.45` JSON.
+/// Serialize this report as whitespace-free schema `1.46` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.

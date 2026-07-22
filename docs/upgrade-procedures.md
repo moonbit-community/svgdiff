@@ -18,7 +18,7 @@ Renderer, parser, metric, schema, same-domain ordering-policy, and Impact Assess
 | Raster metric representation | `linear_srgb_premultiplied_rgba_f64` | `RenderedMagnitude` and `DifferenceMagnitude` numeric meaning |
 | Perceptual color metric | `delta_e_ok_changed_pixels_after_linear_srgb_background/v1` | event-local changed-pixel sample count and arithmetic mean DeltaEOK |
 | Perceptual spatial metric | `nvlabs_ldr_flip/v1.7-b475eb4b` | event-local LDR-FLIP maps, response bounds, quantization, and Viewing Conditions |
-| JSON Schema | `1.45` | every serialized field, enum, null/absence rule, and top-level invariant |
+| JSON Schema | `1.46` | every serialized field, enum, omission rule, and top-level invariant |
 | Nonvisual source-audit schema | `1.0` | source-only fact identity, paths, values, provenance, status, and parse failures |
 | Same-domain ordering | `v2_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 | Impact Assessment | `event_rendered_pareto/v1` | event eligibility, common rendered inputs, Pareto dominance, ties, incomparability, missing evidence, frontier groups, and domination witnesses |
@@ -242,7 +242,7 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Every released Schema, currently `1.0` through `1.45`, is a versioned consumer contract. A change to required fields, field meaning, enum values, null/absence behavior, identifier references, or numeric units requires an explicit compatibility review.
+Schema `1.46` is the only retained Structured Report consumer contract. A change to required fields, field meaning, enum values, omission behavior, identifier references, or numeric units requires an explicit compatibility review and direct migration of current consumers; obsolete schema artifacts are deleted rather than maintained indefinitely.
 
 The independent source-audit schema follows the same discipline but is not entered in the Structured Report registry. Validate [`svgdiff-source-audit.schema.json`](../schema/svgdiff-source-audit.schema.json), its canonical example, and the public `SourceAudit*` interface whenever audit identity, paths, values, spans, status, or failures change.
 

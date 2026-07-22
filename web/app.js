@@ -244,10 +244,10 @@ function comparisonRequest() {
 function renderReport(report, reportText) {
   const fragment = elements.reportTemplate.content.cloneNode(true);
   elements.resultRoot.replaceChildren(fragment);
-  elements.resultRoot.style.setProperty("--canvas-ratio", `${report.profile.viewport_width}/${report.profile.viewport_height}`);
+  elements.resultRoot.style.setProperty("--canvas-ratio", `${report.comparison.viewport.width}/${report.comparison.viewport.height}`);
   const frames = elements.resultRoot.querySelectorAll(".preview-content iframe");
-  frames[0].srcdoc = previewDocument(elements.beforeSource.value, report.profile.viewport_width, report.profile.viewport_height);
-  frames[1].srcdoc = previewDocument(elements.afterSource.value, report.profile.viewport_width, report.profile.viewport_height);
+  frames[0].srcdoc = previewDocument(elements.beforeSource.value, report.comparison.viewport.width, report.comparison.viewport.height);
+  frames[1].srcdoc = previewDocument(elements.afterSource.value, report.comparison.viewport.width, report.comparison.viewport.height);
   elements.resultRoot.querySelector("#report-data").value = JSON.stringify(report, null, 2);
   window.SvgdiffReportInspector.mount(elements.resultRoot);
   elements.resultSection.hidden = false;
@@ -274,8 +274,9 @@ async function compare() {
     const reportText = await runInWorker(request);
     const report = JSON.parse(reportText);
     renderReport(report, reportText);
-    const perceptual = report.canvas_outcome?.perceptual_flip?.status === "computed" ? "three canvas scores computed" : "perceptual score unavailable for this profile";
-    setStatus(`Complete browser transaction: ${report.analysis_status} report, ${report.atomic_differences.length} Atomic Differences, ${perceptual}.`, "");
+    const differenceCount = report.difference_groups.reduce((count, group) => count + group.items.length, 0);
+    const perceptual = typeof report.canvas?.perceptual_difference === "number" ? "three canvas scores computed" : "perceptual score not requested";
+    setStatus(`Complete browser transaction: ${report.analysis_status} report, ${differenceCount} Atomic Differences, ${perceptual}.`, "");
   } catch (error) {
     if (error.name === "AbortError") setStatus("Comparison cancelled. No partial report was presented.", "");
     else setStatus(error.message || String(error), "error");

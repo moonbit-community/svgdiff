@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-20
 
-This document states what schema `1.45` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `1.46` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -126,7 +126,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
-Current producers also project encountered renderer-specific Diagnostics into `renderer_capability_gaps`. The stable capability IDs distinguish CSS precedence, fractional geometry, fractional leaf opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, use-transform placement, viewport, referenced-gradient rasterization, referenced-pattern rasterization, and embedded-image compositing. This encountered-only array does not list unrelated missing features and does not replace the coverage matrix.
+The typed engine model also projects encountered renderer-specific Diagnostics into capability-gap records. Stable capability IDs distinguish CSS precedence, fractional geometry, fractional leaf opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, use-transform placement, viewport, referenced-gradient rasterization, referenced-pattern rasterization, and embedded-image compositing. Schema `1.46` serializes only encountered public consequences through `limitations`, not this implementation inventory.
 
 ## Unsupported or deferred
 

@@ -75,17 +75,8 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
 
   if ! printf '%s' "$case_json" | jq -e --slurpfile report "$tmp/$id.json" '
       ($report[0].analysis_status == .expected_analysis_status) and
-      (($report[0].atomic_differences | length) >= .minimum_atomic_differences) and
-      ([.required_diagnostics[]] - [$report[0].diagnostics[].code] | length == 0) and
-      all((.required_subject_alignments // [])[];
-        . as $expected |
-        any($report[0].subject_alignments[];
-          .relation == $expected.relation and
-          (.before | length) == $expected.before_count and
-          (.after | length) == $expected.after_count and
-          (($expected | has("basis") | not) or .basis == $expected.basis)
-        )
-      )
+      ([$report[0].difference_groups[].items[]] | length) >= .minimum_atomic_differences and
+      ([.required_diagnostics[]] - [$report[0].limitations[].code] | length == 0)
     ' >/dev/null; then
     printf 'Corpus expectation failed: %s\n' "$id" >&2
     exit 1

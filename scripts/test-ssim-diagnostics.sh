@@ -35,8 +35,7 @@ jq -e '
     .enlarged_exact_rgba8 == true and .ms_ssim == 1) and
   (.cases[] | select(.case_id == "embedded-raster-change") |
     .human_tier == "high" and .canonical_exact_rgba8 == true and
-    .production_renderer_capability_gaps[0].capability_id ==
-      "raster.embedded_images") and
+    any(.production_limitations[]; .code == "renderer_embedded_raster_unavailable")) and
   (.cases[] | select(.case_id == "unsupported-path-change") |
     .ms_ssim == null and .ms_ssim_reason_code != null)
 ' evaluation/ssim-diagnostics/results.v1.json >/dev/null
@@ -44,8 +43,7 @@ jq -e '
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
-  .schema_version == "1.45" and
-  .impact_assessment.policy_id == "event_rendered_pareto/v1" and
+  .schema_version == "1.46" and
   ([paths | map(tostring) | join(".") |
     select(test("(^|\\.)(ssim|ms_ssim)($|\\.)"))] | length) == 0
 ' "$tmp/report.json" >/dev/null

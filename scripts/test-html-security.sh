@@ -246,7 +246,7 @@ pw --raw run-code \
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
       hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
-      hasCompatibility: eventEvidenceText.includes('Schema 1.45 provides bounds only'),
+      hasCompatibility: eventEvidenceText.includes('Schema 1.46 reports CSS-space bounds'),
     };
     await page.locator('#outcome-filter').selectOption('zero');
     const hiddenSelection = {
@@ -322,11 +322,10 @@ pw --raw run-code \
       firstDiffId,
       diffCount,
       eventCount,
-      reportDiffCount: embedded.atomic_differences.length,
+      reportDiffCount: embedded.difference_groups.reduce((count, group) => count + group.items.length, 0),
       reportEventCount: embedded.events.length,
       canvasScores,
       difference,
-      impactPolicy: embedded.impact_assessment.policy_id,
       groupOrder: await page.locator('.group-header h3').allTextContents().catch(() => []),
       defaultDisclosure,
       hoverOverlayCount,
@@ -368,7 +367,6 @@ jq -e '
     "equalPixel": [0, 0, 0, 255],
     "changedPixel": [255, 0, 255, 255]
   } and
-  .impactPolicy == "event_rendered_pareto/v1" and
   .defaultDisclosure == {"event": false, "atomic": false, "raw": false} and
   .hoverOverlayCount == 2 and
   .observedOverlayCount == 2 and
@@ -391,7 +389,7 @@ jq -e '
     "atomicOpen": true,
     "eventOpen": true,
     "hasMagnitude": true,
-    "hasComputedReason": true,
+    "hasComputedReason": false,
     "hasRegion": true,
     "hasFact": true,
     "hasCause": true,
@@ -416,27 +414,18 @@ jq -e '
   .accessible.downloadLabel == "Download JSON" and
   .rawActions == {"open": true, "filename": "svgdiff-report.json"} and
   .sessionReset == false and
-  (.states.tied.overview | contains("exactly tied")) and
-  .states.tied.groups == 1 and
-  (.states.incomparable.overview | contains("incomparable under this policy")) and
+  (.states.tied.overview | contains("does not invent a universal severity ranking")) and
+  (.states.incomparable.overview | contains("does not invent a universal severity ranking")) and
   .states.incomparable.points == 2 and
   (.states.partial.overview | contains("Analysis is partial")) and
-  (.states.partial.overview | contains("unavailable is not zero")) and
-  (.states.equivalent.diffs | contains("Measured zero")) and
   (.states.equivalent.diffs | contains("red → #ff0000")) and
-  .states.equivalent.effectiveValues == ["Same effective value"] and
-  .states.equivalent.effectiveValueTitles == ["Effective values are compared after applying supported SVG rules; this does not describe final pixels."] and
   (.states.equivalent.diffs | contains("Canvas: 0 changed fraction")) and
-  (.states.subtle.diffs | contains("Measured zero")) and
   (.states.subtle.diffs | contains("1.0 → 0.99999")) and
-  .states.subtle.effectiveValues == ["Different effective value"] and
   (.states.subtle.diffs | contains("Parameter: ≈1.000e-5 CSS px")) and
-  (.states.subtle.diffs | contains("0 pixels (0)")) and
-  (.states.empty.overview | contains("No candidate Visual Events")) and
   (.states.empty.diffs | contains("No Atomic Differences")) and
   (.states.failed.overview | contains("Analysis failed")) and
   (.states.failed.diffs | contains("No Atomic Differences"))
 ' "$tmp/browser-interaction.json" >/dev/null
 
 printf 'HTML security browser validation: scripts, handlers, parent, network: isolated\n'
-printf 'HTML evidence browser validation: impact, details, causes, regions, controls: ok\n'
+printf 'HTML evidence browser validation: measurements, details, causes, regions, controls: ok\n'

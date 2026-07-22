@@ -53,7 +53,10 @@ def main() -> None:
     report = json.loads(result.stdout)
     if report.get("analysis_status") != "complete":
         raise ValueError("measured workload did not produce complete analysis")
-    if len(report.get("atomic_differences", [])) != args.expected_differences:
+    difference_count = sum(
+        len(group["items"]) for group in report.get("difference_groups", [])
+    )
+    if difference_count != args.expected_differences:
         raise ValueError("measured workload produced an unexpected difference count")
     print(
         json.dumps(

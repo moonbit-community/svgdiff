@@ -55,7 +55,7 @@ fn help_text() -> String {
 ///|
 fn version_text() -> String {
   let profile = @lib.ComparisonProfile::v1_default()
-  "svgdiff 0.6.0\nengine: 0.6.0\nschema: 1.45\nagent-projection: svgdiff-agent-projection/1\nrenderer: \{profile.renderer_id}\nrenderer-conformance-profile: \{profile.renderer_conformance_profile_id}\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
+  "svgdiff 0.6.0\nengine: 0.6.0\nschema: 1.46\nagent-projection: svgdiff-agent-projection/1\nrenderer: \{profile.renderer_id}\nrenderer-conformance-profile: \{profile.renderer_conformance_profile_id}\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
 }
 
 ///|

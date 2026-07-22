@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.45` coverage map
+Status: current schema `1.46` internal coverage map
 
 Last verified: 2026-07-20
 
@@ -13,13 +13,13 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.45`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `1.46`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
 ## Runtime matrix contract
 
-Every current report emits `coverage_matrix`. It is the sole canonical coverage summary; consumers must not derive coverage from difference counts or maintain a competing aggregate. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations.
+The engine builds a typed `coverage_matrix` before deriving `analysis_status`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations. Schema `1.46` does not serialize successful rows; it emits only encountered gaps through `limitations`.
 
 | Cell status | Source Semantics | Computed Appearance | Rendered Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Feature IDs use five current namespaces:
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 | `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. `coverage_matrix` was introduced as an optional Schema `1.0` property and remains optional for compatible legacy reports; the current Schema `1.45` engine always emits it.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Legacy schemas through `1.45` serialized this matrix; Schema `1.46` keeps it inside the typed engine model.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -97,7 +97,7 @@ The third M2 gate validates the downstream evidence graph. Its [soundness invent
 
 ## Guarded, partial, and failed capabilities
 
-Renderer-specific rows also produce one encountered `renderer_capability_gaps` record with stable capability ID, support status, and all establishing Diagnostic IDs. Analyzer-owned limitations such as unsupported `path` remain visible here and in Diagnostics but do not become renderer capability gaps. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../engine/renderer_capabilities_test.mbt).
+Renderer-specific rows also produce typed capability-gap records with stable capability IDs and establishing Diagnostic IDs. Schema `1.46` folds encountered public consequences into `limitations` rather than exposing a second renderer inventory. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../engine/renderer_capabilities_test.mbt).
 
 | Feature or condition | Report status | Diagnostic code | Constrained evidence | Executable coverage |
 | --- | --- | --- | --- | --- |

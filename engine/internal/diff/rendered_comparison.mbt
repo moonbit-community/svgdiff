@@ -84,7 +84,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "1.45",
+        schema_version: "1.46",
         analysis_status: "partial",
         canvas_outcome: not_computed_canvas_outcome(
           "rendered_evidence_unavailable",
@@ -168,7 +168,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.45",
+        schema_version: "1.46",
         analysis_status: "complete",
         canvas_outcome: not_computed_canvas_outcome(
           "rendered_evidence_unavailable",
@@ -222,7 +222,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "1.45",
+        schema_version: "1.46",
         analysis_status: "complete",
         canvas_outcome: not_computed_canvas_outcome(
           "rendered_evidence_unavailable",

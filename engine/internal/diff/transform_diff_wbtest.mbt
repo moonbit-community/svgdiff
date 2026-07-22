@@ -70,21 +70,26 @@ test "typed transform JSON retains zero components" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "atomic_differences": [
-        _,
-        _,
+      "difference_groups": [
         {
-          "domain": "geometry.transform.translation",
-          "magnitude": {
-            "transform_effect": {
-              "kind": "translation",
-              "delta_x_css_px": 2,
-              "delta_y_css_px": 0,
-              "norm_css_px": 2,
+          "items": [
+            _,
+            _,
+            {
+              "kind": "geometry.transform.translation",
+              "magnitude": {
+                "transform": {
+                  "kind": "translation",
+                  "delta_x_css_px": 2,
+                  "delta_y_css_px": 0,
+                  "norm_css_px": 2,
+                  ..
+                },
+                ..
+              },
               ..
             },
-            ..
-          },
+          ],
           ..
         },
       ],

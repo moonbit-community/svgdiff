@@ -191,39 +191,16 @@ test "removing an ancestor declaration falls back to the initial value" {
 }
 
 ///|
-test "structured report JSON exposes inherited fill provenance" {
+test "structured report JSON hides inheritance implementation provenance" {
   let report = @engine.compare(
     inherited_fill_document("", "fill='red'"),
     inherited_fill_document("style='fill: red'", ""),
     @engine.ComparisonProfile::v1_default(),
   )
-  match @json.parse(report.to_json_string()) {
-    {
-      "schema_version": "1.45",
-      "source_resolutions": [
-        {
-          "subject_id": "box",
-          "after": {
-            "resolution": "inherited",
-            "declaration_owner_id": "layer",
-            "declaration": {
-              "origin": "inline_style",
-              "source_span": {
-                "start_offset": Number(_),
-                "end_offset": Number(_),
-                ..
-              },
-              ..
-            },
-            ..
-          },
-          ..
-        },
-      ],
-      ..
-    } => ()
-    _ => fail("serialized report did not retain inherited fill provenance")
-  }
+  let json = report.to_json_string()
+  assert_true(json.find("source_resolutions") is None)
+  assert_true(json.find("declaration_owner_id") is None)
+  assert_true(json.find("source_span") is None)
 }
 
 ///|

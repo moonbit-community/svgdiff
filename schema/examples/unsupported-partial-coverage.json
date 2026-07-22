@@ -1,489 +1,133 @@
 {
-  "schema_version": "1.45",
+  "schema_version": "1.46",
   "analysis_status": "partial",
-  "canvas_outcome": {
+  "comparison": {
+    "viewport": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "canvas": {
     "status": "computed",
-    "magnitude": {
-      "changed_pixels": 112,
-      "changed_pixel_fraction": 0.4375,
-      "rgba8_rmse": 0.21673971242293488,
-      "linear_premultiplied_rgba_rmse": 0.21673971242293488
-    },
-    "perceptual_flip": {
-      "status": "not_computed",
-      "reason_code": "flip_not_requested"
-    }
+    "changed_pixels": 112,
+    "changed_fraction": 0.4375,
+    "linear_rgba_rmse": 0.21673971242293488
   },
-  "impact_assessment": {
-    "policy_id": "event_rendered_pareto/v1",
-    "status": "complete",
-    "calibration_status": "not_calibrated",
-    "input_fields": [
-      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
-    ],
-    "candidate_event_count": 1,
-    "frontier_relation": "unique",
-    "frontier_groups": [
-      {
-        "event_ids": [
-          "event:alignment:0"
-        ],
-        "atomic_difference_ids": [
-          "diff:alignment:0:d:segment:0:parameter:y",
-          "diff:alignment:0:d:segment:1:parameter:y"
-        ],
-        "measurements": {
-          "changed_pixel_fraction": 0.4375,
-          "linear_premultiplied_rgba_rmse": 0.21673971242293488
-        }
-      }
-    ],
-    "domination_witnesses": []
-  },
-  "coverage_matrix": [
+  "difference_groups": [
     {
-      "feature_id": "property.d",
-      "subject_id": "mark",
-      "source_semantics": "covered",
-      "computed_appearance": "limited",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path",
-        "diagnostic:renderer-stroke-join-raster-unproven:mark",
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "document.xml",
-      "subject_id": "document",
-      "source_semantics": "covered",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "not_applicable",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.path",
-      "subject_id": "mark",
-      "source_semantics": "covered",
-      "computed_appearance": "limited",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path",
-        "diagnostic:renderer-stroke-join-raster-unproven:mark",
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "property.fill",
-      "subject_id": "mark",
-      "source_semantics": "covered",
-      "computed_appearance": "limited",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path",
-        "diagnostic:renderer-stroke-join-raster-unproven:mark",
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "property.stroke",
-      "subject_id": "mark",
-      "source_semantics": "covered",
-      "computed_appearance": "limited",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path",
-        "diagnostic:renderer-stroke-join-raster-unproven:mark",
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "property.stroke-width",
-      "subject_id": "mark",
-      "source_semantics": "covered",
-      "computed_appearance": "limited",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path",
-        "diagnostic:renderer-stroke-join-raster-unproven:mark",
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "domain.geometry.path.parameter",
-      "subject_id": "alignment:0",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer-stroke-join-raster-unproven:mark",
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "guard.unsupported_visual_subject",
-      "subject_id": "path",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "limited",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:unsupported-visual-subject:path"
-      ]
-    },
-    {
-      "feature_id": "guard.renderer_stroke_join_raster_unproven",
-      "subject_id": "mark",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer-stroke-join-raster-unproven:mark"
-      ]
-    },
-    {
-      "feature_id": "guard.renderer_stroke_outline_raster_unproven",
-      "subject_id": "mark",
-      "source_semantics": "not_applicable",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "limited",
-      "diagnostic_ids": [
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    }
-  ],
-  "renderer_capability_gaps": [
-    {
-      "capability_id": "raster.stroke_join",
-      "support_status": "guarded",
-      "diagnostic_ids": [
-        "diagnostic:renderer-stroke-join-raster-unproven:mark"
-      ]
-    },
-    {
-      "capability_id": "raster.stroke_outline",
-      "support_status": "guarded",
-      "diagnostic_ids": [
-        "diagnostic:renderer-stroke-outline-raster-unproven:mark"
-      ]
-    }
-  ],
-  "profile": {
-    "viewport_width": 16,
-    "viewport_height": 16,
-    "comparison_dpr": 1,
-    "color_interpretation": "srgb",
-    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
-    "perceptual_background": null,
-    "flip_viewing_conditions": null,
-    "flip_error_threshold": null
-  },
-  "subject_alignments": [
-    {
-      "id": "alignment:0",
-      "subject_role": "entity",
-      "relation": "correspondence",
-      "before": [
+      "category": "geometry",
+      "items": [
         {
-          "source_index": 0,
-          "kind": "path",
-          "authored_id": "mark",
-          "instance_context": null
-        }
-      ],
-      "after": [
+          "id": "diff:alignment:0:d:segment:0:parameter:y",
+          "subject": "alignment:0",
+          "subject_role": "entity",
+          "kind": "geometry.path.parameter",
+          "source": {
+            "before": "M2 2 L14 14",
+            "after": "M2 14 L14 2"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "parameter_abs_user_units": 12,
+            "parameter_signed_user_units": 12,
+            "symmetric_relative": 1.5,
+            "parameter_abs_css_px": 12,
+            "parameter_viewport_fraction": 0.5303300858899106,
+            "parameter_entity_fraction": 0.4242640687119285,
+            "geometry_displacement_css_px": 7.0710678118654755,
+            "painted_boundary_displacement": {
+              "mean_css_px": 3.759401614608872,
+              "p95_css_px": 7.0710678118654755,
+              "max_css_px": 7.0710678118654755
+            },
+            "painted_coverage_difference": {
+              "before_css_px2": 33.937254901960785,
+              "after_css_px2": 33.937254901960785,
+              "absolute_difference_css_px2": 59.874509803921576,
+              "union_css_px2": 63.874509803921576,
+              "fraction": 0.93737721021611
+            },
+            "geometry_viewport_fraction": 0.3125,
+            "raster_changed_fraction": 0.4375,
+            "raster_linear_rgba_rmse": 0.21673971242293488
+          }
+        },
         {
-          "source_index": 0,
-          "kind": "path",
-          "authored_id": "mark",
-          "instance_context": null
+          "id": "diff:alignment:0:d:segment:1:parameter:y",
+          "subject": "alignment:0",
+          "subject_role": "entity",
+          "kind": "geometry.path.parameter",
+          "source": {
+            "before": "M2 2 L14 14",
+            "after": "M2 14 L14 2"
+          },
+          "effective": {
+            "relation": "different"
+          },
+          "magnitude": {
+            "parameter_abs_user_units": 12,
+            "parameter_signed_user_units": -12,
+            "symmetric_relative": 1.5,
+            "parameter_abs_css_px": 12,
+            "parameter_viewport_fraction": 0.5303300858899106,
+            "parameter_entity_fraction": 0.4242640687119285,
+            "geometry_displacement_css_px": 7.0710678118654755,
+            "painted_boundary_displacement": {
+              "mean_css_px": 3.759401614608872,
+              "p95_css_px": 7.0710678118654755,
+              "max_css_px": 7.0710678118654755
+            },
+            "painted_coverage_difference": {
+              "before_css_px2": 33.937254901960785,
+              "after_css_px2": 33.937254901960785,
+              "absolute_difference_css_px2": 59.874509803921576,
+              "union_css_px2": 63.874509803921576,
+              "fraction": 0.93737721021611
+            },
+            "geometry_viewport_fraction": 0.3125,
+            "raster_changed_fraction": 0.4375,
+            "raster_linear_rgba_rmse": 0.21673971242293488
+          }
         }
-      ],
-      "basis": "minimum_rendered_geometry_distance",
-      "evidence": {
-        "score_kind": "rendered_geometry_feature_distance_v1",
-        "selected_score": 0.08663655161388197,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    }
-  ],
-  "changed_facts": [
-    {
-      "id": "fact:alignment:0:d:segment:0:parameter:y",
-      "subject_id": "alignment:0",
-      "property": "d.segment.0.y",
-      "before": {
-        "property": "d",
-        "authored_value": "M2 2 L14 14",
-        "declared_value": "M2 2 L14 14",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "after": {
-        "property": "d",
-        "authored_value": "M2 14 L14 2",
-        "declared_value": "M2 14 L14 2",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "affected_subject_ids": [
-        "mark"
       ]
-    },
-    {
-      "id": "fact:alignment:0:d:segment:1:parameter:y",
-      "subject_id": "alignment:0",
-      "property": "d.segment.1.y",
-      "before": {
-        "property": "d",
-        "authored_value": "M2 2 L14 14",
-        "declared_value": "M2 2 L14 14",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "after": {
-        "property": "d",
-        "authored_value": "M2 14 L14 2",
-        "declared_value": "M2 14 L14 2",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "affected_subject_ids": [
-        "mark"
-      ]
-    }
-  ],
-  "source_resolutions": [],
-  "atomic_differences": [
-    {
-      "id": "diff:alignment:0:d:segment:0:parameter:y",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "geometry.path.parameter",
-      "source_before": "2",
-      "source_after": "14",
-      "source_fact_before": {
-        "property": "d",
-        "authored_value": "M2 2 L14 14",
-        "declared_value": "M2 2 L14 14",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "source_fact_after": {
-        "property": "d",
-        "authored_value": "M2 14 L14 2",
-        "declared_value": "M2 14 L14 2",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "changed_fact_ids": [
-        "fact:alignment:0:d:segment:0:parameter:y"
-      ],
-      "evidence_layers": [
-        "source_semantics",
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "path_segment_parameters_differ",
-        "diagnostic_ids": []
-      },
-      "parameter_delta_css_px": 12,
-      "magnitude": {
-        "parameter_abs_user_units": 12,
-        "parameter_signed_user_units": 12,
-        "symmetric_relative": 1.5,
-        "parameter_abs_css_px": 12,
-        "parameter_viewport_fraction": 0.5303300858899106,
-        "parameter_entity_fraction": 0.4242640687119285,
-        "geometry_displacement_css_px": 7.0710678118654755,
-        "painted_boundary_displacement": {
-          "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 28,
-          "after_sample_count": 28,
-          "mean_css_px": 3.759401614608872,
-          "p95_css_px": 7.0710678118654755,
-          "max_css_px": 7.0710678118654755
-        },
-        "painted_coverage_difference": {
-          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 33.937254901960785,
-          "after_coverage_css_px2": 33.937254901960785,
-          "absolute_difference_css_px2": 59.874509803921576,
-          "union_coverage_css_px2": 63.874509803921576,
-          "fraction": 0.93737721021611
-        },
-        "geometry_viewport_fraction": 0.3125,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.4375,
-        "raster_rgba8_rmse": 0.21673971242293488,
-        "raster_linear_premultiplied_rgba_rmse": 0.21673971242293488,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          7.0710678118654755,
-          0.3125,
-          0.4375
-        ]
-      }
-    },
-    {
-      "id": "diff:alignment:0:d:segment:1:parameter:y",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "geometry.path.parameter",
-      "source_before": "14",
-      "source_after": "2",
-      "source_fact_before": {
-        "property": "d",
-        "authored_value": "M2 2 L14 14",
-        "declared_value": "M2 2 L14 14",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "source_fact_after": {
-        "property": "d",
-        "authored_value": "M2 14 L14 2",
-        "declared_value": "M2 14 L14 2",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 105,
-          "end_offset": 116
-        }
-      },
-      "changed_fact_ids": [
-        "fact:alignment:0:d:segment:1:parameter:y"
-      ],
-      "evidence_layers": [
-        "source_semantics",
-        "computed_appearance",
-        "rendered_evidence"
-      ],
-      "computed_relation": {
-        "status": "different",
-        "reason_code": "path_segment_parameters_differ",
-        "diagnostic_ids": []
-      },
-      "parameter_delta_css_px": -12,
-      "magnitude": {
-        "parameter_abs_user_units": 12,
-        "parameter_signed_user_units": -12,
-        "symmetric_relative": 1.5,
-        "parameter_abs_css_px": 12,
-        "parameter_viewport_fraction": 0.5303300858899106,
-        "parameter_entity_fraction": 0.4242640687119285,
-        "geometry_displacement_css_px": 7.0710678118654755,
-        "painted_boundary_displacement": {
-          "method_id": "symmetric_nearest_boundary_pixels/v1",
-          "before_sample_count": 28,
-          "after_sample_count": 28,
-          "mean_css_px": 3.759401614608872,
-          "p95_css_px": 7.0710678118654755,
-          "max_css_px": 7.0710678118654755
-        },
-        "painted_coverage_difference": {
-          "method_id": "symmetric_alpha_coverage_l1_over_union/v1",
-          "before_coverage_css_px2": 33.937254901960785,
-          "after_coverage_css_px2": 33.937254901960785,
-          "absolute_difference_css_px2": 59.874509803921576,
-          "union_coverage_css_px2": 63.874509803921576,
-          "fraction": 0.93737721021611
-        },
-        "geometry_viewport_fraction": 0.3125,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0.4375,
-        "raster_rgba8_rmse": 0.21673971242293488,
-        "raster_linear_premultiplied_rgba_rmse": 0.21673971242293488,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          7.0710678118654755,
-          0.3125,
-          0.4375
-        ]
-      }
     }
   ],
   "events": [
     {
       "id": "event:alignment:0",
-      "primary_subject_id": "alignment:0",
-      "atomic_difference_ids": [
+      "subject": "alignment:0",
+      "difference_ids": [
         "diff:alignment:0:d:segment:0:parameter:y",
         "diff:alignment:0:d:segment:1:parameter:y"
       ],
-      "rendered_outcome": {
+      "outcome": {
         "status": "computed",
-        "magnitude": {
-          "changed_pixels": 112,
-          "changed_pixel_fraction": 0.4375,
-          "rgba8_rmse": 0.21673971242293488,
-          "linear_premultiplied_rgba_rmse": 0.21673971242293488
-        },
-        "perceptual_color": {
-          "status": "not_computed",
-          "reason_code": "perceptual_background_absent"
-        },
-        "perceptual_flip": {
-          "status": "not_computed",
-          "reason_code": "flip_not_requested"
-        }
+        "changed_pixels": 112,
+        "changed_fraction": 0.4375,
+        "linear_rgba_rmse": 0.21673971242293488
       },
-      "difference_regions": [
+      "regions": [
         {
           "id": "region:pixel:0",
-          "source": "pixel_mask",
-          "pixel_x": 1,
-          "pixel_y": 1,
-          "pixel_width": 14,
-          "pixel_height": 14,
-          "css_x": 1,
-          "css_y": 1,
-          "css_width": 14,
-          "css_height": 14,
+          "kind": "observed",
+          "bounds": {
+            "x": 1,
+            "y": 1,
+            "width": 14,
+            "height": 14
+          },
           "changed_pixels": 112,
           "viewport_fraction": 0.4375,
-          "cause_envelope": {
+          "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "fallback_scope": "comparison",
-            "candidate_changed_fact_ids": [
-              "fact:alignment:0:d:segment:0:parameter:y",
-              "fact:alignment:0:d:segment:1:parameter:y"
+            "candidate_difference_ids": [
+              "diff:alignment:0:d:segment:0:parameter:y",
+              "diff:alignment:0:d:segment:1:parameter:y"
             ],
-            "diagnostic_ids": [
+            "limitation_ids": [
               "diagnostic:unsupported-visual-subject:path",
               "diagnostic:renderer-stroke-outline-raster-unproven:mark",
               "diagnostic:renderer-stroke-join-raster-unproven:mark"
@@ -493,78 +137,31 @@
       ]
     }
   ],
-  "diagnostics": [
+  "limitations": [
     {
       "id": "diagnostic:unsupported-visual-subject:path",
       "code": "unsupported_visual_subject",
-      "subject_id": "path",
-      "affected_evidence_layers": [
+      "subject": "path",
+      "affects": [
         "computed_appearance",
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "before",
-          "source_span": {
-            "start_offset": 86,
-            "end_offset": 163
-          }
-        },
-        {
-          "source_role": "after",
-          "source_span": {
-            "start_offset": 86,
-            "end_offset": 163
-          }
-        }
       ]
     },
     {
       "id": "diagnostic:renderer-stroke-outline-raster-unproven:mark",
       "code": "renderer_stroke_outline_raster_unproven",
-      "subject_id": "mark",
-      "affected_evidence_layers": [
+      "subject": "mark",
+      "affects": [
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "before",
-          "source_span": {
-            "start_offset": 138,
-            "end_offset": 143
-          }
-        },
-        {
-          "source_role": "before",
-          "source_span": {
-            "start_offset": 159,
-            "end_offset": 160
-          }
-        },
-        {
-          "source_role": "after",
-          "source_span": {
-            "start_offset": 138,
-            "end_offset": 143
-          }
-        },
-        {
-          "source_role": "after",
-          "source_span": {
-            "start_offset": 159,
-            "end_offset": 160
-          }
-        }
       ]
     },
     {
       "id": "diagnostic:renderer-stroke-join-raster-unproven:mark",
       "code": "renderer_stroke_join_raster_unproven",
-      "subject_id": "mark",
-      "affected_evidence_layers": [
+      "subject": "mark",
+      "affects": [
         "rendered_evidence"
-      ],
-      "source_locations": []
+      ]
     }
   ]
 }

@@ -1,40 +1,34 @@
-# Lossless Agent Projection JSONL
+# Agent Projection JSONL
 
-Status: current transport contract
+Status: optional transport contract
 
 Projection identity: `svgdiff-agent-projection/1`
 
-Source report identity: Structured Report Schema `1.45`
+Source report identity: Structured Report Schema `1.46`
 
-Last verified: 2026-07-17
+Last verified: 2026-07-22
 
-`svgdiff before.svg after.svg --agent-projection` emits a deterministic JSON Lines transport for limited-context consumers. It does not summarize or discard report evidence. Instead, it partitions one canonical Structured Report into a header followed by individually addressable canonical array items.
+`svgdiff before.svg after.svg --agent-projection` partitions the concise report
+into JSON Lines. It exists for consumers with record-size limits; it is not a
+second semantic report and is not the recommended default. Ordinary JSON is
+usually smaller and easier for both humans and Agents.
 
-The ordinary JSON output remains the source of truth. `--agent-json` still means only whitespace-free canonical JSON and is mutually exclusive with `--agent-projection`.
+Records have this fixed order:
 
-## Record order
+1. one `header` containing `schema_version`, `analysis_status`, `comparison`,
+   and `canvas`;
+2. one record per `difference_groups` item;
+3. one record per `events` item;
+4. one record per `limitations` item.
 
-Every line is one object validated by [`svgdiff-agent-projection.schema.json`](../schema/svgdiff-agent-projection.schema.json). Records appear in this fixed order:
+Every record carries the projection identity, source schema, and global
+sequence. Section records also carry the section name and index. A consumer
+must reject unknown identities, sequence gaps, section reordering, index gaps,
+count mismatches, extra records, or missing records.
 
-1. one `header` record;
-2. `coverage_matrix` items;
-3. `renderer_capability_gaps` items;
-4. `subject_alignments` items;
-5. `changed_facts` items;
-6. `source_resolutions` items;
-7. `atomic_differences` items;
-8. `events` items;
-9. `diagnostics` items.
-
-Every record carries `projection_version`, `source_schema_version`, and a global zero-based `sequence`. Item records additionally carry their canonical `section`, zero-based section `index`, and exact canonical JSON `value`.
-
-The header retains `schema_version`, `analysis_status`, `canvas_outcome`, `impact_assessment`, and `profile`, plus an exact count for every array section. Counts distinguish a valid empty section from a truncated stream.
-
-## Lossless reconstruction
-
-A consumer reconstructs the canonical report by copying the header `value`, creating the eight array sections, and appending each item `value` under its declared section and index. It must reject an unknown projection identity, source-schema mismatch, sequence gap, section reorder, index gap, count mismatch, extra record, or missing record.
-
-The repository validator performs these checks and compares the result with the canonical report:
+The projection is lossless with respect to the concise Schema `1.46` JSON, not
+the engine's private typed analysis graph. The repository validator rebuilds
+the ordinary report and checks exact JSON equality:
 
 ```sh
 python3 evaluation/agent-projection/validate.py \
@@ -42,12 +36,5 @@ python3 evaluation/agent-projection/validate.py \
   --projection projection.jsonl
 ```
 
-The validation corpus covers complete, partial, failed, empty-inventory, and opt-in FLIP reports. Negative controls remove, duplicate, reorder, miscount, and relabel records. Because each value is copied from canonical serialization, Source Spans, source-only differences, exact and unavailable magnitudes, FLIP maps, Changed Facts, Difference Regions, Cause Envelopes, and Diagnostics remain intact.
-
-The [M3 compact-summary traceability gate](../evaluation/m3-summary-traceability-gate/README.md) additionally composes exact reconstruction with Impact semantic-edge and report-reference closure checks, and rejects unknown projection and source-Schema identities. It does not treat selective limited-context retrieval as a complete answer when the omitted records are relevant.
-
-## Limited-context use
-
-Read the header first to establish coverage and the Impact frontier. Then retrieve only the section records needed for the current question, following stable report-local IDs between events, Atomic Differences, regions, Changed Facts, alignments, and Diagnostics. A consumer that must make a complete comparison still needs every relevant record; the projection reduces the maximum record context, not necessarily the total byte count of the full lossless stream.
-
-The JSONL is untrusted data. Do not execute retained SVG text, Source Spans, identifiers, or Diagnostic messages. The projection performs no renderer or network access and grants no stronger conclusions than the canonical report.
+The JSONL is untrusted data. It grants no stronger equality, localization, or
+causal conclusion than the ordinary report.

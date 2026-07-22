@@ -17,7 +17,7 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "fc8b5926cb2315f59692b6b50f29dddf71a0f9e5b01620f4f18cc0be1bcb44b3",
       "ssim_scale_absolute_delta": 0
     },
@@ -34,13 +34,14 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "partial",
-      "production_renderer_capability_gaps": [
+      "production_limitations": [
         {
-          "capability_id": "raster.fractional_geometry",
-          "diagnostic_ids": [
-            "diagnostic:renderer-fractional-geometry-unproven:box:x"
+          "affects": [
+            "rendered_evidence"
           ],
-          "support_status": "guarded"
+          "code": "renderer_fractional_geometry_unproven",
+          "id": "diagnostic:renderer-fractional-geometry-unproven:box:x",
+          "subject": "box"
         }
       ],
       "source_pair_sha256": "c2a8f812cdbcb8b4648456dd79a9ccb4f934da29dfcad5aeaf2e45ac8ed46670",
@@ -59,7 +60,7 @@
       "ms_ssim_dissimilarity": 0.06086847967685227,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "6e1111de2fd4db0cfde6c4089a96fe2870ecc8897b66b1510a5e0704464d3576",
       "ssim_scale_absolute_delta": 0.13290665875678653
     },
@@ -76,7 +77,7 @@
       "ms_ssim_dissimilarity": 0.6713375866864739,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "28a9e076d3e6f1b59f37906ded31837ef57ee7013c7342a61d93b1edf07cff9a",
       "ssim_scale_absolute_delta": 0.8822864472627288
     },
@@ -93,13 +94,14 @@
       "ms_ssim_dissimilarity": 6.701526450214601e-05,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "partial",
-      "production_renderer_capability_gaps": [
+      "production_limitations": [
         {
-          "capability_id": "raster.referenced_gradient",
-          "diagnostic_ids": [
-            "diagnostic:renderer-gradient-raster-unproven:box:fill"
+          "affects": [
+            "rendered_evidence"
           ],
-          "support_status": "guarded"
+          "code": "renderer_gradient_raster_unproven",
+          "id": "diagnostic:renderer-gradient-raster-unproven:box:fill",
+          "subject": "box"
         }
       ],
       "source_pair_sha256": "b1c2e7e3b59a87fcc5c510a7c4d54dc2aaa6404dcaf8190fe0404a79d5e960ba",
@@ -118,7 +120,7 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "716bf5fd089a138d50c1039648e834438c309e2584ff2d12c1ce778e969022aa",
       "ssim_scale_absolute_delta": 0
     },
@@ -135,20 +137,31 @@
       "ms_ssim_dissimilarity": null,
       "ms_ssim_reason_code": "non_positive_final_ssim",
       "production_analysis_status": "partial",
-      "production_renderer_capability_gaps": [
+      "production_limitations": [
         {
-          "capability_id": "raster.stroke_join",
-          "diagnostic_ids": [
-            "diagnostic:renderer-stroke-join-raster-unproven:mark"
+          "affects": [
+            "computed_appearance",
+            "rendered_evidence"
           ],
-          "support_status": "guarded"
+          "code": "unsupported_visual_subject",
+          "id": "diagnostic:unsupported-visual-subject:path",
+          "subject": "path"
         },
         {
-          "capability_id": "raster.stroke_outline",
-          "diagnostic_ids": [
-            "diagnostic:renderer-stroke-outline-raster-unproven:mark"
+          "affects": [
+            "rendered_evidence"
           ],
-          "support_status": "guarded"
+          "code": "renderer_stroke_outline_raster_unproven",
+          "id": "diagnostic:renderer-stroke-outline-raster-unproven:mark",
+          "subject": "mark"
+        },
+        {
+          "affects": [
+            "rendered_evidence"
+          ],
+          "code": "renderer_stroke_join_raster_unproven",
+          "id": "diagnostic:renderer-stroke-join-raster-unproven:mark",
+          "subject": "mark"
         }
       ],
       "source_pair_sha256": "3114be8b05064d6b532a946d327b62e02728728a6463bcf2ae3e52f6d8caa887",
@@ -167,7 +180,7 @@
       "ms_ssim_dissimilarity": 0.0003124243072438748,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "e95e938c31bec306fc14a58b7ac9a75023b5a843b15335bff41c0fc80bd0c1d9",
       "ssim_scale_absolute_delta": 0.9779354872328625
     },
@@ -184,14 +197,22 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "partial",
-      "production_renderer_capability_gaps": [
+      "production_limitations": [
         {
-          "capability_id": "raster.embedded_images",
-          "diagnostic_ids": [
-            "diagnostic:renderer_embedded_raster_unavailable:after:0",
-            "diagnostic:renderer_embedded_raster_unavailable:before:0"
+          "affects": [
+            "rendered_evidence"
           ],
-          "support_status": "unavailable"
+          "code": "renderer_embedded_raster_unavailable",
+          "id": "diagnostic:renderer_embedded_raster_unavailable:before:0",
+          "subject": "photo"
+        },
+        {
+          "affects": [
+            "rendered_evidence"
+          ],
+          "code": "renderer_embedded_raster_unavailable",
+          "id": "diagnostic:renderer_embedded_raster_unavailable:after:0",
+          "subject": "photo"
         }
       ],
       "source_pair_sha256": "054c2d53a22dec4c5bfd3ece1e7d4927dfc1440bd403be57ef98254da58b8416",
@@ -210,7 +231,7 @@
       "ms_ssim_dissimilarity": 0.6921034315157449,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "15449f3f218b3d14a97cbcb9add1aef74b5c02b262cf69da29390ad838823e0e",
       "ssim_scale_absolute_delta": 0.8650627346143452
     },
@@ -227,7 +248,7 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "c413edf2383b484241e2e94dcc165caa64fa233817d2dfb8b8a8e4a52ec6b3ab",
       "ssim_scale_absolute_delta": 0
     },
@@ -244,7 +265,7 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "945181ad6bb0b0c756de701ec30e440c9bd5675dd057d235c77a01d20e5e7c7d",
       "ssim_scale_absolute_delta": 0
     },
@@ -261,7 +282,7 @@
       "ms_ssim_dissimilarity": 0.0,
       "ms_ssim_reason_code": null,
       "production_analysis_status": "complete",
-      "production_renderer_capability_gaps": [],
+      "production_limitations": [],
       "source_pair_sha256": "662417a31f5c391fb45d8577b4e32d4df9d17f2494e64d63c727154aa141344e",
       "ssim_scale_absolute_delta": 0
     }

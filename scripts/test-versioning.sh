@@ -24,8 +24,8 @@ grep -F "scripts/check-release-tag.sh v$module_version" release/README.md >/dev/
 schema_version=$(jq -r '.properties.schema_version.const' schema/svgdiff-report.schema.json)
 renderer_id=$(sed -n 's/^renderer: //p' "$tmp/version.txt")
 conformance_profile=$(sed -n 's/^renderer-conformance-profile: //p' "$tmp/version.txt")
-ordering_policy=$(jq -r '.["$defs"].atomicDifference.properties.domain_ordering.properties.policy_id.const' schema/svgdiff-report.schema.json)
-impact_policy=$(jq -r '.["$defs"].impactAssessment.properties.policy_id.const' schema/svgdiff-report.schema.json)
+ordering_policy=$(sed -n 's/^ordering-policy: //p' "$tmp/version.txt")
+impact_policy=$(sed -n 's/^impact-policy: //p' "$tmp/version.txt")
 agent_projection=$(jq -r '.["$defs"].headerRecord.properties.projection_version.const' schema/svgdiff-agent-projection.schema.json)
 
 printf '%s\n' "$schema_version" | grep -Eq '^[1-9][0-9]*\.[0-9]+$'
@@ -35,10 +35,10 @@ grep -Fx "ordering-policy: $ordering_policy" "$tmp/version.txt" >/dev/null
 grep -Fx "impact-policy: $impact_policy" "$tmp/version.txt" >/dev/null
 grep -Fx "agent-projection: $agent_projection" "$tmp/version.txt" >/dev/null
 jq -e '
-  .properties.profile.properties.renderer_id ==
-    {"type": "string", "minLength": 1} and
-  .properties.profile.properties.renderer_conformance_profile_id ==
-    {"type": "string", "minLength": 1}
+  .required == [
+    "schema_version", "analysis_status", "comparison", "canvas",
+    "difference_groups", "events", "limitations"
+  ]
 ' schema/svgdiff-report.schema.json >/dev/null
 
 test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/baseline.v1.json)" = "$conformance_profile"
@@ -56,14 +56,10 @@ jq -e --arg schema "$schema_version" --arg renderer "$renderer_id" \
 
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
-jq -e --arg schema "$schema_version" \
-  --arg renderer "$renderer_id" --arg profile "$conformance_profile" \
-  --arg policy "$ordering_policy" --arg impact "$impact_policy" '
+jq -e --arg schema "$schema_version" '
   .schema_version == $schema and
-  .profile.renderer_id == $renderer and
-  .profile.renderer_conformance_profile_id == $profile and
-  all(.atomic_differences[]; .domain_ordering.policy_id == $policy) and
-  .impact_assessment.policy_id == $impact
+  .comparison.viewport == {"width":16,"height":16} and
+  ([.difference_groups[].items[]] | length) == 1
 ' "$tmp/report.json" >/dev/null
 
 printf 'Version identities: module=%s schema=%s projection=%s renderer=%s ordering=%s impact=%s conformance=%s\n' \

@@ -51,9 +51,9 @@ const result = invoke({
 assert.equal(result.status, 0, result.text);
 assert.equal(result.errorKind, 0);
 const report = JSON.parse(result.text);
-assert.equal(report.schema_version, "1.45");
+assert.equal(report.schema_version, "1.46");
 assert.equal(report.analysis_status, "complete");
-assert.equal(report.canvas_outcome.magnitude.changed_pixel_fraction, 0.25);
+assert.equal(report.canvas.changed_fraction, 0.25);
 assert.deepEqual(report, nativeReport);
 
 const invalid = invoke({

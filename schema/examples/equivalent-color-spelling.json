@@ -1,280 +1,57 @@
 {
-  "schema_version": "1.45",
+  "schema_version": "1.46",
   "analysis_status": "complete",
-  "canvas_outcome": {
+  "comparison": {
+    "viewport": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "canvas": {
     "status": "computed",
-    "magnitude": {
-      "changed_pixels": 0,
-      "changed_pixel_fraction": 0,
-      "rgba8_rmse": 0,
-      "linear_premultiplied_rgba_rmse": 0
-    },
-    "perceptual_flip": {
-      "status": "not_computed",
-      "reason_code": "flip_not_requested"
-    }
+    "changed_pixels": 0,
+    "changed_fraction": 0,
+    "linear_rgba_rmse": 0
   },
-  "impact_assessment": {
-    "policy_id": "event_rendered_pareto/v1",
-    "status": "complete",
-    "calibration_status": "not_calibrated",
-    "input_fields": [
-      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
-    ],
-    "candidate_event_count": 1,
-    "frontier_relation": "unique",
-    "frontier_groups": [
-      {
-        "event_ids": [
-          "event:box"
-        ],
-        "atomic_difference_ids": [
-          "diff:entity:box:fill"
-        ],
-        "measurements": {
-          "changed_pixel_fraction": 0,
-          "linear_premultiplied_rgba_rmse": 0
-        }
-      }
-    ],
-    "domination_witnesses": []
-  },
-  "coverage_matrix": [
+  "difference_groups": [
     {
-      "feature_id": "property.x",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.y",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "document.xml",
-      "subject_id": "document",
-      "source_semantics": "covered",
-      "computed_appearance": "not_applicable",
-      "rendered_evidence": "not_applicable",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "subject.rect",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.fill",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.width",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "property.height",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    },
-    {
-      "feature_id": "domain.paint.fill",
-      "subject_id": "box",
-      "source_semantics": "covered",
-      "computed_appearance": "covered",
-      "rendered_evidence": "covered",
-      "diagnostic_ids": []
-    }
-  ],
-  "renderer_capability_gaps": [],
-  "profile": {
-    "viewport_width": 16,
-    "viewport_height": 16,
-    "comparison_dpr": 1,
-    "color_interpretation": "srgb",
-    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
-    "perceptual_background": null,
-    "flip_viewing_conditions": null,
-    "flip_error_threshold": null
-  },
-  "subject_alignments": [
-    {
-      "id": "alignment:0",
-      "subject_role": "entity",
-      "relation": "correspondence",
-      "before": [
+      "category": "paint",
+      "items": [
         {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "box",
-          "instance_context": null
+          "id": "diff:entity:box:fill",
+          "subject": "box",
+          "subject_role": "entity",
+          "kind": "paint.fill",
+          "source": {
+            "before": "red",
+            "after": "#ff0000"
+          },
+          "effective": {
+            "relation": "equivalent"
+          },
+          "magnitude": {
+            "raster_changed_fraction": 0,
+            "raster_linear_rgba_rmse": 0
+          }
         }
-      ],
-      "after": [
-        {
-          "source_index": 0,
-          "kind": "rect",
-          "authored_id": "box",
-          "instance_context": null
-        }
-      ],
-      "basis": "exact_visual_signature",
-      "evidence": {
-        "score_kind": "exact_visual_signature",
-        "selected_score": 0,
-        "candidate_count": 1,
-        "equal_score_candidate_count": 1,
-        "ambiguity": "unique",
-        "confidence": null,
-        "confidence_status": "not_calibrated"
-      }
-    }
-  ],
-  "changed_facts": [
-    {
-      "id": "fact:auto:diff:entity:box:fill",
-      "subject_id": "alignment:0",
-      "property": "paint.fill",
-      "before": {
-        "property": "fill",
-        "authored_value": "red",
-        "declared_value": "red",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 145
-        }
-      },
-      "after": {
-        "property": "fill",
-        "authored_value": "#ff0000",
-        "declared_value": "#ff0000",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 149
-        }
-      },
-      "affected_subject_ids": [
-        "box"
       ]
-    }
-  ],
-  "source_resolutions": [],
-  "atomic_differences": [
-    {
-      "id": "diff:entity:box:fill",
-      "subject_role": "entity",
-      "subject_alignment_id": "alignment:0",
-      "domain": "paint.fill",
-      "source_before": "red",
-      "source_after": "#ff0000",
-      "source_fact_before": {
-        "property": "fill",
-        "authored_value": "red",
-        "declared_value": "red",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 145
-        }
-      },
-      "source_fact_after": {
-        "property": "fill",
-        "authored_value": "#ff0000",
-        "declared_value": "#ff0000",
-        "origin": "presentation_attribute",
-        "source_span": {
-          "start_offset": 142,
-          "end_offset": 149
-        }
-      },
-      "changed_fact_ids": [
-        "fact:auto:diff:entity:box:fill"
-      ],
-      "evidence_layers": [
-        "source_semantics"
-      ],
-      "computed_relation": {
-        "status": "equivalent",
-        "reason_code": "same_resolved_color",
-        "diagnostic_ids": []
-      },
-      "magnitude": {
-        "parameter_abs_user_units": null,
-        "parameter_signed_user_units": null,
-        "symmetric_relative": null,
-        "parameter_abs_css_px": null,
-        "parameter_viewport_fraction": null,
-        "parameter_entity_fraction": null,
-        "geometry_displacement_css_px": null,
-        "painted_boundary_displacement": null,
-        "painted_coverage_difference": null,
-        "geometry_viewport_fraction": null,
-        "presence_painted_viewport_fraction": null,
-        "raster_changed_pixel_fraction": 0,
-        "raster_rgba8_rmse": 0,
-        "raster_linear_premultiplied_rgba_rmse": 0,
-        "intrinsic_raster": null
-      },
-      "domain_ordering": {
-        "policy_id": "v2_domain_lexicographic",
-        "components": [
-          0,
-          0,
-          0
-        ]
-      }
     }
   ],
   "events": [
     {
       "id": "event:box",
-      "primary_subject_id": "box",
-      "atomic_difference_ids": [
+      "subject": "box",
+      "difference_ids": [
         "diff:entity:box:fill"
       ],
-      "rendered_outcome": {
+      "outcome": {
         "status": "computed",
-        "magnitude": {
-          "changed_pixels": 0,
-          "changed_pixel_fraction": 0,
-          "rgba8_rmse": 0,
-          "linear_premultiplied_rgba_rmse": 0
-        },
-        "perceptual_color": {
-          "status": "not_computed",
-          "reason_code": "perceptual_background_absent"
-        },
-        "perceptual_flip": {
-          "status": "not_computed",
-          "reason_code": "flip_not_requested"
-        }
+        "changed_pixels": 0,
+        "changed_fraction": 0,
+        "linear_rgba_rmse": 0
       },
-      "difference_regions": []
+      "regions": []
     }
   ],
-  "diagnostics": []
+  "limitations": []
 }

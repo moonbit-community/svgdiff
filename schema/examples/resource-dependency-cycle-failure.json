@@ -1,104 +1,37 @@
 {
-  "schema_version": "1.45",
+  "schema_version": "1.46",
   "analysis_status": "failed",
-  "canvas_outcome": {
+  "comparison": {
+    "viewport": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "canvas": {
     "status": "not_computed",
-    "reason_code": "rendered_evidence_unavailable",
-    "perceptual_flip": {
-      "status": "not_computed",
-      "reason_code": "rendered_evidence_unavailable"
-    }
+    "reason": "rendered_evidence_unavailable"
   },
-  "impact_assessment": {
-    "policy_id": "event_rendered_pareto/v1",
-    "status": "not_applicable",
-    "calibration_status": "not_calibrated",
-    "input_fields": [
-      "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-      "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse"
-    ],
-    "candidate_event_count": 0,
-    "frontier_relation": "not_applicable",
-    "frontier_groups": [],
-    "domination_witnesses": []
-  },
-  "coverage_matrix": [
-    {
-      "feature_id": "resource.reference_cycle.after",
-      "subject_id": "reference_cycle.after",
-      "source_semantics": "failed",
-      "computed_appearance": "failed",
-      "rendered_evidence": "failed",
-      "diagnostic_ids": [
-        "diagnostic:reference-cycle-detected:reference_cycle.after"
-      ]
-    },
-    {
-      "feature_id": "resource.reference_cycle.before",
-      "subject_id": "reference_cycle.before",
-      "source_semantics": "failed",
-      "computed_appearance": "failed",
-      "rendered_evidence": "failed",
-      "diagnostic_ids": [
-        "diagnostic:reference-cycle-detected:reference_cycle.before"
-      ]
-    }
-  ],
-  "renderer_capability_gaps": [],
-  "profile": {
-    "viewport_width": 16,
-    "viewport_height": 16,
-    "comparison_dpr": 1,
-    "color_interpretation": "srgb",
-    "raster_representation": "linear_srgb_premultiplied_rgba_f64",
-    "renderer_id": "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1",
-    "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
-    "perceptual_background": null,
-    "flip_viewing_conditions": null,
-    "flip_error_threshold": null
-  },
-  "subject_alignments": [],
-  "changed_facts": [],
-  "source_resolutions": [],
-  "atomic_differences": [],
+  "difference_groups": [],
   "events": [],
-  "diagnostics": [
+  "limitations": [
     {
       "id": "diagnostic:reference-cycle-detected:reference_cycle.before",
       "code": "reference_cycle_detected",
-      "subject_id": "reference_cycle.before",
-      "affected_evidence_layers": [
+      "subject": "reference_cycle.before",
+      "affects": [
         "source_semantics",
         "computed_appearance",
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "before",
-          "source_span": {
-            "start_offset": 89,
-            "end_offset": 101
-          }
-        }
       ]
     },
     {
       "id": "diagnostic:reference-cycle-detected:reference_cycle.after",
       "code": "reference_cycle_detected",
-      "subject_id": "reference_cycle.after",
-      "affected_evidence_layers": [
+      "subject": "reference_cycle.after",
+      "affects": [
         "source_semantics",
         "computed_appearance",
         "rendered_evidence"
-      ],
-      "source_locations": [
-        {
-          "source_role": "after",
-          "source_span": {
-            "start_offset": 94,
-            "end_offset": 106
-          }
-        }
       ]
     }
   ]

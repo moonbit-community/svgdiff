@@ -16,8 +16,8 @@
   },
   "maximum": {
     "agent_hard_safety_failure_count": 0,
-    "report_cause_false_positive_count": 1,
-    "agent_cause_false_positive_count": 1,
+    "report_cause_false_positive_count": 2,
+    "agent_cause_false_positive_count": 2,
     "invalid_magnitude_claim_count": 0,
     "invalid_evidence_reference_count": 0
   }

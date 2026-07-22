@@ -169,13 +169,14 @@ pw --raw run-code \
       await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
       await page.locator('#result-section').waitFor({ state: 'visible' });
       const affineReport = JSON.parse(await page.locator('#report-data').inputValue());
+      const affineDifferences = affineReport.difference_groups.flatMap(group => group.items);
       affineExamples.push({
         id,
         expectedDomains,
         transforms,
         analysisStatus: affineReport.analysis_status,
-        domains: affineReport.atomic_differences.map(difference => difference.domain),
-        unexpectedScale: id === 'rotation' && affineReport.atomic_differences.some(difference => difference.domain === 'geometry.transform.scale'),
+        domains: affineDifferences.map(difference => difference.kind),
+        unexpectedScale: id === 'rotation' && affineDifferences.some(difference => difference.kind === 'geometry.transform.scale'),
         changedScores: await page.locator('.score-card .score-value').allTextContents(),
       });
     }
@@ -189,8 +190,8 @@ pw --raw run-code \
       status: baselineUi.status,
       analysisStatus: report.analysis_status,
       schemaVersion: report.schema_version,
-      atomicDifferences: report.atomic_differences.length,
-      diagnostics: report.diagnostics.length,
+      atomicDifferences: report.difference_groups.flatMap(group => group.items).length,
+      diagnostics: report.limitations.length,
       scores,
       previewSvgCounts,
       previewRootsFillViewport,
@@ -232,7 +233,7 @@ jq -e '
   .sourceFacts.afterSize == {"x":"152","y":"52","width":"72","height":"72","fill":"#16a34a"} and
   .effectiveValueOptions == ["Any effective value","Different","Same","Unknown"] and
   .analysisStatus == "complete" and
-  .schemaVersion == "1.45" and
+  .schemaVersion == "1.46" and
   .atomicDifferences == 3 and
   .diagnostics == 0 and
   .effectiveValues == ["Different effective value","Different effective value","Different effective value"] and

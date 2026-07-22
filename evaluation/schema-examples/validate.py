@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
-import base64
 import copy
-import hashlib
 import json
-import math
 import subprocess
 import sys
 from pathlib import Path
@@ -31,981 +28,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def nested_value(value: Any, path: str) -> Any:
-    current = value
-    for component in path.split("."):
-        if not isinstance(current, dict) or component not in current:
-            raise ValueError(f"missing semantic assertion path: {path}")
-        current = current[component]
-    return current
-
-
-IMPACT_INPUT_FIELDS = [
-    "events[].rendered_outcome.magnitude.changed_pixel_fraction",
-    "events[].rendered_outcome.magnitude.linear_premultiplied_rgba_rmse",
-]
-
-
-def event_impact_measurements(event: dict[str, Any]) -> dict[str, float] | None:
-    evidence = event["rendered_outcome"]
-    magnitude = evidence.get("magnitude")
-    if evidence.get("status") != "computed" or not isinstance(magnitude, dict):
-        return None
-    return {
-        "changed_pixel_fraction": magnitude["changed_pixel_fraction"],
-        "linear_premultiplied_rgba_rmse": magnitude[
-            "linear_premultiplied_rgba_rmse"
-        ],
-    }
-
-
-def impact_dominates(
-    left: dict[str, float] | None, right: dict[str, float] | None
-) -> bool:
-    if left is None or right is None:
-        return False
-    return (
-        left["changed_pixel_fraction"] >= right["changed_pixel_fraction"]
-        and left["linear_premultiplied_rgba_rmse"]
-        >= right["linear_premultiplied_rgba_rmse"]
-        and (
-            left["changed_pixel_fraction"] > right["changed_pixel_fraction"]
-            or left["linear_premultiplied_rgba_rmse"]
-            > right["linear_premultiplied_rgba_rmse"]
-        )
-    )
-
-
-def report_id_key(value: str) -> tuple[int, str]:
-    return (len(value), value)
-
-
-def assert_impact_assessment(case: dict[str, Any], report: dict[str, Any]) -> None:
-    assessment = report["impact_assessment"]
-    events = {event["id"]: event for event in report["events"]}
-    measurements = {
-        event_id: event_impact_measurements(event)
-        for event_id, event in events.items()
-    }
-    if assessment["policy_id"] != "event_rendered_pareto/v1":
-        raise ValueError(f"{case['id']}: unexpected Impact Assessment policy")
-    if assessment["calibration_status"] != "not_calibrated":
-        raise ValueError(f"{case['id']}: Impact Assessment claimed calibration")
-    if assessment["input_fields"] != IMPACT_INPUT_FIELDS:
-        raise ValueError(f"{case['id']}: Impact Assessment input fields drifted")
-    if assessment["candidate_event_count"] != len(events):
-        raise ValueError(f"{case['id']}: Impact Assessment candidate count drifted")
-    expected_status = (
-        "not_applicable"
-        if not events
-        else "partial"
-        if any(value is None for value in measurements.values())
-        else "complete"
-    )
-    if assessment["status"] != expected_status:
-        raise ValueError(f"{case['id']}: Impact Assessment status drifted")
-
-    expected_frontier = {
-        event_id
-        for event_id, vector in measurements.items()
-        if not any(
-            other_id != event_id and impact_dominates(other, vector)
-            for other_id, other in measurements.items()
-        )
-    }
-    groups = assessment["frontier_groups"]
-    seen_frontier: set[str] = set()
-    previous_group_id: str | None = None
-    for group in groups:
-        event_ids = group["event_ids"]
-        if not event_ids or event_ids != sorted(set(event_ids), key=report_id_key):
-            raise ValueError(f"{case['id']}: invalid Impact frontier event IDs")
-        if (
-            previous_group_id is not None
-            and report_id_key(event_ids[0]) <= report_id_key(previous_group_id)
-        ):
-            raise ValueError(f"{case['id']}: Impact frontier groups are not stable")
-        previous_group_id = event_ids[0]
-        if seen_frontier.intersection(event_ids):
-            raise ValueError(f"{case['id']}: duplicate Impact frontier event")
-        seen_frontier.update(event_ids)
-        if not set(event_ids) <= set(events):
-            raise ValueError(f"{case['id']}: unknown Impact frontier event")
-        vector = group["measurements"]
-        if vector is None:
-            if len(event_ids) != 1 or measurements[event_ids[0]] is not None:
-                raise ValueError(f"{case['id']}: invalid unavailable Impact group")
-        elif any(measurements[event_id] != vector for event_id in event_ids):
-            raise ValueError(f"{case['id']}: invalid measured Impact tie group")
-        expected_difference_ids = []
-        for event_id in event_ids:
-            for difference_id in events[event_id]["atomic_difference_ids"]:
-                if difference_id not in expected_difference_ids:
-                    expected_difference_ids.append(difference_id)
-        if group["atomic_difference_ids"] != expected_difference_ids:
-            raise ValueError(f"{case['id']}: Impact difference links drifted")
-    if seen_frontier != expected_frontier:
-        raise ValueError(f"{case['id']}: Impact frontier is not Pareto complete")
-
-    if not groups:
-        expected_relation = "not_applicable"
-    elif len(groups) == 1:
-        expected_relation = "unique" if len(groups[0]["event_ids"]) == 1 else "tied"
-    elif any(len(group["event_ids"]) > 1 for group in groups):
-        expected_relation = "mixed"
-    else:
-        expected_relation = "incomparable"
-    if assessment["frontier_relation"] != expected_relation:
-        raise ValueError(f"{case['id']}: Impact frontier relation drifted")
-
-    dominated = sorted(set(events) - expected_frontier, key=report_id_key)
-    witnesses = assessment["domination_witnesses"]
-    if [item["dominated_event_id"] for item in witnesses] != dominated:
-        raise ValueError(f"{case['id']}: Impact domination coverage drifted")
-    for witness in witnesses:
-        dominated_id = witness["dominated_event_id"]
-        expected_dominant = next(
-            event_id
-            for event_id in sorted(events, key=report_id_key)
-            if event_id != dominated_id
-            and impact_dominates(measurements[event_id], measurements[dominated_id])
-        )
-        if (
-            witness["dominant_event_id"] != expected_dominant
-            or witness["rule_id"]
-            != "both_rendered_metrics_no_less_and_one_greater"
-        ):
-            raise ValueError(f"{case['id']}: invalid Impact domination witness")
-
-
-def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
-    expected = case["expected"]
-    differences = report["atomic_differences"]
-    actual = {
-        "analysis_status": report["analysis_status"],
-        "domains": [item["domain"] for item in differences],
-        "computed_relations": [
-            item["computed_relation"]["status"] for item in differences
-        ],
-        "diagnostic_codes": [item["code"] for item in report["diagnostics"]],
-    }
-    for field in actual:
-        if actual[field] != expected[field]:
-            raise ValueError(
-                f"{case['id']}: expected {field}={expected[field]!r}, "
-                f"got {actual[field]!r}"
-            )
-    if report["profile"]["perceptual_background"] != expected.get(
-        "perceptual_background"
-    ):
-        raise ValueError(
-            f"{case['id']}: unexpected Perceptual Background "
-            f"{report['profile']['perceptual_background']!r}"
-        )
-    if report["profile"]["flip_viewing_conditions"] != expected.get(
-        "flip_viewing_conditions"
-    ):
-        raise ValueError(
-            f"{case['id']}: unexpected FLIP Viewing Conditions "
-            f"{report['profile']['flip_viewing_conditions']!r}"
-        )
-    if report["profile"]["flip_error_threshold"] != expected.get(
-        "flip_error_threshold"
-    ):
-        raise ValueError(
-            f"{case['id']}: unexpected FLIP error threshold "
-            f"{report['profile']['flip_error_threshold']!r}"
-        )
-    if "impact_assessment" in expected and report["impact_assessment"] != expected[
-        "impact_assessment"
-    ]:
-        raise ValueError(f"{case['id']}: exact Impact Assessment drifted")
-    expected_perceptual = expected.get("perceptual_color")
-    if expected_perceptual is None:
-        for event in report["events"]:
-            evidence = event["rendered_outcome"]["perceptual_color"]
-            if evidence != {
-                "status": "not_computed",
-                "reason_code": "perceptual_background_absent",
-            }:
-                raise ValueError(
-                    f"{case['id']}: unexpected absent-background "
-                    f"perceptual evidence {evidence!r}"
-                )
-    else:
-        event = next(
-            (
-                candidate
-                for candidate in report["events"]
-                if candidate["id"] == expected_perceptual["event_id"]
-            ),
-            None,
-        )
-        if event is None:
-            raise ValueError(
-                f"{case['id']}: missing perceptual event "
-                f"{expected_perceptual['event_id']}"
-            )
-        evidence = event["rendered_outcome"]["perceptual_color"]
-        magnitude = evidence.get("magnitude")
-        if evidence.get("status") != "computed" or magnitude is None:
-            raise ValueError(
-                f"{case['id']}: expected computed perceptual evidence, "
-                f"got {evidence!r}"
-            )
-        for field in ("method_id", "sample_count", "mean_delta_e_ok"):
-            if magnitude[field] != expected_perceptual[field]:
-                raise ValueError(
-                    f"{case['id']}: expected perceptual {field}="
-                    f"{expected_perceptual[field]!r}, got {magnitude[field]!r}"
-                )
-    expected_flip = expected.get("perceptual_flip")
-    if expected_flip is None:
-        for event in report["events"]:
-            evidence = event["rendered_outcome"]["perceptual_flip"]
-            if evidence != {
-                "status": "not_computed",
-                "reason_code": "flip_not_requested",
-            }:
-                raise ValueError(
-                    f"{case['id']}: unexpected unrequested FLIP evidence "
-                    f"{evidence!r}"
-                )
-    else:
-        event = next(
-            (
-                candidate
-                for candidate in report["events"]
-                if candidate["id"] == expected_flip["event_id"]
-            ),
-            None,
-        )
-        if event is None:
-            raise ValueError(
-                f"{case['id']}: missing FLIP event {expected_flip['event_id']}"
-            )
-        evidence = event["rendered_outcome"]["perceptual_flip"]
-        flip_map = evidence.get("map")
-        if evidence.get("status") != "computed" or flip_map is None:
-            raise ValueError(
-                f"{case['id']}: expected computed FLIP evidence, got {evidence!r}"
-            )
-        for field in (
-            "method_id",
-            "pixel_x",
-            "pixel_y",
-            "pixel_width",
-            "pixel_height",
-            "encoding",
-            "quantization_step",
-        ):
-            if flip_map[field] != expected_flip[field]:
-                raise ValueError(
-                    f"{case['id']}: expected FLIP {field}="
-                    f"{expected_flip[field]!r}, got {flip_map[field]!r}"
-                )
-        encoded = base64.b64decode(flip_map["values_base64"], validate=True)
-        if len(encoded) != expected_flip["encoded_bytes"]:
-            raise ValueError(
-                f"{case['id']}: expected {expected_flip['encoded_bytes']} "
-                f"FLIP bytes, got {len(encoded)}"
-            )
-        digest = hashlib.sha256(encoded).hexdigest()
-        if digest != expected_flip["values_sha256"]:
-            raise ValueError(
-                f"{case['id']}: expected FLIP SHA-256 "
-                f"{expected_flip['values_sha256']}, got {digest}"
-            )
-        statistics = evidence.get("statistics")
-        expected_statistics = expected_flip["statistics"]
-        if statistics != expected_statistics:
-            raise ValueError(
-                f"{case['id']}: expected FLIP statistics "
-                f"{expected_statistics!r}, got {statistics!r}"
-            )
-    by_domain = {item["domain"]: item for item in differences}
-    for check in expected["magnitude_checks"]:
-        if check["domain"] not in by_domain:
-            raise ValueError(f"{case['id']}: missing domain {check['domain']}")
-        actual_value = nested_value(by_domain[check["domain"]], check["field"])
-        expected_value = check["value"]
-        if check["op"] == "eq":
-            matches = actual_value == expected_value
-        elif check["op"] == "gt":
-            matches = isinstance(actual_value, (int, float)) and actual_value > expected_value
-        elif check["op"] == "lt":
-            matches = isinstance(actual_value, (int, float)) and actual_value < expected_value
-        else:
-            matches = False
-        if not matches:
-            raise ValueError(
-                f"{case['id']}: {check['field']}={actual_value!r} does not "
-                f"satisfy {check['op']} {expected_value!r}"
-            )
-    if "instance_ids" in expected:
-        instance_ids = []
-        for alignment in report["subject_alignments"]:
-            for reference in alignment["before"] + alignment["after"]:
-                context = reference.get("instance_context")
-                if context is not None:
-                    instance_ids.append(context["instance_id"])
-        if sorted(set(instance_ids)) != expected["instance_ids"]:
-            raise ValueError(
-                f"{case['id']}: expected instance IDs={expected['instance_ids']!r}, "
-                f"got {sorted(set(instance_ids))!r}"
-            )
-    if "changed_fact_affected_subject_ids" in expected:
-        affected = sorted(
-            {
-                subject_id
-                for fact in report["changed_facts"]
-                for subject_id in fact["affected_subject_ids"]
-            }
-        )
-        if affected != expected["changed_fact_affected_subject_ids"]:
-            raise ValueError(
-                f"{case['id']}: expected affected subjects="
-                f"{expected['changed_fact_affected_subject_ids']!r}, got {affected!r}"
-            )
-    if "alignment_authored_pairs" in expected:
-        pairs = []
-        for alignment in report["subject_alignments"]:
-            if len(alignment["before"]) == 1 and len(alignment["after"]) == 1:
-                before_id = alignment["before"][0]["authored_id"]
-                after_id = alignment["after"][0]["authored_id"]
-                if before_id is not None and after_id is not None:
-                    pairs.append([before_id, after_id])
-        pairs.sort()
-        if pairs != expected["alignment_authored_pairs"]:
-            raise ValueError(
-                f"{case['id']}: expected authored alignment pairs="
-                f"{expected['alignment_authored_pairs']!r}, got {pairs!r}"
-            )
-    if "alignment_cardinalities" in expected:
-        cardinalities = sorted(
-            [
-                [
-                    alignment["basis"],
-                    len(alignment["before"]),
-                    len(alignment["after"]),
-                    alignment["evidence"]["score_kind"],
-                ]
-                for alignment in report["subject_alignments"]
-            ]
-        )
-        if cardinalities != expected["alignment_cardinalities"]:
-            raise ValueError(
-                f"{case['id']}: expected alignment cardinalities="
-                f"{expected['alignment_cardinalities']!r}, got {cardinalities!r}"
-            )
-    if "alignment_roles" in expected:
-        roles = sorted(
-            {alignment["subject_role"] for alignment in report["subject_alignments"]}
-        )
-        if roles != expected["alignment_roles"]:
-            raise ValueError(
-                f"{case['id']}: expected alignment roles="
-                f"{expected['alignment_roles']!r}, got {roles!r}"
-            )
-
-
-def assert_outcome_state_examples(reports: dict[str, dict[str, Any]]) -> None:
-    equivalent = reports["equivalent-color-spelling"]
-    equivalent_difference = equivalent["atomic_differences"][0]
-    if not (
-        equivalent["analysis_status"] == "complete"
-        and equivalent_difference["evidence_layers"] == ["source_semantics"]
-        and equivalent_difference["computed_relation"]["status"] == "equivalent"
-        and equivalent["events"][0]["rendered_outcome"]["magnitude"][
-            "changed_pixels"
-        ]
-        == 0
-    ):
-        raise ValueError("source-only computed-equivalent outcome is not explicit")
-
-    rendered_zero = reports["color-alpha-opacity-equivalent"]
-    different_ids = {
-        item["id"]
-        for item in rendered_zero["atomic_differences"]
-        if item["computed_relation"]["status"] == "different"
-    }
-    zero_event_difference_ids = {
-        difference_id
-        for event in rendered_zero["events"]
-        if event["rendered_outcome"]["magnitude"]["changed_pixels"] == 0
-        and event["rendered_outcome"]["magnitude"]["rgba8_rmse"] == 0
-        and event["rendered_outcome"]["magnitude"][
-            "linear_premultiplied_rgba_rmse"
-        ]
-        == 0
-        for difference_id in event["atomic_difference_ids"]
-    }
-    if not different_ids or not different_ids <= zero_event_difference_ids:
-        raise ValueError("computed-different rendered-zero outcome is not explicit")
-
-    rendered_change = reports["salient-fill-change"]
-    if not (
-        any(
-            item["computed_relation"]["status"] == "different"
-            for item in rendered_change["atomic_differences"]
-        )
-        and any(
-            event["rendered_outcome"]["magnitude"]["changed_pixels"] > 0
-            for event in rendered_change["events"]
-        )
-    ):
-        raise ValueError("rendered-nonzero outcome is not explicit")
-
-    partial = reports["unsupported-partial-coverage"]
-    if partial["analysis_status"] != "partial" or not partial["diagnostics"]:
-        raise ValueError("partial outcome lacks explicit status or Diagnostics")
-    failed = reports["reference-cycle-failure"]
-    if failed["analysis_status"] != "failed" or not failed["diagnostics"]:
-        raise ValueError("failed outcome lacks explicit status or Diagnostics")
-
-
-def assert_uncertainty_state_examples(reports: dict[str, dict[str, Any]]) -> None:
-    all_evidence = [
-        alignment["evidence"]
-        for report in reports.values()
-        for alignment in report["subject_alignments"]
-    ]
-    if not all_evidence or any(
-        evidence["confidence"] is not None
-        or evidence["confidence_status"] != "not_calibrated"
-        for evidence in all_evidence
-    ):
-        raise ValueError("current alignments do not expose uncalibrated confidence")
-
-    repeated = reports["repeated-subject-equivalence-class"]
-    if not any(
-        alignment["evidence"]["ambiguity"] == "tied"
-        for alignment in repeated["subject_alignments"]
-    ):
-        raise ValueError("canonical alignment ambiguity lacks a tied case")
-    insertion = reports["subject-insertion"]
-    if not any(
-        alignment["evidence"]["ambiguity"] == "not_assessed"
-        for alignment in insertion["subject_alignments"]
-    ):
-        raise ValueError("canonical alignment ambiguity lacks not_assessed")
-
-    uncertain = reports["unsupported-filter-primitive-change"]
-    diagnostic_ids = {item["id"] for item in uncertain["diagnostics"]}
-    indeterminate = [
-        item
-        for item in uncertain["atomic_differences"]
-        if item["computed_relation"]["status"] == "indeterminate"
-    ]
-    if not indeterminate or any(
-        not item["computed_relation"]["diagnostic_ids"]
-        or not set(item["computed_relation"]["diagnostic_ids"]) <= diagnostic_ids
-        for item in indeterminate
-    ):
-        raise ValueError("indeterminate interpretation lacks resolving Diagnostics")
-
-
-def assert_coverage_summary(case: dict[str, Any], report: dict[str, Any]) -> None:
-    rows = report.get("coverage_matrix")
-    if not isinstance(rows, list) or not rows:
-        raise ValueError(f"{case['id']}: report has no explicit coverage summary")
-    diagnostics = {
-        diagnostic["id"]: diagnostic for diagnostic in report["diagnostics"]
-    }
-    keys = []
-    strongest = "complete"
-    valid_states = {"covered", "limited", "not_applicable", "failed"}
-    layers = ("source_semantics", "computed_appearance", "rendered_evidence")
-    for index, row in enumerate(rows):
-        feature_id = row.get("feature_id")
-        subject_id = row.get("subject_id")
-        if not isinstance(feature_id, str) or not feature_id:
-            raise ValueError(f"{case['id']}: coverage row {index} lacks feature ID")
-        if not isinstance(subject_id, str) or not subject_id:
-            raise ValueError(f"{case['id']}: coverage row {index} lacks subject ID")
-        keys.append((feature_id, subject_id))
-        row_diagnostics = row.get("diagnostic_ids")
-        if not isinstance(row_diagnostics, list) or len(row_diagnostics) != len(
-            set(row_diagnostics)
-        ):
-            raise ValueError(
-                f"{case['id']}: coverage row {feature_id}/{subject_id} "
-                "has invalid Diagnostic references"
-            )
-        for layer in layers:
-            state = row.get(layer)
-            if state not in valid_states:
-                raise ValueError(
-                    f"{case['id']}: coverage row {feature_id}/{subject_id} "
-                    f"has invalid {layer} state {state!r}"
-                )
-            if state in {"limited", "failed"}:
-                establishing = [
-                    identifier
-                    for identifier in row_diagnostics
-                    if identifier in diagnostics
-                    and layer in diagnostics[identifier]["affected_evidence_layers"]
-                ]
-                if not establishing:
-                    raise ValueError(
-                        f"{case['id']}: {feature_id}/{subject_id}/{layer} "
-                        "has no establishing Diagnostic"
-                    )
-            if state == "failed":
-                strongest = "failed"
-            elif state == "limited" and strongest != "failed":
-                strongest = "partial"
-    if len(keys) != len(set(keys)):
-        raise ValueError(f"{case['id']}: duplicate coverage feature/subject row")
-    def shortlex(value: str) -> tuple[int, tuple[int, ...]]:
-        return len(value), tuple(ord(character) for character in value)
-
-    expected_keys = sorted(
-        keys, key=lambda key: (shortlex(key[0]), shortlex(key[1]))
-    )
-    if keys != expected_keys:
-        raise ValueError(f"{case['id']}: coverage rows are not deterministic")
-    if report["analysis_status"] != strongest:
-        raise ValueError(
-            f"{case['id']}: coverage summary implies {strongest}, "
-            f"report says {report['analysis_status']}"
-        )
-
-
-def assert_raw_magnitude_authority(case: dict[str, Any], report: dict[str, Any]) -> None:
-    magnitude_fields = (
-        "parameter_abs_user_units",
-        "parameter_signed_user_units",
-        "symmetric_relative",
-        "parameter_abs_css_px",
-        "parameter_viewport_fraction",
-        "parameter_entity_fraction",
-        "geometry_displacement_css_px",
-        "painted_boundary_displacement",
-        "painted_coverage_difference",
-        "geometry_viewport_fraction",
-        "presence_painted_viewport_fraction",
-        "raster_changed_pixel_fraction",
-        "raster_rgba8_rmse",
-        "raster_linear_premultiplied_rgba_rmse",
-    )
-    for difference in report["atomic_differences"]:
-        magnitude = difference.get("magnitude")
-        if not isinstance(magnitude, dict) or not set(magnitude_fields) <= set(
-            magnitude
-        ) or set(magnitude) - set(magnitude_fields) > {
-            "transform_effect",
-            "intrinsic_raster",
-        }:
-            raise ValueError(
-                f"{case['id']}: {difference['id']} lost the raw magnitude vector"
-            )
-        if any(
-            value is not None and type(value) not in {int, float}
-            for name, value in magnitude.items()
-            if name
-            not in {
-                "transform_effect",
-                "intrinsic_raster",
-                "painted_boundary_displacement",
-                "painted_coverage_difference",
-            }
-        ):
-            raise ValueError(
-                f"{case['id']}: {difference['id']} has a nonnumeric raw magnitude"
-            )
-        parameter_css = magnitude["parameter_abs_css_px"]
-        parameter_viewport = magnitude["parameter_viewport_fraction"]
-        parameter_entity = magnitude["parameter_entity_fraction"]
-        viewport_diagonal = math.hypot(
-            report["profile"]["viewport_width"],
-            report["profile"]["viewport_height"],
-        )
-        if (parameter_css is None) != (parameter_viewport is None):
-            raise ValueError(
-                f"{case['id']}: {difference['id']} split one parameter measurement"
-            )
-        if parameter_css is not None and not math.isclose(
-            parameter_viewport,
-            parameter_css / viewport_diagonal,
-            rel_tol=1e-12,
-            abs_tol=1e-15,
-        ):
-            raise ValueError(
-                f"{case['id']}: {difference['id']} has an inconsistent viewport fraction"
-            )
-        if parameter_entity is not None and (
-            parameter_css is None or parameter_entity < 0
-        ):
-            raise ValueError(
-                f"{case['id']}: {difference['id']} has an invalid entity fraction"
-            )
-        boundary = magnitude["painted_boundary_displacement"]
-        if boundary is not None:
-            boundary_fields = {
-                "method_id",
-                "before_sample_count",
-                "after_sample_count",
-                "mean_css_px",
-                "p95_css_px",
-                "max_css_px",
-            }
-            if not isinstance(boundary, dict) or set(boundary) != boundary_fields:
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has an invalid boundary distribution"
-                )
-            before_count = boundary["before_sample_count"]
-            after_count = boundary["after_sample_count"]
-            mean = boundary["mean_css_px"]
-            p95 = boundary["p95_css_px"]
-            maximum = boundary["max_css_px"]
-            if (
-                boundary["method_id"]
-                != "symmetric_nearest_boundary_pixels/v1"
-                or type(before_count) is not int
-                or type(after_count) is not int
-                or before_count < 0
-                or after_count < 0
-                or (before_count == 0) != (after_count == 0)
-                or any(type(value) not in {int, float} for value in (mean, p95, maximum))
-                or not 0 <= mean <= maximum
-                or not 0 <= p95 <= maximum
-                or difference["subject_role"] != "entity"
-                or not difference["domain"].startswith("geometry.")
-                or (
-                    maximum > 0
-                    and "rendered_evidence" not in difference["evidence_layers"]
-                )
-            ):
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has inconsistent boundary evidence"
-                )
-        coverage = magnitude["painted_coverage_difference"]
-        if coverage is not None:
-            coverage_fields = {
-                "method_id",
-                "before_coverage_css_px2",
-                "after_coverage_css_px2",
-                "absolute_difference_css_px2",
-                "union_coverage_css_px2",
-                "fraction",
-            }
-            if not isinstance(coverage, dict) or set(coverage) != coverage_fields:
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has invalid coverage evidence"
-                )
-            before_coverage = coverage["before_coverage_css_px2"]
-            after_coverage = coverage["after_coverage_css_px2"]
-            absolute = coverage["absolute_difference_css_px2"]
-            union = coverage["union_coverage_css_px2"]
-            fraction = coverage["fraction"]
-            values = (before_coverage, after_coverage, absolute, union, fraction)
-            if (
-                coverage["method_id"]
-                != "symmetric_alpha_coverage_l1_over_union/v1"
-                or any(type(value) not in {int, float} for value in values)
-                or any(value < 0 for value in values)
-                or absolute > union
-                or fraction > 1
-        or difference["subject_role"] != "entity"
-        or difference["computed_relation"]["status"] != "different"
-        or difference["domain"].startswith("presence.")
-                or difference["domain"] == "presence"
-                or (fraction > 0 and "rendered_evidence" not in difference["evidence_layers"])
-            ):
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has inconsistent coverage evidence"
-                )
-            expected_fraction = 0 if union == 0 else absolute / union
-            if not math.isclose(
-                fraction, expected_fraction, rel_tol=1e-12, abs_tol=1e-15
-            ):
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has inconsistent coverage fraction"
-                )
-        intrinsic = magnitude.get("intrinsic_raster")
-        if intrinsic is not None:
-            intrinsic_fields = {
-                "before_width",
-                "before_height",
-                "after_width",
-                "after_height",
-                "compared_pixels",
-                "changed_pixels",
-                "changed_pixel_fraction",
-                "rgba8_rmse",
-                "linear_premultiplied_rgba_rmse",
-            }
-            if not isinstance(intrinsic, dict) or set(intrinsic) != intrinsic_fields:
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has an invalid intrinsic raster magnitude"
-                )
-            if any(
-                value is not None and type(value) not in {int, float}
-                for value in intrinsic.values()
-            ):
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} has a nonnumeric intrinsic raster magnitude"
-                )
-        domain = difference["domain"]
-        effect = magnitude.get("transform_effect")
-        transform_components = {
-            "geometry.transform.translation": (
-                "norm_css_px",
-                "geometry_viewport_fraction",
-            ),
-            "geometry.transform.rotation": ("abs_delta_degrees",),
-            "geometry.transform.scale": ("max_abs_delta",),
-            "geometry.transform.skew": ("abs_delta_degrees",),
-            "geometry.transform.residual_matrix": (),
-        }
-        if domain in transform_components:
-            if not isinstance(effect, dict):
-                raise ValueError(
-                    f"{case['id']}: {difference['id']} lacks typed transform magnitude"
-                )
-            expected_components = []
-            for field in transform_components[domain]:
-                if field == "geometry_viewport_fraction":
-                    value = magnitude[field]
-                else:
-                    value = effect[field]
-                if value is not None:
-                    expected_components.append(value)
-            if magnitude["raster_changed_pixel_fraction"] is not None:
-                expected_components.append(magnitude["raster_changed_pixel_fraction"])
-        elif domain == "resource.image.content" and intrinsic is not None:
-            expected_components = [
-                intrinsic[field]
-                for field in (
-                    "linear_premultiplied_rgba_rmse",
-                    "rgba8_rmse",
-                    "changed_pixel_fraction",
-                )
-                if intrinsic[field] is not None
-            ]
-        elif domain.startswith("geometry."):
-            source_fields = (
-                "geometry_displacement_css_px",
-                "geometry_viewport_fraction",
-                "raster_changed_pixel_fraction",
-            )
-        elif domain.startswith("paint."):
-            source_fields = (
-                "raster_linear_premultiplied_rgba_rmse",
-                "raster_rgba8_rmse",
-                "raster_changed_pixel_fraction",
-            )
-        elif domain.startswith("presence.") or domain == "presence":
-            source_fields = (
-                "presence_painted_viewport_fraction",
-                "raster_changed_pixel_fraction",
-            )
-        else:
-            source_fields = (
-                "raster_changed_pixel_fraction",
-                "raster_linear_premultiplied_rgba_rmse",
-                "raster_rgba8_rmse",
-            )
-        if domain not in transform_components and domain != "resource.image.content":
-            expected_components = [
-                magnitude[field]
-                for field in source_fields
-                if magnitude[field] is not None
-            ]
-        ordering = difference["domain_ordering"]
-        if ordering["policy_id"] != "v2_domain_lexicographic":
-            raise ValueError(f"{case['id']}: unknown ordering policy")
-        if ordering["components"] != expected_components:
-            raise ValueError(
-                f"{case['id']}: {difference['id']} ordering is not derived "
-                "from retained raw magnitudes"
-            )
-
-
-def assert_alignment_evidence(case: dict[str, Any], report: dict[str, Any]) -> None:
-    required = {
-        "score_kind",
-        "selected_score",
-        "candidate_count",
-        "equal_score_candidate_count",
-        "ambiguity",
-        "confidence",
-        "confidence_status",
-    }
-    assessed_score_kinds = {
-        "exact_visual_signature",
-        "property_distance",
-        "rendered_geometry_feature_distance_v1",
-        "embedded_image_source_order_v1",
-    }
-    candidate_only_score_kinds = {
-        "structural_semantic_signature",
-        "structural_authored_id",
-        "structural_path",
-        "stable_kind_order",
-        "resource_semantic_signature",
-        "resource_authored_id",
-        "resource_path",
-        "resource_stable_kind_order",
-    }
-    unassessed_score_kinds = {
-        "structural_rule",
-        "unmatched",
-        "group_identity_or_singleton",
-    }
-    alignments_by_id = {}
-    for index, alignment in enumerate(report["subject_alignments"]):
-        role = alignment.get("subject_role")
-        if role not in {"entity", "resource"}:
-            raise ValueError(
-                f"{case['id']}: alignment {index} has invalid subject role"
-            )
-        alignment_id = alignment.get("id")
-        if not isinstance(alignment_id, str) or alignment_id in alignments_by_id:
-            raise ValueError(
-                f"{case['id']}: alignment {index} has invalid or duplicate ID"
-            )
-        alignments_by_id[alignment_id] = alignment
-        if any(
-            "instance_context" not in reference
-            for reference in alignment["before"] + alignment["after"]
-        ):
-            raise ValueError(
-                f"{case['id']}: current producer omitted instance context"
-            )
-        evidence = alignment.get("evidence")
-        if not isinstance(evidence, dict) or not required <= set(evidence):
-            raise ValueError(
-                f"{case['id']}: alignment {index} lacks complete selection evidence"
-            )
-        candidate_count = evidence["candidate_count"]
-        equal_count = evidence["equal_score_candidate_count"]
-        if (
-            not isinstance(candidate_count, int)
-            or isinstance(candidate_count, bool)
-            or not isinstance(equal_count, int)
-            or isinstance(equal_count, bool)
-            or candidate_count < 0
-            or equal_count < 0
-            or equal_count > candidate_count
-        ):
-            raise ValueError(f"{case['id']}: alignment {index} has invalid counts")
-        if evidence["confidence"] is not None or evidence["confidence_status"] != (
-            "not_calibrated"
-        ):
-            raise ValueError(
-                f"{case['id']}: alignment {index} invents calibrated confidence"
-            )
-        score_kind = evidence["score_kind"]
-        ambiguity = evidence["ambiguity"]
-        if score_kind in assessed_score_kinds:
-            if evidence["selected_score"] is None:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} lacks its selected score"
-                )
-            if ambiguity == "unique" and equal_count != 1:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} has inconsistent uniqueness"
-                )
-            if ambiguity == "tied" and equal_count < 2:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} has inconsistent tie evidence"
-                )
-            if ambiguity not in {"unique", "tied"}:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} lost assessed ambiguity"
-                )
-        elif score_kind in candidate_only_score_kinds:
-            if evidence["selected_score"] is not None:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} invents a numeric structural score"
-                )
-            if ambiguity == "unique" and equal_count != 1:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} has inconsistent structural uniqueness"
-                )
-            if ambiguity == "tied" and equal_count < 2:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} has inconsistent structural tie evidence"
-                )
-            if ambiguity not in {"unique", "tied"}:
-                raise ValueError(
-                    f"{case['id']}: alignment {index} lost structural ambiguity"
-                )
-        elif score_kind in unassessed_score_kinds:
-            if (
-                evidence["selected_score"] is not None
-                or candidate_count != 0
-                or equal_count != 0
-                or ambiguity != "not_assessed"
-            ):
-                raise ValueError(
-                    f"{case['id']}: alignment {index} overstates unassessed evidence"
-                )
-        else:
-            raise ValueError(
-                f"{case['id']}: alignment {index} has unknown score kind {score_kind!r}"
-            )
-    for index, difference in enumerate(report["atomic_differences"]):
-        if difference.get("subject_role") != "resource":
-            continue
-        alignment_id = difference.get("subject_alignment_id")
-        alignment = alignments_by_id.get(alignment_id)
-        if alignment is None or alignment["subject_role"] != "resource":
-            raise ValueError(
-                f"{case['id']}: resource difference {index} lacks its resource alignment"
-            )
-
-
-def assert_diagnostic_locations(case: dict[str, Any], report: dict[str, Any]) -> None:
-    sources = {
-        "before": checked_path(case["before"]).read_text(encoding="utf-8"),
-        "after": checked_path(case["after"]).read_text(encoding="utf-8"),
-    }
-    required_locations = {
-        "unsupported_visual_subject",
-        "renderer_fractional_geometry_unproven",
-        "renderer_gradient_raster_unproven",
-    }
-    for index, diagnostic in enumerate(report["diagnostics"]):
-        locations = diagnostic.get("source_locations")
-        if not isinstance(locations, list):
-            raise ValueError(
-                f"{case['id']}: Diagnostic {index} has no current source_locations"
-            )
-        if diagnostic["code"] in required_locations and not locations:
-            raise ValueError(
-                f"{case['id']}: {diagnostic['code']} lost its source location"
-            )
-        keys = []
-        for location in locations:
-            role = location.get("source_role")
-            span = location.get("source_span")
-            if role not in sources or not isinstance(span, dict):
-                raise ValueError(
-                    f"{case['id']}: Diagnostic {index} has an invalid source role"
-                )
-            start = span.get("start_offset")
-            end = span.get("end_offset")
-            source_length = len(sources[role].encode("utf-16-le")) // 2
-            if (
-                type(start) is not int
-                or type(end) is not int
-                or start < 0
-                or end < start
-                or end > source_length
-            ):
-                raise ValueError(
-                    f"{case['id']}: Diagnostic {index} has an invalid UTF-16 span"
-                )
-            keys.append((role, start, end))
-        if len(keys) != len(set(keys)):
-            raise ValueError(
-                f"{case['id']}: Diagnostic {index} repeats a source location"
-            )
-
-
 def checked_path(relative_path: str) -> Path:
     path = (ROOT / relative_path).resolve()
     if ROOT not in path.parents:
@@ -1014,14 +36,13 @@ def checked_path(relative_path: str) -> Path:
 
 
 def generate(cli: Path, case: dict[str, Any]) -> bytes:
-    command = [
-        str(cli),
-        str(checked_path(case["before"])),
-        str(checked_path(case["after"])),
-        *case.get("cli_args", []),
-    ]
     result = subprocess.run(
-        command,
+        [
+            str(cli),
+            str(checked_path(case["before"])),
+            str(checked_path(case["after"])),
+            *case.get("cli_args", []),
+        ],
         check=False,
         capture_output=True,
     )
@@ -1033,6 +54,175 @@ def generate(cli: Path, case: dict[str, Any]) -> bytes:
             f"{result.stderr.decode(errors='replace')!r}"
         )
     return result.stdout
+
+
+def differences(report: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        item
+        for group in report["difference_groups"]
+        for item in group["items"]
+    ]
+
+
+def nested_value(value: Any, path: str) -> Any:
+    current = value
+    for component in path.split("."):
+        if not isinstance(current, dict) or component not in current:
+            raise KeyError(path)
+        current = current[component]
+    return current
+
+
+def public_magnitude_path(path: str) -> str | None:
+    removed = {
+        "magnitude.painted_boundary_displacement.before_sample_count",
+        "magnitude.painted_boundary_displacement.after_sample_count",
+    }
+    if path in removed:
+        return None
+    replacements = {
+        "magnitude.raster_changed_pixel_fraction": "magnitude.raster_changed_fraction",
+        "magnitude.raster_linear_premultiplied_rgba_rmse": "magnitude.raster_linear_rgba_rmse",
+        "magnitude.transform_effect.": "magnitude.transform.",
+        "magnitude.intrinsic_raster.changed_pixel_fraction": "magnitude.intrinsic_raster.changed_fraction",
+        "magnitude.intrinsic_raster.linear_premultiplied_rgba_rmse": "magnitude.intrinsic_raster.linear_rgba_rmse",
+        "magnitude.painted_coverage_difference.before_coverage_css_px2": "magnitude.painted_coverage_difference.before_css_px2",
+        "magnitude.painted_coverage_difference.after_coverage_css_px2": "magnitude.painted_coverage_difference.after_css_px2",
+        "magnitude.painted_coverage_difference.union_coverage_css_px2": "magnitude.painted_coverage_difference.union_css_px2",
+    }
+    for old, new in replacements.items():
+        if old in path:
+            return path.replace(old, new)
+    return path
+
+
+def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
+    expected = case["expected"]
+    items = differences(report)
+    actual = {
+        "analysis_status": report["analysis_status"],
+        "domains": [item["kind"] for item in items],
+        "computed_relations": [item["effective"]["relation"] for item in items],
+        "diagnostic_codes": [item["code"] for item in report["limitations"]],
+    }
+    for field, value in actual.items():
+        if value != expected[field]:
+            raise ValueError(
+                f"{case['id']}: expected {field}={expected[field]!r}, got {value!r}"
+            )
+
+    comparison = report["comparison"]
+    if comparison.get("perceptual_background") != expected.get(
+        "perceptual_background"
+    ):
+        raise ValueError(f"{case['id']}: Perceptual Background drifted")
+    expected_viewing = expected.get("flip_viewing_conditions")
+    if comparison.get("flip_pixels_per_degree") != (
+        expected_viewing or {}
+    ).get("pixels_per_degree"):
+        raise ValueError(f"{case['id']}: FLIP viewing conditions drifted")
+    expected_threshold = expected.get("flip_error_threshold")
+    if comparison.get("flip_error_threshold") != (expected_threshold or {}).get(
+        "value"
+    ):
+        raise ValueError(f"{case['id']}: FLIP threshold drifted")
+
+    by_kind = {item["kind"]: item for item in items}
+    for check in expected["magnitude_checks"]:
+        item = by_kind.get(check["domain"])
+        if item is None:
+            raise ValueError(f"{case['id']}: missing kind {check['domain']}")
+        path = public_magnitude_path(check["field"])
+        if path is None:
+            continue
+        try:
+            actual_value = nested_value(item, path)
+        except KeyError as error:
+            raise ValueError(f"{case['id']}: missing public magnitude {path}") from error
+        expected_value = check["value"]
+        if check["op"] == "eq":
+            matches = actual_value == expected_value
+        elif check["op"] == "gt":
+            matches = isinstance(actual_value, (int, float)) and actual_value > expected_value
+        elif check["op"] == "lt":
+            matches = isinstance(actual_value, (int, float)) and actual_value < expected_value
+        else:
+            matches = False
+        if not matches:
+            raise ValueError(
+                f"{case['id']}: {path}={actual_value!r} does not "
+                f"satisfy {check['op']} {expected_value!r}"
+            )
+
+    expected_color = expected.get("perceptual_color")
+    if expected_color is not None:
+        event = next(
+            item for item in report["events"] if item["id"] == expected_color["event_id"]
+        )
+        actual_color = event["outcome"].get("perceptual_color")
+        if actual_color != {
+            "sample_count": expected_color["sample_count"],
+            "mean_delta_e_ok": expected_color["mean_delta_e_ok"],
+        }:
+            raise ValueError(f"{case['id']}: perceptual color drifted")
+
+    expected_flip = expected.get("perceptual_flip")
+    if expected_flip is not None:
+        event = next(
+            item for item in report["events"] if item["id"] == expected_flip["event_id"]
+        )
+        actual_flip = event["outcome"].get("perceptual_difference")
+        expected_statistics = expected_flip["statistics"]
+        expected_public = {
+            key: expected_statistics[key]
+            for key in (
+                "canvas_mean",
+                "event_region_mean",
+                "response_p95",
+                "response_maximum",
+                "area_above_threshold",
+            )
+        }
+        if actual_flip != expected_public:
+            raise ValueError(f"{case['id']}: perceptual difference drifted")
+
+
+def assert_report_links(case: dict[str, Any], report: dict[str, Any]) -> None:
+    items = differences(report)
+    difference_ids = {item["id"] for item in items}
+    limitation_ids = {item["id"] for item in report["limitations"]}
+    if len(difference_ids) != len(items):
+        raise ValueError(f"{case['id']}: duplicate Atomic Difference ID")
+    for item in items:
+        if not set(item["effective"].get("limitation_ids", [])) <= limitation_ids:
+            raise ValueError(f"{case['id']}: unknown difference limitation link")
+    for event in report["events"]:
+        if not set(event["difference_ids"]) <= difference_ids:
+            raise ValueError(f"{case['id']}: unknown event difference link")
+        for region in event["regions"]:
+            causes = region["possible_causes"]
+            if not set(causes["candidate_difference_ids"]) <= difference_ids:
+                raise ValueError(f"{case['id']}: unknown possible-cause link")
+            if not set(causes.get("limitation_ids", [])) <= limitation_ids:
+                raise ValueError(f"{case['id']}: unknown region limitation link")
+
+
+def assert_representative_states(reports: dict[str, dict[str, Any]]) -> None:
+    equivalent = differences(reports["equivalent-color-spelling"])[0]
+    if not (
+        equivalent["effective"]["relation"] == "equivalent"
+        and equivalent["magnitude"]["raster_changed_fraction"] == 0
+    ):
+        raise ValueError("effective-equivalent measured zero is not explicit")
+    rendered_change = reports["salient-fill-change"]
+    if not any(event["outcome"].get("changed_pixels", 0) > 0 for event in rendered_change["events"]):
+        raise ValueError("rendered-nonzero outcome is not explicit")
+    partial = reports["unsupported-partial-coverage"]
+    if partial["analysis_status"] != "partial" or not partial["limitations"]:
+        raise ValueError("partial outcome lacks limitations")
+    failed = reports["reference-cycle-failure"]
+    if failed["analysis_status"] != "failed" or not failed["limitations"]:
+        raise ValueError("failed outcome lacks limitations")
 
 
 def expect_schema_rejection(
@@ -1050,27 +240,18 @@ def main() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     audit_schema(schema)
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-    if manifest.get("schema_version") != "svgdiff-schema-examples/1":
-        raise ValueError("unsupported schema-example manifest version")
     cases = manifest.get("cases")
-    if not isinstance(cases, list) or not cases:
-        raise ValueError("schema-example manifest has no cases")
-    ids = [case.get("id") for case in cases]
-    if len(ids) != len(set(ids)):
-        raise ValueError("schema-example IDs must be unique")
+    if manifest.get("schema_version") != "svgdiff-schema-examples/1" or not cases:
+        raise ValueError("unsupported or empty schema-example manifest")
 
-    reports = {}
+    reports: dict[str, dict[str, Any]] = {}
     for case in cases:
         encoded = generate(args.cli.resolve(), case)
         report = json.loads(encoded)
         reports[case["id"]] = report
         validate_instance(report, schema, schema)
         assert_semantics(case, report)
-        assert_impact_assessment(case, report)
-        assert_coverage_summary(case, report)
-        assert_raw_magnitude_authority(case, report)
-        assert_alignment_evidence(case, report)
-        assert_diagnostic_locations(case, report)
+        assert_report_links(case, report)
         output = checked_path(case["output"])
         if args.update:
             output.parent.mkdir(parents=True, exist_ok=True)
@@ -1080,266 +261,22 @@ def main() -> None:
                 f"{case['id']}: checked-in example drifted; run the update command"
             )
 
-    assert_outcome_state_examples(reports)
-    assert_uncertainty_state_examples(reports)
+    assert_representative_states(reports)
 
     missing_required = copy.deepcopy(reports["equivalent-color-spelling"])
     del missing_required["analysis_status"]
     expect_schema_rejection(missing_required, schema, "missing required property")
-    missing_impact = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_impact["impact_assessment"]
-    expect_schema_rejection(missing_impact, schema, "missing Impact Assessment")
-    invalid_impact_policy = copy.deepcopy(reports["salient-fill-change"])
-    invalid_impact_policy["impact_assessment"]["policy_id"] = "unknown"
-    expect_schema_rejection(
-        invalid_impact_policy, schema, "unknown Impact Assessment policy"
-    )
-    invalid_impact_measurement = copy.deepcopy(reports["salient-fill-change"])
-    invalid_impact_measurement["impact_assessment"]["frontier_groups"][0][
-        "measurements"
-    ]["changed_pixel_fraction"] = 2
-    expect_schema_rejection(
-        invalid_impact_measurement, schema, "out-of-range Impact measurement"
-    )
-    inconsistent_impact = copy.deepcopy(reports["salient-fill-change"])
-    inconsistent_impact["impact_assessment"]["frontier_groups"][0]["event_ids"] = [
-        "unknown"
-    ]
-    try:
-        assert_impact_assessment({"id": "inconsistent-impact"}, inconsistent_impact)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("Impact semantic validator accepted an unknown frontier event")
-    missing_background = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_background["profile"]["perceptual_background"]
-    expect_schema_rejection(
-        missing_background, schema, "missing Perceptual Background state"
-    )
+    unexpected_internal = copy.deepcopy(reports["equivalent-color-spelling"])
+    unexpected_internal["coverage_matrix"] = []
+    expect_schema_rejection(unexpected_internal, schema, "internal field leaked")
+    invalid_fraction = copy.deepcopy(reports["salient-fill-change"])
+    invalid_fraction["canvas"]["changed_fraction"] = 2
+    expect_schema_rejection(invalid_fraction, schema, "out-of-range canvas fraction")
     invalid_background = copy.deepcopy(reports["salient-fill-change"])
-    invalid_background["profile"]["perceptual_background"]["red"] = 256
-    expect_schema_rejection(
-        invalid_background, schema, "out-of-range Perceptual Background"
-    )
-    missing_flip_viewing = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_flip_viewing["profile"]["flip_viewing_conditions"]
-    expect_schema_rejection(
-        missing_flip_viewing, schema, "missing FLIP Viewing Conditions state"
-    )
-    invalid_flip_viewing = copy.deepcopy(reports["salient-fill-change"])
-    invalid_flip_viewing["profile"]["flip_viewing_conditions"][
-        "pixels_per_degree"
-    ] = 4097
-    expect_schema_rejection(
-        invalid_flip_viewing, schema, "out-of-range FLIP pixels per degree"
-    )
-    missing_flip_threshold = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_flip_threshold["profile"]["flip_error_threshold"]
-    expect_schema_rejection(
-        missing_flip_threshold, schema, "missing FLIP error threshold state"
-    )
-    invalid_flip_threshold = copy.deepcopy(reports["salient-fill-change"])
-    invalid_flip_threshold["profile"]["flip_error_threshold"]["value"] = 2
-    expect_schema_rejection(
-        invalid_flip_threshold, schema, "out-of-range FLIP error threshold"
-    )
-    missing_perceptual = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_perceptual["events"][0]["rendered_outcome"]["perceptual_color"]
-    expect_schema_rejection(
-        missing_perceptual, schema, "missing perceptual color evidence"
-    )
-    invalid_perceptual = copy.deepcopy(reports["salient-fill-change"])
-    invalid_perceptual["events"][0]["rendered_outcome"]["perceptual_color"][
-        "magnitude"
-    ]["mean_delta_e_ok"] = -1
-    expect_schema_rejection(
-        invalid_perceptual, schema, "negative perceptual color magnitude"
-    )
-    missing_flip = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_flip["events"][0]["rendered_outcome"]["perceptual_flip"]
-    expect_schema_rejection(
-        missing_flip, schema, "missing perceptual FLIP evidence"
-    )
-    invalid_flip = copy.deepcopy(reports["salient-fill-change"])
-    invalid_flip["events"][0]["rendered_outcome"]["perceptual_flip"]["map"][
-        "encoding"
-    ] = "float32_base64"
-    expect_schema_rejection(invalid_flip, schema, "unknown FLIP map encoding")
-    missing_flip_statistics = copy.deepcopy(reports["salient-fill-change"])
-    del missing_flip_statistics["events"][0]["rendered_outcome"][
-        "perceptual_flip"
-    ]["statistics"]
-    expect_schema_rejection(
-        missing_flip_statistics, schema, "missing FLIP statistics"
-    )
-    invalid_flip_statistics = copy.deepcopy(reports["salient-fill-change"])
-    invalid_flip_statistics["events"][0]["rendered_outcome"][
-        "perceptual_flip"
-    ]["statistics"]["response_p95"] = 2
-    expect_schema_rejection(
-        invalid_flip_statistics, schema, "out-of-range FLIP statistic"
-    )
-    wrong_nullable_type = copy.deepcopy(reports["equivalent-color-spelling"])
-    wrong_nullable_type["atomic_differences"][0]["magnitude"][
-        "parameter_abs_user_units"
-    ] = "not-a-number"
-    expect_schema_rejection(wrong_nullable_type, schema, "wrong nullable type")
-    missing_parameter_scale = copy.deepcopy(reports["exact-parameter-scales"])
-    del missing_parameter_scale["atomic_differences"][0]["magnitude"][
-        "parameter_abs_css_px"
-    ]
-    expect_schema_rejection(
-        missing_parameter_scale, schema, "missing exact parameter scale"
-    )
-    inconsistent_parameter_scale = copy.deepcopy(
-        reports["exact-parameter-scales"]
-    )
-    inconsistent_parameter_scale["atomic_differences"][0]["magnitude"][
-        "parameter_viewport_fraction"
-    ] = 1
-    try:
-        assert_raw_magnitude_authority(
-            {"id": "inconsistent-parameter-scale"},
-            inconsistent_parameter_scale,
-        )
-    except ValueError:
-        pass
-    else:
-        raise ValueError("semantic validation accepted inconsistent parameter scales")
-    missing_boundary_distribution = copy.deepcopy(
-        reports["painted-boundary-distribution"]
-    )
-    del missing_boundary_distribution["atomic_differences"][0]["magnitude"][
-        "painted_boundary_displacement"
-    ]
-    expect_schema_rejection(
-        missing_boundary_distribution,
-        schema,
-        "missing painted-boundary distribution field",
-    )
-    inconsistent_boundary_distribution = copy.deepcopy(
-        reports["painted-boundary-distribution"]
-    )
-    inconsistent_boundary_distribution["atomic_differences"][0]["magnitude"][
-        "painted_boundary_displacement"
-    ]["p95_css_px"] = 3
-    try:
-        assert_raw_magnitude_authority(
-            {"id": "inconsistent-boundary-distribution"},
-            inconsistent_boundary_distribution,
-        )
-    except ValueError:
-        pass
-    else:
-        raise ValueError(
-            "semantic validation accepted inconsistent boundary distribution"
-        )
-    missing_coverage_difference = copy.deepcopy(
-        reports["painted-boundary-distribution"]
-    )
-    del missing_coverage_difference["atomic_differences"][0]["magnitude"][
-        "painted_coverage_difference"
-    ]
-    expect_schema_rejection(
-        missing_coverage_difference,
-        schema,
-        "missing painted-coverage difference field",
-    )
-    out_of_range_coverage = copy.deepcopy(
-        reports["painted-boundary-distribution"]
-    )
-    out_of_range_coverage["atomic_differences"][0]["magnitude"][
-        "painted_coverage_difference"
-    ]["fraction"] = 2
-    expect_schema_rejection(
-        out_of_range_coverage,
-        schema,
-        "out-of-range painted-coverage fraction",
-    )
-    inconsistent_coverage_difference = copy.deepcopy(
-        reports["painted-boundary-distribution"]
-    )
-    inconsistent_coverage_difference["atomic_differences"][0]["magnitude"][
-        "painted_coverage_difference"
-    ]["fraction"] = 0.25
-    try:
-        assert_raw_magnitude_authority(
-            {"id": "inconsistent-painted-coverage-difference"},
-            inconsistent_coverage_difference,
-        )
-    except ValueError:
-        pass
-    else:
-        raise ValueError(
-            "semantic validation accepted inconsistent painted coverage"
-        )
-    wrong_nullable_fact = copy.deepcopy(reports["subject-insertion"])
-    wrong_nullable_fact["changed_facts"][0]["before"] = 7
-    expect_schema_rejection(wrong_nullable_fact, schema, "wrong nullable fact")
-    incomplete_alignment_evidence = copy.deepcopy(
-        reports["equivalent-color-spelling"]
-    )
-    del incomplete_alignment_evidence["subject_alignments"][0]["evidence"][
-        "confidence_status"
-    ]
-    expect_schema_rejection(
-        incomplete_alignment_evidence, schema, "incomplete alignment evidence"
-    )
-    missing_alignment_role = copy.deepcopy(reports["equivalent-color-spelling"])
-    del missing_alignment_role["subject_alignments"][0]["subject_role"]
-    expect_schema_rejection(
-        missing_alignment_role, schema, "missing Subject Alignment role"
-    )
-    missing_instance_context_field = copy.deepcopy(reports["use-definition-change"])
-    del missing_instance_context_field["subject_alignments"][0]["before"][0][
-        "instance_context"
-    ]["definition_subject_id"]
-    expect_schema_rejection(
-        missing_instance_context_field,
-        schema,
-        "incomplete present instance context",
-    )
-    invalid_diagnostic_role = copy.deepcopy(reports["tiny-numeric-geometry"])
-    invalid_diagnostic_role["diagnostics"][0]["source_locations"][0][
-        "source_role"
-    ] = "left"
-    expect_schema_rejection(
-        invalid_diagnostic_role, schema, "invalid Diagnostic source role"
-    )
-    incomplete_diagnostic_location = copy.deepcopy(
-        reports["tiny-numeric-geometry"]
-    )
-    del incomplete_diagnostic_location["diagnostics"][0]["source_locations"][0][
-        "source_span"
-    ]
-    expect_schema_rejection(
-        incomplete_diagnostic_location, schema, "incomplete Diagnostic location"
-    )
-    invalid_transform_effect = copy.deepcopy(reports["group-transform-change"])
-    transform_effect = next(
-        difference["magnitude"]["transform_effect"]
-        for difference in invalid_transform_effect["atomic_differences"]
-        if difference["domain"] == "geometry.transform.translation"
-    )
-    transform_effect["kind"] = "unknown"
-    expect_schema_rejection(
-        invalid_transform_effect, schema, "unknown transform-effect kind"
-    )
-    extra_transform_effect_field = copy.deepcopy(
-        reports["group-transform-change"]
-    )
-    transform_effect = next(
-        difference["magnitude"]["transform_effect"]
-        for difference in extra_transform_effect_field["atomic_differences"]
-        if difference["domain"] == "geometry.transform.translation"
-    )
-    transform_effect["extra"] = 1
-    expect_schema_rejection(
-        extra_transform_effect_field, schema, "extra transform-effect field"
-    )
+    invalid_background["comparison"]["perceptual_background"]["red"] = 256
+    expect_schema_rejection(invalid_background, schema, "invalid background")
 
-    action = "updated" if args.update else "validated"
-    print(f"Schema examples: {len(cases)} production reports {action}")
+    print(f"validated {len(cases)} schema examples")
 
 
 if __name__ == "__main__":

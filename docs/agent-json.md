@@ -1,46 +1,63 @@
-# Compact Agent JSON
+# Concise Agent JSON
 
-Status: current schema `1.45` serialization mode
+Status: current schema `1.46` serialization contract
 
-Last verified: 2026-07-17
+Last verified: 2026-07-22
 
-`svgdiff before.svg after.svg --agent-json` emits the complete Structured Report on one JSON line. The mode removes indentation and line breaks but does not project, summarize, rename, reorder by a new policy, or omit any report evidence.
+`svgdiff before.svg after.svg` emits an indented Structured Report. Adding
+`--agent-json` removes formatting whitespace but produces the same JSON value.
 
-The compact output:
+The formal report has seven top-level fields:
 
-- validates against the same [`svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json) as default output;
-- retains the same `schema_version`, analysis status, comparison-wide Canvas Outcome, Impact Assessment, Comparison Profile, coverage matrix, renderer capability gaps, alignments, Changed Facts, source resolutions, Atomic Differences, events, Difference Regions, Cause Envelopes, magnitudes, and Diagnostics;
-- uses the same exit statuses and stdout/stderr rules;
-- may be written with `--output FILE`;
-- does not alter the independently generated HTML report.
+- `schema_version` and `analysis_status` establish the contract and whether an
+  equality conclusion is allowed;
+- `comparison` records only caller-relevant comparison inputs such as the
+  viewport and requested perceptual conditions;
+- `canvas` records whole-canvas measurements once;
+- `difference_groups` contains every Atomic Difference, grouped by visual
+  domain and kept in the engine's domain-specific magnitude order;
+- `events` links differences to rendered outcomes, localization, and possible
+  causes;
+- `limitations` contains only actual conditions that constrain a conclusion.
 
-Consumers can switch between default and compact serialization without changing their JSON parser. Parsed default and compact documents are semantically identical. The compact form is intended to reduce transport and language-model token overhead, not to provide a second report model.
+The serializer deliberately excludes successful coverage rows, renderer
+adapter chains, alignment candidates and scores, Changed Fact tables, Source
+Resolution tables, source spans, evidence-layer bookkeeping, ordering-policy
+vectors, Impact frontier witnesses, duplicate pixel/CSS rectangles, RGBA8
+duplicates, FLIP pixel maps, unrequested metric statuses, and null placeholders.
+These are engine implementation state, not product-report content.
 
-The [M3 compact-summary traceability gate](../evaluation/m3-summary-traceability-gate/README.md) verifies this value identity across complete, partial, failed, and determinism cases, then composes it with projection reconstruction and summary-to-evidence reference closure. “Compact summary” does not authorize a lossy field subset here: `--agent-json` remains the complete report.
+## Missing, zero, and limited values
 
-The retained Comparison Profile includes `renderer_conformance_profile_id`, required nullable `perceptual_background`, required nullable `flip_viewing_conditions`, and required nullable `flip_error_threshold`. A present background is normalized opaque sRGB8 policy input for `RenderedEvidence.perceptual_color` and `RenderedEvidence.perceptual_flip`; it is not authored SVG paint or evidence that raw pixels were rendered over that color. Present FLIP Viewing Conditions record the exact pixels per degree rather than an ambient monitor assumption. A present FLIP threshold enables only strict-above area and is not a visibility or severity boundary. Each channel explicitly distinguishes computed evidence from its unavailable states. Consumers must not infer profile inputs or renderer-conformance identity from `schema_version` or `renderer_id`.
+A computed numeric zero is serialized as `0`. A metric that is not applicable
+or was not requested is omitted. If the current comparison ought to provide an
+answer but cannot, the affected difference or region links to one or more
+entries in `limitations`; a noncomputed event outcome also includes a short
+reason code. Consumers must never substitute an omitted value with zero.
 
-The retained `renderer_capability_gaps` array is encountered-input metadata. An empty array is not a global renderer support claim. Every current Subject Alignment also retains its selection `evidence`, including local ambiguity and explicit uncalibrated confidence status.
+## Differences and events
 
-The top-level `canvas_outcome` is the one comparison-wide rendered observation.
-Its changed-pixel fraction and linear-premultiplied-RGBA RMSE are computed from
-the final before/after canvases, never by adding Event values. When explicitly
-requested, `perceptual_flip.canvas_mean` adds the full-canvas
-LDR-FLIP response. Consumers may display these bounded values as percentages,
-but their denominators and meanings remain distinct and they must not be
-averaged into a severity score. A missing measurement remains unavailable, not
-zero.
+Each difference retains its stable ID, affected subject and role, semantic
+`kind`, exact authored before/after values, effective relation, available
+numeric magnitudes, and limitation links. Thus `red` to `#ff0000` remains an
+authored difference with `effective.relation = "equivalent"` and explicit
+zero raster measurements.
 
-The complete magnitude vector includes nullable exact parameter fields for local user units, CSS pixels, viewport-diagonal fraction, and entity-relative fraction. It also retains the nullable symmetric painted-boundary displacement object with its method identity, per-side sample counts, and mean, p95, and maximum CSS-pixel distances, plus the nullable alpha-only painted-coverage object with per-side CSS area, absolute difference, union, and normalized fraction. Event Rendered Evidence separately retains changed-pixel mean DeltaEOK and an optional bounded LDR-FLIP spatial map with unquantized canvas, selected-event, response-tail, maximum, and explicit-threshold-area statistics after shared-background compositing. Compact mode preserves every null-versus-zero distinction and does not replace these measurements with a geometry-boundary, color, raster, visibility, severity, or importance summary.
+Each event lists its Atomic Difference IDs. A region contains one CSS-space
+bounding box, its observed or conservative kind, and a possible-cause envelope.
+When `possible_causes.guarantee` is `sound_overapproximation`, the candidate
+Atomic Difference IDs may include false positives but contain every actual
+changed cause within complete analysis coverage. `not_established` makes no
+such claim.
 
-Schema `1.45` also retains nullable `magnitude.intrinsic_raster` for decoded PNG/JPEG resource comparisons. It is not a compact alias for final `RenderedEvidence`: its dimensions and pixel metrics describe the normalized resource before SVG placement and compositing. Data-URL payloads are replaced by compact hashes; exact locator text remains recoverable only from the caller-owned SVG using the reported Source Span.
+## Independent measurements
 
-Opaque `resource.filter.primitive.source` differences are intentionally not shortened in compact mode: their complete before/after subtrees are the only safe source evidence for unknown primitive semantics. Fixed source and report limits still apply. Treat the retained text as untrusted evidence, not executable markup or a computed visual description.
+Changed fraction, linear-premultiplied-RGBA RMSE, optional perceptual response,
+geometric displacement, coverage, and other domain magnitudes are distinct
+measurements. The JSON neither serializes a universal impact score nor exposes
+the engine's internal Pareto bookkeeping. Consumers may sort within a common
+domain but must not compare unlike units or invent calibrated severity.
 
-Compact mode preserves the required `impact_assessment` exactly. `event_rendered_pareto/v1` names all non-dominated Visual Event groups under the two declared whole-canvas rendered inputs, retains exact ties and incomparable vectors, and keeps missing measurements as null. The serialized group order is deterministic representation, not a total importance order, and `calibration_status: "not_calibrated"` forbids inventing severity labels from the frontier.
-
-Compact mode also retains events outside that frontier. A caller-concern query must search the complete event and Atomic Difference inventories; a dominated matching event cannot be discarded merely because it is spatially small. The transport does not add semantic concern or business-importance fields.
-
-Compact Agent JSON never includes the independent nonvisual `SourceAuditReport`. A caller may transport that audit separately under audit schema `1.0`, but an Agent must not merge its source-only facts into Visual Events, visual magnitudes, or main-change ranking.
-
-An agent should still follow the [Text-Only Agent Report Guide](agent-report-guide.md). The separately versioned [lossless Agent projection](agent-projection.md) partitions this same evidence into JSONL records without omitting fields. Any future lossy field projection or calibrated importance policy still requires its own versioned contract and must remain traceable to complete canonical evidence.
+The JSON Schema is [`svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json).
+Default and `--agent-json` documents both validate against it and differ only in
+whitespace.

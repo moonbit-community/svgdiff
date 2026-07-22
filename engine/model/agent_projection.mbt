@@ -2,34 +2,28 @@
 const AGENT_PROJECTION_VERSION : String = "svgdiff-agent-projection/1"
 
 ///|
-fn agent_projection_header(report : StructuredReport) -> Json {
+fn projection_header(report : StructuredReport) -> Json {
   {
     "projection_version": AGENT_PROJECTION_VERSION,
     "source_schema_version": report.schema_version,
     "record_type": "header",
     "sequence": 0,
     "section_counts": {
-      "coverage_matrix": report.coverage_matrix.length(),
-      "renderer_capability_gaps": report.renderer_capability_gaps.length(),
-      "subject_alignments": report.subject_alignments.length(),
-      "changed_facts": report.changed_facts.length(),
-      "source_resolutions": report.source_resolutions.length(),
-      "atomic_differences": report.atomic_differences.length(),
+      "difference_groups": compact_difference_groups(report).length(),
       "events": report.events.length(),
-      "diagnostics": report.diagnostics.length(),
+      "limitations": report.diagnostics.length(),
     },
     "value": {
       "schema_version": report.schema_version,
       "analysis_status": report.analysis_status,
-      "canvas_outcome": report.canvas_outcome,
-      "impact_assessment": report.impact_assessment,
-      "profile": report.profile,
+      "comparison": compact_comparison(report.profile),
+      "canvas": compact_canvas_outcome(report.canvas_outcome),
     },
   }
 }
 
 ///|
-fn agent_projection_item(
+fn projection_item(
   schema_version : String,
   sequence : Int,
   section : String,
@@ -48,94 +42,53 @@ fn agent_projection_item(
 }
 
 ///|
-fn[T : ToJson] append_agent_projection_section(
+fn append_projection_section(
   lines : Array[String],
   schema_version : String,
   section : String,
-  values : Array[T],
+  values : Array[Json],
   sequence : Int,
 ) -> Int {
-  let mut next_sequence = sequence
+  let mut next = sequence
   for index, value in values {
     lines.push(
-      agent_projection_item(
-        schema_version,
-        next_sequence,
-        section,
-        index,
-        value.to_json(),
-      ).stringify(),
+      projection_item(schema_version, next, section, index, value).stringify(),
     )
-    next_sequence += 1
+    next += 1
   }
-  next_sequence
+  next
 }
 
 ///|
-/// Serialize this report as lossless line-addressable Agent projection JSONL.
-///
-/// The header retains all non-array report fields and exact section counts.
-/// Each following record retains one canonical array item. Concatenating every
-/// record reconstructs the complete Structured Report without semantic loss.
+/// Serialize the concise report as line-addressable JSONL records.
 pub fn StructuredReport::to_agent_projection_json_lines(
   self : StructuredReport,
 ) -> String {
-  let lines = [agent_projection_header(self).stringify()]
-  let mut sequence = 1
-  sequence = append_agent_projection_section(
+  let lines = [projection_header(self).stringify()]
+  let groups = compact_difference_groups(self)
+  let mut sequence = append_projection_section(
     lines,
     self.schema_version,
-    "coverage_matrix",
-    self.coverage_matrix,
-    sequence,
+    "difference_groups",
+    groups,
+    1,
   )
-  sequence = append_agent_projection_section(
-    lines,
-    self.schema_version,
-    "renderer_capability_gaps",
-    self.renderer_capability_gaps,
-    sequence,
-  )
-  sequence = append_agent_projection_section(
-    lines,
-    self.schema_version,
-    "subject_alignments",
-    self.subject_alignments,
-    sequence,
-  )
-  sequence = append_agent_projection_section(
-    lines,
-    self.schema_version,
-    "changed_facts",
-    self.changed_facts,
-    sequence,
-  )
-  sequence = append_agent_projection_section(
-    lines,
-    self.schema_version,
-    "source_resolutions",
-    self.source_resolutions,
-    sequence,
-  )
-  sequence = append_agent_projection_section(
-    lines,
-    self.schema_version,
-    "atomic_differences",
-    self.atomic_differences,
-    sequence,
-  )
-  sequence = append_agent_projection_section(
+  sequence = append_projection_section(
     lines,
     self.schema_version,
     "events",
-    self.events,
+    [
+      for event in self.events => compact_event(self, event)
+    ],
     sequence,
   )
-  let _ = append_agent_projection_section(
+  let _ = append_projection_section(
     lines,
     self.schema_version,
-    "diagnostics",
-    self.diagnostics,
+    "limitations",
+    [
+      for diagnostic in self.diagnostics => compact_limitation(diagnostic)
+    ],
     sequence,
   )
   lines.join("\n")
