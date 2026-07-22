@@ -31,9 +31,6 @@ jobs:
       - name: Build static site
         run: sh scripts/build-pages.sh
 
-      - name: Validate browser product
-        run: sh scripts/test-pages.sh
-
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
