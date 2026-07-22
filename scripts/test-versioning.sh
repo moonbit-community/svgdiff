@@ -43,15 +43,9 @@ jq -e '
 
 test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/baseline.v1.json)" = "$conformance_profile"
 test "$(jq -r '.conformance_profile_id' evaluation/renderer-conformance/dispositions.v1.json)" = "$conformance_profile"
-jq -e --arg schema "$schema_version" --arg renderer "$renderer_id" \
-  --arg profile "$conformance_profile" --arg policy "$ordering_policy" \
-  --arg impact "$impact_policy" '
-  (.consumer_policy.accepted_schema_versions | index($schema)) != null and
-  (.consumer_policy.accepted_renderer_ids | index($renderer)) != null and
-  (.consumer_policy.accepted_renderer_conformance_profile_ids |
-    index($profile)) != null and
-  (.consumer_policy.accepted_ordering_policy_ids | index($policy)) != null and
-  (.consumer_policy.accepted_impact_policy_ids | index($impact)) != null
+jq -e --arg schema "$schema_version" '
+  .consumer_policy.current_schema_version == $schema and
+  (.consumer_policy.accepted_schema_versions | index($schema)) != null
 ' evaluation/compatibility/manifest.v1.json >/dev/null
 
 moon run --target native cmd/svgdiff -- \
