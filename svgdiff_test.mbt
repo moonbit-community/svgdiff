@@ -589,6 +589,11 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("Changed area") is Some(_))
   assert_true(html.find("Linear RGBA error") is Some(_))
   assert_true(html.find("Perceptual difference") is Some(_))
+  assert_true(html.find("data-difference-canvas") is Some(_))
+  assert_true(
+    html.find("RGB channel difference; black pixels are equal") is Some(_),
+  )
+  assert_true(html.find("before[index]===after[index]?0:255") is Some(_))
   assert_true(html.find("(value*100).toFixed(2)") is Some(_))
   assert_true(html.find("Not measured") is Some(_))
   assert_true(html.find("Visual Events") is Some(_))

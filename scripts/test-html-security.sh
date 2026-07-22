@@ -170,6 +170,17 @@ pw --raw run-code \
         value: card.querySelector('.score-value')?.textContent,
       })),
     );
+    await page.waitForFunction(() => document.querySelector('[data-difference-canvas]')?.dataset.state === 'ready');
+    const difference = await page.locator('[data-difference-canvas]').evaluate(canvas => {
+      const context = canvas.getContext('2d');
+      return {
+        headings: [...document.querySelectorAll('.preview h2')].map(node => node.textContent),
+        width: canvas.width,
+        height: canvas.height,
+        equalPixel: [...context.getImageData(0, 0, 1, 1).data],
+        changedPixel: [...context.getImageData(4, 4, 1, 1).data],
+      };
+    });
     const diffCount = await page.locator('[data-diff-id]').count();
     const eventCount = await page.locator('.event-card[data-event-id]').count();
     const firstEvent = page.locator('.event-card[data-event-id]').first();
@@ -314,6 +325,7 @@ pw --raw run-code \
       reportDiffCount: embedded.atomic_differences.length,
       reportEventCount: embedded.events.length,
       canvasScores,
+      difference,
       impactPolicy: embedded.impact_assessment.policy_id,
       groupOrder: await page.locator('.group-header h3').allTextContents().catch(() => []),
       defaultDisclosure,
@@ -349,6 +361,13 @@ jq -e '
     {"label": "Linear RGBA error", "value": "35.36%"},
     {"label": "Perceptual difference", "value": "Not measured"}
   ] and
+  .difference == {
+    "headings": ["Before", "Difference", "After"],
+    "width": 16,
+    "height": 16,
+    "equalPixel": [0, 0, 0, 255],
+    "changedPixel": [255, 0, 255, 255]
+  } and
   .impactPolicy == "event_rendered_pareto/v1" and
   .defaultDisclosure == {"event": false, "atomic": false, "raw": false} and
   .hoverOverlayCount == 2 and
@@ -383,7 +402,7 @@ jq -e '
   .hiddenSelection.overlays == 0 and
   (.hiddenSelection.status | contains("selected but hidden")) and
   .restoredSelection == {"visible": true, "overlays": 2} and
-  (.transforms | length == 2 and .[0] == .[1]) and
+  (.transforms | length == 3 and .[0] == .[1] and .[1] == .[2]) and
   .zoom == "125%" and
   .clearedOverlayCount == 0 and
   .cardSelection == {"active": true, "overlayCount": 2} and

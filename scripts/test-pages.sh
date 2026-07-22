@@ -87,6 +87,7 @@ pw --raw run-code \
     await page.getByRole('button', { name: 'Compare SVGs' }).click();
     await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
     await page.locator('#result-section').waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('#report-root [data-difference-canvas]')?.dataset.state === 'ready');
     const reportText = await page.locator('#report-data').inputValue();
     const report = JSON.parse(reportText);
     const scores = await page.locator('.score-card').evaluateAll(cards => cards.map(card => ({
@@ -105,6 +106,16 @@ pw --raw run-code \
           Math.abs(bounds.width - innerWidth) < 0.5 && Math.abs(bounds.height - innerHeight) < 0.5;
       }));
     }
+    const difference = await page.locator('#report-root [data-difference-canvas]').evaluate(canvas => {
+      const context = canvas.getContext('2d');
+      return {
+        headings: [...document.querySelectorAll('#report-root .preview h2')].map(node => node.textContent),
+        width: canvas.width,
+        height: canvas.height,
+        equalPixel: [...context.getImageData(0, 0, 1, 1).data],
+        changedPixel: [...context.getImageData(40, 60, 1, 1).data],
+      };
+    });
     await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
     const baselineUi = {
       status: await page.locator('#run-status').textContent(),
@@ -183,6 +194,7 @@ pw --raw run-code \
       scores,
       previewSvgCounts,
       previewRootsFillViewport,
+      difference,
       effectiveValues: baselineUi.effectiveValues,
       overlays: baselineUi.overlays,
       overlayLabels: baselineUi.overlayLabels,
@@ -229,6 +241,13 @@ jq -e '
   all(.scores[]; .value != "0.00%") and
   .previewSvgCounts == [1, 1] and
   .previewRootsFillViewport == [true, true] and
+  .difference == {
+    "headings": ["Before", "Difference", "After"],
+    "width": 256,
+    "height": 160,
+    "equalPixel": [0, 0, 0, 255],
+    "changedPixel": [255, 255, 255, 255]
+  } and
   .overlays > 0 and
   .overlayLabels == 0 and
   .noViewBoxLocalizationGeometryError <= 1 and
