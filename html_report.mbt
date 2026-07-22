@@ -9,9 +9,52 @@ fn escape_html(value : String) -> String {
 }
 
 ///|
-fn sandbox_document(source : String) -> String {
+fn preview_element_insert_offset(
+  source : String,
+  span : @xml.SourceSpan,
+) -> Int {
+  let mut offset = span.end.offset - 1
+  while offset > span.start.offset && source[offset] != '>' {
+    offset -= 1
+  }
+  if offset > span.start.offset && source[offset - 1] == '/' {
+    offset - 1
+  } else {
+    offset
+  }
+}
+
+///|
+fn preview_source(source : String, width : Int, height : Int) -> String {
+  let reader = @xml.NamespaceReader::from_string(source)
+  let events = reader.read_events_until_eof() catch { _ => return source }
+  for event in events {
+    match event.kind {
+      Start(element) | Empty(element) => {
+        if element.name.local_name != "svg" {
+          return source
+        }
+        for attribute in element.attributes {
+          if attribute.name.local_name == "viewBox" &&
+            attribute.name.namespace_uri is None {
+            return source
+          }
+        }
+        // CSS sizing alone does not scale the user space of a root SVG without
+        // viewBox. Adapt only the sandbox copy to the Comparison Viewport.
+        let offset = preview_element_insert_offset(source, event.span)
+        return "\{source.view(end_offset=offset)} viewBox=\"0 0 \{width} \{height}\"\{source.view(start_offset=offset)}"
+      }
+      _ => ()
+    }
+  }
+  source
+}
+
+///|
+fn sandbox_document(source : String, width : Int, height : Int) -> String {
   escape_html(
-    "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%!important;height:100%!important}</style>\{source}",
+    "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%!important;height:100%!important}</style>\{preview_source(source, width, height)}",
   )
 }
 
@@ -30,8 +73,8 @@ pub fn render_html_report(
   let width = report.profile.viewport_width
   let height = report.profile.viewport_height
   let report_json = escape_html(report.to_json_string())
-  let before_document = sandbox_document(before_svg)
-  let after_document = sandbox_document(after_svg)
+  let before_document = sandbox_document(before_svg, width, height)
+  let after_document = sandbox_document(after_svg, width, height)
   let styles = html_report_styles()
   let script = html_report_script()
   let html =

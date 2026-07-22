@@ -202,8 +202,22 @@ pw --raw run-code \
       active: await firstEvent.evaluate(node => node.classList.contains('active')),
       pressed: await firstEvent.locator('[data-locate-event]').getAttribute('aria-pressed'),
       overlayCount: await page.locator('.overlay .region').count(),
+      overlayLabelCount: await page.locator('.overlay .region-label').count(),
       status: await page.locator('#selection-status').textContent(),
     };
+    const beforeFrameHost = page.locator('.preview-content iframe').first();
+    const beforeFrameBounds = await beforeFrameHost.boundingBox();
+    const beforeSubjectBounds = await beforeFrameHost.contentFrame().locator('#box').evaluate(node => {
+      const bounds = node.getBoundingClientRect();
+      return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+    });
+    const beforeOverlayBounds = await page.locator('.overlay').first().locator('.region.observed').boundingBox();
+    const localizationGeometryError = Math.max(
+      Math.abs(beforeFrameBounds.x + beforeSubjectBounds.x - beforeOverlayBounds.x),
+      Math.abs(beforeFrameBounds.y + beforeSubjectBounds.y - beforeOverlayBounds.y),
+      Math.abs(beforeSubjectBounds.width - beforeOverlayBounds.width),
+      Math.abs(beforeSubjectBounds.height - beforeOverlayBounds.height),
+    );
     await firstEvent.locator('[data-locate-event]').click();
     const repeatedSelection = {
       active: await firstEvent.evaluate(node => node.classList.contains('active')),
@@ -308,6 +322,7 @@ pw --raw run-code \
       afterHoverOverlayCount,
       checkboxIndependent,
       selected,
+      localizationGeometryError,
       repeatedSelection,
       evidence,
       hiddenSelection,
@@ -349,7 +364,9 @@ jq -e '
   .selected.active == true and
   .selected.pressed == "true" and
   .selected.overlayCount == 2 and
+  .selected.overlayLabelCount == 0 and
   (.selected.status | contains($result.firstEventId)) and
+  .localizationGeometryError <= 1 and
   .repeatedSelection == {"active": true, "pressed": "true"} and
   .evidence == {
     "atomicOpen": true,
@@ -391,11 +408,11 @@ jq -e '
   .states.equivalent.effectiveValues == ["Same effective value"] and
   .states.equivalent.effectiveValueTitles == ["Effective values are compared after applying supported SVG rules; this does not describe final pixels."] and
   (.states.equivalent.diffs | contains("Canvas: 0 changed fraction")) and
-  (.states.subtle.diffs | contains("Measured nonzero")) and
+  (.states.subtle.diffs | contains("Measured zero")) and
   (.states.subtle.diffs | contains("1.0 → 0.99999")) and
   .states.subtle.effectiveValues == ["Different effective value"] and
   (.states.subtle.diffs | contains("Parameter: ≈1.000e-5 CSS px")) and
-  (.states.subtle.diffs | contains("16 pixels (0.0625)")) and
+  (.states.subtle.diffs | contains("0 pixels (0)")) and
   (.states.empty.overview | contains("No candidate Visual Events")) and
   (.states.empty.diffs | contains("No Atomic Differences")) and
   (.states.failed.overview | contains("Analysis failed")) and

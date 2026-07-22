@@ -113,6 +113,25 @@ pw --raw run-code \
       overlayLabels: await page.locator('.region-label').count(),
       effectiveValueOptions: await page.locator('#relation-filter option').allTextContents(),
     };
+    await page.locator('#before-source').fill('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"256\"><rect id=\"no-viewbox-target\" x=\"32\" y=\"32\" width=\"64\" height=\"64\" fill=\"red\"/></svg>');
+    await page.locator('#after-source').fill('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"256\"><rect id=\"no-viewbox-target\" x=\"32\" y=\"32\" width=\"64\" height=\"64\" fill=\"blue\"/></svg>');
+    await page.getByRole('button', { name: 'Compare SVGs' }).click();
+    await page.waitForFunction(() => document.querySelector('#compare-button')?.textContent === 'Compare SVGs');
+    await page.locator('#result-section').waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
+    const noViewBoxFrameHost = page.locator('#report-root .preview-content iframe').first();
+    const noViewBoxFrameBounds = await noViewBoxFrameHost.boundingBox();
+    const noViewBoxSubjectBounds = await noViewBoxFrameHost.contentFrame().locator('#no-viewbox-target').evaluate(node => {
+      const bounds = node.getBoundingClientRect();
+      return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+    });
+    const noViewBoxOverlayBounds = await page.locator('#report-root .overlay').first().locator('.region.observed').boundingBox();
+    const noViewBoxLocalizationGeometryError = Math.max(
+      Math.abs(noViewBoxFrameBounds.x + noViewBoxSubjectBounds.x - noViewBoxOverlayBounds.x),
+      Math.abs(noViewBoxFrameBounds.y + noViewBoxSubjectBounds.y - noViewBoxOverlayBounds.y),
+      Math.abs(noViewBoxSubjectBounds.width - noViewBoxOverlayBounds.width),
+      Math.abs(noViewBoxSubjectBounds.height - noViewBoxOverlayBounds.height),
+    );
     const affineExpectations = [
       ['translation', ['geometry.transform.translation']],
       ['rotation', ['geometry.transform.rotation']],
@@ -175,6 +194,7 @@ pw --raw run-code \
         return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== '127.0.0.1';
       })),
       effectiveValueOptions: baselineUi.effectiveValueOptions,
+      noViewBoxLocalizationGeometryError,
       affineExamples,
     };
   }" >"$tmp/browser.json" 2>>"$log"
@@ -210,8 +230,8 @@ jq -e '
   .previewSvgCounts == [1, 1] and
   .previewRootsFillViewport == [true, true] and
   .overlays > 0 and
-  .overlayLabels > 0 and
-  .overlayLabels <= .overlays and
+  .overlayLabels == 0 and
+  .noViewBoxLocalizationGeometryError <= 1 and
   .rawReportAvailable == true and
   .wasmBytes > 100 and
   (.affineExamples | length) == 5 and

@@ -105,13 +105,26 @@ let pending = null;
 let requestId = 0;
 let comparing = false;
 
-function previewDocument(source) {
-  return `<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body{display:grid;place-items:center}body>svg{display:block;width:100%!important;height:100%!important}</style>${source}`;
+function previewSource(source, viewportWidth, viewportHeight) {
+  if (!Number.isFinite(viewportWidth) || viewportWidth <= 0 || !Number.isFinite(viewportHeight) || viewportHeight <= 0) return source;
+  const document = new DOMParser().parseFromString(source, "image/svg+xml");
+  const root = document.documentElement;
+  if (root.localName !== "svg" || root.hasAttribute("viewBox")) return source;
+  // CSS sizing alone does not scale no-viewBox user space. Adapt only this sandbox copy.
+  root.setAttribute("viewBox", `0 0 ${viewportWidth} ${viewportHeight}`);
+  return new XMLSerializer().serializeToString(document);
+}
+
+function previewDocument(source, viewportWidth, viewportHeight) {
+  const adaptedSource = previewSource(source, viewportWidth, viewportHeight);
+  return `<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body{display:grid;place-items:center}body>svg{display:block;width:100%!important;height:100%!important}</style>${adaptedSource}`;
 }
 
 function refreshPreviews() {
-  elements.beforePreview.srcdoc = previewDocument(elements.beforeSource.value);
-  elements.afterPreview.srcdoc = previewDocument(elements.afterSource.value);
+  const viewportWidth = Number(elements.width.value);
+  const viewportHeight = Number(elements.height.value);
+  elements.beforePreview.srcdoc = previewDocument(elements.beforeSource.value, viewportWidth, viewportHeight);
+  elements.afterPreview.srcdoc = previewDocument(elements.afterSource.value, viewportWidth, viewportHeight);
 }
 
 function loadExample() {
@@ -233,8 +246,8 @@ function renderReport(report, reportText) {
   elements.resultRoot.replaceChildren(fragment);
   elements.resultRoot.style.setProperty("--canvas-ratio", `${report.profile.viewport_width}/${report.profile.viewport_height}`);
   const frames = elements.resultRoot.querySelectorAll(".preview-content iframe");
-  frames[0].srcdoc = previewDocument(elements.beforeSource.value);
-  frames[1].srcdoc = previewDocument(elements.afterSource.value);
+  frames[0].srcdoc = previewDocument(elements.beforeSource.value, report.profile.viewport_width, report.profile.viewport_height);
+  frames[1].srcdoc = previewDocument(elements.afterSource.value, report.profile.viewport_width, report.profile.viewport_height);
   elements.resultRoot.querySelector("#report-data").value = JSON.stringify(report, null, 2);
   window.SvgdiffReportInspector.mount(elements.resultRoot);
   elements.resultSection.hidden = false;
@@ -273,6 +286,8 @@ async function compare() {
 
 elements.beforeSource.addEventListener("input", refreshPreviews);
 elements.afterSource.addEventListener("input", refreshPreviews);
+elements.width.addEventListener("input", refreshPreviews);
+elements.height.addEventListener("input", refreshPreviews);
 elements.beforeFile.addEventListener("change", () => readSvgFile(elements.beforeFile.files[0], "before"));
 elements.afterFile.addEventListener("change", () => readSvgFile(elements.afterFile.files[0], "after"));
 elements.background.addEventListener("change", () => {
