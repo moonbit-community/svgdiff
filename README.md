@@ -97,6 +97,21 @@ The self-contained CLI HTML and browser page share the same Report Inspector
 script and styles extracted from `html_report_assets.mbt`. The generated
 `_site` directory is ignored and must not be edited directly.
 
+## Agent WASM skill
+
+The [`cmd/svgdiff_miniio`](cmd/svgdiff_miniio/README.md) package exposes the
+same comparison engine as a portable WASIp1 CLI using MiniIO. It reads two
+guest-visible SVG files and writes concise Structured Report schema `2.0` JSON
+for an agent that cannot inspect images:
+
+```sh
+moon runwasm cmd/svgdiff_miniio before.svg after.svg
+```
+
+Its focused [`SKILL.md`](cmd/svgdiff_miniio/SKILL.md) defines the agent reading
+procedure, deterministic checkpoint control, exit statuses, and WASI preopen
+boundary.
+
 ## Library API
 
 Install module version `0.7.0` with `moon add Milky2018/svgdiff@0.7.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.

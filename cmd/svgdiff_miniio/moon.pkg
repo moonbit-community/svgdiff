@@ -1,0 +1,9 @@
+import {
+  "Milky2018/svgdiff",
+  "moonbit-community/miniio",
+  "moonbitlang/core/string",
+}
+
+supported_targets = "wasm"
+
+pkgtype(kind: "executable")

@@ -31,12 +31,14 @@ import {
   "moonbitlang/quickcheck@0.14.0",
   "Milky2018/svgdiff-raster-codec@0.1.1",
   "Milky2018/svg@0.3.1",
+  "moonbit-community/miniio@0.2.1",
 }
 
 options(
   exclude: [
     ".github",
-    "cmd",
+    "cmd/svgdiff",
+    "cmd/svgdiff_wasm",
     "completions",
     "docs",
     "evaluation",
