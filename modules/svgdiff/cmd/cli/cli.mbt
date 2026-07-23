@@ -13,14 +13,14 @@
 // limitations under the License.
 
 ///|
-pub(all) struct Resource {
+pub struct Resource {
   locator : String
   media_type : String
   path : String
 } derive(FromJson)
 
 ///|
-pub(all) struct Config {
+pub struct Config {
   before_path : String
   after_path : String
   output_path : String?
@@ -39,12 +39,12 @@ pub(all) struct Config {
 }
 
 ///|
-pub(all) suberror CliError {
+pub suberror CliError {
   InvalidArguments(String)
 }
 
 ///|
-pub fn version_text(command_name : String) -> String {
+fn version_text(command_name : String) -> String {
   let profile = @svgdiff.ComparisonProfile::v1_default()
   (
     $|\{command_name} 0.7.0
@@ -59,10 +59,11 @@ pub fn version_text(command_name : String) -> String {
 }
 
 ///|
-fn program_name(args : Array[String]) -> String {
-  let name = args
-    .get(0)
-    .unwrap_or("svgdiff")
+fn program_name(args : ArrayView[String]) -> String {
+  let name = (match args {
+      [path, ..] => path
+      [] => "svgdiff"
+    })
     .split("/")
     .last()
     .unwrap_or("svgdiff")
@@ -74,88 +75,7 @@ fn program_name(args : Array[String]) -> String {
 }
 
 ///|
-fn input_positionals() -> Array[@argparse.PositionArg] {
-  [
-    PositionArg(
-      "before",
-      about="Before SVG file, or - for stdin",
-      num_args=@argparse.ValueRange::single(),
-      allow_hyphen_values=true,
-    ),
-    PositionArg(
-      "after",
-      about="After SVG file, or - for stdin",
-      num_args=@argparse.ValueRange::single(),
-      allow_hyphen_values=true,
-    ),
-  ]
-}
-
-///|
-fn command_options() -> Array[@argparse.OptionArg] {
-  [
-    OptionArg(
-      "width",
-      about="Comparison viewport width in CSS pixels",
-      default_values=["16"],
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "height",
-      about="Comparison viewport height in CSS pixels",
-      default_values=["16"],
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "max-checkpoints",
-      about="Optional deterministic computation budget",
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "perceptual-background",
-      about="Record one explicit opaque deterministic sRGB background",
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "flip-pixels-per-degree",
-      about="Request LDR-FLIP with supported PPD in [1, 4096]",
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "flip-error-threshold",
-      about="Report FLIP area strictly above an explicit value in [0, 1]",
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "before-resource",
-      about="Supply one before-side resource JSON object",
-      action=Append,
-    ),
-    OptionArg(
-      "after-resource",
-      about="Supply one after-side resource JSON object",
-      action=Append,
-    ),
-    OptionArg(
-      "output",
-      about="Write JSON or Agent projection JSONL to FILE",
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "html",
-      about="Also write the self-contained HTML presentation",
-      allow_hyphen_values=true,
-    ),
-    OptionArg(
-      "summary",
-      about="Also write a derived non-authoritative Markdown summary",
-      allow_hyphen_values=true,
-    ),
-  ]
-}
-
-///|
-pub fn command(name : String) -> @argparse.Command {
+fn command(name : String) -> @argparse.Command {
   Command(
     name,
     about=(
@@ -170,7 +90,20 @@ pub fn command(name : String) -> @argparse.Command {
       #|  2  Invalid arguments or file I/O failure
     ),
     version=version_text(name),
-    positionals=input_positionals(),
+    positionals=[
+      PositionArg(
+        "before",
+        about="Before SVG file, or - for stdin",
+        num_args=@argparse.ValueRange::single(),
+        allow_hyphen_values=true,
+      ),
+      PositionArg(
+        "after",
+        about="After SVG file, or - for stdin",
+        num_args=@argparse.ValueRange::single(),
+        allow_hyphen_values=true,
+      ),
+    ],
     flags=[
       FlagArg(
         "agent-json",
@@ -183,7 +116,65 @@ pub fn command(name : String) -> @argparse.Command {
         conflicts_with=["agent-json"],
       ),
     ],
-    options=command_options(),
+    options=[
+      OptionArg(
+        "width",
+        about="Comparison viewport width in CSS pixels",
+        default_values=["16"],
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "height",
+        about="Comparison viewport height in CSS pixels",
+        default_values=["16"],
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "max-checkpoints",
+        about="Optional deterministic computation budget",
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "perceptual-background",
+        about="Record one explicit opaque deterministic sRGB background",
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "flip-pixels-per-degree",
+        about="Request LDR-FLIP with supported PPD in [1, 4096]",
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "flip-error-threshold",
+        about="Report FLIP area strictly above an explicit value in [0, 1]",
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "before-resource",
+        about="Supply one before-side resource JSON object",
+        action=Append,
+      ),
+      OptionArg(
+        "after-resource",
+        about="Supply one after-side resource JSON object",
+        action=Append,
+      ),
+      OptionArg(
+        "output",
+        about="Write JSON or Agent projection JSONL to FILE",
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "html",
+        about="Also write the self-contained HTML presentation",
+        allow_hyphen_values=true,
+      ),
+      OptionArg(
+        "summary",
+        about="Also write a derived non-authoritative Markdown summary",
+        allow_hyphen_values=true,
+      ),
+    ],
   )
 }
 
@@ -344,10 +335,10 @@ fn parse_resources(
 }
 
 ///|
-pub fn parse(args : Array[String]) -> Config raise CliError {
+pub fn parse(args : ArrayView[String]) -> Config raise CliError {
   let name = program_name(args)
   let argv = if args.length() > 0 { args[1:] } else { args[:] }
-  let matches = command(name).parse(argv~) catch {
+  let matches = @argparse.parse(command(name), argv~, env=Map([])) catch {
     error => raise InvalidArguments(error.to_string())
   }
   parse_matches(matches)

@@ -5,28 +5,23 @@ import {
   "Milky2018/svgdiff",
   "Milky2018/svgdiff/engine",
   "Milky2018/svgdiff/engine/model",
-  "moonbitlang/core/argparse",
   "moonbitlang/core/json",
 }
 
 // Values
-pub fn command(String) -> @argparse.Command
-
 pub fn compare_sources(String, String, Config, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport raise @svgdiff.ComparisonInterrupted
 
-pub fn parse(Array[String]) -> Config raise CliError
+pub fn parse(ArrayView[String]) -> Config raise CliError
 
 pub fn serialize_report(@model.StructuredReport, Config) -> String
 
-pub fn version_text(String) -> String
-
 // Errors
-pub(all) suberror CliError {
+pub suberror CliError {
   InvalidArguments(String)
 }
 
 // Types and methods
-pub(all) struct Config {
+pub struct Config {
   before_path : String
   after_path : String
   output_path : String?
@@ -44,7 +39,7 @@ pub(all) struct Config {
   max_checkpoints : Int?
 }
 
-pub(all) struct Resource {
+pub struct Resource {
   locator : String
   media_type : String
   path : String

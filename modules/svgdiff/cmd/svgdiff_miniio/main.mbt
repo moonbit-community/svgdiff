@@ -13,19 +13,19 @@
 // limitations under the License.
 
 ///|
-priv suberror InputError {
-  InputError(String)
+priv suberror IoError {
+  IoError(String)
 }
 
 ///|
-fn read_svg(path : String) -> String raise InputError {
+fn read_svg(path : String) -> String raise IoError {
   if path == "-" {
     @miniio.stdin.read_all().text() catch {
-      error => raise InputError("Failed to read stdin: \{error}")
+      error => raise IoError("Failed to read stdin: \{error}")
     }
   } else {
     @miniio.read_text_file(path) catch {
-      error => raise InputError("Failed to read \{path}: \{error}")
+      error => raise IoError("Failed to read \{path}: \{error}")
     }
   }
 }
@@ -33,12 +33,12 @@ fn read_svg(path : String) -> String raise InputError {
 ///|
 fn read_resource_bundle(
   resources : Array[@cli.Resource],
-) -> @svgdiff.ResourceBundle raise InputError {
+) -> @svgdiff.ResourceBundle raise IoError {
   let entries : Array[@svgdiff.ResourceBundleEntry] = []
   for resource in resources {
     let bytes = @miniio.read_file(resource.path).binary() catch {
       error =>
-        raise InputError("Failed to read resource \{resource.path}: \{error}")
+        raise IoError("Failed to read resource \{resource.path}: \{error}")
     }
     entries.push({
       locator: resource.locator,
@@ -50,10 +50,94 @@ fn read_resource_bundle(
 }
 
 ///|
-fn write_error(message : String) -> Unit {
+fn write_file(path : String, contents : String) -> Unit raise IoError {
+  @miniio.write_text_file(path, contents) catch {
+    error => raise IoError("Failed to write \{path}: \{error}")
+  }
+}
+
+///|
+fn write_stdout(contents : String) -> Unit raise IoError {
+  @miniio.stdout.write_text(contents) catch {
+    error => raise IoError("Failed to write report: \{error}")
+  }
+}
+
+///|
+fn write_error(message : String) -> Unit noraise {
   @miniio.stderr.write_text(message + "\n") catch {
     _ => ()
   }
+}
+
+///|
+fn execute(config : @cli.Config) -> Int {
+  try {
+    let before_svg = read_svg(config.before_path)
+    let after_svg = read_svg(config.after_path)
+    let before_resources = read_resource_bundle(config.before_resources)
+    let after_resources = read_resource_bundle(config.after_resources)
+    let report = @cli.compare_sources(
+      before_svg, after_svg, config, before_resources, after_resources,
+    ) catch {
+      CheckpointBudgetExceeded(max_checkpoints~) => {
+        write_error(
+          "Deterministic checkpoint budget \{max_checkpoints} exhausted",
+        )
+        return 1
+      }
+      Cancelled => {
+        write_error("Comparison cancelled")
+        return 1
+      }
+    }
+    let json = @cli.serialize_report(report, config)
+    match config.output_path {
+      Some(path) =>
+        write_file(
+          path,
+          if config.agent_projection {
+            json + "\n"
+          } else {
+            json
+          },
+        )
+      None => write_stdout(json + "\n")
+    }
+    match config.html_path {
+      Some(path) =>
+        write_file(
+          path,
+          @svgdiff.render_html_report(before_svg, after_svg, report),
+        )
+      None => ()
+    }
+    match config.summary_path {
+      Some(path) => write_file(path, @svgdiff.render_markdown_summary(report))
+      None => ()
+    }
+    if report.analysis_status == "failed" {
+      1
+    } else {
+      0
+    }
+  } catch {
+    IoError(message) => {
+      write_error(message)
+      2
+    }
+  }
+}
+
+///|
+fn run(args : ArrayView[String]) -> Int {
+  let config = @cli.parse(args) catch {
+    InvalidArguments(message) => {
+      write_error(message)
+      return 2
+    }
+  }
+  execute(config)
 }
 
 ///|
@@ -65,107 +149,8 @@ fn main {
       return
     }
   }
-  let config = @cli.parse(args) catch {
-    InvalidArguments(message) => {
-      write_error(message)
-      @miniio.exit(2)
-      return
-    }
-  }
-  let before_svg = read_svg(config.before_path) catch {
-    InputError(message) => {
-      write_error(message)
-      @miniio.exit(2)
-      return
-    }
-  }
-  let after_svg = read_svg(config.after_path) catch {
-    InputError(message) => {
-      write_error(message)
-      @miniio.exit(2)
-      return
-    }
-  }
-  let before_resources = read_resource_bundle(config.before_resources) catch {
-    InputError(message) => {
-      write_error(message)
-      @miniio.exit(2)
-      return
-    }
-  }
-  let after_resources = read_resource_bundle(config.after_resources) catch {
-    InputError(message) => {
-      write_error(message)
-      @miniio.exit(2)
-      return
-    }
-  }
-  let report = @cli.compare_sources(
-    before_svg, after_svg, config, before_resources, after_resources,
-  ) catch {
-    CheckpointBudgetExceeded(max_checkpoints~) => {
-      write_error(
-        "Deterministic checkpoint budget \{max_checkpoints} exhausted",
-      )
-      @miniio.exit(1)
-      return
-    }
-    Cancelled => {
-      write_error("Comparison cancelled")
-      @miniio.exit(1)
-      return
-    }
-  }
-  let json = @cli.serialize_report(report, config)
-  match config.output_path {
-    Some(path) =>
-      @miniio.write_text_file(
-        path,
-        if config.agent_projection {
-          json + "\n"
-        } else {
-          json
-        },
-      ) catch {
-        error => {
-          write_error("Failed to write \{path}: \{error}")
-          @miniio.exit(2)
-        }
-      }
-    None =>
-      @miniio.stdout.write_text(json + "\n") catch {
-        error => {
-          write_error("Failed to write report: \{error}")
-          @miniio.exit(2)
-          return
-        }
-      }
-  }
-  match config.html_path {
-    Some(path) => {
-      let html = @svgdiff.render_html_report(before_svg, after_svg, report)
-      @miniio.write_text_file(path, html) catch {
-        error => {
-          write_error("Failed to write \{path}: \{error}")
-          @miniio.exit(2)
-        }
-      }
-    }
-    None => ()
-  }
-  match config.summary_path {
-    Some(path) => {
-      let summary = @svgdiff.render_markdown_summary(report)
-      @miniio.write_text_file(path, summary) catch {
-        error => {
-          write_error("Failed to write \{path}: \{error}")
-          @miniio.exit(2)
-        }
-      }
-    }
-    None => ()
-  }
-  if report.analysis_status == "failed" {
-    @miniio.exit(1)
+  let code = run(args)
+  if code != 0 {
+    @miniio.exit(code)
   }
 }

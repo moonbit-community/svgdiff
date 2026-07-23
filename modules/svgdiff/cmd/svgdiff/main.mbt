@@ -13,19 +13,19 @@
 // limitations under the License.
 
 ///|
-priv suberror InputError {
-  InputError(String)
+priv suberror IoError {
+  IoError(String)
 }
 
 ///|
 async fn read_svg(path : String) -> String {
   if path == "-" {
     @stdio.stdin.read_all().text() catch {
-      error => raise InputError("Failed to read stdin: \{error}")
+      error => raise IoError("Failed to read stdin: \{error}")
     }
   } else {
     @fs.read_file_to_string(path, encoding="utf8") catch {
-      error => raise InputError("Failed to read \{path}: \{error}")
+      error => raise IoError("Failed to read \{path}: \{error}")
     }
   }
 }
@@ -33,12 +33,12 @@ async fn read_svg(path : String) -> String {
 ///|
 fn read_resource_bundle(
   resources : Array[@cli.Resource],
-) -> @lib.ResourceBundle raise InputError {
+) -> @lib.ResourceBundle raise IoError {
   let entries : Array[@lib.ResourceBundleEntry] = []
   for resource in resources {
     let bytes = @fs.read_file_to_bytes(resource.path) catch {
       error =>
-        raise InputError("Failed to read resource \{resource.path}: \{error}")
+        raise IoError("Failed to read resource \{resource.path}: \{error}")
     }
     entries.push({
       locator: resource.locator,
@@ -50,118 +50,101 @@ fn read_resource_bundle(
 }
 
 ///|
-async fn write_error(message : String) -> Unit {
-  @stdio.stderr.write(message + "\n")
+fn write_file(path : String, contents : String) -> Unit raise IoError {
+  @fs.write_string_to_file(path, contents, encoding="utf8") catch {
+    error => raise IoError("Failed to write \{path}: \{error}")
+  }
+}
+
+///|
+async fn write_stdout(contents : String) -> Unit {
+  @stdio.stdout.write(contents) catch {
+    error => raise IoError("Failed to write report: \{error}")
+  }
+}
+
+///|
+async fn write_error(message : String) -> Unit noraise {
+  @stdio.stderr.write(message + "\n") catch {
+    _ => ()
+  }
+}
+
+///|
+async fn execute(config : @cli.Config) -> Int noraise {
+  try {
+    let before_svg = read_svg(config.before_path)
+    let after_svg = read_svg(config.after_path)
+    let before_resources = read_resource_bundle(config.before_resources)
+    let after_resources = read_resource_bundle(config.after_resources)
+    let report = @cli.compare_sources(
+      before_svg, after_svg, config, before_resources, after_resources,
+    ) catch {
+      CheckpointBudgetExceeded(max_checkpoints~) => {
+        write_error(
+          "Deterministic checkpoint budget \{max_checkpoints} exhausted",
+        )
+        return 1
+      }
+      Cancelled => {
+        write_error("Comparison cancelled")
+        return 1
+      }
+    }
+    let json = @cli.serialize_report(report, config)
+    match config.output_path {
+      Some(path) =>
+        write_file(
+          path,
+          if config.agent_projection {
+            json + "\n"
+          } else {
+            json
+          },
+        )
+      None => write_stdout(json + "\n")
+    }
+    match config.html_path {
+      Some(path) =>
+        write_file(path, @lib.render_html_report(before_svg, after_svg, report))
+      None => ()
+    }
+    match config.summary_path {
+      Some(path) => write_file(path, @lib.render_markdown_summary(report))
+      None => ()
+    }
+    if report.analysis_status == "failed" {
+      1
+    } else {
+      0
+    }
+  } catch {
+    IoError(message) => {
+      write_error(message)
+      2
+    }
+    error => {
+      write_error("Command failed: \{error}")
+      2
+    }
+  }
+}
+
+///|
+async fn run(args : ArrayView[String]) -> Int noraise {
+  let config = @cli.parse(args) catch {
+    InvalidArguments(message) => {
+      write_error(message)
+      return 2
+    }
+  }
+  execute(config)
 }
 
 ///|
 async fn main {
-  let args = @sys.get_cli_args()
-  let config = @cli.parse(args) catch {
-    InvalidArguments(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-  }
-  let before_svg = read_svg(config.before_path) catch {
-    InputError(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-    error => {
-      write_error("Failed to read before SVG: \{error}")
-      @sys.exit(2)
-      return
-    }
-  }
-  let after_svg = read_svg(config.after_path) catch {
-    InputError(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-    error => {
-      write_error("Failed to read after SVG: \{error}")
-      @sys.exit(2)
-      return
-    }
-  }
-  let before_resources = read_resource_bundle(config.before_resources) catch {
-    InputError(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-  }
-  let after_resources = read_resource_bundle(config.after_resources) catch {
-    InputError(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-  }
-  let report = @cli.compare_sources(
-    before_svg, after_svg, config, before_resources, after_resources,
-  ) catch {
-    CheckpointBudgetExceeded(max_checkpoints~) => {
-      write_error(
-        "Deterministic checkpoint budget \{max_checkpoints} exhausted",
-      )
-      @sys.exit(1)
-      return
-    }
-    Cancelled => {
-      write_error("Comparison cancelled")
-      @sys.exit(1)
-      return
-    }
-  }
-  let json = @cli.serialize_report(report, config)
-  match config.output_path {
-    Some(path) =>
-      @fs.write_string_to_file(
-        path,
-        if config.agent_projection {
-          json + "\n"
-        } else {
-          json
-        },
-        encoding="utf8",
-      ) catch {
-        error => {
-          write_error("Failed to write \{path}: \{error}")
-          @sys.exit(2)
-        }
-      }
-    None => @stdio.stdout.write(json + "\n")
-  }
-  match config.html_path {
-    Some(path) => {
-      let html = @lib.render_html_report(before_svg, after_svg, report)
-      @fs.write_string_to_file(path, html, encoding="utf8") catch {
-        error => {
-          write_error("Failed to write \{path}: \{error}")
-          @sys.exit(2)
-        }
-      }
-    }
-    None => ()
-  }
-  match config.summary_path {
-    Some(path) => {
-      let summary = @lib.render_markdown_summary(report)
-      @fs.write_string_to_file(path, summary, encoding="utf8") catch {
-        error => {
-          write_error("Failed to write \{path}: \{error}")
-          @sys.exit(2)
-        }
-      }
-    }
-    None => ()
-  }
-  if report.analysis_status == "failed" {
-    @sys.exit(1)
+  let code = run(@sys.get_cli_args())
+  if code != 0 {
+    @sys.exit(code)
   }
 }
