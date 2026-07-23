@@ -13,24 +13,19 @@
 // limitations under the License.
 
 ///|
-priv enum ResourceInputResult {
-  LoadedResourceBundle(@svgdiff.ResourceBundle)
-  ResourceInputError(String)
+priv suberror InputError {
+  InputError(String)
 }
 
 ///|
-fn read_svg(path : String) -> Result[String, String] {
+fn read_svg(path : String) -> String raise InputError {
   if path == "-" {
-    try @miniio.stdin.read_all().text() catch {
-      error => Err("Failed to read stdin: \{error}")
-    } noraise {
-      source => Ok(source)
+    @miniio.stdin.read_all().text() catch {
+      error => raise InputError("Failed to read stdin: \{error}")
     }
   } else {
-    try @miniio.read_text_file(path) catch {
-      error => Err("Failed to read \{path}: \{error}")
-    } noraise {
-      source => Ok(source)
+    @miniio.read_text_file(path) catch {
+      error => raise InputError("Failed to read \{path}: \{error}")
     }
   }
 }
@@ -38,14 +33,12 @@ fn read_svg(path : String) -> Result[String, String] {
 ///|
 fn read_resource_bundle(
   resources : Array[@cli.Resource],
-) -> ResourceInputResult {
+) -> @svgdiff.ResourceBundle raise InputError {
   let entries : Array[@svgdiff.ResourceBundleEntry] = []
   for resource in resources {
     let bytes = @miniio.read_file(resource.path).binary() catch {
       error =>
-        return ResourceInputError(
-          "Failed to read resource \{resource.path}: \{error}",
-        )
+        raise InputError("Failed to read resource \{resource.path}: \{error}")
     }
     entries.push({
       locator: resource.locator,
@@ -53,7 +46,7 @@ fn read_resource_bundle(
       bytes,
     })
   }
-  LoadedResourceBundle({ entries, })
+  { entries, }
 }
 
 ///|
@@ -72,41 +65,36 @@ fn main {
       return
     }
   }
-  let config = match @cli.parse(args) {
-    Ok(config) => config
-    Err(message) => {
+  let config = @cli.parse(args) catch {
+    InvalidArguments(message) => {
       write_error(message)
       @miniio.exit(2)
       return
     }
   }
-  let before_svg = match read_svg(config.before_path) {
-    Ok(source) => source
-    Err(message) => {
+  let before_svg = read_svg(config.before_path) catch {
+    InputError(message) => {
       write_error(message)
       @miniio.exit(2)
       return
     }
   }
-  let after_svg = match read_svg(config.after_path) {
-    Ok(source) => source
-    Err(message) => {
+  let after_svg = read_svg(config.after_path) catch {
+    InputError(message) => {
       write_error(message)
       @miniio.exit(2)
       return
     }
   }
-  let before_resources = match read_resource_bundle(config.before_resources) {
-    LoadedResourceBundle(bundle) => bundle
-    ResourceInputError(message) => {
+  let before_resources = read_resource_bundle(config.before_resources) catch {
+    InputError(message) => {
       write_error(message)
       @miniio.exit(2)
       return
     }
   }
-  let after_resources = match read_resource_bundle(config.after_resources) {
-    LoadedResourceBundle(bundle) => bundle
-    ResourceInputError(message) => {
+  let after_resources = read_resource_bundle(config.after_resources) catch {
+    InputError(message) => {
       write_error(message)
       @miniio.exit(2)
       return

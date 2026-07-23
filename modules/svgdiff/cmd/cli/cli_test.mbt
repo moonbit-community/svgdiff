@@ -13,6 +13,19 @@
 // limitations under the License.
 
 ///|
+fn assert_parse_error(args : Array[String], expected? : String) -> Unit raise {
+  try @cli.parse(args) catch {
+    InvalidArguments(message) =>
+      match expected {
+        Some(expected) => assert_eq(message, expected)
+        None => ()
+      }
+  } noraise {
+    _ => fail("expected CLI parsing to raise InvalidArguments")
+  }
+}
+
+///|
 test "CLI parses paths viewport and output" {
   let config = @cli.parse([
     "svgdiff", "before.svg", "after.svg", "--width", "32", "--height", "24", "--output",
@@ -23,154 +36,124 @@ test "CLI parses paths viewport and output" {
     "--perceptual-background", "#336699", "--flip-pixels-per-degree", "67", "--flip-error-threshold",
     "0.05", "--max-checkpoints", "8192",
   ])
-  match config {
-    Ok(config) => {
-      assert_eq(config.before_path, "before.svg")
-      assert_eq(config.after_path, "after.svg")
-      assert_eq(config.width, 32)
-      assert_eq(config.height, 24)
-      assert_eq(config.output_path, Some("report.json"))
-      assert_eq(config.html_path, Some("report.html"))
-      assert_eq(config.summary_path, Some("summary.md"))
-      assert_true(config.agent_json)
-      assert_false(config.agent_projection)
-      assert_eq(config.max_checkpoints, Some(8192))
-      assert_eq(config.before_resources.length(), 2)
-      assert_eq(config.before_resources[0].locator, "asset.png")
-      assert_eq(config.before_resources[0].media_type, "image/png")
-      assert_eq(config.before_resources[0].path, "before.png")
-      assert_eq(config.before_resources[1].locator, "mask.png")
-      assert_eq(config.before_resources[1].path, "before-mask.png")
-      assert_eq(config.after_resources.length(), 1)
-      assert_eq(config.after_resources[0].path, "after.png")
-      guard config.perceptual_background is Some(background) else {
-        fail("expected parsed Perceptual Background")
-      }
-      assert_eq(background.red(), 51)
-      assert_eq(background.green(), 102)
-      assert_eq(background.blue(), 153)
-      guard config.flip_viewing_conditions is Some(viewing) else {
-        fail("expected parsed FLIP Viewing Conditions")
-      }
-      assert_eq(viewing.pixels_per_degree(), 67.0)
-      guard config.flip_error_threshold is Some(threshold) else {
-        fail("expected parsed FLIP error threshold")
-      }
-      assert_eq(threshold.value(), 0.05)
-    }
-    Err(message) => fail("expected valid CLI configuration: \{message}")
+  assert_eq(config.before_path, "before.svg")
+  assert_eq(config.after_path, "after.svg")
+  assert_eq(config.width, 32)
+  assert_eq(config.height, 24)
+  assert_eq(config.output_path, Some("report.json"))
+  assert_eq(config.html_path, Some("report.html"))
+  assert_eq(config.summary_path, Some("summary.md"))
+  assert_true(config.agent_json)
+  assert_false(config.agent_projection)
+  assert_eq(config.max_checkpoints, Some(8192))
+  assert_eq(config.before_resources.length(), 2)
+  assert_eq(config.before_resources[0].locator, "asset.png")
+  assert_eq(config.before_resources[0].media_type, "image/png")
+  assert_eq(config.before_resources[0].path, "before.png")
+  assert_eq(config.before_resources[1].locator, "mask.png")
+  assert_eq(config.before_resources[1].path, "before-mask.png")
+  assert_eq(config.after_resources.length(), 1)
+  assert_eq(config.after_resources[0].path, "after.png")
+  guard config.perceptual_background is Some(background) else {
+    fail("expected parsed Perceptual Background")
   }
+  assert_eq(background.red(), 51)
+  assert_eq(background.green(), 102)
+  assert_eq(background.blue(), 153)
+  guard config.flip_viewing_conditions is Some(viewing) else {
+    fail("expected parsed FLIP Viewing Conditions")
+  }
+  assert_eq(viewing.pixels_per_degree(), 67.0)
+  guard config.flip_error_threshold is Some(threshold) else {
+    fail("expected parsed FLIP error threshold")
+  }
+  assert_eq(threshold.value(), 0.05)
 }
 
 ///|
 test "CLI keeps canonical JSON as the default" {
-  match @cli.parse(["svgdiff", "before.svg", "after.svg"]) {
-    Ok(config) => {
-      assert_false(config.agent_json)
-      assert_false(config.agent_projection)
-      assert_true(config.summary_path is None)
-      assert_true(config.max_checkpoints is None)
-    }
-    Err(message) => fail("expected default configuration: \{message}")
-  }
+  let config = @cli.parse(["svgdiff", "before.svg", "after.svg"])
+  assert_false(config.agent_json)
+  assert_false(config.agent_projection)
+  assert_true(config.summary_path is None)
+  assert_true(config.max_checkpoints is None)
 }
 
 ///|
 test "CLI selects one lossless Agent projection mode" {
-  match
-    @cli.parse(["svgdiff", "before.svg", "after.svg", "--agent-projection"]) {
-    Ok(config) => {
-      assert_false(config.agent_json)
-      assert_true(config.agent_projection)
-    }
-    Err(message) => fail("expected Agent projection configuration: \{message}")
-  }
-  assert_true(
-    @cli.parse([
-      "svgdiff", "before.svg", "after.svg", "--agent-json", "--agent-projection",
-    ])
-    is Err(_),
-  )
+  let config = @cli.parse([
+    "svgdiff", "before.svg", "after.svg", "--agent-projection",
+  ])
+  assert_false(config.agent_json)
+  assert_true(config.agent_projection)
+  assert_parse_error([
+    "svgdiff", "before.svg", "after.svg", "--agent-json", "--agent-projection",
+  ])
 }
 
 ///|
 test "CLI records a FLIP error threshold without inventing Viewing Conditions" {
-  match
-    @cli.parse([
-      "svgdiff", "before.svg", "after.svg", "--flip-error-threshold", "0.25",
-    ]) {
-    Ok(config) => {
-      assert_true(config.flip_viewing_conditions is None)
-      guard config.flip_error_threshold is Some(threshold) else {
-        fail("expected parsed FLIP error threshold")
-      }
-      assert_eq(threshold.value(), 0.25)
-    }
-    Err(message) => fail("expected threshold-only configuration: \{message}")
+  let config = @cli.parse([
+    "svgdiff", "before.svg", "after.svg", "--flip-error-threshold", "0.25",
+  ])
+  assert_true(config.flip_viewing_conditions is None)
+  guard config.flip_error_threshold is Some(threshold) else {
+    fail("expected parsed FLIP error threshold")
   }
+  assert_eq(threshold.value(), 0.25)
 }
 
 ///|
 test "CLI rejects missing and invalid arguments" {
-  assert_true(@cli.parse([]) is Err(_))
-  assert_true(@cli.parse(["svgdiff"]) is Err(_))
-  assert_true(
-    @cli.parse(["svgdiff", "a.svg", "b.svg", "--width", "0"]) is Err(_),
+  assert_parse_error([])
+  assert_parse_error(["svgdiff"])
+  assert_parse_error(
+    ["svgdiff", "a.svg", "b.svg", "--width", "0"],
+    expected="--width requires a positive integer",
   )
-  assert_true(
-    @cli.parse(["svgdiff", "a.svg", "b.svg", "--unknown", "x"]) is Err(_),
-  )
-  assert_true(
-    @cli.parse([
-      "svgdiff", "a.svg", "b.svg", "--perceptual-background", "transparent",
-    ])
-    is Err(_),
+  assert_parse_error(["svgdiff", "a.svg", "b.svg", "--unknown", "x"])
+  assert_parse_error(
+    ["svgdiff", "a.svg", "b.svg", "--perceptual-background", "transparent"],
+    expected="--perceptual-background requires an opaque deterministic sRGB color",
   )
   for value in ["0", "4097", "nan", "inf", "invalid"] {
-    assert_true(
-      @cli.parse([
-        "svgdiff", "a.svg", "b.svg", "--flip-pixels-per-degree", value,
-      ])
-      is Err(_),
+    assert_parse_error(
+      ["svgdiff", "a.svg", "b.svg", "--flip-pixels-per-degree", value],
+      expected="--flip-pixels-per-degree requires a finite number in [1, 4096]",
     )
   }
   for value in ["-0.001", "1.001", "nan", "inf", "invalid"] {
-    assert_true(
-      @cli.parse(["svgdiff", "a.svg", "b.svg", "--flip-error-threshold", value])
-      is Err(_),
+    assert_parse_error(
+      ["svgdiff", "a.svg", "b.svg", "--flip-error-threshold", value],
+      expected="--flip-error-threshold requires a finite number in [0, 1]",
     )
   }
-  assert_true(@cli.parse(["svgdiff", "-", "-"]) is Err(_))
-  assert_true(
-    @cli.parse([
-      "svgdiff", "a.svg", "b.svg", "--before-resource", "{\"locator\":\"asset\"}",
-    ])
-    is Err(_),
+  assert_parse_error(
+    ["svgdiff", "-", "-"],
+    expected="Only one SVG input may use stdin (-)",
   )
-  assert_true(
-    @cli.parse([
+  assert_parse_error(
+    [
+      "svgdiff", "a.svg", "b.svg", "--before-resource", "{\"locator\":\"asset\"}",
+    ],
+    expected="--before-resource requires a JSON object with string locator, media_type, and path fields",
+  )
+  assert_parse_error(
+    [
       "svgdiff", "a.svg", "b.svg", "--before-resource", "{\"locator\":\"asset\",\"media_type\":\"image/png\",\"path\":\"-\"}",
-    ])
-    is Err(_),
+    ],
+    expected="Resource path may not use stdin (-)",
   )
 }
 
 ///|
 test "CLI accepts one explicit stdin operand" {
-  match @cli.parse(["svgdiff", "-", "after.svg"]) {
-    Ok(config) => {
-      assert_eq(config.before_path, "-")
-      assert_eq(config.after_path, "after.svg")
-    }
-    Err(message) => fail("expected before stdin: \{message}")
-  }
-  match @cli.parse(["svgdiff", "before.svg", "-"]) {
-    Ok(config) => {
-      assert_eq(config.before_path, "before.svg")
-      assert_eq(config.after_path, "-")
-    }
-    Err(message) => fail("expected after stdin: \{message}")
-  }
+  let before_stdin = @cli.parse(["svgdiff", "-", "after.svg"])
+  assert_eq(before_stdin.before_path, "-")
+  assert_eq(before_stdin.after_path, "after.svg")
+  let after_stdin = @cli.parse(["svgdiff", "before.svg", "-"])
+  assert_eq(after_stdin.before_path, "before.svg")
+  assert_eq(after_stdin.after_path, "-")
 }
 
 ///|
@@ -204,7 +187,16 @@ test "CLI help documents options and exit statuses" {
 test "CLI version exposes every contract identity" {
   assert_eq(
     @cli.version_text("svgdiff"),
-    "svgdiff 0.7.0\nengine: 0.7.0\nschema: 2.0\nagent-projection: svgdiff-agent-projection/1\nrenderer: svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1\nrenderer-conformance-profile: svgdiff-renderer-conformance-profile/27\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1",
+    (
+      #|svgdiff 0.7.0
+      #|engine: 0.7.0
+      #|schema: 2.0
+      #|agent-projection: svgdiff-agent-projection/1
+      #|renderer: svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1
+      #|renderer-conformance-profile: svgdiff-renderer-conformance-profile/27
+      #|ordering-policy: v2_domain_lexicographic
+      #|impact-policy: event_rendered_pareto/v1
+    ),
   )
 }
 
@@ -212,9 +204,6 @@ test "CLI version exposes every contract identity" {
 test "program name does not change the CLI contract" {
   let native = @cli.parse(["svgdiff", "before.svg", "after.svg"])
   let miniio = @cli.parse(["svgdiff_miniio", "before.svg", "after.svg"])
-  guard (native, miniio) is (Ok(native), Ok(miniio)) else {
-    fail("expected both executable names to use the shared CLI contract")
-  }
   assert_eq(native.before_path, miniio.before_path)
   assert_eq(native.after_path, miniio.after_path)
   assert_eq(native.width, miniio.width)
@@ -224,11 +213,9 @@ test "program name does not change the CLI contract" {
 
 ///|
 test "shared CLI comparison emits selected Agent JSON" {
-  let config = match
-    @cli.parse(["svgdiff_miniio", "before.svg", "after.svg", "--agent-json"]) {
-    Ok(config) => config
-    Err(message) => fail("expected valid config: \{message}")
-  }
+  let config = @cli.parse([
+    "svgdiff_miniio", "before.svg", "after.svg", "--agent-json",
+  ])
   let report = @cli.compare_sources(
     "<svg width='16' height='16'><rect x='1' y='1' width='8' height='8' fill='red'/></svg>",
     "<svg width='16' height='16'><rect x='1' y='1' width='8' height='8' fill='blue'/></svg>",

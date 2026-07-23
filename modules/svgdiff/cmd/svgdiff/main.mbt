@@ -13,43 +13,32 @@
 // limitations under the License.
 
 ///|
-priv enum SvgInputResult {
-  SvgSource(String)
+priv suberror InputError {
   InputError(String)
 }
 
 ///|
-priv enum ResourceInputResult {
-  LoadedResourceBundle(@lib.ResourceBundle)
-  ResourceInputError(String)
-}
-
-///|
-async fn read_svg(path : String) -> SvgInputResult {
+async fn read_svg(path : String) -> String {
   if path == "-" {
-    let source = @stdio.stdin.read_all().text() catch {
-        error => return InputError("Failed to read stdin: \{error}")
-      }
-    return SvgSource(source)
-  }
-  try @fs.read_file_to_string(path, encoding="utf8") catch {
-    error => InputError("Failed to read \{path}: \{error}")
-  } noraise {
-    source => SvgSource(source)
+    @stdio.stdin.read_all().text() catch {
+      error => raise InputError("Failed to read stdin: \{error}")
+    }
+  } else {
+    @fs.read_file_to_string(path, encoding="utf8") catch {
+      error => raise InputError("Failed to read \{path}: \{error}")
+    }
   }
 }
 
 ///|
 fn read_resource_bundle(
   resources : Array[@cli.Resource],
-) -> ResourceInputResult {
+) -> @lib.ResourceBundle raise InputError {
   let entries : Array[@lib.ResourceBundleEntry] = []
   for resource in resources {
     let bytes = @fs.read_file_to_bytes(resource.path) catch {
       error =>
-        return ResourceInputError(
-          "Failed to read resource \{resource.path}: \{error}",
-        )
+        raise InputError("Failed to read resource \{resource.path}: \{error}")
     }
     entries.push({
       locator: resource.locator,
@@ -57,7 +46,7 @@ fn read_resource_bundle(
       bytes,
     })
   }
-  LoadedResourceBundle({ entries, })
+  { entries, }
 }
 
 ///|
@@ -68,41 +57,46 @@ async fn write_error(message : String) -> Unit {
 ///|
 async fn main {
   let args = @sys.get_cli_args()
-  let config = match @cli.parse(args) {
-    Ok(config) => config
-    Err(message) => {
+  let config = @cli.parse(args) catch {
+    InvalidArguments(message) => {
       write_error(message)
       @sys.exit(2)
       return
     }
   }
-  let before_svg = match read_svg(config.before_path) {
-    SvgSource(source) => source
+  let before_svg = read_svg(config.before_path) catch {
+    InputError(message) => {
+      write_error(message)
+      @sys.exit(2)
+      return
+    }
+    error => {
+      write_error("Failed to read before SVG: \{error}")
+      @sys.exit(2)
+      return
+    }
+  }
+  let after_svg = read_svg(config.after_path) catch {
+    InputError(message) => {
+      write_error(message)
+      @sys.exit(2)
+      return
+    }
+    error => {
+      write_error("Failed to read after SVG: \{error}")
+      @sys.exit(2)
+      return
+    }
+  }
+  let before_resources = read_resource_bundle(config.before_resources) catch {
     InputError(message) => {
       write_error(message)
       @sys.exit(2)
       return
     }
   }
-  let after_svg = match read_svg(config.after_path) {
-    SvgSource(source) => source
+  let after_resources = read_resource_bundle(config.after_resources) catch {
     InputError(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-  }
-  let before_resources = match read_resource_bundle(config.before_resources) {
-    LoadedResourceBundle(bundle) => bundle
-    ResourceInputError(message) => {
-      write_error(message)
-      @sys.exit(2)
-      return
-    }
-  }
-  let after_resources = match read_resource_bundle(config.after_resources) {
-    LoadedResourceBundle(bundle) => bundle
-    ResourceInputError(message) => {
       write_error(message)
       @sys.exit(2)
       return

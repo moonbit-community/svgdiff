@@ -39,6 +39,11 @@ pub(all) struct Config {
 }
 
 ///|
+pub(all) suberror CliError {
+  InvalidArguments(String)
+}
+
+///|
 pub fn version_text(command_name : String) -> String {
   let profile = @svgdiff.ComparisonProfile::v1_default()
   (
@@ -183,44 +188,51 @@ pub fn command(name : String) -> @argparse.Command {
 }
 
 ///|
-fn parse_positive_int(value : String, option : String) -> Result[Int, String] {
+fn parse_positive_int(value : String, option : String) -> Int raise CliError {
   let parsed = @string.parse_int(value) catch {
-    _ => return Err("\{option} requires a positive integer")
+    _ => raise InvalidArguments("\{option} requires a positive integer")
   }
-  if parsed > 0 {
-    Ok(parsed)
-  } else {
-    Err("\{option} requires a positive integer")
+  guard parsed > 0 else {
+    raise InvalidArguments("\{option} requires a positive integer")
   }
+  parsed
 }
 
 ///|
 fn parse_flip_viewing_conditions(
   value : String,
-) -> Result[@svgdiff.FlipViewingConditions, String] {
+) -> @svgdiff.FlipViewingConditions raise CliError {
   let parsed = @string.parse_double(value) catch {
     _ =>
-      return Err(
+      raise InvalidArguments(
         "--flip-pixels-per-degree requires a finite number in [1, 4096]",
       )
   }
   match @svgdiff.FlipViewingConditions::from_pixels_per_degree(parsed) {
-    Some(viewing) => Ok(viewing)
+    Some(viewing) => viewing
     None =>
-      Err("--flip-pixels-per-degree requires a finite number in [1, 4096]")
+      raise InvalidArguments(
+        "--flip-pixels-per-degree requires a finite number in [1, 4096]",
+      )
   }
 }
 
 ///|
 fn parse_flip_error_threshold(
   value : String,
-) -> Result[@svgdiff.FlipErrorThreshold, String] {
+) -> @svgdiff.FlipErrorThreshold raise CliError {
   let parsed = @string.parse_double(value) catch {
-    _ => return Err("--flip-error-threshold requires a finite number in [0, 1]")
+    _ =>
+      raise InvalidArguments(
+        "--flip-error-threshold requires a finite number in [0, 1]",
+      )
   }
   match @svgdiff.FlipErrorThreshold::from_value(parsed) {
-    Some(threshold) => Ok(threshold)
-    None => Err("--flip-error-threshold requires a finite number in [0, 1]")
+    Some(threshold) => threshold
+    None =>
+      raise InvalidArguments(
+        "--flip-error-threshold requires a finite number in [0, 1]",
+      )
   }
 }
 
@@ -233,7 +245,7 @@ fn optional_arg(values : Array[String]?) -> String? {
 }
 
 ///|
-fn parse_matches(matches : @argparse.Matches) -> Result[Config, String] {
+fn parse_matches(matches : @argparse.Matches) -> Config raise CliError {
   guard matches.values
     is {
       "before": [before_path],
@@ -251,26 +263,20 @@ fn parse_matches(matches : @argparse.Matches) -> Result[Config, String] {
       "summary"? : summary_arg,
       ..
     } else {
-    return Err("Invalid command arguments")
+    raise InvalidArguments("Invalid command arguments")
   }
   let { "agent-json"? : agent_json, "agent-projection"? : agent_projection, .. } = matches.flags
   if before_path == "-" && after_path == "-" {
-    return Err("Only one SVG input may use stdin (-)")
+    raise InvalidArguments("Only one SVG input may use stdin (-)")
   }
-  let width = match parse_positive_int(width_text, "--width") {
-    Ok(value) => value
-    Err(message) => return Err(message)
-  }
-  let height = match parse_positive_int(height_text, "--height") {
-    Ok(value) => value
-    Err(message) => return Err(message)
-  }
+  let width = parse_positive_int(width_text, "--width")
+  let height = parse_positive_int(height_text, "--height")
   let perceptual_background = match optional_arg(perceptual_background_arg) {
     Some(value) =>
       match @svgdiff.PerceptualBackground::parse_srgb(value) {
         Some(background) => Some(background)
         None =>
-          return Err(
+          raise InvalidArguments(
             "--perceptual-background requires an opaque deterministic sRGB color",
           )
       }
@@ -278,40 +284,22 @@ fn parse_matches(matches : @argparse.Matches) -> Result[Config, String] {
   }
   let flip_viewing_conditions = match
     optional_arg(flip_viewing_conditions_arg) {
-    Some(value) =>
-      match parse_flip_viewing_conditions(value) {
-        Ok(viewing) => Some(viewing)
-        Err(message) => return Err(message)
-      }
+    Some(value) => Some(parse_flip_viewing_conditions(value))
     None => None
   }
   let flip_error_threshold = match optional_arg(flip_error_threshold_arg) {
-    Some(value) =>
-      match parse_flip_error_threshold(value) {
-        Ok(threshold) => Some(threshold)
-        Err(message) => return Err(message)
-      }
+    Some(value) => Some(parse_flip_error_threshold(value))
     None => None
   }
   let max_checkpoints = match optional_arg(max_checkpoints_arg) {
-    Some(value) =>
-      match parse_positive_int(value, "--max-checkpoints") {
-        Ok(value) => Some(value)
-        Err(message) => return Err(message)
-      }
+    Some(value) => Some(parse_positive_int(value, "--max-checkpoints"))
     None => None
   }
-  let before_resources = match
-    parse_resources(before_resource_args, "--before-resource") {
-    Ok(resources) => resources
-    Err(message) => return Err(message)
-  }
-  let after_resources = match
-    parse_resources(after_resource_args, "--after-resource") {
-    Ok(resources) => resources
-    Err(message) => return Err(message)
-  }
-  Ok({
+  let before_resources = parse_resources(
+    before_resource_args, "--before-resource",
+  )
+  let after_resources = parse_resources(after_resource_args, "--after-resource")
+  {
     before_path,
     after_path,
     output_path: optional_arg(output_arg),
@@ -327,40 +315,40 @@ fn parse_matches(matches : @argparse.Matches) -> Result[Config, String] {
     before_resources,
     after_resources,
     max_checkpoints,
-  })
+  }
 }
 
 ///|
 fn parse_resources(
   values : Array[String]?,
   option : String,
-) -> Result[Array[Resource], String] {
+) -> Array[Resource] raise CliError {
   let resources : Array[Resource] = []
   match values {
     Some(values) =>
       for value in values {
         let resource : Resource = @json.from_json(@json.parse(value)) catch {
           _ =>
-            return Err(
+            raise InvalidArguments(
               "\{option} requires a JSON object with string locator, media_type, and path fields",
             )
         }
         if resource.path == "-" {
-          return Err("Resource path may not use stdin (-)")
+          raise InvalidArguments("Resource path may not use stdin (-)")
         }
         resources.push(resource)
       }
     None => ()
   }
-  Ok(resources)
+  resources
 }
 
 ///|
-pub fn parse(args : Array[String]) -> Result[Config, String] {
+pub fn parse(args : Array[String]) -> Config raise CliError {
   let name = program_name(args)
   let argv = if args.length() > 0 { args[1:] } else { args[:] }
   let matches = command(name).parse(argv~) catch {
-    error => return Err(error.to_string())
+    error => raise InvalidArguments(error.to_string())
   }
   parse_matches(matches)
 }
