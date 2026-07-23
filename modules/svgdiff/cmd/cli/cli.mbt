@@ -41,7 +41,16 @@ pub(all) struct Config {
 ///|
 pub fn version_text(command_name : String) -> String {
   let profile = @svgdiff.ComparisonProfile::v1_default()
-  "\{command_name} 0.7.0\nengine: 0.7.0\nschema: 2.0\nagent-projection: svgdiff-agent-projection/1\nrenderer: \{profile.renderer_id}\nrenderer-conformance-profile: \{profile.renderer_conformance_profile_id}\nordering-policy: v2_domain_lexicographic\nimpact-policy: event_rendered_pareto/v1"
+  (
+    $|\{command_name} 0.7.0
+    $|engine: 0.7.0
+    $|schema: 2.0
+    $|agent-projection: svgdiff-agent-projection/1
+    $|renderer: \{profile.renderer_id}
+    $|renderer-conformance-profile: \{profile.renderer_conformance_profile_id}
+    $|ordering-policy: v2_domain_lexicographic
+    $|impact-policy: event_rendered_pareto/v1
+  )
 }
 
 ///|
@@ -79,7 +88,7 @@ fn input_positionals() -> Array[@argparse.PositionArg] {
 
 ///|
 fn command_options() -> Array[@argparse.OptionArg] {
-  let options : Array[@argparse.OptionArg] = [
+  [
     OptionArg(
       "width",
       about="Comparison viewport width in CSS pixels",
@@ -92,85 +101,69 @@ fn command_options() -> Array[@argparse.OptionArg] {
       default_values=["16"],
       allow_hyphen_values=true,
     ),
-  ]
-  options.push(
     OptionArg(
       "max-checkpoints",
       about="Optional deterministic computation budget",
       allow_hyphen_values=true,
     ),
-  )
-  options.push(
     OptionArg(
       "perceptual-background",
       about="Record one explicit opaque deterministic sRGB background",
       allow_hyphen_values=true,
     ),
-  )
-  options.push(
     OptionArg(
       "flip-pixels-per-degree",
       about="Request LDR-FLIP with supported PPD in [1, 4096]",
       allow_hyphen_values=true,
     ),
-  )
-  options.push(
     OptionArg(
       "flip-error-threshold",
       about="Report FLIP area strictly above an explicit value in [0, 1]",
       allow_hyphen_values=true,
     ),
-  )
-  options.push(
     OptionArg(
       "before-resource",
       about="Supply one before-side resource JSON object",
       action=Append,
     ),
-  )
-  options.push(
     OptionArg(
       "after-resource",
       about="Supply one after-side resource JSON object",
       action=Append,
     ),
-  )
-  options.push(
     OptionArg(
       "output",
       about="Write JSON or Agent projection JSONL to FILE",
       allow_hyphen_values=true,
     ),
-  )
-  options.push(
     OptionArg(
       "html",
       about="Also write the self-contained HTML presentation",
       allow_hyphen_values=true,
     ),
-  )
-  options.push(
     OptionArg(
       "summary",
       about="Also write a derived non-authoritative Markdown summary",
       allow_hyphen_values=true,
     ),
-  )
-  options
+  ]
 }
 
 ///|
 pub fn command(name : String) -> @argparse.Command {
   Command(
     name,
-    about="Compare two deterministic static SVG files and emit Structured Report JSON.\n" +
-      "Use - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option." +
-      "\n\n" +
-      "Each --before-resource or --after-resource accepts one JSON object with locator, media_type, and path string fields.\n\n" +
-      "Exit status:\n" +
-      "  0  Complete or partial report produced\n" +
-      "  1  Analysis failed or the deterministic checkpoint budget was exhausted\n" +
-      "  2  Invalid arguments or file I/O failure",
+    about=(
+      #|Compare two deterministic static SVG files and emit Structured Report JSON.
+      #|Use - for exactly one input to read that SVG from stdin. Resource files are read only when named by an explicit resource option.
+      #|
+      #|Each --before-resource or --after-resource accepts one JSON object with locator, media_type, and path string fields.
+      #|
+      #|Exit status:
+      #|  0  Complete or partial report produced
+      #|  1  Analysis failed or the deterministic checkpoint budget was exhausted
+      #|  2  Invalid arguments or file I/O failure
+    ),
     version=version_text(name),
     positionals=input_positionals(),
     flags=[
