@@ -31,7 +31,7 @@ Reports must validate against their declared JSON Schema before evaluation. A sc
 ```text
 Read the SVG Diff Structured Report and return an evidence-grounded comparison.
 
-First state whether the report establishes a complete comparison, a partial comparison, or a failed analysis. Name every serialized limitation. Then identify every item in every difference group, including effective-equivalent and measured-zero differences. For each difference, report its kind, subject, authored before/after values, effective relation, available magnitude with units, event location when available, and possible changed causes. Distinguish a sound over-approximation from unproven causation. Use the independent measurements to explain visually large changes without inventing a universal score or total order. Cite the report IDs supporting each claim. Never treat an omitted, limited, or indeterminate value as zero.
+First state whether the report establishes a complete comparison, a partial comparison, or a failed analysis. Name every serialized limitation. Then identify every item in every difference group, including effective-equivalent differences and differences whose owning event has a measured-zero outcome. For each difference, report its kind, subject, local authored before/after values, effective relation, available direct magnitude with units, owning-event outcome and shared isolated-subject measurements, event location when available, and possible changed causes. Distinguish a sound over-approximation from unproven causation. Use the independent measurements to explain visually large changes without inventing a universal score or total order. Cite the report IDs supporting each claim. Never treat an omitted, limited, or indeterminate value as zero.
 ```
 
 The harness may request JSON or natural language, but it must preserve every required answer component below. Machine scoring should use the answer record; natural-language quality is not part of this contract.
@@ -52,7 +52,7 @@ The normalized answer record contains:
 | Differences | One entry for every reported Atomic Difference, including source-only and zero-rendered differences | `difference_groups[].items` |
 | Kind | Category, semantic kind, and authored before/after values | difference group, `kind`, `source` |
 | Subject | The affected subject and role | `subject`, `subject_role`, event references |
-| Magnitude | Every available exact measurement with its unit; explicit indeterminate state where relevant | `magnitude`, event `outcome`, `limitations` |
+| Magnitude | Every available direct atomic measurement and every owning-event rendered or shared isolated-subject measurement with its unit; explicit indeterminate state where relevant | `magnitude`, event `outcome`, `limitations` |
 | Location | Region IDs and CSS-space bounds or an explicit statement that no location was computed | `events[].regions` |
 | Possible causes | Candidate scope, explicit Atomic Difference IDs when event-local, guarantee, coverage, and limitation IDs | `regions[].possible_causes` |
 | Main changes | An ordered subset with evidence-based rationale and explicit ambiguity when cross-domain ordering is not defined | events, magnitudes, regions |

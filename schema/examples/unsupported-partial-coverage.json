@@ -23,8 +23,8 @@
           "subject_role": "entity",
           "kind": "geometry.path.parameter",
           "source": {
-            "before": "M2 2 L14 14",
-            "after": "M2 14 L14 2"
+            "before": "M2 2",
+            "after": "M2 14"
           },
           "effective": {
             "relation": "different"
@@ -35,23 +35,7 @@
             "symmetric_relative": 1.5,
             "parameter_abs_css_px": 12,
             "parameter_viewport_fraction": 0.5303300858899106,
-            "parameter_entity_fraction": 0.4242640687119285,
-            "geometry_displacement_css_px": 7.0710678118654755,
-            "painted_boundary_displacement": {
-              "mean_css_px": 3.759401614608872,
-              "p95_css_px": 7.0710678118654755,
-              "max_css_px": 7.0710678118654755
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 33.937254901960785,
-              "after_css_px2": 33.937254901960785,
-              "absolute_difference_css_px2": 59.874509803921576,
-              "union_css_px2": 63.874509803921576,
-              "fraction": 0.93737721021611
-            },
-            "geometry_viewport_fraction": 0.3125,
-            "raster_changed_fraction": 0.4375,
-            "raster_linear_rgba_rmse": 0.21673971242293488
+            "parameter_entity_fraction": 0.4242640687119285
           }
         },
         {
@@ -60,8 +44,8 @@
           "subject_role": "entity",
           "kind": "geometry.path.parameter",
           "source": {
-            "before": "M2 2 L14 14",
-            "after": "M2 14 L14 2"
+            "before": "L14 14",
+            "after": "L14 2"
           },
           "effective": {
             "relation": "different"
@@ -72,23 +56,7 @@
             "symmetric_relative": 1.5,
             "parameter_abs_css_px": 12,
             "parameter_viewport_fraction": 0.5303300858899106,
-            "parameter_entity_fraction": 0.4242640687119285,
-            "geometry_displacement_css_px": 7.0710678118654755,
-            "painted_boundary_displacement": {
-              "mean_css_px": 3.759401614608872,
-              "p95_css_px": 7.0710678118654755,
-              "max_css_px": 7.0710678118654755
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 33.937254901960785,
-              "after_css_px2": 33.937254901960785,
-              "absolute_difference_css_px2": 59.874509803921576,
-              "union_css_px2": 63.874509803921576,
-              "fraction": 0.93737721021611
-            },
-            "geometry_viewport_fraction": 0.3125,
-            "raster_changed_fraction": 0.4375,
-            "raster_linear_rgba_rmse": 0.21673971242293488
+            "parameter_entity_fraction": 0.4242640687119285
           }
         }
       ]
@@ -106,7 +74,21 @@
         "status": "computed",
         "changed_pixels": 112,
         "changed_fraction": 0.4375,
-        "linear_rgba_rmse": 0.21673971242293488
+        "linear_rgba_rmse": 0.21673971242293488,
+        "isolated_subject": {
+          "painted_boundary_displacement": {
+            "mean_css_px": 3.759401614608872,
+            "p95_css_px": 7.0710678118654755,
+            "max_css_px": 7.0710678118654755
+          },
+          "painted_coverage_difference": {
+            "before_css_px2": 33.937254901960785,
+            "after_css_px2": 33.937254901960785,
+            "absolute_difference_css_px2": 59.874509803921576,
+            "union_css_px2": 63.874509803921576,
+            "fraction": 0.93737721021611
+          }
+        }
       },
       "regions": [
         {

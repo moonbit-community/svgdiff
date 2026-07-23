@@ -36,17 +36,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_coverage_difference": {
-              "before_css_px2": 144,
-              "after_css_px2": 144,
-              "absolute_difference_css_px2": 0,
-              "union_css_px2": 144,
-              "fraction": 0
-            },
-            "raster_changed_fraction": 0.5625,
-            "raster_linear_rgba_rmse": 0.5303300858899106
           }
         }
       ]
@@ -77,6 +66,15 @@
             "threshold": 0.05,
             "pixel_count": 244,
             "canvas_fraction": 0.953125
+          }
+        },
+        "isolated_subject": {
+          "painted_coverage_difference": {
+            "before_css_px2": 144,
+            "after_css_px2": 144,
+            "absolute_difference_css_px2": 0,
+            "union_css_px2": 144,
+            "fraction": 0
           }
         }
       },

@@ -74,6 +74,46 @@ def nested_value(value: Any, path: str) -> Any:
     return current
 
 
+def event_for_difference(
+    report: dict[str, Any], difference_id: str
+) -> dict[str, Any]:
+    matches = [
+        event
+        for event in report["events"]
+        if difference_id in event["difference_ids"]
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"{difference_id}: expected one owning Visual Event, got {len(matches)}"
+        )
+    return matches[0]
+
+
+def public_magnitude_value(
+    report: dict[str, Any],
+    difference: dict[str, Any],
+    path: str,
+) -> Any:
+    event = event_for_difference(report, difference["id"])
+    if path == "magnitude.raster_changed_fraction":
+        return event["outcome"]["changed_fraction"]
+    if path == "magnitude.raster_linear_rgba_rmse":
+        return event["outcome"]["linear_rgba_rmse"]
+    for prefix in (
+        "magnitude.painted_boundary_displacement.",
+        "magnitude.painted_coverage_difference.",
+    ):
+        if path.startswith(prefix):
+            try:
+                return nested_value(difference, path)
+            except KeyError:
+                return nested_value(
+                    event["outcome"]["isolated_subject"],
+                    path.removeprefix("magnitude."),
+                )
+    return nested_value(difference, path)
+
+
 def public_magnitude_path(path: str) -> str | None:
     removed = {
         "magnitude.painted_boundary_displacement.before_sample_count",
@@ -137,7 +177,7 @@ def assert_semantics(case: dict[str, Any], report: dict[str, Any]) -> None:
         if path is None:
             continue
         try:
-            actual_value = nested_value(item, path)
+            actual_value = public_magnitude_value(report, item, path)
         except KeyError as error:
             raise ValueError(f"{case['id']}: missing public magnitude {path}") from error
         expected_value = check["value"]
@@ -212,9 +252,13 @@ def assert_report_links(case: dict[str, Any], report: dict[str, Any]) -> None:
 
 def assert_representative_states(reports: dict[str, dict[str, Any]]) -> None:
     equivalent = differences(reports["equivalent-color-spelling"])[0]
+    event = event_for_difference(
+        reports["equivalent-color-spelling"], equivalent["id"]
+    )
     if not (
         equivalent["effective"]["relation"] == "equivalent"
-        and equivalent["magnitude"]["raster_changed_fraction"] == 0
+        and event["outcome"]["changed_fraction"] == 0
+        and event["outcome"]["linear_rgba_rmse"] == 0
     ):
         raise ValueError("effective-equivalent measured zero is not explicit")
     rendered_change = reports["salient-fill-change"]

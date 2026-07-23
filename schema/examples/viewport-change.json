@@ -28,17 +28,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_coverage_difference": {
-              "before_css_px2": 16,
-              "after_css_px2": 64,
-              "absolute_difference_css_px2": 62,
-              "union_css_px2": 71,
-              "fraction": 0.8732394366197183
-            },
-            "raster_changed_fraction": 0.2421875,
-            "raster_linear_rgba_rmse": 0.34798527267687634
           }
         }
       ]
@@ -57,22 +46,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_boundary_displacement": {
-              "mean_css_px": 2.9230450570062354,
-              "p95_css_px": 6.4031242374328485,
-              "max_css_px": 7.0710678118654755
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 16,
-              "after_css_px2": 64,
-              "absolute_difference_css_px2": 62,
-              "union_css_px2": 71,
-              "fraction": 0.8732394366197183
-            },
-            "raster_changed_fraction": 0.2421875,
-            "raster_linear_rgba_rmse": 0.34798527267687634
           }
         },
         {
@@ -88,20 +61,6 @@
             "relation": "different"
           },
           "magnitude": {
-            "painted_boundary_displacement": {
-              "mean_css_px": 2.9230450570062354,
-              "p95_css_px": 6.4031242374328485,
-              "max_css_px": 7.0710678118654755
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 16,
-              "after_css_px2": 64,
-              "absolute_difference_css_px2": 62,
-              "union_css_px2": 71,
-              "fraction": 0.8732394366197183
-            },
-            "raster_changed_fraction": 0.2421875,
-            "raster_linear_rgba_rmse": 0.34798527267687634,
             "transform": {
               "kind": "scale",
               "before_x": 1,
@@ -128,7 +87,21 @@
         "status": "computed",
         "changed_pixels": 62,
         "changed_fraction": 0.2421875,
-        "linear_rgba_rmse": 0.34798527267687634
+        "linear_rgba_rmse": 0.34798527267687634,
+        "isolated_subject": {
+          "painted_boundary_displacement": {
+            "mean_css_px": 2.9230450570062354,
+            "p95_css_px": 6.4031242374328485,
+            "max_css_px": 7.0710678118654755
+          },
+          "painted_coverage_difference": {
+            "before_css_px2": 16,
+            "after_css_px2": 64,
+            "absolute_difference_css_px2": 62,
+            "union_css_px2": 71,
+            "fraction": 0.8732394366197183
+          }
+        }
       },
       "regions": [
         {

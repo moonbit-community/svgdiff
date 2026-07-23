@@ -28,10 +28,6 @@
           },
           "effective": {
             "relation": "equivalent"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0,
-            "raster_linear_rgba_rmse": 0
           }
         },
         {
@@ -49,16 +45,7 @@
           "magnitude": {
             "parameter_abs_user_units": 0.375,
             "parameter_signed_user_units": -0.375,
-            "symmetric_relative": 1.2,
-            "painted_coverage_difference": {
-              "before_css_px2": 18.070588235294068,
-              "after_css_px2": 18.070588235294068,
-              "absolute_difference_css_px2": 0,
-              "union_css_px2": 18.070588235294068,
-              "fraction": 0
-            },
-            "raster_changed_fraction": 0,
-            "raster_linear_rgba_rmse": 0
+            "symmetric_relative": 1.2
           }
         }
       ]
@@ -76,7 +63,16 @@
         "status": "computed",
         "changed_pixels": 0,
         "changed_fraction": 0,
-        "linear_rgba_rmse": 0
+        "linear_rgba_rmse": 0,
+        "isolated_subject": {
+          "painted_coverage_difference": {
+            "before_css_px2": 18.070588235294068,
+            "after_css_px2": 18.070588235294068,
+            "absolute_difference_css_px2": 0,
+            "union_css_px2": 18.070588235294068,
+            "fraction": 0
+          }
+        }
       },
       "regions": []
     }

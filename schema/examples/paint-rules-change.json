@@ -28,17 +28,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_coverage_difference": {
-              "before_css_px2": 116.88627450980388,
-              "after_css_px2": 111.49019607843134,
-              "absolute_difference_css_px2": 5.3960784313725485,
-              "union_css_px2": 116.88627450980388,
-              "fraction": 0.04616520163725425
-            },
-            "raster_changed_fraction": 0.3125,
-            "raster_linear_rgba_rmse": 0.1890332336387133
           }
         },
         {
@@ -52,17 +41,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_coverage_difference": {
-              "before_css_px2": 116.88627450980388,
-              "after_css_px2": 111.49019607843134,
-              "absolute_difference_css_px2": 5.3960784313725485,
-              "union_css_px2": 116.88627450980388,
-              "fraction": 0.04616520163725425
-            },
-            "raster_changed_fraction": 0.3125,
-            "raster_linear_rgba_rmse": 0.1890332336387133
           }
         }
       ]
@@ -81,10 +59,6 @@
           },
           "effective": {
             "relation": "equivalent"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.3125,
-            "raster_linear_rgba_rmse": 0.1890332336387133
           }
         }
       ]
@@ -103,7 +77,16 @@
         "status": "computed",
         "changed_pixels": 80,
         "changed_fraction": 0.3125,
-        "linear_rgba_rmse": 0.1890332336387133
+        "linear_rgba_rmse": 0.1890332336387133,
+        "isolated_subject": {
+          "painted_coverage_difference": {
+            "before_css_px2": 116.88627450980388,
+            "after_css_px2": 111.49019607843134,
+            "absolute_difference_css_px2": 5.3960784313725485,
+            "union_css_px2": 116.88627450980388,
+            "fraction": 0.04616520163725425
+          }
+        }
       },
       "regions": [
         {

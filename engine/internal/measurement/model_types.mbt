@@ -4,6 +4,7 @@ using @model {
   type CanvasOutcome,
   type ChangedFact,
   type ComparisonProfile,
+  type DeclaredVisualFact,
   type DifferenceMagnitude,
   type DifferenceRegion,
   type DomainOrdering,

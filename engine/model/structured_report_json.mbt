@@ -1,4 +1,10 @@
 ///|
+priv struct CompactIsolatedSubject {
+  painted_boundary_displacement : PaintedBoundaryDisplacementMagnitude?
+  painted_coverage_difference : PaintedCoverageDifferenceMagnitude?
+}
+
+///|
 fn[T : ToJson] put_optional(
   fields : Map[String, Json],
   key : String,
@@ -94,8 +100,26 @@ fn compact_coverage(value : PaintedCoverageDifferenceMagnitude) -> Json {
 }
 
 ///|
-fn compact_difference_magnitude(difference : AtomicDifference) -> Json? {
+fn compact_difference_magnitude(
+  report : StructuredReport,
+  difference : AtomicDifference,
+) -> Json? {
   let value = difference.magnitude
+  let isolated_subject = isolated_subject_for_difference(report, difference.id)
+  let shared_boundary = match isolated_subject {
+    Some(subject) => subject.painted_boundary_displacement
+    None => None
+  }
+  let shared_coverage = match isolated_subject {
+    Some(subject) => subject.painted_coverage_difference
+    None => None
+  }
+  let shared_path_displacement = difference.domain.has_prefix("geometry.path.") &&
+    (match (value.geometry_displacement_css_px, shared_boundary) {
+      (Some(displacement), Some(boundary)) =>
+        displacement == boundary.max_css_px
+      _ => false
+    })
   let fields : Map[String, Json] = Map([])
   put_optional(
     fields,
@@ -127,40 +151,34 @@ fn compact_difference_magnitude(difference : AtomicDifference) -> Json? {
     "parameter_entity_fraction",
     value.parameter_entity_fraction,
   )
-  put_optional(
-    fields,
-    "geometry_displacement_css_px",
-    value.geometry_displacement_css_px,
-  )
+  if !shared_path_displacement {
+    put_optional(
+      fields,
+      "geometry_displacement_css_px",
+      value.geometry_displacement_css_px,
+    )
+  }
   match value.painted_boundary_displacement {
-    Some(boundary) =>
+    Some(boundary) if Some(boundary) != shared_boundary =>
       fields["painted_boundary_displacement"] = compact_boundary(boundary)
-    None => ()
+    _ => ()
   }
   match value.painted_coverage_difference {
-    Some(coverage) =>
+    Some(coverage) if Some(coverage) != shared_coverage =>
       fields["painted_coverage_difference"] = compact_coverage(coverage)
-    None => ()
+    _ => ()
   }
-  put_optional(
-    fields,
-    "geometry_viewport_fraction",
-    value.geometry_viewport_fraction,
-  )
+  if !shared_path_displacement {
+    put_optional(
+      fields,
+      "geometry_viewport_fraction",
+      value.geometry_viewport_fraction,
+    )
+  }
   put_optional(
     fields,
     "presence_painted_viewport_fraction",
     value.presence_painted_viewport_fraction,
-  )
-  put_optional(
-    fields,
-    "raster_changed_fraction",
-    value.raster_changed_pixel_fraction,
-  )
-  put_optional(
-    fields,
-    "raster_linear_rgba_rmse",
-    value.raster_linear_premultiplied_rgba_rmse,
   )
   match value.intrinsic_raster {
     Some(raster) =>
@@ -268,7 +286,7 @@ fn compact_difference(
     effective["limitation_ids"] = difference.computed_relation.diagnostic_ids.to_json()
   }
   fields["effective"] = Json::object(effective)
-  match compact_difference_magnitude(difference) {
+  match compact_difference_magnitude(report, difference) {
     Some(magnitude) => fields["magnitude"] = magnitude
     None => ()
   }
@@ -312,6 +330,83 @@ fn candidate_difference_ids(
 }
 
 ///|
+fn isolated_subject_for_event(
+  report : StructuredReport,
+  event : VisualEvent,
+) -> CompactIsolatedSubject? {
+  let mut boundary : PaintedBoundaryDisplacementMagnitude? = None
+  let mut coverage : PaintedCoverageDifferenceMagnitude? = None
+  let mut boundary_conflict = false
+  let mut coverage_conflict = false
+  for difference in report.atomic_differences {
+    if !event.atomic_difference_ids.contains(difference.id) {
+      continue
+    }
+    match difference.magnitude.painted_boundary_displacement {
+      Some(value) =>
+        match boundary {
+          Some(existing) if existing != value => boundary_conflict = true
+          None => boundary = Some(value)
+          _ => ()
+        }
+      None => ()
+    }
+    match difference.magnitude.painted_coverage_difference {
+      Some(value) =>
+        match coverage {
+          Some(existing) if existing != value => coverage_conflict = true
+          None => coverage = Some(value)
+          _ => ()
+        }
+      None => ()
+    }
+  }
+  if boundary_conflict {
+    boundary = None
+  }
+  if coverage_conflict {
+    coverage = None
+  }
+  if boundary is None && coverage is None {
+    None
+  } else {
+    Some({
+      painted_boundary_displacement: boundary,
+      painted_coverage_difference: coverage,
+    })
+  }
+}
+
+///|
+fn isolated_subject_for_difference(
+  report : StructuredReport,
+  difference_id : String,
+) -> CompactIsolatedSubject? {
+  for event in report.events {
+    if event.atomic_difference_ids.contains(difference_id) {
+      return isolated_subject_for_event(report, event)
+    }
+  }
+  None
+}
+
+///|
+fn compact_isolated_subject(value : CompactIsolatedSubject) -> Json {
+  let fields : Map[String, Json] = Map([])
+  match value.painted_boundary_displacement {
+    Some(boundary) =>
+      fields["painted_boundary_displacement"] = compact_boundary(boundary)
+    None => ()
+  }
+  match value.painted_coverage_difference {
+    Some(coverage) =>
+      fields["painted_coverage_difference"] = compact_coverage(coverage)
+    None => ()
+  }
+  Json::object(fields)
+}
+
+///|
 fn compact_region(report : StructuredReport, region : DifferenceRegion) -> Json {
   let cause : Map[String, Json] = Map([])
   cause["guarantee"] = region.cause_envelope.guarantee.to_json()
@@ -346,7 +441,10 @@ fn compact_region(report : StructuredReport, region : DifferenceRegion) -> Json 
 }
 
 ///|
-fn compact_event_outcome(value : RenderedEvidence) -> Json {
+fn compact_event_outcome(
+  value : RenderedEvidence,
+  isolated_subject : CompactIsolatedSubject?,
+) -> Json {
   let fields : Map[String, Json] = Map([])
   fields["status"] = value.status.to_json()
   match value.magnitude {
@@ -383,6 +481,11 @@ fn compact_event_outcome(value : RenderedEvidence) -> Json {
     }
     _ => ()
   }
+  match isolated_subject {
+    Some(subject) =>
+      fields["isolated_subject"] = compact_isolated_subject(subject)
+    None => ()
+  }
   Json::object(fields)
 }
 
@@ -392,7 +495,10 @@ fn compact_event(report : StructuredReport, event : VisualEvent) -> Json {
     "id": event.id,
     "subject": event.primary_subject_id,
     "difference_ids": event.atomic_difference_ids,
-    "outcome": compact_event_outcome(event.rendered_outcome),
+    "outcome": compact_event_outcome(
+      event.rendered_outcome,
+      isolated_subject_for_event(report, event),
+    ),
     "regions": [
       for region in event.difference_regions => compact_region(report, region)
     ],

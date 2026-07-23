@@ -2,7 +2,7 @@
 
 Status: current schema `2.0` serialization contract
 
-Last verified: 2026-07-22
+Last verified: 2026-07-23
 
 `svgdiff before.svg after.svg` emits an indented Structured Report. Adding
 `--agent-json` removes formatting whitespace but produces the same JSON value.
@@ -38,13 +38,22 @@ reason code. Consumers must never substitute an omitted value with zero.
 ## Differences and events
 
 Each difference retains its stable ID, affected subject and role, semantic
-`kind`, exact authored before/after values, effective relation, available
-numeric magnitudes, and limitation links. Thus `red` to `#ff0000` remains an
-authored difference with `effective.relation = "equivalent"` and explicit
-zero raster measurements.
+`kind`, exact local authored before/after values, effective relation, available
+direct numeric magnitudes, and limitation links. A path-command or
+path-parameter difference therefore carries only its corresponding authored
+segment rather than repeating the complete `d` attribute.
 
 Each event lists its Atomic Difference IDs. A region contains one CSS-space
 bounding box, its observed or conservative kind, and a possible-cause envelope.
+The event outcome owns its final raster response exactly once. When all
+available child observations agree, `outcome.isolated_subject` also owns the
+shared painted-boundary and alpha-coverage comparison exactly once; those
+subject-level observations are not repeated on every child difference and must
+not be interpreted as each child's independent contribution. Thus `red` to
+`#ff0000` remains an authored difference with
+`effective.relation = "equivalent"`, while its owning event carries the
+explicit measured-zero raster outcome.
+
 All current Event regions are `conservative`. An admitted isolated rendering
 may tighten the candidate or prove it empty, while other Events use a
 bounds-filtered final-canvas mask or computed bounds. Several Events may
@@ -63,9 +72,12 @@ coverage. `not_established` makes no such claim.
 
 Changed fraction, linear-premultiplied-RGBA RMSE, optional perceptual response,
 geometric displacement, coverage, and other domain magnitudes are distinct
-measurements. The JSON neither serializes a universal impact score nor exposes
-the engine's internal Pareto bookkeeping. Consumers may sort within a common
-domain but must not compare unlike units or invent calibrated severity.
+measurements. Atomic `magnitude` contains only evidence direct to that
+difference. Event `outcome` contains the shared rendered response and optional
+shared isolated-subject observations. The JSON neither serializes a universal
+impact score nor exposes the engine's internal Pareto bookkeeping. Consumers
+may sort within a common domain but must not compare unlike units or invent
+calibrated severity.
 
 The JSON Schema is [`svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json).
 Default and `--agent-json` documents both validate against it and differ only in

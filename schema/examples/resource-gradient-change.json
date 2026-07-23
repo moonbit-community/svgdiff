@@ -28,10 +28,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.5625,
-            "raster_linear_rgba_rmse": 0.16303478532769208
           }
         }
       ]
@@ -50,10 +46,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.5625,
-            "raster_linear_rgba_rmse": 0.16303478532769208
           }
         }
       ]

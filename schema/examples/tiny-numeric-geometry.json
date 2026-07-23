@@ -35,21 +35,7 @@
             "symmetric_relative": 0.000010000050000204492,
             "parameter_abs_css_px": 0.00000999999999995449,
             "parameter_viewport_fraction": 4.419417382395809e-7,
-            "parameter_entity_fraction": 8.838834764791618e-7,
-            "painted_boundary_displacement": {
-              "mean_css_px": 0,
-              "p95_css_px": 0,
-              "max_css_px": 0
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 64,
-              "after_css_px2": 64,
-              "absolute_difference_css_px2": 0,
-              "union_css_px2": 64,
-              "fraction": 0
-            },
-            "raster_changed_fraction": 0,
-            "raster_linear_rgba_rmse": 0
+            "parameter_entity_fraction": 8.838834764791618e-7
           }
         }
       ]
@@ -66,7 +52,21 @@
         "status": "computed",
         "changed_pixels": 0,
         "changed_fraction": 0,
-        "linear_rgba_rmse": 0
+        "linear_rgba_rmse": 0,
+        "isolated_subject": {
+          "painted_boundary_displacement": {
+            "mean_css_px": 0,
+            "p95_css_px": 0,
+            "max_css_px": 0
+          },
+          "painted_coverage_difference": {
+            "before_css_px2": 64,
+            "after_css_px2": 64,
+            "absolute_difference_css_px2": 0,
+            "union_css_px2": 64,
+            "fraction": 0
+          }
+        }
       },
       "regions": []
     }

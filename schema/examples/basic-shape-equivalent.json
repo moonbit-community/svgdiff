@@ -35,9 +35,7 @@
             "symmetric_relative": 0,
             "parameter_abs_css_px": 0,
             "parameter_viewport_fraction": 0,
-            "parameter_entity_fraction": 0,
-            "raster_changed_fraction": 0,
-            "raster_linear_rgba_rmse": 0
+            "parameter_entity_fraction": 0
           }
         },
         {
@@ -58,9 +56,7 @@
             "symmetric_relative": 0,
             "parameter_abs_css_px": 0,
             "parameter_viewport_fraction": 0,
-            "parameter_entity_fraction": 0,
-            "raster_changed_fraction": 0,
-            "raster_linear_rgba_rmse": 0
+            "parameter_entity_fraction": 0
           }
         }
       ]

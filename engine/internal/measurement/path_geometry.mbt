@@ -265,6 +265,8 @@ fn append_path_atomic_difference(
   domain : String,
   source_before : String,
   source_after : String,
+  before_segment : PathSegmentEvidence?,
+  after_segment : PathSegmentEvidence?,
   computed_status : String,
   reason_code : String,
   parameter_delta : Double?,
@@ -276,8 +278,16 @@ fn append_path_atomic_difference(
 ) -> Unit {
   let fact_id = "fact:\{alignment.id}:d:\{suffix}"
   let difference_id = "diff:\{alignment.id}:d:\{suffix}"
-  let before_fact = source_subject_fact(before_subject, "d")
-  let after_fact = source_subject_fact(after_subject, "d")
+  let before_fact = localized_path_fact(
+    source_subject_fact(before_subject, "d"),
+    property,
+    before_segment,
+  )
+  let after_fact = localized_path_fact(
+    source_subject_fact(after_subject, "d"),
+    property,
+    after_segment,
+  )
   changed_facts.push({
     id: fact_id,
     subject_id: alignment.id,
@@ -319,6 +329,28 @@ fn append_path_atomic_difference(
     domain_ordering: empty_domain_ordering(),
   })
   difference_ids.push(difference_id)
+}
+
+///|
+fn localized_path_fact(
+  fact : DeclaredVisualFact?,
+  property : String,
+  segment : PathSegmentEvidence?,
+) -> DeclaredVisualFact? {
+  match (fact, segment) {
+    (Some(fact), Some(segment)) =>
+      Some({
+        ..fact,
+        property,
+        authored_value: segment.authored_value,
+        declared_value: segment.authored_value.trim().to_owned(),
+        source_span: {
+          start_offset: segment.source_span.start_offset,
+          end_offset: segment.source_span.end_offset,
+        },
+      })
+    _ => None
+  }
 }
 
 ///|
@@ -370,6 +402,8 @@ pub fn append_path_geometry_differences(
             "geometry.path.structure",
             normalized_path_segment_signature(before_segment.normalized),
             normalized_path_segment_signature(after_segment.normalized),
+            Some(before_segment),
+            Some(after_segment),
             "different",
             "path_segment_kinds_differ",
             None,
@@ -391,6 +425,8 @@ pub fn append_path_geometry_differences(
             "geometry.path.command",
             before_segment.authored_command,
             after_segment.authored_command,
+            Some(before_segment),
+            Some(after_segment),
             "equivalent",
             "same_normalized_path_segment",
             None,
@@ -428,6 +464,8 @@ pub fn append_path_geometry_differences(
             "geometry.path.parameter",
             before_parameter.value,
             after_parameter.value,
+            Some(before_segment),
+            Some(after_segment),
             "different",
             "path_segment_parameters_differ",
             parameter_delta,
@@ -451,6 +489,8 @@ pub fn append_path_geometry_differences(
             before_subject.path_segments[before_index].normalized,
           ),
           "",
+          Some(before_subject.path_segments[before_index]),
+          None,
           "different",
           "path_segment_deleted",
           None,
@@ -472,6 +512,8 @@ pub fn append_path_geometry_differences(
           normalized_path_segment_signature(
             after_subject.path_segments[after_index].normalized,
           ),
+          None,
+          Some(after_subject.path_segments[after_index]),
           "different",
           "path_segment_inserted",
           None,

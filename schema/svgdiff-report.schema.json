@@ -134,8 +134,6 @@
         "geometry_displacement_css_px": { "type": "number", "minimum": 0 },
         "geometry_viewport_fraction": { "type": "number", "minimum": 0 },
         "presence_painted_viewport_fraction": { "type": "number", "minimum": 0 },
-        "raster_changed_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
-        "raster_linear_rgba_rmse": { "type": "number", "minimum": 0, "maximum": 1 },
         "painted_boundary_displacement": { "$ref": "#/$defs/boundary" },
         "painted_coverage_difference": { "$ref": "#/$defs/coverage" },
         "intrinsic_raster": { "$ref": "#/$defs/intrinsicRaster" },
@@ -213,8 +211,21 @@
         "changed_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
         "linear_rgba_rmse": { "type": "number", "minimum": 0, "maximum": 1 },
         "perceptual_color": { "type": "object" },
-        "perceptual_difference": { "type": "object" }
+        "perceptual_difference": { "type": "object" },
+        "isolated_subject": { "$ref": "#/$defs/isolatedSubject" }
       },
+      "additionalProperties": false
+    },
+    "isolatedSubject": {
+      "type": "object",
+      "properties": {
+        "painted_boundary_displacement": { "$ref": "#/$defs/boundary" },
+        "painted_coverage_difference": { "$ref": "#/$defs/coverage" }
+      },
+      "anyOf": [
+        { "required": ["painted_boundary_displacement"] },
+        { "required": ["painted_coverage_difference"] }
+      ],
       "additionalProperties": false
     },
     "region": {

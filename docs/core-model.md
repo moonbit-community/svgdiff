@@ -40,7 +40,7 @@ SVG source
   -> concise Structured Report JSON 2.0
 ```
 
-The typed MoonBit value retains detailed engine evidence for library callers and tests. Its JSON serializer is an intentional product boundary: it emits only comparison inputs, whole-canvas measurements, grouped Atomic Differences, Visual Events, localization/possible-cause links, and actual limitations. It does not serialize coverage rows, renderer adapters, alignment scoring, Changed Facts, source spans, ordering vectors, or Impact bookkeeping. See the [concise JSON contract](agent-json.md).
+The typed MoonBit value retains detailed engine evidence for library callers and tests. Its JSON serializer is an intentional product boundary: it emits only comparison inputs, whole-canvas measurements, grouped Atomic Differences, Visual Events, localization/possible-cause links, and actual limitations. It does not serialize coverage rows, renderer adapters, alignment scoring, Changed Facts, source spans, ordering vectors, or Impact bookkeeping. It also normalizes evidence ownership: direct atomic measurements stay on the difference, while final raster outcomes and agreeing isolated-subject boundary or coverage observations appear once on the owning event. See the [concise JSON contract](agent-json.md).
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
@@ -261,7 +261,7 @@ For complete source-input propagation, the engine retains every fact directly li
 
 A `VisualEvent` is the primary agent-facing grouping unit. In schema `2.0` it records one subject, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
 
-Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together. For conservative regions this is a bounded canvas response, not an exact contribution measurement.
+Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together. When isolated painted-boundary or coverage observations agree across an event's children, concise JSON serializes them once as the event's shared isolated-subject evidence. It does not claim that every child independently produced that result. For conservative regions this is a bounded canvas response, not an exact contribution measurement.
 
 Changed Facts express causal fan-out rather than event ownership. One Changed Fact may be referenced by distinct Atomic Differences in several events when an inherited declaration or shared resource affects several subjects. Conversely, several Changed Facts may feed the Atomic Differences in one event. This preserves one report identity for every independently reportable distinction without confusing an authored cause with its outcomes.
 
@@ -304,9 +304,10 @@ is explicit; inapplicable and unrequested values are omitted; blocked expected
 measurements are explained through `limitations`.
 
 `difference_groups` contains every Atomic Difference under one stable visual
-category. Each item retains authored before/after values, its effective
-relation, and only the magnitudes actually computed. `events` link those IDs to
-rendered outcomes, CSS-space regions, and conservative possible causes.
+category. Each item retains local authored before/after values, its effective
+relation, and only the magnitudes direct to that independent difference.
+`events` link those IDs to rendered outcomes, optional shared isolated-subject
+measurements, CSS-space regions, and conservative possible causes.
 `limitations` is the compact product projection of internal Diagnostics.
 
 The typed engine result may retain richer coverage, alignment, provenance,
@@ -321,13 +322,14 @@ obligations are defined in the [Analysis Status Contract](analysis-status.md).
 3. Unsupported semantics cannot produce a false claim of complete equality.
 4. `equivalent`, `different`, `indeterminate`, and `not_applicable` remain distinct computed states.
 5. Measured zero is serialized; inapplicable or unrequested measurements are omitted; blocked expected measurements link to limitations.
-6. Every serialized Atomic Difference retains its authored values, effective relation, subject, category, and all computed magnitudes without exposing internal Changed Fact tables.
+6. Every serialized Atomic Difference retains its local authored values, effective relation, subject, category, and all direct computed magnitudes without exposing internal Changed Fact tables.
 7. Event grouping does not delete or merge away Atomic Differences.
-8. Every reported Difference Region carries a Cause Envelope.
-9. A Cause Envelope claiming `sound_overapproximation` may contain false positives but must contain every actual changed cause within the supported coverage boundary.
-10. Dependency-specific XML, SVG scene, image, and renderer types do not cross the public report seam.
-11. HTML is a presentation of the Structured Report and must not recompute semantic differences.
-12. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every serialized report-local reference resolves within the report.
+8. Final raster response and agreeing isolated-subject observations are serialized once on the owning event, never copied onto every child as if each independently contributed them.
+9. Every reported Difference Region carries a Cause Envelope.
+10. A Cause Envelope claiming `sound_overapproximation` may contain false positives but must contain every actual changed cause within the supported coverage boundary.
+11. Dependency-specific XML, SVG scene, image, and renderer types do not cross the public report seam.
+12. HTML is a presentation of the Structured Report and must not recompute semantic differences.
+13. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every serialized report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
 ## Not implemented in schema 2.0

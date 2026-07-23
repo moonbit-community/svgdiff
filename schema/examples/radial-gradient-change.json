@@ -32,9 +32,7 @@
           "magnitude": {
             "parameter_abs_user_units": 2,
             "parameter_signed_user_units": 2,
-            "symmetric_relative": 0.25,
-            "raster_changed_fraction": 0.515625,
-            "raster_linear_rgba_rmse": 0.12648487603218694
+            "symmetric_relative": 0.25
           }
         },
         {
@@ -48,10 +46,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.515625,
-            "raster_linear_rgba_rmse": 0.12648487603218694
           }
         },
         {
@@ -65,10 +59,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.515625,
-            "raster_linear_rgba_rmse": 0.12648487603218694
           }
         },
         {
@@ -82,10 +72,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.515625,
-            "raster_linear_rgba_rmse": 0.12648487603218694
           }
         },
         {
@@ -99,10 +85,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.515625,
-            "raster_linear_rgba_rmse": 0.12648487603218694
           }
         }
       ]
@@ -121,10 +103,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "raster_changed_fraction": 0.515625,
-            "raster_linear_rgba_rmse": 0.12648487603218694
           }
         }
       ]

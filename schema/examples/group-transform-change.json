@@ -28,22 +28,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_boundary_displacement": {
-              "mean_css_px": 2,
-              "p95_css_px": 4,
-              "max_css_px": 4
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 25,
-              "after_css_px2": 25,
-              "absolute_difference_css_px2": 40,
-              "union_css_px2": 45,
-              "fraction": 0.8888888888888888
-            },
-            "raster_changed_fraction": 0.15625,
-            "raster_linear_rgba_rmse": 0.2795084971874737
           }
         },
         {
@@ -57,22 +41,6 @@
           },
           "effective": {
             "relation": "different"
-          },
-          "magnitude": {
-            "painted_boundary_displacement": {
-              "mean_css_px": 2,
-              "p95_css_px": 4,
-              "max_css_px": 4
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 25,
-              "after_css_px2": 25,
-              "absolute_difference_css_px2": 40,
-              "union_css_px2": 45,
-              "fraction": 0.8888888888888888
-            },
-            "raster_changed_fraction": 0.15625,
-            "raster_linear_rgba_rmse": 0.2795084971874737
           }
         },
         {
@@ -92,21 +60,7 @@
             "parameter_viewport_fraction": 0.17677669529663687,
             "parameter_entity_fraction": 0.565685424949238,
             "geometry_displacement_css_px": 4,
-            "painted_boundary_displacement": {
-              "mean_css_px": 2,
-              "p95_css_px": 4,
-              "max_css_px": 4
-            },
-            "painted_coverage_difference": {
-              "before_css_px2": 25,
-              "after_css_px2": 25,
-              "absolute_difference_css_px2": 40,
-              "union_css_px2": 45,
-              "fraction": 0.8888888888888888
-            },
             "geometry_viewport_fraction": 0.17677669529663687,
-            "raster_changed_fraction": 0.15625,
-            "raster_linear_rgba_rmse": 0.2795084971874737,
             "transform": {
               "kind": "translation",
               "before_x_css_px": 1,
@@ -135,7 +89,21 @@
         "status": "computed",
         "changed_pixels": 40,
         "changed_fraction": 0.15625,
-        "linear_rgba_rmse": 0.2795084971874737
+        "linear_rgba_rmse": 0.2795084971874737,
+        "isolated_subject": {
+          "painted_boundary_displacement": {
+            "mean_css_px": 2,
+            "p95_css_px": 4,
+            "max_css_px": 4
+          },
+          "painted_coverage_difference": {
+            "before_css_px2": 25,
+            "after_css_px2": 25,
+            "absolute_difference_css_px2": 40,
+            "union_css_px2": 45,
+            "fraction": 0.8888888888888888
+          }
+        }
       },
       "regions": [
         {

@@ -32,9 +32,7 @@
           "magnitude": {
             "parameter_abs_user_units": 2,
             "parameter_signed_user_units": 2,
-            "symmetric_relative": 1,
-            "raster_changed_fraction": 0.078125,
-            "raster_linear_rgba_rmse": 0.17433157416459813
+            "symmetric_relative": 1
           }
         }
       ]

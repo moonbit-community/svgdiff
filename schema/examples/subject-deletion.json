@@ -32,8 +32,6 @@
           },
           "magnitude": {
             "presence_painted_viewport_fraction": 0.140625,
-            "raster_changed_fraction": 0.140625,
-            "raster_linear_rgba_rmse": 0.30319826947951,
             "presence": {
               "affected_entity_count": 1,
               "bounds_area_css_px2": 36,

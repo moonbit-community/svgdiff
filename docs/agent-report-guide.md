@@ -2,7 +2,7 @@
 
 Status: current schema `2.0` interpretation guide
 
-Last verified: 2026-07-22
+Last verified: 2026-07-23
 
 The report is designed for a text-only Agent. Read it in this order:
 
@@ -12,23 +12,33 @@ The report is designed for a text-only Agent. Read it in this order:
 3. Read `comparison` to establish viewport and requested perceptual inputs.
 4. Read `canvas` for whole-image measurements.
 5. Enumerate every item in every `difference_groups` group, including items
-   whose rendered magnitude is zero.
-6. Follow each difference into `events` for rendered outcome, localization,
-   and possible causes.
+   whose owning event has a measured-zero rendered outcome.
+6. Follow each difference into its owning `events` entry for the rendered
+   outcome, shared isolated-subject measurements, localization, and possible
+   causes.
 7. Read every linked and top-level `limitations` entry before describing
    unavailable evidence.
 
 ## Difference interpretation
 
-`source.before` and `source.after` preserve exact authored values. They may be
-spelled differently while `effective.relation` is `equivalent`; for example,
-`red` and `#ff0000`. A `different` relation says supported computed semantics
-differ. `indeterminate` means a limitation prevents that conclusion.
+`source.before` and `source.after` preserve exact local authored values. For a
+path command or parameter this is the corresponding authored segment, not the
+complete `d` attribute. Values may be spelled differently while
+`effective.relation` is `equivalent`; for example, `red` and `#ff0000`. A
+`different` relation says supported computed semantics differ. `indeterminate`
+means a limitation prevents that conclusion.
 
 `magnitude` is sparse. Present numeric zero is measured zero. An omitted metric
 is not applicable, unrequested, or unavailable; use limitation links and event
 outcome reasons to distinguish those cases. Do not manufacture null-valued
 fields or turn absence into zero.
+
+An Atomic Difference contains only measurements direct to that independent
+change. Do not expect the final raster response or an agreeing
+painted-boundary/coverage observation to be copied into every item. Read those
+once from the owning event's `outcome`; optional `isolated_subject` describes
+the shared aligned subject, not an independently measured contribution from
+each child difference.
 
 The category groups are navigation, not a global ranking. Compare magnitudes
 only when their units and meanings match. Changed fraction, linear RGBA RMSE,

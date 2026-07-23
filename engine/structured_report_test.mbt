@@ -372,11 +372,8 @@ test "report omits unavailable values but retains measured zero" {
   )
   match @json.parse(magnitude_report.to_json_string()) {
     {
-      "difference_groups": [
-        {
-          "items": [{ "magnitude": { "raster_changed_fraction": 0, .. }, .. }],
-          ..
-        },
+      "events": [
+        { "outcome": { "changed_fraction": 0, "linear_rgba_rmse": 0, .. }, .. },
       ],
       ..
     } => ()
@@ -431,6 +428,45 @@ test "compact JSON preserves the concise structured report" {
     _ => fail("compact JSON did not preserve every concise report section")
   }
   assert_true(compact.contains("\"kind\":\"text.content\""))
+}
+
+///|
+test "compact path differences keep local facts and share subject evidence" {
+  let before = "<svg width='16' height='16'><path id='mark' d='M0 0 L4 4 L8 8' stroke='black'/></svg>"
+  let after = "<svg width='16' height='16'><path id='mark' d='M0 0 L5 6 L9 10' stroke='black'/></svg>"
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.atomic_differences.length(), 4)
+  let compact = report.to_compact_json_string()
+  assert_true(compact.find("M0 0 L4 4 L8 8") is None)
+  assert_true(compact.find("M0 0 L5 6 L9 10") is None)
+  assert_true(compact.contains("\"before\":\"L4 4\""))
+  assert_true(compact.contains("\"after\":\"L5 6\""))
+  assert_true(compact.find("\"raster_changed_fraction\"") is None)
+  assert_eq(compact.split("\"painted_boundary_displacement\"").count(), 2)
+  assert_eq(compact.split("\"painted_coverage_difference\"").count(), 2)
+  match @json.parse(compact) {
+    {
+      "events": [
+        {
+          "outcome": {
+            "isolated_subject": {
+              "painted_boundary_displacement": _,
+              "painted_coverage_difference": _,
+              ..
+            },
+            ..
+          },
+          ..
+        },
+      ],
+      ..
+    } => ()
+    _ => fail("shared path evidence must belong to its Visual Event")
+  }
 }
 
 ///|

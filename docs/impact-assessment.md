@@ -6,7 +6,13 @@ Last verified: 2026-07-17
 
 The engine retains a typed `ImpactAssessment` for internal experiments and legacy library callers. Schema `2.0` deliberately does not serialize it. The assessment is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
 
-The concise report instead exposes independent raw measurements on grouped differences and events. Agents must enumerate those inventories without assuming that the internal Pareto frontier is a product-level importance judgment.
+The concise report instead exposes independent raw measurements on grouped
+differences and events. It keeps measurements direct to an Atomic Difference on
+that item, while the final raster response and agreeing isolated-subject
+boundary or coverage observations appear once on the owning event. Agents must
+enumerate those inventories without assuming that the internal Pareto frontier
+is a product-level importance judgment or attributing a shared event result to
+each child independently.
 
 ## Authoritative measurement surface
 

@@ -92,6 +92,19 @@ def diagnostic_codes(report: dict) -> set[str]:
     return {diagnostic["code"] for diagnostic in report["limitations"]}
 
 
+def event_for_difference(report: dict, difference_id: str) -> dict:
+    matches = [
+        event
+        for event in report["events"]
+        if difference_id in event["difference_ids"]
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"{difference_id}: expected one owning Visual Event, got {len(matches)}"
+        )
+    return matches[0]
+
+
 def validate_subject_roles(report: dict) -> None:
     if any(
         difference.get("subject_role") not in {"entity", "resource"}
@@ -153,6 +166,12 @@ def validate_false_equality(case: dict, report: dict) -> None:
     }
     if {difference["id"] for difference in differences} != expected_ids:
         raise ValueError("false-equality path findings are incomplete or unstable")
+    event = event_for_difference(report, differences[0]["id"])
+    if any(event_for_difference(report, item["id"])["id"] != event["id"] for item in differences):
+        raise ValueError("false-equality path findings lost their shared Visual Event")
+    isolated = event["outcome"].get("isolated_subject", {})
+    boundary = isolated.get("painted_boundary_displacement")
+    coverage = isolated.get("painted_coverage_difference")
     if any(
         difference["kind"] != "geometry.path.parameter"
         or difference["effective"]["relation"] != "different"
@@ -160,37 +179,15 @@ def validate_false_equality(case: dict, report: dict) -> None:
         or difference["magnitude"]["parameter_abs_css_px"] != 14
         or difference["magnitude"]["parameter_viewport_fraction"] is None
         or difference["magnitude"]["parameter_entity_fraction"] is None
-        or difference["magnitude"]["geometry_displacement_css_px"] <= 0
-        or difference["magnitude"]["painted_boundary_displacement"] is None
-        or difference["magnitude"]["painted_boundary_displacement"][
-            "max_css_px"
-        ]
-        != difference["magnitude"]["geometry_displacement_css_px"]
-        or not 0
-        <= difference["magnitude"]["painted_boundary_displacement"][
-            "mean_css_px"
-        ]
-        <= difference["magnitude"]["painted_boundary_displacement"][
-            "max_css_px"
-        ]
-        or not 0
-        <= difference["magnitude"]["painted_boundary_displacement"][
-            "p95_css_px"
-        ]
-        <= difference["magnitude"]["painted_boundary_displacement"][
-            "max_css_px"
-        ]
-        or difference["magnitude"]["painted_coverage_difference"] is None
-        or difference["magnitude"]["painted_coverage_difference"][
-            "absolute_difference_css_px2"
-        ]
-        > difference["magnitude"]["painted_coverage_difference"][
-            "union_css_px2"
-        ]
-        or not 0
-        <= difference["magnitude"]["painted_coverage_difference"]["fraction"]
-        <= 1
         for difference in differences
+    ) or (
+        boundary is None
+        or boundary["max_css_px"] <= 0
+        or not 0 <= boundary["mean_css_px"] <= boundary["max_css_px"]
+        or not 0 <= boundary["p95_css_px"] <= boundary["max_css_px"]
+        or coverage is None
+        or coverage["absolute_difference_css_px2"] > coverage["union_css_px2"]
+        or not 0 <= coverage["fraction"] <= 1
     ):
         raise ValueError("false-equality path findings lost exact or boundary evidence")
     if "unsupported_visual_subject" not in diagnostic_codes(report):
@@ -214,10 +211,11 @@ def validate_structural_false_equality(report: dict) -> None:
     if len(differences) != 1:
         raise ValueError("stacking change was lost or fragmented")
     difference = differences[0]
+    event = event_for_difference(report, difference["id"])
     if (
         difference["kind"] != "document.structure.stacking_order"
         or difference["effective"]["relation"] != "different"
-        or difference["magnitude"]["raster_changed_fraction"] <= 0
+        or event["outcome"]["changed_fraction"] <= 0
     ):
         raise ValueError("stacking difference lost semantic or numeric evidence")
     regions = [
