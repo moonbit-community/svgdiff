@@ -1,6 +1,6 @@
 # svgdiff
 
-`svgdiff` compares two deterministic static SVG sources and emits a layered, machine-readable visual difference report. It distinguishes authored source changes, canonical used geometry, deterministic sRGB solid color and opacity semantics, computed visual relations, raster response, spatial Difference Regions, and conservative Cause Envelopes. The report is designed for agents that cannot inspect images directly.
+`svgdiff` compares two deterministic static SVG sources and emits a layered, machine-readable visual difference report. It distinguishes authored source changes, canonical used geometry, deterministic sRGB solid color and opacity semantics, bounded embedded raster content, computed visual relations, raster response, spatial Difference Regions, and conservative Cause Envelopes. The report is designed for agents that cannot inspect images directly.
 
 ## Install locally
 
@@ -54,7 +54,7 @@ svgdiff before.svg after.svg --perceptual-background '#ffffff'
 svgdiff before.svg after.svg --perceptual-background '#ffffff' --flip-pixels-per-degree 67
 ```
 
-Supply raster bytes explicitly when an `image` locator is not a data URL. No SVG-authored path is opened automatically:
+Supply raster bytes explicitly when an `image` locator is not a data URL. Each option is a locator, MIME type, and file triplet; no SVG-authored path is opened automatically:
 
 ```sh
 svgdiff before.svg after.svg \
@@ -97,6 +97,28 @@ The self-contained CLI HTML and browser page share the same Report Inspector
 script and styles extracted from `html_report_assets.mbt`. The generated
 `_site` directory is ignored and must not be edited directly.
 
+## Agent WASM skill
+
+The [`cmd/svgdiff_miniio`](cmd/svgdiff_miniio/README.md) package exposes the
+same comparison engine as a portable WASIp1 CLI using MiniIO. It reads two
+guest-visible SVG files and writes concise Structured Report schema `2.0` JSON
+for an agent that cannot inspect images. After version `0.7.0` is published,
+run the package directly from Mooncakes:
+
+```sh
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
+```
+
+From a source checkout, verify it with the repository fixtures:
+
+```sh
+moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
+```
+
+Its focused [`SKILL.md`](cmd/svgdiff_miniio/SKILL.md) defines the agent reading
+procedure, deterministic checkpoint control, exit statuses, and WASI preopen
+boundary.
+
 ## Library API
 
 Install module version `0.7.0` with `moon add Milky2018/svgdiff@0.7.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
@@ -110,23 +132,25 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `2.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). It is deliberately smaller than the typed engine result: `comparison`, `canvas`, categorized `difference_groups`, `events`, and actual `limitations` are the complete serialized surface. Successful coverage rows, alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
+The current JSON contract is version `2.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). It is deliberately smaller than the typed engine result: `comparison`, `canvas`, categorized `difference_groups`, `events`, and actual `limitations` are the complete serialized surface. Successful coverage rows, alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Atomic items keep exact local authored evidence and direct magnitudes; the owning Event keeps the final raster response and agreeing shared isolated-subject observations once, without erasing any Atomic Difference. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
 
 Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
 
-The two isolated-paint observations reuse one bounded before/after render pair per alignment. Boundary evidence records before/after sample counts plus mean, nearest-rank p95, and maximum CSS-pixel distance. Coverage evidence records before/after alpha area, absolute alpha difference, maximum-alpha union, and their ratio. Equal alpha coverage is zero even when RGB color changes; null means the isolated observation was unavailable, not measured zero.
+The two isolated-paint observations reuse one bounded before/after render pair per alignment. Boundary evidence records mean, nearest-rank p95, and maximum CSS-pixel distance. Coverage evidence records before/after alpha area, absolute alpha difference, maximum-alpha union, and their ratio. When the observations agree across an Event's Atomic Differences, concise JSON emits them once under `events[].outcome.isolated_subject`; the richer typed model retains its internal per-difference evidence. Equal alpha coverage is zero even when RGB color changes; omission means the isolated observation was unavailable or not applicable, not measured zero.
 
 Static same-document linear and radial gradients are compared as structured resources plus consumer-specific paint: geometry, units, spread, transforms, recursive templates, every stop, and every fill/stroke consequence remain individually reportable. Their source and computed semantics are complete for the admitted sRGB slice; the current pinned renderer still carries an explicit gradient-raster guard.
 
 Static same-document patterns over the admitted basic-shape child slice use the same resource/consumer separation: tile and content coordinates, transforms, viewport mapping, recursive templates, child operations, and every fill/stroke consequence remain individually reportable. Their computed semantics do not depend on the pinned renderer, whose pattern rasterization remains explicitly guarded.
 
+`fill` and `stroke` also implement the SVG 2 URL fallback grammar. A valid same-document gradient or pattern wins; a missing or wrong-kind local target selects its optional solid color, `currentColor`, or `none` fallback, and an absent fallback deterministically means no paint. Inactive fallbacks remain source-visible without creating computed dependencies, while external target validity stays guarded.
+
 Inherited `paint-order`, `fill-rule`, and `clip-rule` are resolved through the same cascade and dependency model. Paint order is compared by its active operation sequence, fill rules collapse when the fill is inactive or the contour is provably simple, and clip rules outside `clipPath` are inactive. Non-inherited `clip-path` now resolves presentation, inline, and static stylesheet declarations plus CSS-wide values and custom properties. One local static non-rounded rectangle clip is complete-eligible in `userSpaceOnUse` or numeric `objectBoundingBox` coordinates, with deterministic axis transforms, leaf or ordinary container application, per-consumer fan-out, and conservative effect bounds; other clip content and locators remain source-located Diagnostics.
 
-Non-inherited `mask` and `mask-mode` now resolve through the same cascade. One local SVG mask with zero or one direct non-rounded solid rectangle is complete-eligible for alpha or sRGB-luminance transfer, user-space or object-bounding-box region/content units, defaults, deterministic transforms, leaf or ordinary container application, shared fan-out, continuous numeric deltas, isolated composition, and conservative per-side effect bounds. Missing, wrong-kind, empty, or non-positive-region admitted masks are deterministic transparent black; broader mask syntax remains precise partial coverage.
+Non-inherited `mask` and `mask-mode` use the same host/resource separation. One same-document SVG mask with zero or one direct non-rounded solid rectangle is complete-eligible for alpha or sRGB-luminance transfer, user-space or object-bounding-box region/content coordinates, normative region defaults, deterministic axis transforms, leaf or ordinary container application, shared consumer fan-out, continuous numeric deltas, isolated compositing, and conservative per-side effect bounds. Missing, wrong-kind, empty, or non-positive-region admitted masks deterministically suppress the target as transparent black; CSS image/multi-layer masks and other excluded interactions remain precise source-located Diagnostics.
 
-Non-inherited `filter` now resolves through the same cascade. One local graph of direct static `feOffset` primitives on an explicit-ID, untransformed basic-shape leaf is complete-eligible. Missing or wrong-kind local targets deterministically apply no filter, while an empty admitted graph produces transparent output. The engine resolves filter and primitive units, normative regions, SourceGraphic, SourceAlpha, implicit and named inputs, separate clipped RGBA intermediates, continuous offset magnitudes, fan-out, and conservative intermediate/final bounds. Unsupported direct primitives retain position-aligned complete source subtrees, exact spans, affected consumers, and the resolved same-document filter region as a conservative localization upper bound, so every attribute, type, nested-content, text, comment, insertion, deletion, shadow, or spelling change remains a source-only Atomic Difference without a computed-pixel or causal-completeness claim. CSS filter functions, external/invalid locators without a resolved region, templates, primitive subregions, fractional device offsets, transforms, animation, reuse, and effect interactions remain precise partial coverage.
+Non-inherited `filter` also uses host/resource separation. One same-document graph of direct static `feOffset` primitives on an explicit-ID, untransformed basic-shape leaf is complete-eligible. A missing or wrong-kind local target deterministically applies no filter, while an empty admitted graph produces transparent output. The engine resolves `filterUnits`, `primitiveUnits`, normative filter-region defaults, SourceGraphic, SourceAlpha, implicit previous results, and named earlier results; evaluates every primitive on a distinct transparent RGBA surface; hard-clips every intermediate to the filter region; reports graph, region, input, result, and offset changes with continuous magnitudes and fan-out; and propagates conservative per-intermediate and final bounds. Every unsupported direct primitive is retained as a position-aligned full source subtree, so attribute, type, nested-content, text, comment, insertion, deletion, and spelling changes remain source-only Atomic Differences with exact spans and affected consumers. A resolved same-document graph also retains its filter region as a conservative localization upper bound, including for opaque SVG shadow primitives, without claiming computed pixels, magnitude, or causal completeness. CSS filter functions and external or invalid locators without a resolved region remain unlocalized behind precise source-located Diagnostics.
 
-Non-inherited CSS `mix-blend-mode` and `isolation` are complete-eligible for explicit-ID, untransformed, integer non-rounded opaque solid rectangles. All sixteen standard blend keywords use browser-matched W3C formulas; ordinary groups share their parent backdrop, while `isolation:isolate` on the root SVG or an authored-ID `g` starts transparent and composites once. Reports keep modes categorical, name the foreground plus conservative ordered backdrop prefix inside the nearest isolation boundary, use the same compositor for stacking changes, and propagate complete causes through those operation participants plus events sharing the exact Difference Region. Continuous alpha, antialiasing, strokes, transforms, instances, container blend modes, anonymous or instance isolation hosts, and effect interactions remain precise partial coverage.
+Non-inherited CSS `mix-blend-mode` and `isolation` are complete-eligible for explicit-ID, untransformed, integer non-rounded opaque solid rectangles. All sixteen standard blend keywords use browser-matched W3C formulas; ordinary groups share their parent backdrop, while `isolation:isolate` on the root SVG or an authored-ID `g` starts transparent and composites once. Reports keep modes categorical, name the foreground plus conservative ordered backdrop prefix inside the nearest isolation boundary, use the same compositor for stacking changes, and propagate complete causes through those operation participants plus events sharing the exact Difference Region. Continuous alpha, antialiasing, strokes, transforms, instances, container blend modes, anonymous or instance isolation hosts, and effect interactions remain precise source-located Diagnostics.
 
 Admitted `g`, `defs`, `symbol`, and same-document `use` structure preserves authored definition identity separately from each rendered placement. Reports expose deterministic nested instance paths, keep definition-owned declarations and Source Spans, fan one change out to every affected instance, and resolve use-host inheritance plus symbol or SVG instance viewports. External or invalid references remain diagnosed, and the measured transform-plus-translation renderer divergence remains guarded.
 
@@ -134,7 +158,7 @@ Consequence-aware structure reporting links effective reparenting and use-target
 
 A private typed resource graph now unifies gradient, pattern, marker, clip, mask, filter, symbol, image, use, attribute URL, and static stylesheet dependencies. It retains locator states and exact reference spans, supplies deterministic conservative reachability, and drives the existing cycle and use-expansion safety checks. The complete unchanged graph is not added to Agent JSON; reports continue to expose only relevant resource facts, affected consumers, and Diagnostics.
 
-Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied resources on `image` are decoded under fixed byte, dimension, pixel, cumulative-pixel, and PNG decompression limits without network or path I/O. Reports distinguish locator spelling, intrinsic dimensions and RGBA8 content, placement, insertion, and deletion; content changes carry resource-local intrinsic raster metrics and conservative bounds. Embedded ICC and other non-v1 profile metadata, HDR metadata, and samples above 8 bits retain compact hashes, intrinsic dimensions, placement, exact locator spans, and precise partial Diagnostics without conversion or tone mapping; explicit PNG `sRGB` remains admitted. Other valid raster variants remain explicit partial coverage. The pinned renderer does not composite these images, so final-canvas evidence remains unavailable through an explicit capability gap. Resource types beyond bundled PNG/JPEG images, nested SVG images, general clip/mask content, and filter primitives beyond the admitted graph remain later roadmap work.
+Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exact-match caller-supplied resources on `image` are decoded under fixed no-I/O resource limits. Reports distinguish source encodings, intrinsic dimensions and normalized RGBA8 content, placement, fitting, opacity, transform, insertion, and deletion. Different encodings that decode identically remain source-distinct but computed-equivalent; content differences carry an intrinsic raster magnitude and conservative image bounds without embedding payloads in JSON. Embedded ICC and other non-v1 profile metadata, HDR metadata, and samples above 8 bits retain compact hashes, intrinsic dimensions, placement, exact locator spans, and precise partial Diagnostics without conversion or tone mapping; explicit PNG `sRGB` remains admitted. Other valid raster variants remain explicit partial coverage instead of being approximated. The pinned renderer does not composite these images, so `renderer_embedded_raster_unavailable` keeps final-canvas evidence explicitly unavailable. Resource types beyond bundled PNG/JPEG images, embedded SVG images, final image compositing, general clip/mask content, and general filter primitives remain later roadmap work.
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
@@ -239,7 +263,7 @@ or create severity, visibility, equality, or unique-cause claims.
 - source spans, authored values, normalized declarations, presentation/inline/static-stylesheet cascade provenance including specificity, source order, duplicates, and `!important`, plus ordinary inheritance and CSS-wide defaulting for every supported visual property;
 - case-sensitive inherited custom properties with bounded nested `var()` fallback, `currentColor` dependencies, and causal fan-out into supported geometry, paint, stroke, opacity, vector-effect, marker attachment, and admitted gradient stop colors;
 - role-typed set-to-set alignment for Visual Entities and Visual Resources: rendered shapes and guarded paths use transform- and conservative-painted-bounds-aware exact signatures plus bounded device-space feature distance, repeated exact subjects retain equivalence classes, `use` instances retain rendered paths, groups/text/use hosts use source-structural entity alignment, and visual definitions plus intrinsic image content use independent resource alignments referenced by every resource Atomic Difference;
-- geometry, exact normalized path parameter and topology, fill, stroke paint, canonical length-aware stroke width/caps/joins/miter limits/dashes/dash offsets/vector effects, local marker attachments and length-aware resource viewport/orientation properties, leaf and isolated container opacity, static alpha/luminance masks, bounded static `feOffset` graphs, opaque unsupported-filter source subtrees, opaque binary-alpha blend modes and isolation, insertion, deletion, and consequence-aware ancestry, instance-resolution, and stacking differences;
+- geometry, exact normalized path parameter and topology, fill, stroke paint, canonical length-aware stroke width/caps/joins/miter limits/dashes/dash offsets/vector effects, local marker attachments and length-aware resource viewport/orientation properties, bounded embedded-raster source/content/placement, leaf and isolated container opacity, static alpha/luminance masks, bounded static `feOffset` graphs, opaque unsupported-filter source subtrees, opaque binary-alpha blend modes and isolation, insertion, deletion, and consequence-aware ancestry, instance-resolution, and stacking differences;
 - root and nested SVG viewport declarations, nearest-viewport percentage resolution, and exact cumulative coordinate mappings under one explicit common Comparison Viewport;
 - exact continuous parameter magnitudes, symmetric painted-boundary displacement distributions, alpha-only painted-coverage differences, same-domain ordering, RGBA8 raster response, connected Difference Regions, and causally complete conservative Cause Envelopes that retain direct, rendered-subject-indexed, and supported operation-participant source-input tokens for complete reports;
 - explicit `partial` or `failed` coverage with Diagnostics for unsupported or unresolved semantics.
@@ -262,7 +286,7 @@ The production renderer is `Milky2018/svg@0.3.1`. Cascade, ordinary inheritance,
 
 The complete implementation boundary, including guarded partial cases, is in the [current v1 support contract](docs/v1-scope.md).
 
-The hand-authored [evaluation corpus](evaluation/corpus/README.md) contains stable SVG pairs for equivalent, subtle, salient, structural, resource-mediated, zero-contribution, and unsupported cases. Run `sh scripts/test-corpus.sh` to validate every pair through the production CLI.
+The hand-authored [evaluation corpus](evaluation/corpus/README.md) contains stable SVG pairs for equivalent, subtle, salient, structural, resource-mediated, embedded-raster, zero-contribution, and unsupported cases. Run `sh scripts/test-corpus.sh` to validate every pair through the production CLI.
 
 The complementary [mutation suite](evaluation/mutations/README.md) generates deterministic pairs with independently declared Changed Facts and affected subjects. Run `sh scripts/test-mutations.sh` to verify generation and report retention.
 
@@ -270,13 +294,19 @@ The [adversarial suite](evaluation/adversarial/README.md) checks malformed trans
 
 The [compatibility corpus](evaluation/compatibility/README.md) generates current, legacy-additive, future-additive, unknown-schema, unknown-ordering-policy, and unknown-Impact-policy report variants. Run `sh scripts/test-compatibility.sh` to verify deterministic consumer dispatch and validation against every entry in the [released Schema registry](schema/registry.v1.json) before semantic interpretation.
 
-The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, cascade and inheritance equivalence, tiny numeric change, salient change, insertion, deletion, resources, viewport mapping, partial coverage, and failed admission. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
+The [canonical Structured Report examples](schema/examples/README.md) are byte-for-byte production CLI outputs for equivalent spelling, cascade and inheritance equivalence, tiny numeric change, salient change, insertion, deletion, gradients, patterns, embedded rasters, viewport mapping, partial coverage, and failed admission. Run `sh scripts/test-schema-examples.sh` to validate them against the current Schema and semantic manifest.
 
 The [determinism evaluation](evaluation/determinism/README.md) repeats equivalent, changed, structural, resource, unsupported, multi-event, and non-default-viewport comparisons in separate CLI processes. Run `sh scripts/test-report-determinism.sh` to verify byte-stable output, globally unique report-local IDs, closed references, and identical evidence in default and compact JSON. CI also compares exact canonical bundles across Ubuntu 24.04 x64, Windows Server 2025 x64, and macOS 15 arm64; `sh scripts/test-cross-platform-determinism.sh` exercises the same aggregation policy locally with positive and negative controls.
 
-The [semantic-concern evaluation](evaluation/semantic-concern/README.md) proves that a caller-designated one-pixel event remains recoverable from the full and Agent inventories even when a larger event dominates it under context-free Impact. Run `sh scripts/test-semantic-concern-policy.sh` to verify the query-conditioned policy boundary.
-
 The [performance suites](evaluation/performance/README.md) independently time parse/admission, alignment, rendering, region extraction, provenance, and serialization through native release microbenchmarks, then enforce representative small, medium, and large end-to-end native CLI wall-time and peak-RSS ceilings. Run `sh scripts/run-stage-benchmarks.sh --output /tmp/svgdiff-stage-benchmarks.json` for stage diagnostics and `sh scripts/run-performance-budgets.sh --output /tmp/svgdiff-performance-budgets.json` for the regression gate. Both are distinct from the Agent-quality benchmark.
+
+The opt-in [report-only language-model benchmark](evaluation/language-model-benchmark/README.md) evaluates an isolated actual model against the same thirteen-case corpus and strict machine thresholds. Its retained v1 observation passes all accepted Agent metrics with zero hard safety failures. The deterministic evidence adapter remains the default CI regression fixture; rerunning the model benchmark requires the pinned Codex CLI, authentication, and network access.
+
+The [terminal Agent reliability gate](evaluation/terminal-agent-reliability-gate/README.md) binds that retained observation to explicit change-inventory, accepted-main-event, localization, possible-cause, coverage, traceability, and safety targets while checking report-region and Cause Envelope soundness independently. Its claim is limited to the pinned observation and is not a guarantee for another model or future run.
+
+The [terminal operational gate](evaluation/terminal-operational-gate/README.md) composes deterministic report bytes, installation and release archives, fixed hostile-input controls, contract identities, and the three-target native CI/release matrix. The security claim is bounded local processing, not a multi-tenant sandbox or unauthenticated upload service; the reproducibility claim covers canonical behavior, not bit-identical executables or cross-toolchain builds.
+
+The [M3 compact-summary traceability gate](evaluation/m3-summary-traceability-gate/README.md) verifies that compact JSON remains the complete report, Agent projection streams reconstruct it exactly, and Impact/Markdown summary IDs lead into the closed evidence graph without making Markdown a second source of truth.
 
 ## Documentation
 
@@ -298,7 +328,7 @@ The [performance suites](evaluation/performance/README.md) independently time pa
 
 ## Validation
 
-Run the MoonBit suite and CLI integration test:
+Run the cross-target MoonBit suite and executable integration tests:
 
 ```sh
 moon check --target all --warn-list +73
@@ -319,7 +349,6 @@ sh scripts/test-html-security.sh
 sh scripts/test-compatibility.sh
 sh scripts/test-schema-examples.sh
 sh scripts/test-completions.sh
-sh scripts/test-semantic-concern-policy.sh
 ```
 
-The browser oracle, renderer-conformance, and HTML-security validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.
+The GitHub Pages, browser-oracle, renderer-conformance, and HTML-security validations additionally require Node.js/npm (`npx`) and launch pinned headless Chromium outside the production engine. Alternate-scale QA uses only the evaluation renderer adapter and never changes canonical report evidence.
