@@ -102,10 +102,17 @@ script and styles extracted from `html_report_assets.mbt`. The generated
 The [`cmd/svgdiff_miniio`](cmd/svgdiff_miniio/README.md) package exposes the
 same comparison engine as a portable WASIp1 CLI using MiniIO. It reads two
 guest-visible SVG files and writes concise Structured Report schema `2.0` JSON
-for an agent that cannot inspect images:
+for an agent that cannot inspect images. After version `0.7.0` is published,
+run the package directly from Mooncakes:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio before.svg after.svg
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
+```
+
+From a source checkout, verify it with the repository fixtures:
+
+```sh
+moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
 ```
 
 Its focused [`SKILL.md`](cmd/svgdiff_miniio/SKILL.md) defines the agent reading

@@ -13,10 +13,17 @@ analysis limitations.
 
 ## Run
 
-From this repository:
+After module version `0.7.0` is published:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio before.svg after.svg
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
+```
+
+From this repository, use the checked-in fixtures for a self-contained smoke
+test:
+
+```sh
+moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
 ```
 
 The command writes concise Structured Report schema `2.0` JSON to stdout. It

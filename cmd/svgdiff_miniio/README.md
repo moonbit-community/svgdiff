@@ -3,8 +3,16 @@
 Portable WASIp1 CLI for the `Milky2018/svgdiff` visual-semantic comparison
 engine.
 
+After module version `0.7.0` is published:
+
 ```sh
-moon runwasm cmd/svgdiff_miniio before.svg after.svg
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
+```
+
+From the repository root:
+
+```sh
+moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
 moon runwasm cmd/svgdiff_miniio -- --help
 ```
 
