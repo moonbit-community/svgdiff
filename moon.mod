@@ -36,28 +36,15 @@ import {
 
 options(
   exclude: [
-    ".github",
     "cmd/svgdiff",
     "cmd/svgdiff_wasm",
     "completions",
     "docs",
     "evaluation",
     "issues",
-    "prototype",
-    "release",
     "schema",
     "scripts",
     "testdata",
     "web",
-    "modules",
-    "moon.work",
-    "AGENTS.md",
-    "CONTEXT.md",
-    "README.md",
-    "README.mbt.md",
-    "roadmap.md",
-    "*_test.mbt",
-    "*_wbtest.mbt",
-    "engine/README.md",
   ],
 )
