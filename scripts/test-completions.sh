@@ -16,8 +16,10 @@ if command -v fish >/dev/null 2>&1; then
 fi
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --help >"$tmp/help.txt"
-options=$(sed -n '/^Options:/,/^$/s/^  \(--[a-z-]*\).*/\1/p' "$tmp/help.txt")
-test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 14
+options=$(sed -E -n \
+  '/^Options:/,/^$/s/^  (-[[:alnum:]?], )?(--[a-z-]*).*/\2/p' \
+  "$tmp/help.txt")
+test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 15
 for option in $options; do
   grep -q -- "$option" "$tmp/help.txt"
   grep -q -- "$option" completions/svgdiff.bash
@@ -42,19 +44,6 @@ SVGDIFF_COMPLETION_TMP="$tmp" bash -c '
   _svgdiff
   test "${COMPREPLY[*]}" = "before.svg"
 '
-SVGDIFF_COMPLETION_TMP="$tmp" bash -c '
-  source completions/svgdiff.bash
-  cd "$SVGDIFF_COMPLETION_TMP"
-  COMP_WORDS=(svgdiff before.svg after.svg --before-resource asset.png image/)
-  COMP_CWORD=5
-  _svgdiff
-  test "${COMPREPLY[*]}" = "image/png image/jpeg"
-  COMP_WORDS=(svgdiff before.svg after.svg --before-resource asset.png image/png be)
-  COMP_CWORD=6
-  _svgdiff
-  test "${COMPREPLY[*]}" = "before.svg"
-'
-
 for shell in bash zsh fish; do
   dest="$tmp/$shell"
   first=$(sh scripts/install-completions.sh "$shell" --dest "$dest")

@@ -3,8 +3,10 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 tmp=${TMPDIR:-/tmp}/svgdiff-cli-$$
+wasi_tmp=_build/svgdiff-miniio-cli-$$
 mkdir -p "$tmp"
-trap 'rm -rf "$tmp"' EXIT
+mkdir -p "$wasi_tmp"
+trap 'rm -rf "$tmp" "$wasi_tmp"' EXIT
 
 assert_status() {
   expected=$1
@@ -116,11 +118,55 @@ jq -e '
 moon run --target native modules/svgdiff/cmd/svgdiff -- --help >"$tmp/help.txt"
 grep -q '^Usage: svgdiff ' "$tmp/help.txt"
 grep -q -- '--agent-json' "$tmp/help.txt"
-grep -q -- '--summary FILE' "$tmp/help.txt"
+grep -q -- '--summary <summary>' "$tmp/help.txt"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
 grep -q '^svgdiff 0.7.0$' "$tmp/version.txt"
 grep -q '^schema: 2.0$' "$tmp/version.txt"
+
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio \
+  testdata/before.svg testdata/after.svg \
+  --output "$wasi_tmp/report.json" \
+  --html "$wasi_tmp/report.html" \
+  --summary "$wasi_tmp/summary.md"
+test "$(jq -S -c . "$wasi_tmp/report.json")" = \
+  "$(jq -S -c . "$tmp/report.json")"
+grep -q '<!doctype html>' "$wasi_tmp/report.html"
+grep -q '^# SVG Diff Summary$' "$wasi_tmp/summary.md"
+
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio \
+  testdata/before.svg testdata/after.svg \
+  --agent-projection --output "$wasi_tmp/report.jsonl"
+grep -q 'svgdiff-agent-projection/1' "$wasi_tmp/report.jsonl"
+
+python3 -c \
+  'import base64, pathlib, sys; pathlib.Path(sys.argv[1]).write_bytes(base64.b64decode(sys.argv[2]))' \
+  "$wasi_tmp/red.png" \
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg=='
+printf '%s\n' \
+  "<svg width='16' height='16'><image href='asset.png' width='8' height='8'/></svg>" \
+  >"$wasi_tmp/resource.svg"
+resource_json=$(printf \
+  '{"locator":"asset.png","media_type":"image/png","path":"%s"}' \
+  "$wasi_tmp/red.png")
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio \
+  "$wasi_tmp/resource.svg" "$wasi_tmp/resource.svg" \
+  --before-resource "$resource_json" \
+  --after-resource "$resource_json" \
+  --agent-json >"$wasi_tmp/resource-report.json"
+jq -e '
+  all(.limitations[]; .code != "resource_bundle_entry_missing")
+' "$wasi_tmp/resource-report.json" >/dev/null
+
+assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
+  testdata/before.svg testdata/after.svg --max-checkpoints 1 \
+  >"$tmp/native-budget.out" 2>"$tmp/native-budget.err"
+grep -q 'checkpoint budget 1 exhausted' "$tmp/native-budget.err"
+
+assert_status 1 moon runwasm modules/svgdiff/cmd/svgdiff_miniio \
+  testdata/before.svg testdata/after.svg --max-checkpoints 1 \
+  >"$tmp/miniio-budget.out" 2>"$tmp/miniio-budget.err"
+grep -q 'checkpoint budget 1 exhausted' "$tmp/miniio-budget.err"
 
 assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/missing-args.out" 2>"$tmp/missing-args.err"

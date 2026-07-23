@@ -54,12 +54,12 @@ svgdiff before.svg after.svg --perceptual-background '#ffffff'
 svgdiff before.svg after.svg --perceptual-background '#ffffff' --flip-pixels-per-degree 67
 ```
 
-Supply raster bytes explicitly when an `image` locator is not a data URL. Each option is a locator, MIME type, and file triplet; no SVG-authored path is opened automatically:
+Supply raster bytes explicitly when an `image` locator is not a data URL. Each repeatable option accepts one JSON object containing `locator`, `media_type`, and `path`; no SVG-authored path is opened automatically:
 
 ```sh
 svgdiff before.svg after.svg \
-  --before-resource assets/photo.png image/png before-photo.png \
-  --after-resource assets/photo.png image/png after-photo.png
+  --before-resource '{"locator":"assets/photo.png","media_type":"image/png","path":"before-photo.png"}' \
+  --after-resource '{"locator":"assets/photo.png","media_type":"image/png","path":"after-photo.png"}'
 ```
 
 Add `--html report.html` to generate a self-contained interactive report with
@@ -101,18 +101,18 @@ generated `_site` directory is ignored and must not be edited directly.
 
 The [`modules/svgdiff/cmd/svgdiff_miniio`](modules/svgdiff/cmd/svgdiff_miniio/README.md) package exposes the
 same comparison engine as a portable WASIp1 CLI using MiniIO. It reads two
-guest-visible SVG files and writes concise Structured Report schema `2.0` JSON
-for an agent that cannot inspect images. After version `0.7.0` is published,
-run the package directly from Mooncakes:
+guest-visible SVG files and supports the same arguments, outputs, explicit
+resources, and optional deterministic checkpoint budget as the native CLI.
+After version `0.7.0` is published, run the package directly from Mooncakes:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg --agent-json
 ```
 
 From a source checkout, verify it with the repository fixtures:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg --agent-json
 ```
 
 The repository-level [`SKILL.md`](SKILL.md) defines the agent reading
@@ -162,9 +162,9 @@ Explicit 8-bit non-interlaced PNG and single-scan baseline JPEG data URLs or exa
 
 The root package is the stable product seam. Its implementation lives in the formal `engine` package; historical experiment findings are retained under `docs/research`.
 
-Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional deterministic checkpoint budget. `compare_with_control` raises typed `Cancelled` or `CheckpointBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. The budget counts engine checkpoints rather than elapsed time, so the same input and engine version exhaust it independently of machine speed. Checks remain cooperative, so one synchronous dependency call may finish before the next checkpoint. The ordinary `compare` and native CLI remain unlimited.
+Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional deterministic checkpoint budget. `compare_with_control` raises typed `Cancelled` or `CheckpointBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. The budget counts engine checkpoints rather than elapsed time, so the same input and engine version exhaust it independently of machine speed. Checks remain cooperative, so one synchronous dependency call may finish before the next checkpoint. The ordinary `compare` and both CLIs remain unlimited unless `--max-checkpoints` is supplied.
 
-The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. File, stdin, stdout, and process handling remain isolated in the native-only `modules/svgdiff/cmd/svgdiff` package. The wasm-only [`modules/svgdiff/cmd/svgdiff_wasm`](modules/svgdiff/cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
+The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. Filesystem, stdin, stdout, and process handling remain outside the engine in the native `modules/svgdiff/cmd/svgdiff` and WASIp1 `modules/svgdiff/cmd/svgdiff_miniio` adapters. The wasm-only [`modules/svgdiff/cmd/svgdiff_wasm`](modules/svgdiff/cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
 
 ### Compare SVG sources
 

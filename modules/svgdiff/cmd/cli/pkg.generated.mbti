@@ -1,0 +1,53 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/cmd/cli"
+
+import {
+  "Milky2018/svgdiff",
+  "Milky2018/svgdiff/engine",
+  "Milky2018/svgdiff/engine/model",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn command(String) -> @argparse.Command
+
+pub fn compare_sources(String, String, Config, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport raise @svgdiff.ComparisonInterrupted
+
+pub fn parse(Array[String]) -> Result[Config, String]
+
+pub fn serialize_report(@model.StructuredReport, Config) -> String
+
+pub fn version_text(String) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct Config {
+  before_path : String
+  after_path : String
+  output_path : String?
+  html_path : String?
+  summary_path : String?
+  agent_json : Bool
+  agent_projection : Bool
+  width : Int
+  height : Int
+  perceptual_background : @model.PerceptualBackground?
+  flip_viewing_conditions : @model.FlipViewingConditions?
+  flip_error_threshold : @model.FlipErrorThreshold?
+  before_resources : Array[Resource]
+  after_resources : Array[Resource]
+  max_checkpoints : Int?
+}
+
+pub(all) struct Resource {
+  locator : String
+  media_type : String
+  path : String
+} derive(@json.FromJson)
+
+// Type aliases
+
+// Traits
+

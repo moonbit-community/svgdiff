@@ -2,7 +2,7 @@
 
 Status: implementation-grounded policy note
 
-Last verified: 2026-07-15
+Last verified: 2026-07-23
 
 ## Question
 
@@ -12,7 +12,7 @@ How can a comparison resolve non-data-URL raster images reproducibly without gra
 
 Resource acquisition belongs to the caller. The root API accepts separate before and after `ResourceBundle` values. Each ordered entry contains an opaque locator, an explicit media type, and bytes. Resolution trims the authored `image` locator and performs one case-sensitive exact match against the corresponding bundle. It does not resolve relative paths, apply a base URL, percent-decode or canonicalize the key, follow redirects, inspect the current directory, or fetch a network URL.
 
-The CLI exposes the same boundary through repeatable `--before-resource LOCATOR MEDIA_TYPE FILE` and `--after-resource LOCATOR MEDIA_TYPE FILE` triplets. It reads exactly those named files before comparison. The file path is acquisition input only: it is not used as locator identity and is never serialized in the report.
+The CLI exposes the same boundary through repeatable `--before-resource RESOURCE_JSON` and `--after-resource RESOURCE_JSON` single-value options. Each JSON object contains string `locator`, `media_type`, and `path` fields. It reads exactly those named files before comparison. The file path is acquisition input only: it is not used as locator identity and is never serialized in the report.
 
 ## Admission and evidence
 

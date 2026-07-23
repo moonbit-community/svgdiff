@@ -16,17 +16,18 @@ analysis limitations.
 After module version `0.7.0` is published:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg --agent-json
 ```
 
 From this repository, use the checked-in fixtures for a self-contained smoke
 test:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg --agent-json
 ```
 
-The command writes concise Structured Report schema `2.0` JSON to stdout. It
+The command writes canonical Structured Report schema `2.0` JSON by default;
+pass `--agent-json` for the same report without formatting whitespace. It
 accepts exactly two guest-visible SVG paths. Use `-` for at most one input to
 read it from stdin.
 
@@ -43,7 +44,8 @@ Useful explicit comparison inputs:
 moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
   --width 256 \
   --height 256 \
-  --max-checkpoints 1000000
+  --max-checkpoints 1000000 \
+  --agent-json
 ```
 
 Optional displayed-color evidence requires an opaque background. LDR-FLIP
@@ -52,7 +54,8 @@ additionally requires pixels per degree:
 ```sh
 moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
   --perceptual-background '#ffffff' \
-  --flip-pixels-per-degree 67
+  --flip-pixels-per-degree 67 \
+  --agent-json
 ```
 
 ## Interpret the report
@@ -83,10 +86,11 @@ that contains the input SVGs:
 
 ```sh
 wasmtime run --dir ./examples::examples \
-  svgdiff_miniio.wasm examples/before.svg examples/after.svg
+  svgdiff_miniio.wasm examples/before.svg examples/after.svg --agent-json
 ```
 
 The skill performs no network access and resolves no ambient host paths.
-External raster resources must currently be embedded as supported `data:` URLs.
-Argument and file errors exit with status `2`; comparison interruption or a
-failed analysis exits with status `1`.
+External raster resources may be supplied explicitly with the same repeatable
+`--before-resource` and `--after-resource` JSON options as the native CLI;
+their paths must also be guest-visible. Argument and file errors exit with
+status `2`; comparison interruption or a failed analysis exits with status `1`.

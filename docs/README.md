@@ -100,7 +100,7 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
 - The production comparison implementation lives in
   `modules/svgdiff/engine`; the root package is the public seam.
-- The CLI lives in `modules/svgdiff/cmd/svgdiff`, can emit JSON plus an optional self-contained HTML presentation, and reads non-data-URL raster bytes only from explicit before/after resource triplets.
+- Shared command specifications, configuration, and argument decoding live in `modules/svgdiff/cmd/cli`. The native `modules/svgdiff/cmd/svgdiff` and WASIp1 `modules/svgdiff/cmd/svgdiff_miniio` packages expose the same options, output modes, explicit resources, and optional checkpoint budget while retaining backend-specific I/O and exit handling.
 - The implemented analyzer covers a deliberately bounded deterministic static-SVG subset, including complete source/computed semantics for static same-document linear/radial gradients, patterns over the admitted basic-shape child slice, local rectangular clipping, static alpha/luminance masking with isolated container application and conservative effect bounds, deterministic same-document use instances with separate definition and placement identity, and consequence-aware ancestry, instance-resolution, and stacking relationships.
 - Unsupported semantics produce Diagnostics and prevent a false `complete` claim.
 - The M5 non-goal gate composes font, platform, color, renderer, dynamic, foreign-content, and generalized-resource decisions without adopting those future capabilities.

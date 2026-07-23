@@ -1,7 +1,7 @@
 import {
   "Milky2018/svgdiff",
+  "Milky2018/svgdiff/cmd/cli",
   "moonbit-community/miniio",
-  "moonbitlang/core/string",
 }
 
 supported_targets = "wasm"

@@ -6,11 +6,12 @@ _svgdiff() {
     '2:after SVG:_files -g "*.svg"' \
     '--width[comparison viewport width in CSS pixels]:positive integer:' \
     '--height[comparison viewport height in CSS pixels]:positive integer:' \
+    '--max-checkpoints[optional deterministic computation budget]:positive integer:' \
     '--perceptual-background[record one explicit opaque deterministic sRGB background]:color:' \
     '--flip-pixels-per-degree[request LDR-FLIP with supported pixels per degree]:pixels per degree:' \
     '--flip-error-threshold[report FLIP area above an explicit error threshold]:FLIP error threshold:' \
-    '*--before-resource[supply one before-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
-    '*--after-resource[supply one after-side raster resource]:locator: :media type:(image/png image/jpeg):resource file:_files' \
+    '*--before-resource[supply one before-side raster resource]:resource JSON:' \
+    '*--after-resource[supply one after-side raster resource]:resource JSON:' \
     '--output[write JSON or Agent projection JSONL to a file]:output file:_files' \
     '--html[write the self-contained HTML report]:HTML file:_files' \
     '--summary[write a derived non-authoritative Markdown summary]:Markdown file:_files' \

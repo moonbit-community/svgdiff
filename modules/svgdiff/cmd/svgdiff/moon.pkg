@@ -1,9 +1,9 @@
 import {
   "Milky2018/svgdiff" @lib,
+  "Milky2018/svgdiff/cmd/cli",
   "moonbitlang/async",
   "moonbitlang/async/io",
   "moonbitlang/async/stdio",
-  "moonbitlang/core/string",
   "moonbitlang/x/fs",
   "moonbitlang/x/sys",
 }

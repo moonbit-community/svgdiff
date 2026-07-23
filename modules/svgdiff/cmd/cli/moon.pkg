@@ -1,0 +1,6 @@
+import {
+  "Milky2018/svgdiff",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+}

@@ -2,11 +2,11 @@
 
 Status: current command contract
 
-Last verified: 2026-07-16
+Last verified: 2026-07-23
 
 ## Inputs
 
-`svgdiff` requires two positional SVG operands. A path reads a UTF-8 file. `-` reads one complete UTF-8 SVG document from stdin.
+Both `svgdiff` and `svgdiff_miniio` implement this contract and require two positional SVG operands. A path reads a UTF-8 file. `-` reads one complete UTF-8 SVG document from stdin. MiniIO paths must be visible through the WASI host's preopened directories.
 
 | Invocation shape | Meaning |
 | --- | --- |
@@ -14,11 +14,12 @@ Last verified: 2026-07-16
 | `cat before.svg \| svgdiff - after.svg` | Read the before SVG from stdin. |
 | `cat after.svg \| svgdiff before.svg -` | Read the after SVG from stdin. |
 | `svgdiff - -` | Invalid: one stdin stream cannot supply two independently bounded documents. |
-| `svgdiff before.svg after.svg --before-resource asset.png image/png before.png --after-resource asset.png image/png after.png` | Supply exact-match bytes for `asset.png` independently on each side. |
+| `svgdiff before.svg after.svg --before-resource '{"locator":"asset.png","media_type":"image/png","path":"before.png"}' --after-resource '{"locator":"asset.png","media_type":"image/png","path":"after.png"}'` | Supply exact-match bytes for `asset.png` independently on each side. |
 | `svgdiff before.svg after.svg --perceptual-background white` | Record one normalized opaque sRGB8 Perceptual Background without changing current transparent-canvas raw evidence. |
 | `svgdiff before.svg after.svg --perceptual-background white --flip-pixels-per-degree 67` | Compute optional event-local LDR-FLIP maps under explicitly recorded pixels-per-degree Viewing Conditions. |
+| `svgdiff before.svg after.svg --max-checkpoints 1000000` | Stop with exit status `1` if deterministic engine work exceeds the explicit checkpoint budget. |
 
-Missing positional operands never imply stdin. Resource options are repeatable `LOCATOR MEDIA_TYPE FILE` triplets; their file operand may not be `-`. The CLI reads only those explicitly named resource files, and the engine treats each locator as an opaque key rather than opening it as a path. `--perceptual-background COLOR` accepts only deterministic resolved opaque sRGB colors; contextual, system, invalid, and translucent values are rejected before comparison. `--flip-pixels-per-degree PPD` accepts only finite values in `[1, 4096]`, records the exact value, and does not imply a background; both options are required for computed FLIP maps. The command reads the complete SVG stream and explicit resource files before comparison, then the engine applies the fixed source and bundle budgets before XML or image analysis. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission and CLI cancellation remain future work. Cooperative controls are available only to callers of the MoonBit library.
+Missing positional operands never imply stdin. Resource options are repeatable single-value options; each value is a JSON object with string `locator`, `media_type`, and `path` fields, and `path` may not be `-`. The CLI reads only those explicitly named resource files, and the engine treats each locator as an opaque key rather than opening it as a path. `--perceptual-background COLOR` accepts only deterministic resolved opaque sRGB colors; contextual, system, invalid, and translucent values are rejected before comparison. `--flip-pixels-per-degree PPD` accepts only finite values in `[1, 4096]`, records the exact value, and does not imply a background; both options are required for computed FLIP maps. `--max-checkpoints N` accepts a positive integer; omission means unlimited deterministic work. The command reads the complete SVG stream and explicit resource files before comparison, then the engine applies the fixed source and bundle budgets before XML or image analysis. This bounds comparison work but not the CLI's initial file-read allocation; streaming admission remains future work.
 
 ## Outputs
 

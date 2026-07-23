@@ -68,7 +68,7 @@ The private MoonBit LDR-FLIP implementation follows the equations and constants 
 
 ### CLI and data access
 
-- The CLI reads the two SVG paths plus only resource files named by repeatable `--before-resource LOCATOR MEDIA_TYPE FILE` or `--after-resource LOCATOR MEDIA_TYPE FILE` triplets, and writes only explicitly requested JSON or HTML paths. A resource path supplies bytes and never becomes locator identity or report evidence.
+- The CLI reads the two SVG paths plus only resource files named by repeatable `--before-resource RESOURCE_JSON` or `--after-resource RESOURCE_JSON` single-value options, and writes only explicitly requested JSON or HTML paths. Each JSON object contains string `locator`, `media_type`, and `path` fields. A resource path supplies bytes and never becomes locator identity or report evidence.
 - Invalid arguments and file I/O errors exit with status `2`; malformed SVG analysis exits with status `1`.
 - A partial report is returned successfully so Diagnostics remain machine-readable.
 
@@ -76,7 +76,7 @@ The private MoonBit LDR-FLIP implementation follows the equations and constants 
 
 Schema `2.0` provides fixed resource admission but does not yet provide a complete hostile-input execution sandbox:
 
-- the CLI has no cancellation or comparison-time option; the library's controlled comparison is cooperative and cannot preempt one synchronous parser or renderer call;
+- the CLIs expose a deterministic checkpoint budget but no wall-clock deadline or external cancellation predicate; cooperative control cannot preempt one synchronous parser or renderer call;
 - no streaming admission before the CLI allocates the complete input String, no in-process peak-memory enforcement for final serialization, and no configurable embedding policy;
 - no coverage-guided or sanitizer-guided fuzzing; the fixed-seed generative [fuzz smoke](../evaluation/fuzz/README.md) covers parser, adapter, renderer, JSON, and HTML boundaries but does not measure code coverage;
 - no automated dependency advisory or SBOM check, and no signing, notarization, or SLSA attestation of the CI-published license and provenance evidence;
