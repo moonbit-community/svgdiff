@@ -16,7 +16,7 @@ test "spatially disconnected pixel changes produce separate regions" {
     all_regions.push_iter(event.difference_regions.iter())
   }
   assert_eq(all_regions.length(), 2)
-  assert_true(all_regions.all(region => region.source == "pixel_mask"))
+  assert_true(all_regions.all(region => region.source == "isolated_pixel_mask"))
   assert_eq(
     all_regions.fold(init=0, fn(total, region) { total + region.changed_pixels }),
     18,
@@ -54,7 +54,7 @@ test "each event raster magnitude is local to its region union" {
 }
 
 ///|
-test "ordinary inheritance uses the rendered pixel mask" {
+test "ordinary inheritance uses an isolated pixel candidate" {
   let before = "<svg width='16' height='16'><g fill='red'><rect id='box' x='2' y='3' width='5' height='4'/></g></svg>"
   let after = "<svg width='16' height='16'><g fill='blue'><rect id='box' x='4' y='3' width='5' height='4'/></g></svg>"
   let report = @engine.compare(
@@ -71,7 +71,7 @@ test "ordinary inheritance uses the rendered pixel mask" {
   assert_eq(fill_events.length(), 1)
   assert_eq(fill_events[0].difference_regions.length(), 1)
   let region = fill_events[0].difference_regions[0]
-  assert_eq(region.source, "pixel_mask")
+  assert_eq(region.source, "isolated_pixel_mask")
   assert_eq(region.css_x, 2.0)
   assert_eq(region.css_y, 3.0)
   assert_eq(region.css_width, 7.0)

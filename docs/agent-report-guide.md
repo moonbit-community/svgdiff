@@ -1,6 +1,6 @@
 # Agent Report Guide
 
-Status: current schema `1.46` interpretation guide
+Status: current schema `2.0` interpretation guide
 
 Last verified: 2026-07-22
 
@@ -42,9 +42,14 @@ outcome can be computed or unavailable. A computed zero event remains useful:
 it proves that the reported semantic difference produced no pixels under the
 recorded profile and rasterization.
 
-Each region contains one CSS-space bounding box. `observed` comes from changed
-pixels; `conservative` is a sound spatial enclosure under the stated analysis
-boundary. No duplicate device/CSS rectangle or per-side footprint is emitted.
+Each region contains one CSS-space bounding box. All current Event regions are
+`conservative`. Some are tightened by a supported isolated entity rendering;
+others only intersect final changed pixels with Event bounds, or retain
+computed bounds when rendered pixels are unavailable. Several Events may
+therefore share the same region. Their numeric outcome is a bounded canvas
+response, not an exact contribution. `observed` is reserved for future
+scene-level contribution evidence. No duplicate device/CSS rectangle or
+per-side footprint is emitted.
 
 ## Possible causes
 

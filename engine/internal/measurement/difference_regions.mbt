@@ -316,11 +316,109 @@ pub fn rendered_magnitude_for_regions(
 }
 
 ///|
-fn clip_pixel_region_to_bounds(
+fn event_isolated_domain(domain : String) -> Bool {
+  domain.has_prefix("geometry.") ||
+  domain.has_prefix("paint.") ||
+  domain.has_prefix("presence.")
+}
+
+///|
+fn event_has_only_isolated_entity_differences(
+  event : VisualEvent,
+  report : StructuredReport,
+  alignment : SubjectAlignment,
+) -> Bool {
+  for id in event.atomic_difference_ids {
+    let mut found = false
+    for difference in report.atomic_differences {
+      if difference.id == id {
+        if difference.subject_role != "entity" ||
+          difference.subject_alignment_id != Some(alignment.id) ||
+          !event_isolated_domain(difference.domain) {
+          return false
+        }
+        found = true
+        break
+      }
+    }
+    if !found {
+      return false
+    }
+  }
+  !event.atomic_difference_ids.is_empty()
+}
+
+///|
+fn isolated_subjects_image_or_empty(
+  subjects : Array[SourceSubject],
+  profile : ComparisonProfile,
+) -> @svg.Image? {
+  if subjects.is_empty() {
+    Some(@svg.Image::new(profile.viewport_width, profile.viewport_height))
+  } else {
+    isolated_subjects_image(subjects, profile)
+  }
+}
+
+///|
+priv struct EventIsolationBudget {
+  mut comparisons : Int
+  mut raster_pixels : Int
+}
+
+///|
+fn EventIsolationBudget::new() -> EventIsolationBudget {
+  { comparisons: 0, raster_pixels: 0 }
+}
+
+///|
+fn EventIsolationBudget::measure(
+  self : EventIsolationBudget,
+  event : VisualEvent,
+  report : StructuredReport,
+  alignments : Array[SubjectAlignment],
+  before : Array[SourceSubject],
+  after : Array[SourceSubject],
+) -> (@svg.Image, @svg.Image)? {
+  guard alignment_for_event(event, alignments) is Some(alignment) &&
+    event_has_only_isolated_entity_differences(event, report, alignment) else {
+    return None
+  }
+  let before_subjects = subjects_for_references(before, alignment.before)
+  let after_subjects = subjects_for_references(after, alignment.after)
+  if !before_subjects.all(boundary_isolation_supported) ||
+    !after_subjects.all(boundary_isolation_supported) {
+    return None
+  }
+  let pixels = report.profile.viewport_width * report.profile.viewport_height
+  let work_pixels = pixels * 2
+  if !isolated_render_budget_allows(
+      self.comparisons,
+      self.raster_pixels,
+      pixels,
+    ) {
+    return None
+  }
+  self.comparisons += 1
+  self.raster_pixels += work_pixels
+  let images = match
+    (
+      isolated_subjects_image_or_empty(before_subjects, report.profile),
+      isolated_subjects_image_or_empty(after_subjects, report.profile),
+    ) {
+    (Some(before_image), Some(after_image)) => (before_image, after_image)
+    _ => return None
+  }
+  Some(images)
+}
+
+///|
+fn clip_pixel_region_to_event_evidence(
   region : DifferenceRegion,
   bounds : CssBounds,
   before : @svg.Image,
   after : @svg.Image,
+  isolated : (@svg.Image, @svg.Image)?,
 ) -> DifferenceRegion? {
   let region_bounds : CssBounds = {
     x: region.css_x,
@@ -349,13 +447,21 @@ fn clip_pixel_region_to_bounds(
   for y in start_y..<end_y {
     for x in start_x..<end_x {
       let index = y * before.width + x
-      if pixels_differ(before, after, index) {
-        changed_pixels += 1
-        min_x = min_x.min(x)
-        min_y = min_y.min(y)
-        max_x = max_x.max(x)
-        max_y = max_y.max(y)
+      if !pixels_differ(before, after, index) {
+        continue
       }
+      match isolated {
+        Some((isolated_before, isolated_after)) =>
+          if !pixels_differ(isolated_before, isolated_after, index) {
+            continue
+          }
+        None => ()
+      }
+      changed_pixels += 1
+      min_x = min_x.min(x)
+      min_y = min_y.min(y)
+      max_x = max_x.max(x)
+      max_y = max_y.max(y)
     }
   }
   if changed_pixels == 0 {
@@ -363,6 +469,11 @@ fn clip_pixel_region_to_bounds(
   }
   Some({
     ..region,
+    source: if isolated is Some(_) {
+      "isolated_pixel_mask"
+    } else {
+      "bounded_pixel_mask"
+    },
     pixel_x: min_x,
     pixel_y: min_y,
     pixel_width: max_x - min_x + 1,
@@ -1281,14 +1392,29 @@ pub fn attach_difference_regions(
   let mut attached_region_count = 0
   let mut perceptual_map_pixels = 0
   let mut perceptual_flip_samples = 0
+  let isolation_budget = EventIsolationBudget::new()
   for event in report.events {
     comparison_guard.checkpoint()
-    let bounds = event_side_bounds(
+    let isolated = isolation_budget.measure(
+      event, report, alignments, before, after,
+    )
+    let event_bounds = event_side_bounds(
         event, report, alignments, before, after, before_images, after_images, before_filter_hosts,
         after_filter_hosts,
       )
       .map(side_bounds_union)
       .unwrap_or(None)
+    let bounds = match (event_bounds, isolated) {
+      (Some(bounds), _) => Some(bounds)
+      (None, Some(_)) =>
+        Some({
+          x: 0.0,
+          y: 0.0,
+          width: report.profile.viewport_width.to_double(),
+          height: report.profile.viewport_height.to_double(),
+        })
+      (None, None) => None
+    }
     let regions : Array[DifferenceRegion] = []
     if event.rendered_outcome.status == "computed" {
       match bounds {
@@ -1297,8 +1423,8 @@ pub fn attach_difference_regions(
             match
               rendered_images.bind(images => {
                 let (before_image, after_image) = images
-                clip_pixel_region_to_bounds(
-                  region, bounds, before_image, after_image,
+                clip_pixel_region_to_event_evidence(
+                  region, bounds, before_image, after_image, isolated,
                 )
               }) {
               Some(clipped) => {

@@ -1,6 +1,6 @@
 # Concise Agent JSON
 
-Status: current schema `1.46` serialization contract
+Status: current schema `2.0` serialization contract
 
 Last verified: 2026-07-22
 
@@ -45,6 +45,12 @@ zero raster measurements.
 
 Each event lists its Atomic Difference IDs. A region contains one CSS-space
 bounding box, its observed or conservative kind, and a possible-cause envelope.
+All current Event regions are `conservative`. An admitted isolated rendering
+may tighten the candidate or prove it empty, while other Events use a
+bounds-filtered final-canvas mask or computed bounds. Several Events may
+legitimately share a region, and its outcome is a bounded response rather than
+an exact contribution. `observed` is reserved for future scene-level
+contribution evidence.
 When `possible_causes.guarantee` is `sound_overapproximation`, the candidate
 Atomic Difference IDs may include false positives but contain every actual
 changed cause within complete analysis coverage. `not_established` makes no

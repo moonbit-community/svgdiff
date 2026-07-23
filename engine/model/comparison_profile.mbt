@@ -85,7 +85,7 @@ pub fn FlipErrorThreshold::value(self : FlipErrorThreshold) -> Double {
 ///|
 /// Rendering and normalization conditions recorded for one comparison.
 ///
-/// The root schema `1.46` API accepts caller-provided viewport dimensions,
+/// The root schema `2.0` API accepts caller-provided viewport dimensions,
 /// Perceptual Background, FLIP Viewing Conditions, and FLIP error threshold,
 /// and canonicalizes the
 /// remaining fields to `v1_default`.
@@ -125,7 +125,7 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
 }
 
 ///|
-/// Return the fixed schema `1.46` profile with a `16 x 16` viewport.
+/// Return the fixed schema `2.0` profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions,
 /// an explicitly parsed Perceptual Background, invariant-checked FLIP Viewing

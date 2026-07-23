@@ -99,7 +99,7 @@ script and styles extracted from `html_report_assets.mbt`. The generated
 
 ## Library API
 
-Install module version `0.6.0` with `moon add Milky2018/svgdiff@0.6.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.7.0` with `moon add Milky2018/svgdiff@0.7.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -110,7 +110,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `1.46`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). It is deliberately smaller than the typed engine result: `comparison`, `canvas`, categorized `difference_groups`, `events`, and actual `limitations` are the complete serialized surface. Successful coverage rows, alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
+The current JSON contract is version `2.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). It is deliberately smaller than the typed engine result: `comparison`, `canvas`, categorized `difference_groups`, `events`, and actual `limitations` are the complete serialized surface. Successful coverage rows, alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
 
 Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
 
@@ -159,7 +159,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "1.46")
+  assert_eq(report.schema_version, "2.0")
   assert_eq(report.analysis_status, "complete")
   assert_true(report.atomic_differences.length() >= 2)
   assert_true(report.events.length() > 0)
@@ -220,7 +220,7 @@ test "serialize JSON and build the HTML presentation" {
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
   let summary = @svgdiff.render_markdown_summary(report)
-  assert_true(json.find("\"schema_version\": \"1.46\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"2.0\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))

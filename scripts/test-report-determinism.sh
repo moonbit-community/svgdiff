@@ -17,7 +17,11 @@ jq -e '
   .repetitions_per_mode == 3 and
   (.cases | length) == 8 and
   all(.cases[]; .status == "passed") and
-  (.negative_controls | length) == 8
+  .negative_controls == [
+    "duplicate_report_local_id",
+    "dangling_report_local_reference",
+    "dangling_possible_cause"
+  ]
 ' "$tmp/first.json" >/dev/null
 
 printf 'Structured Report determinism and local references: ok\n'

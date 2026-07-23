@@ -112,6 +112,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0106](0106-use-side-qualified-resource-response-snapshots.md) | Accepted, not implemented | Bind generalized external resources as side-qualified offline request/response snapshots and keep acquisition outside comparison. |
 | [0107](0107-defer-persistent-caching-until-measured.md) | Accepted | Keep persistent and graph-incremental caches out of the product until measured demand justifies a complete exact-result key and untrusted artifact envelope. |
 | [0108](0108-delegate-proven-rendering-to-svg-0.3.1.md) | Accepted, implemented | Delegate passing cascade, native geometry, mask-content, and filter-graph rendering to `Milky2018/svg@0.3.1` while retaining only reproduced residual adapters. |
+| [0109](0109-keep-event-localization-conservative-without-contribution-evidence.md) | Accepted, implemented | Use isolation to tighten candidates and prove zero while keeping all Event regions conservative without contribution evidence. |
 
 ## CLI and distribution decisions
 

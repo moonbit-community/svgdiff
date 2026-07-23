@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.46",
+  "schema_version": "2.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -71,7 +71,7 @@
       "regions": [
         {
           "id": "region:pixel:0",
-          "kind": "observed",
+          "kind": "conservative",
           "bounds": {
             "x": 1,
             "y": 1,

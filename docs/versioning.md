@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-20
+Last verified: 2026-07-23
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -10,13 +10,13 @@ Last verified: 2026-07-20
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.6.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `1.46` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| MoonBit module and CLI | `0.7.0` | `moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `2.0` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
-| Limitations | Schema `1.46` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
+| Limitations | Schema `2.0` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
-| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `1.46`. |
-| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `1.46`. |
+| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `2.0`. |
+| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `2.0`. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/27` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
@@ -160,6 +160,10 @@ Module `0.5.31` adds the comparison-wide `canvas_outcome`. It measures the final
 Module `0.6.0` removes wall-clock time from the core engine and replaces `ComparisonControl.max_elapsed_milliseconds` plus `TimeBudgetExceeded` with the deterministic `max_checkpoints` plus `CheckpointBudgetExceeded`. The root, engine, color, and raster-codec packages now support wasm, wasm-gc, JavaScript, and native; the filesystem/stdin/stdout CLI remains native-only. The wasm-only `cmd/svgdiff_wasm` entry exposes `svgdiff-wasm-abi/1`, a fixed-memory UTF-8 JSON transaction accepting two SVG strings plus explicit viewport, nullable perceptual-profile inputs, and a positive checkpoint budget and returning compact Structured Report JSON. The final ABI 1 shape deliberately removes the earlier optional-viewport/no-perceptual request without a legacy decoder. The static GitHub Pages product runs this transaction in a dedicated Worker and shares the self-contained HTML Report Inspector presentation assets without recomputing semantics. Cross-target tests cover the complete library suite, while the wasm smoke gate requires one canonical report to be exactly equal to native output and the Pages browser gate verifies the three canvas measurements, localization, and raw JSON. This intentional public control-API break advances the module minor line; Structured Report schema `1.45`, renderer identity, conformance profile `/25`, Diagnostics, ordering policy, and Impact policy remain unchanged.
 
 Schema `1.46` intentionally contracts the product JSON. It keeps comparison inputs, whole-canvas measurements, grouped Atomic Differences, Visual Events, CSS-space localization, possible-cause Atomic Difference links, and encountered limitations. Successful coverage rows, renderer adapter identity chains, alignment scoring, Changed Facts, source spans, source-resolution tables, evidence bookkeeping, ordering vectors, Impact frontier internals, duplicate raster metrics, unrequested statuses, and null placeholders remain available only in the typed engine model or are omitted. Obsolete schemas and examples are not retained; current consumers either understand `1.46` or reject the report.
+
+Module `0.7.0` replaces whole-canvas Event-region inheritance with bounded event-local candidate construction. Admitted geometry, paint, and presence Events receive an isolated-subject raster comparison that can prove zero and tighten the final canvas mask; other Events retain bounds-only candidates. Both paths remain conservative because neither establishes scene-level counterfactual contribution under occlusion, compositing, blending, filters, masks, or cancellation. The engine shares fixed isolation work limits across measurement channels, and failed render attempts consume budget. This intentional behavior change advances the pre-1.0 module minor line; renderer identity, conformance profile `/27`, Diagnostics, ordering policy, and Impact policy remain unchanged.
+
+Schema `2.0` reclassifies every current Event-level Difference Region as `conservative` and reserves `observed` for future evidence that establishes an Event's scene-level contribution. The report shape is otherwise unchanged. Because existing consumers may interpret `observed` as stronger evidence and because the meaning of a serialized value changed, this is a report-semantic breaking change. Schema `1.46` consumers must explicitly migrate or reject `2.0`; no legacy producer is retained.
 
 ## Structured Report schema versions
 

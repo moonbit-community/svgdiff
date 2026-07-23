@@ -168,3 +168,119 @@ test "disjoint arc Events do not inherit the whole canvas difference mask" {
     }),
   )
 }
+
+///|
+test "overlapping computed-equivalent Event does not inherit another outcome" {
+  let before =
+    #|<svg width="16" height="16"><rect id="base" width="16" height="16" fill="red"/><rect id="front" x="4" y="4" width="4" height="4" fill="blue"/></svg>
+  let after =
+    #|<svg width="16" height="16"><rect id="base" width="16" height="16" fill="#ff0000"/><rect id="front" x="4" y="4" width="4" height="4" fill="green"/></svg>
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  let equivalent_id = report.atomic_differences.filter(difference => {
+      difference.source_before == "red" &&
+      difference.source_after == "#ff0000" &&
+      difference.computed_relation.status == "equivalent"
+    })[0].id
+  let equivalent_event = report.events.filter(event => {
+      event.atomic_difference_ids.contains(equivalent_id)
+    })[0]
+  assert_eq(
+    equivalent_event.rendered_outcome.magnitude.unwrap().changed_pixels,
+    0,
+  )
+  assert_true(equivalent_event.difference_regions.is_empty())
+  assert_eq(
+    report.atomic_differences.filter(difference => {
+      difference.id == equivalent_id
+    })[0].magnitude.raster_changed_pixel_fraction,
+    Some(0.0),
+  )
+  let changed_event = report.events.filter(event => {
+      event.atomic_difference_ids.any(id => {
+        report.atomic_differences.any(difference => {
+          difference.id == id &&
+          difference.source_before == "blue" &&
+          difference.source_after == "green"
+        })
+      })
+    })[0]
+  assert_eq(
+    changed_event.rendered_outcome.magnitude.unwrap().changed_pixels,
+    16,
+  )
+  assert_true(
+    changed_event.difference_regions.all(region => {
+      region.source == "isolated_pixel_mask"
+    }),
+  )
+}
+
+///|
+test "zero-painted path Event does not inherit an overlapping outcome" {
+  let before =
+    #|<svg width="16" height="16"><path d="M0 0h16v16H0z" fill="none"/><rect id="box" x="2" y="4" width="4" height="4"/></svg>
+  let after =
+    #|<svg width="16" height="16"><path d="M0 0h16v16H0zM0 0h16v16H0z" fill="none"/><rect id="box" x="10" y="4" width="4" height="4"/></svg>
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  let path_differences = report.atomic_differences.filter(difference => {
+    difference.domain.has_prefix("geometry.path.")
+  })
+  assert_true(!path_differences.is_empty())
+  assert_true(
+    path_differences.all(difference => {
+      difference.magnitude.painted_coverage_difference.map(coverage => {
+        coverage.fraction == 0.0
+      }) ==
+      Some(true)
+    }),
+  )
+  let path_event = report.events.filter(event => {
+      event.atomic_difference_ids.contains(path_differences[0].id)
+    })[0]
+  assert_eq(path_event.rendered_outcome.magnitude.unwrap().changed_pixels, 0)
+  assert_true(path_event.difference_regions.is_empty())
+  assert_true(
+    path_differences.all(difference => {
+      difference.magnitude.raster_changed_pixel_fraction == Some(0.0)
+    }),
+  )
+  let box_event = report.events.filter(event => {
+      event.atomic_difference_ids.any(id => {
+        report.atomic_differences.any(difference => {
+          difference.id == id && difference.domain == "geometry.position"
+        })
+      })
+    })[0]
+  assert_eq(box_event.rendered_outcome.magnitude.unwrap().changed_pixels, 32)
+  assert_true(
+    box_event.difference_regions.all(region => {
+      region.source == "isolated_pixel_mask"
+    }),
+  )
+  assert_true(
+    box_event.difference_regions.all(region => {
+      region.cause_envelope.guarantee == "not_established" &&
+      region.cause_envelope.coverage == "partial" &&
+      region.cause_envelope.fallback_scope == "comparison"
+    }),
+  )
+}
+
+///|
+test "bounds-only localization is not reported as observed Event evidence" {
+  let before =
+    #|<svg width="16" height="16"><rect id="back" width="12" height="12" fill="red"/><rect id="front" x="4" y="4" width="12" height="12" fill="blue"/></svg>
+  let after =
+    #|<svg width="16" height="16"><rect id="front" x="4" y="4" width="12" height="12" fill="blue"/><rect id="back" width="12" height="12" fill="red"/></svg>
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  guard report.events.filter(event => event.id.has_prefix("event:structure:"))
+    is [event] else {
+    fail("expected one stacking Event")
+  }
+  assert_true(!event.difference_regions.is_empty())
+  assert_true(
+    event.difference_regions.all(region => region.source == "bounded_pixel_mask"),
+  )
+  let compact = report.to_json().stringify()
+  assert_true(compact.find("\"kind\":\"conservative\"") is Some(_))
+}

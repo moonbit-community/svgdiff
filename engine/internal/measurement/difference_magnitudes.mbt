@@ -399,9 +399,7 @@ fn IsolatedPaintMeasurementCache::measure(
     after.is_empty() ||
     !before.all(boundary_isolation_supported) ||
     !after.all(boundary_isolation_supported) ||
-    self.comparisons >= 64 ||
-    pixels > 1_048_576 ||
-    self.raster_pixels + work_pixels > 4_194_304 {
+    !isolated_render_budget_allows(self.comparisons, self.raster_pixels, pixels) {
     None
   } else {
     self.comparisons += 1

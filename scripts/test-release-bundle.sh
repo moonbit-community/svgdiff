@@ -93,7 +93,7 @@ jq -e \
   (.build.target_os | length) > 0 and
   (.build.target_architecture | length) > 0 and
   .product.module_version == $version and
-  .product.report_schema_version == "1.46" and
+  .product.report_schema_version == "2.0" and
   .product.agent_projection_version == "svgdiff-agent-projection/1" and
   .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and
   .product.ordering_policy_id == "v2_domain_lexicographic" and

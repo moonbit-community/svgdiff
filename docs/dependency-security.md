@@ -4,7 +4,7 @@ Status: current maintenance ledger
 
 Last verified: 2026-07-21
 
-This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `1.46`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
+This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `2.0`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
 The opt-in report-only language-model benchmark uses a separately installed pinned Codex CLI and authenticated remote model. Neither is linked, vendored, resolved by MoonBit, shipped in release archives, or used by the comparison engine. Each evaluated case gets an empty working directory and isolated temporary Codex home containing only authentication; user configuration, project rules, prior sessions, and model caches are excluded. Strict feature overrides disable shell, browser, apps, MCP, memory, and related tools before the request, while any residual tool event rejects the run. This protects benchmark validity, not hostile multi-tenant execution: the benchmark requires trusted operator credentials and network access and must not be exposed as an unauthenticated service.
 

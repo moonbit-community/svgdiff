@@ -1,6 +1,6 @@
 # Analysis Status Contract
 
-Status: current schema `1.46` caller contract
+Status: current schema `2.0` caller contract
 
 Last verified: 2026-07-16
 
@@ -43,7 +43,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `1.46`'s implemented support contract under the recorded comparison inputs.
+> No visual-semantic difference was found within schema `2.0`'s implemented support contract under the recorded comparison inputs.
 
 It does not support any of these stronger statements:
 
@@ -78,7 +78,7 @@ A partial report does not permit an equality conclusion, even when:
 
 Consumers may use the supported differences, magnitudes, regions, and candidates that are present, but must qualify any summary with the limitations that constrain it. The CLI returns status `0` because partial analysis is a successfully produced result, not a process failure.
 
-An unsupported direct filter primitive demonstrates this rule: schema `1.46` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
+An unsupported direct filter primitive demonstrates this rule: schema `2.0` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
 
 ## `failed`
 

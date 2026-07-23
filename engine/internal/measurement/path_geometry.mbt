@@ -91,9 +91,11 @@ pub fn PathBoundaryBudget::measure(
 ) -> IsolatedPaintMeasurements? {
   let pixels = profile.viewport_width * profile.viewport_height
   let work_pixels = pixels * 2
-  if self.comparisons >= 64 ||
-    pixels > 1_048_576 ||
-    self.raster_pixels + work_pixels > 4_194_304 {
+  if !isolated_render_budget_allows(
+      self.comparisons,
+      self.raster_pixels,
+      pixels,
+    ) {
     return None
   }
   self.comparisons += 1

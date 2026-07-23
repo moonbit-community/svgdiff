@@ -1,6 +1,6 @@
 # Feature Coverage Matrix
 
-Status: current schema `1.46` internal coverage map
+Status: current schema `2.0` internal coverage map
 
 Last verified: 2026-07-20
 
@@ -13,13 +13,13 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `1.46`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `2.0`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
 ## Runtime matrix contract
 
-The engine builds a typed `coverage_matrix` before deriving `analysis_status`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations. Schema `1.46` does not serialize successful rows; it emits only encountered gaps through `limitations`.
+The engine builds a typed `coverage_matrix` before deriving `analysis_status`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations. Schema `2.0` does not serialize successful rows; it emits only encountered gaps through `limitations`.
 
 | Cell status | Source Semantics | Computed Appearance | Rendered Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Feature IDs use five current namespaces:
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 | `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Legacy schemas through `1.45` serialized this matrix; Schema `1.46` keeps it inside the typed engine model.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Legacy schemas through `1.45` serialized this matrix; Schema `2.0` keeps it inside the typed engine model.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -91,13 +91,13 @@ The third M2 gate validates the downstream evidence graph. Its [soundness invent
 | Exact parameter and geometry magnitude | Computed magnitude remains continuous and separate from guarded renderer observations | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): `tiny geometry changes retain continuous magnitude independent of pixels` |
 | Presence footprint and isolated painted coverage | Computed footprint and rendered measurements | None | [`magnitude_test.mbt`](../engine/magnitude_test.mbt): insertion/deletion and isolated coverage tests |
 | Same-domain lexicographic ordering | Report ordering evidence | None | [`difference_ordering_wbtest.mbt`](../engine/difference_ordering_wbtest.mbt): all v2 tuple families, including typed transform effects, missing values, and comparator direction; [`magnitude_test.mbt`](../engine/magnitude_test.mbt): descending magnitude and stable equal-tuple tie-breaking |
-| Connected pixel-mask Difference Regions | Rendered | None | [`difference_region_test.mbt`](../engine/difference_region_test.mbt): `spatially disconnected pixel changes produce separate regions` |
-| Side-typed entity and effect localization plus conservative computed-bounds regions | Private before/after bounds for ordinary subjects, images, markers, group opacity, clips, masks, and filters; movement retains both sides, insertion only after, deletion only before; the serialized region exposes only their final conservative union | The reason that made raster evidence unavailable remains present; no side-specific pixel attribution or exact contribution is implied | [`difference_regions_wbtest.mbt`](../engine/difference_regions_wbtest.mbt): movement/insertion/deletion side invariants, clip/filter effect-side invariants, supported subject-bound derivation, and conservative union behavior; family-specific region suites |
+| Event-isolated conservative Difference Regions | Final changed pixels intersected with an admitted isolated before/after entity rendering and the entity's side-typed bounds; equal isolated renderings prove an empty Event | The result remains conservative because coincident support does not prove contribution through occlusion or compositing; resource, effect, ancestry, stacking, incomplete, or over-budget Events use wider conservative localization | [`production_examples_wbtest.mbt`](../engine/internal/diff/production_examples_wbtest.mbt): overlapping computed-equivalent paint and non-painting path controls; [`difference_region_test.mbt`](../engine/difference_region_test.mbt): disconnected ordinary leaf changes |
+| Side-typed entity and effect localization plus conservative canvas-mask and computed-bounds regions | Private before/after bounds for ordinary subjects, images, markers, group opacity, clips, masks, and filters; movement retains both sides, insertion only after, deletion only before; the serialized region exposes only their final conservative union | Bounds-filtered final canvas pixels and computed bounds are possible locations rather than event-specific contribution; the reason that made stronger evidence unavailable remains present | [`difference_regions_wbtest.mbt`](../engine/internal/diff/difference_regions_wbtest.mbt): movement/insertion/deletion side invariants, inactive painted bounds, clip/filter effect-side invariants, supported subject-bound derivation, and conservative union behavior; family-specific region suites |
 | Source-input and operation influence tokens for a complete report | Direct event tokens plus a private Changed Fact-to-rendered-subject index over geometry, paint, resources, transforms, viewport mapping, use instances, and structural relationships; entity events query both alignment sides; group, clip, mask, filter, blend, isolation, and stacking events also query conservative operation participants; exact shared-region identity carries concurrent event tokens | Partial, unsupported, and empty-candidate paths retain the wider comparison fallback; complete covered regions use `sound_overapproximation` without exact contribution claims | [`cause_envelopes_wbtest.mbt`](../engine/cause_envelopes_wbtest.mbt): input-family index, two-sided and instance identity, direct-link-independent propagation, operation classification, effect/resource fan-out, backdrop retention, stacking-region sharing, and disjoint-subject pruning; [`cause_envelope_test.mbt`](../engine/cause_envelope_test.mbt): complete, inherited paint, disjoint region, insertion, and deletion cases |
 
 ## Guarded, partial, and failed capabilities
 
-Renderer-specific rows also produce typed capability-gap records with stable capability IDs and establishing Diagnostic IDs. Schema `1.46` folds encountered public consequences into `limitations` rather than exposing a second renderer inventory. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../engine/renderer_capabilities_test.mbt).
+Renderer-specific rows also produce typed capability-gap records with stable capability IDs and establishing Diagnostic IDs. Schema `2.0` folds encountered public consequences into `limitations` rather than exposing a second renderer inventory. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../engine/renderer_capabilities_test.mbt).
 
 | Feature or condition | Report status | Diagnostic code | Constrained evidence | Executable coverage |
 | --- | --- | --- | --- | --- |

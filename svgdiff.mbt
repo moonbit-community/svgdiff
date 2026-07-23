@@ -92,7 +92,7 @@ pub fn compare_with_resources(
   let report = @engine.compare_with_resources(
     before_svg, after_svg, canonical_profile, before_resources, after_resources,
   )
-  { ..report, schema_version: "1.46" }
+  { ..report, schema_version: "2.0" }
 }
 
 ///|
@@ -103,7 +103,7 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `1.46` profile.
+/// Compare two deterministic static SVG sources under one schema `2.0` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width`, `profile.viewport_height`, the optional
@@ -130,7 +130,7 @@ pub fn compare(
     flip_error_threshold: profile.flip_error_threshold,
   }
   let report = @engine.compare(before_svg, after_svg, canonical_profile)
-  { ..report, schema_version: "1.46" }
+  { ..report, schema_version: "2.0" }
 }
 
 ///|
@@ -162,7 +162,7 @@ pub fn compare_with_control(
     CheckpointBudgetExceeded(max_checkpoints~) =>
       raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
-    report => { ..report, schema_version: "1.46" }
+    report => { ..report, schema_version: "2.0" }
   }
 }
 
@@ -194,6 +194,6 @@ pub fn compare_with_control_and_resources(
     CheckpointBudgetExceeded(max_checkpoints~) =>
       raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
-    report => { ..report, schema_version: "1.46" }
+    report => { ..report, schema_version: "2.0" }
   }
 }

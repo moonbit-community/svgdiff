@@ -43,7 +43,7 @@ jq -e '
 moon run --target native cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
-  .schema_version == "1.46" and
+  .schema_version == "2.0" and
   ([paths | map(tostring) | join(".") |
     select(test("(^|\\.)(ssim|ms_ssim)($|\\.)"))] | length) == 0
 ' "$tmp/report.json" >/dev/null

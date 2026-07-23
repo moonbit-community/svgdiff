@@ -4,7 +4,7 @@ Status: implementation-aligned contract
 
 Last verified: 2026-07-20
 
-This document states what schema `1.46` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
+This document states what schema `2.0` can analyze today. It deliberately separates implemented support from accepted future design. If this file disagrees with an ADR or research note about current capability, this file wins; if it disagrees with the public types or JSON Schema about serialization, the code and Schema win.
 
 The executable trace from each feature to its Diagnostic and tests lives in the [feature coverage matrix](feature-coverage.md).
 
@@ -77,7 +77,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 - symmetric alpha-only painted-coverage differences for admitted two-sided entity changes, retaining per-side coverage, absolute difference, and union in CSS square pixels plus their bounded ratio, independent of RGB color;
 - presence footprint, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE where available;
 - deterministic same-domain ordering under `v2_domain_lexicographic`;
-- connected pixel-mask Difference Regions and conservative computed-bounds fallback regions, with private side-typed bounds retained through entity and effect localization so movement includes both sides while insertion and deletion retain only the side that exists before final union;
+- conservative Event Difference Regions tightened by admitted isolated geometry, paint, and presence renderings, with bounds-filtered canvas candidates or computed-bounds fallbacks elsewhere; and private side-typed bounds retained through entity and effect localization so movement includes both sides while insertion and deletion retain only the side that exists before final union;
 - conservative Cause Envelopes with a sound-overapproximation guarantee for complete covered regions, including direct event tokens, every source-input token reached through before/after rendered-subject fan-out, and conservative participants for admitted group, clip, mask, filter, blend, isolation, and stacking operations;
 - self-contained HTML presentation generated from the report without recomputing comparison semantics.
 
@@ -126,7 +126,7 @@ The following capabilities can participate in a `complete` report when no unsupp
 
 These guards are part of v1 correctness. A guarded numeric renderer observation is not browser-conformant evidence, and absent rendered evidence is never interpreted as zero.
 
-The typed engine model also projects encountered renderer-specific Diagnostics into capability-gap records. Stable capability IDs distinguish CSS precedence, fractional geometry, fractional leaf opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, use-transform placement, viewport, referenced-gradient rasterization, referenced-pattern rasterization, and embedded-image compositing. Schema `1.46` serializes only encountered public consequences through `limitations`, not this implementation inventory.
+The typed engine model also projects encountered renderer-specific Diagnostics into capability-gap records. Stable capability IDs distinguish CSS precedence, fractional geometry, fractional leaf opacity, curved-shape, filled point-shape, stroke outline, stroke join, stroke dash, non-scaling-stroke, marker, general affine, use-transform placement, viewport, referenced-gradient rasterization, referenced-pattern rasterization, and embedded-image compositing. Schema `2.0` serializes only encountered public consequences through `limitations`, not this implementation inventory.
 
 ## Unsupported or deferred
 

@@ -1,10 +1,10 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: internal typed-model policy; not serialized by schema `1.46`
+Status: internal typed-model policy; not serialized by schema `2.0`
 
 Last verified: 2026-07-17
 
-The engine retains a typed `ImpactAssessment` for internal experiments and legacy library callers. Schema `1.46` deliberately does not serialize it. The assessment is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
+The engine retains a typed `ImpactAssessment` for internal experiments and legacy library callers. Schema `2.0` deliberately does not serialize it. The assessment is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
 
 The concise report instead exposes independent raw measurements on grouped differences and events. Agents must enumerate those inventories without assuming that the internal Pareto frontier is a product-level importance judgment.
 

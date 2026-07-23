@@ -138,7 +138,7 @@ pw --raw run-code \
       const bounds = node.getBoundingClientRect();
       return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
     });
-    const noViewBoxOverlayBounds = await page.locator('#report-root .overlay').first().locator('.region.observed').boundingBox();
+    const noViewBoxOverlayBounds = await page.locator('#report-root .overlay').first().locator('.region.conservative').boundingBox();
     const noViewBoxLocalizationGeometryError = Math.max(
       Math.abs(noViewBoxFrameBounds.x + noViewBoxSubjectBounds.x - noViewBoxOverlayBounds.x),
       Math.abs(noViewBoxFrameBounds.y + noViewBoxSubjectBounds.y - noViewBoxOverlayBounds.y),
@@ -220,7 +220,12 @@ pw --raw run-code \
         analysisStatus: exampleReport.analysis_status,
         atomicDifferences: exampleReport.difference_groups.flatMap(group => group.items).length,
         diagnostics: exampleReport.limitations.length,
+        canvasChangedPixels: exampleReport.canvas.changed_pixels,
         scores: await page.locator('.score-card .score-value').allTextContents(),
+        eventOutcomes: exampleReport.events.map(event => ({
+          changedPixels: event.outcome.changed_pixels,
+          regionKinds: event.regions.map(region => region.kind),
+        })),
         differencePixels,
       });
     }
@@ -285,7 +290,7 @@ jq -e '
   .sourceFacts.afterSize == {"x":"152","y":"52","width":"72","height":"72","fill":"#16a34a"} and
   .effectiveValueOptions == ["Any effective value","Different","Same","Unknown"] and
   .analysisStatus == "complete" and
-  .schemaVersion == "1.46" and
+  .schemaVersion == "2.0" and
   .atomicDifferences == 3 and
   .diagnostics == 0 and
   .effectiveValues == ["Different effective value","Different effective value","Different effective value"] and
@@ -337,8 +342,44 @@ jq -e '
   ) and
   (.realExamples[] | select(.id == "viewBoxScale") |
     .differencePixels.nonBlack == 0 and
-    .scores == ["0.00%","0.00%","0.00%"]
+    .scores == ["0.00%","0.00%","0.00%"] and
+    (.eventOutcomes | length) == 2 and
+    all(.eventOutcomes[]; .changedPixels == 0 and (.regionKinds | length) == 0)
+  ) and
+  (.realExamples[] | select(.id == "visibility") |
+    . as $example |
+    ([.eventOutcomes[] | select(.changedPixels == 0 and (.regionKinds | length) == 0)] | length) == 1 and
+    all(.eventOutcomes[] | select(.changedPixels > 0);
+      .changedPixels == $example.canvasChangedPixels and
+      (.regionKinds | length) > 0 and all(.regionKinds[]; . == "conservative")
+    )
+  ) and
+  (.realExamples[] | select(.id == "bell") |
+    . as $example |
+    (.eventOutcomes | length) == 2 and
+    ([.eventOutcomes[].changedPixels] | unique | length) == 2 and
+    all(.eventOutcomes[]; .changedPixels < $example.canvasChangedPixels)
+  ) and
+  (.realExamples[] | select(.id == "battery") |
+    . as $example |
+    (.eventOutcomes | length) == 6 and
+    ([.eventOutcomes[].changedPixels] | unique | length) >= 5 and
+    ([.eventOutcomes[] | select(.changedPixels == $example.canvasChangedPixels)] | length) == 2
+  ) and
+  all(.realExamples[] | select(.id == "circleDot" or .id == "heart");
+    . as $example |
+    (.eventOutcomes | length) == 1 and
+    .eventOutcomes[0].changedPixels == $example.canvasChangedPixels
+  ) and
+  (.realExamples[] | select(.id == "rocket") |
+    (.eventOutcomes | length) == 64 and
+    ([.eventOutcomes[] | select(.changedPixels == null)] | length) > 0 and
+    ([.eventOutcomes[].changedPixels | select(. != null)] | unique | length) >= 10
+  ) and
+  all(.realExamples[];
+    all(.eventOutcomes[].regionKinds[]; . == "conservative") and
+    all(.eventOutcomes[] | select(.changedPixels > 0); (.regionKinds | length) > 0)
   )
 ' "$tmp/browser.json" >/dev/null
 
-printf 'GitHub Pages browser flow: base, affine, and seven pinned examples, WASM reports, Difference, attribution, JSON: ok\n'
+printf 'GitHub Pages browser flow: base, affine, and seven pinned examples, isolated and conservative localization, WASM reports, Difference, attribution, JSON: ok\n'

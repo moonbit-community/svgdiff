@@ -196,7 +196,7 @@ pw --raw run-code \
     };
     await firstDiff.hover();
     const hoverOverlayCount = await page.locator('.overlay .region').count();
-    const observedOverlayCount = await page.locator('.overlay .region.observed').count();
+    const conservativeOverlayCount = await page.locator('.overlay .region.conservative').count();
     await page.locator('#overview-heading').hover();
     const afterHoverOverlayCount = await page.locator('.overlay .region').count();
     const checkbox = firstDiff.locator('[data-atomic-check]');
@@ -224,7 +224,7 @@ pw --raw run-code \
       const bounds = node.getBoundingClientRect();
       return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
     });
-    const beforeOverlayBounds = await page.locator('.overlay').first().locator('.region.observed').boundingBox();
+    const beforeOverlayBounds = await page.locator('.overlay').first().locator('.region.conservative').boundingBox();
     const localizationGeometryError = Math.max(
       Math.abs(beforeFrameBounds.x + beforeSubjectBounds.x - beforeOverlayBounds.x),
       Math.abs(beforeFrameBounds.y + beforeSubjectBounds.y - beforeOverlayBounds.y),
@@ -248,7 +248,7 @@ pw --raw run-code \
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
       hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
-      hasCompatibility: eventEvidenceText.includes('Schema 1.46 reports CSS-space bounds'),
+      hasCompatibility: eventEvidenceText.includes('Schema 2.0 reports CSS-space bounds'),
     };
     await page.locator('#outcome-filter').selectOption('zero');
     const hiddenSelection = {
@@ -331,7 +331,7 @@ pw --raw run-code \
       groupOrder: await page.locator('.group-header h3').allTextContents().catch(() => []),
       defaultDisclosure,
       hoverOverlayCount,
-      observedOverlayCount,
+      conservativeOverlayCount,
       afterHoverOverlayCount,
       checkboxIndependent,
       selected,
@@ -373,7 +373,7 @@ jq -e '
   } and
   .defaultDisclosure == {"event": false, "atomic": false, "raw": false} and
   .hoverOverlayCount == 2 and
-  .observedOverlayCount == 2 and
+  .conservativeOverlayCount == 2 and
   .afterHoverOverlayCount == 0 and
   .checkboxIndependent == {
     "checked": true,

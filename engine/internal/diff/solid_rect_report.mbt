@@ -131,7 +131,7 @@ fn rect_coverage_report(
   let subject_id = "rect:0"
   let diagnostic_id = "diagnostic:\{code}:\{subject_id}"
   {
-    schema_version: "1.46",
+    schema_version: "2.0",
     analysis_status: "partial",
     canvas_outcome: not_computed_canvas_outcome("rendered_evidence_unavailable"),
     impact_assessment: empty_impact_assessment(),
@@ -278,7 +278,7 @@ fn compare_rect_declared_facts(
     })
   }
   {
-    schema_version: "1.46",
+    schema_version: "2.0",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

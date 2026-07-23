@@ -80,7 +80,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "1.46",
+            schema_version: "2.0",
             analysis_status: "complete",
             canvas_outcome: not_computed_canvas_outcome(
               "rendered_evidence_unavailable",
@@ -124,7 +124,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "1.46",
+            schema_version: "2.0",
             analysis_status: "partial",
             canvas_outcome: not_computed_canvas_outcome(
               "rendered_evidence_unavailable",
@@ -202,7 +202,7 @@ fn compare_without_resource_limits(
         None =>
           finish_report(
             {
-              schema_version: "1.46",
+              schema_version: "2.0",
               analysis_status: "partial",
               canvas_outcome: not_computed_canvas_outcome(
                 "rendered_evidence_unavailable",
