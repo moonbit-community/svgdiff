@@ -36,23 +36,25 @@ pub fn selected_raw_difference_bounds(
   if regions.is_empty() {
     return None
   }
-  let mut start_x = before.width
-  let mut start_y = before.height
+  let mut start_x = before.width()
+  let mut start_y = before.height()
   let mut end_x = 0
   let mut end_y = 0
   for region in regions {
     start_x = start_x.min(region.pixel_x.max(0))
     start_y = start_y.min(region.pixel_y.max(0))
-    end_x = end_x.max((region.pixel_x + region.pixel_width).min(before.width))
-    end_y = end_y.max((region.pixel_y + region.pixel_height).min(before.height))
+    end_x = end_x.max((region.pixel_x + region.pixel_width).min(before.width()))
+    end_y = end_y.max(
+      (region.pixel_y + region.pixel_height).min(before.height()),
+    )
   }
-  let mut min_x = before.width
-  let mut min_y = before.height
+  let mut min_x = before.width()
+  let mut min_y = before.height()
   let mut max_x = -1
   let mut max_y = -1
   for y in start_y..<end_y {
     for x in start_x..<end_x {
-      let index = y * before.width + x
+      let index = y * before.width() + x
       if pixel_in_regions(x, y, regions) && pixels_differ(before, after, index) {
         min_x = min_x.min(x)
         min_y = min_y.min(y)
@@ -203,7 +205,7 @@ pub fn event_local_perceptual_flip_evidence(
   remaining_output_pixels : Int,
   remaining_convolution_samples : Int,
 ) -> PerceptualFlipComputation {
-  if before.width != after.width || before.height != after.height {
+  if before.width() != after.width() || before.height() != after.height() {
     return {
       evidence: not_computed_perceptual_flip_evidence(
         "rendered_evidence_unavailable",
@@ -220,7 +222,7 @@ pub fn event_local_perceptual_flip_evidence(
           perceptual_flip_statistics(
             [],
             [],
-            before.width * before.height,
+            before.width() * before.height(),
             threshold,
           ),
         ),
@@ -234,14 +236,14 @@ pub fn event_local_perceptual_flip_evidence(
   let output_bounds = expand_flip_bounds(
     selected,
     response_radius,
-    before.width,
-    before.height,
+    before.width(),
+    before.height(),
   )
   let context_bounds = expand_flip_bounds(
     output_bounds,
     response_radius,
-    before.width,
-    before.height,
+    before.width(),
+    before.height(),
   )
   let output_pixels = output_bounds.pixel_width * output_bounds.pixel_height
   let context_pixels = context_bounds.pixel_width * context_bounds.pixel_height
@@ -271,16 +273,16 @@ pub fn event_local_perceptual_flip_evidence(
     let y = context_bounds.pixel_y + local_y
     for local_x in 0..<context_bounds.pixel_width {
       let x = context_bounds.pixel_x + local_x
-      let index = y * before.width + x
+      let index = y * before.width() + x
       let reference_color = displayed_linear_flip_color(
-        before.pixels[index],
+        image_pixel_at(before, index),
         background,
       )
       reference.push(reference_color)
       candidate.push(
         if pixel_in_regions(x, y, regions) &&
           pixels_differ(before, after, index) {
-          displayed_linear_flip_color(after.pixels[index], background)
+          displayed_linear_flip_color(image_pixel_at(after, index), background)
         } else {
           reference_color
         },
@@ -307,7 +309,7 @@ pub fn event_local_perceptual_flip_evidence(
       values.push(value)
       let global_x = output_bounds.pixel_x + x
       let global_y = output_bounds.pixel_y + y
-      let global_index = global_y * before.width + global_x
+      let global_index = global_y * before.width() + global_x
       if pixel_in_regions(global_x, global_y, regions) &&
         pixels_differ(before, after, global_index) {
         event_region_values.push(value)
@@ -329,7 +331,7 @@ pub fn event_local_perceptual_flip_evidence(
       perceptual_flip_statistics(
         values,
         event_region_values,
-        before.width * before.height,
+        before.width() * before.height(),
         threshold,
       ),
     ),

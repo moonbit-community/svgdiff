@@ -88,7 +88,7 @@ pub fn event_local_perceptual_color_evidence(
   regions : Array[DifferenceRegion],
   background : PerceptualBackground,
 ) -> PerceptualColorEvidence {
-  if before.width != after.width || before.height != after.height {
+  if before.width() != after.width() || before.height() != after.height() {
     return not_computed_perceptual_color_evidence(
       "rendered_evidence_unavailable",
     )
@@ -106,26 +106,26 @@ pub fn event_local_perceptual_color_evidence(
     None => 0
   }
   let end_x = match single_region {
-    Some(region) => (region.pixel_x + region.pixel_width).min(before.width)
-    None => before.width
+    Some(region) => (region.pixel_x + region.pixel_width).min(before.width())
+    None => before.width()
   }
   let end_y = match single_region {
-    Some(region) => (region.pixel_y + region.pixel_height).min(before.height)
-    None => before.height
+    Some(region) => (region.pixel_y + region.pixel_height).min(before.height())
+    None => before.height()
   }
   let mut sample_count = 0
   let mut sum = 0.0
   for y in start_y..<end_y {
     for x in start_x..<end_x {
-      let index = y * before.width + x
+      let index = y * before.width() + x
       if (single_region is None && !pixel_in_regions(x, y, regions)) ||
         !pixels_differ(before, after, index) {
         continue
       }
       sample_count += 1
       sum += delta_e_ok_after_background(
-        before.pixels[index],
-        after.pixels[index],
+        image_pixel_at(before, index),
+        image_pixel_at(after, index),
         background,
       )
     }

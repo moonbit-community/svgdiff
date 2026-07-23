@@ -97,6 +97,8 @@ using @rendered {
   computed_rendered_evidence,
   event_local_perceptual_color_evidence,
   event_local_perceptual_flip_evidence,
+  image_pixel_at,
+  image_pixel_count,
   linear_premultiplied_rgba_squared_error,
   not_computed_canvas_outcome,
   not_computed_canvas_perceptual_flip_evidence,

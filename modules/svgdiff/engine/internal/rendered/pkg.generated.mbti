@@ -37,23 +37,9 @@ pub fn exact_pixel_options() -> @pixelmatch.Options
 
 pub fn expand_flip_bounds(FlipPixelBounds, Int, Int, Int) -> FlipPixelBounds
 
-pub fn group_compositor_apply_opacity(@svg.Image, Double) -> Unit
+pub fn image_pixel_at(@svg.Image, Int) -> @svg.Color
 
-pub fn group_compositor_atomic_container(@svg.SVGNode) -> Bool
-
-pub fn group_compositor_children(@svg.SVGNode) -> Array[@svg.SVGNode]
-
-pub fn group_compositor_clear_outside_bounds(@svg.Image, @svg.BoundingBox) -> Unit
-
-pub fn group_compositor_container(@svg.SVGNode) -> Bool
-
-pub fn group_compositor_over_image(@svg.Image, @svg.Image) -> Unit
-
-pub fn group_compositor_render_container(@svg.SVGDocument, Array[@svg.SVGNode], @svg.SVGNode, Int, Int) -> @svg.Image
-
-pub fn group_compositor_render_leaf(@svg.SVGDocument, Array[@svg.SVGNode], @svg.SVGNode, Int, Int) -> @svg.Image
-
-pub fn group_compositor_render_masked_container(@svg.SVGDocument, Array[@svg.SVGNode], @svg.SVGNode, Int, Int) -> @svg.Image
+pub fn image_pixel_count(@svg.Image) -> Int
 
 pub fn linear_premultiplied_rgba_squared_error(@svg.Color, @svg.Color) -> Double
 

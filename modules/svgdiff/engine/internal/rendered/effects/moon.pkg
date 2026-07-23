@@ -1,8 +1,5 @@
 import {
   "Milky2018/svgdiff/engine/model",
-  "Milky2018/svgdiff/engine/internal/computed/effects" @computed_effects,
-  "Milky2018/svgdiff/engine/internal/computed/style",
-  "Milky2018/svgdiff/engine/internal/rendered",
   "Milky2018/svgdiff/engine/internal/rendered/normalization",
   "Milky2018/svg",
 }

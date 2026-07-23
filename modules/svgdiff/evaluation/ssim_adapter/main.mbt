@@ -61,10 +61,13 @@ fn optional_string_json(value : String?) -> String {
 ///|
 fn render_document(source : String, width : Int, height : Int) -> @svg.Image? {
   guard @svg.parse_svg_document(source) is Some(document) else { return None }
-  let image = @svg.render_svg_document_to_image(document, width, height)
-  if image.width != width ||
-    image.height != height ||
-    image.pixels.length() != width * height {
+  let image = @svg.render_svg_document(
+      document,
+      width,
+      height,
+      @svg.RenderOptions::default(),
+    ).image
+  if image.width() != width || image.height() != height {
     None
   } else {
     Some(image)

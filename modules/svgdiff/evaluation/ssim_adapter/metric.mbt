@@ -252,31 +252,36 @@ fn five_level_ms_ssim(
 
 ///|
 fn displayed_grayscale_over_white(image : @svg.Image) -> Array[Double] {
-  image.pixels.map(pixel => {
-    let alpha = pixel.a.to_double() / 255.0
-    let inverse_alpha = 1.0 - alpha
-    let red = pixel.r.to_double() * alpha + 255.0 * inverse_alpha
-    let green = pixel.g.to_double() * alpha + 255.0 * inverse_alpha
-    let blue = pixel.b.to_double() * alpha + 255.0 * inverse_alpha
-    0.2989 * red + 0.5870 * green + 0.1140 * blue
-  })
+  let values : Array[Double] = []
+  for y in 0..<image.height() {
+    for x in 0..<image.width() {
+      let pixel = image.get_pixel(x, y)
+      let alpha = pixel.a.to_double() / 255.0
+      let inverse_alpha = 1.0 - alpha
+      let red = pixel.r.to_double() * alpha + 255.0 * inverse_alpha
+      let green = pixel.g.to_double() * alpha + 255.0 * inverse_alpha
+      let blue = pixel.b.to_double() * alpha + 255.0 * inverse_alpha
+      values.push(0.2989 * red + 0.5870 * green + 0.1140 * blue)
+    }
+  }
+  values
 }
 
 ///|
 fn exact_pixels(left : @svg.Image, right : @svg.Image) -> Bool {
-  if left.width != right.width ||
-    left.height != right.height ||
-    left.pixels.length() != right.pixels.length() {
+  if left.width() != right.width() || left.height() != right.height() {
     return false
   }
-  for index in 0..<left.pixels.length() {
-    let left_pixel = left.pixels[index]
-    let right_pixel = right.pixels[index]
-    if left_pixel.r != right_pixel.r ||
-      left_pixel.g != right_pixel.g ||
-      left_pixel.b != right_pixel.b ||
-      left_pixel.a != right_pixel.a {
-      return false
+  for y in 0..<left.height() {
+    for x in 0..<left.width() {
+      let left_pixel = left.get_pixel(x, y)
+      let right_pixel = right.get_pixel(x, y)
+      if left_pixel.r != right_pixel.r ||
+        left_pixel.g != right_pixel.g ||
+        left_pixel.b != right_pixel.b ||
+        left_pixel.a != right_pixel.a {
+        return false
+      }
     }
   }
   true

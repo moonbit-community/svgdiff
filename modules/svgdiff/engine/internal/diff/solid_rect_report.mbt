@@ -39,7 +39,7 @@ fn rect_computed_fact(
   document : @svg.SVGDocument,
   property : String,
 ) -> RectComputedFact? {
-  match first_rect_node(document.root) {
+  match first_rect_node(document.root()) {
     Some(node) =>
       match (property, node.shape) {
         ("x", Rect(x~, ..)) => Some(RectNumber(x))

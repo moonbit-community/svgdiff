@@ -13,7 +13,15 @@
 // limitations under the License.
 
 ///|
-using @model {type ComparisonProfile}
-
-///|
-using @normalization {normalize_renderer_input_with_profile}
+pub fn render_product_document_to_image(
+  document : @svg.SVGDocument,
+  width : Int,
+  height : Int,
+) -> @svg.Image {
+  @svg.render_svg_document(
+    document,
+    width,
+    height,
+    @svg.RenderOptions::default(),
+  ).image
+}

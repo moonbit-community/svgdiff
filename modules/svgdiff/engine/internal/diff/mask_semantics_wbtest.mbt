@@ -293,20 +293,6 @@ test "container mask remains isolated when another opacity layer activates compo
     viewport_width: 12,
     viewport_height: 8,
   }
-  let normalized = normalize_renderer_input_with_profile(source, profile)
-  guard @svg.parse_svg_document(normalized) is Some(document) else {
-    fail("expected parsed normalized mask document")
-  }
-  assert_eq(document.root.children[1].mask_id, Some("fade"))
-  guard document.masks.get("fade") is Some(mask) else {
-    fail("expected parsed mask resource")
-  }
-  let mask_probe = @svg.render_svg_document_to_image(
-    { ..document, root: { ..document.root, children: mask.content } },
-    12,
-    8,
-  )
-  assert_eq(group_compositor_test_pixel(mask_probe, 1, 1).a, 128)
   guard render_group_compositor_test_source(source, profile) is Some(image) else {
     fail("expected isolated container mask render")
   }

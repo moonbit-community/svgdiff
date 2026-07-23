@@ -143,10 +143,10 @@ test "opaque blend formulas and transparent backdrop are exact" {
       fail("expected product render for {keyword}")
     }
     let overlap = group_compositor_test_pixel(image, 2, 2)
-    assert_eq(overlap.r, expected[index].0)
-    assert_eq(overlap.g, expected[index].1)
-    assert_eq(overlap.b, expected[index].2)
-    assert_eq(overlap.a, 255)
+    assert_eq(
+      (overlap.r, overlap.g, overlap.b, overlap.a),
+      (expected[index].0, expected[index].1, expected[index].2, 255),
+    )
     assert_group_compositor_pixel(image, 5, 5, 100, 150, 200, 255)
   }
   let multiply = "<svg width='8' height='8'><rect id='back' width='4' height='4' fill='#c86432'/><rect id='front' x='2' y='2' width='4' height='4' fill='#6496c8' style='mix-blend-mode:multiply'/></svg>"

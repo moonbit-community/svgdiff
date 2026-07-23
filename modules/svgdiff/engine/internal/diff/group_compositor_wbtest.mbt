@@ -18,7 +18,7 @@ fn group_compositor_test_pixel(
   x : Int,
   y : Int,
 ) -> @svg.Color {
-  image.pixels[y * image.width + x]
+  image.get_pixel(x, y)
 }
 
 ///|
@@ -51,9 +51,7 @@ fn assert_group_compositor_pixel(
   alpha : Int,
 ) -> Unit raise {
   let pixel = group_compositor_test_pixel(image, x, y)
-  assert_true(
-    pixel.r == red && pixel.g == green && pixel.b == blue && pixel.a == alpha,
-  )
+  assert_eq((pixel.r, pixel.g, pixel.b, pixel.a), (red, green, blue, alpha))
 }
 
 ///|

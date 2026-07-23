@@ -32,7 +32,7 @@ import {
   "moonbitlang/x@0.4.40",
   "moonbitlang/quickcheck@0.14.0",
   "Milky2018/svgdiff-raster-codec@0.1.1",
-  "Milky2018/svg@0.3.1",
+  "Milky2018/svg@0.5.2",
   "moonbit-community/miniio@0.2.1",
 }
 

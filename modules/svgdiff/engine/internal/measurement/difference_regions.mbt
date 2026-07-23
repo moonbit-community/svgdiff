@@ -181,9 +181,9 @@ pub fn pixel_difference_regions(
   after : @svg.Image,
   max_regions : Int,
 ) -> DifferenceRegionExtraction {
-  let width = before.width
-  let height = before.height
-  if width != after.width || height != after.height {
+  let width = before.width()
+  let height = before.height()
+  if width != after.width() || height != after.height() {
     return Regions([])
   }
   let visited = Array::make(width * height, false)
@@ -295,30 +295,30 @@ pub fn rendered_magnitude_for_regions(
     None => 0
   }
   let end_x = match single_region {
-    Some(region) => (region.pixel_x + region.pixel_width).min(before.width)
-    None => before.width
+    Some(region) => (region.pixel_x + region.pixel_width).min(before.width())
+    None => before.width()
   }
   let end_y = match single_region {
-    Some(region) => (region.pixel_y + region.pixel_height).min(before.height)
-    None => before.height
+    Some(region) => (region.pixel_y + region.pixel_height).min(before.height())
+    None => before.height()
   }
   for y in start_y..<end_y {
     for x in start_x..<end_x {
-      let index = y * before.width + x
+      let index = y * before.width() + x
       if (single_region is None && !pixel_in_regions(x, y, regions)) ||
         !pixels_differ(before, after, index) {
         continue
       }
       changed_pixels += 1
-      let left = before.pixels[index]
-      let right = after.pixels[index]
+      let left = image_pixel_at(before, index)
+      let right = image_pixel_at(after, index)
       squared_error += raw_rgba8_squared_error(left, right)
       linear_squared_error += linear_premultiplied_rgba_squared_error(
         left, right,
       )
     }
   }
-  let total_pixels = before.pixels.length()
+  let total_pixels = image_pixel_count(before)
   {
     changed_pixels,
     changed_pixel_fraction: changed_pixels.to_double() /
@@ -448,11 +448,11 @@ fn clip_pixel_region_to_event_evidence(
   let end_x = (intersection.x + intersection.width)
     .ceil()
     .to_int()
-    .min(before.width)
+    .min(before.width())
   let end_y = (intersection.y + intersection.height)
     .ceil()
     .to_int()
-    .min(before.height)
+    .min(before.height())
   let mut min_x = end_x
   let mut min_y = end_y
   let mut max_x = start_x - 1
@@ -460,7 +460,7 @@ fn clip_pixel_region_to_event_evidence(
   let mut changed_pixels = 0
   for y in start_y..<end_y {
     for x in start_x..<end_x {
-      let index = y * before.width + x
+      let index = y * before.width() + x
       if !pixels_differ(before, after, index) {
         continue
       }
@@ -498,7 +498,7 @@ fn clip_pixel_region_to_event_evidence(
     css_height: (max_y - min_y + 1).to_double(),
     changed_pixels,
     viewport_fraction: changed_pixels.to_double() /
-    before.pixels.length().to_double(),
+    image_pixel_count(before).to_double(),
   })
 }
 
@@ -903,7 +903,8 @@ fn isolated_presence_painted_pixels(
     None => return None
   }
   let mut painted_pixels = 0
-  for pixel in image.pixels {
+  for index in 0..<image_pixel_count(image) {
+    let pixel = image_pixel_at(image, index)
     if pixel.a > 0 {
       painted_pixels += 1
     }
@@ -913,25 +914,27 @@ fn isolated_presence_painted_pixels(
 
 ///|
 fn painted_boundary_pixel(image : @svg.Image, x : Int, y : Int) -> Bool {
-  let index = y * image.width + x
-  if image.pixels[index].a == 0 {
+  let width = image.width()
+  let height = image.height()
+  let index = y * width + x
+  if image_pixel_at(image, index).a == 0 {
     return false
   }
   x == 0 ||
   y == 0 ||
-  x + 1 == image.width ||
-  y + 1 == image.height ||
-  image.pixels[index - 1].a == 0 ||
-  image.pixels[index + 1].a == 0 ||
-  image.pixels[index - image.width].a == 0 ||
-  image.pixels[index + image.width].a == 0
+  x + 1 == width ||
+  y + 1 == height ||
+  image_pixel_at(image, index - 1).a == 0 ||
+  image_pixel_at(image, index + 1).a == 0 ||
+  image_pixel_at(image, index - width).a == 0 ||
+  image_pixel_at(image, index + width).a == 0
 }
 
 ///|
 fn painted_boundary_count(image : @svg.Image) -> Int {
   let mut count = 0
-  for y in 0..<image.height {
-    for x in 0..<image.width {
+  for y in 0..<image.height() {
+    for x in 0..<image.width() {
       if painted_boundary_pixel(image, x, y) {
         count += 1
       }
@@ -1002,32 +1005,34 @@ fn squared_distance_transform_1d(
 
 ///|
 fn boundary_squared_distance_transform(image : @svg.Image) -> Array[Double] {
-  let unreachable_distance = image.width.to_double() * image.width.to_double() +
-    image.height.to_double() * image.height.to_double() +
+  let width = image.width()
+  let height = image.height()
+  let unreachable_distance = width.to_double() * width.to_double() +
+    height.to_double() * height.to_double() +
     1.0
-  let distances = Array::make(image.width * image.height, unreachable_distance)
-  for y in 0..<image.height {
-    let row = Array::make(image.width, unreachable_distance)
-    for x in 0..<image.width {
+  let distances = Array::make(width * height, unreachable_distance)
+  for y in 0..<height {
+    let row = Array::make(width, unreachable_distance)
+    for x in 0..<width {
       if painted_boundary_pixel(image, x, y) {
         row[x] = 0.0
       }
     }
     let transformed = squared_distance_transform_1d(row, unreachable_distance)
-    for x in 0..<image.width {
-      distances[y * image.width + x] = transformed[x]
+    for x in 0..<width {
+      distances[y * width + x] = transformed[x]
     }
   }
-  for x in 0..<image.width {
-    let column = Array::make(image.height, unreachable_distance)
-    for y in 0..<image.height {
-      column[y] = distances[y * image.width + x]
+  for x in 0..<width {
+    let column = Array::make(height, unreachable_distance)
+    for y in 0..<height {
+      column[y] = distances[y * width + x]
     }
     let transformed = squared_distance_transform_1d(
       column, unreachable_distance,
     )
-    for y in 0..<image.height {
-      distances[y * image.width + x] = transformed[y]
+    for y in 0..<height {
+      distances[y * width + x] = transformed[y]
     }
   }
   distances
@@ -1040,10 +1045,10 @@ fn directional_boundary_distances(
 ) -> Array[Double] {
   let distances = boundary_squared_distance_transform(target)
   let samples : Array[Double] = []
-  for y in 0..<source.height {
-    for x in 0..<source.width {
+  for y in 0..<source.height() {
+    for x in 0..<source.width() {
       if painted_boundary_pixel(source, x, y) {
-        samples.push(distances[y * source.width + x].sqrt())
+        samples.push(distances[y * source.width() + x].sqrt())
       }
     }
   }
@@ -1056,8 +1061,8 @@ pub fn painted_boundary_displacement_distribution(
   after : @svg.Image,
   comparison_dpr : Double,
 ) -> PaintedBoundaryDisplacementMagnitude? {
-  if before.width != after.width ||
-    before.height != after.height ||
+  if before.width() != after.width() ||
+    before.height() != after.height() ||
     comparison_dpr <= 0.0 ||
     comparison_dpr.is_nan() ||
     comparison_dpr.is_inf() {
@@ -1103,8 +1108,8 @@ pub fn painted_coverage_difference(
   after : @svg.Image,
   comparison_dpr : Double,
 ) -> PaintedCoverageDifferenceMagnitude? {
-  if before.width != after.width ||
-    before.height != after.height ||
+  if before.width() != after.width() ||
+    before.height() != after.height() ||
     comparison_dpr <= 0.0 ||
     comparison_dpr.is_nan() ||
     comparison_dpr.is_inf() {
@@ -1114,9 +1119,9 @@ pub fn painted_coverage_difference(
   let mut after_coverage = 0.0
   let mut absolute_difference = 0.0
   let mut union_coverage = 0.0
-  for index in 0..<before.pixels.length() {
-    let before_alpha = before.pixels[index].a.to_double() / 255.0
-    let after_alpha = after.pixels[index].a.to_double() / 255.0
+  for index in 0..<image_pixel_count(before) {
+    let before_alpha = image_pixel_at(before, index).a.to_double() / 255.0
+    let after_alpha = image_pixel_at(after, index).a.to_double() / 255.0
     before_coverage += before_alpha
     after_coverage += after_alpha
     absolute_difference += (before_alpha - after_alpha).abs()
@@ -1158,8 +1163,8 @@ pub fn isolated_subjects_painted_measurements(
     _ => return None
   }
   let (before_image, after_image) = images
-  if before_image.width != after_image.width ||
-    before_image.height != after_image.height {
+  if before_image.width() != after_image.width() ||
+    before_image.height() != after_image.height() {
     return None
   }
   guard painted_coverage_difference(

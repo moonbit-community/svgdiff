@@ -67,24 +67,30 @@ async fn main {
       return
     }
   }
-  let rendered = @svg.render_svg_document_to_image(document, width, height)
-  if rendered.width != width ||
-    rendered.height != height ||
-    rendered.pixels.length() != width * height {
+  let rendered = @svg.render_svg_document(
+      document,
+      width,
+      height,
+      @svg.RenderOptions::default(),
+    ).image
+  if rendered.width() != width || rendered.height() != height {
     fail("Renderer pixel buffer dimensions are invalid")
     return
   }
   let output = StringBuilder::new()
   output.write_string("{\"width\":\{width},\"height\":\{height},\"rgba\":[")
   let mut first = true
-  for pixel in rendered.pixels {
-    for channel in [pixel.r, pixel.g, pixel.b, pixel.a] {
-      if first {
-        first = false
-      } else {
-        output.write_char(',')
+  for y in 0..<height {
+    for x in 0..<width {
+      let pixel = rendered.get_pixel(x, y)
+      for channel in [pixel.r, pixel.g, pixel.b, pixel.a] {
+        if first {
+          first = false
+        } else {
+          output.write_char(',')
+        }
+        output.write_string(channel.to_string())
       }
-      output.write_string(channel.to_string())
     }
   }
   output.write_string("]}")

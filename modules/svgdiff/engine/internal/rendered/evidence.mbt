@@ -15,10 +15,11 @@
 ///|
 pub fn to_pixelmatch_image(image : @svg.Image) -> @pixelmatch.Image {
   let pixels : Array[@pixelmatch.Color] = []
-  for pixel in image.pixels {
+  for index in 0..<image_pixel_count(image) {
+    let pixel = image_pixel_at(image, index)
     pixels.push(@pixelmatch.Color::rgba(pixel.r, pixel.g, pixel.b, pixel.a))
   }
-  @pixelmatch.Image::from_pixels(image.width, image.height, pixels)
+  @pixelmatch.Image::from_pixels(image.width(), image.height(), pixels)
 }
 
 ///|
@@ -89,9 +90,10 @@ pub fn rendered_image_difference(
 ) -> RenderedMagnitude {
   let mut squared_error = 0.0
   let mut linear_squared_error = 0.0
-  for index in 0..<before_image.pixels.length() {
-    let before_pixel = before_image.pixels[index]
-    let after_pixel = after_image.pixels[index]
+  let pixel_count = image_pixel_count(before_image)
+  for index in 0..<pixel_count {
+    let before_pixel = image_pixel_at(before_image, index)
+    let after_pixel = image_pixel_at(after_image, index)
     squared_error += raw_rgba8_squared_error(before_pixel, after_pixel)
     linear_squared_error += linear_premultiplied_rgba_squared_error(
       before_pixel, after_pixel,
@@ -107,9 +109,9 @@ pub fn rendered_image_difference(
     changed_pixels: report.diff_count,
     changed_pixel_fraction: report.diff_count.to_double() /
     report.total_pixels.to_double(),
-    rgba8_rmse: (squared_error / (before_image.pixels.length() * 4).to_double()).sqrt(),
+    rgba8_rmse: (squared_error / (pixel_count * 4).to_double()).sqrt(),
     linear_premultiplied_rgba_rmse: (linear_squared_error /
-    (before_image.pixels.length() * 4).to_double()).sqrt(),
+    (pixel_count * 4).to_double()).sqrt(),
   }
 }
 

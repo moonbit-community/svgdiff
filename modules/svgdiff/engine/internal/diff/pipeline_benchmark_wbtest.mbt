@@ -74,10 +74,18 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
     is Some(after_document) else {
     fail("benchmark fixture must parse")
   }
-  let before_image = @svg.render_svg_document_to_image(
-    before_document, 128, 128,
-  )
-  let after_image = @svg.render_svg_document_to_image(after_document, 128, 128)
+  let before_image = @svg.render_svg_document(
+      before_document,
+      128,
+      128,
+      @svg.RenderOptions::default(),
+    ).image
+  let after_image = @svg.render_svg_document(
+      after_document,
+      128,
+      128,
+      @svg.RenderOptions::default(),
+    ).image
   let report = compare(before, after, profile)
   benchmark.bench(name="parse_admission", () => {
     let empty_resources = ResourceBundle::empty()
@@ -108,12 +116,18 @@ fn run_pipeline_stage_benchmarks(benchmark : @bench.T) -> Unit raise {
     )
   })
   benchmark.bench(name="rendering", () => {
-    let rendered_before = @svg.render_svg_document_to_image(
-      before_document, 128, 128,
-    )
-    let rendered_after = @svg.render_svg_document_to_image(
-      after_document, 128, 128,
-    )
+    let rendered_before = @svg.render_svg_document(
+        before_document,
+        128,
+        128,
+        @svg.RenderOptions::default(),
+      ).image
+    let rendered_after = @svg.render_svg_document(
+        after_document,
+        128,
+        128,
+        @svg.RenderOptions::default(),
+      ).image
     benchmark.keep((rendered_before, rendered_after))
   })
   benchmark.bench(name="region_extraction", () => {

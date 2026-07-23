@@ -17,16 +17,19 @@ fn assert_renderer_images_equal(
   left : @svg.Image,
   right : @svg.Image,
 ) -> Unit raise {
-  assert_eq(left.pixels.length(), right.pixels.length())
-  for index in 0..<left.pixels.length() {
-    let left_pixel = left.pixels[index]
-    let right_pixel = right.pixels[index]
-    assert_true(
-      left_pixel.r == right_pixel.r &&
-      left_pixel.g == right_pixel.g &&
-      left_pixel.b == right_pixel.b &&
-      left_pixel.a == right_pixel.a,
-    )
+  assert_eq(left.width(), right.width())
+  assert_eq(left.height(), right.height())
+  for y in 0..<left.height() {
+    for x in 0..<left.width() {
+      let left_pixel = left.get_pixel(x, y)
+      let right_pixel = right.get_pixel(x, y)
+      assert_true(
+        left_pixel.r == right_pixel.r &&
+        left_pixel.g == right_pixel.g &&
+        left_pixel.b == right_pixel.b &&
+        left_pixel.a == right_pixel.a,
+      )
+    }
   }
 }
 
@@ -37,13 +40,18 @@ test "renderer input delegates cascade and ordinary inheritance to svg" {
   guard @svg.parse_svg_document(cascade) is Some(cascade_document) else {
     fail("cascade source must parse")
   }
-  let cascade_image = @svg.render_svg_document_to_image(cascade_document, 4, 4)
+  let cascade_image = @svg.render_svg_document(
+      cascade_document,
+      4,
+      4,
+      @svg.RenderOptions::default(),
+    ).image
   assert_eq(
     (
-      cascade_image.pixels[0].r,
-      cascade_image.pixels[0].g,
-      cascade_image.pixels[0].b,
-      cascade_image.pixels[0].a,
+      cascade_image.get_pixel(0, 0).r,
+      cascade_image.get_pixel(0, 0).g,
+      cascade_image.get_pixel(0, 0).b,
+      cascade_image.get_pixel(0, 0).a,
     ),
     (255, 0, 0, 255),
   )
@@ -56,8 +64,18 @@ test "renderer input delegates cascade and ordinary inheritance to svg" {
     fail("inherited stroke sources must parse")
   }
   assert_renderer_images_equal(
-    @svg.render_svg_document_to_image(inherited_document, 16, 16),
-    @svg.render_svg_document_to_image(explicit_document, 16, 16),
+    @svg.render_svg_document(
+      inherited_document,
+      16,
+      16,
+      @svg.RenderOptions::default(),
+    ).image,
+    @svg.render_svg_document(
+      explicit_document,
+      16,
+      16,
+      @svg.RenderOptions::default(),
+    ).image,
   )
 }
 
@@ -100,8 +118,18 @@ test "renderer input keeps unsupported inline geometry and point syntax adapters
     fail("normalized inline geometry must parse")
   }
   assert_renderer_images_equal(
-    @svg.render_svg_document_to_image(left_document, 10, 6),
-    @svg.render_svg_document_to_image(right_document, 10, 6),
+    @svg.render_svg_document(
+      left_document,
+      10,
+      6,
+      @svg.RenderOptions::default(),
+    ).image,
+    @svg.render_svg_document(
+      right_document,
+      10,
+      6,
+      @svg.RenderOptions::default(),
+    ).image,
   )
 
   let compact = "<svg><polygon points='0 0 4-0 4e0,4'/></svg>"

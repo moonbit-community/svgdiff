@@ -59,13 +59,27 @@ fn source_text_content(input : String) -> String? {
 }
 
 ///|
+fn find_svg_node(node : @svg.SVGNode, id : String) -> @svg.SVGNode? {
+  if node.id == id {
+    return Some(node)
+  }
+  for child in node.children {
+    match find_svg_node(child, id) {
+      Some(found) => return Some(found)
+      None => ()
+    }
+  } nobreak {
+    None
+  }
+}
+
+///|
 fn rect_presence_footprint(
   document : @svg.SVGDocument,
   id : String,
   profile : ComparisonProfile,
 ) -> PresenceMagnitude? {
-  let scene = @svg.Scene::new(document.root)
-  match scene.find_node(id) {
+  match find_svg_node(document.root(), id) {
     Some(node) =>
       match node.shape {
         Rect(x=_, y=_, width~, height~, rx=_, ry=_) => {

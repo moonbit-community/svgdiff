@@ -13,7 +13,22 @@
 // limitations under the License.
 
 ///|
-using @model {type ComparisonProfile}
-
-///|
-using @normalization {normalize_renderer_input_with_profile}
+pub fn render_product_source_to_image(
+  source : String,
+  profile : ComparisonProfile,
+) -> @svg.Image? {
+  guard @svg.parse_svg_document(
+      normalize_renderer_input_with_profile(source, profile),
+    )
+    is Some(document) else {
+    return None
+  }
+  Some(
+    @svg.render_svg_document(
+      document,
+      profile.viewport_width,
+      profile.viewport_height,
+      @svg.RenderOptions::default(),
+    ).image,
+  )
+}

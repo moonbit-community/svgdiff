@@ -13,13 +13,24 @@
 // limitations under the License.
 
 ///|
+pub fn image_pixel_count(image : @svg.Image) -> Int {
+  image.width() * image.height()
+}
+
+///|
+pub fn image_pixel_at(image : @svg.Image, index : Int) -> @svg.Color {
+  let width = image.width()
+  image.get_pixel(index % width, index / width)
+}
+
+///|
 pub fn pixels_differ(
   before : @svg.Image,
   after : @svg.Image,
   index : Int,
 ) -> Bool {
-  let left = before.pixels[index]
-  let right = after.pixels[index]
+  let left = image_pixel_at(before, index)
+  let right = image_pixel_at(after, index)
   left.r != right.r ||
   left.g != right.g ||
   left.b != right.b ||
