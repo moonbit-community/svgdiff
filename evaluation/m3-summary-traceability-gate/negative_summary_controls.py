@@ -24,7 +24,7 @@ def main() -> None:
     report = json.loads(args.report.read_text(encoding="utf-8"))
     summary = args.summary.read_text(encoding="utf-8")
 
-    trace_id = report["atomic_differences"][0]["id"]
+    trace_id = report["difference_groups"][0]["items"][0]["id"]
     missing_trace = summary.replace(escape_markdown(trace_id), "")
     expect_rejected(report, missing_trace, "missing_trace_id")
 

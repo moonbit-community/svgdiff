@@ -145,6 +145,7 @@
           "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
+            "scope": "event_region",
             "candidate_difference_ids": [
               "diff:alignment:0:viewport:fact:viewport:0:0:viewBox",
               "diff:alignment:0:transform:cumulative",

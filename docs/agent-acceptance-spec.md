@@ -54,7 +54,7 @@ The normalized answer record contains:
 | Subject | The affected subject and role | `subject`, `subject_role`, event references |
 | Magnitude | Every available exact measurement with its unit; explicit indeterminate state where relevant | `magnitude`, event `outcome`, `limitations` |
 | Location | Region IDs and CSS-space bounds or an explicit statement that no location was computed | `events[].regions` |
-| Possible causes | Candidate Atomic Difference IDs, guarantee, coverage, and limitation IDs | `regions[].possible_causes` |
+| Possible causes | Candidate scope, explicit Atomic Difference IDs when event-local, guarantee, coverage, and limitation IDs | `regions[].possible_causes` |
 | Main changes | An ordered subset with evidence-based rationale and explicit ambiguity when cross-domain ordering is not defined | events, magnitudes, regions |
 | Traceability | Stable report IDs for every difference, region, candidate cause, and limitation claim | report-local identifiers |
 

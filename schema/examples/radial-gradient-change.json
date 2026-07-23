@@ -163,14 +163,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:gradient:paint:cx",
-              "diff:gradient:paint:spreadMethod",
-              "diff:gradient:paint:gradientTransform",
-              "diff:gradient:paint:effective-coordinate-matrix",
-              "diff:gradient:paint:stop:0:color",
-              "diff:alignment:0:fill:gradient"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:renderer-curved-shape-raster-unproven:dot",
               "diagnostic:renderer-gradient-raster-unproven:dot:fill"

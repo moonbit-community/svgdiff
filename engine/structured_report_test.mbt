@@ -434,6 +434,33 @@ test "compact JSON preserves the concise structured report" {
 }
 
 ///|
+test "comparison-wide cause fallback serializes its scope without repeated IDs" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='red' class='unresolved'/><circle id='right' cx='12' cy='12' r='2' fill='red' class='unresolved'/></svg>",
+    "<svg width='16' height='16'><circle id='left' cx='4' cy='4' r='2' fill='blue' class='unresolved'/><circle id='right' cx='12' cy='12' r='2' fill='green' class='unresolved'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "partial")
+  assert_true(report.events.any(event => !event.difference_regions.is_empty()))
+  let compact = report.to_compact_json_string()
+  assert_true(compact.contains("\"scope\":\"comparison\""))
+  assert_true(compact.find("\"candidate_difference_ids\"") is None)
+}
+
+///|
+test "event-local complete causes retain explicit candidate IDs" {
+  let report = @engine.compare(
+    rect_svg("red"),
+    rect_svg("blue"),
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_eq(report.analysis_status, "complete")
+  let compact = report.to_compact_json_string()
+  assert_true(compact.contains("\"scope\":\"event_region\""))
+  assert_true(compact.contains("\"candidate_difference_ids\":["))
+}
+
+///|
 test "unsupported visual subjects cannot produce complete equality" {
   let source = "<svg width='16' height='16'><path d='M0 0 L8 8'/></svg>"
   let report = @engine.compare(

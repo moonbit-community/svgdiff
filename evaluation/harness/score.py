@@ -7,6 +7,7 @@ import sys
 
 from harness import (
     read_json_lines,
+    report_cause_candidate_ids,
     report_differences,
     report_limitation_ids,
     validate_answer,
@@ -79,17 +80,18 @@ def report_regions(report):
 
 
 def report_envelope_candidates(report):
-    return {
-        fact_id
-        for event in report["events"]
-        for region in event["regions"]
-        for fact_id in region["possible_causes"]["candidate_difference_ids"]
-    }
+    return set().union(
+        *[
+            report_cause_candidate_ids(report, region["possible_causes"])
+            for event in report["events"]
+            for region in event["regions"]
+        ]
+    )
 
 
 def report_envelope_volume(report):
     candidate_sets = [
-        set(region["possible_causes"]["candidate_difference_ids"])
+        report_cause_candidate_ids(report, region["possible_causes"])
         for event in report["events"]
         for region in event["regions"]
     ]

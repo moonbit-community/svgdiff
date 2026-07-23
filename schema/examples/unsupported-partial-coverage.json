@@ -123,10 +123,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:alignment:0:d:segment:0:parameter:y",
-              "diff:alignment:0:d:segment:1:parameter:y"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:unsupported-visual-subject:path",
               "diagnostic:renderer-stroke-outline-raster-unproven:mark",

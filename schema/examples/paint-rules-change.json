@@ -120,11 +120,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:entity:star:fill-rule",
-              "diff:entity:star:paint-order",
-              "diff:entity:star:clip-rule"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:renderer-point-shape-raster-unproven:star",
               "diagnostic:renderer-stroke-outline-raster-unproven:star",

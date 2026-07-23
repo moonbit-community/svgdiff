@@ -64,9 +64,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:alignment:image-resource:0:href"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:embedded_raster_color_profile_unsupported:before:0",
               "diagnostic:embedded_raster_hdr_unsupported:after:0"

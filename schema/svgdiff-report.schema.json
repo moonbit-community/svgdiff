@@ -237,21 +237,41 @@
         "changed_pixels": { "type": "integer", "minimum": 0 },
         "viewport_fraction": { "type": "number", "minimum": 0 },
         "possible_causes": {
-          "type": "object",
-          "required": ["guarantee", "coverage", "candidate_difference_ids"],
-          "properties": {
-            "guarantee": { "enum": ["sound_overapproximation", "not_established"] },
-            "coverage": { "enum": ["complete", "partial", "failed"] },
-            "candidate_difference_ids": {
-              "type": "array",
-              "items": { "type": "string", "minLength": 1 }
+          "anyOf": [
+            {
+              "type": "object",
+              "required": ["guarantee", "coverage", "scope", "candidate_difference_ids"],
+              "properties": {
+                "guarantee": { "enum": ["sound_overapproximation", "not_established"] },
+                "coverage": { "enum": ["complete", "partial", "failed"] },
+                "scope": { "const": "event_region" },
+                "candidate_difference_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "type": "string", "minLength": 1 }
+                },
+                "limitation_ids": {
+                  "type": "array",
+                  "items": { "type": "string", "minLength": 1 }
+                }
+              },
+              "additionalProperties": false
             },
-            "limitation_ids": {
-              "type": "array",
-              "items": { "type": "string", "minLength": 1 }
+            {
+              "type": "object",
+              "required": ["guarantee", "coverage", "scope"],
+              "properties": {
+                "guarantee": { "enum": ["sound_overapproximation", "not_established"] },
+                "coverage": { "enum": ["complete", "partial", "failed"] },
+                "scope": { "const": "comparison" },
+                "limitation_ids": {
+                  "type": "array",
+                  "items": { "type": "string", "minLength": 1 }
+                }
+              },
+              "additionalProperties": false
             }
-          },
-          "additionalProperties": false
+          ]
         }
       },
       "additionalProperties": false

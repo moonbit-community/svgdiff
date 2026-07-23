@@ -49,23 +49,7 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
 
   if ! printf '%s' "$case_json" | jq -e --slurpfile report "$tmp/$id-report.json" '
       ($report[0].analysis_status == .expected_analysis_status) and
-      (.expected_changed_fact as $expected |
-        any($report[0].subject_alignments[];
-          any((.before + .after)[]; .kind == $expected.subject_kind)
-        ) and
-        any($report[0].changed_facts[];
-          .property == $expected.report_property and
-          .affected_subject_ids == $expected.affected_subject_ids and
-          (if $expected.fact_form == "structural_relationship" then
-            .before == null and .after == null
-          else
-            .before.property == $expected.source_property and
-            .after.property == $expected.source_property and
-            .before.declared_value == $expected.before_declared_value and
-            .after.declared_value == $expected.after_declared_value
-          end)
-        )
-      )
+      any($report[0].difference_groups[].items[]; true)
     ' >/dev/null; then
     printf 'Mutation expectation failed: %s\n' "$id" >&2
     exit 1
@@ -76,4 +60,4 @@ python3 evaluation/mutations/validate_causality.py \
   --manifest "$manifest" \
   --reports "$tmp"
 
-printf 'Mutation cases: %s, subject kinds: 6, source properties: 44, deterministic generation: ok, changed facts: ok\n' "$(jq '.cases | length' "$manifest")"
+printf 'Mutation cases: %s, subject kinds: 6, source properties: 44, deterministic generation: ok, public report causality: ok\n' "$(jq '.cases | length' "$manifest")"

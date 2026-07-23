@@ -39,50 +39,28 @@ python3 evaluation/harness/harness.py prepare \
 
 jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
   length == $expected and
-  any(.[].report.profile.perceptual_background; . == null) and
-  any(.[].report.profile.perceptual_background;
+  any(.[].report.comparison.perceptual_background; . == null) and
+  any(.[].report.comparison.perceptual_background;
     . == {"red": 255, "green": 255, "blue": 255}) and
-  any(.[].report.profile.flip_viewing_conditions;
-    . == {"pixels_per_degree": 20}) and
-  any(.[].report.profile.flip_error_threshold;
-    . == {"value": 0.05}) and
-  any(.[].report.events[].rendered_outcome.perceptual_color;
-    .status == "computed" and
-    .magnitude.method_id ==
-      "delta_e_ok_changed_pixels_after_linear_srgb_background/v1" and
-    .magnitude.sample_count > 0 and
-    .magnitude.mean_delta_e_ok > 0) and
-  any(.[].report.events[].rendered_outcome.perceptual_color;
-    .status == "not_computed" and
-    .reason_code == "perceptual_background_absent") and
-  any(.[].report.events[].rendered_outcome.perceptual_flip;
-    .status == "computed" and
-    .map.method_id == "nvlabs_ldr_flip/v1.7-b475eb4b" and
-    .map.encoding == "uint16_be_base64" and
-    (.map.values_base64 | length) > 0 and
-    .statistics.method_id == "event_local_ldr_flip_pooling/v1" and
-    .statistics.canvas_pixel_count > 0 and
-    .statistics.event_region_sample_count > 0 and
-    .statistics.response_sample_count > 0 and
-    .statistics.response_maximum >= .statistics.response_p95 and
-    .statistics.area_above_threshold.threshold == 0.05 and
-    .statistics.area_above_threshold.pixel_count > 0 and
-    .statistics.area_above_threshold.canvas_fraction > 0) and
-  any(.[].report.events[].rendered_outcome.perceptual_flip;
-    .status == "not_computed" and
-    .reason_code == "flip_not_requested") and
-  all(.[];
-    .report.impact_assessment.policy_id == "event_rendered_pareto/v1" and
-    .report.impact_assessment.calibration_status == "not_calibrated" and
-    .report.impact_assessment.candidate_event_count ==
-      (.report.events | length) and
-    (([.report.impact_assessment.frontier_groups[].event_ids[]] -
-      [.report.events[].id]) | length) == 0) and
+  any(.[].report.comparison.flip_pixels_per_degree; . == 20) and
+  any(.[].report.comparison.flip_error_threshold; . == 0.05) and
+  any(.[].report.events[].outcome.perceptual_color;
+    .sample_count > 0 and
+    .mean_delta_e_ok > 0) and
+  any(.[].report.events[].outcome; has("perceptual_color") | not) and
+  any(.[].report.events[].outcome.perceptual_difference;
+    .canvas_mean > 0 and
+    .event_region_mean > 0 and
+    .response_maximum >= .response_p95 and
+    .area_above_threshold.threshold == 0.05 and
+    .area_above_threshold.pixel_count > 0 and
+    .area_above_threshold.canvas_fraction > 0) and
+  any(.[].report.events[].outcome; has("perceptual_difference") | not) and
   all(.[];
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "1.45") and
+    (.report.schema_version == "2.0") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and

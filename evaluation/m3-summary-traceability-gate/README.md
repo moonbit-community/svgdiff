@@ -32,4 +32,4 @@ The accepted result is:
 M3 compact-summary traceability gate: passed
 ```
 
-This gate changes no product format or policy. Structured Report Schema `1.45`, projection `svgdiff-agent-projection/1`, Impact policy `event_rendered_pareto/v1`, and the derived-only Markdown authority remain unchanged.
+This gate changes no product format or policy. Structured Report Schema `2.0`, projection `svgdiff-agent-projection/1`, Impact policy `event_rendered_pareto/v1`, and the derived-only Markdown authority remain unchanged.

@@ -33,6 +33,8 @@ relation.
 
 Cause Envelopes are unchanged. Partial reports still widen to the full Changed
 Fact universe so that localization precision cannot trade away causal recall.
+Schema `2.0` serializes this as `scope = "comparison"` rather than repeating
+every Atomic Difference ID in every region.
 ADR 0038 remains deferred: isolated rendering is useful safe pruning and zero
 evidence, but exact contribution weights still require the documented reopen
 trigger and a separately evaluated implementation.

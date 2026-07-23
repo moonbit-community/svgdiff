@@ -120,29 +120,32 @@ If any condition fails, the report uses `not_established` rather than claiming c
 
 ```json
 {
-  "cause_envelope": {
+  "possible_causes": {
     "guarantee": "sound_overapproximation",
     "coverage": "complete",
-    "fallback_scope": "event_region",
-    "candidate_changed_fact_ids": ["fact:12", "fact:19"],
-    "diagnostic_ids": []
+    "scope": "event_region",
+    "candidate_difference_ids": ["diff:12", "diff:19"]
   }
 }
 ```
 
-A partial result uses:
+A partial comparison-wide result does not repeat the entire report inventory:
 
 ```json
 {
-  "cause_envelope": {
+  "possible_causes": {
     "guarantee": "not_established",
     "coverage": "partial",
-    "fallback_scope": "comparison",
-    "candidate_changed_fact_ids": ["fact:12", "fact:19"],
-    "diagnostic_ids": ["diagnostic:unsupported-operation"]
+    "scope": "comparison",
+    "limitation_ids": ["diagnostic:unsupported-operation"]
   }
 }
 ```
+
+`scope = "comparison"` means every Atomic Difference in the report remains a
+candidate. The typed engine retains the complete Changed Fact universe; the
+product JSON states the equivalent set by scope instead of serializing the same
+ID array in every region.
 
 Candidate ranking may reorder or annotate the Cause Envelope but cannot remove candidates from a causally complete envelope.
 

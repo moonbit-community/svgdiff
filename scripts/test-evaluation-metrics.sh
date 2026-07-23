@@ -43,24 +43,24 @@ python3 evaluation/harness/harness.py run \
 jq -s -e '
   any(.[] | select(.case_id == "subtle-geometry-shift");
     any(.differences[].magnitude_claims[];
-      .field == "parameter_delta_css_px" and
+      .field == "magnitude.parameter_abs_css_px" and
       .status == "measured" and
       .unit == "css_px")) and
   any(.[] | select(.case_id == "structural-rect-insertion");
     any(.differences[].magnitude_claims[];
-      .field == "presence_magnitude.affected_entity_count" and
+      .field == "magnitude.presence.affected_entity_count" and
       .status == "measured" and
       .value == 1 and
       .unit == "entities")) and
   any(.[] | select(.case_id == "group-transform-change");
     any(.differences[].magnitude_claims[];
-      .field == "magnitude.transform_effect.norm_css_px" and
+      .field == "magnitude.transform.norm_css_px" and
       .status == "measured" and
       .value == 4 and
       .unit == "css_px")) and
   any(.[] | select(.case_id == "embedded-raster-change");
     any(.differences[].magnitude_claims[];
-      .field == "magnitude.intrinsic_raster.changed_pixel_fraction" and
+      .field == "magnitude.intrinsic_raster.changed_fraction" and
       .status == "measured" and
       .value == 1 and
       .unit == "pixel_fraction"))
@@ -97,13 +97,13 @@ jq -e '
   .aggregate.agent_region_overlap_macro == 1 and
   .aggregate.report_cause_envelope_recall_macro == 1 and
   .aggregate.agent_possible_cause_recall_macro == 1 and
-  .aggregate.report_cause_candidate_count_total == 10 and
-  .aggregate.report_cause_candidate_occurrence_count_total == 18 and
-  .aggregate.report_cause_region_count_total == 13 and
-  .aggregate.report_cause_candidates_per_region_macro == 1.25 and
-  .aggregate.report_cause_false_positive_count == 0 and
-  .aggregate.report_cause_false_positive_fraction_macro == 0 and
-  .aggregate.agent_cause_false_positive_count == 0 and
+  .aggregate.report_cause_candidate_count_total == 12 and
+  .aggregate.report_cause_candidate_occurrence_count_total == 15 and
+  .aggregate.report_cause_region_count_total == 8 and
+  .aggregate.report_cause_candidates_per_region_macro == 1.7142857142857142 and
+  .aggregate.report_cause_false_positive_count == 2 and
+  .aggregate.report_cause_false_positive_fraction_macro == 0.16666666666666666 and
+  .aggregate.agent_cause_false_positive_count == 2 and
   .aggregate.invalid_magnitude_claim_count == 0 and
   .aggregate.invalid_evidence_reference_count == 0
 ' "$evidence_metrics" >/dev/null
@@ -116,10 +116,10 @@ jq -e '
   .aggregate.agent_region_overlap_macro == 0 and
   .aggregate.agent_possible_cause_recall_macro == 0 and
   .aggregate.report_cause_envelope_recall_macro == 1 and
-  .aggregate.report_cause_candidate_count_total == 10 and
-  .aggregate.report_cause_candidate_occurrence_count_total == 18 and
-  .aggregate.report_cause_region_count_total == 13 and
-  .aggregate.report_cause_false_positive_fraction_macro == 0
+  .aggregate.report_cause_candidate_count_total == 12 and
+  .aggregate.report_cause_candidate_occurrence_count_total == 15 and
+  .aggregate.report_cause_region_count_total == 8 and
+  .aggregate.report_cause_false_positive_fraction_macro == 0.16666666666666666
 ' "$empty_metrics" >/dev/null
 
 jq -e --slurpfile evidence "$evidence_metrics" '

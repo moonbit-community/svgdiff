@@ -3,7 +3,11 @@
 import json
 import sys
 
-from harness import report_differences, report_limitation_ids
+from harness import (
+    report_cause_candidate_ids,
+    report_differences,
+    report_limitation_ids,
+)
 from magnitude_claims import difference_magnitude_claims
 
 
@@ -26,7 +30,10 @@ for difference in report_differences(report):
         {
             candidate_id
             for region in regions
-            for candidate_id in region["possible_causes"]["candidate_difference_ids"]
+            for candidate_id in report_cause_candidate_ids(
+                report,
+                region["possible_causes"],
+            )
         }
     )
     guarantees = {region["possible_causes"]["guarantee"] for region in regions}

@@ -4,9 +4,14 @@ import argparse
 import json
 import subprocess
 from pathlib import Path
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from evaluation.report_causes import report_differences
 NEW_CONFORMANCE_CODES = {
     "renderer_fractional_geometry_unproven",
     "renderer_gradient_raster_unproven",
@@ -99,6 +104,26 @@ def compare_source(cli: Path, source: Path) -> dict:
     return compare_pair(cli, source, source)
 
 
+def diagnostic_codes(report: dict) -> set[str]:
+    return {diagnostic["code"] for diagnostic in report["limitations"]}
+
+
+def renderer_components(cli: Path) -> set[str]:
+    result = subprocess.run(
+        [str(cli), "--version"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    renderer_line = next(
+        (line for line in result.stdout.splitlines() if line.startswith("renderer: ")),
+        None,
+    )
+    if renderer_line is None:
+        raise ValueError("CLI version output lacks renderer identity")
+    return set(renderer_line.removeprefix("renderer: ").split("+"))
+
+
 def main() -> None:
     args = parse_args()
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
@@ -124,6 +149,7 @@ def main() -> None:
     diagnostic_count = 0
     normalizer_count = 0
     compositor_count = 0
+    components = renderer_components(args.cli)
     for case_id in sorted(divergent):
         mapping = mappings[case_id]
         disposition = mapping.get("disposition")
@@ -149,26 +175,22 @@ def main() -> None:
             report = compare_pair(args.cli, source, canonical)
             if report.get("analysis_status") != "complete":
                 raise ValueError(f"normalizer comparison remained partial: {case_id}")
-            renderer_components = report["profile"]["renderer_id"].split("+")
             component_id = normalizer_id.removeprefix("svgdiff/")
-            if normalizer_id not in renderer_components and component_id not in renderer_components:
+            if normalizer_id not in components and component_id not in components:
                 raise ValueError(f"normalizer identity missing for {case_id}")
-            differences = report.get("atomic_differences", [])
+            differences = report_differences(report)
             if not differences or any(
-                difference.get("computed_relation", {}).get("status") != "equivalent"
+                difference.get("effective", {}).get("relation") != "equivalent"
                 for difference in differences
             ):
                 raise ValueError(f"normalizer did not prove computed equivalence: {case_id}")
             events = report.get("events", [])
             if not events or any(
-                event.get("rendered_outcome", {}).get("magnitude", {}).get(
-                    "changed_pixels"
-                )
-                != 0
+                event.get("outcome", {}).get("changed_pixels") != 0
                 for event in events
             ):
                 raise ValueError(f"normalizer changed production pixels: {case_id}")
-            emitted = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+            emitted = diagnostic_codes(report)
             if emitted & NEW_CONFORMANCE_CODES:
                 raise ValueError(f"normalizer comparison acquired a guard: {case_id}")
             normalizer_count += 1
@@ -187,13 +209,12 @@ def main() -> None:
             self_report = compare_source(args.cli, source)
             if self_report.get("analysis_status") != "complete":
                 raise ValueError(f"compositor source remained partial: {case_id}")
-            renderer_components = self_report["profile"]["renderer_id"].split("+")
             component_id = compositor_id.removeprefix("svgdiff/")
-            if compositor_id not in renderer_components and component_id not in renderer_components:
+            if compositor_id not in components and component_id not in components:
                 raise ValueError(f"compositor identity missing for {case_id}")
             if any(
                 diagnostic.get("code") == "group_opacity_compositing_unsupported"
-                for diagnostic in self_report.get("diagnostics", [])
+                for diagnostic in self_report.get("limitations", [])
             ):
                 raise ValueError(f"retired group opacity guard emitted: {case_id}")
             canonical_id = mapping.get("canonical_case_id")
@@ -225,11 +246,8 @@ def main() -> None:
                         f"compositor canonical comparison remained partial: {case_id}"
                     )
                 if any(
-                    event.get("rendered_outcome", {}).get("status") != "computed"
-                    or event.get("rendered_outcome", {}).get("magnitude", {}).get(
-                        "changed_pixels"
-                    )
-                    != 0
+                    event.get("outcome", {}).get("status") != "computed"
+                    or event.get("outcome", {}).get("changed_pixels") != 0
                     for event in canonical_events
                 ):
                     raise ValueError(
@@ -242,19 +260,17 @@ def main() -> None:
             )
             differences = [
                 difference
-                for difference in report.get("atomic_differences", [])
-                if difference.get("domain")
+                for difference in report_differences(report)
+                if difference.get("kind")
                 == mapping.get("validation_domain", "compositing.opacity")
             ]
             if report.get("analysis_status") != "complete" or len(differences) != 1:
                 raise ValueError(f"compositor validation comparison failed: {case_id}")
             if not any(
-                event.get("rendered_outcome", {}).get("status") == "computed"
-                and event.get("rendered_outcome", {}).get("magnitude", {}).get(
-                    "changed_pixels", 0
-                ) > 0
+                event.get("outcome", {}).get("status") == "computed"
+                and event.get("outcome", {}).get("changed_pixels", 0) > 0
                 for event in report.get("events", [])
-                if differences[0]["id"] in event.get("atomic_difference_ids", [])
+                if differences[0]["id"] in event.get("difference_ids", [])
             ):
                 raise ValueError(f"compositor produced no measured response: {case_id}")
             compositor_count += 1
@@ -268,14 +284,8 @@ def main() -> None:
         report = compare_source(args.cli, source)
         if report.get("analysis_status") != "partial":
             raise ValueError(f"divergent case remained complete: {case_id}")
-        if code not in {diagnostic["code"] for diagnostic in report["diagnostics"]}:
+        if code not in diagnostic_codes(report):
             raise ValueError(f"disposition diagnostic missing for {case_id}: {code}")
-        if not any(
-            row["feature_id"] == f"guard.{code}"
-            and row["rendered_evidence"] == "limited"
-            for row in report["coverage_matrix"]
-        ):
-            raise ValueError(f"rendered guard coverage missing for {case_id}: {code}")
         diagnostic_count += 1
 
     exact_supported = [
@@ -286,7 +296,7 @@ def main() -> None:
     for case in exact_supported:
         source = (ROOT / fixtures[case["id"]]["source"]).resolve()
         report = compare_source(args.cli, source)
-        emitted = {diagnostic["code"] for diagnostic in report["diagnostics"]}
+        emitted = diagnostic_codes(report)
         unexpected = emitted & NEW_CONFORMANCE_CODES
         if unexpected:
             raise ValueError(
@@ -328,7 +338,7 @@ def main() -> None:
         report = compare_source(args.cli, source)
         mask_guards = sorted(
             diagnostic["code"]
-            for diagnostic in report.get("diagnostics", [])
+            for diagnostic in report.get("limitations", [])
             if diagnostic["code"].startswith("mask_")
         )
         if report.get("analysis_status") != "complete" or mask_guards:
@@ -353,7 +363,7 @@ def main() -> None:
         report = compare_source(args.cli, source)
         filter_guards = sorted(
             diagnostic["code"]
-            for diagnostic in report.get("diagnostics", [])
+            for diagnostic in report.get("limitations", [])
             if diagnostic["code"].startswith("filter_")
         )
         if report.get("analysis_status") != "complete" or filter_guards:
@@ -378,7 +388,7 @@ def main() -> None:
         report = compare_source(args.cli, source)
         blend_guards = sorted(
             diagnostic["code"]
-            for diagnostic in report.get("diagnostics", [])
+            for diagnostic in report.get("limitations", [])
             if diagnostic["code"].startswith(("blend_", "isolation_"))
         )
         if report.get("analysis_status") != "complete" or blend_guards:

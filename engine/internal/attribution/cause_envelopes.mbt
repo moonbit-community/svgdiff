@@ -320,7 +320,8 @@ pub fn attach_cause_envelopes(
           }
         }
       }
-      if !complete || candidates.is_empty() {
+      let comparison_fallback = !complete || candidates.is_empty()
+      if comparison_fallback {
         push_unique_fact_ids(candidates, all_fact_ids)
       }
       regions.push({
@@ -336,7 +337,7 @@ pub fn attach_cause_envelopes(
           } else {
             "partial"
           },
-          fallback_scope: if candidates.length() == all_fact_ids.length() {
+          fallback_scope: if comparison_fallback {
             "comparison"
           } else {
             "event_region"

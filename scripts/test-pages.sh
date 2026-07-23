@@ -201,6 +201,23 @@ pw --raw run-code \
       await page.locator('#result-section').waitFor({ state: 'visible' });
       await page.waitForFunction(() => document.querySelector('#report-root [data-difference-canvas]')?.dataset.state === 'ready');
       const exampleReport = JSON.parse(await page.locator('#report-data').inputValue());
+      let causePresentation = null;
+      if (id === 'visibility') {
+        const changedEvent = exampleReport.events.find(event =>
+          event.outcome.changed_pixels > 0
+        );
+        const card = page.locator(
+          '.event-card[data-event-id=\"' + changedEvent.id + '\"]'
+        );
+        await card.locator('details.evidence > summary').click();
+        const evidence = card.locator('details.evidence');
+        causePresentation = {
+          comparisonFallback: (await evidence.textContent()).includes(
+            'Comparison-wide fallback'
+          ),
+          factCards: await evidence.locator('.fact-card').count(),
+        };
+      }
       const differencePixels = await page.locator('#report-root [data-difference-canvas]').evaluate(canvas => {
         const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
         let nonBlack = 0;
@@ -220,11 +237,17 @@ pw --raw run-code \
         analysisStatus: exampleReport.analysis_status,
         atomicDifferences: exampleReport.difference_groups.flatMap(group => group.items).length,
         diagnostics: exampleReport.limitations.length,
+        causePresentation,
         canvasChangedPixels: exampleReport.canvas.changed_pixels,
         scores: await page.locator('.score-card .score-value').allTextContents(),
         eventOutcomes: exampleReport.events.map(event => ({
           changedPixels: event.outcome.changed_pixels,
           regionKinds: event.regions.map(region => region.kind),
+          causeScopes: event.regions.map(region => region.possible_causes.scope),
+          expandedComparisonCauses: event.regions.some(region =>
+            region.possible_causes.scope === 'comparison' &&
+            Object.hasOwn(region.possible_causes, 'candidate_difference_ids')
+          ),
         })),
         differencePixels,
       });
@@ -241,6 +264,9 @@ pw --raw run-code \
       schemaVersion: report.schema_version,
       atomicDifferences: report.difference_groups.flatMap(group => group.items).length,
       diagnostics: report.limitations.length,
+      baselineCauses: report.events.flatMap(event =>
+        event.regions.map(region => region.possible_causes)
+      ),
       scores,
       previewSvgCounts,
       previewRootsFillViewport,
@@ -293,6 +319,11 @@ jq -e '
   .schemaVersion == "2.0" and
   .atomicDifferences == 3 and
   .diagnostics == 0 and
+  all(.baselineCauses[];
+    .scope == "event_region" and
+    has("candidate_difference_ids") and
+    (.candidate_difference_ids | length) > 0
+  ) and
   .effectiveValues == ["Different effective value","Different effective value","Different effective value"] and
   [.scores[].label] == ["Changed area","Linear RGBA error","Perceptual difference"] and
   all(.scores[]; (.value | endswith("%"))) and
@@ -348,6 +379,7 @@ jq -e '
   ) and
   (.realExamples[] | select(.id == "visibility") |
     . as $example |
+    .causePresentation == {"comparisonFallback":true,"factCards":0} and
     ([.eventOutcomes[] | select(.changedPixels == 0 and (.regionKinds | length) == 0)] | length) == 1 and
     all(.eventOutcomes[] | select(.changedPixels > 0);
       .changedPixels == $example.canvasChangedPixels and
@@ -378,7 +410,11 @@ jq -e '
   ) and
   all(.realExamples[];
     all(.eventOutcomes[].regionKinds[]; . == "conservative") and
-    all(.eventOutcomes[] | select(.changedPixels > 0); (.regionKinds | length) > 0)
+    all(.eventOutcomes[] | select(.changedPixels > 0);
+      (.regionKinds | length) > 0 and
+      all(.causeScopes[]; . == "comparison") and
+      (.expandedComparisonCauses | not)
+    )
   )
 ' "$tmp/browser.json" >/dev/null
 

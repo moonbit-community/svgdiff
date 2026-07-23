@@ -5,11 +5,17 @@ import copy
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from evaluation.report_causes import cause_candidate_difference_ids
+
+
 MANIFEST_PATH = ROOT / "evaluation/determinism/manifest.v1.json"
 REQUIRED_CATEGORIES = {
     "equivalent", "changed", "inserted", "deleted", "resource-mediated",
@@ -78,8 +84,7 @@ def validate_links(report: dict[str, Any]) -> dict[str, int]:
         for region in event["regions"]:
             region_count += 1
             causes = region["possible_causes"]
-            if not set(causes["candidate_difference_ids"]) <= difference_set:
-                raise ValueError("dangling possible cause")
+            cause_candidate_difference_ids(causes, difference_set)
             if not set(causes.get("limitation_ids", [])) <= limitation_set:
                 raise ValueError("dangling region limitation")
     return {
@@ -151,9 +156,12 @@ def main() -> None:
     dangling["events"][0]["difference_ids"][0] = "diff:missing"
     expect_rejection(dangling)
     cause = copy.deepcopy(control)
-    cause["events"][0]["regions"][0]["possible_causes"][
-        "candidate_difference_ids"
-    ] = ["diff:missing"]
+    cause["events"][0]["regions"][0]["possible_causes"] = {
+        "guarantee": "sound_overapproximation",
+        "coverage": "complete",
+        "scope": "event_region",
+        "candidate_difference_ids": ["diff:missing"],
+    }
     expect_rejection(cause)
 
     output = {

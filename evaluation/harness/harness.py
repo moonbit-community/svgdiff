@@ -7,6 +7,15 @@ import shlex
 import subprocess
 import sys
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from evaluation.report_causes import (
+    cause_candidate_difference_ids,
+    report_differences,
+    report_difference_ids,
+)
 
 ROOT = Path(__file__).resolve().parent
 ACCEPTANCE_VERSION = "agent-acceptance/1"
@@ -20,16 +29,12 @@ CAUSE_GUARANTEES = {
 MAGNITUDE_STATUSES = {"measured", "not_computed", "indeterminate"}
 
 
-def report_differences(report):
-    return [
-        difference
-        for group in report.get("difference_groups", [])
-        for difference in group.get("items", [])
-    ]
-
-
 def report_limitation_ids(report):
     return [item["id"] for item in report.get("limitations", [])]
+
+
+def report_cause_candidate_ids(report, causes):
+    return cause_candidate_difference_ids(causes, report_difference_ids(report))
 
 
 def read_json_lines(path: Path):

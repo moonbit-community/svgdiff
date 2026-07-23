@@ -10,7 +10,7 @@ This gate composes the current coverage-safety chain for the first terminal acce
 
 ## Exact claim
 
-- `complete` remains scoped to schema `1.45`, one recorded Comparison Profile, and the implemented support contract.
+- `complete` remains scoped to schema `2.0`, one recorded Comparison Profile, and the implemented support contract.
 - The named static feature inventory, renderer dispositions, centralized coverage proof, unsupported-input properties, and status composition prevent missing or inconsistent evidence from becoming complete.
 - Malformed, over-limit, cyclic, or explosively expanding inputs fail instead of returning a truncated inventory.
 - Unadopted advanced semantics remain partial or external; the advanced adopted set is empty.

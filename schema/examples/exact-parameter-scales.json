@@ -83,6 +83,7 @@
           "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
+            "scope": "event_region",
             "candidate_difference_ids": [
               "diff:entity:box:x"
             ]
@@ -102,6 +103,7 @@
           "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
+            "scope": "event_region",
             "candidate_difference_ids": [
               "diff:entity:box:x"
             ]

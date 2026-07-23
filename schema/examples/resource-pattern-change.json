@@ -106,11 +106,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:pattern:id:tile:child:dot:fill",
-              "diff:pattern:id:tile:child:dot:computed_signature",
-              "diff:alignment:0:fill:pattern"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:renderer-pattern-raster-unproven:box:fill"
             ]
@@ -130,11 +126,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:pattern:id:tile:child:dot:fill",
-              "diff:pattern:id:tile:child:dot:computed_signature",
-              "diff:alignment:0:fill:pattern"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:renderer-pattern-raster-unproven:box:fill"
             ]
@@ -154,11 +146,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:pattern:id:tile:child:dot:fill",
-              "diff:pattern:id:tile:child:dot:computed_signature",
-              "diff:alignment:0:fill:pattern"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:renderer-pattern-raster-unproven:box:fill"
             ]

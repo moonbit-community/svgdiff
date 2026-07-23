@@ -51,10 +51,13 @@ bounds-filtered final-canvas mask or computed bounds. Several Events may
 legitimately share a region, and its outcome is a bounded response rather than
 an exact contribution. `observed` is reserved for future scene-level
 contribution evidence.
-When `possible_causes.guarantee` is `sound_overapproximation`, the candidate
-Atomic Difference IDs may include false positives but contain every actual
-changed cause within complete analysis coverage. `not_established` makes no
-such claim.
+`possible_causes.scope = "event_region"` carries explicit
+`candidate_difference_ids`. `scope = "comparison"` means every Atomic
+Difference in the report remains a candidate and deliberately omits the
+redundant ID array. When `possible_causes.guarantee` is
+`sound_overapproximation`, the represented candidates may include false
+positives but contain every actual changed cause within complete analysis
+coverage. `not_established` makes no such claim.
 
 ## Independent measurements
 

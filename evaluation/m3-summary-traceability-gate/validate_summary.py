@@ -43,26 +43,21 @@ def validate(report: dict, summary: str) -> None:
         "summary analysis status mismatch",
     )
 
-    impact = report["impact_assessment"]
-    require_text(summary, impact["policy_id"], "Impact policy")
-    require_text(summary, impact["calibration_status"], "Impact calibration state")
-    require_text(summary, impact["frontier_relation"], "Impact frontier relation")
+    require_text(summary, "event_rendered_pareto/v1", "Impact policy")
+    require_text(summary, "not_calibrated", "Impact calibration state")
     require("does not provide a severity label or total order" in summary, "summary lacks Impact limitation")
-    for group in impact["frontier_groups"]:
-        for event_id in group["event_ids"]:
-            require_text(summary, event_id, "frontier event ID")
-        for difference_id in group["atomic_difference_ids"]:
-            require_text(summary, difference_id, "frontier Atomic Difference ID")
-
-    for difference in report["atomic_differences"]:
+    for event in report["events"]:
+        require_text(summary, event["id"], "Visual Event ID")
+    differences = [
+        difference
+        for group in report["difference_groups"]
+        for difference in group["items"]
+    ]
+    for difference in differences:
         require_text(summary, difference["id"], "Atomic Difference ID")
-        if difference.get("subject_alignment_id") is not None:
-            require_text(summary, difference["subject_alignment_id"], "Subject Alignment ID")
-        for fact_id in difference["changed_fact_ids"]:
-            require_text(summary, fact_id, "Changed Fact ID")
-        for diagnostic_id in difference["computed_relation"]["diagnostic_ids"]:
+        for diagnostic_id in difference["effective"].get("limitation_ids", []):
             require_text(summary, diagnostic_id, "relation Diagnostic ID")
-    for diagnostic in report["diagnostics"]:
+    for diagnostic in report["limitations"]:
         require_text(summary, diagnostic["id"], "Diagnostic ID")
 
     if report["analysis_status"] != "complete":

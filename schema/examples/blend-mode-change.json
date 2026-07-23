@@ -65,6 +65,7 @@
           "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
+            "scope": "event_region",
             "candidate_difference_ids": [
               "diff:compositing:front:mix-blend-mode"
             ]

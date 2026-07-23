@@ -316,10 +316,13 @@ fn compact_region(report : StructuredReport, region : DifferenceRegion) -> Json 
   let cause : Map[String, Json] = Map([])
   cause["guarantee"] = region.cause_envelope.guarantee.to_json()
   cause["coverage"] = region.cause_envelope.coverage.to_json()
-  cause["candidate_difference_ids"] = candidate_difference_ids(
-    report,
-    region.cause_envelope.candidate_changed_fact_ids,
-  ).to_json()
+  cause["scope"] = region.cause_envelope.fallback_scope.to_json()
+  if region.cause_envelope.fallback_scope != "comparison" {
+    cause["candidate_difference_ids"] = candidate_difference_ids(
+      report,
+      region.cause_envelope.candidate_changed_fact_ids,
+    ).to_json()
+  }
   if !region.cause_envelope.diagnostic_ids.is_empty() {
     cause["limitation_ids"] = region.cause_envelope.diagnostic_ids.to_json()
   }

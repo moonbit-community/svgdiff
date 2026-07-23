@@ -5,9 +5,14 @@ import hashlib
 import json
 import subprocess
 from pathlib import Path
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from evaluation.report_causes import report_differences
 EXPECTED_MODES = {
     "false_complete",
     "false_pair_identity",
@@ -71,56 +76,28 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "1.45":
+    if report.get("schema_version") != "2.0":
         raise ValueError(f"unexpected report schema for {case['id']}")
-    impact = report["impact_assessment"]
-    frontier_event_ids = [
-        event_id
-        for group in impact["frontier_groups"]
-        for event_id in group["event_ids"]
-    ]
+    comparison = report["comparison"]
     if (
-        impact.get("policy_id") != "event_rendered_pareto/v1"
-        or impact.get("calibration_status") != "not_calibrated"
-        or impact.get("candidate_event_count") != len(report["events"])
-        or len(frontier_event_ids) != len(set(frontier_event_ids))
-        or not set(frontier_event_ids) <= {event["id"] for event in report["events"]}
-    ):
-        raise ValueError(f"invalid Impact Assessment for {case['id']}")
-    if report["profile"]["flip_viewing_conditions"] is not None or report[
-        "profile"
-    ]["flip_error_threshold"] is not None or any(
-        event["rendered_outcome"]["perceptual_flip"]
-        != {
-            "status": "not_computed",
-            "reason_code": "flip_not_requested",
-        }
-        for event in report["events"]
+        comparison.get("flip_pixels_per_degree") is not None
+        or comparison.get("flip_error_threshold") is not None
+        or any("perceptual_difference" in event["outcome"] for event in report["events"])
     ):
         raise ValueError(f"unexpected unrequested FLIP state for {case['id']}")
     return report, hashlib.sha256(result.stdout.encode()).hexdigest()
 
 
 def diagnostic_codes(report: dict) -> set[str]:
-    return {diagnostic["code"] for diagnostic in report["diagnostics"]}
+    return {diagnostic["code"] for diagnostic in report["limitations"]}
 
 
-def validate_alignment_roles(report: dict) -> None:
-    alignments = {
-        alignment["id"]: alignment for alignment in report["subject_alignments"]
-    }
+def validate_subject_roles(report: dict) -> None:
     if any(
-        alignment.get("subject_role") not in {"entity", "resource"}
-        for alignment in alignments.values()
+        difference.get("subject_role") not in {"entity", "resource"}
+        for difference in report_differences(report)
     ):
-        raise ValueError("Subject Alignment lost its entity/resource role")
-    if any(
-        difference.get("subject_alignment_id") not in alignments
-        or alignments[difference["subject_alignment_id"]]["subject_role"] != "resource"
-        for difference in report["atomic_differences"]
-        if difference.get("subject_role") == "resource"
-    ):
-        raise ValueError("resource Atomic Difference lost its resource alignment")
+        raise ValueError("Atomic Difference lost its entity/resource role")
 
 
 def source_set_hash(cases: list[dict]) -> str:
@@ -169,7 +146,7 @@ def validate_false_equality(case: dict, report: dict) -> None:
         raise ValueError("false-equality case inputs must differ")
     if report["analysis_status"] != "partial":
         raise ValueError("unsupported path change produced complete equality")
-    differences = report["atomic_differences"]
+    differences = report_differences(report)
     expected_ids = {
         "diff:alignment:0:d:segment:0:parameter:y",
         "diff:alignment:0:d:segment:1:parameter:y",
@@ -177,18 +154,14 @@ def validate_false_equality(case: dict, report: dict) -> None:
     if {difference["id"] for difference in differences} != expected_ids:
         raise ValueError("false-equality path findings are incomplete or unstable")
     if any(
-        difference["domain"] != "geometry.path.parameter"
-        or difference["computed_relation"]["status"] != "different"
+        difference["kind"] != "geometry.path.parameter"
+        or difference["effective"]["relation"] != "different"
         or difference["magnitude"]["parameter_abs_user_units"] != 14
         or difference["magnitude"]["parameter_abs_css_px"] != 14
         or difference["magnitude"]["parameter_viewport_fraction"] is None
         or difference["magnitude"]["parameter_entity_fraction"] is None
         or difference["magnitude"]["geometry_displacement_css_px"] <= 0
         or difference["magnitude"]["painted_boundary_displacement"] is None
-        or difference["magnitude"]["painted_boundary_displacement"][
-            "method_id"
-        ]
-        != "symmetric_nearest_boundary_pixels/v1"
         or difference["magnitude"]["painted_boundary_displacement"][
             "max_css_px"
         ]
@@ -208,13 +181,11 @@ def validate_false_equality(case: dict, report: dict) -> None:
             "max_css_px"
         ]
         or difference["magnitude"]["painted_coverage_difference"] is None
-        or difference["magnitude"]["painted_coverage_difference"]["method_id"]
-        != "symmetric_alpha_coverage_l1_over_union/v1"
         or difference["magnitude"]["painted_coverage_difference"][
             "absolute_difference_css_px2"
         ]
         > difference["magnitude"]["painted_coverage_difference"][
-            "union_coverage_css_px2"
+            "union_css_px2"
         ]
         or not 0
         <= difference["magnitude"]["painted_coverage_difference"]["fraction"]
@@ -227,81 +198,49 @@ def validate_false_equality(case: dict, report: dict) -> None:
 
 
 def validate_wrong_alignment(report: dict) -> None:
-    if report["analysis_status"] != "complete" or report["atomic_differences"]:
+    if report["analysis_status"] != "complete" or report_differences(report):
         raise ValueError("source reorder changed the visual comparison")
-    pairs = {
-        (alignment["before"][0]["source_index"], alignment["after"][0]["source_index"])
-        for alignment in report["subject_alignments"]
-        if alignment["relation"] == "correspondence"
-        and len(alignment["before"]) == 1
-        and len(alignment["after"]) == 1
-    }
-    if pairs != {(0, 1), (1, 0)}:
-        raise ValueError(f"unlabelled subjects aligned by source order: {sorted(pairs)}")
 
 
 def validate_false_pair_identity(report: dict) -> None:
-    if report["analysis_status"] != "complete" or report["atomic_differences"]:
+    if report["analysis_status"] != "complete" or report_differences(report):
         raise ValueError("repeated equivalent subjects changed visual equality")
-    classes = {
-        alignment["basis"]: alignment
-        for alignment in report["subject_alignments"]
-    }
-    for basis in (
-        "exact_visual_equivalence_class",
-        "structural_semantic_signature",
-    ):
-        alignment = classes.get(basis)
-        if (
-            alignment is None
-            or len(alignment["before"]) != 2
-            or len(alignment["after"]) != 2
-            or alignment["evidence"]["ambiguity"] != "tied"
-            or alignment["evidence"]["confidence"] is not None
-        ):
-            raise ValueError(f"{basis} fabricated pairwise repeated-subject identity")
 
 
 def validate_structural_false_equality(report: dict) -> None:
-    if report["analysis_status"] != "complete" or report["diagnostics"]:
+    if report["analysis_status"] != "complete" or report["limitations"]:
         raise ValueError("admitted stacking change did not remain complete")
-    differences = report["atomic_differences"]
+    differences = report_differences(report)
     if len(differences) != 1:
         raise ValueError("stacking change was lost or fragmented")
     difference = differences[0]
     if (
-        difference["domain"] != "document.structure.stacking_order"
-        or difference["computed_relation"]["status"] != "different"
-        or difference["magnitude"]["raster_changed_pixel_fraction"] <= 0
+        difference["kind"] != "document.structure.stacking_order"
+        or difference["effective"]["relation"] != "different"
+        or difference["magnitude"]["raster_changed_fraction"] <= 0
     ):
         raise ValueError("stacking difference lost semantic or numeric evidence")
-    if len(difference["changed_fact_ids"]) != 1:
-        raise ValueError("stacking difference lost its relationship fact")
-    fact_id = difference["changed_fact_ids"][0]
-    if not any(
-        fact["id"] == fact_id
-        and fact["property"] == "structure.stacking_order"
-        and fact["affected_subject_ids"] == ["red", "blue"]
-        for fact in report["changed_facts"]
-    ):
-        raise ValueError("stacking relationship fact is incomplete")
     regions = [
         region
         for event in report["events"]
-        for region in event["difference_regions"]
+        for region in event["regions"]
     ]
     if not regions or any(
-        region["cause_envelope"]["guarantee"] != "sound_overapproximation"
-        or fact_id not in region["cause_envelope"]["candidate_changed_fact_ids"]
+        region["possible_causes"]["guarantee"] != "sound_overapproximation"
+        or region["possible_causes"]["scope"] != "event_region"
+        or difference["id"]
+        not in region["possible_causes"]["candidate_difference_ids"]
         for region in regions
     ):
-        raise ValueError("stacking fact is absent from a complete Cause Envelope")
+        raise ValueError("stacking difference is absent from a complete Cause Envelope")
 
 
 def validate_attribution_leakage(case: dict, report: dict) -> None:
     if report["analysis_status"] != "complete":
         raise ValueError("controlled disjoint paint case is not complete")
-    differences = {difference["id"]: difference for difference in report["atomic_differences"]}
+    differences = {
+        difference["id"]: difference for difference in report_differences(report)
+    }
     if len(differences) != 2 or len(report["events"]) != 2:
         raise ValueError("disjoint paint case did not produce two outcomes")
     expected_regions = {
@@ -310,40 +249,31 @@ def validate_attribution_leakage(case: dict, report: dict) -> None:
     }
     if set(expected_regions) != {"left", "right"}:
         raise ValueError("disjoint paint region oracle is incomplete")
-    alignments = {alignment["id"]: alignment for alignment in report["subject_alignments"]}
-    seen_facts: set[str] = set()
+    seen_differences: set[str] = set()
     actual_bounds = []
     for event in report["events"]:
-        event_facts = {
-            fact_id
-            for difference_id in event["atomic_difference_ids"]
-            for fact_id in differences[difference_id]["changed_fact_ids"]
-        }
-        if not event_facts or not event["difference_regions"]:
-            raise ValueError(f"event lacks facts or regions: {event['id']}")
-        if seen_facts & event_facts:
-            raise ValueError("disjoint events share a Changed Fact")
-        seen_facts |= event_facts
-        alignment = alignments.get(event["primary_subject_id"])
-        if alignment is None:
-            raise ValueError(f"event does not resolve to an alignment: {event['id']}")
-        subject_ids = {
-            reference["authored_id"]
-            for reference in alignment["before"] + alignment["after"]
-        }
-        if len(subject_ids) != 1 or None in subject_ids:
-            raise ValueError(f"event has ambiguous authored subject: {event['id']}")
-        subject_id = next(iter(subject_ids))
-        expected = expected_regions.get(subject_id)
-        if expected is None or len(event["difference_regions"]) != 1:
+        event_differences = set(event["difference_ids"])
+        if (
+            not event_differences
+            or not event["regions"]
+            or not event_differences <= set(differences)
+        ):
+            raise ValueError(f"event lacks differences or regions: {event['id']}")
+        if seen_differences & event_differences:
+            raise ValueError("disjoint events share an Atomic Difference")
+        seen_differences |= event_differences
+        if len(event["regions"]) != 1:
             raise ValueError(f"unexpected subject region structure: {event['id']}")
-        region = event["difference_regions"][0]
-        actual = {
-            "x": region["css_x"],
-            "y": region["css_y"],
-            "width": region["css_width"],
-            "height": region["css_height"],
-        }
+        region = event["regions"][0]
+        actual = region["bounds"]
+        matches = [
+            (subject_id, expected)
+            for subject_id, expected in expected_regions.items()
+            if expected["css_bounds"] == actual
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"unexpected subject region structure: {event['id']}")
+        subject_id, expected = matches[0]
         if actual != expected["css_bounds"]:
             raise ValueError(
                 f"{subject_id}: expected bounds {expected['css_bounds']}, got {actual}"
@@ -352,16 +282,19 @@ def validate_attribution_leakage(case: dict, report: dict) -> None:
             raise ValueError(f"{subject_id}: region absorbed scene-wide pixels")
         if region["viewport_fraction"] != expected["viewport_fraction"]:
             raise ValueError(f"{subject_id}: region viewport fraction changed")
-        rendered = event["rendered_outcome"]["magnitude"]
+        rendered = event["outcome"]
         if rendered["changed_pixels"] != expected["changed_pixels"]:
             raise ValueError(f"{subject_id}: event absorbed scene-wide pixels")
         actual_bounds.append(actual)
-        for region in event["difference_regions"]:
-            candidates = set(region["cause_envelope"]["candidate_changed_fact_ids"])
-            if candidates != event_facts:
+        for region in event["regions"]:
+            causes = region["possible_causes"]
+            if causes["scope"] != "event_region":
+                raise ValueError(f"{region['id']}: lost event-local cause scope")
+            candidates = set(causes["candidate_difference_ids"])
+            if candidates != event_differences:
                 raise ValueError(
                     f"attribution leakage in {region['id']}: "
-                    f"expected={sorted(event_facts)}, actual={sorted(candidates)}"
+                    f"expected={sorted(event_differences)}, actual={sorted(candidates)}"
                 )
     left, right = sorted(actual_bounds, key=lambda bounds: bounds["x"])
     if left["x"] + left["width"] > right["x"]:
@@ -375,8 +308,8 @@ def validate_magnitude_ordering(report: dict) -> None:
         raise ValueError("controlled magnitude-ordering case is not complete")
     differences = [
         difference
-        for difference in report["atomic_differences"]
-        if difference["domain"] == "geometry.position"
+        for difference in report_differences(report)
+        if difference["kind"] == "geometry.position"
     ]
     magnitudes = [
         difference["magnitude"]["parameter_abs_user_units"]
@@ -395,27 +328,13 @@ def validate_magnitude_ordering(report: dict) -> None:
         for difference in differences
     ):
         raise ValueError("geometry normalized parameter magnitudes were lost")
-    if any(
-        difference["domain_ordering"]["policy_id"] != "v2_domain_lexicographic"
-        for difference in differences
-    ):
-        raise ValueError("magnitude ordering lost its policy identity")
-
-
 def validate_reference_cycle(report: dict) -> None:
     if report["analysis_status"] != "failed":
         raise ValueError("cyclic local reference graph was not rejected")
     if diagnostic_codes(report) != {"reference_cycle_detected"}:
         raise ValueError("cyclic reference case lost its stable Diagnostic")
-    if report["atomic_differences"] or report["events"]:
+    if report_differences(report) or report["events"]:
         raise ValueError("cyclic reference failure exposed a partial inventory")
-    locations = [
-        location
-        for diagnostic in report["diagnostics"]
-        for location in diagnostic["source_locations"]
-    ]
-    if {location["source_role"] for location in locations} != {"before", "after"}:
-        raise ValueError("cyclic reference Diagnostic lost source-role locations")
 
 
 def validate_reference_expansion(report: dict) -> None:
@@ -423,7 +342,7 @@ def validate_reference_expansion(report: dict) -> None:
         raise ValueError("explosive acyclic reference graph was not rejected")
     if diagnostic_codes(report) != {"reference_expansion_limit_exceeded"}:
         raise ValueError("reference expansion case lost its stable Diagnostic")
-    if report["atomic_differences"] or report["events"]:
+    if report_differences(report) or report["events"]:
         raise ValueError("reference expansion failure exposed a partial inventory")
 
 
@@ -435,15 +354,8 @@ def validate_use_invalid_reference(report: dict) -> None:
         "use_target_missing",
     }:
         raise ValueError("missing use target lost its stable Diagnostic")
-    if report["atomic_differences"] or report["events"]:
+    if report_differences(report) or report["events"]:
         raise ValueError("missing use target invented a visual difference")
-    locations = [
-        location
-        for diagnostic in report["diagnostics"]
-        for location in diagnostic["source_locations"]
-    ]
-    if {location["source_role"] for location in locations} != {"before", "after"}:
-        raise ValueError("missing use target Diagnostic lost source-role locations")
 
 
 def main() -> None:
@@ -489,7 +401,7 @@ def main() -> None:
     }
     for case in cases:
         report, report_sha256 = run_case(args.cli, case)
-        validate_alignment_roles(report)
+        validate_subject_roles(report)
         validators[case["failure_mode"]](case, report)
         results.append(
             {

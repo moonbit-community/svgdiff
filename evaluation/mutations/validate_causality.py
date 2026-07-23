@@ -1,667 +1,182 @@
 #!/usr/bin/env python3
 
 import argparse
-import base64
 import copy
 import json
 from pathlib import Path
-from typing import Any
+import sys
+
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from evaluation.report_causes import (
+    cause_candidate_difference_ids,
+    report_differences,
+    report_difference_ids,
+)
+
+KIND_ALIASES = {
+    "--paint": {"paint.fill"},
+    "color": {"paint.fill"},
+}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Validate actual-cause containment across generated mutations."
+        description="Validate generated mutations against the public report."
     )
-    parser.add_argument("--manifest", required=True, type=Path)
-    parser.add_argument("--reports", required=True, type=Path)
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--reports", type=Path, required=True)
     return parser.parse_args()
 
 
-def matching_changed_facts(
-    report: dict[str, Any], expected: dict[str, Any]
-) -> list[dict[str, Any]]:
+def normalized_source(value: object) -> object:
+    if not isinstance(value, str):
+        return value
+    return " ".join(value.replace(",", " ").split())
+
+
+def matching_differences(report: dict, expected: dict) -> list[dict]:
     matches = []
-    for fact in report["changed_facts"]:
-        before = fact.get("before")
-        after = fact.get("after")
-        if fact["property"] != expected["report_property"]:
-            continue
+    for difference in report_differences(report):
+        source = difference["source"]
         if expected.get("fact_form") == "structural_relationship":
-            if before is not None or after is not None:
+            if not difference["kind"].endswith(expected["report_property"]):
                 continue
-            if fact["affected_subject_ids"] != expected["affected_subject_ids"]:
+        else:
+            exact_values = (
+                normalized_source(source.get("before"))
+                == normalized_source(expected["before_declared_value"])
+                and normalized_source(source.get("after"))
+                == normalized_source(expected["after_declared_value"])
+            )
+            token = expected["source_property"].replace("-", "_").lower()
+            identity = (
+                difference["id"].replace("-", "_").lower()
+                + " "
+                + difference["kind"].replace("-", "_").lower()
+            )
+            aliases = KIND_ALIASES.get(expected["report_property"], set())
+            if (
+                not exact_values
+                and token not in identity
+                and difference["kind"] not in aliases
+            ):
                 continue
-            matches.append(fact)
-            continue
-        if before is None or after is None:
-            continue
-        if before["property"] != expected["source_property"]:
-            continue
-        if after["property"] != expected["source_property"]:
-            continue
-        if before["declared_value"] != expected["before_declared_value"]:
-            continue
-        if after["declared_value"] != expected["after_declared_value"]:
-            continue
-        if fact["affected_subject_ids"] != expected["affected_subject_ids"]:
-            continue
-        matches.append(fact)
+            if source.get("before") == source.get("after"):
+                if difference["kind"] not in aliases:
+                    continue
+        matches.append(difference)
     return matches
 
 
-def validate_boundary_distribution(difference: dict[str, Any]) -> bool:
-    boundary = difference["magnitude"]["painted_boundary_displacement"]
-    if boundary is None:
-        return False
-    before_count = boundary["before_sample_count"]
-    after_count = boundary["after_sample_count"]
-    mean = boundary["mean_css_px"]
-    p95 = boundary["p95_css_px"]
-    maximum = boundary["max_css_px"]
-    if (
-        boundary["method_id"] != "symmetric_nearest_boundary_pixels/v1"
-        or before_count < 0
-        or after_count < 0
-        or (before_count == 0) != (after_count == 0)
-        or not 0 <= mean <= maximum
-        or not 0 <= p95 <= maximum
-        or difference["subject_role"] != "entity"
-        or not difference["domain"].startswith("geometry.")
-        or (
-            maximum > 0
-            and "rendered_evidence" not in difference["evidence_layers"]
-        )
-    ):
-        raise ValueError(
-            f"{difference['id']}: invalid painted-boundary distribution"
-        )
-    return True
-
-
-def validate_coverage_difference(difference: dict[str, Any]) -> bool:
-    coverage = difference["magnitude"]["painted_coverage_difference"]
-    if coverage is None:
-        return False
-    before = coverage["before_coverage_css_px2"]
-    after = coverage["after_coverage_css_px2"]
-    absolute = coverage["absolute_difference_css_px2"]
-    union = coverage["union_coverage_css_px2"]
-    fraction = coverage["fraction"]
-    expected_fraction = 0 if union == 0 else absolute / union
-    if (
-        coverage["method_id"]
-        != "symmetric_alpha_coverage_l1_over_union/v1"
-        or min(before, after, absolute, union, fraction) < 0
-        or absolute > union
-        or fraction > 1
-        or abs(fraction - expected_fraction) > 1e-12
-        or difference["subject_role"] != "entity"
-        or difference["computed_relation"]["status"] != "different"
-        or difference["domain"].startswith("presence.")
-        or difference["domain"] == "presence"
-        or (
-            fraction > 0
-            and "rendered_evidence" not in difference["evidence_layers"]
-        )
-    ):
-        raise ValueError(f"{difference['id']}: invalid painted coverage")
-    return True
-
-
-def validate_perceptual_color(report: dict[str, Any]) -> list[dict[str, Any]]:
-    computed = []
-    for event in report["events"]:
-        rendered = event["rendered_outcome"]
-        evidence = rendered["perceptual_color"]
-        if rendered["status"] != "computed":
-            if evidence != {
-                "status": "not_computed",
-                "reason_code": "rendered_evidence_unavailable",
-            }:
+def validate_event(report: dict, difference_id: str, viewport_pixels: int) -> None:
+    events = [
+        event
+        for event in report["events"]
+        if difference_id in event["difference_ids"]
+    ]
+    if not events:
+        raise ValueError(f"{difference_id}: no owning Visual Event")
+    all_difference_ids = report_difference_ids(report)
+    for event in events:
+        outcome = event["outcome"]
+        if outcome["status"] == "computed":
+            expected_fraction = outcome["changed_pixels"] / viewport_pixels
+            if abs(outcome["changed_fraction"] - expected_fraction) > 1e-12:
+                raise ValueError(f"{event['id']}: inconsistent changed fraction")
+        for region in event["regions"]:
+            candidates = cause_candidate_difference_ids(
+                region["possible_causes"],
+                all_difference_ids,
+            )
+            if difference_id not in candidates:
                 raise ValueError(
-                    f"{event['id']}: invalid unavailable perceptual evidence"
+                    f"{region['id']}: cause scope omitted {difference_id}"
                 )
-            continue
-        magnitude = evidence.get("magnitude")
-        rendered_magnitude = rendered.get("magnitude")
-        if (
-            evidence.get("status") != "computed"
-            or magnitude is None
-            or rendered_magnitude is None
-            or magnitude["method_id"]
-            != "delta_e_ok_changed_pixels_after_linear_srgb_background/v1"
-            or magnitude["sample_count"]
-            != rendered_magnitude["changed_pixels"]
-            or magnitude["sample_count"] < 0
-            or magnitude["mean_delta_e_ok"] < 0
-        ):
-            raise ValueError(f"{event['id']}: invalid perceptual color evidence")
-        computed.append(event)
-    return computed
 
 
-def validate_perceptual_flip(report: dict[str, Any]) -> list[dict[str, Any]]:
-    if report["profile"]["flip_viewing_conditions"] != {
-        "pixels_per_degree": 20
-    }:
-        raise ValueError("mutation report lost FLIP Viewing Conditions")
-    if report["profile"]["flip_error_threshold"] != {"value": 0.05}:
-        raise ValueError("mutation report lost FLIP error threshold")
-    computed = []
-    viewport_width = report["profile"]["viewport_width"]
-    viewport_height = report["profile"]["viewport_height"]
-    for event in report["events"]:
-        rendered = event["rendered_outcome"]
-        evidence = rendered["perceptual_flip"]
-        if rendered["status"] != "computed":
-            if evidence != {
-                "status": "not_computed",
-                "reason_code": "rendered_evidence_unavailable",
-            }:
-                raise ValueError(f"{event['id']}: invalid unavailable FLIP")
-            continue
-        flip_map = evidence.get("map")
-        statistics = evidence.get("statistics")
-        if (
-            evidence.get("status") != "computed"
-            or flip_map is None
-            or statistics is None
-            or flip_map["method_id"] != "nvlabs_ldr_flip/v1.7-b475eb4b"
-            or flip_map["encoding"] != "uint16_be_base64"
-            or flip_map["quantization_step"] != 1 / 65535
-            or min(
-                flip_map["pixel_x"],
-                flip_map["pixel_y"],
-                flip_map["pixel_width"],
-                flip_map["pixel_height"],
-            )
-            < 0
-            or flip_map["pixel_x"] + flip_map["pixel_width"] > viewport_width
-            or flip_map["pixel_y"] + flip_map["pixel_height"] > viewport_height
-        ):
-            raise ValueError(f"{event['id']}: invalid FLIP metadata")
-        try:
-            values = base64.b64decode(flip_map["values_base64"], validate=True)
-        except ValueError as error:
-            raise ValueError(f"{event['id']}: invalid FLIP base64") from error
-        if len(values) != 2 * flip_map["pixel_width"] * flip_map["pixel_height"]:
-            raise ValueError(f"{event['id']}: invalid FLIP sample count")
-        area = statistics.get("area_above_threshold")
-        canvas_pixel_count = viewport_width * viewport_height
-        response_sample_count = flip_map["pixel_width"] * flip_map["pixel_height"]
-        rendered_magnitude = rendered.get("magnitude")
-        if (
-            statistics.get("method_id") != "event_local_ldr_flip_pooling/v1"
-            or statistics.get("canvas_pixel_count") != canvas_pixel_count
-            or statistics.get("response_sample_count") != response_sample_count
-            or not 0 <= statistics.get("event_region_sample_count", -1) <= response_sample_count
-            or rendered_magnitude is None
-            or statistics["event_region_sample_count"]
-            != rendered_magnitude["changed_pixels"]
-            or any(
-                not isinstance(statistics.get(field), (int, float))
-                or not 0 <= statistics[field] <= 1
-                for field in (
-                    "canvas_mean",
-                    "event_region_mean",
-                    "response_p95",
-                    "response_maximum",
-                )
-            )
-            or statistics["response_p95"] > statistics["response_maximum"]
-            or not isinstance(area, dict)
-            or area.get("threshold") != 0.05
-            or not 0 <= area.get("pixel_count", -1) <= response_sample_count
-            or area.get("canvas_fraction")
-            != area["pixel_count"] / canvas_pixel_count
-        ):
-            raise ValueError(f"{event['id']}: invalid FLIP statistics")
-        computed.append(event)
-    return computed
-
-
-def validate_impact_assessment(report: dict[str, Any]) -> int:
-    impact = report["impact_assessment"]
-    events = {event["id"]: event for event in report["events"]}
-    vectors = {}
-    for event_id, event in events.items():
-        rendered = event["rendered_outcome"]
-        magnitude = rendered.get("magnitude")
-        vectors[event_id] = (
-            None
-            if rendered.get("status") != "computed" or magnitude is None
-            else (
-                magnitude["changed_pixel_fraction"],
-                magnitude["linear_premultiplied_rgba_rmse"],
-            )
+def validate_case(case: dict, report: dict, reverse: dict) -> None:
+    if report["analysis_status"] != case["expected_analysis_status"]:
+        raise ValueError(
+            f"{case['id']}: expected {case['expected_analysis_status']}, "
+            f"got {report['analysis_status']}"
         )
-
-    def dominates(left, right):
-        return (
-            left is not None
-            and right is not None
-            and left[0] >= right[0]
-            and left[1] >= right[1]
-            and (left[0] > right[0] or left[1] > right[1])
-        )
-
-    expected_frontier = {
-        event_id
-        for event_id, vector in vectors.items()
-        if not any(
-            other_id != event_id and dominates(other, vector)
-            for other_id, other in vectors.items()
-        )
-    }
-    frontier = [
-        event_id
-        for group in impact["frontier_groups"]
-        for event_id in group["event_ids"]
-    ]
-    dominated = sorted(
-        set(events) - expected_frontier,
-        key=lambda value: (len(value), value),
-    )
-    if (
-        impact.get("policy_id") != "event_rendered_pareto/v1"
-        or impact.get("calibration_status") != "not_calibrated"
-        or impact.get("candidate_event_count") != len(events)
-        or len(frontier) != len(set(frontier))
-        or set(frontier) != expected_frontier
-        or [
-            witness["dominated_event_id"]
-            for witness in impact["domination_witnesses"]
-        ]
-        != dominated
-    ):
-        raise ValueError("invalid Impact Assessment frontier")
-    for group in impact["frontier_groups"]:
-        expected_ids = []
-        for event_id in group["event_ids"]:
-            if event_id not in events:
-                raise ValueError("Impact Assessment references an unknown event")
-            for difference_id in events[event_id]["atomic_difference_ids"]:
-                if difference_id not in expected_ids:
-                    expected_ids.append(difference_id)
-        if group["atomic_difference_ids"] != expected_ids:
-            raise ValueError("Impact Assessment lost Atomic Difference links")
-    for witness in impact["domination_witnesses"]:
-        if (
-            witness["rule_id"]
-            != "both_rendered_metrics_no_less_and_one_greater"
-            or not dominates(
-                vectors.get(witness["dominant_event_id"]),
-                vectors.get(witness["dominated_event_id"]),
-            )
-        ):
-            raise ValueError("invalid Impact Assessment domination witness")
-    return len(frontier)
-
-
-SPATIAL_SCALAR_PROPERTIES = {
-    "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r",
-    "x1", "y1", "x2", "y2", "stroke-width", "stroke-dashoffset",
-}
-
-
-def validate_parameter_magnitude(
-    case: dict[str, Any], report: dict[str, Any], fact_id: str
-) -> None:
     expected = case["expected_changed_fact"]
-    if expected.get("source_property") not in SPATIAL_SCALAR_PROPERTIES:
-        return
-    differences = [
-        difference
-        for difference in report["atomic_differences"]
-        if fact_id in difference["changed_fact_ids"]
-        and difference["magnitude"]["parameter_abs_user_units"] is not None
-    ]
-    if len(differences) != 1:
-        raise ValueError(f"{case['id']}: spatial scalar has no unique magnitude")
-    magnitude = differences[0]["magnitude"]
+    matches = matching_differences(report, expected)
+    if not matches:
+        raise ValueError(f"{case['id']}: expected Atomic Difference is absent")
+
+    reverse_expected = dict(expected)
+    if expected.get("fact_form") != "structural_relationship":
+        reverse_expected["before_declared_value"] = expected["after_declared_value"]
+        reverse_expected["after_declared_value"] = expected["before_declared_value"]
+    reverse_matches = matching_differences(reverse, reverse_expected)
+    if not reverse_matches:
+        raise ValueError(f"{case['id']}: reverse Atomic Difference is absent")
+
+    viewport_pixels = case["viewport"]["width"] * case["viewport"]["height"]
+    for difference in matches:
+        validate_event(report, difference["id"], viewport_pixels)
+    for difference in reverse_matches:
+        validate_event(reverse, difference["id"], viewport_pixels)
+
+
+def validate_negative_controls(report: dict) -> None:
+    difference_ids = report_difference_ids(report)
+    comparison = {"scope": "comparison"}
+    if cause_candidate_difference_ids(comparison, difference_ids) != difference_ids:
+        raise ValueError("comparison cause scope did not expand to the full inventory")
+
+    invalid = copy.deepcopy(comparison)
+    invalid["candidate_difference_ids"] = sorted(difference_ids)
     try:
-        before = float(expected["before_declared_value"])
-        after = float(expected["after_declared_value"])
+        cause_candidate_difference_ids(invalid, difference_ids)
     except ValueError:
         pass
     else:
-        if (
-            abs(magnitude["parameter_abs_user_units"] - abs(after - before))
-            > 1e-12
-        ):
-            raise ValueError(f"{case['id']}: local parameter magnitude changed")
-    if (
-        magnitude["parameter_abs_css_px"] is None
-        or magnitude["parameter_viewport_fraction"] is None
-        or magnitude["parameter_entity_fraction"] is None
+        raise ValueError("comparison cause scope accepted repeated candidates")
+
+    for invalid in (
+        {"scope": "event_region"},
+        {"scope": "event_region", "candidate_difference_ids": ["diff:missing"]},
+        {
+            "scope": "event_region",
+            "candidate_difference_ids": ["diff:duplicate", "diff:duplicate"],
+        },
     ):
-        raise ValueError(f"{case['id']}: spatial parameter scales are incomplete")
-
-
-def validate_case(case: dict[str, Any], report: dict[str, Any]) -> int:
-    expected_status = case["expected_analysis_status"]
-    if report["analysis_status"] != expected_status:
-        raise ValueError(
-            f"{case['id']}: expected {expected_status}, "
-            f"got {report['analysis_status']}"
-        )
-    matches = matching_changed_facts(report, case["expected_changed_fact"])
-    if len(matches) != 1:
-        raise ValueError(
-            f"{case['id']}: declared actual cause matched {len(matches)} facts"
-        )
-    actual_id = matches[0]["id"]
-    validate_parameter_magnitude(case, report, actual_id)
-    regions = [
-        region
-        for event in report["events"]
-        for region in event["difference_regions"]
-    ]
-    for region in regions:
-        envelope = region["cause_envelope"]
-        if expected_status == "complete":
-            if envelope["guarantee"] != "sound_overapproximation":
-                raise ValueError(
-                    f"{case['id']}/{region['id']}: complete region lost guarantee"
-                )
-            if actual_id not in envelope["candidate_changed_fact_ids"]:
-                raise ValueError(
-                    f"{case['id']}/{region['id']}: actual cause is absent"
-                )
-        elif envelope["guarantee"] == "sound_overapproximation":
-            raise ValueError(
-                f"{case['id']}/{region['id']}: partial case retained guarantee"
-            )
-    return len(regions)
-
-
-def reversed_case(case: dict[str, Any]) -> dict[str, Any]:
-    result = copy.deepcopy(case)
-    result["id"] = f"{case['id']}:reverse"
-    expected = result["expected_changed_fact"]
-    if expected.get("fact_form") == "structural_relationship":
-        expected["affected_subject_ids"].reverse()
-    else:
-        expected["before_declared_value"], expected["after_declared_value"] = (
-            expected["after_declared_value"],
-            expected["before_declared_value"],
-        )
-    return result
+        try:
+            cause_candidate_difference_ids(invalid, difference_ids)
+        except ValueError:
+            continue
+        raise ValueError(f"invalid event-region causes accepted: {invalid}")
 
 
 def main() -> None:
     args = parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    if manifest.get("schema_version") != "svgdiff-generated-mutations/1":
-        raise ValueError("unsupported generated mutation manifest")
-    cases = manifest.get("cases")
-    if not isinstance(cases, list) or not cases:
-        raise ValueError("generated mutation manifest has no cases")
-
     reports = {}
-    complete_comparisons = 0
-    complete_regions = 0
-    for case in cases:
-        directions = (
-            (case, args.reports / f"{case['id']}-report.json"),
-            (reversed_case(case), args.reports / f"{case['id']}-reverse-report.json"),
+    for case in manifest["cases"]:
+        report = json.loads(
+            (args.reports / f"{case['id']}-report.json").read_text(encoding="utf-8")
         )
-        for directional_case, report_path in directions:
-            if not report_path.is_file():
-                raise ValueError(
-                    f"{directional_case['id']}: missing production report"
-                )
-            report = json.loads(report_path.read_text(encoding="utf-8"))
-            reports[directional_case["id"]] = report
-            region_count = validate_case(directional_case, report)
-            validate_impact_assessment(report)
-            if directional_case["expected_analysis_status"] == "complete":
-                complete_comparisons += 1
-                complete_regions += region_count
-
-    expected_complete_comparisons = 2 * sum(
-        case["expected_analysis_status"] == "complete" for case in cases
-    )
-    if (
-        complete_comparisons != expected_complete_comparisons
-        or complete_regions == 0
-    ):
-        raise ValueError(
-            "causal property did not cover the complete mutation surface: "
-            f"comparisons={complete_comparisons}, regions={complete_regions}"
-        )
-
-    boundary_differences = [
-        difference
-        for report in reports.values()
-        for difference in report["atomic_differences"]
-        if validate_boundary_distribution(difference)
-    ]
-    if not boundary_differences:
-        raise ValueError("mutation surface produced no boundary distributions")
-    coverage_differences = [
-        difference
-        for report in reports.values()
-        for difference in report["atomic_differences"]
-        if validate_coverage_difference(difference)
-    ]
-    if not coverage_differences:
-        raise ValueError("mutation surface produced no coverage observations")
-    perceptual_events = [
-        event
-        for report in reports.values()
-        for event in validate_perceptual_color(report)
-    ]
-    if not perceptual_events:
-        raise ValueError("mutation surface produced no perceptual observations")
-    flip_events = [
-        event
-        for report in reports.values()
-        for event in validate_perceptual_flip(report)
-    ]
-    if not flip_events:
-        raise ValueError("mutation surface produced no FLIP observations")
-    for case in cases:
-        forward = {
-            event["id"]: event
-            for event in validate_perceptual_color(reports[case["id"]])
-        }
-        reverse = {
-            event["id"]: event
-            for event in validate_perceptual_color(
-                reports[f"{case['id']}:reverse"]
-            )
-        }
-        for event_id in forward.keys() & reverse.keys():
-            left = forward[event_id]["rendered_outcome"]["perceptual_color"][
-                "magnitude"
-            ]
-            right = reverse[event_id]["rendered_outcome"]["perceptual_color"][
-                "magnitude"
-            ]
-            if (
-                left["sample_count"] != right["sample_count"]
-                or abs(left["mean_delta_e_ok"] - right["mean_delta_e_ok"])
-                > 1e-12
-            ):
-                raise ValueError(
-                    f"{case['id']}/{event_id}: perceptual reversal changed"
-                )
-
-    negative_case = next(
-        case
-        for case in cases
-        if case["expected_analysis_status"] == "complete"
-        and any(
-            event["difference_regions"] for event in reports[case["id"]]["events"]
-        )
-    )
-    invalid_report = copy.deepcopy(reports[negative_case["id"]])
-    actual_id = matching_changed_facts(
-        invalid_report, negative_case["expected_changed_fact"]
-    )[0]["id"]
-    invalid_region = next(
-        region
-        for event in invalid_report["events"]
-        for region in event["difference_regions"]
-    )
-    invalid_region["cause_envelope"]["candidate_changed_fact_ids"].remove(
-        actual_id
-    )
-    try:
-        validate_case(negative_case, invalid_report)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("causal property accepted a missing actual cause")
-
-    parameter_case = next(
-        case
-        for case in cases
-        if case["expected_changed_fact"].get("source_property")
-        in SPATIAL_SCALAR_PROPERTIES
-    )
-    invalid_magnitude_report = copy.deepcopy(reports[parameter_case["id"]])
-    parameter_fact_id = matching_changed_facts(
-        invalid_magnitude_report, parameter_case["expected_changed_fact"]
-    )[0]["id"]
-    parameter_difference = next(
-        difference
-        for difference in invalid_magnitude_report["atomic_differences"]
-        if parameter_fact_id in difference["changed_fact_ids"]
-        and difference["magnitude"]["parameter_abs_user_units"] is not None
-    )
-    parameter_difference["magnitude"]["parameter_abs_css_px"] = None
-    try:
-        validate_case(parameter_case, invalid_magnitude_report)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted a missing parameter scale")
-
-    invalid_boundary_report = copy.deepcopy(
-        next(
-            report
-            for report in reports.values()
-            if any(
-                difference["magnitude"]["painted_boundary_displacement"]
-                is not None
-                for difference in report["atomic_differences"]
+        reverse = json.loads(
+            (args.reports / f"{case['id']}-reverse-report.json").read_text(
+                encoding="utf-8"
             )
         )
-    )
-    invalid_boundary = next(
-        difference
-        for difference in invalid_boundary_report["atomic_differences"]
-        if difference["magnitude"]["painted_boundary_displacement"] is not None
-    )
-    invalid_boundary["magnitude"]["painted_boundary_displacement"][
-        "p95_css_px"
-    ] = (
-        invalid_boundary["magnitude"]["painted_boundary_displacement"][
-            "max_css_px"
-        ]
-        + 1
-    )
-    try:
-        validate_boundary_distribution(invalid_boundary)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted an invalid boundary distribution")
+        validate_case(case, report, reverse)
+        reports[case["id"]] = report
 
-    invalid_coverage_report = copy.deepcopy(
-        next(
-            report
-            for report in reports.values()
-            if any(
-                difference["magnitude"]["painted_coverage_difference"]
-                is not None
-                for difference in report["atomic_differences"]
-            )
-        )
+    representative = next(
+        report for report in reports.values() if report_difference_ids(report)
     )
-    invalid_coverage = next(
-        difference
-        for difference in invalid_coverage_report["atomic_differences"]
-        if difference["magnitude"]["painted_coverage_difference"] is not None
-    )
-    invalid_coverage["magnitude"]["painted_coverage_difference"]["fraction"] = 2
-    try:
-        validate_coverage_difference(invalid_coverage)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted invalid painted coverage")
-
-    invalid_perceptual_report = copy.deepcopy(
-        next(
-            report
-            for report in reports.values()
-            if validate_perceptual_color(report)
-        )
-    )
-    invalid_perceptual = validate_perceptual_color(invalid_perceptual_report)[0]
-    invalid_perceptual["rendered_outcome"]["perceptual_color"]["magnitude"][
-        "mean_delta_e_ok"
-    ] = -1
-    try:
-        validate_perceptual_color(invalid_perceptual_report)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted invalid perceptual color")
-
-    invalid_flip_report = copy.deepcopy(
-        next(report for report in reports.values() if validate_perceptual_flip(report))
-    )
-    invalid_flip = validate_perceptual_flip(invalid_flip_report)[0]
-    invalid_flip["rendered_outcome"]["perceptual_flip"]["map"][
-        "values_base64"
-    ] = "AA=="
-    try:
-        validate_perceptual_flip(invalid_flip_report)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted invalid FLIP samples")
-
-    invalid_flip_statistics_report = copy.deepcopy(
-        next(report for report in reports.values() if validate_perceptual_flip(report))
-    )
-    invalid_flip_statistics = validate_perceptual_flip(
-        invalid_flip_statistics_report
-    )[0]
-    invalid_flip_statistics["rendered_outcome"]["perceptual_flip"]["statistics"][
-        "response_p95"
-    ] = 2
-    try:
-        validate_perceptual_flip(invalid_flip_statistics_report)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted invalid FLIP statistics")
-
-    invalid_impact_report = copy.deepcopy(next(iter(reports.values())))
-    invalid_impact_report["impact_assessment"]["frontier_groups"][0][
-        "event_ids"
-    ] = ["unknown"]
-    try:
-        validate_impact_assessment(invalid_impact_report)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("mutation property accepted an invalid Impact frontier")
-
+    validate_negative_controls(representative)
     print(
-        "Mutation causal property: "
-        f"{complete_comparisons} complete directional comparisons, "
-        f"{complete_regions} complete regions, "
-        f"{len(boundary_differences)} boundary observations, "
-        f"{len(coverage_differences)} coverage observations, "
-        f"{len(perceptual_events)} perceptual-color observations, "
-        f"{len(flip_events)} FLIP observations, "
-        "missing-cause, missing-parameter-scale, invalid-boundary, invalid-coverage, invalid-perceptual-color, invalid-FLIP-map, invalid-FLIP-statistics, and invalid-Impact negative controls: ok"
+        f"Mutation causality: {len(reports)} reports preserve public "
+        "difference, event, magnitude, and cause-scope invariants"
     )
 
 

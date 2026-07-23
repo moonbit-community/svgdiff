@@ -65,6 +65,7 @@
           "possible_causes": {
             "guarantee": "sound_overapproximation",
             "coverage": "complete",
+            "scope": "event_region",
             "candidate_difference_ids": [
               "diff:structure:stacking:alignment:0:alignment:1"
             ]

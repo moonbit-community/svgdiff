@@ -4,11 +4,20 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from evaluation.report_causes import (
+    cause_candidate_difference_ids,
+    report_difference_ids,
+)
+
+
 MANIFEST_PATH = ROOT / "evaluation/semantic-concern/manifest.v1.json"
 RESULTS_PATH = ROOT / "evaluation/semantic-concern/results.v1.json"
 
@@ -110,11 +119,16 @@ def build_results(cli: Path) -> dict[str, Any]:
         and event["outcome"].get("changed_fraction", 0) > target_outcome["changed_fraction"]
         and event["outcome"].get("linear_rgba_rmse", 0) > target_outcome["linear_rgba_rmse"]
     )
-    cause_ids = {
-        identifier
-        for region in target["regions"]
-        for identifier in region["possible_causes"]["candidate_difference_ids"]
-    }
+    comparison_difference_ids = report_difference_ids(report)
+    cause_ids = set().union(
+        *[
+            cause_candidate_difference_ids(
+                region["possible_causes"],
+                comparison_difference_ids,
+            )
+            for region in target["regions"]
+        ]
+    )
     require(set(target["difference_ids"]) <= cause_ids <= differences.keys(), "cause links drifted")
     require(not has_forbidden_semantic_field(report), "report inferred semantic priority")
 

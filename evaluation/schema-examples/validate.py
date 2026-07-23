@@ -12,6 +12,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+from evaluation.report_causes import cause_candidate_difference_ids
 from evaluation.schema_validation import audit_schema, validate_instance
 
 
@@ -201,8 +202,10 @@ def assert_report_links(case: dict[str, Any], report: dict[str, Any]) -> None:
             raise ValueError(f"{case['id']}: unknown event difference link")
         for region in event["regions"]:
             causes = region["possible_causes"]
-            if not set(causes["candidate_difference_ids"]) <= difference_ids:
-                raise ValueError(f"{case['id']}: unknown possible-cause link")
+            try:
+                cause_candidate_difference_ids(causes, difference_ids)
+            except ValueError as error:
+                raise ValueError(f"{case['id']}: {error}") from error
             if not set(causes.get("limitation_ids", [])) <= limitation_ids:
                 raise ValueError(f"{case['id']}: unknown region limitation link")
 

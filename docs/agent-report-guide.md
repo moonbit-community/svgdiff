@@ -53,8 +53,11 @@ per-side footprint is emitted.
 
 ## Possible causes
 
-`possible_causes.candidate_difference_ids` points directly to Atomic
-Differences. `sound_overapproximation` means the set may contain false
+`possible_causes.scope = "event_region"` uses
+`candidate_difference_ids` to point directly to Atomic Differences.
+`scope = "comparison"` means every Atomic Difference in the report is a
+candidate; the complete inventory is not repeated inside each region.
+`sound_overapproximation` means the represented set may contain false
 positives but includes every actual changed cause within complete supported
 coverage. It does not mean every candidate is causal. `not_established` makes
 no completeness claim; report its limitation IDs.

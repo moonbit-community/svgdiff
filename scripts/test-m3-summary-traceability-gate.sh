@@ -83,7 +83,7 @@ test "$(jq -S -c . "$tmp/compact-mismatch.json")" != \
 
 "$cli" testdata/before.svg testdata/before.svg >"$tmp/empty.json"
 "$cli" testdata/before.svg testdata/before.svg --agent-projection >"$tmp/empty.jsonl"
-test "$(jq '.atomic_differences | length' "$tmp/empty.json")" -eq 0
+test "$(jq '[.difference_groups[].items[]] | length' "$tmp/empty.json")" -eq 0
 python3 evaluation/agent-projection/validate.py \
   --report "$tmp/empty.json" --projection "$tmp/empty.jsonl"
 

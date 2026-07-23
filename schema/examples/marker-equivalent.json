@@ -69,9 +69,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "candidate_difference_ids": [
-              "diff:marker-resource:2:2:markerWidth"
-            ],
+            "scope": "comparison",
             "limitation_ids": [
               "diagnostic:unsupported-visual-subject:path",
               "diagnostic:marker-content-semantics-unsupported:edge",

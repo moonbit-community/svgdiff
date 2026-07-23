@@ -2,7 +2,9 @@
 
 import argparse
 import json
+import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -24,28 +26,53 @@ def checked_path(relative: str) -> Path:
     return path
 
 
-def generate(cli: Path, case: dict) -> dict:
-    result = subprocess.run(
-        [
-            str(cli),
-            str(checked_path("evaluation/corpus/" + case["before"])),
-            str(checked_path("evaluation/corpus/" + case["after"])),
-            "--width",
-            str(case["viewport"]["width"]),
-            "--height",
-            str(case["viewport"]["height"]),
-            "--agent-json",
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+def generate(cli: Path, case: dict) -> tuple[dict, str]:
+    with tempfile.TemporaryDirectory(prefix="svgdiff-impact-") as directory:
+        summary_path = Path(directory) / "summary.md"
+        result = subprocess.run(
+            [
+                str(cli),
+                str(checked_path("evaluation/corpus/" + case["before"])),
+                str(checked_path("evaluation/corpus/" + case["after"])),
+                "--width",
+                str(case["viewport"]["width"]),
+                "--height",
+                str(case["viewport"]["height"]),
+                "--agent-json",
+                "--summary",
+                str(summary_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        summary = summary_path.read_text(encoding="utf-8")
     if result.returncode not in {0, 1} or result.stderr:
         raise ValueError(
             f"{case['id']}: comparison failed with status={result.returncode}, "
             f"stderr={result.stderr!r}"
         )
-    return json.loads(result.stdout)
+    return json.loads(result.stdout), summary
+
+
+def summary_frontier(summary: str) -> tuple[set[str], set[str], int]:
+    event_ids: set[str] = set()
+    difference_ids: set[str] = set()
+    for line in summary.splitlines():
+        match = re.fullmatch(
+            r"- Group \d+: events (.+); Atomic Differences (.+); measurements .+",
+            line,
+        )
+        if match is None:
+            continue
+        event_ids.update(value.replace("\\_", "_") for value in match.group(1).split(", "))
+        difference_ids.update(
+            value.replace("\\_", "_") for value in match.group(2).split(", ")
+        )
+    count_match = re.search(r"^- Candidate Visual Events: (\d+)$", summary, re.MULTILINE)
+    if count_match is None:
+        raise ValueError("summary lacks Impact candidate count")
+    return event_ids, difference_ids, int(count_match.group(1))
 
 
 def leaks_calibrated_label(value: object) -> bool:
@@ -56,15 +83,12 @@ def leaks_calibrated_label(value: object) -> bool:
         )
     if isinstance(value, list):
         return any(leaks_calibrated_label(child) for child in value)
-    return isinstance(value, str) and value.lower() in {
-        "subtle",
-        "salient",
-        "major",
-        "none",
-        "low",
-        "medium",
-        "high",
-    }
+    if not isinstance(value, str):
+        return False
+    return bool(
+        re.search(r"(?mi)^- (tier|severity):", value)
+        or re.search(r'(?i)"(tier|severity)"\s*:', value)
+    )
 
 
 def main() -> None:
@@ -85,31 +109,25 @@ def main() -> None:
     scorable = 0
     not_applicable = 0
     for case in corpus["cases"]:
-        report = generate(args.cli.resolve(), case)
-        impact = report["impact_assessment"]
+        report, summary = generate(args.cli.resolve(), case)
         if (
-            impact["policy_id"] != "event_rendered_pareto/v1"
-            or impact["calibration_status"] != "not_calibrated"
+            "event\\_rendered\\_pareto/v1" not in summary
+            or "not\\_calibrated" not in summary
         ):
             raise ValueError(f"{case['id']}: unexpected Impact policy identity")
-        if leaks_calibrated_label(impact):
+        if leaks_calibrated_label(summary):
             raise ValueError(f"{case['id']}: Impact output leaked calibrated labels")
         target = targets_by_id[case["id"]]
-        frontier_event_ids = {
-            event_id
-            for group in impact["frontier_groups"]
-            for event_id in group["event_ids"]
-        }
-        frontier_difference_ids = {
-            difference_id
-            for group in impact["frontier_groups"]
-            for difference_id in group["atomic_difference_ids"]
-        }
+        frontier_event_ids, frontier_difference_ids, candidate_event_count = (
+            summary_frontier(summary)
+        )
         event_ids = {event["id"] for event in report["events"]}
         difference_ids = {
-            difference["id"] for difference in report["atomic_differences"]
+            difference["id"]
+            for group in report["difference_groups"]
+            for difference in group["items"]
         }
-        if impact["candidate_event_count"] != len(event_ids):
+        if candidate_event_count != len(event_ids):
             raise ValueError(
                 f"{case['id']}: Impact candidate count differs from full event inventory"
             )
