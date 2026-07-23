@@ -18,7 +18,7 @@ One `svgdiff-renderer-experiment-cell/1` represents the same before and after in
 
 - exact before/after SVG hashes and ordered resource-bundle identities;
 - payload kind (`canonical_structured_report`, `external_render_observation`, or `unavailable`) and payload hash/reference;
-- target role, engine/browser source or binary identity, renderer adapters, OS/build, architecture, graphics/font/color backends, process flags, sandbox, and capture-tool identity;
+- target role, modules/svgdiff/engine/browser source or binary identity, renderer adapters, OS/build, architecture, graphics/font/color backends, process flags, sandbox, and capture-tool identity;
 - a renderer-neutral semantic-profile key covering viewport, DPR, color, background, fonts, resources, static/dynamic state, and every other declared input that the target claims to implement;
 - the cell's native Comparison Profile, renderer, conformance, font, color, and platform-observation identities where applicable;
 - output coordinate mapping, dimensions, pixel format, alpha, color space, normalization method, and hashes for before, after, and derived output evidence; and

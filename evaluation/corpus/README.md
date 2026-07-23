@@ -6,7 +6,7 @@ Manifest version: `svgdiff-corpus/1`
 
 Last verified: 2026-07-15
 
-This directory contains hand-authored, standalone SVG pairs used as stable inputs for report and text-only-agent evaluation. Every pair is a real SVG document processed through the production `cmd/svgdiff` command; none depends on the removed toy renderer.
+This directory contains hand-authored, standalone SVG pairs used as stable inputs for report and text-only-agent evaluation. Every pair is a real SVG document processed through the production `modules/svgdiff/cmd/svgdiff` command; none depends on the removed toy renderer.
 
 ## Layout
 

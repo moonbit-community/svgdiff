@@ -25,7 +25,7 @@ scripts/test-semantic-concern-policy.sh
 The committed [`results.v1.json`](results.v1.json) is regenerated only with:
 
 ```sh
-moon build --target native --release cmd/svgdiff
+moon build --target native --release modules/svgdiff/cmd/svgdiff
 python3 evaluation/semantic-concern/evaluate.py \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --update

@@ -151,7 +151,7 @@ jobs:
 
       - name: Capture canonical report bundle
         run: |
-          moon build --target native --release cmd/svgdiff
+          moon build --target native --release modules/svgdiff/cmd/svgdiff
           python evaluation/determinism/validate.py --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe --output _artifacts/determinism-results.json --bundle _artifacts/bundle
 
       - name: Upload canonical report bundle

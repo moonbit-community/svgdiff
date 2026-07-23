@@ -8,7 +8,7 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon build --target native --release cmd/svgdiff
+moon build --target native --release modules/svgdiff/cmd/svgdiff
 python3 evaluation/renderer-conformance/validate_dispositions.py --cli "$cli"
 
 jq '.conformance_profile_id = "svgdiff-renderer-conformance-profile/mismatch"' \

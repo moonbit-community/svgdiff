@@ -5,7 +5,10 @@ import { dirname, join } from "node:path";
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "_site");
 const assetOutput = join(output, "assets");
-const embeddedAssets = await readFile(join(root, "html_report_assets.mbt"), "utf8");
+const embeddedAssets = await readFile(
+  join(root, "modules/svgdiff/html_report_assets.mbt"),
+  "utf8",
+);
 
 function extractRawBinding(name) {
   const startMarker = `  let ${name} =\n`;

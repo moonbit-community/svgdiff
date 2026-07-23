@@ -33,29 +33,29 @@ for field in fields units_or_denominators availability_rule authorities tests; d
 done
 jq 'del(.anti_collapse_rules[0])' "$manifest" >"$tmp/missing-rule.json"
 assert_status 1 python3 "$validator" "$tmp/missing-rule.json" >/dev/null 2>&1
-jq '.dimensions[0].tests[0] = "engine/not-a-real-test.mbt"' "$manifest" \
+jq '.dimensions[0].tests[0] = "modules/svgdiff/engine/not-a-real-test.mbt"' "$manifest" \
   >"$tmp/missing-test-path.json"
 assert_status 1 python3 "$validator" "$tmp/missing-test-path.json" >/dev/null 2>&1
 
 moon test --target native \
-  engine/magnitude_test.mbt \
-  engine/difference_magnitudes_wbtest.mbt \
-  engine/difference_regions_wbtest.mbt \
-  engine/difference_ordering_wbtest.mbt \
-  engine/path_geometry_wbtest.mbt \
-  engine/transform_diff_wbtest.mbt \
-  engine/embedded_image_diff_wbtest.mbt \
-  engine/perceptual_color_wbtest.mbt \
-  engine/perceptual_flip_wbtest.mbt \
-  engine/impact_assessment_wbtest.mbt \
-  engine/structured_report_test.mbt
+  modules/svgdiff/engine/magnitude_test.mbt \
+  modules/svgdiff/engine/internal/measurement/difference_magnitudes_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/difference_regions_wbtest.mbt \
+  modules/svgdiff/engine/internal/measurement/difference_ordering_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/path_geometry_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/transform_diff_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/embedded_image_diff_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/perceptual_color_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/perceptual_flip_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/impact_assessment_wbtest.mbt \
+  modules/svgdiff/engine/structured_report_test.mbt
 sh scripts/test-schema-examples.sh
 sh scripts/test-mutations.sh
 sh scripts/test-impact-assessment.sh
 sh scripts/test-evaluation-metrics.sh
 sh scripts/test-language-model-observation.sh
 
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli=$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><rect id="box" x="1" y="1" width="8" height="8" fill="red"/></svg>' >"$tmp/geometry-before.svg"
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><rect id="box" x="0.99999" y="1" width="8" height="8" fill="red"/></svg>' >"$tmp/geometry-after.svg"

@@ -10,7 +10,7 @@ The later color-profile roadmap phase owns Display-P3, ICC and other wide-gamut 
 
 ## Decision
 
-Own a small `engine/internal/css_color` package that strictly parses case-insensitive CSS Color 3 named, hexadecimal, legacy RGB(A), and HSL(A) forms into straight-alpha sRGB, plus `transparent`, `currentColor`, and the already admitted four/eight-digit alpha hex extension. Recognize deprecated system colors without resolving them. Reject malformed and out-of-profile functions instead of substituting black or transparent.
+Own a small `modules/svgdiff/engine/internal/css_color` package that strictly parses case-insensitive CSS Color 3 named, hexadecimal, legacy RGB(A), and HSL(A) forms into straight-alpha sRGB, plus `transparent`, `currentColor`, and the already admitted four/eight-digit alpha hex extension. Recognize deprecated system colors without resolving them. Reject malformed and out-of-profile functions instead of substituting black or transparent.
 
 Resolve `opacity`, inherited `fill-opacity`, inherited `stroke-opacity`, and non-inherited `stop-opacity` from number or percentage syntax and clamp their computed values to `[0,1]`. Effective leaf fill and stroke alpha is color alpha multiplied by paint opacity and leaf opacity. Effective stop alpha is stop-color alpha multiplied by stop opacity. Preserve each winning `DeclaredVisualFact` unchanged and record canonical values only as computed evidence.
 

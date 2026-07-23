@@ -16,7 +16,7 @@ jq -e '
   (all(.pairs[]; (.measurements | length) == 4))
 ' "$tmp/qa.json" >/dev/null
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
   .schema_version == "2.0" and

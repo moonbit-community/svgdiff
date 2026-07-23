@@ -128,7 +128,12 @@ for field in [
 ]:
     require(decision[field] is False, f"unexpected current change: {field}")
 
-for directory in [ROOT / "engine", ROOT / "schema", ROOT / "cmd", ROOT / ".github"]:
+for directory in [
+    ROOT / "modules" / "svgdiff" / "engine",
+    ROOT / "schema",
+    ROOT / "modules" / "svgdiff" / "cmd",
+    ROOT / ".github",
+]:
     if directory.exists():
         for path in directory.rglob("*"):
             if path.is_file():

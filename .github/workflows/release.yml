@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           sh scripts/package-release.sh --archive
-          version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+          version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
           bundle="dist/svgdiff-$version-${{ matrix.platform }}"
           archive="$bundle.tar.gz"
           test -f "$archive"
@@ -177,7 +177,7 @@ jobs:
             --platform macos-arm64=_release/platforms/svgdiff-release-macos-arm64/determinism \
             --output _release/cross-platform-determinism.json
 
-          version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+          version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
           mkdir -p _release/publish
           for platform in linux-x64 windows-x64 macos-arm64; do
             source="_release/platforms/svgdiff-release-$platform/svgdiff-$version-$platform.tar.gz"

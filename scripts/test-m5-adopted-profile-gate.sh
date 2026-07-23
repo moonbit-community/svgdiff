@@ -88,7 +88,7 @@ do
 done
 sh scripts/test-m5-nongoal-coverage-gate.sh
 
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli=$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 "$cli" testdata/before.svg testdata/before.svg >"$tmp/current-report.json"
 python3 - "$manifest" "$tmp/current-report.json" <<'PY'

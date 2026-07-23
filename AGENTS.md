@@ -12,8 +12,9 @@ You can browse and install extra skills here:
   blackbox test files (ending in `_test.mbt`) and whitebox test files (ending in
   `_wbtest.mbt`).
 
-- In the toplevel directory, there is a `moon.mod` file listing module
-  metadata.
+- The repository root is a MoonBit workspace. The primary
+  `Milky2018/svgdiff` module lives under `modules/svgdiff`; the independently
+  published raster codec lives under `modules/raster_codec`.
 
 ## Coding convention
 

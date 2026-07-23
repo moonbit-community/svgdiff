@@ -32,7 +32,7 @@ trap 'rm -rf "$tmp"' EXIT
 cd "$root"
 moon test --target native --release --include-skipped \
   --filter 'pipeline stage machine artifact' \
-  engine/internal/diff/pipeline_benchmark_wbtest.mbt >"$tmp/raw.txt"
+  modules/svgdiff/engine/internal/diff/pipeline_benchmark_wbtest.mbt >"$tmp/raw.txt"
 
 sed -n 's/^SVGDIFF_STAGE_BENCHMARK_JSON=//p' "$tmp/raw.txt" >"$tmp/result.json"
 test "$(wc -l <"$tmp/result.json" | tr -d ' ')" -eq 1

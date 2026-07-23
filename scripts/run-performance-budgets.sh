@@ -26,7 +26,7 @@ case "$output" in
 esac
 
 cd "$root"
-moon build --target native --release cmd/svgdiff
+moon build --target native --release modules/svgdiff/cmd/svgdiff
 python3 evaluation/performance/run_budgets.py \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --manifest evaluation/performance/budgets.v2.json \

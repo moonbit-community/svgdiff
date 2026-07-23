@@ -43,7 +43,7 @@ The binary-alpha boundary is intentional. Continuous alpha, antialiasing, contai
 
 ## Evidence
 
-- [`blend_semantics_wbtest.mbt`](../../engine/blend_semantics_wbtest.mbt)
+- [`blend_semantics_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/blend_semantics_wbtest.mbt)
 - [`renderer-conformance`](../../evaluation/renderer-conformance/README.md)
 - [`blend-mode-change.json`](../../schema/examples/blend-mode-change.json)
 - [`ISS-118`](../../issues/ISS-118.md)

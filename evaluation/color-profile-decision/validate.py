@@ -157,13 +157,18 @@ for field in [
 ]:
     require(decision[field] is False, f"unexpected current change: {field}")
 
-for path in [ROOT / "moon.mod", ROOT / "moon.pkg"]:
+for path in [ROOT / "modules/svgdiff/moon.mod", ROOT / "modules/svgdiff/moon.pkg"]:
     if path.exists():
         text = path.read_text(encoding="utf-8").lower()
         require("lcms" not in text, f"color dependency leaked into {path.name}")
         require("skcms" not in text, f"color dependency leaked into {path.name}")
 
-for directory in [ROOT / "engine", ROOT / "schema", ROOT / "cmd", ROOT / ".github"]:
+for directory in [
+    ROOT / "modules" / "svgdiff" / "engine",
+    ROOT / "schema",
+    ROOT / "modules" / "svgdiff" / "cmd",
+    ROOT / ".github",
+]:
     if directory.exists():
         for path in directory.rglob("*"):
             if path.is_file():

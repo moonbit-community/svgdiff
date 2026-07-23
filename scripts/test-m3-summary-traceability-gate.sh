@@ -51,7 +51,7 @@ jq '.agent_projection_version = "unknown"' \
 assert_status 1 python3 evaluation/m3-summary-traceability-gate/validate.py \
   "$tmp/wrong-identity.json" >/dev/null 2>&1
 
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 
 validate_summary_case complete 0 testdata/before.svg testdata/after.svg

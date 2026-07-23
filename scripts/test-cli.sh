@@ -21,7 +21,7 @@ assert_status() {
 
 cd "$root"
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
@@ -43,7 +43,7 @@ jq -e '
   (has("atomic_differences") | not)
 ' "$tmp/report.json" >/dev/null
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json \
   >"$tmp/agent.json" 2>"$tmp/agent.err"
 test ! -s "$tmp/agent.err"
@@ -51,7 +51,7 @@ test "$(wc -l <"$tmp/agent.json" | tr -d ' ')" -eq 1
 test "$(wc -c <"$tmp/agent.json")" -lt "$(wc -c <"$tmp/report.json")"
 test "$(jq -S -c . "$tmp/agent.json")" = "$(jq -S -c . "$tmp/report.json")"
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   --perceptual-background '#336699' \
   >"$tmp/background.json" 2>"$tmp/background.err"
@@ -63,7 +63,7 @@ jq -e '
   (.events[0].outcome | has("perceptual_difference") | not)
 ' "$tmp/background.json" >/dev/null
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   --perceptual-background '#336699' \
   --flip-pixels-per-degree 20 --flip-error-threshold 0.05 \
@@ -78,7 +78,7 @@ jq -e '
   (.events[0].outcome.perceptual_difference | has("values_base64") | not)
 ' "$tmp/flip.json" >/dev/null
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --width 32 --height 24 \
   --output "$tmp/output.json" --html "$tmp/report.html" \
   --summary "$tmp/summary.md" >"$tmp/output.stdout" 2>"$tmp/output.err"
@@ -97,7 +97,7 @@ grep -q '^# SVG Diff Summary$' "$tmp/summary.md"
 diff_id=$(jq -r '.difference_groups[0].items[0].id' "$tmp/output.json")
 grep -F "$diff_id" "$tmp/summary.md" >/dev/null
 
-cat testdata/before.svg | moon run --target native cmd/svgdiff -- \
+cat testdata/before.svg | moon run --target native modules/svgdiff/cmd/svgdiff -- \
   - testdata/after.svg >"$tmp/stdin-before.json"
 jq -e '.schema_version == "2.0" and .analysis_status == "complete"' \
   "$tmp/stdin-before.json" >/dev/null
@@ -105,7 +105,7 @@ jq -e '.schema_version == "2.0" and .analysis_status == "complete"' \
 printf '%s\n' \
   "<svg width='16' height='16'><rect id='box' width='8' height='8' fill='red' stroke='red' style='fill:blue;stroke:blue;unknown:value'/></svg>" \
   >"$tmp/limited.svg"
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   "$tmp/limited.svg" "$tmp/limited.svg" --agent-json \
   >"$tmp/limited.json"
 jq -e '
@@ -113,27 +113,27 @@ jq -e '
   any(.limitations[]; .code == "renderer_style_precedence_unresolved")
 ' "$tmp/limited.json" >/dev/null
 
-moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
+moon run --target native modules/svgdiff/cmd/svgdiff -- --help >"$tmp/help.txt"
 grep -q '^Usage: svgdiff ' "$tmp/help.txt"
 grep -q -- '--agent-json' "$tmp/help.txt"
 grep -q -- '--summary FILE' "$tmp/help.txt"
 
-moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
+moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
 grep -q '^svgdiff 0.7.0$' "$tmp/version.txt"
 grep -q '^schema: 2.0$' "$tmp/version.txt"
 
-assert_status 2 moon run --target native cmd/svgdiff -- \
+assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/missing-args.out" 2>"$tmp/missing-args.err"
 test ! -s "$tmp/missing-args.out"
 grep -q '^Usage: svgdiff ' "$tmp/missing-args.err"
 
-assert_status 2 moon run --target native cmd/svgdiff -- \
+assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   --perceptual-background transparent \
   >"$tmp/invalid-background.out" 2>"$tmp/invalid-background.err"
 test ! -s "$tmp/invalid-background.out"
 
-assert_status 1 moon run --target native cmd/svgdiff -- \
+assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --width 8193 --agent-json \
   >"$tmp/resource-failed.json" 2>"$tmp/resource-failed.err"
 test ! -s "$tmp/resource-failed.err"
@@ -151,7 +151,7 @@ jq -e '
 ' "$tmp/resource-failed.json" >/dev/null
 
 printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
-assert_status 1 moon run --target native cmd/svgdiff -- \
+assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   "$tmp/malformed.svg" testdata/after.svg \
   >"$tmp/failed.json" 2>"$tmp/failed.err"
 test ! -s "$tmp/failed.err"

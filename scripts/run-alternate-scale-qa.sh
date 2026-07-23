@@ -10,5 +10,5 @@ if [ "$#" -ne 1 ]; then
 fi
 
 cd "$root"
-moon build --target native --release evaluation/renderer_adapter
+moon build --target native --release modules/svgdiff/evaluation/renderer_adapter
 python3 evaluation/alternate-scale/run.py --adapter "$adapter" --output "$1"

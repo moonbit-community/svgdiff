@@ -67,10 +67,10 @@ A text-only Agent must not infer resource meaning from the absence of an Atomic 
 
 ## Executable enforcement
 
-- Cross-family outcome matrix: [`resource_outcome_policy_wbtest.mbt`](../engine/resource_outcome_policy_wbtest.mbt)
-- Graph cycle, non-cycle, edge, and expansion safety: [`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt)
-- Precise graph states and reachability: [`resource_dependency_graph_wbtest.mbt`](../engine/resource_dependency_graph_wbtest.mbt)
-- Paint fallback selection: [`paint_fallback_wbtest.mbt`](../engine/paint_fallback_wbtest.mbt)
-- Structural reuse failures and unused definitions: [`structure_semantics_wbtest.mbt`](../engine/structure_semantics_wbtest.mbt)
-- Invalid gradient, pattern, clip, mask, filter, marker, and raster boundaries: [`gradient_diff_wbtest.mbt`](../engine/gradient_diff_wbtest.mbt), [`pattern_semantics_wbtest.mbt`](../engine/pattern_semantics_wbtest.mbt), [`clip_semantics_wbtest.mbt`](../engine/clip_semantics_wbtest.mbt), [`mask_semantics_wbtest.mbt`](../engine/mask_semantics_wbtest.mbt), [`filter_semantics_wbtest.mbt`](../engine/filter_semantics_wbtest.mbt), [`marker_geometry_wbtest.mbt`](../engine/marker_geometry_wbtest.mbt), and [`embedded_image_diff_wbtest.mbt`](../engine/embedded_image_diff_wbtest.mbt)
-- Bundle configuration and lazy content validation: [`resource_bundle_wbtest.mbt`](../engine/resource_bundle_wbtest.mbt)
+- Cross-family outcome matrix: [`resource_outcome_policy_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/resource_outcome_policy_wbtest.mbt)
+- Graph cycle, non-cycle, edge, and expansion safety: [`resource_limits_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/resource_limits_wbtest.mbt)
+- Precise graph states and reachability: [`resource_dependency_graph_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/resource_dependency_graph_wbtest.mbt)
+- Paint fallback selection: [`paint_fallback_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/paint_fallback_wbtest.mbt)
+- Structural reuse failures and unused definitions: [`structure_semantics_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/structure_semantics_wbtest.mbt)
+- Invalid gradient, pattern, clip, mask, filter, marker, and raster boundaries: [`gradient_diff_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/gradient_diff_wbtest.mbt), [`pattern_semantics_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/pattern_semantics_wbtest.mbt), [`clip_semantics_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/clip_semantics_wbtest.mbt), [`mask_semantics_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/mask_semantics_wbtest.mbt), [`filter_semantics_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/filter_semantics_wbtest.mbt), [`marker_geometry_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/marker_geometry_wbtest.mbt), and [`embedded_image_diff_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/embedded_image_diff_wbtest.mbt)
+- Bundle configuration and lazy content validation: [`resource_bundle_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/resource_bundle_wbtest.mbt)

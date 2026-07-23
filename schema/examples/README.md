@@ -51,7 +51,7 @@ The versioned source mapping and semantic expectations live in [`evaluation/sche
 Update intentional report changes with:
 
 ```sh
-moon build --target native --release cmd/svgdiff
+moon build --target native --release modules/svgdiff/cmd/svgdiff
 python3 evaluation/schema-examples/validate.py \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --update

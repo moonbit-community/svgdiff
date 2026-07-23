@@ -23,7 +23,7 @@ From this repository, use the checked-in fixtures for a self-contained smoke
 test:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
 ```
 
 The command writes concise Structured Report schema `2.0` JSON to stdout. It
@@ -34,13 +34,13 @@ To inspect the skill's own help through `moon runwasm`, separate the forwarded
 flag from the runner's flags:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio -- --help
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --help
 ```
 
 Useful explicit comparison inputs:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio before.svg after.svg \
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
   --width 256 \
   --height 256 \
   --max-checkpoints 1000000
@@ -50,7 +50,7 @@ Optional displayed-color evidence requires an opaque background. LDR-FLIP
 additionally requires pixels per degree:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio before.svg after.svg \
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
   --perceptual-background '#ffffff' \
   --flip-pixels-per-degree 67
 ```

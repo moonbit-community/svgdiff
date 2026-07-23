@@ -38,13 +38,13 @@ Version output identifies the `svgdiff` module and engine, Structured Report sch
 Run the native CLI from the repository root:
 
 ```sh
-moon run --target native cmd/svgdiff -- before.svg after.svg
+moon run --target native modules/svgdiff/cmd/svgdiff -- before.svg after.svg
 ```
 
 Set the common comparison viewport or write the report to a file:
 
 ```sh
-moon run --target native cmd/svgdiff -- before.svg after.svg --width 800 --height 600 --output report.json
+moon run --target native modules/svgdiff/cmd/svgdiff -- before.svg after.svg --width 800 --height 600 --output report.json
 ```
 
 Record an explicit opaque sRGB background for event-local displayed-color measurement with `--perceptual-background COLOR`. This profile input enables changed-pixel mean DeltaEOK but does not change transparent-canvas raw rendering. Add explicit pixels per degree to request an event-local LDR-FLIP map; no display geometry is guessed:
@@ -94,12 +94,12 @@ python3 -m http.server 4173 --directory _site
 ```
 
 The self-contained CLI HTML and browser page share the same Report Inspector
-script and styles extracted from `html_report_assets.mbt`. The generated
-`_site` directory is ignored and must not be edited directly.
+script and styles extracted from `modules/svgdiff/html_report_assets.mbt`. The
+generated `_site` directory is ignored and must not be edited directly.
 
 ## Agent WASM skill
 
-The [`cmd/svgdiff_miniio`](cmd/svgdiff_miniio/README.md) package exposes the
+The [`modules/svgdiff/cmd/svgdiff_miniio`](modules/svgdiff/cmd/svgdiff_miniio/README.md) package exposes the
 same comparison engine as a portable WASIp1 CLI using MiniIO. It reads two
 guest-visible SVG files and writes concise Structured Report schema `2.0` JSON
 for an agent that cannot inspect images. After version `0.7.0` is published,
@@ -112,16 +112,16 @@ moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
 From a source checkout, verify it with the repository fixtures:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
 ```
 
-Its focused [`SKILL.md`](cmd/svgdiff_miniio/SKILL.md) defines the agent reading
+The repository-level [`SKILL.md`](SKILL.md) defines the agent reading
 procedure, deterministic checkpoint control, exit statuses, and WASI preopen
 boundary.
 
 ## Library API
 
-Install module version `0.7.0` with `moon add Milky2018/svgdiff@0.7.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](PACKAGE.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.7.0` with `moon add Milky2018/svgdiff@0.7.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](modules/svgdiff/README.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -164,11 +164,12 @@ The root package is the stable product seam. Its implementation lives in the for
 
 Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional deterministic checkpoint budget. `compare_with_control` raises typed `Cancelled` or `CheckpointBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. The budget counts engine checkpoints rather than elapsed time, so the same input and engine version exhaust it independently of machine speed. Checks remain cooperative, so one synchronous dependency call may finish before the next checkpoint. The ordinary `compare` and native CLI remain unlimited.
 
-The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. File, stdin, stdout, and process handling remain isolated in the native-only `cmd/svgdiff` package. The wasm-only [`cmd/svgdiff_wasm`](cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
+The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. File, stdin, stdout, and process handling remain isolated in the native-only `modules/svgdiff/cmd/svgdiff` package. The wasm-only [`modules/svgdiff/cmd/svgdiff_wasm`](modules/svgdiff/cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
 
 ### Compare SVG sources
 
-This example is compiled and run as part of `moon check` and `moon test`:
+The focused module README contains the checked public-API smoke test. The
+following project-level example uses the same public package:
 
 ```mbt check
 ///|

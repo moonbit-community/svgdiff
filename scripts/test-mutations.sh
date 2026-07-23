@@ -34,13 +34,13 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   width=$(printf '%s' "$case_json" | jq -r '.viewport.width')
   height=$(printf '%s' "$case_json" | jq -r '.viewport.height')
 
-  moon run --target native cmd/svgdiff -- \
+  moon run --target native modules/svgdiff/cmd/svgdiff -- \
     "$first/$before" "$first/$after" \
     --width "$width" --height "$height" \
     --perceptual-background white \
     --flip-pixels-per-degree 20 \
     --flip-error-threshold 0.05 >"$tmp/$id-report.json"
-  moon run --target native cmd/svgdiff -- \
+  moon run --target native modules/svgdiff/cmd/svgdiff -- \
     "$first/$after" "$first/$before" \
     --width "$width" --height "$height" \
     --perceptual-background white \

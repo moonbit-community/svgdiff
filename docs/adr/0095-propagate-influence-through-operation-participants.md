@@ -39,6 +39,6 @@ This is region-level provenance, not tile-level propagation. If a future support
 
 ## Evidence
 
-- [`cause_envelopes_wbtest.mbt`](../../engine/cause_envelopes_wbtest.mbt)
+- [`cause_envelopes_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/cause_envelopes_wbtest.mbt)
 - [`influence-provenance.md`](../influence-provenance.md)
 - [`ISS-148`](../../issues/ISS-148.md)

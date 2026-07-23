@@ -47,7 +47,7 @@ case "$raw_arch" in
 esac
 test "$(jq -r '.build.target_os' "$bundle/provenance.json")" = "$expected_os"
 test "$(jq -r '.build.target_architecture' "$bundle/provenance.json")" = "$expected_arch"
-expected_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+expected_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
 expected_bundle="svgdiff-$expected_version-$expected_os-$expected_arch"
 test "$(basename "$bundle")" = "$expected_bundle"
 if [ "$expected_os" = windows ]; then
@@ -78,7 +78,7 @@ else
   artifact_sha256=$(sha256sum "$bundle/$executable_name" | awk '{ print $1 }')
 fi
 source_revision=$(git rev-parse HEAD)
-module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
 jq -e \
   --arg sha "$artifact_sha256" \
   --arg revision "$source_revision" \
@@ -88,7 +88,7 @@ jq -e \
   .subject == {"name": $executable_name, "sha256": $sha} and
   .source.revision == $revision and
   .source.dirty == true and
-  .build.command == "moon build --target native --release cmd/svgdiff" and
+  .build.command == "moon build --target native --release modules/svgdiff/cmd/svgdiff" and
   (.build.toolchain | startswith("moon ")) and
   (.build.target_os | length) > 0 and
   (.build.target_architecture | length) > 0 and

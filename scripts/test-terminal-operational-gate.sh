@@ -50,10 +50,10 @@ assert_status 1 python3 "$validator" "$manifest" \
   --release-workflow "$tmp/incomplete-release.yml" >/dev/null 2>&1
 
 moon test --target native \
-  engine/resource_limits_wbtest.mbt \
-  engine/resource_bundle_wbtest.mbt \
-  engine/resource_dependency_graph_wbtest.mbt \
-  engine/resource_outcome_policy_wbtest.mbt
+  modules/svgdiff/engine/internal/diff/resource_limits_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/resource_bundle_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/resource_dependency_graph_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/resource_outcome_policy_wbtest.mbt
 sh scripts/test-report-determinism.sh
 sh scripts/test-cross-platform-determinism.sh
 sh scripts/test-install.sh

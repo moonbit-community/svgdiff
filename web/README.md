@@ -1,7 +1,7 @@
 # GitHub Pages browser product
 
 This directory is the handwritten source for the local-only SVGDiff browser
-product. It is a static adapter over `cmd/svgdiff_wasm`; comparison semantics
+product. It is a static adapter over `modules/svgdiff/cmd/svgdiff_wasm`; comparison semantics
 remain owned by the MoonBit root and engine packages.
 
 ## Build and preview
@@ -33,8 +33,9 @@ sh scripts/test-pages.sh
   transaction. It accepts one complete request with a deterministic checkpoint
   budget and returns compact Structured Report JSON or a host error without a
   partial report.
-- `html_report_assets.mbt` remains the canonical Report Inspector behavior and
-  styling. `scripts/build-pages.mjs` extracts those raw assets into `_site`, so
+- `modules/svgdiff/html_report_assets.mbt` remains the canonical Report
+  Inspector behavior and styling. `scripts/build-pages.mjs` extracts those raw
+  assets into `_site`, so
   the native self-contained HTML and GitHub Pages do not maintain two viewer
   implementations.
 - SVG previews use empty-sandbox iframes. Browser pixels are presentation only;

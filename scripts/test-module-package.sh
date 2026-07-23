@@ -3,7 +3,7 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 tmp=${TMPDIR:-/tmp}/svgdiff-module-package-$$
-version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/moon.mod")
+version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/modules/svgdiff/moon.mod")
 archive="$root/_build/publish/Milky2018-svgdiff-$version.zip"
 codec_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/modules/raster_codec/moon.mod")
 codec_archive="$root/_build/publish/Milky2018-svgdiff-raster-codec-$codec_version.zip"
@@ -11,7 +11,7 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon package --list >/dev/null 2>&1
+moon -C modules/svgdiff package --list >/dev/null 2>&1
 test -f "$archive"
 unzip -Z1 "$archive" | sed '/\/$/d' >"$tmp/package-list.txt"
 
@@ -24,9 +24,9 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | PACKAGE.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt)
+    LICENSE | README.md | README.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt)
       ;;
-    engine/*)
+    engine/* | cmd/svgdiff_miniio/*)
       case "$path" in
         *_test.mbt | *_wbtest.mbt)
           printf 'Registry package contains a test source: %s\n' "$path" >&2
@@ -52,7 +52,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE PACKAGE.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt; do
+for required in LICENSE README.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt cmd/svgdiff_miniio/moon.pkg cmd/svgdiff_miniio/main.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 

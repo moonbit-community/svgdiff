@@ -69,7 +69,7 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   test -f "$before_path"
   test -f "$after_path"
 
-  moon run --target native cmd/svgdiff -- \
+  moon run --target native modules/svgdiff/cmd/svgdiff -- \
     "$before_path" "$after_path" \
     --width "$width" --height "$height" >"$tmp/$id.json"
 

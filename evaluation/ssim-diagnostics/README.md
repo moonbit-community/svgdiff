@@ -35,7 +35,7 @@ sh scripts/test-ssim-diagnostics.sh
 To intentionally regenerate the artifact after an accepted corpus, renderer, algorithm, or profile change:
 
 ```sh
-moon build --target native --release evaluation/ssim_adapter cmd/svgdiff
+moon build --target native --release modules/svgdiff/evaluation/ssim_adapter modules/svgdiff/cmd/svgdiff
 python3 evaluation/ssim-diagnostics/evaluate.py \
   --adapter _build/native/release/build/Milky2018/svgdiff/evaluation/ssim_adapter/ssim_adapter.exe \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \

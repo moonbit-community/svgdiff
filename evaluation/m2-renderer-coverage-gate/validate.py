@@ -59,7 +59,9 @@ def validate(document: object) -> None:
     require(allowed == {"diagnostic", "normalizer", "compositor"}, "disposition kinds drifted")
     require(all(case.get("disposition") in allowed for case in disposition_cases), "unknown disposition kind")
 
-    production = (ROOT / "engine" / "model" / "comparison_profile.mbt").read_text(encoding="utf-8")
+    production = (
+        ROOT / "modules" / "svgdiff" / "engine" / "model" / "comparison_profile.mbt"
+    ).read_text(encoding="utf-8")
     require(f'renderer_conformance_profile_id: "{EXPECTED_PROFILE}"' in production, "production profile drifted")
     chains = document.get("safety_chains")
     require(isinstance(chains, list), "safety chains missing")

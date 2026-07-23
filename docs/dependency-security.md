@@ -115,7 +115,7 @@ No general URL resolver, snapshot-package reader, fetch client, archive format, 
 
 Refresh this ledger whenever a dependency version changes and at every release milestone:
 
-1. inspect `moon.mod` and resolved `.mooncakes/*/moon.mod*` versions;
+1. inspect `modules/svgdiff/moon.mod` and resolved `.mooncakes/*/moon.mod*` versions;
 2. verify each manifest license against the packaged LICENSE or upstream repository;
 3. review new transitive dependencies and native code;
 4. query every linked upstream PR and replace stale status text;

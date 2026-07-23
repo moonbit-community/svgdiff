@@ -45,4 +45,4 @@ Cycle and expansion rejection produces `analysis_status = "failed"`, failed cove
 
 `Milky2018/xml` separately owns XML entity recursion and expansion limits. Fixed source, structure, raster, region, and serialization budgets remain defined in the [resource-limit contract](resource-limits.md). Embedding callers may cooperatively cancel or set a deterministic checkpoint budget through the [controlled library API](library-api.md); dependency calls remain non-preemptible, and streaming file admission plus hard peak-memory enforcement remain future security work.
 
-Executable boundaries live in [`resource_limits_wbtest.mbt`](../engine/resource_limits_wbtest.mbt), while the production-CLI counterexample lives in the [adversarial corpus](../evaluation/adversarial/README.md).
+Executable boundaries live in [`resource_limits_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/resource_limits_wbtest.mbt), while the production-CLI counterexample lives in the [adversarial corpus](../evaluation/adversarial/README.md).

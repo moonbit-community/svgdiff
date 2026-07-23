@@ -90,7 +90,7 @@ do
   sh "$command"
 done
 
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli=$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 
 run_unsupported_self_comparison font analysis_coverage_unproven <<'SVG'
@@ -117,10 +117,10 @@ SVG
 
 sh scripts/test-m2-renderer-coverage-gate.sh
 moon test --target native \
-  engine/structured_report_test.mbt \
-  engine/embedded_image_diff_wbtest.mbt \
-  engine/resource_bundle_wbtest.mbt \
-  engine/resource_outcome_policy_wbtest.mbt \
-  engine/unsupported_input_property_test.mbt
+  modules/svgdiff/engine/structured_report_test.mbt \
+  modules/svgdiff/engine/internal/diff/embedded_image_diff_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/resource_bundle_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/resource_outcome_policy_wbtest.mbt \
+  modules/svgdiff/engine/unsupported_input_property_test.mbt
 
 printf 'M5 explicit non-goal coverage gate: passed\n'

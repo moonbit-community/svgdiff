@@ -87,7 +87,7 @@ tree_dependency_count=$(printf '%s\n' "$dependency_tree" | grep -Eo '[A-Za-z0-9_
 test "$tree_dependency_count" = "$(jq '.dependencies | length' "$dependency_manifest")"
 test "$(jq '[.dependencies[] | select(.license != "Apache-2.0")] | length' "$dependency_manifest")" = 0
 
-module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
 case "${RUNNER_OS-}" in
   Linux)
     target_os=linux
@@ -133,7 +133,7 @@ if [ "$target_os" = windows ]; then
 fi
 bundle="$output_root/svgdiff-$module_version-$target_os-$target_arch"
 
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 binary="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 if [ ! -f "$binary" ]; then
   printf 'Release binary was not produced at %s\n' "$binary" >&2
@@ -192,7 +192,7 @@ jq -n \
       toolchain: $moon_version,
       target_os: $target_os,
       target_architecture: $target_arch,
-      command: "moon build --target native --release cmd/svgdiff"
+      command: "moon build --target native --release modules/svgdiff/cmd/svgdiff"
     },
     product: {
       module_version: $module_version,

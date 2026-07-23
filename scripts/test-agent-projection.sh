@@ -22,8 +22,8 @@ assert_status() {
 validate_case() {
   name=$1
   shift
-  moon run --target native cmd/svgdiff -- "$@" >"$tmp/$name-report.json"
-  moon run --target native cmd/svgdiff -- \
+  moon run --target native modules/svgdiff/cmd/svgdiff -- "$@" >"$tmp/$name-report.json"
+  moon run --target native modules/svgdiff/cmd/svgdiff -- \
     "$@" --agent-projection >"$tmp/$name-projection.jsonl"
   python3 evaluation/agent-projection/validate.py \
     --report "$tmp/$name-report.json" \
@@ -50,10 +50,10 @@ validate_case flip \
 
 printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
 set +e
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   "$tmp/malformed.svg" testdata/after.svg >"$tmp/failed-report.json"
 report_status=$?
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   "$tmp/malformed.svg" testdata/after.svg --agent-projection \
   >"$tmp/failed-projection.jsonl"
 projection_status=$?
@@ -64,7 +64,7 @@ python3 evaluation/agent-projection/validate.py \
   --report "$tmp/failed-report.json" \
   --projection "$tmp/failed-projection.jsonl"
 
-assert_status 2 moon run --target native cmd/svgdiff -- \
+assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   --agent-json --agent-projection \
   >"$tmp/conflict.out" 2>"$tmp/conflict.err"
@@ -72,7 +72,7 @@ test ! -s "$tmp/conflict.out"
 grep -q '^--agent-json and --agent-projection are mutually exclusive$' \
   "$tmp/conflict.err"
 
-moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
+moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
 grep -q '^agent-projection: svgdiff-agent-projection/1$' "$tmp/version.txt"
 
 python3 evaluation/agent-projection/negative_controls.py \
@@ -81,7 +81,7 @@ python3 evaluation/agent-projection/negative_controls.py \
   --projection "$tmp/corpus-salient-fill-change-projection.jsonl" \
   --output-dir "$tmp/negative-controls"
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   evaluation/corpus/cases/salient-fill-change/before.svg \
   evaluation/corpus/cases/salient-fill-change/after.svg \
   --width 16 --height 16 --agent-projection \

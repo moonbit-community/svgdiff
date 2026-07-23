@@ -65,9 +65,9 @@ def source_hash(case: dict[str, Any]) -> str:
 def adapter_implementation_hash() -> str:
     digest = hashlib.sha256()
     for relative in (
-        "evaluation/ssim_adapter/metric.mbt",
-        "evaluation/ssim_adapter/main.mbt",
-        "evaluation/ssim_adapter/moon.pkg",
+        "modules/svgdiff/evaluation/ssim_adapter/metric.mbt",
+        "modules/svgdiff/evaluation/ssim_adapter/main.mbt",
+        "modules/svgdiff/evaluation/ssim_adapter/moon.pkg",
     ):
         path = ROOT / relative
         digest.update(relative.encode())

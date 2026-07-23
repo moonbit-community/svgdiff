@@ -34,7 +34,7 @@ sh scripts/test-lpips-experiment.sh
 Regeneration is deliberately outside default installation and CI. Prepare an isolated Python 3.11.6 environment containing exactly `lpips==0.1.4`, `torch==2.7.1`, `torchvision==0.22.1`, and `numpy==2.4.6`. Place `alexnet-owt-7be5be79.pth` under `$TORCH_HOME/hub/checkpoints/` and verify the SHA-256 identities in [`manifest.v1.json`](manifest.v1.json). Then run:
 
 ```sh
-moon build --target native --release evaluation/renderer_adapter cmd/svgdiff
+moon build --target native --release modules/svgdiff/evaluation/renderer_adapter modules/svgdiff/cmd/svgdiff
 TORCH_HOME=/path/to/offline/torch-home \
   /path/to/pinned/python evaluation/lpips-experiment/evaluate.py \
   --adapter _build/native/release/build/Milky2018/svgdiff/evaluation/renderer_adapter/renderer_adapter.exe \

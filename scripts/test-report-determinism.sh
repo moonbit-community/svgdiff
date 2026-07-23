@@ -8,7 +8,7 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 python3 evaluation/determinism/validate.py --cli "$cli" --output "$tmp/first.json"
 python3 evaluation/determinism/validate.py --cli "$cli" --output "$tmp/second.json"
 cmp "$tmp/first.json" "$tmp/second.json"

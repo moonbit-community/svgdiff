@@ -7,8 +7,8 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 cd "$root"
 
-moon build cmd/svgdiff --target native --release
-moon build cmd/svgdiff_wasm --target wasm --release
+moon build modules/svgdiff/cmd/svgdiff --target native --release
+moon build modules/svgdiff/cmd/svgdiff_wasm --target wasm --release
 native_cli=_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 "$native_cli" testdata/before.svg testdata/after.svg --agent-json \
   --perceptual-background '#ffffff' --flip-pixels-per-degree 60 \

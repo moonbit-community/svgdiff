@@ -47,12 +47,12 @@ sh scripts/test-m5-adopted-profile-gate.sh
 sh scripts/test-cli.sh
 sh scripts/test-fuzz-smoke.sh
 moon test --target native \
-  engine/coverage_proof_wbtest.mbt \
-  engine/feature_coverage_wbtest.mbt \
-  engine/unsupported_input_property_test.mbt \
-  engine/resource_limits_wbtest.mbt
+  modules/svgdiff/engine/internal/diff/coverage_proof_wbtest.mbt \
+  modules/svgdiff/engine/internal/diff/feature_coverage_wbtest.mbt \
+  modules/svgdiff/engine/unsupported_input_property_test.mbt \
+  modules/svgdiff/engine/internal/diff/resource_limits_wbtest.mbt
 
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli=$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 "$cli" testdata/before.svg testdata/before.svg >"$tmp/complete.json"
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><script/></svg>' >"$tmp/partial.svg"

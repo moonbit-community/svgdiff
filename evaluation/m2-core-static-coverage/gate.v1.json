@@ -9,7 +9,7 @@
       "admitted_slice": "complete_path_data_grammar_normalized_source_geometry_and_bounded_observations",
       "coverage_marker": "Complete path-data grammar, absolute segment normalization",
       "limiting_diagnostics": ["unsupported_visual_subject"],
-      "tests": ["engine/path_data_wbtest.mbt", "engine/path_geometry_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/path_data_wbtest.mbt", "modules/svgdiff/engine/internal/diff/path_geometry_wbtest.mbt"]
     },
     {
       "id": "transforms",
@@ -17,7 +17,7 @@
       "admitted_slice": "cumulative_integer_axis_transform_semantics",
       "coverage_marker": "SVG transform lists, cumulative matrices",
       "limiting_diagnostics": ["renderer_transform_raster_unproven", "transform_syntax_unsupported"],
-      "tests": ["engine/transform_data_wbtest.mbt", "engine/transform_decomposition_wbtest.mbt", "engine/transform_diff_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/transform_data_wbtest.mbt", "modules/svgdiff/engine/internal/diff/transform_decomposition_wbtest.mbt", "modules/svgdiff/engine/internal/diff/transform_diff_wbtest.mbt"]
     },
     {
       "id": "viewports",
@@ -25,7 +25,7 @@
       "admitted_slice": "root_and_nested_integer_axis_viewport_mapping",
       "coverage_marker": "Root and nested SVG viewport mapping",
       "limiting_diagnostics": ["renderer_viewport_raster_unproven", "viewport_semantics_unsupported"],
-      "tests": ["engine/viewport_data_wbtest.mbt", "engine/viewport_diff_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/viewport_data_wbtest.mbt", "modules/svgdiff/engine/internal/diff/viewport_diff_wbtest.mbt"]
     },
     {
       "id": "css_cascade",
@@ -33,7 +33,7 @@
       "admitted_slice": "static_author_cascade_selector_and_inheritance_scope",
       "coverage_marker": "Author cascade over presentation, inline, and matched rule candidates",
       "limiting_diagnostics": ["css_cascade_unsupported"],
-      "tests": ["engine/css_cascade_wbtest.mbt", "engine/css_selector_wbtest.mbt", "engine/inherited_fill_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/source/css_cascade_wbtest.mbt", "modules/svgdiff/engine/internal/source/css_selector_wbtest.mbt", "modules/svgdiff/engine/internal/diff/inherited_fill_wbtest.mbt"]
     },
     {
       "id": "reuse",
@@ -41,7 +41,7 @@
       "admitted_slice": "acyclic_static_same_document_use_instances",
       "coverage_marker": "Structural containers and static same-document use instances",
       "limiting_diagnostics": ["renderer_use_transform_raster_unproven", "use_external_reference_unsupported", "use_target_missing"],
-      "tests": ["engine/structure_semantics_wbtest.mbt", "engine/structural_diff_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/structure_semantics_wbtest.mbt", "modules/svgdiff/engine/internal/diff/structural_diff_wbtest.mbt"]
     },
     {
       "id": "gradients",
@@ -49,7 +49,7 @@
       "admitted_slice": "static_same_document_srgb_linear_and_radial_gradients",
       "coverage_marker": "Static same-document linear and radial gradients",
       "limiting_diagnostics": ["renderer_gradient_raster_unproven"],
-      "tests": ["engine/gradient_semantics_wbtest.mbt", "engine/gradient_diff_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/gradient_semantics_wbtest.mbt", "modules/svgdiff/engine/internal/diff/gradient_diff_wbtest.mbt"]
     },
     {
       "id": "clipping",
@@ -57,7 +57,7 @@
       "admitted_slice": "static_local_rectangular_clipping",
       "coverage_marker": "Static local rectangular clipping",
       "limiting_diagnostics": ["clip_path_content_unsupported", "clip_path_geometry_unsupported", "clip_path_effect_bounds_unavailable"],
-      "tests": ["engine/clip_semantics_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/clip_semantics_wbtest.mbt"]
     },
     {
       "id": "masking",
@@ -65,7 +65,7 @@
       "admitted_slice": "static_local_rectangular_alpha_and_srgb_luminance_masking",
       "coverage_marker": "Static local alpha and luminance masking",
       "limiting_diagnostics": ["mask_content_unsupported", "mask_geometry_unsupported", "mask_effect_bounds_unavailable"],
-      "tests": ["engine/mask_semantics_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/mask_semantics_wbtest.mbt"]
     },
     {
       "id": "group_compositing",
@@ -73,7 +73,7 @@
       "admitted_slice": "static_isolated_group_and_root_opacity",
       "coverage_marker": "Group or root opacity",
       "limiting_diagnostics": [],
-      "tests": ["engine/group_compositor_wbtest.mbt", "engine/group_opacity_wbtest.mbt"]
+      "tests": ["modules/svgdiff/engine/internal/diff/group_compositor_wbtest.mbt", "modules/svgdiff/engine/internal/diff/group_opacity_wbtest.mbt"]
     }
   ]
 }

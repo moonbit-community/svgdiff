@@ -37,7 +37,7 @@ graph TD
   ISS_019["ISS-019: Guard paired gradient stop semantics"]
   ISS_020["ISS-020: Promote the comparison engine out of prototype"]
   ISS_021["ISS-021: Rename the module owner to Milky2018"]
-  ISS_022["ISS-022: Rename the CLI package to cmd/svgdiff"]
+  ISS_022["ISS-022: Rename the CLI package to modules/svgdiff/cmd/svgdiff"]
   ISS_023["ISS-023: Record the complete post-v1 roadmap"]
   ISS_024["ISS-024: Define the text-only agent acceptance contract"]
   ISS_025["ISS-025: Build the curated SVG pair corpus"]

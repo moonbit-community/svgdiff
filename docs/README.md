@@ -10,7 +10,7 @@ This directory separates the current product contract from future plans and hist
 
 | Question | Authoritative source |
 | --- | --- |
-| What does the command do? | [`README.mbt.md`](../README.mbt.md) and the executable in `cmd/svgdiff` |
+| What does the command do? | [`README.mbt.md`](../README.mbt.md) and the executable in `modules/svgdiff/cmd/svgdiff` |
 | How do stdin, stdout, stderr, and `-` behave? | [`cli-io.md`](cli-io.md) |
 | How are Bash, Zsh, and Fish completions installed? | [`completions/README.md`](../completions/README.md) |
 | What integrity and attribution files belong in a native release bundle? | [`release/README.md`](../release/README.md) |
@@ -98,8 +98,9 @@ The public MoonBit types and checked-in JSON Schema take precedence over prose f
 - Caller-supplied semantic concerns remain outside Structured Report and context-free Impact; the full event inventory and Agent JSON preserve dominated matches without inferring priority from SVG source.
 - The Comparison Profile can record one explicit opaque sRGB8 Perceptual Background and optional FLIP pixels-per-degree Viewing Conditions; events then expose changed-pixel mean DeltaEOK and opt-in event-local LDR-FLIP maps while raw rendering remains transparent.
 - Admitted scalar spatial changes expose exact local, CSS-pixel, viewport-relative, and entity-relative parameter scales independently from geometry and raster outcomes.
-- The production comparison implementation lives in `engine`; the root package is the public seam.
-- The CLI lives in `cmd/svgdiff`, can emit JSON plus an optional self-contained HTML presentation, and reads non-data-URL raster bytes only from explicit before/after resource triplets.
+- The production comparison implementation lives in
+  `modules/svgdiff/engine`; the root package is the public seam.
+- The CLI lives in `modules/svgdiff/cmd/svgdiff`, can emit JSON plus an optional self-contained HTML presentation, and reads non-data-URL raster bytes only from explicit before/after resource triplets.
 - The implemented analyzer covers a deliberately bounded deterministic static-SVG subset, including complete source/computed semantics for static same-document linear/radial gradients, patterns over the admitted basic-shape child slice, local rectangular clipping, static alpha/luminance masking with isolated container application and conservative effect bounds, deterministic same-document use instances with separate definition and placement identity, and consequence-aware ancestry, instance-resolution, and stacking relationships.
 - Unsupported semantics produce Diagnostics and prevent a false `complete` claim.
 - The M5 non-goal gate composes font, platform, color, renderer, dynamic, foreign-content, and generalized-resource decisions without adopting those future capabilities.

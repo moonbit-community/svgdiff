@@ -14,7 +14,7 @@ with an empty atomic_differences array.
 
 Self-comparison is deliberate. An unchanged unsupported feature is the easiest place to produce false equality by treating “the specialized analyzer emitted nothing” as proof that nothing visual differs. A safe result is `partial` with limiting coverage and Diagnostics, or `failed` when the document cannot be analyzed.
 
-[`unsupported_input_property_test.mbt`](../engine/unsupported_input_property_test.mbt) deterministically enumerates families rather than relying on a random seed:
+[`unsupported_input_property_test.mbt`](../modules/svgdiff/engine/unsupported_input_property_test.mbt) deterministically enumerates families rather than relying on a random seed:
 
 - unsupported visual elements, both direct and nested in groups;
 - unsupported attributes across every currently supported basic shape;

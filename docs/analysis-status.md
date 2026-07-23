@@ -116,8 +116,8 @@ The number or magnitude of Atomic Differences never changes this ordering. A lar
 
 ## Executable enforcement
 
-- Complete, partial, and failed report cases: [`structured_report_test.mbt`](../engine/structured_report_test.mbt)
-- Unsupported-feature equality guards: [`generic_shape_diff_test.mbt`](../engine/generic_shape_diff_test.mbt)
-- Partial Cause Envelope downgrade: [`cause_envelope_test.mbt`](../engine/cause_envelope_test.mbt)
-- CLI exit behavior: [`cmd/svgdiff/main.mbt`](../cmd/svgdiff/main.mbt) and [`scripts/test-cli.sh`](../scripts/test-cli.sh)
+- Complete, partial, and failed report cases: [`structured_report_test.mbt`](../modules/svgdiff/engine/structured_report_test.mbt)
+- Unsupported-feature equality guards: [`generic_shape_diff_test.mbt`](../modules/svgdiff/engine/generic_shape_diff_test.mbt)
+- Partial Cause Envelope downgrade: [`cause_envelope_test.mbt`](../modules/svgdiff/engine/cause_envelope_test.mbt)
+- CLI exit behavior: [`modules/svgdiff/cmd/svgdiff/main.mbt`](../modules/svgdiff/cmd/svgdiff/main.mbt) and [`scripts/test-cli.sh`](../scripts/test-cli.sh)
 - Feature-level traceability: [`feature-coverage.md`](feature-coverage.md)

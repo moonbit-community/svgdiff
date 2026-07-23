@@ -12,16 +12,17 @@ moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg
 From the repository root:
 
 ```sh
-moon runwasm cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
-moon runwasm cmd/svgdiff_miniio -- --help
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --help
 ```
 
 The package reads two guest-visible SVG files and writes concise Structured
-Report schema `2.0` JSON to stdout. See [`SKILL.md`](SKILL.md) for the
-agent-facing interpretation contract and WASI preopen requirements.
+Report schema `2.0` JSON to stdout. See the repository-level
+[`SKILL.md`](../../../../SKILL.md) for the agent-facing interpretation contract
+and WASI preopen requirements.
 
 Build the WASIp1 artifact with:
 
 ```sh
-moon build --target wasm cmd/svgdiff_miniio
+moon build --target wasm modules/svgdiff/cmd/svgdiff_miniio
 ```

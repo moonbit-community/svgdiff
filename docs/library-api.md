@@ -12,7 +12,19 @@ Install the published module with:
 moon add Milky2018/svgdiff@0.7.0
 ```
 
-The root registry archive contains only the root, `engine`, and `engine/internal/*` implementation packages, generated interfaces, [`PACKAGE.mbt.md`](../PACKAGE.mbt.md), manifest, and license. These library packages support wasm, wasm-gc, JavaScript, and native. The separately versioned `Milky2018/svgdiff-raster-codec` archive contains the project-owned bounded decoder required by the root module. Publish codec `0.1.1` before root `0.7.0`; consumers still import only the root package. `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's packaged-source checks, and compiles a separate workspace consumer against both generated zips. The published [Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the same module version as the CLI engine identity.
+The registry archive is built from `modules/svgdiff` and contains the root
+library, `engine` implementation packages, the portable
+`cmd/svgdiff_miniio` entrypoint, generated interfaces, the focused
+[`README.mbt.md`](../modules/svgdiff/README.mbt.md), manifest, and license.
+These library packages support wasm, wasm-gc, JavaScript, and native. The
+separately versioned `Milky2018/svgdiff-raster-codec` archive contains the
+project-owned bounded decoder required by the root module. Publish codec
+`0.1.1` before root `0.7.0`; consumers still import only the root package.
+`sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's
+packaged-source checks, and compiles a separate workspace consumer against
+both generated zips. The published
+[Mooncakes root module](https://mooncakes.io/docs/Milky2018/svgdiff) uses the
+same module version as the CLI engine identity.
 
 Public source and behavior compatibility follows the [module SemVer rules](versioning.md#moonbit-module-semver). Before `1.0.0`, breaking changes increment the minor component and patch releases remain backward-compatible.
 
@@ -52,7 +64,7 @@ Every call uses the fixed [comparison resource limits](resource-limits.md) and [
 
 `ComparisonControl` contains `should_cancel: () -> Bool` and `max_checkpoints: Int?`; `ComparisonControl::unlimited()` disables both controls. A true predicate raises `Cancelled`. A nonpositive checkpoint budget expires at the first checkpoint. A positive budget permits exactly that many checkpoints and raises `CheckpointBudgetExceeded(max_checkpoints=...)` at the next one. Cancellation is checked first when both conditions hold. This is a deterministic work bound for one engine version, not a wall-clock deadline.
 
-Executable IO is outside the library seam. [`cmd/svgdiff`](../cmd/svgdiff) is the native filesystem/stdin/stdout CLI. [`cmd/svgdiff_wasm`](../cmd/svgdiff_wasm/README.md) is the wasm-only, in-memory UTF-8 JSON transaction used by the static browser product. Its ABI 1 request explicitly supplies both SVG strings, viewport dimensions, nullable Perceptual Background, nullable FLIP pixels-per-degree, nullable FLIP threshold, and a positive deterministic checkpoint budget; missing and unknown fields are rejected.
+Executable IO is outside the library seam. [`modules/svgdiff/cmd/svgdiff`](../modules/svgdiff/cmd/svgdiff) is the native filesystem/stdin/stdout CLI. [`modules/svgdiff/cmd/svgdiff_wasm`](../modules/svgdiff/cmd/svgdiff_wasm/README.md) is the wasm-only, in-memory UTF-8 JSON transaction used by the static browser product. Its ABI 1 request explicitly supplies both SVG strings, viewport dimensions, nullable Perceptual Background, nullable FLIP pixels-per-degree, nullable FLIP threshold, and a positive deterministic checkpoint budget; missing and unknown fields are rejected.
 
 An interruption returns no Structured Report: callers must handle `ComparisonInterrupted` as request control flow rather than infer evidence from missing arrays. Checks occur before and after admission, alignment work, per-event region work, report-finishing stages, and built-in serialization enforcement. Third-party XML parsing and SVG rendering are synchronous and cannot be preempted; each call may finish before the engine reaches its next counted checkpoint. The ordinary `compare` and CLI behavior remain unchanged; current reports use Schema `2.0` and its Diagnostic catalog.
 
@@ -78,7 +90,9 @@ The typed engine result still carries internal Impact Assessment state used by e
 
 ## Basic use
 
-Use the checked `mbt check` examples in [`README.mbt.md`](../README.mbt.md) as the executable source of library usage. The essential sequence is:
+Use the checked `mbt check` example in
+[`modules/svgdiff/README.mbt.md`](../modules/svgdiff/README.mbt.md) as the
+executable source of library usage. The essential sequence is:
 
 1. start from `ComparisonProfile::v1_default`;
 2. set the common viewport dimensions if the `16 x 16` default is not appropriate, optionally set a parsed opaque sRGB Perceptual Background for event-local DeltaEOK, optionally add invariant-checked FLIP Viewing Conditions for an event-local LDR-FLIP map and pooled statistics, and optionally set an invariant-checked FLIP error threshold for strict-above area;
@@ -106,7 +120,7 @@ moon ide doc '@Milky2018/svgdiff.compare'
 moon ide doc '@Milky2018/svgdiff.StructuredReport'
 ```
 
-`moon info` regenerates `pkg.generated.mbti`, which is the reviewable public signature. `moon ide doc` includes the owning-package docstrings.
+`moon info` regenerates `modules/svgdiff/pkg.generated.mbti`, which is the reviewable public signature. `moon ide doc` includes the owning-package docstrings.
 
 The current toolchain's optional local `moon doc` site generation is blocked while checking transitive dependency tests: `mizchi/image`'s `ColorType` and `moonbitlang/x`'s `Rational[Int64]` are used by `assert_eq` without implementing `Debug`. This does not affect `moon info`, `moon ide doc`, module publication, consumer checks, or project tests. Do not patch dependency caches to generate the site; retry `moon doc --serve` after released upstream packages remove those test-only constraints. Live blocker status is recorded in [`dependency-security.md`](dependency-security.md).
 

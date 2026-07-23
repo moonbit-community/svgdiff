@@ -8,8 +8,8 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon build --target native --release cmd/svgdiff
-moon test --target native engine/alignment_test.mbt
+moon build --target native --release modules/svgdiff/cmd/svgdiff
+moon test --target native modules/svgdiff/engine/alignment_test.mbt
 python3 evaluation/adversarial/validate.py --cli "$cli" --output "$tmp/first.json"
 python3 evaluation/adversarial/validate.py --cli "$cli" --output "$tmp/second.json"
 cmp "$tmp/first.json" "$tmp/second.json"

@@ -13,9 +13,11 @@ name = "Milky2018/svgdiff"
 
 version = "0.7.0"
 
-readme = "PACKAGE.mbt.md"
+readme = "README.mbt.md"
 
 license = "Apache-2.0"
+
+repository = "https://github.com/Milky2018/svgdiff"
 
 keywords = [ "svg", "diff", "visual-semantics", "structured-report", "agent" ]
 
@@ -38,13 +40,9 @@ options(
   exclude: [
     "cmd/svgdiff",
     "cmd/svgdiff_wasm",
-    "completions",
-    "docs",
     "evaluation",
-    "issues",
-    "schema",
-    "scripts",
-    "testdata",
-    "web",
+    "*_test.mbt",
+    "*_wbtest.mbt",
+    "engine/README.md",
   ],
 )

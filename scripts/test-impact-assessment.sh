@@ -7,7 +7,7 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 python3 evaluation/impact/validate.py --cli "$cli" >"$tmp/first.txt"
 python3 evaluation/impact/validate.py --cli "$cli" >"$tmp/second.txt"

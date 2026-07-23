@@ -4,7 +4,7 @@
 library. Build it with:
 
 ```sh
-moon build cmd/svgdiff_wasm --target wasm --release
+moon build modules/svgdiff/cmd/svgdiff_wasm --target wasm --release
 ```
 
 The module exports `memory`, `abi_version`, `transfer_ptr`,

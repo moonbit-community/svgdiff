@@ -22,14 +22,14 @@
       "id": "central_coverage_proof",
       "claim": "missing_or_inconsistent_feature_layer_or_diagnostic_bookkeeping_prevents_complete",
       "boundary": "coverage_bookkeeping_does_not_by_itself_prove_renderer_conformance",
-      "authorities": ["docs/coverage-proof-obligations.md", "engine/coverage_proof.mbt"],
+      "authorities": ["docs/coverage-proof-obligations.md", "modules/svgdiff/engine/internal/diff/coverage_proof.mbt"],
       "validation_commands": ["scripts/test-m2-renderer-coverage-gate.sh"]
     },
     {
       "id": "unsupported_input_safety",
       "claim": "unsupported_self_comparison_never_becomes_complete_empty_equality",
       "boundary": "partial_reports_retain_supported_evidence_without_equality",
-      "authorities": ["docs/unsupported-input-properties.md", "engine/unsupported_input_property_test.mbt"],
+      "authorities": ["docs/unsupported-input-properties.md", "modules/svgdiff/engine/unsupported_input_property_test.mbt"],
       "validation_commands": ["scripts/test-m2-renderer-coverage-gate.sh"]
     },
     {

@@ -8,7 +8,7 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon build --target native --release cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 test -x "$cli"
 if grep -q '_build/native/release/build/cmd/svgdiff/svgdiff.exe' \
   .github/workflows/ci.yml; then

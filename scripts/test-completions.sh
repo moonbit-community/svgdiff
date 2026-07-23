@@ -15,7 +15,7 @@ if command -v fish >/dev/null 2>&1; then
   fish -n completions/svgdiff.fish
 fi
 
-moon run --target native cmd/svgdiff -- --help >"$tmp/help.txt"
+moon run --target native modules/svgdiff/cmd/svgdiff -- --help >"$tmp/help.txt"
 options=$(sed -n '/^Options:/,/^$/s/^  \(--[a-z-]*\).*/\1/p' "$tmp/help.txt")
 test "$(printf '%s\n' "$options" | wc -l | tr -d ' ')" -eq 14
 for option in $options; do

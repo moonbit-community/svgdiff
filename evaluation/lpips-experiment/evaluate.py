@@ -86,8 +86,8 @@ def evaluator_implementation_hash() -> str:
 def renderer_adapter_hash() -> str:
     digest = hashlib.sha256()
     for relative in (
-        "evaluation/renderer_adapter/main.mbt",
-        "evaluation/renderer_adapter/moon.pkg",
+        "modules/svgdiff/evaluation/renderer_adapter/main.mbt",
+        "modules/svgdiff/evaluation/renderer_adapter/moon.pkg",
     ):
         digest.update(relative.encode())
         digest.update(b"\0")

@@ -16,7 +16,7 @@
         "explicit_ambiguity",
         "confidence_not_calibrated"
       ],
-      "evidence": ["engine/alignment_test.mbt", "docs/alignment-tie-breaking.md", "evaluation/annotations/subject-alignments.v1.json"]
+      "evidence": ["modules/svgdiff/engine/alignment_test.mbt", "docs/alignment-tie-breaking.md", "evaluation/annotations/subject-alignments.v1.json"]
     },
     {
       "id": "difference_regions",
@@ -30,7 +30,7 @@
         "unavailable_raster_uses_computed_bounds_or_no_region_without_fabrication",
         "region_limit_fails_instead_of_truncating"
       ],
-      "evidence": ["engine/difference_region_test.mbt", "engine/difference_regions_wbtest.mbt", "docs/core-model.md"]
+      "evidence": ["modules/svgdiff/engine/difference_region_test.mbt", "modules/svgdiff/engine/internal/diff/difference_regions_wbtest.mbt", "docs/core-model.md"]
     },
     {
       "id": "cause_envelopes",
@@ -43,7 +43,7 @@
         "partial_coverage_uses_not_established",
         "false_positives_are_allowed_but_false_negatives_are_not"
       ],
-      "evidence": ["engine/cause_envelope_test.mbt", "engine/cause_envelopes_wbtest.mbt", "docs/influence-provenance.md"]
+      "evidence": ["modules/svgdiff/engine/cause_envelope_test.mbt", "modules/svgdiff/engine/internal/diff/cause_envelopes_wbtest.mbt", "docs/influence-provenance.md"]
     },
     {
       "id": "report_reference_closure",

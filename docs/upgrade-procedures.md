@@ -23,7 +23,7 @@ Renderer, parser, metric, schema, same-domain ordering-policy, and Impact Assess
 | Same-domain ordering | `v2_domain_lexicographic` | `DomainOrdering.components` construction and comparison |
 | Impact Assessment | `event_rendered_pareto/v1` | event eligibility, common rendered inputs, Pareto dominance, ties, incomparability, missing evidence, frontier groups, and domination witnesses |
 
-The source of dependency versions is `moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json). The [compatibility and versioning contract](versioning.md) decides which identity each consumer-visible change must increment.
+The source of dependency versions is `modules/svgdiff/moon.mod`. The source of serialized constants is the public implementation plus [`schema/svgdiff-report.schema.json`](../schema/svgdiff-report.schema.json). The [compatibility and versioning contract](versioning.md) decides which identity each consumer-visible change must increment.
 
 ## General upgrade gate
 
@@ -60,7 +60,8 @@ Before replacing or owning a layer, apply the [Renderer Upstream and Ownership G
 
 ### Required synchronized changes
 
-- Update the dependency version in `moon.mod` through `moon add` or the supported package command.
+- Update the dependency version in `modules/svgdiff/moon.mod` through
+  `moon -C modules/svgdiff add` or the supported package command.
 - Update `ComparisonProfile::v1_default().renderer_id` when the production renderer identity changes.
 - Review and normally increment `renderer_conformance_profile_id` when fixtures, dispositions, guards, tolerances, or accepted capability claims change, even if the renderer package does not.
 - Keep the Schema structural constraints for `profile.renderer_id` and `profile.renderer_conformance_profile_id` independent from concrete accepted identities; update the versioned consumer compatibility policy whenever either production identity changes.
@@ -96,11 +97,12 @@ Use this procedure for `Milky2018/xml` or any replacement source parser.
 - Verify half-open UTF-16 offsets for ASCII, non-BMP characters, attributes, direct text, and parse errors.
 - Confirm that parser-specific types remain private to the Source Semantics adapter.
 
-The regression sources are [`source_adapter_wbtest.mbt`](../engine/source_adapter_wbtest.mbt) and the historical [`milky-xml-evaluation.md`](research/milky-xml-evaluation.md). A new version should receive a dated evaluation follow-up rather than rewriting the historical snapshot.
+The regression sources are [`source_adapter_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/source_adapter_wbtest.mbt) and the historical [`milky-xml-evaluation.md`](research/milky-xml-evaluation.md). A new version should receive a dated evaluation follow-up rather than rewriting the historical snapshot.
 
 ### Required synchronized changes
 
-- Update `moon.mod` with the supported package command.
+- Update `modules/svgdiff/moon.mod` with
+  `moon -C modules/svgdiff add`.
 - Update parser identity in ownership and evaluation documents.
 - Review every Source Span assertion and serialized source-fact fixture.
 - Reassess `svg_parse_failed` behavior and any new parser error categories.
@@ -306,7 +308,7 @@ Calibration must introduce a new policy identity. It must record its corpus, lab
 No cache artifact is currently implemented. If `svgdiff-exact-result-cache-key/1` is activated later:
 
 1. treat every module, Schema, Diagnostic, parser, semantic adapter, renderer, conformance, coverage, alignment, region, magnitude, provenance, ordering, Impact, resource, and adopted execution-profile change as a cache-key compatibility review;
-2. include exact ordered before/after source and resource inputs, the complete Comparison Profile, effective deterministic limits, engine/build dependencies, and required target/toolchain identity;
+2. include exact ordered before/after source and resource inputs, the complete Comparison Profile, effective deterministic limits, modules/svgdiff/engine/build dependencies, and required target/toolchain identity;
 3. allocate a new key or envelope version whenever canonical encoding, digest input, validation, stored report encoding, or reuse meaning changes;
 4. test that changing each identity produces a miss and that cold and hit paths return byte-identical valid reports for every admitted status;
 5. reject unknown, corrupt, oversized, cross-user, traversal, poisoned, cancelled, or time-budget-interrupted entries and fall back to full recomputation; and

@@ -25,7 +25,7 @@ The prototype used a deterministic six-tile toy renderer to derive output values
 | Unknown-operation fallback | PASS | Widening to all Changed Facts preserves completeness. |
 | Unsupported operation | NOT CLAIMED | The injected cause is missing, but incomplete coverage prevents a false completeness claim. |
 
-The experiment validated the data model, conservative transfer discipline, before/after union, fallback behavior, and the rule that incomplete coverage must revoke a completeness claim. The production regression cases now live in `engine/cause_envelope_test.mbt`; the toy implementation was removed after those guarantees were absorbed.
+The experiment validated the data model, conservative transfer discipline, before/after union, fallback behavior, and the rule that incomplete coverage must revoke a completeness claim. The production regression cases now live in `modules/svgdiff/engine/cause_envelope_test.mbt`; the toy implementation was removed after those guarantees were absorbed.
 
 ## Real MoonBit integration spike
 

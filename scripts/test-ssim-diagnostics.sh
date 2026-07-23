@@ -7,7 +7,7 @@ mkdir -p "$tmp"
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
-moon build --target native --release evaluation/ssim_adapter cmd/svgdiff >/dev/null
+moon build --target native --release modules/svgdiff/evaluation/ssim_adapter modules/svgdiff/cmd/svgdiff >/dev/null
 adapter="$root/_build/native/release/build/Milky2018/svgdiff/evaluation/ssim_adapter/ssim_adapter.exe"
 cli="$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe"
 python3 evaluation/ssim-diagnostics/evaluate.py \
@@ -40,7 +40,7 @@ jq -e '
     .ms_ssim == null and .ms_ssim_reason_code != null)
 ' evaluation/ssim-diagnostics/results.v1.json >/dev/null
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
   .schema_version == "2.0" and

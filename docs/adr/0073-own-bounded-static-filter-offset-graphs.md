@@ -42,7 +42,7 @@ The project owns additional deterministic rendering code, resource budgets, vers
 
 ## Evidence
 
-- [`filter_semantics_wbtest.mbt`](../../engine/filter_semantics_wbtest.mbt)
+- [`filter_semantics_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/filter_semantics_wbtest.mbt)
 - [`renderer-conformance`](../../evaluation/renderer-conformance/README.md)
 - [`filter-offset-change.json`](../../schema/examples/filter-offset-change.json)
 - [`ISS-117`](../../issues/ISS-117.md)

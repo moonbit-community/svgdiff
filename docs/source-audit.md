@@ -44,7 +44,7 @@ Masking is not a resource-limit bypass. Whole-source input size, XML element, ne
 
 ## Executable enforcement
 
-- Visual exclusion, offset-preserving masking, CSS consequences, audit alignment, namespaces, Unicode spans, failures, and determinism: [`source_audit_wbtest.mbt`](../engine/source_audit_wbtest.mbt)
+- Visual exclusion, offset-preserving masking, CSS consequences, audit alignment, namespaces, Unicode spans, failures, and determinism: [`source_audit_wbtest.mbt`](../modules/svgdiff/engine/source_audit_wbtest.mbt)
 - Root public API and serialization separation: [`svgdiff_test.mbt`](../svgdiff_test.mbt)
 - JSON Schema positive and negative controls: [`validate.py`](../evaluation/source-audit/validate.py)
 - Canonical visual equality report with changed metadata: [`nonvisual-metadata-equivalent.json`](../schema/examples/nonvisual-metadata-equivalent.json)

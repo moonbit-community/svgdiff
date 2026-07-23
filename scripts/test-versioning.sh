@@ -8,18 +8,16 @@ trap 'rm -rf "$tmp"' EXIT
 
 cd "$root"
 
-module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' moon.mod)
+module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
 test -n "$module_version"
 printf '%s\n' "$module_version" | grep -Eq '^(0|[1-9][0-9]*)\.[0-9]+\.[0-9]+$'
 
-moon run --target native cmd/svgdiff -- --version >"$tmp/version.txt"
+moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
 grep -Fx "svgdiff $module_version" "$tmp/version.txt" >/dev/null
 grep -Fx "engine: $module_version" "$tmp/version.txt" >/dev/null
-grep -Fx "moon add Milky2018/svgdiff@$module_version" PACKAGE.mbt.md >/dev/null
-grep -F "Module version \`$module_version\`" PACKAGE.mbt.md >/dev/null
+grep -Fx "moon add Milky2018/svgdiff@$module_version" modules/svgdiff/README.mbt.md >/dev/null
 grep -F "moon add Milky2018/svgdiff@$module_version" README.mbt.md >/dev/null
 grep -F "moon add Milky2018/svgdiff@$module_version" docs/library-api.md >/dev/null
-grep -F "scripts/check-release-tag.sh v$module_version" release/README.md >/dev/null
 
 schema_version=$(jq -r '.properties.schema_version.const' schema/svgdiff-report.schema.json)
 renderer_id=$(sed -n 's/^renderer: //p' "$tmp/version.txt")
@@ -48,7 +46,7 @@ jq -e --arg schema "$schema_version" '
   (.consumer_policy.accepted_schema_versions | index($schema)) != null
 ' evaluation/compatibility/manifest.v1.json >/dev/null
 
-moon run --target native cmd/svgdiff -- \
+moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e --arg schema "$schema_version" '
   .schema_version == $schema and

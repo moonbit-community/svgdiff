@@ -38,7 +38,7 @@ jq -e '
       .raw_rgba8_equal == true and .forward_distance == 0))
 ' evaluation/lpips-experiment/results.v1.json >/dev/null
 
-if rg -n 'lpips' moon.mod moon.pkg engine schema cmd .github >/dev/null; then
+if rg -n 'lpips' modules/svgdiff/moon.mod modules/svgdiff/moon.pkg modules/svgdiff/engine schema modules/svgdiff/cmd .github >/dev/null; then
   printf 'LPIPS leaked into the module, product engine, schema, CLI, or default CI\n' >&2
   exit 1
 fi

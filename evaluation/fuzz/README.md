@@ -24,7 +24,7 @@ sh scripts/test-fuzz-smoke.sh
 Scale exploration with another seed and case count:
 
 ```sh
-moon build --target native --release cmd/svgdiff
+moon build --target native --release modules/svgdiff/cmd/svgdiff
 python3 evaluation/fuzz/run.py \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --seed 123456 --cases 1000 --output /tmp/svgdiff-fuzz.json

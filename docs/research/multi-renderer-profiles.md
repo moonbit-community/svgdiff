@@ -11,7 +11,7 @@ renderers under one profile, or both?
 
 The recommended answer is **both, as different typed questions inside a
 factorial matrix**. A matrix does not create a new canonical renderer. Each
-cell preserves one exact engine/profile result, and each edge says which axis
+cell preserves one exact modules/svgdiff/engine/profile result, and each edge says which axis
 was held constant. A diagonal that changes engine and profile together is
 confounded unless compatible intermediate cells exist.
 
@@ -304,7 +304,7 @@ The deferred multi-renderer implementation should not begin until it has:
 - at least two exact engine targets and two execution profiles with a closed
   four-cell fixture rectangle;
 - repeatable capture, hostile-resource limits, offline behavior, and exact
-  engine/environment/output identity validation;
+  modules/svgdiff/engine/environment/output identity validation;
 - versioned cross-cell fact/subject/event correlation and per-evidence
   compatibility checks;
 - negative controls for hidden fonts, color management, platform changes,

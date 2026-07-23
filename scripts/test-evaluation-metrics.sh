@@ -24,7 +24,7 @@ jq -c '.cases[]' "$manifest" | while IFS= read -r case_json; do
   after=$(printf '%s' "$case_json" | jq -r '.after')
   width=$(printf '%s' "$case_json" | jq -r '.viewport.width')
   height=$(printf '%s' "$case_json" | jq -r '.viewport.height')
-  moon run --target native cmd/svgdiff -- \
+  moon run --target native modules/svgdiff/cmd/svgdiff -- \
     "$root/evaluation/corpus/$before" \
     "$root/evaluation/corpus/$after" \
     --width "$width" --height "$height" >"$reports/$id.json"

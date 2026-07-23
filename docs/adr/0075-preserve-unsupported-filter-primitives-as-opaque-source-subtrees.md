@@ -43,6 +43,6 @@ Structured Report schema advances to `1.31` for the new domain. The renderer ide
 
 ## Evidence
 
-- [`filter_semantics_wbtest.mbt`](../../engine/filter_semantics_wbtest.mbt)
+- [`filter_semantics_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/filter_semantics_wbtest.mbt)
 - [`unsupported-filter-primitive-change.json`](../../schema/examples/unsupported-filter-primitive-change.json)
 - [`ISS-119`](../../issues/ISS-119.md)

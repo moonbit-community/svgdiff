@@ -8,7 +8,7 @@ if [ "$#" -ne 1 ]; then
   exit 2
 fi
 
-module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/moon.mod")
+module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' "$root/modules/svgdiff/moon.mod")
 expected_tag="v$module_version"
 if [ "$1" != "$expected_tag" ]; then
   printf 'Release tag %s does not match module version %s; expected %s\n' \

@@ -34,7 +34,7 @@ sh scripts/test-impact-calibration.sh
 To intentionally regenerate the checked-in artifacts after an accepted corpus, annotation, renderer, metric, or profile change:
 
 ```sh
-moon build --target native --release cmd/svgdiff
+moon build --target native --release modules/svgdiff/cmd/svgdiff
 python3 evaluation/impact-calibration/validate.py \
   --cli _build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe \
   --update

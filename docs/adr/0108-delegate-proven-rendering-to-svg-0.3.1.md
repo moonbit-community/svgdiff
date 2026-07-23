@@ -27,9 +27,9 @@ Profile `/27` records the actual 0.3.1 dependency and browser identity. The hist
 
 ## Evidence
 
-- [`renderer_input_wbtest.mbt`](../../engine/internal/rendered/normalization/renderer_input_wbtest.mbt)
-- [`filter_semantics_wbtest.mbt`](../../engine/internal/diff/filter_semantics_wbtest.mbt)
-- [`group_compositor_wbtest.mbt`](../../engine/internal/diff/group_compositor_wbtest.mbt)
-- [`mask_semantics_wbtest.mbt`](../../engine/internal/diff/mask_semantics_wbtest.mbt)
-- [`blend_semantics_wbtest.mbt`](../../engine/internal/diff/blend_semantics_wbtest.mbt)
+- [`renderer_input_wbtest.mbt`](../../modules/svgdiff/engine/internal/rendered/normalization/renderer_input_wbtest.mbt)
+- [`filter_semantics_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/filter_semantics_wbtest.mbt)
+- [`group_compositor_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/group_compositor_wbtest.mbt)
+- [`mask_semantics_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/mask_semantics_wbtest.mbt)
+- [`blend_semantics_wbtest.mbt`](../../modules/svgdiff/engine/internal/diff/blend_semantics_wbtest.mbt)
 - [Renderer evaluation](../renderer-evaluation.md)

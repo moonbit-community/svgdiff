@@ -146,11 +146,16 @@ require(
     not (ROOT / "prototype" / "font-runtime-probe").exists(),
     "throwaway font runtime probe was not removed",
 )
-for path in [ROOT / "moon.mod", ROOT / "moon.pkg"]:
+for path in [ROOT / "modules/svgdiff/moon.mod", ROOT / "modules/svgdiff/moon.pkg"]:
     if path.exists():
         text = path.read_text(encoding="utf-8")
         require("svgdiff-font-runtime" not in text, f"runtime dependency leaked into {path.name}")
-for directory in [ROOT / "engine", ROOT / "schema", ROOT / "cmd", ROOT / ".github"]:
+for directory in [
+    ROOT / "modules" / "svgdiff" / "engine",
+    ROOT / "schema",
+    ROOT / "modules" / "svgdiff" / "cmd",
+    ROOT / ".github",
+]:
     if directory.exists():
         for path in directory.rglob("*"):
             if path.is_file():

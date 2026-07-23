@@ -15,7 +15,7 @@ fi
 mkdir -p "$oracle"
 cd "$root"
 sh scripts/run-browser-oracle.sh "$oracle"
-moon build --target native --release evaluation/renderer_adapter
+moon build --target native --release modules/svgdiff/evaluation/renderer_adapter
 python3 evaluation/renderer-conformance/compare.py \
   --oracle "$oracle" \
   --adapter "$adapter" \

@@ -218,7 +218,7 @@ When font execution is eventually implemented, each report must retain, for both
 - every selected `(asset_sha256, face_index)` pair;
 - the complete selected variation coordinate vector;
 - exact font matching and fallback policy ID;
-- shaping engine/version/build, shaper choice, Unicode data version, script, language, direction, and feature policy;
+- shaping modules/svgdiff/engine/version/build, shaper choice, Unicode data version, script, language, direction, and feature policy;
 - WOFF/WOFF2 decoder identity;
 - rasterizer version/build, scale, hinting interpreter and flags, antialiasing/subpixel mode, stem darkening, bitmap/color/SVG-glyph policies, and synthetic-style policy;
 - precise missing, invalid, unsupported, or budget-exceeded diagnostics and affected evidence layers.
