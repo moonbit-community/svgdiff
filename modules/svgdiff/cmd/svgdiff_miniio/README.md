@@ -19,9 +19,9 @@ moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --help
 The package reads guest-visible files and exposes the same CLI contract as the
 native executable, including canonical or Agent JSON, projection JSONL,
 resource bundles, HTML, Markdown summary, output files, and an optional
-deterministic checkpoint budget. See the repository-level
-[`SKILL.md`](../../../../SKILL.md) for the agent-facing interpretation contract
-and WASI preopen requirements.
+deterministic checkpoint budget. See the module-level
+[`SKILL.md`](../../SKILL.md) for the agent-facing interpretation contract and
+guest-visible filesystem and resource rules.
 
 Build the WASIp1 artifact with:
 

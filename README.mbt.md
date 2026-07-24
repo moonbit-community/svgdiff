@@ -115,9 +115,9 @@ From a source checkout, verify it with the repository fixtures:
 moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg --agent-json
 ```
 
-The repository-level [`SKILL.md`](SKILL.md) defines the agent reading
-procedure, deterministic checkpoint control, exit statuses, and WASI preopen
-boundary.
+The module-level [`SKILL.md`](modules/svgdiff/SKILL.md) defines the agent
+reading procedure, deterministic checkpoint control, exit statuses, and
+guest-visible filesystem and resource boundary.
 
 ## Library API
 

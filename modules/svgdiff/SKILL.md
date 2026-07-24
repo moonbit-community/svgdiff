@@ -1,29 +1,23 @@
 ---
 name: svgdiff
-description: "Compare two SVG files by visual semantics and emit compact Structured Report JSON for an agent that cannot inspect images."
+description: "Compare two deterministic static SVG files by visual semantics with the portable WASIp1 svgdiff CLI, producing compact Structured Report JSON for agents that cannot inspect images. Use when an agent must enumerate visual-semantic differences, magnitudes, conservative locations, possible causes, and coverage limitations."
 ---
 
 # svgdiff
 
-Use this skill when an agent needs to determine what visually changed between
-two deterministic static SVG files without relying on multimodal inspection.
-It reports authored distinctions, computed relations, independent numeric
-magnitudes, rendered outcomes, conservative locations, possible causes, and
-analysis limitations.
-
 ## Run
-
-After module version `0.7.0` is published:
-
-```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg --agent-json
-```
 
 From this repository, use the checked-in fixtures for a self-contained smoke
 test:
 
 ```sh
 moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg --agent-json
+```
+
+After module version `0.7.0` is published, run the pinned package directly:
+
+```sh
+moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg --agent-json
 ```
 
 The command writes canonical Structured Report schema `2.0` JSON by default;
@@ -37,6 +31,17 @@ flag from the runner's flags:
 ```sh
 moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --help
 ```
+
+Inspect the exact engine, schema, renderer, conformance, and policy identities
+before interpreting or retaining a report:
+
+```sh
+moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --version
+```
+
+Record this output alongside reports that will be persisted, compared, or
+handed off. The report schema version alone does not identify every
+rendering-related implementation input.
 
 Useful explicit comparison inputs:
 
@@ -78,19 +83,15 @@ moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
    coverage, and other domain magnitudes independent. Do not invent a universal
    severity score or suppress small differences.
 
-## WASI filesystem
+## Filesystem and resources
 
-All paths are guest-visible. `moon runwasm` exposes the project directory when
-running the local package. With a standalone WASI host, preopen the directory
-that contains the input SVGs:
+All input and resource paths are guest-visible. `moon runwasm` exposes the
+project directory when running the local package. The comparison runtime
+performs no network access or implicit SVG-authored path resolution; the
+`moon runwasm` launcher may still download the module or dependencies before
+execution.
 
-```sh
-wasmtime run --dir ./examples::examples \
-  svgdiff_miniio.wasm examples/before.svg examples/after.svg --agent-json
-```
-
-The skill performs no network access and resolves no ambient host paths.
 External raster resources may be supplied explicitly with the same repeatable
-`--before-resource` and `--after-resource` JSON options as the native CLI;
-their paths must also be guest-visible. Argument and file errors exit with
+`--before-resource` and `--after-resource` JSON options as the native CLI.
+Their paths must also be guest-visible. Argument and file errors exit with
 status `2`; comparison interruption or a failed analysis exits with status `1`.
