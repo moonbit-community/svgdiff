@@ -103,10 +103,10 @@ The [`modules/svgdiff/cmd/svgdiff`](modules/svgdiff/cmd/svgdiff) package is the
 shared native and portable WASIp1 CLI. It reads two guest-visible SVG files and
 supports the same arguments, outputs, explicit resources, and optional
 deterministic checkpoint budget on both targets.
-After version `0.7.0` is published, run the package directly from Mooncakes:
+Run version `0.7.1` directly from Mooncakes:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.0 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.1 before.svg after.svg --agent-json
 ```
 
 From a source checkout, verify it with the repository fixtures:
@@ -121,7 +121,7 @@ guest-visible filesystem and resource boundary.
 
 ## Library API
 
-Install module version `0.7.0` with `moon add Milky2018/svgdiff@0.7.0` after that release is published. The latest independently verified Mooncakes publication remains `0.3.3`; its focused [registry README](modules/svgdiff/README.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.7.1` with `moon add Milky2018/svgdiff@0.7.1`. Its focused [registry README](modules/svgdiff/README.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 

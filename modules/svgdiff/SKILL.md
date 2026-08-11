@@ -14,10 +14,10 @@ test:
 moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg --agent-json
 ```
 
-After module version `0.7.0` is published, run the pinned package directly:
+Run the published module version `0.7.1` directly:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.0 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.1 before.svg after.svg --agent-json
 ```
 
 The command writes canonical Structured Report schema `2.0` JSON by default;

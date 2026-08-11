@@ -1,6 +1,6 @@
 # MoonBit Library API
 
-Status: current public interface for module version `0.7.0`
+Status: current public interface for module version `0.7.1`
 
 Last verified: 2026-07-20
 
@@ -9,7 +9,7 @@ Consumers should import the root package `Milky2018/svgdiff`. The `engine` packa
 Install the published module with:
 
 ```sh
-moon add Milky2018/svgdiff@0.7.0
+moon add Milky2018/svgdiff@0.7.1
 ```
 
 The registry archive is built from `modules/svgdiff` and contains the root
@@ -19,7 +19,7 @@ library, `engine` implementation packages, the portable
 These library packages support wasm, wasm-gc, JavaScript, and native. The
 separately versioned `Milky2018/svgdiff-raster-codec` archive contains the
 project-owned bounded decoder required by the root module. Publish codec
-`0.1.1` before root `0.7.0`; consumers still import only the root package.
+`0.1.1` before root `0.7.1`; consumers still import only the root package.
 `sh scripts/test-module-package.sh` validates both inventories, runs MoonBit's
 packaged-source checks, and compiles a separate workspace consumer against
 both generated zips. The published
@@ -60,7 +60,7 @@ SourceAuditReport::to_compact_json_string() -> String
 
 The two canonical JSON methods serialize schema `2.0`. `to_json_string` uses indentation for inspection; `to_compact_json_string` removes only formatting whitespace and preserves every canonical field and value. `to_agent_projection_json_lines` emits the independent `svgdiff-agent-projection/1` JSONL transport: one header plus exact canonical section items that reconstruct the same report without loss.
 
-Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.7.0`.
+Every call uses the fixed [comparison resource limits](resource-limits.md) and [local-reference admission guard](reference-safety.md). Crossing a source, structure, raster, region, or report budget returns a bounded `failed` report with `resource_limit_exceeded`; cyclic or explosively expanding accepted local references use their own stable Diagnostics. No failure returns a silently truncated difference inventory. The limits are intentionally not caller-configurable in module `0.7.1`.
 
 `ComparisonControl` contains `should_cancel: () -> Bool` and `max_checkpoints: Int?`; `ComparisonControl::unlimited()` disables both controls. A true predicate raises `Cancelled`. A nonpositive checkpoint budget expires at the first checkpoint. A positive budget permits exactly that many checkpoints and raises `CheckpointBudgetExceeded(max_checkpoints=...)` at the next one. Cancellation is checked first when both conditions hold. This is a deterministic work bound for one engine version, not a wall-clock deadline.
 

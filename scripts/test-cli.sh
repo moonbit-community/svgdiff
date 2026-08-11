@@ -121,7 +121,7 @@ grep -q -- '--agent-json' "$tmp/help.txt"
 grep -q -- '--summary <summary>' "$tmp/help.txt"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.7.0$' "$tmp/version.txt"
+grep -q '^svgdiff 0.7.1$' "$tmp/version.txt"
 grep -q '^schema: 2.0$' "$tmp/version.txt"
 
 moon runwasm modules/svgdiff/cmd/svgdiff \

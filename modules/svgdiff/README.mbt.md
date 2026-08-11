@@ -7,7 +7,7 @@ visual-semantic differences without inspecting images directly.
 ## Install
 
 ```sh
-moon add Milky2018/svgdiff@0.7.0
+moon add Milky2018/svgdiff@0.7.1
 ```
 
 ## Compare SVG sources
