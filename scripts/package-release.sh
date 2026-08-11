@@ -156,7 +156,8 @@ install -m 0644 "$root/LICENSE" "$bundle/LICENSE"
   printf '# Third-Party Notices\n\n'
   printf 'This native bundle contains code from the resolved MoonBit packages below. Each package manifest declares Apache-2.0. The complete Apache License 2.0 text is included as `LICENSE`. No resolved package contains a `NOTICE` file.\n\n'
   printf 'A missing package-local license file is disclosed explicitly; it is not represented as stronger evidence than the resolved manifest declaration.\n\n'
-  jq -r '.dependencies[] | "- `\(.name)@\(.version)` (\(.relationship)): [upstream](\(.repository)); `\(.license)` declared by the resolved package manifest; package-local license file: \(if .packaged_license_file then "present" else "absent" end)."' "$dependency_manifest"
+  jq -r '.dependencies[] | "- `\(.name)@\(.version)` (\(.relationship)): [upstream](\(.repository)); `\(.license)` declared by the resolved package manifest; package-local license file: \(if .packaged_license_file then "present" else "absent" end)."' "$dependency_manifest" |
+    tr -d '\r'
 } >"$bundle/THIRD_PARTY_NOTICES.md"
 
 artifact_sha256=$(sha256_files "$bundle/$executable_name" | awk '{ print $1 }')

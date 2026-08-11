@@ -107,12 +107,14 @@ jq -e \
 
 test "$(jq '.dependencies | length' release/dependencies.v1.json)" = 10
 jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
+  tr -d '\r' |
   while IFS= read -r dependency; do
     grep -F "\`$dependency\`" "$bundle/THIRD_PARTY_NOTICES.md" >/dev/null
   done
 if [ "${RUNNER_OS-}" != Windows ]; then
   moon -C modules/svgdiff tree >"$tmp/tree.txt"
   jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
+    tr -d '\r' |
     while IFS= read -r dependency; do
       grep -F "$dependency" "$tmp/tree.txt" >/dev/null
     done

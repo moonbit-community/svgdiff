@@ -93,8 +93,9 @@ jobs:
           archive="$bundle.tar.gz"
           test -f "$archive"
           test -f "$bundle/${{ matrix.executable }}"
-          test "$(jq -r '.source.dirty' "$bundle/provenance.json")" = false
-          test "$(jq -r '.source.revision' "$bundle/provenance.json")" = "$GITHUB_SHA"
+          jq -e '.source.dirty == false' "$bundle/provenance.json" >/dev/null
+          jq -e --arg revision "$GITHUB_SHA" \
+            '.source.revision == $revision' "$bundle/provenance.json" >/dev/null
           (
             cd "$bundle"
             if command -v shasum >/dev/null 2>&1; then
