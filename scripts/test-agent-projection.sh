@@ -69,7 +69,7 @@ assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   --agent-json --agent-projection \
   >"$tmp/conflict.out" 2>"$tmp/conflict.err"
 test ! -s "$tmp/conflict.out"
-grep -q '^--agent-json and --agent-projection are mutually exclusive$' \
+grep -q '^error: conflicting arguments: agent-json and agent-projection$' \
   "$tmp/conflict.err"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
