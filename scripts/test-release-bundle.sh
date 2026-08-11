@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+if [ "${RELEASE_TRACE-}" = 1 ]; then
+  set -x
+fi
+
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 tmp=${TMPDIR:-/tmp}/svgdiff-release-bundle-$$
 dirty_marker="$root/.svgdiff-release-dirty-test-$$"

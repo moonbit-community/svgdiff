@@ -72,6 +72,8 @@ jobs:
 
       - name: Test native release candidate
         shell: bash
+        env:
+          RELEASE_TRACE: "1"
         run: |
           moon check --target native --warn-list +73
           moon test --target native
