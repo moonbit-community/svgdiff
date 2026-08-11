@@ -74,7 +74,7 @@ fi
 
 dependency_manifest="$root/release/dependencies.v1.json"
 test "$(jq -r '.schema_version' "$dependency_manifest")" = "svgdiff-release-dependencies/1"
-dependency_tree=$(moon -C modules/svgdiff tree)
+dependency_tree=$(moon -C modules/svgdiff tree | tr -d '\000\r')
 jq -r '.dependencies[] | "\(.name)@\(.version)"' "$dependency_manifest" |
   while IFS= read -r dependency; do
     if ! printf '%s\n' "$dependency_tree" | grep -F "$dependency" >/dev/null; then

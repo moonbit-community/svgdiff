@@ -102,7 +102,7 @@ jq -e \
 ' "$bundle/provenance.json" >/dev/null
 
 test "$(jq '.dependencies | length' release/dependencies.v1.json)" = 10
-moon -C modules/svgdiff tree >"$tmp/tree.txt"
+moon -C modules/svgdiff tree | tr -d '\000\r' >"$tmp/tree.txt"
 jq -r '.dependencies[] | "\(.name)@\(.version)"' release/dependencies.v1.json |
   while IFS= read -r dependency; do
     grep -F "$dependency" "$tmp/tree.txt" >/dev/null
