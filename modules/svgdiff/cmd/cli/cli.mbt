@@ -64,6 +64,7 @@ fn program_name(args : ArrayView[String]) -> String {
       [path, ..] => path
       [] => "svgdiff"
     })
+    .replace_all(old="\\", new="/")
     .split("/")
     .last()
     .unwrap_or("svgdiff")

@@ -15,6 +15,11 @@ printf '%s\n' "$module_version" | grep -Eq '^(0|[1-9][0-9]*)\.[0-9]+\.[0-9]+$'
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
 grep -Fx "svgdiff $module_version" "$tmp/version.txt" >/dev/null
 grep -Fx "engine: $module_version" "$tmp/version.txt" >/dev/null
+native_binary=_build/native/debug/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
+windows_named_binary="$tmp/C:\\tools\\svgdiff.exe"
+cp "$native_binary" "$windows_named_binary"
+"$windows_named_binary" --version >"$tmp/windows-path-version.txt"
+grep -Fx "svgdiff $module_version" "$tmp/windows-path-version.txt" >/dev/null
 grep -Fx "moon add Milky2018/svgdiff@$module_version" modules/svgdiff/README.mbt.md >/dev/null
 grep -F "moon add Milky2018/svgdiff@$module_version" README.mbt.md >/dev/null
 grep -F "moon add Milky2018/svgdiff@$module_version" docs/library-api.md >/dev/null
