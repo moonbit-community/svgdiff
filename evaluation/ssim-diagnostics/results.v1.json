@@ -1,6 +1,6 @@
 {
   "accepted_role": "qa_only_secondary_structural_observation",
-  "adapter_implementation_sha256": "ba9720d3397b72d6e9de1b351466da22a8813696c13d6794eb8fda56c2794d0e",
+  "adapter_implementation_sha256": "79194432d9f406e5adad929558c742e75b6005d701ee56d81399f0203b5763cf",
   "annotation_review_status": "initial_single_pass",
   "canonical_report_evidence": false,
   "cases": [
