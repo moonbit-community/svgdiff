@@ -99,7 +99,6 @@ jobs:
               sha256sum -c SHA256SUMS
             fi
           )
-          mkdir -p _release/determinism
           cp "$archive" _release/
           python evaluation/determinism/validate.py \
             --cli "$bundle/${{ matrix.executable }}" \

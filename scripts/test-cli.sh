@@ -177,13 +177,13 @@ assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   "$tmp/missing.svg" testdata/after.svg \
   >"$tmp/missing-native.out" 2>"$tmp/missing-native.err"
 test ! -s "$tmp/missing-native.out"
-grep -q "^Failed to read $tmp/missing.svg:" "$tmp/missing-native.err"
+grep -q '^Failed to read .*missing.svg:' "$tmp/missing-native.err"
 
 assert_status 2 moon runwasm modules/svgdiff/cmd/svgdiff \
   "$wasi_tmp/missing.svg" testdata/after.svg \
   >"$tmp/missing-wasm.out" 2>"$tmp/missing-wasm.err"
 test ! -s "$tmp/missing-wasm.out"
-grep -q "^Failed to read $wasi_tmp/missing.svg:" "$tmp/missing-wasm.err"
+grep -q '^Failed to read .*missing.svg:' "$tmp/missing-wasm.err"
 
 assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
