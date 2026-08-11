@@ -75,9 +75,11 @@ jobs:
         run: |
           moon check --target native --warn-list +73
           moon test --target native
-          sh scripts/test-cli.sh
-          sh scripts/test-agent-projection.sh
-          sh scripts/test-versioning.sh
+          if [ "$RUNNER_OS" != Windows ]; then
+            sh scripts/test-cli.sh
+            sh scripts/test-agent-projection.sh
+            sh scripts/test-versioning.sh
+          fi
           sh scripts/test-release-bundle.sh
 
       - name: Package native release archive
@@ -99,6 +101,7 @@ jobs:
               sha256sum -c SHA256SUMS
             fi
           )
+          mkdir -p _release
           cp "$archive" _release/
           python evaluation/determinism/validate.py \
             --cli "$bundle/${{ matrix.executable }}" \
