@@ -24,9 +24,9 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | README.md | README.mbt.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt)
+    LICENSE | README.md | README.mbt.md | SKILL.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt)
       ;;
-    engine/* | cmd/cli/* | cmd/svgdiff_miniio/*)
+    engine/* | cmd/cli/* | cmd/svgdiff/*)
       case "$path" in
         *_test.mbt | *_wbtest.mbt)
           printf 'Registry package contains a test source: %s\n' "$path" >&2
@@ -52,7 +52,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE README.mbt.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt cmd/cli/moon.pkg cmd/cli/cli.mbt cmd/svgdiff_miniio/moon.pkg cmd/svgdiff_miniio/main.mbt; do
+for required in LICENSE README.mbt.md SKILL.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt cmd/cli/moon.pkg cmd/cli/cli.mbt cmd/svgdiff/moon.pkg cmd/svgdiff/main.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 
@@ -71,7 +71,7 @@ EOF
 cat >"$tmp/consumer/moon.mod" <<EOF
 name = "svgdiff-package-consumer"
 version = "0.0.0"
-preferred_target = "native"
+preferred_target = "wasm"
 
 import {
   "Milky2018/svgdiff@$version",

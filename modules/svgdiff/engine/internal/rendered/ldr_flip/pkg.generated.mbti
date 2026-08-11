@@ -28,4 +28,3 @@ pub(all) struct FlipLinearRgb {
 // Type aliases
 
 // Traits
-

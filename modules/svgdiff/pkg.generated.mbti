@@ -141,4 +141,3 @@ pub using @model {type TransformTranslationMagnitude}
 pub using @model {type VisualEvent}
 
 // Traits
-

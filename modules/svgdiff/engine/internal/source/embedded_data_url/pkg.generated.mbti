@@ -23,4 +23,3 @@ pub(all) enum EmbeddedRasterDataUrlResult {
 // Type aliases
 
 // Traits
-

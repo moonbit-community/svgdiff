@@ -159,19 +159,17 @@ test "CLI accepts one explicit stdin operand" {
 ///|
 test "program name does not change the CLI contract" {
   let native = @cli.parse(["svgdiff", "before.svg", "after.svg"])
-  let miniio = @cli.parse(["svgdiff_miniio", "before.svg", "after.svg"])
-  assert_eq(native.before_path, miniio.before_path)
-  assert_eq(native.after_path, miniio.after_path)
-  assert_eq(native.width, miniio.width)
-  assert_eq(native.height, miniio.height)
-  assert_eq(native.max_checkpoints, miniio.max_checkpoints)
+  let wasm = @cli.parse(["svgdiff.wasm", "before.svg", "after.svg"])
+  assert_eq(native.before_path, wasm.before_path)
+  assert_eq(native.after_path, wasm.after_path)
+  assert_eq(native.width, wasm.width)
+  assert_eq(native.height, wasm.height)
+  assert_eq(native.max_checkpoints, wasm.max_checkpoints)
 }
 
 ///|
 test "shared CLI comparison emits selected Agent JSON" {
-  let config = @cli.parse([
-    "svgdiff_miniio", "before.svg", "after.svg", "--agent-json",
-  ])
+  let config = @cli.parse(["svgdiff", "before.svg", "after.svg", "--agent-json"])
   let report = @cli.compare_sources(
     "<svg width='16' height='16'><rect x='1' y='1' width='8' height='8' fill='red'/></svg>",
     "<svg width='16' height='16'><rect x='1' y='1' width='8' height='8' fill='blue'/></svg>",

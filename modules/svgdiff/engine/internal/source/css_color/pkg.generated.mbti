@@ -32,4 +32,3 @@ pub fn SrgbaColor::signature(Self) -> String
 // Type aliases
 
 // Traits
-

@@ -100,4 +100,3 @@ pub(all) struct PerceptualFlipComputation {
 // Type aliases
 
 // Traits
-

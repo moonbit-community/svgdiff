@@ -40,4 +40,3 @@ pub fn unlocated_diagnostic(String, String, String, Array[String]) -> @model.Dia
 // Type aliases
 
 // Traits
-

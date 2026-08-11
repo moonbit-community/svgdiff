@@ -26,4 +26,3 @@ pub fn structural_alignment_subjects(@source.StructuralDocument) -> Array[@ir.St
 // Type aliases
 
 // Traits
-

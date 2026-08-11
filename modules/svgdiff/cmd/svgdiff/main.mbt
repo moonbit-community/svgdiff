@@ -25,7 +25,7 @@ async fn read_svg(path : String) -> String {
     }
   } else {
     @fs.read_file_to_string(path, encoding="utf8") catch {
-      error => raise IoError("Failed to read \{path}: \{error}")
+      error => raise IoError("Failed to read \{path}: \{Repr(error)}")
     }
   }
 }
@@ -38,7 +38,9 @@ fn read_resource_bundle(
   for resource in resources {
     let bytes = @fs.read_file_to_bytes(resource.path) catch {
       error =>
-        raise IoError("Failed to read resource \{resource.path}: \{error}")
+        raise IoError(
+          "Failed to read resource \{resource.path}: \{Repr(error)}",
+        )
     }
     entries.push({
       locator: resource.locator,
@@ -52,7 +54,7 @@ fn read_resource_bundle(
 ///|
 fn write_file(path : String, contents : String) -> Unit raise IoError {
   @fs.write_string_to_file(path, contents, encoding="utf8") catch {
-    error => raise IoError("Failed to write \{path}: \{error}")
+    error => raise IoError("Failed to write \{path}: \{Repr(error)}")
   }
 }
 
@@ -143,7 +145,7 @@ async fn run(args : ArrayView[String]) -> Int noraise {
 
 ///|
 async fn main {
-  let code = run(@sys.get_cli_args())
+  let code = run(@env.args())
   if code != 0 {
     @sys.exit(code)
   }

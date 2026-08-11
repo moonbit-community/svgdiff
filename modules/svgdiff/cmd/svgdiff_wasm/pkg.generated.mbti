@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/cmd/svgdiff_wasm"
+
+// Values
+pub fn abi_version() -> Int
+
+pub fn compare(Int) -> Int
+
+pub fn result_error_kind() -> Int
+
+pub fn result_len() -> Int
+
+pub fn result_required_len() -> Int
+
+pub fn transfer_capacity() -> Int
+
+pub fn transfer_ptr() -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

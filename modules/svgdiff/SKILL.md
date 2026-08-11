@@ -1,6 +1,6 @@
 ---
 name: svgdiff
-description: "Compare two deterministic static SVG files by visual semantics with the portable WASIp1 svgdiff CLI, producing compact Structured Report JSON for agents that cannot inspect images. Use when an agent must enumerate visual-semantic differences, magnitudes, conservative locations, possible causes, and coverage limitations."
+description: "Compare two deterministic static SVG files by visual semantics with the native/WASIp1 svgdiff CLI, producing compact Structured Report JSON for agents that cannot inspect images. Use when an agent must enumerate visual-semantic differences, magnitudes, conservative locations, possible causes, and coverage limitations."
 ---
 
 # svgdiff
@@ -11,13 +11,13 @@ From this repository, use the checked-in fixtures for a self-contained smoke
 test:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg --agent-json
+moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg --agent-json
 ```
 
 After module version `0.7.0` is published, run the pinned package directly:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.0 before.svg after.svg --agent-json
 ```
 
 The command writes canonical Structured Report schema `2.0` JSON by default;
@@ -29,14 +29,14 @@ To inspect the skill's own help through `moon runwasm`, separate the forwarded
 flag from the runner's flags:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --help
+moon runwasm modules/svgdiff/cmd/svgdiff -- --help
 ```
 
 Inspect the exact engine, schema, renderer, conformance, and policy identities
 before interpreting or retaining a report:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio -- --version
+moon runwasm modules/svgdiff/cmd/svgdiff -- --version
 ```
 
 Record this output alongside reports that will be persisted, compared, or
@@ -46,7 +46,7 @@ rendering-related implementation input.
 Useful explicit comparison inputs:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
+moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
   --width 256 \
   --height 256 \
   --max-checkpoints 1000000 \
@@ -57,7 +57,7 @@ Optional displayed-color evidence requires an opaque background. LDR-FLIP
 additionally requires pixels per degree:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio before.svg after.svg \
+moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
   --perceptual-background '#ffffff' \
   --flip-pixels-per-degree 67 \
   --agent-json

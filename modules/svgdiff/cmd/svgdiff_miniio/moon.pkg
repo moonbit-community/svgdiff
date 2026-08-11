@@ -1,9 +1,0 @@
-import {
-  "Milky2018/svgdiff",
-  "Milky2018/svgdiff/cmd/cli",
-  "moonbit-community/miniio",
-}
-
-supported_targets = "wasm"
-
-pkgtype(kind: "executable")

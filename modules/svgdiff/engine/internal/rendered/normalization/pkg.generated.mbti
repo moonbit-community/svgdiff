@@ -17,4 +17,3 @@ pub fn normalize_renderer_input_with_profile(String, @model.ComparisonProfile) -
 // Type aliases
 
 // Traits
-

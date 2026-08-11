@@ -50,4 +50,3 @@ pub fn filter_primitive_source_fact(String, @effects.FilterPrimitiveSource?) -> 
 // Type aliases
 
 // Traits
-

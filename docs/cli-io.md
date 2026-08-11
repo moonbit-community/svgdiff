@@ -6,7 +6,7 @@ Last verified: 2026-07-23
 
 ## Inputs
 
-Both `svgdiff` and `svgdiff_miniio` implement this contract and require two positional SVG operands. A path reads a UTF-8 file. `-` reads one complete UTF-8 SVG document from stdin. MiniIO paths must be visible through the WASI host's preopened directories.
+`svgdiff` implements this contract on native and WASIp1 targets and requires two positional SVG operands. A path reads a UTF-8 file. `-` reads one complete UTF-8 SVG document from stdin. WASIp1 paths must be visible through the host's preopened directories.
 
 | Invocation shape | Meaning |
 | --- | --- |

@@ -23,4 +23,3 @@ pub fn compare_with_resources(String, String, @model.ComparisonProfile, @resourc
 // Type aliases
 
 // Traits
-

@@ -32,4 +32,3 @@ pub fn SvgArcCenterParameters::tangent_angle_degrees(Self, Double) -> Double
 // Type aliases
 
 // Traits
-

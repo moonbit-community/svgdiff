@@ -99,20 +99,20 @@ generated `_site` directory is ignored and must not be edited directly.
 
 ## Agent WASM skill
 
-The [`modules/svgdiff/cmd/svgdiff_miniio`](modules/svgdiff/cmd/svgdiff_miniio/README.md) package exposes the
-same comparison engine as a portable WASIp1 CLI using MiniIO. It reads two
-guest-visible SVG files and supports the same arguments, outputs, explicit
-resources, and optional deterministic checkpoint budget as the native CLI.
+The [`modules/svgdiff/cmd/svgdiff`](modules/svgdiff/cmd/svgdiff) package is the
+shared native and portable WASIp1 CLI. It reads two guest-visible SVG files and
+supports the same arguments, outputs, explicit resources, and optional
+deterministic checkpoint budget on both targets.
 After version `0.7.0` is published, run the package directly from Mooncakes:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff_miniio@0.7.0 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.0 before.svg after.svg --agent-json
 ```
 
 From a source checkout, verify it with the repository fixtures:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff_miniio testdata/before.svg testdata/after.svg --agent-json
+moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg --agent-json
 ```
 
 The module-level [`SKILL.md`](modules/svgdiff/SKILL.md) defines the agent
@@ -164,7 +164,7 @@ The root package is the stable product seam. Its implementation lives in the for
 
 Embedding agents may construct a `ComparisonControl` with a cancellation predicate and optional deterministic checkpoint budget. `compare_with_control` raises typed `Cancelled` or `CheckpointBudgetExceeded` control flow and returns no report on interruption; it never presents truncated evidence as a failed analysis. The budget counts engine checkpoints rather than elapsed time, so the same input and engine version exhaust it independently of machine speed. Checks remain cooperative, so one synchronous dependency call may finish before the next checkpoint. The ordinary `compare` and both CLIs remain unlimited unless `--max-checkpoints` is supplied.
 
-The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. Filesystem, stdin, stdout, and process handling remain outside the engine in the native `modules/svgdiff/cmd/svgdiff` and WASIp1 `modules/svgdiff/cmd/svgdiff_miniio` adapters. The wasm-only [`modules/svgdiff/cmd/svgdiff_wasm`](modules/svgdiff/cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
+The root library and engine support MoonBit's wasm, wasm-gc, JavaScript, and native targets. Filesystem, stdin, stdout, and process handling remain outside the engine in the shared native/WASIp1 `modules/svgdiff/cmd/svgdiff` CLI. The wasm-only [`modules/svgdiff/cmd/svgdiff_wasm`](modules/svgdiff/cmd/svgdiff_wasm/README.md) package exposes the in-memory JSON transaction used by the browser product; it accepts SVG strings and explicit comparison-profile inputs and returns Structured Report JSON without paths, files, network access, or ambient browser state.
 
 ### Compare SVG sources
 

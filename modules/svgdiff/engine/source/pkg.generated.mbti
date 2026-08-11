@@ -50,4 +50,3 @@ pub fn SourceAuditReport::to_json_string(Self) -> String
 // Type aliases
 
 // Traits
-

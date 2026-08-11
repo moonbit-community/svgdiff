@@ -35,7 +35,7 @@ async fn fail(message : String) -> Unit {
 
 ///|
 async fn main {
-  let args = @sys.get_cli_args()
+  let args = @env.args()
   if args.length() != 4 {
     fail(usage())
     return

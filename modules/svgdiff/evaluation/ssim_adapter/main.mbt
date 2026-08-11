@@ -76,7 +76,7 @@ fn render_document(source : String, width : Int, height : Int) -> @svg.Image? {
 
 ///|
 async fn main {
-  let args = @sys.get_cli_args()
+  let args = @env.args()
   if args.length() != 5 {
     fail(usage())
     return

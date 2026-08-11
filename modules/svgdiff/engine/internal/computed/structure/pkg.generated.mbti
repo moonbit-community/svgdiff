@@ -45,4 +45,3 @@ pub fn use_rendered_diagnostic(String, String, String, @model.ReportSourceSpan) 
 // Type aliases
 
 // Traits
-
