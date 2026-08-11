@@ -11,13 +11,31 @@
     "status": "computed",
     "changed_pixels": 1,
     "changed_fraction": 0.00390625,
-    "linear_rgba_rmse": 0.05412658773652741
+    "linear_rgba_rmse": 0.05412658773652741,
+    "isolated_subject": {
+      "painted_coverage_difference": {
+        "before_css_px2": 1,
+        "after_css_px2": 1,
+        "absolute_difference_css_px2": 0,
+        "union_css_px2": 1,
+        "fraction": 0
+      }
+    }
   },
   "dominant_event_measurements": {
     "status": "computed",
     "changed_pixels": 64,
     "changed_fraction": 0.25,
-    "linear_rgba_rmse": 0.3535533905932738
+    "linear_rgba_rmse": 0.3535533905932738,
+    "isolated_subject": {
+      "painted_coverage_difference": {
+        "before_css_px2": 64,
+        "after_css_px2": 64,
+        "absolute_difference_css_px2": 0,
+        "union_css_px2": 64,
+        "fraction": 0
+      }
+    }
   },
   "full_inventory_event_count": 2,
   "full_inventory_atomic_difference_count": 2,
