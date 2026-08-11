@@ -74,18 +74,20 @@ fi
 
 dependency_manifest="$root/release/dependencies.v1.json"
 test "$(jq -r '.schema_version' "$dependency_manifest")" = "svgdiff-release-dependencies/1"
-dependency_tree=$(moon -C modules/svgdiff tree | tr -d '\000\r')
-jq -r '.dependencies[] | "\(.name)@\(.version)"' "$dependency_manifest" |
-  while IFS= read -r dependency; do
-    if ! printf '%s\n' "$dependency_tree" | grep -F "$dependency" >/dev/null; then
-      printf 'Resolved dependency is missing or changed: %s\n' "$dependency" >&2
-      exit 1
-    fi
-  done
 test "$(jq '[.dependencies[].name] | unique | length' "$dependency_manifest")" = "$(jq '.dependencies | length' "$dependency_manifest")"
-tree_dependency_count=$(printf '%s\n' "$dependency_tree" | grep -Eo '[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9][^ )]*' | grep -v '^Milky2018/svgdiff@' | sort -u | wc -l | tr -d ' ')
-test "$tree_dependency_count" = "$(jq '.dependencies | length' "$dependency_manifest")"
 test "$(jq '[.dependencies[] | select(.license != "Apache-2.0")] | length' "$dependency_manifest")" = 0
+if [ "${RUNNER_OS-}" != Windows ]; then
+  dependency_tree=$(moon -C modules/svgdiff tree)
+  jq -r '.dependencies[] | "\(.name)@\(.version)"' "$dependency_manifest" |
+    while IFS= read -r dependency; do
+      if ! printf '%s\n' "$dependency_tree" | grep -F "$dependency" >/dev/null; then
+        printf 'Resolved dependency is missing or changed: %s\n' "$dependency" >&2
+        exit 1
+      fi
+    done
+  tree_dependency_count=$(printf '%s\n' "$dependency_tree" | grep -Eo '[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9][^ )]*' | grep -v '^Milky2018/svgdiff@' | sort -u | wc -l | tr -d ' ')
+  test "$tree_dependency_count" = "$(jq '.dependencies | length' "$dependency_manifest")"
+fi
 
 module_version=$(awk -F '"' '$1 ~ /^version = / { print $2; exit }' modules/svgdiff/moon.mod)
 case "${RUNNER_OS-}" in
