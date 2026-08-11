@@ -114,9 +114,9 @@ if [ "${RUNNER_OS-}" != Windows ]; then
     done
 fi
 
-"$bundle/$executable_name" --version | grep -Fx "svgdiff $module_version" >/dev/null
-"$bundle/$executable_name" --version | grep -Fx "agent-projection: svgdiff-agent-projection/1" >/dev/null
-"$bundle/$executable_name" --version | grep -Fx "impact-policy: event_rendered_pareto/v1" >/dev/null
+"$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "svgdiff $module_version" >/dev/null
+"$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "agent-projection: svgdiff-agent-projection/1" >/dev/null
+"$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "impact-policy: event_rendered_pareto/v1" >/dev/null
 "$bundle/$executable_name" testdata/before.svg testdata/after.svg \
   >"$tmp/bundle-report.json"
 "$bundle/$executable_name" testdata/before.svg testdata/after.svg \

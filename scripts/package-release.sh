@@ -162,7 +162,7 @@ install -m 0644 "$root/LICENSE" "$bundle/LICENSE"
 artifact_sha256=$(sha256_files "$bundle/$executable_name" | awk '{ print $1 }')
 source_revision=$(git rev-parse HEAD)
 moon_version=$(moon version | sed -n '1p')
-version_output=$("$bundle/$executable_name" --version)
+version_output=$("$bundle/$executable_name" --version | tr -d '\r')
 schema_version=$(printf '%s\n' "$version_output" | sed -n 's/^schema: //p')
 agent_projection=$(printf '%s\n' "$version_output" | sed -n 's/^agent-projection: //p')
 renderer_id=$(printf '%s\n' "$version_output" | sed -n 's/^renderer: //p')
