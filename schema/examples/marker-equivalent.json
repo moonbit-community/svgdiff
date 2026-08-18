@@ -69,13 +69,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "scope": "comparison",
-            "limitation_ids": [
-              "diagnostic:unsupported-visual-subject:path",
-              "diagnostic:marker-content-semantics-unsupported:edge",
-              "diagnostic:renderer-marker-raster-unproven:edge",
-              "diagnostic:renderer-stroke-outline-raster-unproven:edge"
-            ]
+            "scope": "comparison"
           }
         }
       ]

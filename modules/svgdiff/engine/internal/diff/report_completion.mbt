@@ -172,6 +172,11 @@ fn finish_report(
     report, before_svg, after_svg, rendered_alignments,
   )
   comparison_guard.checkpoint()
+  if precompletion_report_exceeds_byte_limit(report, limits) {
+    return failed_resource_report(report.profile, [
+      resource_limit_diagnostic("report_bytes", None, None),
+    ])
+  }
   let report = match
     attach_difference_regions(
       report, before_svg, after_svg, rendered_alignments, resources, limits, comparison_guard,
@@ -183,6 +188,11 @@ fn finish_report(
       ])
   }
   comparison_guard.checkpoint()
+  if precompletion_report_exceeds_byte_limit(report, limits) {
+    return failed_resource_report(report.profile, [
+      resource_limit_diagnostic("report_bytes", None, None),
+    ])
+  }
   let report = attach_cause_envelopes(report)
   comparison_guard.checkpoint()
   let report = attach_difference_magnitudes(report, before_svg, after_svg)

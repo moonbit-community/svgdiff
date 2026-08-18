@@ -141,11 +141,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "scope": "comparison",
-            "limitation_ids": [
-              "diagnostic:renderer-curved-shape-raster-unproven:dot",
-              "diagnostic:renderer-gradient-raster-unproven:dot:fill"
-            ]
+            "scope": "comparison"
           }
         }
       ]

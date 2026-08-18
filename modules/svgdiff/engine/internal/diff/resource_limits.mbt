@@ -225,14 +225,86 @@ fn total_region_count(report : StructuredReport) -> Int {
 }
 
 ///|
+fn json_serialized_bytes(value : Json, indent : Int, depth : Int) -> Int {
+  match value {
+    Null => 4
+    True => 4
+    False => 5
+    String(_) | Number(_, ..) => utf8_byte_length(value.stringify())
+    Array(values) => {
+      if values.is_empty() {
+        return 2
+      }
+      if indent == 0 {
+        let mut bytes = values.length() + 1
+        for item in values {
+          bytes += json_serialized_bytes(item, indent, depth + 1)
+        }
+        return bytes
+      }
+      let mut bytes = 2
+      for index, item in values {
+        bytes += (depth + 1) * indent
+        bytes += json_serialized_bytes(item, indent, depth + 1)
+        if index + 1 < values.length() {
+          bytes += 1
+        }
+        bytes += 1
+      }
+      bytes + depth * indent + 1
+    }
+    Object(fields) => {
+      if fields.is_empty() {
+        return 2
+      }
+      if indent == 0 {
+        let mut bytes = fields.length() + 1
+        for key, item in fields {
+          bytes += utf8_byte_length(Json::string(key).stringify()) + 1
+          bytes += json_serialized_bytes(item, indent, depth + 1)
+        }
+        return bytes
+      }
+      let mut bytes = 2
+      let mut index = 0
+      for key, item in fields {
+        bytes += (depth + 1) * indent
+        bytes += utf8_byte_length(Json::string(key).stringify()) + 2
+        bytes += json_serialized_bytes(item, indent, depth + 1)
+        if index + 1 < fields.length() {
+          bytes += 1
+        }
+        bytes += 1
+        index += 1
+      }
+      bytes + depth * indent + 1
+    }
+  }
+}
+
+///|
+/// Count both public JSON representations without allocating either complete
+/// serialized String. String and number leaves remain bounded allocations.
 fn serialized_report_bytes(report : StructuredReport) -> Int {
-  let compact = utf8_byte_length(report.to_compact_json_string())
-  let indented = utf8_byte_length(report.to_json_string())
+  let json = ToJson::to_json(report)
+  let compact = json_serialized_bytes(json, 0, 0)
+  let indented = json_serialized_bytes(json, 2, 0)
   if compact > indented {
     compact
   } else {
     indented
   }
+}
+
+///|
+/// The remaining completion stages only add serialized evidence, except that
+/// analysis_status can shorten from `complete` to `failed` by two bytes.
+fn precompletion_report_exceeds_byte_limit(
+  report : StructuredReport,
+  limits : ResourceLimits,
+) -> Bool {
+  let bytes = serialized_report_bytes(report)
+  bytes > 2 && bytes - 2 > limits.max_report_bytes
 }
 
 ///|

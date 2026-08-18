@@ -103,12 +103,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "scope": "comparison",
-            "limitation_ids": [
-              "diagnostic:renderer-point-shape-raster-unproven:star",
-              "diagnostic:renderer-stroke-outline-raster-unproven:star",
-              "diagnostic:renderer-stroke-join-raster-unproven:star"
-            ]
+            "scope": "comparison"
           }
         }
       ]

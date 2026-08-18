@@ -63,7 +63,11 @@ contribution evidence.
 `possible_causes.scope = "event_region"` carries explicit
 `candidate_difference_ids`. `scope = "comparison"` means every Atomic
 Difference in the report remains a candidate and deliberately omits the
-redundant ID array. When `possible_causes.guarantee` is
+redundant ID array. A comparison-scoped envelope whose Diagnostic IDs equal
+the complete top-level `limitations` inventory also omits that redundant ID
+array; its `coverage` and `guarantee` require consumers to inspect the canonical
+top-level inventory. A smaller event-local Diagnostic subset remains explicit
+as `limitation_ids`. When `possible_causes.guarantee` is
 `sound_overapproximation`, the represented candidates may include false
 positives but contain every actual changed cause within complete analysis
 coverage. `not_established` makes no such claim.

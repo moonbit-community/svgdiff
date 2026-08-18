@@ -342,16 +342,12 @@ test "text alignment owns source differences without claiming font evidence" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  guard report.subject_alignments[0] is alignment else {
-    fail("expected text alignment")
-  }
+  let alignment = report.subject_alignments[0]
   assert_eq(alignment.before[0].kind, "text")
   assert_eq(alignment.basis, "structural_authored_id")
   assert_eq(alignment.evidence.ambiguity, "unique")
   assert_true(alignment.evidence.confidence is None)
-  guard report.atomic_differences[0] is difference else {
-    fail("expected text difference")
-  }
+  let difference = report.atomic_differences[0]
   assert_eq(difference.subject_alignment_id, Some(alignment.id))
   assert_eq(difference.computed_relation.status, "indeterminate")
   assert_eq(report.analysis_status, "partial")

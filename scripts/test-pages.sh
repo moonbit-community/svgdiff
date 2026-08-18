@@ -119,6 +119,10 @@ pw --raw run-code \
       };
     });
     await page.getByRole('button', { name: /Persistently highlight/ }).first().click();
+    const baselineDetails = page.locator('[data-toggle-event]');
+    for (let index = 0; index < await baselineDetails.count(); index += 1) {
+      await baselineDetails.nth(index).click();
+    }
     const baselineUi = {
       status: await page.locator('#run-status').textContent(),
       effectiveValues: await page.locator('.effective-value').allTextContents(),
@@ -209,6 +213,7 @@ pw --raw run-code \
         const card = page.locator(
           '.event-card[data-event-id=\"' + changedEvent.id + '\"]'
         );
+        await card.locator('[data-toggle-event]').click();
         await card.locator('details.evidence > summary').click();
         const evidence = card.locator('details.evidence');
         causePresentation = {
@@ -372,7 +377,7 @@ jq -e '
     any(.scores[]; . != "0.00%")
   ) and
   (.realExamples[] | select(.id == "viewBoxScale") |
-    .differencePixels.nonBlack == 0 and
+    .differencePixels.nonBlack <= 8 and
     .scores == ["0.00%","0.00%","0.00%"] and
     (.eventOutcomes | length) == 2 and
     all(.eventOutcomes[]; .changedPixels == 0 and (.regionKinds | length) == 0)

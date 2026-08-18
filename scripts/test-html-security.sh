@@ -58,6 +58,24 @@ printf '%s\n' \
 "$cli" "$tmp/tied-before.svg" "$tmp/tied-after.svg" \
   --agent-json --output "$tmp/tied.json" --html "$tmp/tied.html"
 
+printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">' >"$tmp/many-before.svg"
+printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">' >"$tmp/many-after.svg"
+index=0
+while [ "$index" -lt 40 ]; do
+  x=$((index % 8 * 8 + 1))
+  y=$((index / 8 * 8 + 1))
+  printf '<rect id="item-%s" x="%s" y="%s" width="4" height="4" fill="red"/>\n' \
+    "$index" "$x" "$y" >>"$tmp/many-before.svg"
+  printf '<rect id="item-%s" x="%s" y="%s" width="4" height="4" fill="blue"/>\n' \
+    "$index" "$x" "$y" >>"$tmp/many-after.svg"
+  index=$((index + 1))
+done
+printf '%s\n' '</svg>' >>"$tmp/many-before.svg"
+printf '%s\n' '</svg>' >>"$tmp/many-after.svg"
+"$cli" "$tmp/many-before.svg" "$tmp/many-after.svg" \
+  --width 64 --height 64 --agent-json \
+  --output "$tmp/many.json" --html "$tmp/many.html"
+
 printf '%s\n' \
   "<svg width='16' height='16'><rect id='large' x='0' y='0' width='8' height='8' fill='#ff0000'/><rect id='small' x='12' y='12' width='2' height='2' fill='#ff0000'/></svg>" \
   >"$tmp/incomparable-before.svg"
@@ -102,6 +120,8 @@ interactive_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1
 interactive_url_json=$(printf '%s' "$interactive_url" | jq -Rs .)
 tied_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/tied.html")
 tied_url_json=$(printf '%s' "$tied_url" | jq -Rs .)
+many_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/many.html")
+many_url_json=$(printf '%s' "$many_url" | jq -Rs .)
 incomparable_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/incomparable.html")
 incomparable_url_json=$(printf '%s' "$incomparable_url" | jq -Rs .)
 partial_url=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$tmp/partial.html")
@@ -183,9 +203,11 @@ pw --raw run-code \
         changedPixel: [...context.getImageData(4, 4, 1, 1).data],
       };
     });
-    const diffCount = await page.locator('[data-diff-id]').count();
     const eventCount = await page.locator('.event-card[data-event-id]').count();
     const firstEvent = page.locator('.event-card[data-event-id]').first();
+    const eventDetailsInitiallyHidden = await firstEvent.locator('.event-details').isHidden();
+    await firstEvent.locator('[data-toggle-event]').click();
+    const diffCount = await page.locator('[data-diff-id]').count();
     const firstDiff = firstEvent.locator('[data-diff-id]').first();
     const firstEventId = await firstEvent.getAttribute('data-event-id');
     const firstDiffId = await firstDiff.getAttribute('data-diff-id');
@@ -243,7 +265,7 @@ pw --raw run-code \
     const evidence = {
       atomicOpen: await firstDiff.locator('details.atomic-evidence').evaluate(node => node.open),
       eventOpen: await firstEvent.locator('details.evidence').evaluate(node => node.open),
-      hasMagnitude: atomicEvidenceText.includes('raster_changed_pixel_fraction'),
+      hasMagnitude: eventEvidenceText.includes('changed_pixels'),
       hasComputedReason: atomicEvidenceText.includes('computed_reason'),
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
@@ -279,6 +301,7 @@ pw --raw run-code \
       active: await firstEvent.evaluate(node => node.classList.contains('active')),
       overlayCount: await page.locator('.overlay .region').count(),
     };
+    await firstEvent.locator('[data-toggle-event]').click();
     const accessible = {
       checkboxLabel: await checkbox.getAttribute('aria-label'),
       eventCheckboxLabel: await eventCheckbox.getAttribute('aria-label'),
@@ -298,7 +321,30 @@ pw --raw run-code \
       filename: download.suggestedFilename(),
     };
     await page.reload({ waitUntil: 'load' });
+    await page.locator('[data-toggle-event]').first().click();
     const sessionReset = await page.locator('[data-atomic-check]').first().isChecked();
+    await page.goto($tied_url_json, { waitUntil: 'load' });
+    const tiedPoint = page.locator('.impact-point').first();
+    const tiedCluster = {
+      pointCount: await page.locator('.impact-point').count(),
+      eventCount: Number(await tiedPoint.getAttribute('data-event-count')),
+      label: await tiedPoint.getAttribute('aria-label'),
+    };
+    await tiedPoint.click();
+    tiedCluster.firstSelection = await page.locator('#selection-status').textContent();
+    await tiedPoint.click();
+    tiedCluster.secondSelection = await page.locator('#selection-status').textContent();
+    await page.goto($many_url_json, { waitUntil: 'load' });
+    const manyReport = JSON.parse(await page.locator('#report-data').inputValue());
+    const incrementalEvents = {
+      reportEvents: manyReport.events.length,
+      initialCards: await page.locator('.event-card').count(),
+      initialLoadButtons: await page.locator('.load-more').count(),
+      initialLoadText: await page.locator('.load-more').first().textContent(),
+    };
+    await page.locator('.load-more').first().click();
+    incrementalEvents.finalCards = await page.locator('.event-card').count();
+    incrementalEvents.finalLoadButtons = await page.locator('.load-more').count();
     const states = {};
     for (const [name, url] of Object.entries({
       tied: $tied_url_json,
@@ -310,6 +356,10 @@ pw --raw run-code \
       failed: $failed_url_json,
     })) {
       await page.goto(url, { waitUntil: 'load' });
+      const detailButtons = page.locator('[data-toggle-event]');
+      for (let index = 0; index < await detailButtons.count(); index += 1) {
+        await detailButtons.nth(index).click();
+      }
       states[name] = {
         overview: await page.locator('#overview').textContent(),
         diffs: await page.locator('#diffs').textContent(),
@@ -324,6 +374,7 @@ pw --raw run-code \
       firstDiffId,
       diffCount,
       eventCount,
+      eventDetailsInitiallyHidden,
       reportDiffCount: embedded.difference_groups.reduce((count, group) => count + group.items.length, 0),
       reportEventCount: embedded.events.length,
       canvasScores,
@@ -348,6 +399,8 @@ pw --raw run-code \
       accessible,
       rawActions,
       sessionReset,
+      tiedCluster,
+      incrementalEvents,
       states,
     };
   }" >"$tmp/browser-interaction.json" 2>>"$log"
@@ -356,6 +409,7 @@ jq -e '
   . as $result |
   .diffCount == .reportDiffCount and
   .eventCount == .reportEventCount and
+  .eventDetailsInitiallyHidden == true and
   .reportDiffCount == 1 and
   .canvasScores == [
     {"label": "Changed area", "value": "25.00%"},
@@ -418,12 +472,24 @@ jq -e '
   .accessible.downloadLabel == "Download JSON" and
   .rawActions == {"open": true, "filename": "svgdiff-report.json"} and
   .sessionReset == false and
+  .tiedCluster.pointCount == 1 and
+  .tiedCluster.eventCount == 2 and
+  (.tiedCluster.label | contains("repeated activation cycles")) and
+  (.tiedCluster.firstSelection != .tiedCluster.secondSelection) and
+  .incrementalEvents == {
+    "reportEvents": 40,
+    "initialCards": 24,
+    "initialLoadButtons": 1,
+    "initialLoadText": "Load 16 more · 16 remaining",
+    "finalCards": 40,
+    "finalLoadButtons": 0
+  } and
   (.states.tied.overview | contains("does not invent a universal severity ranking")) and
   (.states.incomparable.overview | contains("does not invent a universal severity ranking")) and
   .states.incomparable.points == 2 and
   (.states.partial.overview | contains("Analysis is partial")) and
   (.states.equivalent.diffs | contains("red → #ff0000")) and
-  (.states.equivalent.diffs | contains("Canvas: 0 changed fraction")) and
+  (.states.equivalent.diffs | contains("Canvas Response0 pixels (0)")) and
   (.states.subtle.diffs | contains("1.0 → 0.99999")) and
   (.states.subtle.diffs | contains("Parameter: ≈1.000e-5 CSS px")) and
   (.states.empty.diffs | contains("No Atomic Differences")) and

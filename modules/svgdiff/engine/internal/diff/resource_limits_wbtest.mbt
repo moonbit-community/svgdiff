@@ -405,6 +405,13 @@ test "report byte limit covers both built-in JSON serializations" {
     default_resource_limits(),
   )
   let exact_bytes = serialized_report_bytes(baseline)
+  assert_eq(
+    exact_bytes,
+    Int::max(
+      utf8_byte_length(baseline.to_compact_json_string()),
+      utf8_byte_length(baseline.to_json_string()),
+    ),
+  )
   assert_not_resource_failure(
     compare_with_resource_limits(
       source,

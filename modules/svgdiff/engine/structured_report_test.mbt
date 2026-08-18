@@ -378,6 +378,33 @@ test "structured report serializes the concise agent-facing result as JSON" {
 }
 
 ///|
+test "comparison-wide Cause Envelopes do not repeat every limitation ID" {
+  let report = @engine.compare(
+    "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='red' class='unresolved'/></svg>",
+    "<svg width='16' height='16'><circle cx='8' cy='8' r='3' fill='blue' class='unresolved'/></svg>",
+    @engine.ComparisonProfile::v1_default(),
+  )
+  guard @json.parse(report.to_json_string()) is Object(root) else {
+    fail("report must be a JSON object")
+  }
+  guard root["events"] is Array([Object(event), ..]) else {
+    fail("partial text report must contain one Event")
+  }
+  guard event["regions"] is Array([Object(region), ..]) else {
+    fail("partial text Event must contain one Region")
+  }
+  guard region["possible_causes"] is Object(causes) else {
+    fail("Region must contain a Cause Envelope")
+  }
+  assert_eq(causes["scope"], "comparison")
+  assert_eq(causes["coverage"], "partial")
+  assert_true(!causes.contains("limitation_ids"))
+  guard root["limitations"] is Array([_, ..]) else {
+    fail("canonical top-level limitation inventory must remain present")
+  }
+}
+
+///|
 test "report omits unavailable values but retains measured zero" {
   let magnitude_report = @engine.compare(
     rect_svg("red"),

@@ -164,7 +164,7 @@ test "root package exposes explicit resource bundles without implicit loading" {
   let entry : @svgdiff.ResourceBundleEntry = {
     locator: "asset.png",
     media_type: "image/png",
-    bytes: Bytes::default(),
+    bytes: Default::default(),
   }
   let invalid = @svgdiff.compare_with_resources(
     source,
@@ -616,6 +616,12 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("(value*100).toFixed(2)") is Some(_))
   assert_true(html.find("Not measured") is Some(_))
   assert_true(html.find("Visual Events") is Some(_))
+  assert_true(html.find("EVENT_BATCH_SIZE=24") is Some(_))
+  assert_true(html.find("Load ${Math.min(EVENT_BATCH_SIZE") is Some(_))
+  assert_true(html.find("populateEventDetails") is Some(_))
+  assert_true(html.find("Show Atomic Differences and evidence") is Some(_))
+  assert_true(html.find("Nearby points are clustered") is Some(_))
+  assert_true(html.find("dataset.eventCount") is Some(_))
   assert_true(html.find("Same effective value") is Some(_))
   assert_true(html.find("Different effective value") is Some(_))
   assert_true(html.find("Effective value unknown") is Some(_))

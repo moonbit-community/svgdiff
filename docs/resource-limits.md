@@ -2,7 +2,7 @@
 
 Status: current module `0.7.1` and schema `2.0` contract
 
-Last verified: 2026-07-16
+Last verified: 2026-08-18
 
 Every production comparison uses the same fixed safety budgets. The public API does not expose a configurable limits record: changing these defaults is a versioned behavior change that must be reviewed against the compatibility contract and adversarial corpus.
 
@@ -55,7 +55,7 @@ Normalized segment sequence alignment uses at most 65,536 dynamic-programming ce
 
 ## Failure semantics
 
-The engine checks raster dimensions before rendering, input bytes before parsing, XML structure and local-reference expansion while consuming bounded event streams, embedded data-URL and decoded-file bytes before image decoding, intrinsic dimensions and pixels before normalized RGBA8 allocation, cumulative image pixels while scanning each source, PNG decompression against its exact validated scanline length, regions while extracting and attaching them, and report bytes at the serialization boundary. The exact inclusive boundary is accepted; the first unit beyond it is rejected.
+The engine checks raster dimensions before rendering, input bytes before parsing, XML structure and local-reference expansion while consuming bounded event streams, embedded data-URL and decoded-file bytes before image decoding, intrinsic dimensions and pixels before normalized RGBA8 allocation, cumulative image pixels while scanning each source, PNG decompression against its exact validated scanline length, and regions while extracting and attaching them. It counts the exact UTF-8 size of each canonical JSON tree without allocating either complete serialized String. Safe lower-bound checks before and after Region attachment reject reports that already cannot fit; the final exact check covers evidence added by later completion stages. The exact inclusive boundary is accepted; the first unit beyond it is rejected.
 
 An exceeded ordinary budget in the production table, including the materialized reference-graph edge budget, returns a small schema-valid report with:
 
@@ -72,9 +72,9 @@ Malformed XML remains `svg_parse_failed`, not a resource failure, unless an earl
 
 ## Boundary and non-goals
 
-The region budget stops region extraction and event attachment at the first excess, so it bounds retained region work. The report-byte budget checks completed canonical serializations; it bounds default and `--agent-json` output but does not claim to cap the transient memory needed to construct that serialization. The lossless Agent projection is derived only from an already bounded report. Its total JSONL may add one small envelope per bounded array item and is not a third 32 MiB report-byte measurement; each individual record contains at most one canonical item plus fixed metadata. The CLI currently reads each selected file or stdin stream into a String before the engine counts it, so the input budget protects parsing and later stages rather than initial file-read allocation.
+The region budget stops region extraction and event attachment at the first excess, so it bounds retained region work. The report-byte budget bounds default and `--agent-json` output and no longer allocates both full serializations merely to measure them. It is not a general peak-memory limit: the typed comparison model, parser, renderer, and an accepted output serialization still require memory. The lossless Agent projection is derived only from an already bounded report. Its total JSONL may add one small envelope per bounded array item and is not a third 32 MiB report-byte measurement; each individual record contains at most one canonical item plus fixed metadata. The CLI currently reads each selected file or stdin stream into a String before the engine counts it, so the input budget protects parsing and later stages rather than initial file-read allocation.
 
-The public [`compare_with_control`](library-api.md) operation adds cooperative cancellation and a deterministic engine-checkpoint budget around these fixed resource limits. Interruption returns no report and does not replace a resource-limit Diagnostic. It cannot preempt one synchronous dependency parse or render call, and neither executable entry exposes it. Streaming input admission, peak-memory enforcement, hard preemptive deadlines, and configurable resource-limit policies remain future work. The generated HTML includes both bounded input sources in addition to report JSON and therefore has no separate report-byte identity.
+The public [`compare_with_control`](library-api.md) operation adds cooperative cancellation and a deterministic engine-checkpoint budget around these fixed resource limits. Interruption returns no report and does not replace a resource-limit Diagnostic. It cannot preempt one synchronous dependency parse or render call. The `svgdiff` CLI exposes the deterministic budget as `--max-checkpoints`; omitting it remains unlimited. Streaming input admission, peak-memory enforcement, hard preemptive deadlines, and configurable resource-limit policies remain future work. The generated HTML includes both bounded input sources in addition to report JSON and therefore has no separate report-byte identity.
 
 No current limit authorizes persistent cache storage or lookup because the product has no persistent cache. A future exact-result cache must independently cap key manifests, entry bytes, total storage, parsing, lookup, atomic publication, and eviction work. It must still include the comparison's effective deterministic limits in the key and validate a cached report against the active report-byte limit; an oversized, corrupt, or unknown entry is a miss, not a truncated report.
 

@@ -432,7 +432,11 @@ fn compact_region(report : StructuredReport, region : DifferenceRegion) -> Json 
       region.cause_envelope.candidate_changed_fact_ids,
     ).to_json()
   }
-  if !region.cause_envelope.diagnostic_ids.is_empty() {
+  let comparison_limitation_ids = [
+    for diagnostic in report.diagnostics => diagnostic.id
+  ]
+  if !region.cause_envelope.diagnostic_ids.is_empty() &&
+    region.cause_envelope.diagnostic_ids != comparison_limitation_ids {
     cause["limitation_ids"] = region.cause_envelope.diagnostic_ids.to_json()
   }
   {

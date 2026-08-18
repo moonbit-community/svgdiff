@@ -89,11 +89,7 @@
           "possible_causes": {
             "guarantee": "not_established",
             "coverage": "partial",
-            "scope": "comparison",
-            "limitation_ids": [
-              "diagnostic:renderer_embedded_raster_unavailable:before:0",
-              "diagnostic:renderer_embedded_raster_unavailable:after:0"
-            ]
+            "scope": "comparison"
           }
         }
       ]
