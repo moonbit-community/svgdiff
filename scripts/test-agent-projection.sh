@@ -73,7 +73,7 @@ grep -q '^error: conflicting arguments: agent-json and agent-projection$' \
   "$tmp/conflict.err"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^agent-projection: svgdiff-agent-projection/1$' "$tmp/version.txt"
+grep -q '^agent-projection: svgdiff-agent-projection/2$' "$tmp/version.txt"
 
 python3 evaluation/agent-projection/negative_controls.py \
   --validator evaluation/agent-projection/validate.py \

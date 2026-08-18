@@ -65,6 +65,7 @@ jobs:
       - name: Validate Schema and compatibility
         run: |
           sh scripts/test-schema-examples.sh
+          sh scripts/test-visual-scene.sh
           sh scripts/test-compatibility.sh
 
       - name: Validate determinism bundle aggregation

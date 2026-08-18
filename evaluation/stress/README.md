@@ -1,8 +1,8 @@
 # Stress Cases
 
 These fixtures exercise valid comparisons that are intentionally too expensive
-or too large for the routine evaluation corpus. They are manual diagnostic
-inputs, not CI gates or normative output snapshots.
+or too large for the routine evaluation corpus. Their full report cardinality
+is diagnostic, while narrowly defined semantic conclusions can be CI gates.
 
 ## Banking domain cross-generator rewrite
 
@@ -19,6 +19,14 @@ Use this case to inspect:
 - Cause Envelope and Diagnostic deduplication;
 - report-size and memory-limit behavior; and
 - report-inspector usability with hundreds of differences.
+
+The object-graph acceptance gate requires 9 corresponding entity objects, 6
+preserved relation edges, preserved semantic content, no object insertion or
+deletion, and changes limited to layout, effective style, and representation:
+
+```sh
+sh scripts/test-visual-scene.sh
+```
 
 Run a deliberately coarse diagnostic comparison with:
 

@@ -1,19 +1,21 @@
 # Concise Agent JSON
 
-Status: current schema `2.0` serialization contract
+Status: current schema `3.0` serialization contract
 
-Last verified: 2026-07-23
+Last verified: 2026-08-18
 
 `svgdiff before.svg after.svg` emits an indented Structured Report. Adding
 `--agent-json` removes formatting whitespace but produces the same JSON value.
 
-The formal report has seven top-level fields:
+The formal report has eight top-level fields:
 
 - `schema_version` and `analysis_status` establish the contract and whether an
   equality conclusion is allowed;
 - `comparison` records only caller-relevant comparison inputs such as the
   viewport and requested perceptual conditions;
 - `canvas` records whole-canvas measurements once;
+- `scene` records aligned Visual Objects and relations, six orthogonal scene
+  conclusions, and coherent scene-level change events;
 - `difference_groups` contains every Atomic Difference, grouped by visual
   domain and kept in the engine's domain-specific magnitude order;
 - `events` links differences to rendered outcomes, localization, and possible
@@ -35,7 +37,15 @@ answer but cannot, the affected difference or region links to one or more
 entries in `limitations`; a noncomputed event outcome also includes a short
 reason code. Consumers must never substitute an omitted value with zero.
 
-## Differences and events
+## Scene, differences, and events
+
+Read `scene` before the primitive evidence inventory. Its `summary` keeps
+content, object-set, relation-graph, layout, style, and representation
+conclusions independent. An object alignment may be one-to-one, set-to-set, or
+explicitly unmatched, and ambiguous correspondence is retained as abstention
+rather than forced into an arbitrary pairing. Scene events reference compact
+evidence domains and representative primitive IDs instead of repeating the
+whole underlying inventory.
 
 Each difference retains its stable ID, affected subject and role, semantic
 `kind`, exact local authored before/after values, effective relation, available

@@ -33,3 +33,26 @@ test "analysis status is summarized from the strongest coverage cell" {
     "failed",
   )
 }
+
+///|
+test "visual scene failure becomes an explicit partial coverage limitation" {
+  let source = "<svg><rect id='box' width='10' height='10'/></svg>"
+  let report = compare(source, source, ComparisonProfile::v1_default())
+  let limited = attach_visual_scene_limitation(report)
+  assert_eq(limited.analysis_status, "partial")
+  assert_true(
+    limited.diagnostics.any(diagnostic => {
+      diagnostic.code == "visual_scene_analysis_unavailable" &&
+      diagnostic.subject_id == "document"
+    }),
+  )
+  assert_true(
+    limited.coverage_matrix.any(row => {
+      row.feature_id == "document.visual_scene" &&
+      row.source_semantics == "limited" &&
+      row.computed_appearance == "limited" &&
+      row.rendered_evidence == "not_applicable"
+    }),
+  )
+  assert_eq(coverage_proof_failures(limited, source, source), [])
+}

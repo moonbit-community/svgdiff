@@ -1,8 +1,8 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `2.0`
+Status: current model for Structured Report schema `3.0`
 
-Last verified: 2026-07-20
+Last verified: 2026-08-18
 
 This document defines the concepts and invariants implemented by the current comparison engine. The checked-in [JSON Schema](../schema/svgdiff-report.schema.json) and public MoonBit report types are authoritative for serialized field names. The [current v1 scope](v1-scope.md) defines which SVG features may receive complete analysis; the [roadmap](../roadmap.md) contains future extensions.
 
@@ -31,16 +31,18 @@ SVG source
   -> authored visual facts and source spans
   -> private typed resource dependency graph
   -> supported computed facts and visual subjects
-  -> before/after subject alignments
-  -> changed facts and atomic differences
+  -> paint primitives and primitive subject alignments
+  -> visual components and visual objects
+  -> before/after visual object graph alignments
+  -> changed facts and atomic evidence differences
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
-  -> visual events
+  -> coherent visual change events
   -> private typed analysis graph
-  -> concise Structured Report JSON 2.0
+  -> concise Structured Report JSON 3.0
 ```
 
-The typed MoonBit value retains detailed engine evidence for library callers and tests. Its JSON serializer is an intentional product boundary: it emits only comparison inputs, whole-canvas measurements, grouped Atomic Differences, Visual Events, localization/possible-cause links, and actual limitations. It does not serialize coverage rows, renderer adapters, alignment scoring, Changed Facts, source spans, ordering vectors, or Impact bookkeeping. It also normalizes evidence ownership: direct atomic measurements stay on the difference, while final raster outcomes and agreeing isolated-subject boundary or coverage observations appear once on the owning event. See the [concise JSON contract](agent-json.md).
+The typed MoonBit value retains detailed engine evidence for library callers and tests. Its JSON serializer is an intentional product boundary: it emits comparison inputs, whole-canvas measurements, the Visual Object Graph conclusion, grouped Atomic Differences, primitive evidence Events, localization/possible-cause links, and actual limitations. It does not serialize coverage rows, renderer adapters, primitive alignment scoring, Changed Facts, source spans, ordering vectors, or Impact bookkeeping. See the [concise JSON contract](agent-json.md).
 
 Source, computed, and rendered evidence are related but never interchangeable. For example, `red` and `#ff0000` may be a source-level distinction with equivalent computed paint and zero rendered error. Conversely, unsupported semantics can make computed or rendered equality indeterminate even when no supported source difference was found.
 
@@ -60,7 +62,7 @@ The internal `ComparisonProfile` records:
 
 The root `compare` function preserves the caller-supplied viewport dimensions, optional Perceptual Background, optional FLIP Viewing Conditions, and optional FLIP error threshold while canonicalizing the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16`, accepts explicit positive dimensions through `--width` and `--height`, records an opaque deterministic sRGB color through `--perceptual-background COLOR`, opts into LDR-FLIP through `--flip-pixels-per-degree PPD`, and records thresholded area only through `--flip-error-threshold VALUE`. It never guesses display geometry or a perceptual threshold.
 
-The Perceptual Background is profile evidence, not SVG paint and not a renderer clear color. Schema `2.0` continues to compute all raw pixels, magnitudes, regions, equality, and coverage on the transparent canvas. Event-local DeltaEOK and LDR-FLIP independently composite both raw event pixels over exactly this normalized color in linear sRGB. When the background is null, display-dependent measurements are unrequested rather than guessed; the concise JSON omits unrequested measurements.
+The Perceptual Background is profile evidence, not SVG paint and not a renderer clear color. Schema `3.0` continues to compute all raw pixels, magnitudes, regions, equality, and coverage on the transparent canvas. Event-local DeltaEOK and LDR-FLIP independently composite both raw event pixels over exactly this normalized color in linear sRGB. When the background is null, display-dependent measurements are unrequested rather than guessed; the concise JSON omits unrequested measurements.
 
 `schema_version` identifies the serialized report shape, `renderer_id` identifies the complete production rendering implementation including project-owned adapters, and `renderer_conformance_profile_id` identifies the reviewed fixture, disposition, guard, and future tolerance policy that bounds Rendered Evidence claims. None can substitute for another. JSON Schema verifies that renderer identities are present and structurally valid; the versioned compatibility policy decides which concrete identities a consumer accepts.
 
@@ -222,7 +224,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are omitted from JSON because schema `2.0` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are omitted from JSON because schema `3.0` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 For an admitted scalar spatial parameter, `parameter_abs_user_units` is the canonical local numeric delta; exact authored spelling and units remain in `source_fact_before` and `source_fact_after`. `parameter_abs_css_px` applies one complete cumulative directional mapping only when that mapping is equal on both sides; equality means the relevant horizontal or vertical basis vector is equal, or the complete linear part is equal for an undirected radial parameter. It never takes the maximum of conflicting before and after mappings. Non-scaling stroke scalars use an identity mapping, while ordinary stroke width and dash offset require the same isotropic linear scale because an anisotropic transform has no direction-independent scalar conversion. `parameter_viewport_fraction` divides the same CSS value by `hypot(profile.viewport_width, profile.viewport_height)`. `parameter_entity_fraction` divides it by the maximum nonzero diagonal of the before and after conservative painted bounds, measured separately so movement does not inflate its own denominator. Basic-shape coordinates and dimensions, image placement and size, scalar stroke lengths, normalized path coordinates or radii, and decomposed transform translation populate these fields where the mapping is complete and common. A zero-size or unavailable entity, incomplete or conflicting transform, non-spatial scalar, angle, scale, list, categorical value, residual matrix, or context-shared resource parameter leaves the inapplicable fields null.
 
@@ -257,9 +259,26 @@ The engine may safely widen an envelope to all Changed Facts when it lacks a sou
 
 For complete source-input propagation, the engine retains every fact directly linked to an event and queries a private token index built from `ChangedFact.affected_subject_ids`. Entity events use the before/after rendered identities of their Subject Alignment, including use-instance identity and one-sided presence; resource and relationship events use their direct facts' conservative affected-subject fan-out. Supported group, clip, mask, filter, blend, isolation, and stacking events additionally union their analyzer-owned operation participants, while exact shared-region identity carries concurrent event tokens. Unsupported, partial, or empty-candidate paths retain the broader comparison fallback. Neither path is an exact contribution claim.
 
-### Visual Event
+### Visual Object Graph and Visual Change Event
 
-A `VisualEvent` is the primary agent-facing grouping unit. In schema `2.0` it records one subject, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions.
+A `VisualObject` groups one or more paint primitives around evidence of a
+user-perceived object. Text inventories, authored identities, spatial bounds,
+primitive composition, and effective style are independent evidence channels;
+no one channel is allowed to force a match. `ObjectAlignment` supports 1:1 and
+set-to-set correspondences and explicitly abstains when no candidate clears its
+acceptance rule. Relations retain resolved object endpoints, so graph
+preservation is established from topology rather than equal edge counts.
+
+A `VisualChangeEvent` is the primary agent-facing conclusion. Its orthogonal
+axes are content, object presence, relation graph, layout, effective style, and
+representation. Each event carries compact evidence-domain cardinalities and
+representative Atomic Difference and primitive Event references. The complete
+primitive inventory remains available without being mistaken for hundreds of
+independent user-perceived changes.
+
+### Primitive evidence Event
+
+A `VisualEvent` is the primitive evidence grouping unit. In schema `3.0` it records one subject, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions. It supports measurement and localization; it is no longer the primary semantic conclusion.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together. When isolated painted-boundary or coverage observations agree across an event's children, concise JSON serializes them once as the event's shared isolated-subject evidence. It does not claim that every child independently produced that result. For conservative regions this is a bounded canvas response, not an exact contribution measurement.
 
@@ -283,14 +302,15 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `2.0` JSON object contains exactly these product-facing sections:
+The schema `3.0` JSON object contains exactly these product-facing sections:
 
 ```json
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "analysis_status": "complete | partial | failed",
   "comparison": {},
   "canvas": {},
+  "scene": {},
   "difference_groups": [],
   "events": [],
   "limitations": []
@@ -303,6 +323,11 @@ perceptual response appears only when requested and computed. A measured zero
 is explicit; inapplicable and unrequested values are omitted; blocked expected
 measurements are explained through `limitations`.
 
+`scene` contains the Visual Objects and relations on both sides, explicit
+object alignments, the six-axis conclusion, and coherent Visual Change Events.
+An `indeterminate` axis is never rewritten as preserved merely because counts
+match or the primitive matcher found no supported difference.
+
 `difference_groups` contains every Atomic Difference under one stable visual
 category. Each item retains local authored before/after values, its effective
 relation, and only the magnitudes direct to that independent difference.
@@ -312,7 +337,7 @@ measurements, CSS-space regions, and conservative possible causes.
 
 The typed engine result may retain richer coverage, alignment, provenance,
 resolution, ordering, and attribution state for testing and composition. None
-of that implementation state is part of schema `2.0` JSON. The exact caller
+of that implementation state is part of schema `3.0` JSON. The exact caller
 obligations are defined in the [Analysis Status Contract](analysis-status.md).
 
 ## Current invariants
@@ -323,16 +348,18 @@ obligations are defined in the [Analysis Status Contract](analysis-status.md).
 4. `equivalent`, `different`, `indeterminate`, and `not_applicable` remain distinct computed states.
 5. Measured zero is serialized; inapplicable or unrequested measurements are omitted; blocked expected measurements link to limitations.
 6. Every serialized Atomic Difference retains its local authored values, effective relation, subject, category, and all direct computed magnitudes without exposing internal Changed Fact tables.
-7. Event grouping does not delete or merge away Atomic Differences.
+7. Visual Object grouping and scene events do not delete or merge away Atomic Differences.
 8. Final raster response and agreeing isolated-subject observations are serialized once on the owning event, never copied onto every child as if each independently contributed them.
 9. Every reported Difference Region carries a Cause Envelope.
 10. A Cause Envelope claiming `sound_overapproximation` may contain false positives but must contain every actual changed cause within the supported coverage boundary.
 11. Dependency-specific XML, SVG scene, image, and renderer types do not cross the public report seam.
+12. Object alignment may abstain; a rejected candidate becomes explicit one-sided evidence rather than a forced match.
+13. A preserved relation graph requires resolved endpoints and equal aligned topology, not merely equal relation counts.
 12. HTML is a presentation of the Structured Report and must not recompute semantic differences.
 13. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every serialized report-local reference resolves within the report.
 13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 2.0
+## Not implemented in schema 3.0
 
 The following concepts are intentional future work rather than hidden current fields:
 

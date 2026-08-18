@@ -851,7 +851,7 @@ fn failed_source_report(
 ) -> StructuredReport {
   let diagnostic_id = "diagnostic:svg-parse-failed:document"
   {
-    schema_version: "2.0",
+    schema_version: "3.0",
     analysis_status: "failed",
     canvas_outcome: not_computed_canvas_outcome("rendered_evidence_unavailable"),
     impact_assessment: empty_impact_assessment(),
@@ -866,6 +866,7 @@ fn failed_source_report(
       },
     ],
     renderer_capability_gaps: [],
+    visual_scene: @model.empty_visual_scene_analysis(),
     profile,
     subject_alignments: [],
     changed_facts: [],
@@ -899,6 +900,7 @@ fn apply_preflight_diagnostics(
     impact_assessment: report.impact_assessment,
     coverage_matrix: report.coverage_matrix,
     renderer_capability_gaps: report.renderer_capability_gaps,
+    visual_scene: report.visual_scene,
     profile: report.profile,
     subject_alignments: report.subject_alignments,
     changed_facts: report.changed_facts,

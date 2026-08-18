@@ -40,7 +40,7 @@ grep -Fx "agent-projection: $agent_projection" "$tmp/version.txt" >/dev/null
 jq -e '
   .required == [
     "schema_version", "analysis_status", "comparison", "canvas",
-    "difference_groups", "events", "limitations"
+    "scene", "difference_groups", "events", "limitations"
   ]
 ' schema/svgdiff-report.schema.json >/dev/null
 

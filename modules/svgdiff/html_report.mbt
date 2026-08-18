@@ -110,7 +110,7 @@ pub fn render_html_report(
     $|<header class="report-header"><div><h1>Visual-semantic review</h1><p id="summary" class="summary"></p></div><span id="compatibility" class="compatibility">Schema compatibility</span></header>
     $|<section id="overview" aria-labelledby="overview-heading"><h2 id="overview-heading" class="section-title">Report overview</h2><div id="impact"></div></section>
     $|<section id="filters" class="filters" aria-label="Review filters"></section>
-    $|<section id="diffs" aria-labelledby="events-heading"><h2 id="events-heading" class="section-title">Visual Events</h2></section>
+    $|<section id="diffs" aria-labelledby="events-heading"><h2 id="events-heading" class="section-title">Primitive evidence events</h2></section>
     $|<details class="diagnostics-panel"><summary id="diagnostics-summary">Diagnostics</summary><div id="diagnostics"></div></details>
     $|<details class="json-panel"><summary>Raw Report JSON</summary><p class="raw-help">Canonical evidence for programs and text-only Agents. Search, copy, or download it directly.</p><div class="raw-actions"><button type="button" id="copy-json">Copy JSON</button><button type="button" id="download-json">Download JSON</button><span id="raw-status" role="status"></span></div><textarea id="report-data" readonly aria-label="Complete Structured Report JSON">\{report_json}</textarea></details>
     $|</aside></main><script>

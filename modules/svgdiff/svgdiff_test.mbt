@@ -25,7 +25,7 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "2.0")
+  assert_eq(report.schema_version, "3.0")
   assert_eq(report.atomic_differences.length(), 1)
   let impact : @svgdiff.ImpactAssessment = report.impact_assessment
   assert_eq(impact.policy_id, "event_rendered_pareto/v1")
@@ -48,11 +48,11 @@ test "root package exposes the stable comparison seam" {
   let witnesses : Array[@svgdiff.ImpactDominationWitness] = impact.domination_witnesses
   assert_true(witnesses.is_empty())
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "2.0", "events": [_], .. } => ()
+    { "schema_version": "3.0", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "2.0", "events": [_], .. } => ()
+    { "schema_version": "3.0", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }
@@ -615,7 +615,8 @@ test "HTML report is self contained and binds report regions" {
   assert_true(html.find("before[index]===after[index]?0:255") is Some(_))
   assert_true(html.find("(value*100).toFixed(2)") is Some(_))
   assert_true(html.find("Not measured") is Some(_))
-  assert_true(html.find("Visual Events") is Some(_))
+  assert_true(html.find("Visual object conclusion") is Some(_))
+  assert_true(html.find("Primitive evidence events") is Some(_))
   assert_true(html.find("EVENT_BATCH_SIZE=24") is Some(_))
   assert_true(html.find("Load ${Math.min(EVENT_BATCH_SIZE") is Some(_))
   assert_true(html.find("populateEventDetails") is Some(_))

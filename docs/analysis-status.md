@@ -1,8 +1,8 @@
 # Analysis Status Contract
 
-Status: current schema `2.0` caller contract
+Status: current schema `3.0` caller contract
 
-Last verified: 2026-07-16
+Last verified: 2026-08-18
 
 `analysis_status` summarizes the engine's internal per-feature, per-evidence-layer coverage under the recorded comparison inputs. Successful coverage rows are not serialized; actual gaps appear in `limitations`. The status does not describe how many differences exist or how visually important a difference is.
 
@@ -43,7 +43,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `2.0`'s implemented support contract under the recorded comparison inputs.
+> No visual-semantic difference was found within schema `3.0`'s implemented support contract under the recorded comparison inputs.
 
 It does not support any of these stronger statements:
 
@@ -78,7 +78,13 @@ A partial report does not permit an equality conclusion, even when:
 
 Consumers may use the supported differences, magnitudes, regions, and candidates that are present, but must qualify any summary with the limitations that constrain it. The CLI returns status `0` because partial analysis is a successfully produced result, not a process failure.
 
-An unsupported direct filter primitive demonstrates this rule: schema `2.0` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
+If the required Visual Object Graph cannot be assembled after the primitive
+comparison succeeds, `visual_scene_analysis_unavailable` limits Source
+Semantics and Computed Appearance, `scene.summary.status` remains
+`not_computed`, and the report is partial. An empty scene in that state is not
+evidence that the documents contain no visual objects or coherent changes.
+
+An unsupported direct filter primitive demonstrates this rule: schema `3.0` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
 
 ## `failed`
 

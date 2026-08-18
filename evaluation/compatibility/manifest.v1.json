@@ -10,18 +10,18 @@
   },
   "consumer_policy": {
     "policy_id": "svgdiff-consumer-compatibility/1",
-    "accepted_schema_versions": ["2.0"],
-    "current_schema_version": "2.0"
+    "accepted_schema_versions": ["3.0"],
+    "current_schema_version": "3.0"
   },
   "cases": [
     {
       "id": "current-schema",
-      "schema_version": "2.0",
+      "schema_version": "3.0",
       "expected_decision": "accepted_current"
     },
     {
       "id": "unknown-schema-version",
-      "schema_version": "3.0",
+      "schema_version": "4.0",
       "expected_decision": "rejected"
     }
   ]

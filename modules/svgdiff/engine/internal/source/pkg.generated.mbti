@@ -121,6 +121,8 @@ pub fn structural_definition_container(String) -> Bool
 
 pub fn structural_href_fact(String, @xml.NamespaceElement) -> @model.DeclaredVisualFact?
 
+pub fn structural_node_attribute_value(StructuralSourceNode, String) -> String?
+
 pub fn structural_parent_path_signature(StructuralDocument, RenderedSubjectPlan) -> String
 
 pub fn structural_path_segment(StructuralDocument, Int) -> String

@@ -248,6 +248,61 @@ def assert_report_links(case: dict[str, Any], report: dict[str, Any]) -> None:
                 raise ValueError(f"{case['id']}: {error}") from error
             if not set(causes.get("limitation_ids", [])) <= limitation_ids:
                 raise ValueError(f"{case['id']}: unknown region limitation link")
+    scene = report["scene"]
+    before_object_ids = {item["id"] for item in scene["before_objects"]}
+    after_object_ids = {item["id"] for item in scene["after_objects"]}
+    alignment_ids = {item["id"] for item in scene["alignments"]}
+    evidence_event_ids = {item["id"] for item in report["events"]}
+    summary = scene["summary"]
+    if summary["before_object_count"] != len(before_object_ids):
+        raise ValueError(f"{case['id']}: before object count mismatch")
+    if summary["after_object_count"] != len(after_object_ids):
+        raise ValueError(f"{case['id']}: after object count mismatch")
+    if summary["before_relation_count"] != len(scene["before_relations"]):
+        raise ValueError(f"{case['id']}: before relation count mismatch")
+    if summary["after_relation_count"] != len(scene["after_relations"]):
+        raise ValueError(f"{case['id']}: after relation count mismatch")
+    for alignment in scene["alignments"]:
+        if not set(alignment["before"]) <= before_object_ids:
+            raise ValueError(f"{case['id']}: unknown before object alignment link")
+        if not set(alignment["after"]) <= after_object_ids:
+            raise ValueError(f"{case['id']}: unknown after object alignment link")
+    for relation in scene["before_relations"]:
+        if not set(relation["endpoints"]) <= before_object_ids:
+            raise ValueError(f"{case['id']}: unknown before relation endpoint")
+    for relation in scene["after_relations"]:
+        if not set(relation["endpoints"]) <= after_object_ids:
+            raise ValueError(f"{case['id']}: unknown after relation endpoint")
+    if summary["object_set"] == "preserved" and (
+        summary["before_object_count"] != summary["after_object_count"]
+        or any(
+            item["relation"] in {"insertion", "deletion"}
+            for item in scene["alignments"]
+        )
+    ):
+        raise ValueError(f"{case['id']}: invalid preserved object set")
+    event_axes = {
+        "content.change": "content",
+        "object.presence": "object_set",
+        "relation.change": "relation_graph",
+        "layout.reflow": "layout",
+        "layout.global_affine": "layout",
+        "style.change": "style",
+        "representation.change": "representation",
+    }
+    for event in scene["events"]:
+        if summary[event_axes[event["kind"]]] != "changed":
+            raise ValueError(f"{case['id']}: scene event contradicts its axis")
+        if not set(event["object_alignment_ids"]) <= alignment_ids:
+            raise ValueError(f"{case['id']}: unknown scene alignment link")
+        if not set(event["difference_ids"]) <= difference_ids:
+            raise ValueError(f"{case['id']}: unknown scene difference link")
+        if not set(event["evidence_event_ids"]) <= evidence_event_ids:
+            raise ValueError(f"{case['id']}: unknown scene evidence event link")
+        if event["evidence_difference_count"] != sum(
+            item["count"] for item in event["evidence_domains"]
+        ):
+            raise ValueError(f"{case['id']}: scene evidence count mismatch")
 
 
 def assert_representative_states(reports: dict[str, dict[str, Any]]) -> None:

@@ -28,7 +28,7 @@ moon run --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
 jq -e '
-  .schema_version == "2.0" and
+  .schema_version == "3.0" and
   .analysis_status == "complete" and
   .comparison == {"viewport":{"width":16,"height":16}} and
   .canvas.status == "computed" and
@@ -101,7 +101,7 @@ grep -F "$diff_id" "$tmp/summary.md" >/dev/null
 
 cat testdata/before.svg | moon run --target native modules/svgdiff/cmd/svgdiff -- \
   - testdata/after.svg >"$tmp/stdin-before.json"
-jq -e '.schema_version == "2.0" and .analysis_status == "complete"' \
+jq -e '.schema_version == "3.0" and .analysis_status == "complete"' \
   "$tmp/stdin-before.json" >/dev/null
 
 printf '%s\n' \
@@ -121,8 +121,8 @@ grep -q -- '--agent-json' "$tmp/help.txt"
 grep -q -- '--summary <summary>' "$tmp/help.txt"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.7.1$' "$tmp/version.txt"
-grep -q '^schema: 2.0$' "$tmp/version.txt"
+grep -q '^svgdiff 0.8.0$' "$tmp/version.txt"
+grep -q '^schema: 3.0$' "$tmp/version.txt"
 
 moon runwasm modules/svgdiff/cmd/svgdiff \
   testdata/before.svg testdata/after.svg \
@@ -137,7 +137,7 @@ grep -q '^# SVG Diff Summary$' "$wasi_tmp/summary.md"
 moon runwasm modules/svgdiff/cmd/svgdiff \
   testdata/before.svg testdata/after.svg \
   --agent-projection --output "$wasi_tmp/report.jsonl"
-grep -q 'svgdiff-agent-projection/1' "$wasi_tmp/report.jsonl"
+grep -q 'svgdiff-agent-projection/2' "$wasi_tmp/report.jsonl"
 
 python3 -c \
   'import base64, pathlib, sys; pathlib.Path(sys.argv[1]).write_bytes(base64.b64decode(sys.argv[2]))' \
@@ -196,7 +196,7 @@ assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/resource-failed.json" 2>"$tmp/resource-failed.err"
 test ! -s "$tmp/resource-failed.err"
 jq -e '
-  .schema_version == "2.0" and
+  .schema_version == "3.0" and
   .analysis_status == "failed" and
   .difference_groups == [] and
   .events == [] and

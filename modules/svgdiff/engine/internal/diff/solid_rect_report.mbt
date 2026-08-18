@@ -145,12 +145,13 @@ fn rect_coverage_report(
   let subject_id = "rect:0"
   let diagnostic_id = "diagnostic:\{code}:\{subject_id}"
   {
-    schema_version: "2.0",
+    schema_version: "3.0",
     analysis_status: "partial",
     canvas_outcome: not_computed_canvas_outcome("rendered_evidence_unavailable"),
     impact_assessment: empty_impact_assessment(),
     coverage_matrix: [],
     renderer_capability_gaps: [],
+    visual_scene: @model.empty_visual_scene_analysis(),
     profile,
     subject_alignments: [],
     changed_facts: [],
@@ -292,7 +293,7 @@ fn compare_rect_declared_facts(
     })
   }
   {
-    schema_version: "2.0",
+    schema_version: "3.0",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {
@@ -302,6 +303,7 @@ fn compare_rect_declared_facts(
     impact_assessment: empty_impact_assessment(),
     coverage_matrix: [],
     renderer_capability_gaps: [],
+    visual_scene: @model.empty_visual_scene_analysis(),
     profile,
     subject_alignments: [],
     changed_facts: [],

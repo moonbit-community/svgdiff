@@ -100,6 +100,7 @@ fn attach_subject_alignments(
     impact_assessment: report.impact_assessment,
     coverage_matrix: report.coverage_matrix,
     renderer_capability_gaps: report.renderer_capability_gaps,
+    visual_scene: report.visual_scene,
     profile: report.profile,
     subject_alignments: alignments,
     changed_facts: report.changed_facts,
@@ -107,6 +108,39 @@ fn attach_subject_alignments(
     atomic_differences: differences,
     events: report.events,
     diagnostics: report.diagnostics,
+  }
+}
+
+///|
+fn attach_visual_scene_limitation(
+  report : StructuredReport,
+) -> StructuredReport {
+  let diagnostic = unlocated_diagnostic(
+    "diagnostic:visual-scene-analysis-unavailable:document",
+    "visual_scene_analysis_unavailable",
+    "document",
+    ["source_semantics", "computed_appearance"],
+  )
+  let diagnostics = report.diagnostics.copy()
+  merge_diagnostic_into(diagnostics, diagnostic)
+  let coverage_matrix = report.coverage_matrix.copy()
+  add_feature_coverage(coverage_matrix, {
+    feature_id: "document.visual_scene",
+    subject_id: "document",
+    source_semantics: "limited",
+    computed_appearance: "limited",
+    rendered_evidence: "not_applicable",
+    diagnostic_ids: [diagnostic.id],
+  })
+  {
+    ..report,
+    analysis_status: if report.analysis_status == "failed" {
+      "failed"
+    } else {
+      "partial"
+    },
+    coverage_matrix,
+    diagnostics,
   }
 }
 
@@ -207,5 +241,31 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_diagnostic_fact_locations(report)
   comparison_guard.checkpoint()
-  attach_impact_assessment(report)
+  let report = attach_impact_assessment(report)
+  comparison_guard.checkpoint()
+  let (visual_scene, visual_scene_failed) = (
+    @scene.compare_visual_scenes(before_svg, after_svg, report.profile),
+    false,
+  ) catch {
+    _ => (@model.empty_visual_scene_analysis(), true)
+  }
+  let report = if visual_scene_failed {
+    attach_visual_scene_limitation(report)
+  } else {
+    report
+  }
+  let report = {
+    ..report,
+    visual_scene: @scene.attach_visual_scene_evidence(
+      visual_scene,
+      report.atomic_differences,
+      report.events,
+    ),
+  }
+  if precompletion_report_exceeds_byte_limit(report, limits) {
+    return failed_resource_report(report.profile, [
+      resource_limit_diagnostic("report_bytes", None, None),
+    ])
+  }
+  report
 }

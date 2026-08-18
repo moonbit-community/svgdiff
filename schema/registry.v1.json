@@ -2,7 +2,7 @@
   "schema_version": "svgdiff-schema-registry/1",
   "released_schemas": [
     {
-      "report_schema_version": "2.0",
+      "report_schema_version": "3.0",
       "status": "current",
       "schema": "schema/svgdiff-report.schema.json",
       "canonical_examples": "evaluation/schema-examples/manifest.v1.json",

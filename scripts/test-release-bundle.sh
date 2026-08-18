@@ -97,8 +97,8 @@ jq -e \
   (.build.target_os | length) > 0 and
   (.build.target_architecture | length) > 0 and
   .product.module_version == $version and
-  .product.report_schema_version == "2.0" and
-  .product.agent_projection_version == "svgdiff-agent-projection/1" and
+  .product.report_schema_version == "3.0" and
+  .product.agent_projection_version == "svgdiff-agent-projection/2" and
   .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and
   .product.ordering_policy_id == "v2_domain_lexicographic" and
   .product.impact_policy_id == "event_rendered_pareto/v1" and
@@ -121,7 +121,7 @@ if [ "${RUNNER_OS-}" != Windows ]; then
 fi
 
 "$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "svgdiff $module_version" >/dev/null
-"$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "agent-projection: svgdiff-agent-projection/1" >/dev/null
+"$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "agent-projection: svgdiff-agent-projection/2" >/dev/null
 "$bundle/$executable_name" --version | tr -d '\r' | grep -Fx "impact-policy: event_rendered_pareto/v1" >/dev/null
 "$bundle/$executable_name" testdata/before.svg testdata/after.svg \
   >"$tmp/bundle-report.json"

@@ -2,6 +2,7 @@
 package "Milky2018/svgdiff/engine/model"
 
 // Values
+pub fn empty_visual_scene_analysis() -> VisualSceneAnalysis
 
 // Errors
 
@@ -349,6 +350,7 @@ pub(all) struct StructuredReport {
   impact_assessment : ImpactAssessment
   coverage_matrix : Array[FeatureCoverage]
   renderer_capability_gaps : Array[RendererCapabilityGap]
+  visual_scene : VisualSceneAnalysis
   profile : ComparisonProfile
   subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]
@@ -434,6 +436,16 @@ pub(all) struct TransformTranslationMagnitude {
   norm_css_px : Double
 } derive(ToJson)
 
+pub(all) struct VisualChangeEvent {
+  id : String
+  kind : String
+  object_alignment_ids : Array[String]
+  atomic_difference_ids : Array[String]
+  evidence_event_ids : Array[String]
+  evidence_difference_count : Int
+  evidence_domains : Array[VisualEvidenceDomain]
+}
+
 pub(all) struct VisualEvent {
   id : String
   primary_subject_id : String
@@ -441,6 +453,70 @@ pub(all) struct VisualEvent {
   rendered_outcome : RenderedEvidence
   difference_regions : Array[DifferenceRegion]
 } derive(ToJson)
+
+pub(all) struct VisualEvidenceDomain {
+  domain : String
+  count : Int
+}
+
+pub(all) struct VisualObjectAlignment {
+  id : String
+  relation : String
+  before_object_ids : Array[String]
+  after_object_ids : Array[String]
+  basis : String
+  ambiguity : String
+}
+
+pub(all) struct VisualObjectBounds {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+}
+
+pub(all) struct VisualObjectSummary {
+  id : String
+  side : String
+  role : String
+  label : String?
+  semantic_text : Array[String]
+  symbolic_text : Array[String]
+  primitive_kinds : Array[String]
+  bounds : VisualObjectBounds?
+}
+
+pub(all) struct VisualRelationSummary {
+  id : String
+  side : String
+  label : String?
+  endpoint_object_ids : Array[String]
+  endpoint_basis : String
+}
+
+pub(all) struct VisualSceneAnalysis {
+  summary : VisualSceneSummary
+  before_objects : Array[VisualObjectSummary]
+  after_objects : Array[VisualObjectSummary]
+  before_relations : Array[VisualRelationSummary]
+  after_relations : Array[VisualRelationSummary]
+  alignments : Array[VisualObjectAlignment]
+  events : Array[VisualChangeEvent]
+}
+
+pub(all) struct VisualSceneSummary {
+  status : String
+  content : String
+  object_set : String
+  relation_graph : String
+  layout : String
+  style : String
+  representation : String
+  before_object_count : Int
+  after_object_count : Int
+  before_relation_count : Int
+  after_relation_count : Int
+}
 
 // Type aliases
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -12,6 +12,68 @@
     "changed_pixels": 0,
     "changed_fraction": 0,
     "linear_rgba_rmse": 0
+  },
+  "scene": {
+    "summary": {
+      "status": "computed",
+      "content": "preserved",
+      "object_set": "preserved",
+      "relation_graph": "preserved",
+      "layout": "preserved",
+      "style": "preserved",
+      "representation": "preserved",
+      "before_object_count": 1,
+      "after_object_count": 1,
+      "before_relation_count": 0,
+      "after_relation_count": 0
+    },
+    "before_objects": [
+      {
+        "id": "object:before:0",
+        "role": "graphic",
+        "primitives": [
+          "rect"
+        ],
+        "bounds": [
+          1,
+          2,
+          8,
+          8
+        ]
+      }
+    ],
+    "after_objects": [
+      {
+        "id": "object:after:0",
+        "role": "graphic",
+        "primitives": [
+          "rect"
+        ],
+        "bounds": [
+          0.99999,
+          2,
+          8,
+          8
+        ]
+      }
+    ],
+    "before_relations": [],
+    "after_relations": [],
+    "alignments": [
+      {
+        "id": "object-alignment:0",
+        "relation": "correspondence",
+        "before": [
+          "object:before:0"
+        ],
+        "after": [
+          "object:after:0"
+        ],
+        "basis": "authored_identity/v1",
+        "ambiguity": "none"
+      }
+    ],
+    "events": []
   },
   "difference_groups": [
     {

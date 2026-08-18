@@ -69,7 +69,7 @@ The checked-in profile `/27` renderer-conformance baseline compares raw `Milky20
 
 Every remaining divergence has an executable disposition. Profile `/27` deliberately retains the existing conservative renderer Diagnostics: one exact fixture does not prove the full transform, pattern, or stroke capability domain. The previously established `renderer_use_inherited_paint_raster_unproven` case still diverges. These guards limit only Rendered Evidence; exact source/computed differences and conservative localization remain available.
 
-The typed engine model projects encountered renderer-specific Diagnostics into capability-gap records for conformance tests. Schema `2.0` exposes only their public consequences through `limitations`; it does not serialize a renderer support inventory.
+The typed engine model projects encountered renderer-specific Diagnostics into capability-gap records for conformance tests. Schema `3.0` exposes only their public consequences through `limitations`; it does not serialize a renderer support inventory.
 
 The [M2 renderer and coverage gate](../evaluation/m2-renderer-coverage-gate/README.md) makes the complete safety chain explicit: reproducible observations, one disposition per divergence, encountered capability projection, centralized coverage proof, status composition, and unsupported-input false-equality properties. It does not promote this renderer to browser-equivalence authority.
 

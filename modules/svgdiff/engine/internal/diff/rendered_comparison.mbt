@@ -112,7 +112,7 @@ fn deferred_font_report(
       let diagnostic_id = "diagnostic:font-analysis-deferred:label"
       let difference_id = "diff:entity:label:text"
       Some({
-        schema_version: "2.0",
+        schema_version: "3.0",
         analysis_status: "partial",
         canvas_outcome: not_computed_canvas_outcome(
           "rendered_evidence_unavailable",
@@ -120,6 +120,7 @@ fn deferred_font_report(
         impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
+        visual_scene: @model.empty_visual_scene_analysis(),
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -196,7 +197,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "2.0",
+        schema_version: "3.0",
         analysis_status: "complete",
         canvas_outcome: not_computed_canvas_outcome(
           "rendered_evidence_unavailable",
@@ -204,6 +205,7 @@ fn presence_change_report(
         impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
+        visual_scene: @model.empty_visual_scene_analysis(),
         profile,
         subject_alignments: [],
         changed_facts: [],
@@ -250,7 +252,7 @@ fn presence_change_report(
         before_document, after_document, profile,
       )
       Some({
-        schema_version: "2.0",
+        schema_version: "3.0",
         analysis_status: "complete",
         canvas_outcome: not_computed_canvas_outcome(
           "rendered_evidence_unavailable",
@@ -258,6 +260,7 @@ fn presence_change_report(
         impact_assessment: empty_impact_assessment(),
         coverage_matrix: [],
         renderer_capability_gaps: [],
+        visual_scene: @model.empty_visual_scene_analysis(),
         profile,
         subject_alignments: [],
         changed_facts: [],

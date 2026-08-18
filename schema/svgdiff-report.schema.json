@@ -1,22 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/svgdiff/schema/2.0",
-  "title": "SVG Diff Structured Report 2.0",
+  "$id": "https://milky2018.github.io/svgdiff/schema/3.0",
+  "title": "SVG Diff Structured Report 3.0",
   "type": "object",
   "required": [
     "schema_version",
     "analysis_status",
     "comparison",
     "canvas",
+    "scene",
     "difference_groups",
     "events",
     "limitations"
   ],
   "properties": {
-    "schema_version": { "const": "2.0" },
+    "schema_version": { "const": "3.0" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "comparison": { "$ref": "#/$defs/comparison" },
     "canvas": { "$ref": "#/$defs/canvas" },
+    "scene": { "$ref": "#/$defs/scene" },
     "difference_groups": {
       "type": "array",
       "items": { "$ref": "#/$defs/differenceGroup" }
@@ -32,6 +34,106 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "scene": {
+      "type": "object",
+      "required": ["summary", "before_objects", "after_objects", "before_relations", "after_relations", "alignments", "events"],
+      "properties": {
+        "summary": { "$ref": "#/$defs/sceneSummary" },
+        "before_objects": { "type": "array", "items": { "$ref": "#/$defs/visualObject" } },
+        "after_objects": { "type": "array", "items": { "$ref": "#/$defs/visualObject" } },
+        "before_relations": { "type": "array", "items": { "$ref": "#/$defs/visualRelation" } },
+        "after_relations": { "type": "array", "items": { "$ref": "#/$defs/visualRelation" } },
+        "alignments": { "type": "array", "items": { "$ref": "#/$defs/visualObjectAlignment" } },
+        "events": { "type": "array", "items": { "$ref": "#/$defs/visualChangeEvent" } }
+      },
+      "additionalProperties": false
+    },
+    "sceneSummary": {
+      "type": "object",
+      "required": ["status", "content", "object_set", "relation_graph", "layout", "style", "representation", "before_object_count", "after_object_count", "before_relation_count", "after_relation_count"],
+      "properties": {
+        "status": { "enum": ["computed", "not_computed"] },
+        "content": { "enum": ["preserved", "changed", "indeterminate"] },
+        "object_set": { "enum": ["preserved", "changed", "indeterminate"] },
+        "relation_graph": { "enum": ["preserved", "changed", "indeterminate"] },
+        "layout": { "enum": ["preserved", "changed", "indeterminate"] },
+        "style": { "enum": ["preserved", "changed", "indeterminate"] },
+        "representation": { "enum": ["preserved", "changed", "indeterminate"] },
+        "before_object_count": { "type": "integer", "minimum": 0 },
+        "after_object_count": { "type": "integer", "minimum": 0 },
+        "before_relation_count": { "type": "integer", "minimum": 0 },
+        "after_relation_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "visualObject": {
+      "type": "object",
+      "required": ["id", "role", "primitives"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "role": { "enum": ["entity", "graphic"] },
+        "label": { "type": "string" },
+        "text": { "type": "array", "items": { "type": "string" } },
+        "symbols": { "type": "array", "items": { "type": "string" } },
+        "primitives": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "bounds": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      },
+      "additionalProperties": false
+    },
+    "visualRelation": {
+      "type": "object",
+      "required": ["id", "endpoints", "endpoint_basis"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "endpoints": { "type": "array", "items": { "type": "string", "minLength": 1 }, "maxItems": 2 },
+        "endpoint_basis": { "enum": ["nearest_endpoint", "unresolved"] }
+      },
+      "additionalProperties": false
+    },
+    "visualObjectAlignment": {
+      "type": "object",
+      "required": ["id", "relation", "before", "after", "basis", "ambiguity"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "relation": { "enum": ["correspondence", "equivalence_class", "insertion", "deletion"] },
+        "before": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "after": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "basis": { "type": "string", "minLength": 1 },
+        "ambiguity": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "visualChangeEvent": {
+      "type": "object",
+      "required": ["id", "kind", "object_alignment_ids", "difference_ids", "evidence_event_ids", "evidence_difference_count", "evidence_domains"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["content.change", "object.presence", "relation.change", "layout.reflow", "layout.global_affine", "style.change", "representation.change"] },
+        "object_alignment_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "difference_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_event_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_difference_count": { "type": "integer", "minimum": 0 },
+        "evidence_domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["domain", "count"],
+            "properties": {
+              "domain": { "type": "string", "minLength": 1 },
+              "count": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "comparison": {
       "type": "object",
       "required": ["viewport"],

@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -12,6 +12,125 @@
     "changed_pixels": 64,
     "changed_fraction": 0.25,
     "linear_rgba_rmse": 0.25668105613346714
+  },
+  "scene": {
+    "summary": {
+      "status": "computed",
+      "content": "preserved",
+      "object_set": "preserved",
+      "relation_graph": "preserved",
+      "layout": "preserved",
+      "style": "changed",
+      "representation": "preserved",
+      "before_object_count": 2,
+      "after_object_count": 2,
+      "before_relation_count": 0,
+      "after_relation_count": 0
+    },
+    "before_objects": [
+      {
+        "id": "object:before:0",
+        "role": "graphic",
+        "primitives": [
+          "rect"
+        ],
+        "bounds": [
+          2,
+          2,
+          12,
+          12
+        ]
+      },
+      {
+        "id": "object:before:1",
+        "role": "graphic",
+        "primitives": [
+          "rect"
+        ],
+        "bounds": [
+          4,
+          4,
+          8,
+          8
+        ]
+      }
+    ],
+    "after_objects": [
+      {
+        "id": "object:after:0",
+        "role": "graphic",
+        "primitives": [
+          "rect"
+        ],
+        "bounds": [
+          2,
+          2,
+          12,
+          12
+        ]
+      },
+      {
+        "id": "object:after:1",
+        "role": "graphic",
+        "primitives": [
+          "rect"
+        ],
+        "bounds": [
+          4,
+          4,
+          8,
+          8
+        ]
+      }
+    ],
+    "before_relations": [],
+    "after_relations": [],
+    "alignments": [
+      {
+        "id": "object-alignment:0",
+        "relation": "correspondence",
+        "before": [
+          "object:before:0"
+        ],
+        "after": [
+          "object:after:0"
+        ],
+        "basis": "authored_identity/v1",
+        "ambiguity": "none"
+      },
+      {
+        "id": "object-alignment:1",
+        "relation": "correspondence",
+        "before": [
+          "object:before:1"
+        ],
+        "after": [
+          "object:after:1"
+        ],
+        "basis": "authored_identity/v1",
+        "ambiguity": "none"
+      }
+    ],
+    "events": [
+      {
+        "id": "scene-event:0",
+        "kind": "style.change",
+        "object_alignment_ids": [],
+        "difference_ids": [
+          "diff:compositing:front:mix-blend-mode"
+        ],
+        "evidence_event_ids": [
+          "event:compositing:front:mix-blend-mode"
+        ],
+        "evidence_difference_count": 1,
+        "evidence_domains": [
+          {
+            "domain": "compositing.blend_mode",
+            "count": 1
+          }
+        ]
+      }
+    ]
   },
   "difference_groups": [
     {

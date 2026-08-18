@@ -17,6 +17,7 @@ import {
   "Milky2018/svgdiff/engine/internal/alignment",
   "Milky2018/svgdiff/engine/internal/attribution",
   "Milky2018/svgdiff/engine/internal/measurement",
+  "Milky2018/svgdiff/engine/internal/scene",
   "Milky2018/svgdiff/engine/internal/resource_diff",
   "Milky2018/svgdiff/engine/internal/resource_model",
   "Milky2018/svgdiff/engine/internal/computed/affine_transform",

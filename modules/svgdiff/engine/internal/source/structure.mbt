@@ -41,6 +41,19 @@ pub(all) struct RenderedSubjectPlan {
 }
 
 ///|
+pub fn structural_node_attribute_value(
+  node : StructuralSourceNode,
+  name : String,
+) -> String? {
+  for attribute in node.element.attributes {
+    if attribute.name.local_name == name {
+      return Some(attribute.value.trim().to_owned())
+    }
+  }
+  None
+}
+
+///|
 pub fn structural_source_kind(kind : String) -> Bool {
   fill_hierarchy_kind(kind) || kind == "marker" || kind == "text"
 }

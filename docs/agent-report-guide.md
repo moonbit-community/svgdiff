@@ -1,8 +1,8 @@
 # Agent Report Guide
 
-Status: current schema `2.0` interpretation guide
+Status: current schema `3.0` interpretation guide
 
-Last verified: 2026-07-23
+Last verified: 2026-08-18
 
 The report is designed for a text-only Agent. Read it in this order:
 
@@ -11,13 +11,29 @@ The report is designed for a text-only Agent. Read it in this order:
    profile-scoped equality.
 3. Read `comparison` to establish viewport and requested perceptual inputs.
 4. Read `canvas` for whole-image measurements.
-5. Enumerate every item in every `difference_groups` group, including items
+5. Read `scene.summary`, then the object/relation alignments and coherent scene
+   events. Keep its six conclusion axes independent.
+6. Enumerate every item in every `difference_groups` group, including items
    whose owning event has a measured-zero rendered outcome.
-6. Follow each difference into its owning `events` entry for the rendered
+7. Follow each difference into its owning `events` entry for the rendered
    outcome, shared isolated-subject measurements, localization, and possible
    causes.
-7. Read every linked and top-level `limitations` entry before describing
+8. Read every linked and top-level `limitations` entry before describing
    unavailable evidence.
+
+## Scene interpretation
+
+The Visual Object Graph is the primary semantic conclusion. Report content,
+object-set, relation-graph, layout, style, and representation independently;
+do not convert them into one severity label. A preserved object set can coexist
+with changed layout and style. `ambiguous` alignments are deliberate
+abstentions, not missing implementation detail, and unmatched objects establish
+insertions or deletions only when the alignment evidence supports that result.
+
+Scene events summarize coherent changes and link to compact evidence domains
+and representative primitive IDs. They are navigation and conclusion units;
+the primitive `difference_groups` and `events` remain the complete evidence
+inventory for audit and localization.
 
 ## Difference interpretation
 
@@ -74,11 +90,12 @@ no completeness claim; report its limitation IDs.
 
 ## Safe summary template
 
-State the analysis status and comparison profile first. Report the three
-whole-canvas measurements independently when present. Then list all grouped
-differences with source values, effective relation, sparse magnitudes, event
-regions, and candidate causes. End with limitations. Never claim visibility,
-importance, or cross-domain severity unless the caller supplies that policy.
+State the analysis status and comparison profile first. Report the six scene
+axes, object/relation preservation, and coherent scene events. Report the three
+whole-canvas measurements independently when present. Then use grouped primitive
+differences, regions, and candidate causes as supporting evidence. End with
+limitations. Never claim visibility, importance, or cross-domain severity
+unless the caller supplies that policy.
 
 See [Concise Agent JSON](agent-json.md), [Analysis Status](analysis-status.md),
 and the checked-in [JSON Schema](../schema/svgdiff-report.schema.json).

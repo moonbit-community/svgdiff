@@ -14,13 +14,13 @@ test:
 moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg --agent-json
 ```
 
-Run the published module version `0.7.1` directly:
+Run the published module version `0.8.0` directly:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.7.1 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.8.0 before.svg after.svg --agent-json
 ```
 
-The command writes canonical Structured Report schema `2.0` JSON by default;
+The command writes canonical Structured Report schema `3.0` JSON by default;
 pass `--agent-json` for the same report without formatting whitespace. It
 accepts exactly two guest-visible SVG paths. Use `-` for at most one input to
 read it from stdin.
@@ -65,21 +65,24 @@ moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
 
 ## Interpret the report
 
-1. Read `analysis_status` first. Only `complete` with no Atomic Differences
-   establishes profile-scoped equality.
-2. Enumerate every item in every `difference_groups` group, including
+1. Read `analysis_status` and `scene.summary` first. Treat `content`,
+   `object_set`, `relation_graph`, `layout`, `style`, and `representation` as
+   independent conclusions; do not collapse them into one severity score.
+2. Read `scene.events` as the coherent user-perceived changes. Follow their
+   representative Difference and evidence Event IDs when details are needed.
+3. Enumerate every item in every `difference_groups` group, including
    effective-equivalent changes and changes whose owning event measures zero.
-3. Treat each item's sparse `magnitude` as direct evidence for that Atomic
+4. Treat each item's sparse `magnitude` as direct evidence for that Atomic
    Difference. Omitted fields are not zero.
-4. Follow `events[].difference_ids` for the owning rendered outcome, optional
+5. Follow `events[].difference_ids` for the owning rendered outcome, optional
    shared `isolated_subject` measurements, conservative regions, and possible
    causes.
-5. A `sound_overapproximation` cause set may contain false positives but
+6. A `sound_overapproximation` cause set may contain false positives but
    includes every actual cause within complete supported coverage. It does not
    prove that every candidate contributed.
-6. Report every entry in `limitations` before making equality or magnitude
+7. Report every entry in `limitations` before making equality or magnitude
    claims.
-7. Keep changed fraction, linear RGBA RMSE, perceptual response, geometry,
+8. Keep changed fraction, linear RGBA RMSE, perceptual response, geometry,
    coverage, and other domain magnitudes independent. Do not invent a universal
    severity score or suppress small differences.
 

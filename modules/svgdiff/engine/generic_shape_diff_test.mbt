@@ -461,6 +461,10 @@ test "group opacity is compositing rather than inherited child opacity" {
       !event.difference_regions.is_empty()
     }),
   )
+  assert_eq(report.visual_scene.summary.style, "changed")
+  assert_true(
+    report.visual_scene.events.any(event => event.kind == "style.change"),
+  )
 }
 
 ///|

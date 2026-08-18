@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -12,6 +12,94 @@
     "changed_pixels": 80,
     "changed_fraction": 0.3125,
     "linear_rgba_rmse": 0.1890332336387133
+  },
+  "scene": {
+    "summary": {
+      "status": "computed",
+      "content": "preserved",
+      "object_set": "preserved",
+      "relation_graph": "preserved",
+      "layout": "preserved",
+      "style": "changed",
+      "representation": "preserved",
+      "before_object_count": 1,
+      "after_object_count": 1,
+      "before_relation_count": 0,
+      "after_relation_count": 0
+    },
+    "before_objects": [
+      {
+        "id": "object:before:0",
+        "role": "graphic",
+        "primitives": [
+          "polygon"
+        ],
+        "bounds": [
+          -3,
+          -3,
+          22,
+          21
+        ]
+      }
+    ],
+    "after_objects": [
+      {
+        "id": "object:after:0",
+        "role": "graphic",
+        "primitives": [
+          "polygon"
+        ],
+        "bounds": [
+          -3,
+          -3,
+          22,
+          21
+        ]
+      }
+    ],
+    "before_relations": [],
+    "after_relations": [],
+    "alignments": [
+      {
+        "id": "object-alignment:0",
+        "relation": "correspondence",
+        "before": [
+          "object:before:0"
+        ],
+        "after": [
+          "object:after:0"
+        ],
+        "basis": "authored_identity/v1",
+        "ambiguity": "none"
+      }
+    ],
+    "events": [
+      {
+        "id": "scene-event:0",
+        "kind": "style.change",
+        "object_alignment_ids": [
+          "object-alignment:0"
+        ],
+        "difference_ids": [
+          "diff:entity:star:fill-rule",
+          "diff:entity:star:paint-order"
+        ],
+        "evidence_event_ids": [
+          "event:star:fill-rule"
+        ],
+        "evidence_difference_count": 2,
+        "evidence_domains": [
+          {
+            "domain": "paint.fill_rule",
+            "count": 1
+          },
+          {
+            "domain": "paint.order",
+            "count": 1
+          }
+        ]
+      }
+    ]
   },
   "difference_groups": [
     {

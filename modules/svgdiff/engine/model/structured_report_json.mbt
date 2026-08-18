@@ -534,12 +534,118 @@ fn compact_limitation(value : Diagnostic) -> Json {
 }
 
 ///|
+fn compact_visual_object_bounds(value : VisualObjectBounds) -> Json {
+  [value.x, value.y, value.width, value.height].to_json()
+}
+
+///|
+fn compact_visual_object(value : VisualObjectSummary) -> Json {
+  let fields : Map[String, Json] = Map([])
+  fields["id"] = value.id.to_json()
+  fields["role"] = value.role.to_json()
+  put_optional(fields, "label", value.label)
+  if !value.semantic_text.is_empty() {
+    fields["text"] = value.semantic_text.to_json()
+  }
+  if !value.symbolic_text.is_empty() {
+    fields["symbols"] = value.symbolic_text.to_json()
+  }
+  fields["primitives"] = value.primitive_kinds.to_json()
+  match value.bounds {
+    Some(bounds) => fields["bounds"] = compact_visual_object_bounds(bounds)
+    None => ()
+  }
+  Json::object(fields)
+}
+
+///|
+fn compact_visual_object_alignment(value : VisualObjectAlignment) -> Json {
+  {
+    "id": value.id,
+    "relation": value.relation,
+    "before": value.before_object_ids,
+    "after": value.after_object_ids,
+    "basis": value.basis,
+    "ambiguity": value.ambiguity,
+  }
+}
+
+///|
+fn compact_visual_relation(value : VisualRelationSummary) -> Json {
+  let fields : Map[String, Json] = Map([])
+  fields["id"] = value.id.to_json()
+  put_optional(fields, "label", value.label)
+  fields["endpoints"] = value.endpoint_object_ids.to_json()
+  fields["endpoint_basis"] = value.endpoint_basis.to_json()
+  Json::object(fields)
+}
+
+///|
+fn compact_visual_change_event(value : VisualChangeEvent) -> Json {
+  {
+    "id": value.id,
+    "kind": value.kind,
+    "object_alignment_ids": value.object_alignment_ids,
+    "difference_ids": value.atomic_difference_ids,
+    "evidence_event_ids": value.evidence_event_ids,
+    "evidence_difference_count": value.evidence_difference_count,
+    "evidence_domains": [
+      for item in value.evidence_domains => {
+        { "domain": item.domain, "count": item.count }
+      }
+    ],
+  }
+}
+
+///|
+fn compact_visual_scene(value : VisualSceneAnalysis) -> Json {
+  {
+    "summary": {
+      "status": value.summary.status,
+      "content": value.summary.content,
+      "object_set": value.summary.object_set,
+      "relation_graph": value.summary.relation_graph,
+      "layout": value.summary.layout,
+      "style": value.summary.style,
+      "representation": value.summary.representation,
+      "before_object_count": value.summary.before_object_count,
+      "after_object_count": value.summary.after_object_count,
+      "before_relation_count": value.summary.before_relation_count,
+      "after_relation_count": value.summary.after_relation_count,
+    },
+    "before_objects": [
+      for object in value.before_objects => compact_visual_object(object)
+    ],
+    "after_objects": [
+      for object in value.after_objects => compact_visual_object(object)
+    ],
+    "before_relations": [
+      for relation in value.before_relations => {
+        compact_visual_relation(relation)
+      }
+    ],
+    "after_relations": [
+      for relation in value.after_relations => compact_visual_relation(relation)
+    ],
+    "alignments": [
+      for alignment in value.alignments => {
+        compact_visual_object_alignment(alignment)
+      }
+    ],
+    "events": [
+      for event in value.events => compact_visual_change_event(event)
+    ],
+  }
+}
+
+///|
 pub impl ToJson for StructuredReport with fn to_json(self) {
   {
     "schema_version": self.schema_version,
     "analysis_status": self.analysis_status,
     "comparison": compact_comparison(self.profile),
     "canvas": compact_canvas_outcome(self.canvas_outcome),
+    "scene": compact_visual_scene(self.visual_scene),
     "difference_groups": compact_difference_groups(self),
     "events": [
       for event in self.events => compact_event(self, event)

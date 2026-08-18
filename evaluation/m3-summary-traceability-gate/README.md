@@ -11,7 +11,7 @@ This gate composes the existing compact JSON, Agent projection, Impact frontier,
 ## Exact claim
 
 - Default and `--agent-json` outputs parse to the same complete Structured Report value.
-- `svgdiff-agent-projection/1` reconstructs the exact canonical report and rejects incomplete, duplicated, reordered, miscounted, relabeled, unknown-version, and wrong-source-Schema streams.
+- `svgdiff-agent-projection/2` reconstructs the exact canonical report and rejects incomplete, duplicated, reordered, miscounted, relabeled, unknown-version, and wrong-source-Schema streams.
 - Every Impact frontier group carries the exact ordered union of Atomic Differences owned by its listed events.
 - Existing typed report references keep regions, Cause Envelopes, Changed Facts, Subject Alignments, and Diagnostics transitively reachable from summary IDs.
 - Markdown retains stable frontier, difference, alignment, fact, and Diagnostic IDs plus the report status and Impact limitations. It explicitly says that evidence may be omitted and canonical JSON remains authoritative.
@@ -32,4 +32,4 @@ The accepted result is:
 M3 compact-summary traceability gate: passed
 ```
 
-This gate changes no product format or policy. Structured Report Schema `2.0`, projection `svgdiff-agent-projection/1`, Impact policy `event_rendered_pareto/v1`, and the derived-only Markdown authority remain unchanged.
+This gate changes no product format or policy. Structured Report Schema `3.0`, projection `svgdiff-agent-projection/2`, Impact policy `event_rendered_pareto/v1`, and the derived-only Markdown authority remain unchanged.

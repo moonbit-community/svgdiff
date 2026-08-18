@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-const AGENT_PROJECTION_VERSION : String = "svgdiff-agent-projection/1"
+const AGENT_PROJECTION_VERSION : String = "svgdiff-agent-projection/2"
 
 ///|
 fn projection_header(report : StructuredReport) -> Json {
@@ -32,6 +32,7 @@ fn projection_header(report : StructuredReport) -> Json {
       "analysis_status": report.analysis_status,
       "comparison": compact_comparison(report.profile),
       "canvas": compact_canvas_outcome(report.canvas_outcome),
+      "scene": compact_visual_scene(report.visual_scene),
     },
   }
 }

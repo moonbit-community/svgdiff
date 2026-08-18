@@ -7,7 +7,7 @@ visual-semantic differences without inspecting images directly.
 ## Install
 
 ```sh
-moon add Milky2018/svgdiff@0.7.1
+moon add Milky2018/svgdiff@0.8.0
 ```
 
 ## Compare SVG sources
@@ -22,8 +22,10 @@ test "compare SVG source strings through the public package" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "2.0")
+  assert_eq(report.schema_version, "3.0")
   assert_eq(report.analysis_status, "complete")
+  assert_eq(report.visual_scene.summary.object_set, "preserved")
+  assert_eq(report.visual_scene.summary.style, "changed")
   assert_true(report.atomic_differences.length() > 0)
   assert_true(report.events.length() > 0)
 }

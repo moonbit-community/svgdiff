@@ -701,7 +701,123 @@ pub(all) struct RendererCapabilityGap {
 } derive(ToJson)
 
 ///|
-/// Complete schema `2.0` result of one SVG comparison.
+/// Canvas-space bounds owned by one extracted Visual Object.
+pub(all) struct VisualObjectBounds {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+}
+
+///|
+/// One user-perceived object assembled from one or more paint primitives.
+pub(all) struct VisualObjectSummary {
+  id : String
+  side : String
+  role : String
+  label : String?
+  semantic_text : Array[String]
+  symbolic_text : Array[String]
+  primitive_kinds : Array[String]
+  bounds : VisualObjectBounds?
+}
+
+///|
+/// Evidence-backed correspondence between before and after Visual Objects.
+pub(all) struct VisualObjectAlignment {
+  id : String
+  relation : String
+  before_object_ids : Array[String]
+  after_object_ids : Array[String]
+  basis : String
+  ambiguity : String
+}
+
+///|
+/// One relation between extracted Visual Objects.
+pub(all) struct VisualRelationSummary {
+  id : String
+  side : String
+  label : String?
+  endpoint_object_ids : Array[String]
+  endpoint_basis : String
+}
+
+///|
+/// Cardinality summary for one Atomic Difference domain supporting a scene event.
+pub(all) struct VisualEvidenceDomain {
+  domain : String
+  count : Int
+}
+
+///|
+/// One coherent scene- or object-level visual change.
+pub(all) struct VisualChangeEvent {
+  id : String
+  kind : String
+  object_alignment_ids : Array[String]
+  atomic_difference_ids : Array[String]
+  evidence_event_ids : Array[String]
+  evidence_difference_count : Int
+  evidence_domains : Array[VisualEvidenceDomain]
+}
+
+///|
+/// Orthogonal scene conclusions. Relations are `preserved`, `changed`, or
+/// `indeterminate`; they are not severity labels or a universal score.
+pub(all) struct VisualSceneSummary {
+  status : String
+  content : String
+  object_set : String
+  relation_graph : String
+  layout : String
+  style : String
+  representation : String
+  before_object_count : Int
+  after_object_count : Int
+  before_relation_count : Int
+  after_relation_count : Int
+}
+
+///|
+/// Object-graph interpretation layered over authoritative primitive evidence.
+pub(all) struct VisualSceneAnalysis {
+  summary : VisualSceneSummary
+  before_objects : Array[VisualObjectSummary]
+  after_objects : Array[VisualObjectSummary]
+  before_relations : Array[VisualRelationSummary]
+  after_relations : Array[VisualRelationSummary]
+  alignments : Array[VisualObjectAlignment]
+  events : Array[VisualChangeEvent]
+}
+
+///|
+pub fn empty_visual_scene_analysis() -> VisualSceneAnalysis {
+  {
+    summary: {
+      status: "not_computed",
+      content: "indeterminate",
+      object_set: "indeterminate",
+      relation_graph: "indeterminate",
+      layout: "indeterminate",
+      style: "indeterminate",
+      representation: "indeterminate",
+      before_object_count: 0,
+      after_object_count: 0,
+      before_relation_count: 0,
+      after_relation_count: 0,
+    },
+    before_objects: [],
+    after_objects: [],
+    before_relations: [],
+    after_relations: [],
+    alignments: [],
+    events: [],
+  }
+}
+
+///|
+/// Complete schema `3.0` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -712,6 +828,7 @@ pub(all) struct StructuredReport {
   impact_assessment : ImpactAssessment
   coverage_matrix : Array[FeatureCoverage]
   renderer_capability_gaps : Array[RendererCapabilityGap]
+  visual_scene : VisualSceneAnalysis
   profile : ComparisonProfile
   subject_alignments : Array[SubjectAlignment]
   changed_facts : Array[ChangedFact]
@@ -722,13 +839,13 @@ pub(all) struct StructuredReport {
 }
 
 ///|
-/// Serialize this report as indented schema `2.0` JSON.
+/// Serialize this report as indented schema `3.0` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `2.0` JSON.
+/// Serialize this report as whitespace-free schema `3.0` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.

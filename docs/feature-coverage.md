@@ -1,8 +1,8 @@
 # Feature Coverage Matrix
 
-Status: current schema `2.0` internal coverage map
+Status: current schema `3.0` internal coverage map
 
-Last verified: 2026-07-20
+Last verified: 2026-08-18
 
 This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics and tests that enforce it. It is an implementation index, not an expansion of the supported scope.
 
@@ -13,13 +13,13 @@ This matrix connects the [v1 support contract](v1-scope.md) to the Diagnostics a
 | Complete-eligible | The feature can participate in a `complete` report when every other encountered semantic is also covered. |
 | Partial | The engine retains independently supported evidence but emits a Diagnostic that prevents a complete conclusion. |
 | Failed | The engine cannot establish a valid comparison document and returns `failed`. |
-| Deferred | The feature is intentionally outside schema `2.0`; current inputs are diagnosed through a partial guard. |
+| Deferred | The feature is intentionally outside schema `3.0`; current inputs are diagnosed through a partial guard. |
 
 Coverage is evaluated for the whole comparison. One limited feature-layer cell makes the report partial even when every other row is covered.
 
 ## Runtime matrix contract
 
-The engine builds a typed `coverage_matrix` before deriving `analysis_status`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations. Schema `2.0` does not serialize successful rows; it emits only encountered gaps through `limitations`.
+The engine builds a typed `coverage_matrix` before deriving `analysis_status`. Each row has a stable feature ID, a report subject, one status for each canonical evidence layer, and the Diagnostic IDs that explain limitations. Schema `3.0` does not serialize successful rows; it emits only encountered gaps through `limitations`.
 
 | Cell status | Source Semantics | Computed Appearance | Rendered Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Feature IDs use five current namespaces:
 | `guard.<diagnostic-code>` | One encountered unsupported, deferred, or failed feature guard. |
 | `resource.<dimension>` | One fixed comparison budget that was exceeded. |
 
-Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Legacy schemas through `1.45` serialized this matrix; Schema `2.0` keeps it inside the typed engine model.
+Rows are deterministically ordered by feature ID and then subject ID using MoonBit `String::compare` shortlex order: shorter ASCII report keys precede longer keys, and equal-length keys compare by code unit. `analysis_status` is derived from the strongest cell: `failed` outranks `limited`, and a matrix containing only `covered` and `not_applicable` cells is `complete`. Legacy schemas through `1.45` serialized this matrix; Schema `3.0` keeps it inside the typed engine model.
 
 The canonical production-report examples validate nonempty and unique feature/subject keys, deterministic row order, all three layer states, Diagnostic closure for every limited or failed cell, and exact `analysis_status` derivation. This end-to-end check complements the MoonBit complete, partial, failed, and proof-obligation tests.
 
@@ -97,7 +97,7 @@ The third M2 gate validates the downstream evidence graph. Its [soundness invent
 
 ## Guarded, partial, and failed capabilities
 
-Renderer-specific rows also produce typed capability-gap records with stable capability IDs and establishing Diagnostic IDs. Schema `2.0` folds encountered public consequences into `limitations` rather than exposing a second renderer inventory. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../modules/svgdiff/engine/renderer_capabilities_test.mbt).
+Renderer-specific rows also produce typed capability-gap records with stable capability IDs and establishing Diagnostic IDs. Schema `3.0` folds encountered public consequences into `limitations` rather than exposing a second renderer inventory. Executable mapping coverage lives in [`renderer_capabilities_test.mbt`](../modules/svgdiff/engine/renderer_capabilities_test.mbt).
 
 | Feature or condition | Report status | Diagnostic code | Constrained evidence | Executable coverage |
 | --- | --- | --- | --- | --- |
@@ -159,6 +159,7 @@ Renderer-specific rows also produce typed capability-gap records with stable cap
 | Ambiguous or unsupported source-subject alignment in the inheritance analyzer | Partial | `source_subject_alignment_unsupported` | Source, computed, rendered | Covered indirectly by the inheritance analyzer fallback; add a direct regression test before treating this code as a stable public diagnostic |
 | Duplicate authored IDs that prevent sound source subject identity | Partial | `duplicate_source_subject_id` | Source, computed | [`inherited_fill_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/inherited_fill_wbtest.mbt) exercises hierarchy construction; a direct report-level regression test remains required |
 | No specialized analyzer can prove coverage | Partial | `analysis_coverage_unproven` | Source, computed, rendered | [`structured_report_test.mbt`](../modules/svgdiff/engine/structured_report_test.mbt): unsupported-subject equality guard |
+| Required Visual Object Graph assembly fails after primitive comparison | Partial | `visual_scene_analysis_unavailable` | Source, computed; retained primitive and rendered evidence remains usable | [`feature_coverage_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/feature_coverage_wbtest.mbt): explicit limitation, coverage row, and proof-closure regression |
 | Final analyzer output does not satisfy the coverage proof obligations | Partial | `coverage_proof_incomplete` | Source, computed, rendered | [`coverage_proof_wbtest.mbt`](../modules/svgdiff/engine/internal/diff/coverage_proof_wbtest.mbt): missing domain and property row downgrade tests |
 
 ## Diagnostic implementation sources

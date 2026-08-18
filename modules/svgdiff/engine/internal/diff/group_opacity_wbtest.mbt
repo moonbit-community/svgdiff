@@ -62,6 +62,7 @@ test "group opacity source spellings retain equivalent computed evidence" {
   assert_eq(event.rendered_outcome.status, "computed")
   assert_eq(event.rendered_outcome.magnitude.unwrap().changed_pixels, 0)
   assert_true(event.difference_regions.is_empty())
+  assert_eq(report.visual_scene.summary.style, "preserved")
 }
 
 ///|

@@ -130,6 +130,14 @@ pw --raw run-code \
       overlayLabels: await page.locator('.region-label').count(),
       effectiveValueOptions: await page.locator('#relation-filter option').allTextContents(),
     };
+    const sceneUi = {
+      heading: await page.getByRole('heading', { name: 'Visual object conclusion' }).textContent(),
+      values: await page.locator('#overview .overview-grid').nth(0).locator('.metric-value').allTextContents(),
+      eventCards: await page.locator('#overview button.callout').allTextContents(),
+    };
+    await page.locator('#overview button.callout').first().hover();
+    sceneUi.hoverOverlays = await page.locator('.overlay .region.observed').count();
+    await page.locator('#overview-heading').hover();
     await page.locator('#before-source').fill('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"256\"><rect id=\"no-viewbox-target\" x=\"32\" y=\"32\" width=\"64\" height=\"64\" fill=\"red\"/></svg>');
     await page.locator('#after-source').fill('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"256\"><rect id=\"no-viewbox-target\" x=\"32\" y=\"32\" width=\"64\" height=\"64\" fill=\"blue\"/></svg>');
     await page.getByRole('button', { name: 'Compare SVGs' }).click();
@@ -181,6 +189,11 @@ pw --raw run-code \
         expectedDomains,
         transforms,
         analysisStatus: affineReport.analysis_status,
+        sceneSummary: affineReport.scene.summary,
+        sceneEvents: affineReport.scene.events.map(event => ({
+          kind: event.kind,
+          alignmentCount: event.object_alignment_ids.length,
+        })),
         domains: affineDifferences.map(difference => difference.kind),
         unexpectedScale: id === 'rotation' && affineDifferences.some(difference => difference.kind === 'geometry.transform.scale'),
         changedScores: await page.locator('.score-card .score-value').allTextContents(),
@@ -240,6 +253,11 @@ pw --raw run-code \
         source,
         viewport: exampleReport.comparison.viewport,
         analysisStatus: exampleReport.analysis_status,
+        sceneSummary: exampleReport.scene.summary,
+        sceneEvents: exampleReport.scene.events.map(event => ({
+          kind: event.kind,
+          alignmentCount: event.object_alignment_ids.length,
+        })),
         atomicDifferences: exampleReport.difference_groups.flatMap(group => group.items).length,
         diagnostics: exampleReport.limitations.length,
         causePresentation,
@@ -267,6 +285,8 @@ pw --raw run-code \
       status: baselineUi.status,
       analysisStatus: report.analysis_status,
       schemaVersion: report.schema_version,
+      sceneSummary: report.scene.summary,
+      sceneUi,
       atomicDifferences: report.difference_groups.flatMap(group => group.items).length,
       diagnostics: report.limitations.length,
       baselineCauses: report.events.flatMap(event =>
@@ -321,7 +341,25 @@ jq -e '
   .sourceFacts.afterSize == {"x":"152","y":"52","width":"72","height":"72","fill":"#16a34a"} and
   .effectiveValueOptions == ["Any effective value","Different","Same","Unknown"] and
   .analysisStatus == "complete" and
-  .schemaVersion == "2.0" and
+  .schemaVersion == "3.0" and
+  .sceneSummary == {
+    "status":"computed",
+    "content":"preserved",
+    "object_set":"preserved",
+    "relation_graph":"preserved",
+    "layout":"changed",
+    "style":"changed",
+    "representation":"preserved",
+    "before_object_count":2,
+    "after_object_count":2,
+    "before_relation_count":0,
+    "after_relation_count":0
+  } and
+  .sceneUi.heading == "Visual object conclusion" and
+  .sceneUi.values == ["preserved","preserved","preserved","changed","changed","preserved"] and
+  (.sceneUi.eventCards | length) == 2 and
+  all(.sceneUi.eventCards[]; startswith("layout.reflow") or startswith("style.change")) and
+  .sceneUi.hoverOverlays == 2 and
   .atomicDifferences == 3 and
   .diagnostics == 0 and
   all(.baselineCauses[];
@@ -353,6 +391,12 @@ jq -e '
   all(.affineExamples[];
     .transforms[0] != .transforms[1] and
     (.analysisStatus == "complete" or .analysisStatus == "partial") and
+    .sceneSummary.status == "computed" and
+    .sceneSummary.before_object_count >= 0 and
+    .sceneSummary.after_object_count >= 0 and
+    .sceneSummary.before_relation_count >= 0 and
+    .sceneSummary.after_relation_count >= 0 and
+    (.sceneEvents | length) <= 6 and
     ((.expectedDomains - .domains) | length == 0) and
     (.unexpectedScale | not) and
     all(.changedScores[]; endswith("%") and . != "0.00%")
@@ -377,6 +421,12 @@ jq -e '
     any(.scores[]; . != "0.00%")
   ) and
   (.realExamples[] | select(.id == "viewBoxScale") |
+    .sceneSummary.content == "preserved" and
+    .sceneSummary.object_set == "preserved" and
+    .sceneSummary.relation_graph == "preserved" and
+    .sceneSummary.layout == "preserved" and
+    .sceneSummary.style == "preserved" and
+    .sceneSummary.representation == "preserved" and
     .differencePixels.nonBlack <= 8 and
     .scores == ["0.00%","0.00%","0.00%"] and
     (.eventOutcomes | length) == 2 and

@@ -2,7 +2,7 @@
 
 Status: current release contract
 
-Last verified: 2026-07-23
+Last verified: 2026-08-18
 
 `svgdiff` has several independently versioned compatibility domains. A release must change every identity whose contract changed, but must not increment unrelated identities merely to keep their numbers visually aligned.
 
@@ -10,13 +10,13 @@ Last verified: 2026-07-23
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.7.1` | `modules/svgdiff/moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `2.0` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
-| Agent projection | `svgdiff-agent-projection/1` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
-| Limitations | Schema `2.0` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
+| MoonBit module and CLI | `0.8.0` | `modules/svgdiff/moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `3.0` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| Agent projection | `svgdiff-agent-projection/2` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
+| Limitations | Schema `3.0` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
-| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `2.0`. |
-| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `2.0`. |
+| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `3.0`. |
+| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `3.0`. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/27` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
@@ -167,6 +167,21 @@ Module `0.7.1` publishes the unified `cmd/svgdiff` package for native and WASIp1
 
 Schema `2.0` reclassifies every current Event-level Difference Region as `conservative` and reserves `observed` for future evidence that establishes an Event's scene-level contribution. It also serializes Cause Envelope scope explicitly: `event_region` carries concrete candidate Difference IDs, while `comparison` denotes the whole report inventory without repeating that array in every region. Atomic items retain exact local authored evidence and only direct magnitudes; the owning Event serializes its final raster response and any agreeing isolated-subject painted-boundary or coverage observation exactly once. This ownership prevents duplicated event evidence from implying an independent contribution by every child while preserving every Atomic Difference. Because existing consumers may interpret `observed` as stronger evidence and because the serialized meaning and shape changed, this is a report-semantic breaking change. Schema `1.46` consumers must explicitly migrate or reject `2.0`; no legacy producer is retained.
 
+Schema `3.0` adds the required Visual Object Graph as the primary semantic
+projection. It serializes objects, relation endpoints, abstaining and set-to-set
+object alignments, orthogonal scene conclusions, and compact coherent Visual
+Change Events while retaining schema `2.0` primitive evidence as a subordinate
+traceability layer. Agent projection `/2` adds this required scene value to the
+header. This is a direct breaking migration; no legacy producer is retained.
+
+Module `0.8.0` implements Schema `3.0` and makes the Visual Object Graph the
+primary public comparison result. The required typed `visual_scene` field and
+its serialized `scene` projection are source- and report-incompatible changes,
+so the module advances to a new pre-1.0 minor line. Renderer identity,
+conformance profile `/27`, ordering policy, and Impact policy remain unchanged.
+The new `visual_scene_analysis_unavailable` limitation prevents a failed scene
+projection from silently appearing as an empty computed scene.
+
 ## Structured Report schema versions
 
 `schema_version` uses `MAJOR.MINOR`, not the module SemVer.
@@ -208,7 +223,7 @@ Assessments with different policy IDs are incomparable. Consumers must reject or
 
 ## Agent projection compatibility
 
-`svgdiff-agent-projection/1` versions the JSONL record envelope, header fields, canonical section order, sequence and index rules, section counts, and exact reconstruction requirement. Consumers must reject an unknown projection identity or source Schema identity before reading item values. Adding, removing, renaming, or reordering a projection section, changing record meanings, or weakening integrity checks allocates a new projection identity.
+`svgdiff-agent-projection/2` versions the JSONL record envelope, header fields, canonical section order, sequence and index rules, section counts, and exact reconstruction requirement. Consumers must reject an unknown projection identity or source Schema identity before reading item values. Adding, removing, renaming, or reordering a projection section, changing record meanings, or weakening integrity checks allocates a new projection identity.
 
 The projection does not version the copied report values; `source_schema_version` names that independent contract. A new Structured Report Schema may use the same projection identity only when the record protocol can carry and reconstruct it without changing projection semantics and its Schema explicitly accepts that source identity.
 

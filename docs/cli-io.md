@@ -27,7 +27,7 @@ Missing positional operands never imply stdin. Resource options are repeatable s
 | --- | --- | --- |
 | Default comparison | One canonical Structured Report JSON document followed by a newline | Empty on success |
 | `--agent-json` | One whitespace-free canonical Structured Report JSON document followed by a newline | Empty on success |
-| `--agent-projection` | One lossless `svgdiff-agent-projection/1` JSONL stream followed by a newline | Empty on success |
+| `--agent-projection` | One lossless `svgdiff-agent-projection/2` JSONL stream followed by a newline | Empty on success |
 | `--output report.json` | Empty | Empty on success; the selected canonical JSON or projection JSONL is written to the selected file |
 | `--html report.html` | Unchanged from the JSON rule | Empty on success; HTML is written independently |
 | `--summary summary.md` | Unchanged from the selected JSON or JSONL rule | Empty on success; derived non-authoritative Markdown is written independently |

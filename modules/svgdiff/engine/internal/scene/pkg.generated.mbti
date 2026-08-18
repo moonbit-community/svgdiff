@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff/engine/internal/scene"
+
+import {
+  "Milky2018/svgdiff/engine/model",
+}
+
+// Values
+pub fn attach_visual_scene_evidence(@model.VisualSceneAnalysis, Array[@model.AtomicDifference], Array[@model.VisualEvent]) -> @model.VisualSceneAnalysis
+
+pub fn compare_visual_scenes(String, String, @model.ComparisonProfile) -> @model.VisualSceneAnalysis raise
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

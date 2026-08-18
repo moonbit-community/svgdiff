@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "analysis_status": "failed",
   "comparison": {
     "viewport": {
@@ -10,6 +10,27 @@
   "canvas": {
     "status": "not_computed",
     "reason": "rendered_evidence_unavailable"
+  },
+  "scene": {
+    "summary": {
+      "status": "not_computed",
+      "content": "indeterminate",
+      "object_set": "indeterminate",
+      "relation_graph": "indeterminate",
+      "layout": "indeterminate",
+      "style": "indeterminate",
+      "representation": "indeterminate",
+      "before_object_count": 0,
+      "after_object_count": 0,
+      "before_relation_count": 0,
+      "after_relation_count": 0
+    },
+    "before_objects": [],
+    "after_objects": [],
+    "before_relations": [],
+    "after_relations": [],
+    "alignments": [],
+    "events": []
   },
   "difference_groups": [],
   "events": [],

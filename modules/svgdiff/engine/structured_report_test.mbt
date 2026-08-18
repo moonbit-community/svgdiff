@@ -360,7 +360,7 @@ test "structured report serializes the concise agent-facing result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "2.0",
+      "schema_version": "3.0",
       "analysis_status": "partial",
       "comparison": _,
       "difference_groups": [_],
@@ -457,7 +457,7 @@ test "compact JSON preserves the concise structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "2.0",
+      "schema_version": "3.0",
       "analysis_status": "partial",
       "comparison": _,
       "canvas": _,
