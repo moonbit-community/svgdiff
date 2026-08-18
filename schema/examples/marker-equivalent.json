@@ -98,8 +98,7 @@
           "magnitude": {
             "parameter_abs_user_units": 0,
             "parameter_signed_user_units": 0,
-            "symmetric_relative": 0,
-            "parameter_abs_css_px": 0
+            "symmetric_relative": 0
           }
         }
       ]

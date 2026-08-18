@@ -146,15 +146,7 @@ fn compact_difference_magnitude(
     value.parameter_signed_user_units,
   )
   put_optional(fields, "symmetric_relative", value.symmetric_relative)
-  match value.parameter_abs_css_px {
-    Some(number) => fields["parameter_abs_css_px"] = number.to_json()
-    None =>
-      put_optional(
-        fields,
-        "parameter_abs_css_px",
-        difference.parameter_delta_css_px,
-      )
-  }
+  put_optional(fields, "parameter_abs_css_px", value.parameter_abs_css_px)
   put_optional(
     fields,
     "parameter_viewport_fraction",

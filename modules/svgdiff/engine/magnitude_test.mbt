@@ -204,16 +204,40 @@ test "non-spatial scalar parameters do not invent spatial scales" {
 test "incomplete coordinate transforms keep spatial parameter scales unavailable" {
   let report = @engine.compare(
     "<svg width='16' height='16'><rect id='box' x='1' width='4' height='4' transform='translate(1,)'/></svg>",
-    "<svg width='16' height='16'><rect id='box' x='2' width='4' height='4' transform='translate(1,)'/></svg>",
+    "<svg width='16' height='16'><rect id='box' x='0' width='4' height='4' transform='translate(1,)'/></svg>",
     @engine.ComparisonProfile::v1_default(),
   )
   let position = report.atomic_differences.filter(difference => {
       difference.domain == "geometry.position"
     })[0]
   assert_eq(position.magnitude.parameter_abs_user_units, Some(1.0))
+  assert_eq(position.magnitude.parameter_signed_user_units, Some(-1.0))
   assert_true(position.magnitude.parameter_abs_css_px is None)
   assert_true(position.magnitude.parameter_viewport_fraction is None)
   assert_true(position.magnitude.parameter_entity_fraction is None)
+  guard @json.parse(report.to_compact_json_string()) is Object(root) &&
+    root["difference_groups"] is Array(groups) else {
+    fail("compact report must contain difference groups")
+  }
+  let mut found = false
+  for group in groups {
+    guard group is Object(group) && group["items"] is Array(items) else {
+      continue
+    }
+    for item in items {
+      guard item is Object(item) &&
+        item["id"] is String(id) &&
+        id == position.id else {
+        continue
+      }
+      guard item["magnitude"] is Object(magnitude) else {
+        fail("position difference must retain its available magnitudes")
+      }
+      assert_false(magnitude.contains("parameter_abs_css_px"))
+      found = true
+    }
+  }
+  assert_true(found)
 }
 
 ///|
