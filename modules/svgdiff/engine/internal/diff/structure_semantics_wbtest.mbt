@@ -118,6 +118,7 @@ test "use placement reaches cumulative subject transforms" {
     subjects,
     ComparisonProfile::v1_default(),
     ComparisonGuard::new(ComparisonControl::unlimited()),
+    (Array::make(subjects.length(), None), Array::make(subjects.length(), None)),
   )
   assert_eq(alignments.length(), 2)
   assert_eq(alignment_bounds(alignments[0], subjects, subjects).unwrap().x, 2.0)

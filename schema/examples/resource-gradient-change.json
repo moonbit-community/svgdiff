@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "box"
+        ],
         "bounds": [
           2,
           2,
@@ -48,6 +51,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "box"
         ],
         "bounds": [
           2,
@@ -77,7 +83,10 @@
       {
         "id": "scene-event:0",
         "kind": "style.change",
-        "object_alignment_ids": [],
+        "scope": "object",
+        "object_alignment_ids": [
+          "object-alignment:0"
+        ],
         "difference_ids": [
           "diff:alignment:0:fill:gradient"
         ],
@@ -92,7 +101,18 @@
           }
         ]
       }
-    ]
+    ],
+    "evidence_coverage": {
+      "effective_difference_count": 2,
+      "classified_difference_count": 1,
+      "residual_difference_count": 1,
+      "residual_domains": [
+        {
+          "domain": "resource.gradient.stop.stop_color",
+          "count": 1
+        }
+      ]
+    }
   },
   "difference_groups": [
     {

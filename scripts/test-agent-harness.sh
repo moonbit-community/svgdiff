@@ -60,7 +60,7 @@ jq -s -e --argjson expected "$(jq '.cases | length' "$manifest")" '
     (keys | sort) == ["acceptance_version", "case_id", "prompt", "report"] and
     .acceptance_version == "agent-acceptance/1" and
     (.prompt | type == "string" and length > 0) and
-    (.report.schema_version == "3.0") and
+    (.report.schema_version == "4.0") and
     (has("before") | not) and
     (has("after") | not) and
     (has("annotations") | not) and

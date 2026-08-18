@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -17,7 +17,7 @@
     "summary": {
       "status": "computed",
       "content": "preserved",
-      "object_set": "changed",
+      "object_set": "preserved",
       "relation_graph": "preserved",
       "layout": "preserved",
       "style": "preserved",
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:0"
+        ],
         "bounds": [
           4,
           4,
@@ -46,6 +49,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "rect:1"
         ],
         "bounds": [
           4,
@@ -62,6 +68,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:0"
+        ],
         "bounds": [
           4,
           4,
@@ -74,6 +83,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "rect:1"
         ],
         "bounds": [
           4,
@@ -88,61 +100,26 @@
     "alignments": [
       {
         "id": "object-alignment:0",
-        "relation": "deletion",
+        "relation": "equivalence_class",
         "before": [
-          "object:before:0"
-        ],
-        "after": [],
-        "basis": "abstained_no_acceptable_candidate",
-        "ambiguity": "abstained"
-      },
-      {
-        "id": "object-alignment:1",
-        "relation": "deletion",
-        "before": [
+          "object:before:0",
           "object:before:1"
         ],
-        "after": [],
-        "basis": "abstained_no_acceptable_candidate",
-        "ambiguity": "abstained"
-      },
-      {
-        "id": "object-alignment:2",
-        "relation": "insertion",
-        "before": [],
         "after": [
-          "object:after:0"
-        ],
-        "basis": "abstained_no_acceptable_candidate",
-        "ambiguity": "abstained"
-      },
-      {
-        "id": "object-alignment:3",
-        "relation": "insertion",
-        "before": [],
-        "after": [
+          "object:after:0",
           "object:after:1"
         ],
-        "basis": "abstained_no_acceptable_candidate",
-        "ambiguity": "abstained"
+        "basis": "exact_visual_object_signature/v1",
+        "ambiguity": "set_to_set"
       }
     ],
-    "events": [
-      {
-        "id": "scene-event:0",
-        "kind": "object.presence",
-        "object_alignment_ids": [
-          "object-alignment:0",
-          "object-alignment:1",
-          "object-alignment:2",
-          "object-alignment:3"
-        ],
-        "difference_ids": [],
-        "evidence_event_ids": [],
-        "evidence_difference_count": 0,
-        "evidence_domains": []
-      }
-    ]
+    "events": [],
+    "evidence_coverage": {
+      "effective_difference_count": 0,
+      "classified_difference_count": 0,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [],
   "events": [],

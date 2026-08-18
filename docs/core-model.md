@@ -1,6 +1,6 @@
 # Core Comparison Model
 
-Status: current model for Structured Report schema `3.0`
+Status: current model for Structured Report schema `4.0`
 
 Last verified: 2026-08-18
 
@@ -31,15 +31,15 @@ SVG source
   -> authored visual facts and source spans
   -> private typed resource dependency graph
   -> supported computed facts and visual subjects
-  -> paint primitives and primitive subject alignments
-  -> visual components and visual objects
-  -> before/after visual object graph alignments
+  -> paint primitives and visual objects on each side
+  -> before/after visual object graph alignments with explicit abstention
+  -> object-owned primitive subject alignments
   -> changed facts and atomic evidence differences
   -> canonical raster observation and difference regions
   -> conservative cause envelopes
   -> coherent visual change events
   -> private typed analysis graph
-  -> concise Structured Report JSON 3.0
+  -> concise Structured Report JSON 4.0
 ```
 
 The typed MoonBit value retains detailed engine evidence for library callers and tests. Its JSON serializer is an intentional product boundary: it emits comparison inputs, whole-canvas measurements, the Visual Object Graph conclusion, grouped Atomic Differences, primitive evidence Events, localization/possible-cause links, and actual limitations. It does not serialize coverage rows, renderer adapters, primitive alignment scoring, Changed Facts, source spans, ordering vectors, or Impact bookkeeping. See the [concise JSON contract](agent-json.md).
@@ -62,7 +62,7 @@ The internal `ComparisonProfile` records:
 
 The root `compare` function preserves the caller-supplied viewport dimensions, optional Perceptual Background, optional FLIP Viewing Conditions, and optional FLIP error threshold while canonicalizing the other fields to the v1 defaults. The CLI defaults the common viewport to `16 x 16`, accepts explicit positive dimensions through `--width` and `--height`, records an opaque deterministic sRGB color through `--perceptual-background COLOR`, opts into LDR-FLIP through `--flip-pixels-per-degree PPD`, and records thresholded area only through `--flip-error-threshold VALUE`. It never guesses display geometry or a perceptual threshold.
 
-The Perceptual Background is profile evidence, not SVG paint and not a renderer clear color. Schema `3.0` continues to compute all raw pixels, magnitudes, regions, equality, and coverage on the transparent canvas. Event-local DeltaEOK and LDR-FLIP independently composite both raw event pixels over exactly this normalized color in linear sRGB. When the background is null, display-dependent measurements are unrequested rather than guessed; the concise JSON omits unrequested measurements.
+The Perceptual Background is profile evidence, not SVG paint and not a renderer clear color. Schema `4.0` continues to compute all raw pixels, magnitudes, regions, equality, and coverage on the transparent canvas. Event-local DeltaEOK and LDR-FLIP independently composite both raw event pixels over exactly this normalized color in linear sRGB. When the background is null, display-dependent measurements are unrequested rather than guessed; the concise JSON omits unrequested measurements.
 
 `schema_version` identifies the serialized report shape, `renderer_id` identifies the complete production rendering implementation including project-owned adapters, and `renderer_conformance_profile_id` identifies the reviewed fixture, disposition, guard, and future tolerance policy that bounds Rendered Evidence claims. None can substitute for another. JSON Schema verifies that renderer identities are present and structurally valid; the versioned compatibility policy decides which concrete identities a consumer accepts.
 
@@ -183,7 +183,19 @@ Schema `1.32` adds a separate source-structural alignment inventory for `g`, `te
 
 The typed model gives every alignment a closed `entity` or `resource` role. Groups, text, use hosts, rendered shapes, and image placement remain entity alignments. Symbols, gradients, patterns, markers, clip paths, masks, filters, and intrinsic image content use independent resource alignments. Every resource Atomic Difference names a resource-role alignment; resource-mediated entity outcomes keep their entity alignments and Changed Fact fan-out. Matching resource definitions, including renamed definitions, is correspondence evidence only and does not prove computed consumer equality or rendered equality. An SVG `image` therefore legitimately has both alignments over the same source reference: one for acquired or decoded content and one for placement. Text correspondence still does not imply font, shaping, glyph, or rendered equality. Unequal-cardinality or mixed-change repeated clusters remain roadmap work.
 
-Equally plausible current matches use the deterministic [v1 Subject Alignment tie-break policy](alignment-tie-breaking.md). Schema `1.1` adds optional selection `evidence`, and current producers always emit its score kind, nullable selected score, local candidate counts, and `unique`, `tied`, or `not_assessed` ambiguity. `confidence` remains null with `confidence_status: "not_calibrated"`. The selected pairing is repeatable, but local uniqueness does not imply authoritative identity or global assignment uniqueness.
+Rendered subjects owned by an extracted entity object are paired only inside
+the accepted Visual Object Alignment. Graphic subjects with the same authored
+identity use the same constraint; anonymous graphics retain the primitive
+split/merge and exact-equivalence rules. An unresolved object correspondence
+therefore cannot leak into a confident cross-object primitive pairing.
+
+Equally plausible minimum-cost matches abstain instead of using deterministic
+order as identity. A locally ambiguous edge is rejected even when it appears
+in one globally minimal assignment. The [v1 Subject Alignment policy](alignment-tie-breaking.md)
+still fixes deterministic report order and records score kind, selected score,
+candidate counts, and ambiguity for accepted pairs. `confidence` remains null
+with `confidence_status: "not_calibrated"`; neither a global optimum nor local
+uniqueness is an identity proof.
 
 This alignment uncertainty is independent from computed interpretation uncertainty. The latter is represented by `ComputedRelation.status: indeterminate`, resolving Diagnostic IDs, and limited Computed Appearance coverage. It is not assigned an invented probability or merged with alignment confidence.
 
@@ -224,7 +236,7 @@ Magnitude is a vector, not a universal similarity scalar. The current vector can
 - RGBA8 and linear-premultiplied-RGBA RMSE;
 - an optional intrinsic decoded-raster object with before/after dimensions and, for equal-sized resources, compared pixels, changed pixels, changed-pixel fraction, RGBA8 RMSE, and linear-premultiplied-RGBA RMSE.
 
-Unavailable components are not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are omitted from JSON because schema `3.0` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
+Unavailable components are not numeric zero. Intrinsic raster metrics never populate final-canvas raster fields. When intrinsic dimensions differ, the dimensions remain present and per-pixel metrics are omitted from JSON because schema `4.0` declares no implicit resampling policy. Insertion and deletion additionally use `PresenceMagnitude` to record subject count, geometric bounds, painted area, and viewport fractions from the side on which the content exists where that evidence is available.
 
 For an admitted scalar spatial parameter, `parameter_abs_user_units` is the canonical local numeric delta; exact authored spelling and units remain in `source_fact_before` and `source_fact_after`. `parameter_abs_css_px` applies one complete cumulative directional mapping only when that mapping is equal on both sides; equality means the relevant horizontal or vertical basis vector is equal, or the complete linear part is equal for an undirected radial parameter. It never takes the maximum of conflicting before and after mappings. Non-scaling stroke scalars use an identity mapping, while ordinary stroke width and dash offset require the same isotropic linear scale because an anisotropic transform has no direction-independent scalar conversion. `parameter_viewport_fraction` divides the same CSS value by `hypot(profile.viewport_width, profile.viewport_height)`. `parameter_entity_fraction` divides it by the maximum nonzero diagonal of the before and after conservative painted bounds, measured separately so movement does not inflate its own denominator. Basic-shape coordinates and dimensions, image placement and size, scalar stroke lengths, normalized path coordinates or radii, and decomposed transform translation populate these fields where the mapping is complete and common. A zero-size or unavailable entity, incomplete or conflicting transform, non-spatial scalar, angle, scale, list, categorical value, residual matrix, or context-shared resource parameter leaves the inapplicable fields null.
 
@@ -264,21 +276,43 @@ For complete source-input propagation, the engine retains every fact directly li
 A `VisualObject` groups one or more paint primitives around evidence of a
 user-perceived object. Text inventories, authored identities, spatial bounds,
 primitive composition, and effective style are independent evidence channels;
-no one channel is allowed to force a match. `ObjectAlignment` supports 1:1 and
-set-to-set correspondences and explicitly abstains when no candidate clears its
-acceptance rule. Relations retain resolved object endpoints, so graph
-preservation is established from topology rather than equal edge counts.
+an exact unique authored identity may establish correspondence, while weaker
+channels require compatible independent evidence. `ObjectAlignment` supports
+1:1 and set-to-set correspondences and explicitly emits `unresolved` when no
+candidate clears its acceptance rule. Unresolved correspondence makes affected
+scene axes `indeterminate`; it is not rewritten as insertion plus deletion.
+Relations retain resolved object endpoints, so graph preservation is
+established from topology rather than equal edge counts.
+
+A Visual Part is currently represented by the rendered subject IDs listed in a
+Visual Object's `subjects` field. These subjects remain the measurement and
+localization units, but their candidate correspondence is constrained by the
+owning Visual Object before primitive alignment runs. This is an internal
+ownership relation, not a claim that SVG element boundaries always coincide
+with human object boundaries.
 
 A `VisualChangeEvent` is the primary agent-facing conclusion. Its orthogonal
 axes are content, object presence, relation graph, layout, effective style, and
-representation. Each event carries compact evidence-domain cardinalities and
-representative Atomic Difference and primitive Event references. The complete
-primitive inventory remains available without being mistaken for hundreds of
-independent user-perceived changes.
+representation. `scope` is `object`, `systemic`, or `comparison`; a systemic
+event is one deterministic pattern spanning several Object Alignments, not a
+new owner of its Atomic Differences. Each event carries compact evidence-domain
+cardinalities, one representative Atomic Difference per domain, and every
+supporting primitive Event reference. The complete primitive inventory remains
+available without being mistaken for hundreds of independent user-perceived
+changes.
+
+`scene.evidence_coverage` makes this projection auditable. Every effective
+Atomic Difference is counted either in the unique union of scene-event evidence
+or in `residual_difference_count`; residual domains are summarized by
+cardinality. Here effective means every non-`equivalent` relation;
+`indeterminate` evidence therefore remains residual unless a future scene
+pattern explicitly models uncertainty. Consequently scene aggregation may
+shorten the primary conclusion without deleting unsupported or unclassified
+evidence.
 
 ### Primitive evidence Event
 
-A `VisualEvent` is the primitive evidence grouping unit. In schema `3.0` it records one subject, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions. It supports measurement and localization; it is no longer the primary semantic conclusion.
+A `VisualEvent` is the primitive evidence grouping unit. In schema `4.0` it records one subject, referenced Atomic Difference IDs, one rendered outcome, and zero or more Difference Regions. It supports measurement and localization; it is no longer the primary semantic conclusion.
 
 Current v1 entity events are anchored to one Primary Subject Alignment, and every Atomic Difference has exactly one owning event. All differences that describe that aligned-subject outcome group in the same event even when they reference several Changed Facts or belong to different domains. A stacking relationship uses one document-level relationship event because it relates two alignments; its Changed Fact lists both affected subjects and its regions conservatively retain the complete changed-pixel mask. The event's Rendered Outcome is measured once over the union of its Difference Regions; child magnitudes are not added together. When isolated painted-boundary or coverage observations agree across an event's children, concise JSON serializes them once as the event's shared isolated-subject evidence. It does not claim that every child independently produced that result. For conservative regions this is a bounded canvas response, not an exact contribution measurement.
 
@@ -286,7 +320,14 @@ Changed Facts express causal fan-out rather than event ownership. One Changed Fa
 
 A resource difference may share one entity event when that entity is its sole mediated outcome. An unreferenced or shared clip-resource change uses its own resource event, while its Changed Facts enumerate every consumer. Other future resource changes with several independent entity outcomes must use a separate resource event and shared Changed Fact references until the project accepts a versioned contextual-event link; assigning the resource Atomic Difference to one arbitrary entity or duplicating it across events is forbidden.
 
-Separate primary alignments remain separate outcome events even when they overlap or are adjacent, share hierarchy, Changed Facts, or resources, or appear visually coherent. A document-level stacking relationship records an evaluated pair; it does not merge either leaf's other outcomes. Cross-subject outcome grouping, separately aligned resource synthesis, and semantic theme detection remain future work. The governing ownership and fan-out decision is [ADR 0040](adr/0040-give-each-atomic-difference-one-event-owner.md); [ADR 0041](adr/0041-defer-cross-subject-event-aggregation.md) requires a measured report-only Agent failure plus a deterministic, traceable, versioned grouping and evaluation policy before that separate boundary can reopen. [ADR 0064](adr/0064-report-only-consequence-aware-structural-relationships.md) defines the relationship-event exception.
+Separate primary alignments remain separate primitive outcome events and every
+Atomic Difference still has exactly one owner. The scene layer may reference
+several such events through a systemic Visual Change Event when they support
+the same object-graph conclusion. This non-owning aggregation preserves ADR
+0040 while superseding ADR 0041 after the banking cross-generator case measured
+the predicted Agent fragmentation failure. ADR 0110 defines the object-first,
+lossless grouping policy; ADR 0064 continues to define the primitive
+relationship-event exception.
 
 ### Impact Assessment
 
@@ -302,11 +343,11 @@ A `Diagnostic` identifies an unsupported, unresolved, or failed analysis conditi
 
 ### Structured Report
 
-The schema `3.0` JSON object contains exactly these product-facing sections:
+The schema `4.0` JSON object contains exactly these product-facing sections:
 
 ```json
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete | partial | failed",
   "comparison": {},
   "canvas": {},
@@ -326,7 +367,9 @@ measurements are explained through `limitations`.
 `scene` contains the Visual Objects and relations on both sides, explicit
 object alignments, the six-axis conclusion, and coherent Visual Change Events.
 An `indeterminate` axis is never rewritten as preserved merely because counts
-match or the primitive matcher found no supported difference.
+match or the primitive matcher found no supported difference. Its evidence
+coverage counts establish that every effective Atomic Difference is either
+classified by at least one scene pattern or retained as a residual domain.
 
 `difference_groups` contains every Atomic Difference under one stable visual
 category. Each item retains local authored before/after values, its effective
@@ -337,7 +380,7 @@ measurements, CSS-space regions, and conservative possible causes.
 
 The typed engine result may retain richer coverage, alignment, provenance,
 resolution, ordering, and attribution state for testing and composition. None
-of that implementation state is part of schema `3.0` JSON. The exact caller
+of that implementation state is part of schema `4.0` JSON. The exact caller
 obligations are defined in the [Analysis Status Contract](analysis-status.md).
 
 ## Current invariants
@@ -353,13 +396,15 @@ obligations are defined in the [Analysis Status Contract](analysis-status.md).
 9. Every reported Difference Region carries a Cause Envelope.
 10. A Cause Envelope claiming `sound_overapproximation` may contain false positives but must contain every actual changed cause within the supported coverage boundary.
 11. Dependency-specific XML, SVG scene, image, and renderer types do not cross the public report seam.
-12. Object alignment may abstain; a rejected candidate becomes explicit one-sided evidence rather than a forced match.
+12. Object alignment may abstain; a rejected many-to-many candidate is explicit `unresolved` evidence rather than a forced match or fabricated insertion/deletion conclusion.
 13. A preserved relation graph requires resolved endpoints and equal aligned topology, not merely equal relation counts.
-12. HTML is a presentation of the Structured Report and must not recompute semantic differences.
-13. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every serialized report-local reference resolves within the report.
-13. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
+14. Entity subjects cannot pair across accepted Visual Object Alignment ownership, and ambiguous minimum-cost subject pairs abstain.
+15. Scene evidence coverage satisfies `classified_difference_count + residual_difference_count == effective_difference_count`.
+16. HTML is a presentation of the Structured Report and must not recompute semantic differences.
+17. Identical inputs and Comparison Profiles produce deterministic array order and report-local IDs; every serialized report-local reference resolves within the report.
+18. Accepted local-reference graphs are cycle-free and remain within the conservative transitive expansion budget before renderer parsing.
 
-## Not implemented in schema 3.0
+## Not implemented in schema 4.0
 
 The following concepts are intentional future work rather than hidden current fields:
 
@@ -371,6 +416,6 @@ The following concepts are intentional future work rather than hidden current fi
 - deterministic font loading, shaping, layout, and glyph evidence;
 - resource bundles beyond admitted PNG/JPEG `image` consumers, implicit Comparison Viewport derivation, environment-dependent lengths, arithmetic length functions, and CSS sizing/cascade;
 - complete CSS, complete path rendering, exact continuous transformed stroke outlines, marker child paint/cascade/context paint, external or environment-dependent marker semantics, `pathLength` calibration, font-relative stroke lengths, precise transformed localization, visual execution of filter primitives beyond the admitted static `feOffset` graph, CSS filter functions, general mask or clip content, continuous-alpha/container/effect-interacting blending, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, and external or dynamic reuse;
-- cross-subject Visual Event aggregation.
+- calibrated semantic theme recognition beyond the implemented systemic scene patterns.
 
 Their accepted design direction is preserved in the [ADR index](adr/README.md), while their implementation work is tracked only in the [roadmap](../roadmap.md).

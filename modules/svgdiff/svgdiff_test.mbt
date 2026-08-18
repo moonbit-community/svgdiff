@@ -25,7 +25,7 @@ test "root package exposes the stable comparison seam" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.schema_version, "3.0")
+  assert_eq(report.schema_version, "4.0")
   assert_eq(report.atomic_differences.length(), 1)
   let impact : @svgdiff.ImpactAssessment = report.impact_assessment
   assert_eq(impact.policy_id, "event_rendered_pareto/v1")
@@ -48,11 +48,11 @@ test "root package exposes the stable comparison seam" {
   let witnesses : Array[@svgdiff.ImpactDominationWitness] = impact.domination_witnesses
   assert_true(witnesses.is_empty())
   match @json.parse(report.to_json_string()) {
-    { "schema_version": "3.0", "events": [_], .. } => ()
+    { "schema_version": "4.0", "events": [_], .. } => ()
     _ => fail("root report did not serialize through the stable seam")
   }
   match @json.parse(report.to_compact_json_string()) {
-    { "schema_version": "3.0", "events": [_], .. } => ()
+    { "schema_version": "4.0", "events": [_], .. } => ()
     _ => fail("root report did not expose compact serialization")
   }
 }

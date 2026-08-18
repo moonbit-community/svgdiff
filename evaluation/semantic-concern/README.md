@@ -33,4 +33,4 @@ python3 evaluation/semantic-concern/evaluate.py \
 
 The accepted consumer rule is query-conditioned: if external task context identifies a concern that resolves to a reported subject, event, difference, source fact, or region, the consumer must report every matching item even when it is dominated. If the context cannot be resolved to report evidence, semantic importance is unknown. In either case, the complete difference inventory remains mandatory.
 
-The accepted policy was established under Schema `1.43` and module version `0.5.23`. This active regression now replays it under current Schema `3.0`; the Impact policy, complete inventories, query-conditioned interpretation, and rejection of production concern fields remain unchanged.
+The accepted policy was established under Schema `1.43` and module version `0.5.23`. This active regression now replays it under current Schema `4.0`; the Impact policy, complete inventories, query-conditioned interpretation, and rejection of production concern fields remain unchanged.

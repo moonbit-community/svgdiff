@@ -76,7 +76,7 @@ def run_case(cli: Path, case: dict) -> tuple[dict, str]:
             f"status={result.returncode}, stderr={result.stderr!r}"
         )
     report = json.loads(result.stdout)
-    if report.get("schema_version") != "3.0":
+    if report.get("schema_version") != "4.0":
         raise ValueError(f"unexpected report schema for {case['id']}")
     comparison = report["comparison"]
     if (

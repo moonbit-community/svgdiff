@@ -81,6 +81,18 @@ fn alignment_refs(subjects : Array[SourceSubject]) -> Array[SubjectReference] {
 }
 
 ///|
+fn subject_owners_compatible(
+  before_owners : Array[String?],
+  after_owners : Array[String?],
+  before_index : Int,
+  after_index : Int,
+) -> Bool {
+  let before_owner = before_owners.get(before_index).unwrap_or(None)
+  let after_owner = after_owners.get(after_index).unwrap_or(None)
+  before_owner == after_owner
+}
+
+///|
 fn make_alignment(
   index : Int,
   relation : String,
@@ -537,7 +549,9 @@ pub fn align_source_subjects_with_guard(
   after : Array[SourceSubject],
   profile : ComparisonProfile,
   comparison_guard : ComparisonGuard,
+  ownership : (Array[String?], Array[String?]),
 ) -> Array[SubjectAlignment] raise ComparisonInterrupted {
+  let (before_owners, after_owners) = ownership
   let alignments : Array[SubjectAlignment] = []
   let before_used = Array::make(before.length(), false)
   let after_used = Array::make(after.length(), false)
@@ -547,7 +561,11 @@ pub fn align_source_subjects_with_guard(
       continue
     }
     for after_index, after_subject in after {
-      if after_used[after_index] || before_subject.kind != after_subject.kind {
+      if after_used[after_index] ||
+        before_subject.kind != after_subject.kind ||
+        !subject_owners_compatible(
+          before_owners, after_owners, before_index, after_index,
+        ) {
         continue
       }
       guard after_subject.reference.instance_context is Some(after_instance) else {
@@ -580,12 +598,17 @@ pub fn align_source_subjects_with_guard(
     let after_candidates : Array[Int] = []
     for index, subject in before {
       if !before_used[index] &&
+        before_owners.get(index).unwrap_or(None) ==
+        before_owners.get(before_index).unwrap_or(None) &&
         repeated_subject_equivalence_signature(subject) == signature {
         before_candidates.push(index)
       }
     }
     for index, subject in after {
       if !after_used[index] &&
+        subject_owners_compatible(
+          before_owners, after_owners, before_index, index,
+        ) &&
         repeated_subject_equivalence_signature(subject) == signature {
         after_candidates.push(index)
       }
@@ -622,6 +645,9 @@ pub fn align_source_subjects_with_guard(
     }
     let candidates = [
       for after_index, after_subject in after if !after_used[after_index] &&
+      subject_owners_compatible(
+        before_owners, after_owners, before_index, after_index,
+      ) &&
       exact_subject_alignment_signature(before_subject) ==
       exact_subject_alignment_signature(after_subject) => after_index
     ]
@@ -680,6 +706,9 @@ pub fn align_source_subjects_with_guard(
     let candidate_indices : Array[Int] = []
     for after_index, after_subject in after {
       if !after_used[after_index] &&
+        subject_owners_compatible(
+          before_owners, after_owners, before_index, after_index,
+        ) &&
         after_subject.kind == "rect" &&
         same_rect_style(before_subject, after_subject) {
         candidates.push(after_subject)
@@ -712,6 +741,9 @@ pub fn align_source_subjects_with_guard(
     let candidate_indices : Array[Int] = []
     for before_index, before_subject in before {
       if !before_used[before_index] &&
+        subject_owners_compatible(
+          before_owners, after_owners, before_index, after_index,
+        ) &&
         before_subject.kind == "rect" &&
         same_rect_style(after_subject, before_subject) {
         candidates.push(before_subject)
@@ -748,75 +780,120 @@ pub fn align_source_subjects_with_guard(
   }
   unmatched_kinds.sort()
   for kind in unmatched_kinds {
-    let before_indices : Array[Int] = []
+    let owner_keys : Array[String?] = []
     for index, subject in before {
-      if !before_used[index] && subject.kind == kind {
-        before_indices.push(index)
+      let owner = before_owners.get(index).unwrap_or(None)
+      if !before_used[index] &&
+        subject.kind == kind &&
+        !owner_keys.contains(owner) {
+        owner_keys.push(owner)
       }
     }
-    let after_indices : Array[Int] = []
     for index, subject in after {
-      if !after_used[index] && subject.kind == kind {
-        after_indices.push(index)
+      let owner = after_owners.get(index).unwrap_or(None)
+      if !after_used[index] &&
+        subject.kind == kind &&
+        !owner_keys.contains(owner) {
+        owner_keys.push(owner)
       }
     }
-    sort_subject_indices(before_indices, before)
-    sort_subject_indices(after_indices, after)
-    for
-      pair in minimum_cost_subject_pairs_with_guard(
-        before_indices, after_indices, before, after, profile, comparison_guard,
-      ) {
-      let (before_index, after_index) = pair
-      before_used[before_index] = true
-      after_used[after_index] = true
-      alignments.push(
-        make_alignment(
-          alignments.length(),
-          "correspondence",
-          [before[before_index]],
-          [after[after_index]],
-          "minimum_rendered_geometry_distance",
-          {
-            let selected_score = subject_distance(
-              before[before_index],
-              after[after_index],
-              profile,
-            )
-            let compatible = if before_indices.length() > after_indices.length() {
-              before_indices.length()
-            } else {
-              after_indices.length()
-            }
-            let mut equal_scores = 0
-            if before_indices.length() > after_indices.length() {
-              for index in before_indices {
-                if subject_distance(before[index], after[after_index], profile) ==
-                  selected_score {
-                  equal_scores += 1
-                }
-              }
-            } else {
-              for index in after_indices {
-                if subject_distance(before[before_index], after[index], profile) ==
-                  selected_score {
-                  equal_scores += 1
-                }
-              }
-            }
-            alignment_evidence(
-              "rendered_geometry_feature_distance_v1",
-              Some(selected_score),
-              compatible,
-              equal_scores,
-              if equal_scores == 1 {
-                "unique"
+    for owner in owner_keys {
+      let before_indices : Array[Int] = []
+      for index, subject in before {
+        if !before_used[index] &&
+          subject.kind == kind &&
+          before_owners.get(index).unwrap_or(None) == owner {
+          before_indices.push(index)
+        }
+      }
+      let after_indices : Array[Int] = []
+      for index, subject in after {
+        if !after_used[index] &&
+          subject.kind == kind &&
+          after_owners.get(index).unwrap_or(None) == owner {
+          after_indices.push(index)
+        }
+      }
+      sort_subject_indices(before_indices, before)
+      sort_subject_indices(after_indices, after)
+      for
+        pair in minimum_cost_subject_pairs_with_guard(
+          before_indices, after_indices, before, after, profile, comparison_guard,
+        ) {
+        let (before_index, after_index) = pair
+        let selected_score = subject_distance(
+          before[before_index],
+          after[after_index],
+          profile,
+        )
+        let ambiguous = before_indices.any(index => {
+            index != before_index &&
+            subject_distance(before[index], after[after_index], profile) <=
+            selected_score
+          }) ||
+          after_indices.any(index => {
+            index != after_index &&
+            subject_distance(before[before_index], after[index], profile) <=
+            selected_score
+          })
+        if ambiguous {
+          continue
+        }
+        before_used[before_index] = true
+        after_used[after_index] = true
+        alignments.push(
+          make_alignment(
+            alignments.length(),
+            "correspondence",
+            [before[before_index]],
+            [after[after_index]],
+            "minimum_rendered_geometry_distance",
+            {
+              let compatible = if before_indices.length() >
+                after_indices.length() {
+                before_indices.length()
               } else {
-                "tied"
-              },
-            )
-          },
-        ),
-      )
+                after_indices.length()
+              }
+              let mut equal_scores = 0
+              if before_indices.length() > after_indices.length() {
+                for index in before_indices {
+                  if subject_distance(
+                      before[index],
+                      after[after_index],
+                      profile,
+                    ) ==
+                    selected_score {
+                    equal_scores += 1
+                  }
+                }
+              } else {
+                for index in after_indices {
+                  if subject_distance(
+                      before[before_index],
+                      after[index],
+                      profile,
+                    ) ==
+                    selected_score {
+                    equal_scores += 1
+                  }
+                }
+              }
+              alignment_evidence(
+                "rendered_geometry_feature_distance_v1",
+                Some(selected_score),
+                compatible,
+                equal_scores,
+                if equal_scores == 1 {
+                  "unique"
+                } else {
+                  "tied"
+                },
+              )
+            },
+          ),
+        )
+      }
     }
   }
   for index, subject in before {

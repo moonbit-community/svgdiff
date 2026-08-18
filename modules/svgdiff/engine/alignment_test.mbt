@@ -131,7 +131,7 @@ test "similar subjects use deterministic minimum geometry distance" {
 }
 
 ///|
-test "changed subjects use global rather than greedy minimum cost" {
+test "global assignment abstains when local identity remains ambiguous" {
   let before = alignment_svg(
     "<rect x='4' y='0' width='2' height='2'/><rect x='0' y='0' width='2' height='2'/>",
   )
@@ -143,14 +143,19 @@ test "changed subjects use global rather than greedy minimum cost" {
     after,
     @engine.ComparisonProfile::v1_default(),
   )
-  assert_true(
-    report.subject_alignments.any(alignment => {
-      alignment.before.length() == 1 &&
-      alignment.before[0].source_index == 0 &&
-      alignment.after.length() == 1 &&
-      alignment.after[0].source_index == 1 &&
-      alignment.basis == "minimum_rendered_geometry_distance"
-    }),
+  assert_eq(
+    report.subject_alignments
+    .filter(alignment => alignment.basis == "minimum_rendered_geometry_distance")
+    .length(),
+    0,
+  )
+  assert_eq(
+    report.subject_alignments
+    .filter(alignment => {
+      alignment.relation == "insertion" || alignment.relation == "deletion"
+    })
+    .length(),
+    4,
   )
 }
 
@@ -216,7 +221,7 @@ test "repeated visual equivalents retain source-semantic differences" {
 }
 
 ///|
-test "equal minimum costs retain stable signature and source order" {
+test "equal minimum costs abstain instead of manufacturing identity" {
   let before = alignment_svg(
     "<rect x='0' y='2' width='4' height='4' fill='red'/><rect x='2' y='2' width='4' height='4' fill='red'/>",
   )
@@ -234,23 +239,15 @@ test "equal minimum costs retain stable signature and source order" {
       (alignment.before[0].source_index, alignment.after[0].source_index)
     }
   ]
-  assert_eq(pairs, [(0, 0), (1, 1)])
-  for alignment in report.subject_alignments {
-    assert_eq(
-      alignment.evidence.score_kind,
-      "rendered_geometry_feature_distance_v1",
-    )
-    assert_true(
-      alignment.evidence.selected_score is Some(score) &&
-      score >= 0.0 &&
-      score <= 1.0,
-    )
-    assert_eq(alignment.evidence.candidate_count, 2)
-    assert_eq(alignment.evidence.equal_score_candidate_count, 2)
-    assert_eq(alignment.evidence.ambiguity, "tied")
-    assert_true(alignment.evidence.confidence is None)
-    assert_eq(alignment.evidence.confidence_status, "not_calibrated")
-  }
+  assert_eq(pairs, [])
+  assert_eq(
+    report.subject_alignments
+    .filter(alignment => {
+      alignment.relation == "insertion" || alignment.relation == "deletion"
+    })
+    .length(),
+    4,
+  )
 }
 
 ///|
@@ -633,4 +630,41 @@ test "one-sided incomplete transform cannot receive zero feature distance" {
     fail("expected assessed feature distance")
   }
   assert_true(score > 0.0 && score <= 1.0)
+}
+
+///|
+test "rendered subjects never cross accepted visual object alignments" {
+  let before =
+    #|<svg width="160" height="60">
+    #|  <g id="class-a"><rect id="a-box" x="0" y="0" width="40" height="40"/><text x="4" y="20">A</text></g>
+    #|  <g id="class-b"><rect id="b-box" x="100" y="0" width="40" height="40"/><text x="104" y="20">B</text></g>
+    #|</svg>
+  let after =
+    #|<svg width="160" height="60">
+    #|  <g id="class-a"><rect id="a-box" x="100" y="0" width="42" height="40"/><text x="104" y="20">A</text></g>
+    #|  <g id="class-b"><rect id="b-box" x="0" y="0" width="38" height="40"/><text x="4" y="20">B</text></g>
+    #|</svg>
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before.any(reference => reference.authored_id == Some("a-box")) &&
+      alignment.after.any(reference => reference.authored_id == Some("a-box"))
+    }),
+  )
+  assert_true(
+    report.subject_alignments.any(alignment => {
+      alignment.before.any(reference => reference.authored_id == Some("b-box")) &&
+      alignment.after.any(reference => reference.authored_id == Some("b-box"))
+    }),
+  )
+  assert_true(
+    !report.subject_alignments.any(alignment => {
+      alignment.before.any(reference => reference.authored_id == Some("a-box")) &&
+      alignment.after.any(reference => reference.authored_id == Some("b-box"))
+    }),
+  )
 }

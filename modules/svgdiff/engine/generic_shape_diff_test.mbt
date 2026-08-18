@@ -468,6 +468,36 @@ test "group opacity is compositing rather than inherited child opacity" {
 }
 
 ///|
+test "scene event retains every owning primitive event without duplicating differences" {
+  let before = shape_svg(
+    "<g id='panel'><rect id='left' x='1' y='1' width='6' height='6' fill='red'/><rect id='right' x='11' y='1' width='6' height='6' fill='red'/><text x='1' y='18'>Panel</text></g>",
+  )
+  let after = shape_svg(
+    "<g id='panel'><rect id='left' x='1' y='1' width='6' height='6' fill='blue'/><rect id='right' x='11' y='1' width='6' height='6' fill='green'/><text x='1' y='18'>Panel</text></g>",
+  )
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
+  let style_events = report.visual_scene.events.filter(event => {
+    event.kind == "style.change"
+  })
+  guard style_events is [event] else { fail("expected a scene style event") }
+  assert_eq(event.scope, "object")
+  assert_eq(event.object_alignment_ids.length(), 1)
+  assert_eq(event.evidence_difference_count, 2)
+  assert_eq(event.atomic_difference_ids.length(), 1)
+  assert_eq(event.evidence_event_ids.length(), 2)
+  assert_eq(
+    report.visual_scene.evidence_coverage.effective_difference_count,
+    report.visual_scene.evidence_coverage.classified_difference_count +
+    report.visual_scene.evidence_coverage.residual_difference_count,
+  )
+  assert_eq(report.visual_scene.evidence_coverage.residual_difference_count, 0)
+}
+
+///|
 test "inline group opacity is diagnosed and reported at source level" {
   let before = shape_svg(
     "<g id='layer' style='opacity:1'><rect x='1' y='1' width='4' height='4'/></g>",
@@ -557,6 +587,16 @@ test "gradient references use computed gradient semantics" {
   assert_true(
     report.diagnostics.all(diagnostic => {
       diagnostic.code != "paint_server_analysis_unsupported"
+    }),
+  )
+  let coverage = report.visual_scene.evidence_coverage
+  assert_eq(
+    coverage.effective_difference_count,
+    coverage.classified_difference_count + coverage.residual_difference_count,
+  )
+  assert_true(
+    coverage.residual_domains.any(domain => {
+      domain.domain == "resource.gradient.stop.stop_color" && domain.count == 1
     }),
   )
 }

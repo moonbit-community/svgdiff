@@ -95,7 +95,7 @@ test "scene alignment abstains from unsupported geometric guesses" {
     after,
     @model.ComparisonProfile::v1_default(),
   )
-  assert_eq(analysis.summary.object_set, "changed")
+  assert_eq(analysis.summary.object_set, "indeterminate")
   assert_true(
     analysis.alignments.all(alignment => alignment.ambiguity == "abstained"),
   )
@@ -174,7 +174,7 @@ test "scene alignment abstains when several before objects tie for one target" {
     after,
     @model.ComparisonProfile::v1_default(),
   )
-  assert_eq(analysis.summary.object_set, "changed")
+  assert_eq(analysis.summary.object_set, "indeterminate")
   assert_true(
     analysis.alignments.all(alignment => alignment.ambiguity == "abstained"),
   )
@@ -191,7 +191,7 @@ test "scene alignment abstains from tied semantic overlap" {
     after,
     @model.ComparisonProfile::v1_default(),
   )
-  assert_eq(analysis.summary.object_set, "changed")
+  assert_eq(analysis.summary.object_set, "indeterminate")
   assert_true(
     analysis.alignments.all(alignment => alignment.ambiguity == "abstained"),
   )

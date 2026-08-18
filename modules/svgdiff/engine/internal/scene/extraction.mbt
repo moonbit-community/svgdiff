@@ -427,6 +427,10 @@ fn build_visual_scene(
   for object_index, group_index in entity_groups {
     let (semantic, symbolic) = group_text(document, group_index)
     let indices = group_primitive_indices(plans, group_index)
+    let subject_ids = [document.nodes[group_index].source_id]
+    for index in indices {
+      subject_ids.push(@ir.source_subject_id(subjects[index]))
+    }
     semantic_text.push_iter(semantic.iter())
     objects.push({
       summary: {
@@ -441,6 +445,7 @@ fn build_visual_scene(
         semantic_text: semantic,
         symbolic_text: symbolic,
         primitive_kinds: primitive_kinds(subjects, indices),
+        subject_ids,
         bounds: scene_object_bounds(subjects, indices),
       },
       identity: @source_semantics.structural_node_attribute_value(
@@ -450,6 +455,10 @@ fn build_visual_scene(
       style_signatures: [
         for index in indices => primitive_style_signature(subjects[index])
       ],
+      primitive_signatures: [
+        for index in indices => subjects[index].signature
+      ],
+      primitive_indices: indices,
     })
   }
   let relation_groups = relation_group_candidates(document, entity_groups)
@@ -485,10 +494,13 @@ fn build_visual_scene(
         semantic_text: [],
         symbolic_text: [],
         primitive_kinds: [subject.kind],
+        subject_ids: [@ir.source_subject_id(subject)],
         bounds: scene_object_bounds(subjects, [primitive_index]),
       },
       identity: subject.reference.authored_id,
       style_signatures: [primitive_style_signature(subject)],
+      primitive_signatures: [subject.signature],
+      primitive_indices: [primitive_index],
     })
   }
   for index, node in document.nodes {

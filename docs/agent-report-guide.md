@@ -1,6 +1,6 @@
 # Agent Report Guide
 
-Status: current schema `3.0` interpretation guide
+Status: current schema `4.0` interpretation guide
 
 Last verified: 2026-08-18
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:0"
+        ],
         "bounds": [
           0,
           0,
@@ -48,6 +51,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "rect:0"
         ],
         "bounds": [
           0,
@@ -73,7 +79,13 @@
         "ambiguity": "none"
       }
     ],
-    "events": []
+    "events": [],
+    "evidence_coverage": {
+      "effective_difference_count": 0,
+      "classified_difference_count": 0,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [
     {

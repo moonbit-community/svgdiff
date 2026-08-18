@@ -4,7 +4,7 @@ Status: optional transport contract
 
 Projection identity: `svgdiff-agent-projection/2`
 
-Source report identity: Structured Report Schema `3.0`
+Source report identity: Structured Report Schema `4.0`
 
 Last verified: 2026-07-22
 
@@ -26,7 +26,7 @@ sequence. Section records also carry the section name and index. A consumer
 must reject unknown identities, sequence gaps, section reordering, index gaps,
 count mismatches, extra records, or missing records.
 
-The projection is lossless with respect to the concise Schema `3.0` JSON, not
+The projection is lossless with respect to the concise Schema `4.0` JSON, not
 the engine's private typed analysis graph. The repository validator rebuilds
 the ordinary report and checks exact JSON equality:
 

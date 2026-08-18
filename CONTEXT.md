@@ -10,7 +10,7 @@ Last verified: 2026-07-18
 
 ## Current state
 
-The repository contains a production comparison engine for a bounded deterministic static-SVG subset, Structured Report schema `2.0`, a native CLI, an optional self-contained HTML presentation, and a separate nonvisual source-audit API. It is not a general SVG or browser-equivalence engine. Current support includes authored and used geometry, exact local/CSS/viewport/entity scalar parameter scales, symmetric pinned-raster painted-boundary mean/p95/maximum distributions, alpha-only painted-coverage differences, optional explicit opaque sRGB8 background compositing with event-local changed-pixel mean DeltaEOK and opt-in event-local LDR-FLIP maps plus separate canvas, event, response, and explicit-threshold statistics kept separate from transparent-canvas evidence, a required uncalibrated Pareto frontier over common Visual Event rendered magnitudes, transforms and viewports, the static author cascade and inheritance, solid paint, gradients, patterns, paint fallbacks and rules, isolated static container opacity, deterministic local rectangular clips, static alpha/luminance masks, bounded local `feOffset` filter graphs, source-only opaque subtree differences for unsupported filter primitives with resolved filter-region localization, transform-event pixel selection through cumulative before/after painted bounds, opaque binary-alpha CSS blend modes and isolation with conservative stacking dependencies, transform- and conservative-painted-bounds-aware rendered shape/path/use-instance alignment, exact repeated rendered equivalence classes, role-typed source-structural entity and Visual Resource alignment with every resource Atomic Difference attached, structural/use-instance semantics, a typed resource graph, bounded PNG/JPEG image evidence from data URLs or exact caller-supplied bundles, precise source-located coverage Diagnostics for embedded raster color-profile and HDR metadata without implicit conversion, and explicit auditing of descriptive content plus accessibility/custom-data attributes without mixing them into visual Atomic Differences. General clip or mask content, clip/mask attachment on use instances, visual execution of filter primitives beyond the admitted `feOffset` slice, CSS filter functions, continuous vector boundary correspondence, continuous-alpha or effect-interacting blending, font-dependent text semantics, dynamic behavior, nested SVG images, final raster-image composition, wide-gamut conversion and HDR tone mapping, unequal-cardinality or mixed-change repeated clusters, calibrated Impact Assessment, and calibrated alignment confidence remain explicitly guarded or deferred.
+The repository contains a production comparison engine for a bounded deterministic static-SVG subset, Structured Report schema `4.0`, a native/WASM CLI, an optional self-contained HTML presentation, and a separate nonvisual source-audit API. The report now builds and aligns Visual Objects before constraining their rendered-subject alignments, permits ambiguous alignment to abstain, and summarizes cross-object layout, style, and representation patterns without deleting residual Atomic Differences. It is not a general SVG or browser-equivalence engine. The detailed support boundary lives in [`docs/v1-scope.md`](docs/v1-scope.md); fonts, dynamic behavior, complete CSS/effects, calibrated alignment confidence, and calibrated semantic importance remain guarded or deferred.
 
 Every call currently performs a full comparison. One bounded paint-measurement memoization exists only inside report assembly; no persistent, graph-incremental, shared, or remote cache is part of the product.
 
@@ -54,8 +54,16 @@ _Avoid_: Diff, event
 The smallest independently reportable visual-semantic distinction for one aligned subject or resource; it may reference one or more Changed Facts.
 _Avoid_: Cause, event
 
+**Visual Object**:
+A conservatively extracted user-perceived object that owns rendered subjects and participates in object-graph alignment.
+_Avoid_: SVG element, guaranteed human object
+
+**Visual Change Event**:
+The primary agent-facing object or systemic scene conclusion, supported by compact evidence-domain counts and primitive Event references.
+_Avoid_: Atomic Difference owner, universal severity
+
 **Visual Event**:
-The agent-facing grouping of Atomic Differences that describe one primary aligned-subject outcome, including its rendered outcome and regions.
+The primitive evidence grouping owned by one primary aligned-subject outcome, including its rendered outcome and regions.
 _Avoid_: Source change, Changed Fact
 
 **Review Classification Axes**:

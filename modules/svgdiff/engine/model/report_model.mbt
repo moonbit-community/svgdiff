@@ -719,6 +719,7 @@ pub(all) struct VisualObjectSummary {
   semantic_text : Array[String]
   symbolic_text : Array[String]
   primitive_kinds : Array[String]
+  subject_ids : Array[String]
   bounds : VisualObjectBounds?
 }
 
@@ -755,11 +756,25 @@ pub(all) struct VisualEvidenceDomain {
 pub(all) struct VisualChangeEvent {
   id : String
   kind : String
+  scope : String
   object_alignment_ids : Array[String]
   atomic_difference_ids : Array[String]
   evidence_event_ids : Array[String]
   evidence_difference_count : Int
   evidence_domains : Array[VisualEvidenceDomain]
+}
+
+///|
+/// Lossless accounting for effective Atomic Differences at the scene layer.
+///
+/// A difference is classified when at least one Visual Change Event references
+/// it as supporting evidence. Residual differences remain authoritative in the
+/// Atomic Difference inventory and are never silently discarded.
+pub(all) struct VisualEvidenceCoverage {
+  effective_difference_count : Int
+  classified_difference_count : Int
+  residual_difference_count : Int
+  residual_domains : Array[VisualEvidenceDomain]
 }
 
 ///|
@@ -789,6 +804,7 @@ pub(all) struct VisualSceneAnalysis {
   after_relations : Array[VisualRelationSummary]
   alignments : Array[VisualObjectAlignment]
   events : Array[VisualChangeEvent]
+  evidence_coverage : VisualEvidenceCoverage
 }
 
 ///|
@@ -813,11 +829,17 @@ pub fn empty_visual_scene_analysis() -> VisualSceneAnalysis {
     after_relations: [],
     alignments: [],
     events: [],
+    evidence_coverage: {
+      effective_difference_count: 0,
+      classified_difference_count: 0,
+      residual_difference_count: 0,
+      residual_domains: [],
+    },
   }
 }
 
 ///|
-/// Complete schema `3.0` result of one SVG comparison.
+/// Complete schema `4.0` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -839,13 +861,13 @@ pub(all) struct StructuredReport {
 }
 
 ///|
-/// Serialize this report as indented schema `3.0` JSON.
+/// Serialize this report as indented schema `4.0` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `3.0` JSON.
+/// Serialize this report as whitespace-free schema `4.0` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.

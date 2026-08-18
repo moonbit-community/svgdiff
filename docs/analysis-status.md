@@ -1,6 +1,6 @@
 # Analysis Status Contract
 
-Status: current schema `3.0` caller contract
+Status: current schema `4.0` caller contract
 
 Last verified: 2026-08-18
 
@@ -43,7 +43,7 @@ A `complete` report guarantees all of the following:
 
 A complete report with no Atomic Differences supports this statement:
 
-> No visual-semantic difference was found within schema `3.0`'s implemented support contract under the recorded comparison inputs.
+> No visual-semantic difference was found within schema `4.0`'s implemented support contract under the recorded comparison inputs.
 
 It does not support any of these stronger statements:
 
@@ -84,7 +84,7 @@ Semantics and Computed Appearance, `scene.summary.status` remains
 `not_computed`, and the report is partial. An empty scene in that state is not
 evidence that the documents contain no visual objects or coherent changes.
 
-An unsupported direct filter primitive demonstrates this rule: schema `3.0` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
+An unsupported direct filter primitive demonstrates this rule: schema `4.0` emits a source-only Atomic Difference and limitation links, while leaving its effective relation indeterminate, magnitude absent, rendered outcome unavailable, regions empty, and causal completeness unestablished. The retained change prevents source loss; it does not make the report complete or prove that the edit changes pixels.
 
 ## `failed`
 

@@ -93,6 +93,7 @@ test "tiny geometry changes retain continuous computed magnitude" {
   assert_eq(difference.source_before, "1.0")
   assert_eq(difference.source_after, "0.99999")
   assert_eq(difference.computed_relation.status, "different")
+  assert_eq(report.visual_scene.summary.layout, "changed")
   assert_eq(
     difference.computed_relation.reason_code,
     "resolved_positions_differ",
@@ -294,6 +295,17 @@ test "zero-contribution insertion retains numeric presence footprint" {
     Some(magnitude) => assert_eq(magnitude.changed_pixels, 0)
     None => fail("expected computed rendered magnitude")
   }
+  guard report.visual_scene.events is [scene_event] else {
+    fail("expected one scene presence event")
+  }
+  assert_eq(scene_event.kind, "object.presence")
+  assert_eq(scene_event.evidence_difference_count, 1)
+  assert_eq(scene_event.atomic_difference_ids, [difference.id])
+  assert_eq(
+    report.visual_scene.evidence_coverage.classified_difference_count,
+    1,
+  )
+  assert_eq(report.visual_scene.evidence_coverage.residual_difference_count, 0)
 }
 
 ///|
@@ -360,7 +372,7 @@ test "structured report serializes the concise agent-facing result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "3.0",
+      "schema_version": "4.0",
       "analysis_status": "partial",
       "comparison": _,
       "difference_groups": [_],
@@ -457,7 +469,7 @@ test "compact JSON preserves the concise structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "3.0",
+      "schema_version": "4.0",
       "analysis_status": "partial",
       "comparison": _,
       "canvas": _,

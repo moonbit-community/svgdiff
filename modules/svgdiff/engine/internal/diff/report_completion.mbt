@@ -18,6 +18,7 @@ fn subject_alignments_for_sources_with_guard(
   after_svg : String,
   profile : ComparisonProfile,
   comparison_guard : ComparisonGuard,
+  scene_context : @scene.VisualSceneContext?,
 ) -> Array[SubjectAlignment] raise ComparisonInterrupted {
   let inventories = try
     Some(
@@ -39,8 +40,16 @@ fn subject_alignments_for_sources_with_guard(
   }
   match inventories {
     Some((before, after, before_structural, after_structural)) => {
+      let ownership = match scene_context {
+        Some(context) => context.subject_ownership()
+        None =>
+          (
+            Array::make(before.length(), None),
+            Array::make(after.length(), None),
+          )
+      }
       let alignments = align_source_subjects_with_guard(
-        before, after, profile, comparison_guard,
+        before, after, profile, comparison_guard, ownership,
       )
       alignments.push_iter(
         align_structural_subjects_with_guard(
@@ -154,6 +163,7 @@ fn finish_report(
   limits : ResourceLimits,
   resources : ComparisonResourceBundles,
   comparison_guard : ComparisonGuard,
+  scene_context : @scene.VisualSceneContext?,
 ) -> StructuredReport raise ComparisonInterrupted {
   comparison_guard.checkpoint()
   let (report, extra_alignments) = attach_group_opacity_differences(
@@ -243,25 +253,25 @@ fn finish_report(
   comparison_guard.checkpoint()
   let report = attach_impact_assessment(report)
   comparison_guard.checkpoint()
-  let (visual_scene, visual_scene_failed) = (
-    @scene.compare_visual_scenes(before_svg, after_svg, report.profile),
-    false,
-  ) catch {
-    _ => (@model.empty_visual_scene_analysis(), true)
+  let (visual_scene, visual_scene_failed) = match scene_context {
+    Some(context) =>
+      (
+        @scene.complete_visual_scene(
+          context,
+          report.atomic_differences,
+          report.events,
+          combined_alignments,
+        ),
+        false,
+      )
+    None => (@model.empty_visual_scene_analysis(), true)
   }
   let report = if visual_scene_failed {
     attach_visual_scene_limitation(report)
   } else {
     report
   }
-  let report = {
-    ..report,
-    visual_scene: @scene.attach_visual_scene_evidence(
-      visual_scene,
-      report.atomic_differences,
-      report.events,
-    ),
-  }
+  let report = { ..report, visual_scene, }
   if precompletion_report_exceeds_byte_limit(report, limits) {
     return failed_resource_report(report.profile, [
       resource_limit_diagnostic("report_bytes", None, None),

@@ -51,8 +51,15 @@ fn compare_without_resource_limits(
       preflight_diagnostics.push_iter(diagnostics.iter())
     _ => ()
   }
+  let scene_context = try
+    @scene.prepare_visual_scene(before_svg, after_svg, profile)
+  catch {
+    _ => None
+  } noraise {
+    context => Some(context)
+  }
   let subject_alignments = subject_alignments_for_sources_with_guard(
-    before_svg, after_svg, profile, comparison_guard,
+    before_svg, after_svg, profile, comparison_guard, scene_context,
   )
   subject_alignments.push_iter(
     embedded_image_alignments_for_sources(
@@ -94,7 +101,7 @@ fn compare_without_resource_limits(
         (empty_rendered_scene_supported(after_svg) catch { _ => false }) {
         return finish_report(
           {
-            schema_version: "3.0",
+            schema_version: "4.0",
             analysis_status: "complete",
             canvas_outcome: not_computed_canvas_outcome(
               "rendered_evidence_unavailable",
@@ -118,6 +125,7 @@ fn compare_without_resource_limits(
           limits,
           resources,
           comparison_guard,
+          scene_context,
         )
       }
       let has_embedded_image_alignment = subject_alignments.any(alignment => {
@@ -139,7 +147,7 @@ fn compare_without_resource_limits(
         after_is_embedded_image_scene {
         return finish_report(
           {
-            schema_version: "3.0",
+            schema_version: "4.0",
             analysis_status: "partial",
             canvas_outcome: not_computed_canvas_outcome(
               "rendered_evidence_unavailable",
@@ -163,6 +171,7 @@ fn compare_without_resource_limits(
           limits,
           resources,
           comparison_guard,
+          scene_context,
         )
       }
       match
@@ -177,7 +186,7 @@ fn compare_without_resource_limits(
           }
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard,
+            limits, resources, comparison_guard, scene_context,
           )
         }
         None => ()
@@ -186,7 +195,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard,
+            limits, resources, comparison_guard, scene_context,
           )
         None => ()
       }
@@ -194,7 +203,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard,
+            limits, resources, comparison_guard, scene_context,
           )
         None => ()
       }
@@ -202,7 +211,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard,
+            limits, resources, comparison_guard, scene_context,
           )
         None => ()
       }
@@ -213,12 +222,12 @@ fn compare_without_resource_limits(
         Some(report) =>
           finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard,
+            limits, resources, comparison_guard, scene_context,
           )
         None =>
           finish_report(
             {
-              schema_version: "3.0",
+              schema_version: "4.0",
               analysis_status: "partial",
               canvas_outcome: not_computed_canvas_outcome(
                 "rendered_evidence_unavailable",
@@ -252,6 +261,7 @@ fn compare_without_resource_limits(
             limits,
             resources,
             comparison_guard,
+            scene_context,
           )
       }
     }

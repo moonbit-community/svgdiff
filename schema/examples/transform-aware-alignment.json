@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "before-left"
+        ],
         "bounds": [
           1,
           4,
@@ -46,6 +49,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "before-right"
         ],
         "bounds": [
           10,
@@ -62,6 +68,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "after-right"
+        ],
         "bounds": [
           10,
           4,
@@ -74,6 +83,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "after-left"
         ],
         "bounds": [
           1,
@@ -95,7 +107,7 @@
         "after": [
           "object:after:1"
         ],
-        "basis": "geometry_and_kind/v1",
+        "basis": "exact_visual_object_signature/v1",
         "ambiguity": "none"
       },
       {
@@ -107,11 +119,17 @@
         "after": [
           "object:after:0"
         ],
-        "basis": "geometry_and_kind/v1",
+        "basis": "exact_visual_object_signature/v1",
         "ambiguity": "none"
       }
     ],
-    "events": []
+    "events": [],
+    "evidence_coverage": {
+      "effective_difference_count": 0,
+      "classified_difference_count": 0,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [],
   "events": [],

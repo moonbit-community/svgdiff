@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -32,7 +32,22 @@
     "before_relations": [],
     "after_relations": [],
     "alignments": [],
-    "events": []
+    "events": [],
+    "evidence_coverage": {
+      "effective_difference_count": 2,
+      "classified_difference_count": 0,
+      "residual_difference_count": 2,
+      "residual_domains": [
+        {
+          "domain": "resource.image.source",
+          "count": 1
+        },
+        {
+          "domain": "resource.image.content",
+          "count": 1
+        }
+      ]
+    }
   },
   "difference_groups": [
     {

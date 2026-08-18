@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "back"
+        ],
         "bounds": [
           2,
           2,
@@ -46,6 +49,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "front"
         ],
         "bounds": [
           4,
@@ -62,6 +68,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "back"
+        ],
         "bounds": [
           2,
           2,
@@ -74,6 +83,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "front"
         ],
         "bounds": [
           4,
@@ -115,7 +127,10 @@
       {
         "id": "scene-event:0",
         "kind": "style.change",
-        "object_alignment_ids": [],
+        "scope": "object",
+        "object_alignment_ids": [
+          "object-alignment:1"
+        ],
         "difference_ids": [
           "diff:compositing:front:mix-blend-mode"
         ],
@@ -130,7 +145,13 @@
           }
         ]
       }
-    ]
+    ],
+    "evidence_coverage": {
+      "effective_difference_count": 1,
+      "classified_difference_count": 1,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [
     {

@@ -55,6 +55,19 @@ fn object_alignment_candidates(
 }
 
 ///|
+fn exact_scene_object_signature(object : SceneObject) -> String {
+  let primitive_signatures = object.primitive_signatures.copy()
+  primitive_signatures.sort()
+  let style_signatures = object.style_signatures.copy()
+  style_signatures.sort()
+  let bounds = match object.summary.bounds {
+    Some(value) => "\{value.x},\{value.y},\{value.width},\{value.height}"
+    None => "none"
+  }
+  "text=\{scene_text_signature(object.summary.semantic_text)}|primitives=\{primitive_signatures.join(";")}|styles=\{style_signatures.join(";")}|bounds=\{bounds}"
+}
+
+///|
 fn align_scene_objects(
   before : VisualScene,
   after : VisualScene,
@@ -98,6 +111,50 @@ fn align_scene_objects(
         for index in after_class => after.objects[index].summary.id
       ],
       basis: "authored_identity/v1",
+      ambiguity: if one_to_one {
+        "none"
+      } else {
+        "set_to_set"
+      },
+    })
+  }
+  for before_index, before_object in before.objects {
+    if before_used[before_index] {
+      continue
+    }
+    let signature = exact_scene_object_signature(before_object)
+    let before_class = [
+      for index, object in before.objects if !before_used[index] &&
+      exact_scene_object_signature(object) == signature => index
+    ]
+    let after_class = [
+      for index, object in after.objects if !after_used[index] &&
+      exact_scene_object_signature(object) == signature => index
+    ]
+    if after_class.is_empty() || before_class.length() != after_class.length() {
+      continue
+    }
+    for index in before_class {
+      before_used[index] = true
+    }
+    for index in after_class {
+      after_used[index] = true
+    }
+    let one_to_one = before_class.length() == 1
+    alignments.push({
+      id: "object-alignment:\{alignments.length()}",
+      relation: if one_to_one {
+        "correspondence"
+      } else {
+        "equivalence_class"
+      },
+      before_object_ids: [
+        for index in before_class => before.objects[index].summary.id
+      ],
+      after_object_ids: [
+        for index in after_class => after.objects[index].summary.id
+      ],
+      basis: "exact_visual_object_signature/v1",
       ambiguity: if one_to_one {
         "none"
       } else {
@@ -212,20 +269,17 @@ fn align_scene_objects(
         (left.height - right.height).abs()
       let same_kind = before_object.summary.primitive_kinds ==
         after_object.summary.primitive_kinds
-      let score = center_delta / scale +
-        size_delta / scale +
-        (if same_kind { 0.0 } else { 0.25 })
-      let threshold = if same_kind { 0.75 } else { 0.4 }
+      if !same_kind {
+        continue
+      }
+      let score = center_delta / scale + size_delta / scale
+      let threshold = 0.75
       if score <= threshold {
         geometric_candidates.push({
           before_index,
           after_index,
           score,
-          basis: if same_kind {
-            "geometry_and_kind/v1"
-          } else {
-            "cross_kind_geometry/v1"
-          },
+          basis: "geometry_and_kind/v1",
         })
       }
     }
@@ -270,29 +324,49 @@ fn align_scene_objects(
       ambiguity: "none",
     })
   }
-  for index, object in before.objects {
-    if !before_used[index] {
+  let remaining_before = [
+    for index, object in before.objects if !before_used[index] => {
+      object.summary.id
+    }
+  ]
+  let remaining_after = [
+    for index, object in after.objects if !after_used[index] => {
+      object.summary.id
+    }
+  ]
+  match (remaining_before, remaining_after) {
+    ([], []) => ()
+    (before_ids, []) =>
+      for object_id in before_ids {
+        alignments.push({
+          id: "object-alignment:\{alignments.length()}",
+          relation: "deletion",
+          before_object_ids: [object_id],
+          after_object_ids: [],
+          basis: "unmatched_object",
+          ambiguity: "none",
+        })
+      }
+    ([], after_ids) =>
+      for object_id in after_ids {
+        alignments.push({
+          id: "object-alignment:\{alignments.length()}",
+          relation: "insertion",
+          before_object_ids: [],
+          after_object_ids: [object_id],
+          basis: "unmatched_object",
+          ambiguity: "none",
+        })
+      }
+    (before_ids, after_ids) =>
       alignments.push({
         id: "object-alignment:\{alignments.length()}",
-        relation: "deletion",
-        before_object_ids: [object.summary.id],
-        after_object_ids: [],
-        basis: "abstained_no_acceptable_candidate",
+        relation: "unresolved",
+        before_object_ids: before_ids,
+        after_object_ids: after_ids,
+        basis: "no_acceptable_unambiguous_candidate",
         ambiguity: "abstained",
       })
-    }
-  }
-  for index, object in after.objects {
-    if !after_used[index] {
-      alignments.push({
-        id: "object-alignment:\{alignments.length()}",
-        relation: "insertion",
-        before_object_ids: [],
-        after_object_ids: [object.summary.id],
-        basis: "abstained_no_acceptable_candidate",
-        ambiguity: "abstained",
-      })
-    }
   }
   alignments
 }
@@ -321,10 +395,10 @@ fn alignment_bounds_changed(
     (Some(before_object), Some(after_object)) =>
       match (before_object.summary.bounds, after_object.summary.bounds) {
         (Some(left), Some(right)) =>
-          (left.x - right.x).abs() > 0.01 ||
-          (left.y - right.y).abs() > 0.01 ||
-          (left.width - right.width).abs() > 0.01 ||
-          (left.height - right.height).abs() > 0.01
+          left.x != right.x ||
+          left.y != right.y ||
+          left.width != right.width ||
+          left.height != right.height
         (None, None) => false
         _ => true
       }

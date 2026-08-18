@@ -9,7 +9,7 @@ import {
 }
 
 // Values
-pub fn align_source_subjects_with_guard(Array[@ir.SourceSubject], Array[@ir.SourceSubject], @model.ComparisonProfile, @control.ComparisonGuard) -> Array[@model.SubjectAlignment] raise @control.ComparisonInterrupted
+pub fn align_source_subjects_with_guard(Array[@ir.SourceSubject], Array[@ir.SourceSubject], @model.ComparisonProfile, @control.ComparisonGuard, (Array[String?], Array[String?])) -> Array[@model.SubjectAlignment] raise @control.ComparisonInterrupted
 
 pub fn align_structural_subjects_with_guard(Array[@ir.StructuralAlignmentSubject], Array[@ir.StructuralAlignmentSubject], Int, @control.ComparisonGuard) -> Array[@model.SubjectAlignment] raise @control.ComparisonInterrupted
 

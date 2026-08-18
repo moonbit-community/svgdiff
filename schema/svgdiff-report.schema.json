@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://milky2018.github.io/svgdiff/schema/3.0",
-  "title": "SVG Diff Structured Report 3.0",
+  "$id": "https://milky2018.github.io/svgdiff/schema/4.0",
+  "title": "SVG Diff Structured Report 4.0",
   "type": "object",
   "required": [
     "schema_version",
@@ -14,7 +14,7 @@
     "limitations"
   ],
   "properties": {
-    "schema_version": { "const": "3.0" },
+    "schema_version": { "const": "4.0" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "comparison": { "$ref": "#/$defs/comparison" },
     "canvas": { "$ref": "#/$defs/canvas" },
@@ -36,7 +36,7 @@
   "$defs": {
     "scene": {
       "type": "object",
-      "required": ["summary", "before_objects", "after_objects", "before_relations", "after_relations", "alignments", "events"],
+      "required": ["summary", "before_objects", "after_objects", "before_relations", "after_relations", "alignments", "events", "evidence_coverage"],
       "properties": {
         "summary": { "$ref": "#/$defs/sceneSummary" },
         "before_objects": { "type": "array", "items": { "$ref": "#/$defs/visualObject" } },
@@ -44,7 +44,8 @@
         "before_relations": { "type": "array", "items": { "$ref": "#/$defs/visualRelation" } },
         "after_relations": { "type": "array", "items": { "$ref": "#/$defs/visualRelation" } },
         "alignments": { "type": "array", "items": { "$ref": "#/$defs/visualObjectAlignment" } },
-        "events": { "type": "array", "items": { "$ref": "#/$defs/visualChangeEvent" } }
+        "events": { "type": "array", "items": { "$ref": "#/$defs/visualChangeEvent" } },
+        "evidence_coverage": { "$ref": "#/$defs/visualEvidenceCoverage" }
       },
       "additionalProperties": false
     },
@@ -68,7 +69,7 @@
     },
     "visualObject": {
       "type": "object",
-      "required": ["id", "role", "primitives"],
+      "required": ["id", "role", "primitives", "subjects"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "role": { "enum": ["entity", "graphic"] },
@@ -76,6 +77,7 @@
         "text": { "type": "array", "items": { "type": "string" } },
         "symbols": { "type": "array", "items": { "type": "string" } },
         "primitives": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "subjects": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
         "bounds": {
           "type": "array",
           "items": { "type": "number" },
@@ -101,7 +103,7 @@
       "required": ["id", "relation", "before", "after", "basis", "ambiguity"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
-        "relation": { "enum": ["correspondence", "equivalence_class", "insertion", "deletion"] },
+        "relation": { "enum": ["correspondence", "equivalence_class", "insertion", "deletion", "unresolved"] },
         "before": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "after": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "basis": { "type": "string", "minLength": 1 },
@@ -111,15 +113,38 @@
     },
     "visualChangeEvent": {
       "type": "object",
-      "required": ["id", "kind", "object_alignment_ids", "difference_ids", "evidence_event_ids", "evidence_difference_count", "evidence_domains"],
+      "required": ["id", "kind", "scope", "object_alignment_ids", "difference_ids", "evidence_event_ids", "evidence_difference_count", "evidence_domains"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "kind": { "enum": ["content.change", "object.presence", "relation.change", "layout.reflow", "layout.global_affine", "style.change", "representation.change"] },
+        "scope": { "enum": ["object", "systemic", "comparison"] },
         "object_alignment_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "difference_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "evidence_event_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "evidence_difference_count": { "type": "integer", "minimum": 0 },
         "evidence_domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["domain", "count"],
+            "properties": {
+              "domain": { "type": "string", "minLength": 1 },
+              "count": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "visualEvidenceCoverage": {
+      "type": "object",
+      "required": ["effective_difference_count", "classified_difference_count", "residual_difference_count", "residual_domains"],
+      "properties": {
+        "effective_difference_count": { "type": "integer", "minimum": 0 },
+        "classified_difference_count": { "type": "integer", "minimum": 0 },
+        "residual_difference_count": { "type": "integer", "minimum": 0 },
+        "residual_domains": {
           "type": "array",
           "items": {
             "type": "object",

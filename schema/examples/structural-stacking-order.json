@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "red"
+        ],
         "bounds": [
           0,
           0,
@@ -46,6 +49,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "blue"
         ],
         "bounds": [
           4,
@@ -62,6 +68,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "blue"
+        ],
         "bounds": [
           4,
           4,
@@ -74,6 +83,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "red"
         ],
         "bounds": [
           0,
@@ -111,7 +123,18 @@
         "ambiguity": "none"
       }
     ],
-    "events": []
+    "events": [],
+    "evidence_coverage": {
+      "effective_difference_count": 1,
+      "classified_difference_count": 0,
+      "residual_difference_count": 1,
+      "residual_domains": [
+        {
+          "domain": "document.structure.stacking_order",
+          "count": 1
+        }
+      ]
+    }
   },
   "difference_groups": [
     {

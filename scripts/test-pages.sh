@@ -341,7 +341,7 @@ jq -e '
   .sourceFacts.afterSize == {"x":"152","y":"52","width":"72","height":"72","fill":"#16a34a"} and
   .effectiveValueOptions == ["Any effective value","Different","Same","Unknown"] and
   .analysisStatus == "complete" and
-  .schemaVersion == "3.0" and
+  .schemaVersion == "4.0" and
   .sceneSummary == {
     "status":"computed",
     "content":"preserved",

@@ -543,6 +543,7 @@ fn compact_visual_object(value : VisualObjectSummary) -> Json {
     fields["symbols"] = value.symbolic_text.to_json()
   }
   fields["primitives"] = value.primitive_kinds.to_json()
+  fields["subjects"] = value.subject_ids.to_json()
   match value.bounds {
     Some(bounds) => fields["bounds"] = compact_visual_object_bounds(bounds)
     None => ()
@@ -577,6 +578,7 @@ fn compact_visual_change_event(value : VisualChangeEvent) -> Json {
   {
     "id": value.id,
     "kind": value.kind,
+    "scope": value.scope,
     "object_alignment_ids": value.object_alignment_ids,
     "difference_ids": value.atomic_difference_ids,
     "evidence_event_ids": value.evidence_event_ids,
@@ -627,6 +629,16 @@ fn compact_visual_scene(value : VisualSceneAnalysis) -> Json {
     "events": [
       for event in value.events => compact_visual_change_event(event)
     ],
+    "evidence_coverage": {
+      "effective_difference_count": value.evidence_coverage.effective_difference_count,
+      "classified_difference_count": value.evidence_coverage.classified_difference_count,
+      "residual_difference_count": value.evidence_coverage.residual_difference_count,
+      "residual_domains": [
+        for item in value.evidence_coverage.residual_domains => {
+          { "domain": item.domain, "count": item.count }
+        }
+      ],
+    },
   }
 }
 

@@ -375,7 +375,7 @@ fn inherited_fill_report_from_hierarchies(
     }
   }
   {
-    schema_version: "3.0",
+    schema_version: "4.0",
     analysis_status: if diagnostics.is_empty() {
       "complete"
     } else {

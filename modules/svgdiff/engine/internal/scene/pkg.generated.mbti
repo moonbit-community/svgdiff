@@ -6,13 +6,24 @@ import {
 }
 
 // Values
-pub fn attach_visual_scene_evidence(@model.VisualSceneAnalysis, Array[@model.AtomicDifference], Array[@model.VisualEvent]) -> @model.VisualSceneAnalysis
-
 pub fn compare_visual_scenes(String, String, @model.ComparisonProfile) -> @model.VisualSceneAnalysis raise
+
+pub fn complete_visual_scene(VisualSceneContext, Array[@model.AtomicDifference], Array[@model.VisualEvent], Array[@model.SubjectAlignment]) -> @model.VisualSceneAnalysis
+
+pub fn prepare_visual_scene(String, String, @model.ComparisonProfile) -> VisualSceneContext raise
 
 // Errors
 
 // Types and methods
+pub struct VisualSceneContext {
+  analysis : @model.VisualSceneAnalysis
+  before_subject_owners : Array[String?]
+  after_subject_owners : Array[String?]
+  before_subject_owner_entries : Array[(String, String)]
+  after_subject_owner_entries : Array[(String, String)]
+}
+pub fn VisualSceneContext::analysis(Self) -> @model.VisualSceneAnalysis
+pub fn VisualSceneContext::subject_ownership(Self) -> (Array[String?], Array[String?])
 
 // Type aliases
 

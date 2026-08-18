@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:0"
+        ],
         "bounds": [
           0,
           0,
@@ -47,6 +50,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:1"
+        ],
         "bounds": [
           2,
           2,
@@ -59,6 +65,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "rect:2"
         ],
         "bounds": [
           6,
@@ -75,6 +84,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:0"
+        ],
         "bounds": [
           0,
           0,
@@ -88,6 +100,9 @@
         "primitives": [
           "rect"
         ],
+        "subjects": [
+          "rect:1"
+        ],
         "bounds": [
           2,
           2,
@@ -100,6 +115,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "rect:2"
         ],
         "bounds": [
           6,
@@ -121,7 +139,7 @@
         "after": [
           "object:after:0"
         ],
-        "basis": "geometry_and_kind/v1",
+        "basis": "exact_visual_object_signature/v1",
         "ambiguity": "none"
       },
       {
@@ -133,7 +151,7 @@
         "after": [
           "object:after:1"
         ],
-        "basis": "geometry_and_kind/v1",
+        "basis": "exact_visual_object_signature/v1",
         "ambiguity": "none"
       },
       {
@@ -145,7 +163,7 @@
         "after": [
           "object:after:2"
         ],
-        "basis": "geometry_and_kind/v1",
+        "basis": "exact_visual_object_signature/v1",
         "ambiguity": "none"
       }
     ],
@@ -153,6 +171,7 @@
       {
         "id": "scene-event:0",
         "kind": "style.change",
+        "scope": "comparison",
         "object_alignment_ids": [],
         "difference_ids": [
           "diff:alignment:group-opacity:0:opacity"
@@ -168,7 +187,13 @@
           }
         ]
       }
-    ]
+    ],
+    "evidence_coverage": {
+      "effective_difference_count": 1,
+      "classified_difference_count": 1,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [
     {

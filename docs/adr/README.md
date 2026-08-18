@@ -23,7 +23,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0019](0019-form-visual-events-around-outcomes.md) | Superseded in part by 0040 | Form Visual Events around outcomes. |
 | [0020](0020-anchor-v1-visual-events-to-one-subject-alignment.md) | Refined by 0041 | Anchor each v1 event to one Subject Alignment. |
 | [0040](0040-give-each-atomic-difference-one-event-owner.md) | Accepted | Give every Atomic Difference one event owner and express causal fan-out through Changed Facts. |
-| [0041](0041-defer-cross-subject-event-aggregation.md) | Accepted | Keep cross-subject aggregation deferred until a measured Agent failure and complete deterministic policy exist. |
+| [0041](0041-defer-cross-subject-event-aggregation.md) | Superseded by 0110 | Keep cross-subject aggregation deferred until a measured Agent failure and complete deterministic policy exist. |
 | [0042](0042-qualify-diagnostic-spans-by-input-role.md) | Accepted | Qualify Diagnostic Source Spans by before/after input role and preserve multiple locations under one stable Diagnostic. |
 | [0043](0043-treat-comparison-interruption-as-control-flow.md) | Accepted | Treat cooperative cancellation and elapsed-time expiry as typed control flow rather than incomplete report evidence. |
 | [0044](0044-compare-canonical-report-bundles-across-a-fixed-platform-matrix.md) | Accepted, implemented | Compare canonical report bundles across an explicit three-platform, two-architecture CI matrix. |
@@ -113,6 +113,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0107](0107-defer-persistent-caching-until-measured.md) | Accepted | Keep persistent and graph-incremental caches out of the product until measured demand justifies a complete exact-result key and untrusted artifact envelope. |
 | [0108](0108-delegate-proven-rendering-to-svg-0.3.1.md) | Accepted, implemented | Delegate passing cascade, native geometry, mask-content, and filter-graph rendering to `Milky2018/svg@0.3.1` while retaining only reproduced residual adapters. |
 | [0109](0109-keep-event-localization-conservative-without-contribution-evidence.md) | Accepted, implemented | Use isolation to tighten candidates and prove zero while keeping all Event regions conservative without contribution evidence. |
+| [0110](0110-align-subjects-within-visual-object-ownership.md) | Accepted, implemented | Align objects before their rendered subjects, abstain on ambiguous identity, and expose lossless systemic scene patterns. |
 
 ## CLI and distribution decisions
 

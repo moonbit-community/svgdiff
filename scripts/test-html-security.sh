@@ -270,7 +270,7 @@ pw --raw run-code \
       hasRegion: await firstEvent.locator('.region-card').count() > 0,
       hasFact: await firstEvent.locator('.fact-card').count() > 0,
       hasCause: eventEvidenceText.includes('Possible Causes & Limitations'),
-      hasCompatibility: eventEvidenceText.includes('Schema 3.0 reports CSS-space bounds'),
+      hasCompatibility: eventEvidenceText.includes('Schema 4.0 reports CSS-space bounds'),
     };
     await page.locator('#outcome-filter').selectOption('zero');
     const hiddenSelection = {

@@ -1,3 +1,5 @@
 # Defer cross-subject Visual Event aggregation until measured Agent failure
 
+Status: superseded by ADR 0110
+
 Current Visual Events never aggregate across Primary Subject Alignments merely because subjects overlap or are adjacent, share hierarchy or Changed Facts, reference the same resource, or have similar rendered outcomes; those relationships remain traceable context, not event identity. This refines ADR-0020: cross-subject aggregation may be reconsidered only after a report-only Agent benchmark demonstrates a concrete fragmentation failure and the proposal defines deterministic membership, ordering, traceability, magnitude and region composition, causal-envelope behavior, ambiguity, compatibility identity, and labeled evaluation criteria. Until then, one event per primary alignment is the safer reversible boundary, and implementation remains explicitly deferred.

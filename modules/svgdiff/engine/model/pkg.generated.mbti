@@ -439,6 +439,7 @@ pub(all) struct TransformTranslationMagnitude {
 pub(all) struct VisualChangeEvent {
   id : String
   kind : String
+  scope : String
   object_alignment_ids : Array[String]
   atomic_difference_ids : Array[String]
   evidence_event_ids : Array[String]
@@ -453,6 +454,13 @@ pub(all) struct VisualEvent {
   rendered_outcome : RenderedEvidence
   difference_regions : Array[DifferenceRegion]
 } derive(ToJson)
+
+pub(all) struct VisualEvidenceCoverage {
+  effective_difference_count : Int
+  classified_difference_count : Int
+  residual_difference_count : Int
+  residual_domains : Array[VisualEvidenceDomain]
+}
 
 pub(all) struct VisualEvidenceDomain {
   domain : String
@@ -483,6 +491,7 @@ pub(all) struct VisualObjectSummary {
   semantic_text : Array[String]
   symbolic_text : Array[String]
   primitive_kinds : Array[String]
+  subject_ids : Array[String]
   bounds : VisualObjectBounds?
 }
 
@@ -502,6 +511,7 @@ pub(all) struct VisualSceneAnalysis {
   after_relations : Array[VisualRelationSummary]
   alignments : Array[VisualObjectAlignment]
   events : Array[VisualChangeEvent]
+  evidence_coverage : VisualEvidenceCoverage
 }
 
 pub(all) struct VisualSceneSummary {

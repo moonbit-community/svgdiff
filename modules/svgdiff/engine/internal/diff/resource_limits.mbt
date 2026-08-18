@@ -37,7 +37,7 @@ fn failed_resource_report(
     }
   })
   {
-    schema_version: "3.0",
+    schema_version: "4.0",
     analysis_status: "failed",
     canvas_outcome: not_computed_canvas_outcome("rendered_evidence_unavailable"),
     impact_assessment: empty_impact_assessment(),

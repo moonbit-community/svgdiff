@@ -64,7 +64,7 @@ def validate(manifest: dict) -> None:
         manifest.get("schema_version") == "svgdiff-m3-summary-traceability-gate/1",
         "gate identity mismatch",
     )
-    require(manifest.get("report_schema_version") == "3.0", "report Schema mismatch")
+    require(manifest.get("report_schema_version") == "4.0", "report Schema mismatch")
     require(
         manifest.get("agent_projection_version") == "svgdiff-agent-projection/2",
         "Agent projection identity mismatch",

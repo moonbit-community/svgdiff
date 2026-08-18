@@ -50,6 +50,7 @@ fn benchmark_align_source_subjects(
       after,
       ComparisonProfile::v1_default(),
       ComparisonGuard::new(ComparisonControl::unlimited()),
+      (Array::make(before.length(), None), Array::make(after.length(), None)),
     )
   catch {
     _ => abort("unlimited benchmark comparison was interrupted")

@@ -19,7 +19,7 @@ jq -e '
 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --agent-json >"$tmp/report.json"
 jq -e '
-  .schema_version == "3.0" and
+  .schema_version == "4.0" and
   .comparison.viewport == {"width": 16, "height": 16} and
   ([paths | map(tostring) | join(".") | select(contains("alternate_scale"))] |
     length) == 0

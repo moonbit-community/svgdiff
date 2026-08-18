@@ -17,6 +17,8 @@ priv struct SceneObject {
   summary : @model.VisualObjectSummary
   identity : String?
   style_signatures : Array[String]
+  primitive_signatures : Array[String]
+  primitive_indices : Array[Int]
 }
 
 ///|
@@ -24,6 +26,17 @@ priv struct VisualScene {
   objects : Array[SceneObject]
   relations : Array[@model.VisualRelationSummary]
   semantic_text : Array[String]
+}
+
+///|
+/// Parsed object-level comparison state reused by subject alignment and final
+/// report assembly. Its implementation stays private to the scene package.
+pub struct VisualSceneContext {
+  analysis : @model.VisualSceneAnalysis
+  before_subject_owners : Array[String?]
+  after_subject_owners : Array[String?]
+  before_subject_owner_entries : Array[(String, String)]
+  after_subject_owner_entries : Array[(String, String)]
 }
 
 ///|

@@ -47,9 +47,9 @@ pub suberror CliError {
 fn version_text(command_name : String) -> String {
   let profile = @svgdiff.ComparisonProfile::v1_default()
   (
-    $|\{command_name} 0.8.0
-    $|engine: 0.8.0
-    $|schema: 3.0
+    $|\{command_name} 0.9.0
+    $|engine: 0.9.0
+    $|schema: 4.0
     $|agent-projection: svgdiff-agent-projection/2
     $|renderer: \{profile.renderer_id}
     $|renderer-conformance-profile: \{profile.renderer_conformance_profile_id}

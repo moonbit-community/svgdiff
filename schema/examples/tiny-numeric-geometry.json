@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -19,7 +19,7 @@
       "content": "preserved",
       "object_set": "preserved",
       "relation_graph": "preserved",
-      "layout": "preserved",
+      "layout": "changed",
       "style": "preserved",
       "representation": "preserved",
       "before_object_count": 1,
@@ -33,6 +33,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "box"
         ],
         "bounds": [
           1,
@@ -48,6 +51,9 @@
         "role": "graphic",
         "primitives": [
           "rect"
+        ],
+        "subjects": [
+          "box"
         ],
         "bounds": [
           0.99999,
@@ -73,7 +79,35 @@
         "ambiguity": "none"
       }
     ],
-    "events": []
+    "events": [
+      {
+        "id": "scene-event:0",
+        "kind": "layout.reflow",
+        "scope": "object",
+        "object_alignment_ids": [
+          "object-alignment:0"
+        ],
+        "difference_ids": [
+          "diff:entity:box:x"
+        ],
+        "evidence_event_ids": [
+          "event:box"
+        ],
+        "evidence_difference_count": 1,
+        "evidence_domains": [
+          {
+            "domain": "geometry.position",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "evidence_coverage": {
+      "effective_difference_count": 1,
+      "classified_difference_count": 1,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [
     {

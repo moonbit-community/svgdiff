@@ -1,6 +1,6 @@
 # Concise Agent JSON
 
-Status: current schema `3.0` serialization contract
+Status: current schema `4.0` serialization contract
 
 Last verified: 2026-08-18
 
@@ -42,10 +42,20 @@ reason code. Consumers must never substitute an omitted value with zero.
 Read `scene` before the primitive evidence inventory. Its `summary` keeps
 content, object-set, relation-graph, layout, style, and representation
 conclusions independent. An object alignment may be one-to-one, set-to-set, or
-explicitly unmatched, and ambiguous correspondence is retained as abstention
-rather than forced into an arbitrary pairing. Scene events reference compact
-evidence domains and representative primitive IDs instead of repeating the
-whole underlying inventory.
+explicitly unmatched; unresolved many-to-many correspondence is retained as
+abstention rather than forced into an arbitrary pairing or mislabeled as
+presence change. Object-owned rendered subjects cannot pair across accepted
+object correspondences. Scene events expose `object`, `systemic`, or
+`comparison` scope and reference compact evidence domains plus representative
+primitive IDs instead of repeating the whole underlying inventory.
+
+`scene.evidence_coverage` is the losslessness check for this compression.
+`classified_difference_count + residual_difference_count` equals
+`effective_difference_count`, where effective means every non-`equivalent`
+relation, including `indeterminate`. `residual_domains` reports compact counts
+for effective Atomic Differences that did not support an emitted scene pattern;
+their full records remain in `difference_groups` and their owning primitive
+Events remain in `events`.
 
 Each difference retains its stable ID, affected subject and role, semantic
 `kind`, exact local authored before/after values, effective relation, available

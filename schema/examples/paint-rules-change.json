@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -34,6 +34,9 @@
         "primitives": [
           "polygon"
         ],
+        "subjects": [
+          "star"
+        ],
         "bounds": [
           -3,
           -3,
@@ -48,6 +51,9 @@
         "role": "graphic",
         "primitives": [
           "polygon"
+        ],
+        "subjects": [
+          "star"
         ],
         "bounds": [
           -3,
@@ -77,6 +83,7 @@
       {
         "id": "scene-event:0",
         "kind": "style.change",
+        "scope": "object",
         "object_alignment_ids": [
           "object-alignment:0"
         ],
@@ -99,7 +106,13 @@
           }
         ]
       }
-    ]
+    ],
+    "evidence_coverage": {
+      "effective_difference_count": 2,
+      "classified_difference_count": 2,
+      "residual_difference_count": 0,
+      "residual_domains": []
+    }
   },
   "difference_groups": [
     {
