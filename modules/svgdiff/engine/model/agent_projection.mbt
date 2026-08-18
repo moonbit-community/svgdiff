@@ -32,6 +32,9 @@ fn projection_header(report : StructuredReport) -> Json {
       "analysis_status": report.analysis_status,
       "comparison": compact_comparison(report.profile),
       "canvas": compact_canvas_outcome(report.canvas_outcome),
+      "changed_facts": [
+        for fact in report.changed_facts => compact_changed_fact(fact)
+      ],
       "scene": compact_visual_scene(report.visual_scene),
     },
   }

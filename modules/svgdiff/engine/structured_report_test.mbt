@@ -299,13 +299,19 @@ test "zero-contribution insertion retains numeric presence footprint" {
     fail("expected one scene presence event")
   }
   assert_eq(scene_event.kind, "object.presence")
-  assert_eq(scene_event.evidence_difference_count, 1)
-  assert_eq(scene_event.atomic_difference_ids, [difference.id])
+  assert_eq(scene_event.effect_count, 1)
+  guard report.visual_scene.object_changes is [object_change] else {
+    fail("expected one object presence change")
+  }
+  assert_eq(object_change.atomic_difference_ids, [difference.id])
   assert_eq(
-    report.visual_scene.evidence_coverage.classified_difference_count,
+    report.visual_scene.evidence_coverage.difference_to_object.assigned_difference_count,
     1,
   )
-  assert_eq(report.visual_scene.evidence_coverage.residual_difference_count, 0)
+  assert_eq(
+    report.visual_scene.evidence_coverage.difference_to_object.unresolved_difference_count,
+    0,
+  )
 }
 
 ///|
@@ -372,7 +378,7 @@ test "structured report serializes the concise agent-facing result as JSON" {
   )
   match @json.parse(report.to_json_string()) {
     {
-      "schema_version": "4.0",
+      "schema_version": "5.0",
       "analysis_status": "partial",
       "comparison": _,
       "difference_groups": [_],
@@ -434,7 +440,7 @@ test "report omits unavailable values but retains measured zero" {
   }
   let json = magnitude_report.to_json_string()
   assert_true(json.find("parameter_abs_user_units") is None)
-  assert_true(json.find("changed_facts") is None)
+  assert_true(json.find("changed_facts") is Some(_))
   assert_true(json.find("subject_alignments") is None)
   let resource_report = @engine.compare(
     unreferenced_gradient_svg("red"),
@@ -469,7 +475,7 @@ test "compact JSON preserves the concise structured report" {
   assert_true(compact.find("\n") is None)
   match @json.parse(compact) {
     {
-      "schema_version": "4.0",
+      "schema_version": "5.0",
       "analysis_status": "partial",
       "comparison": _,
       "canvas": _,

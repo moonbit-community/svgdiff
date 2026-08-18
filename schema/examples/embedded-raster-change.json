@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -13,6 +13,24 @@
     "changed_fraction": 0,
     "linear_rgba_rmse": 0
   },
+  "changed_facts": [
+    {
+      "id": "fact:alignment:image-resource:0:href",
+      "subject": "alignment:image-resource:0",
+      "property": "href",
+      "before": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
+      "after": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
+      "affected_subject_count": 1
+    },
+    {
+      "id": "fact:alignment:image-resource:0:decoded_content",
+      "subject": "alignment:image-resource:0",
+      "property": "decoded_content",
+      "before": "data:image/png;encoding=base64;bytes=70;encoded_sha256=4ff6ab670a58c14270e034e2090d9a432caa263a14e0a25785386b0c12f880b5;intrinsic=1x1;rgba8_sha256=34aaa746c25a0f105c4316bbb1f009aa359f49582656ee97d73c58132d563423",
+      "after": "data:image/png;encoding=base64;bytes=70;encoded_sha256=6a34118ba2e0bf5da5ab14cb63b121e2e8b2987a876668a9b2f9c30e1357470b;intrinsic=1x1;rgba8_sha256=b7d1b3a1104cc86b1cea310793cf777002db0517281d135a02de079b0ea87c23",
+      "affected_subject_count": 1
+    }
+  ],
   "scene": {
     "summary": {
       "status": "not_computed",
@@ -32,21 +50,30 @@
     "before_relations": [],
     "after_relations": [],
     "alignments": [],
+    "object_changes": [],
     "events": [],
     "evidence_coverage": {
-      "effective_difference_count": 2,
-      "classified_difference_count": 0,
-      "residual_difference_count": 2,
-      "residual_domains": [
-        {
-          "domain": "resource.image.source",
-          "count": 1
-        },
-        {
-          "domain": "resource.image.content",
-          "count": 1
-        }
-      ]
+      "difference_to_object": {
+        "effective_difference_count": 2,
+        "assigned_difference_count": 0,
+        "unresolved_difference_count": 2,
+        "unresolved_domains": [
+          {
+            "domain": "resource.image.source",
+            "count": 1
+          },
+          {
+            "domain": "resource.image.content",
+            "count": 1
+          }
+        ]
+      },
+      "object_to_scene": {
+        "object_change_count": 0,
+        "assigned_object_change_count": 0,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [

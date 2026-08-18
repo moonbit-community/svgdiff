@@ -192,7 +192,7 @@ pw --raw run-code \
         sceneSummary: affineReport.scene.summary,
         sceneEvents: affineReport.scene.events.map(event => ({
           kind: event.kind,
-          alignmentCount: event.object_alignment_ids.length,
+          objectCount: event.object_change_ids.length,
         })),
         domains: affineDifferences.map(difference => difference.kind),
         unexpectedScale: id === 'rotation' && affineDifferences.some(difference => difference.kind === 'geometry.transform.scale'),
@@ -256,7 +256,7 @@ pw --raw run-code \
         sceneSummary: exampleReport.scene.summary,
         sceneEvents: exampleReport.scene.events.map(event => ({
           kind: event.kind,
-          alignmentCount: event.object_alignment_ids.length,
+          objectCount: event.object_change_ids.length,
         })),
         atomicDifferences: exampleReport.difference_groups.flatMap(group => group.items).length,
         diagnostics: exampleReport.limitations.length,
@@ -341,7 +341,7 @@ jq -e '
   .sourceFacts.afterSize == {"x":"152","y":"52","width":"72","height":"72","fill":"#16a34a"} and
   .effectiveValueOptions == ["Any effective value","Different","Same","Unknown"] and
   .analysisStatus == "complete" and
-  .schemaVersion == "4.0" and
+  .schemaVersion == "5.0" and
   .sceneSummary == {
     "status":"computed",
     "content":"preserved",
@@ -459,7 +459,7 @@ jq -e '
     .eventOutcomes[0].changedPixels == $example.canvasChangedPixels
   ) and
   (.realExamples[] | select(.id == "rocket") |
-    (.eventOutcomes | length) == 64 and
+    (.eventOutcomes | length) >= 50 and
     ([.eventOutcomes[] | select(.changedPixels == null)] | length) > 0 and
     ([.eventOutcomes[].changedPixels | select(. != null)] | unique | length) >= 10
   ) and

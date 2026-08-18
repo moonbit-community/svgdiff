@@ -18,7 +18,7 @@ PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/after.svg" >report.json 2>report.err
 test ! -s report.err
 jq -e '
-  .schema_version == "4.0" and
+  .schema_version == "5.0" and
   .analysis_status == "complete" and
   (.difference_groups | map(.items | length) | add) == 1 and
   (.events | length) == 1 and
@@ -27,8 +27,8 @@ jq -e '
 PATH="$bindir:$PATH" svgdiff --help >help.txt
 PATH="$bindir:$PATH" svgdiff --version >version.txt
 grep -q '^Usage: svgdiff ' help.txt
-grep -q '^svgdiff 0.9.0$' version.txt
-grep -q '^schema: 4.0$' version.txt
+grep -q '^svgdiff 0.10.0$' version.txt
+grep -q '^schema: 5.0$' version.txt
 grep -q '^agent-projection: svgdiff-agent-projection/2$' version.txt
 grep -q '^renderer: svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.3.1$' version.txt
 grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/27$' version.txt
@@ -39,7 +39,7 @@ PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/after.svg" --agent-json >agent.json 2>agent.err
 test ! -s agent.err
 test "$(wc -l <agent.json | tr -d ' ')" -eq 1
-jq -e '.schema_version == "4.0" and (.difference_groups | map(.items | length) | add) == 1' agent.json >/dev/null
+jq -e '.schema_version == "5.0" and (.difference_groups | map(.items | length) | add) == 1' agent.json >/dev/null
 
 PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/before.svg" \
@@ -52,19 +52,19 @@ PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/before.svg" \
   "$root/testdata/after.svg" --summary summary.md >summary-report.json 2>summary.err
 test ! -s summary.err
-jq -e '.schema_version == "4.0"' summary-report.json >/dev/null
+jq -e '.schema_version == "5.0"' summary-report.json >/dev/null
 grep -q '^# SVG Diff Summary$' summary.md
 grep -q 'Structured Report JSON is authoritative' summary.md
 
 cat "$root/testdata/before.svg" | PATH="$bindir:$PATH" svgdiff \
   - "$root/testdata/after.svg" >stdin-report.json 2>stdin-report.err
 test ! -s stdin-report.err
-jq -e '.schema_version == "4.0" and .analysis_status == "complete"' stdin-report.json >/dev/null
+jq -e '.schema_version == "5.0" and .analysis_status == "complete"' stdin-report.json >/dev/null
 
 cat "$root/testdata/after.svg" | PATH="$bindir:$PATH" svgdiff \
   "$root/testdata/before.svg" - >stdin-after-report.json 2>stdin-after-report.err
 test ! -s stdin-after-report.err
-jq -e '.schema_version == "4.0" and .analysis_status == "complete"' stdin-after-report.json >/dev/null
+jq -e '.schema_version == "5.0" and .analysis_status == "complete"' stdin-after-report.json >/dev/null
 
 if printf '%s\n' '<svg/>' | PATH="$bindir:$PATH" svgdiff \
   - - >double-stdin.out 2>double-stdin.err; then

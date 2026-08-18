@@ -436,15 +436,11 @@ pub(all) struct TransformTranslationMagnitude {
   norm_css_px : Double
 } derive(ToJson)
 
-pub(all) struct VisualChangeEvent {
-  id : String
-  kind : String
-  scope : String
-  object_alignment_ids : Array[String]
-  atomic_difference_ids : Array[String]
-  evidence_event_ids : Array[String]
-  evidence_difference_count : Int
-  evidence_domains : Array[VisualEvidenceDomain]
+pub(all) struct VisualDifferenceCoverage {
+  effective_difference_count : Int
+  assigned_difference_count : Int
+  unresolved_difference_count : Int
+  unresolved_domains : Array[VisualEvidenceDomain]
 }
 
 pub(all) struct VisualEvent {
@@ -456,10 +452,8 @@ pub(all) struct VisualEvent {
 } derive(ToJson)
 
 pub(all) struct VisualEvidenceCoverage {
-  effective_difference_count : Int
-  classified_difference_count : Int
-  residual_difference_count : Int
-  residual_domains : Array[VisualEvidenceDomain]
+  difference_to_object : VisualDifferenceCoverage
+  object_to_scene : VisualObjectChangeCoverage
 }
 
 pub(all) struct VisualEvidenceDomain {
@@ -481,6 +475,23 @@ pub(all) struct VisualObjectBounds {
   y : Double
   width : Double
   height : Double
+}
+
+pub(all) struct VisualObjectChange {
+  id : String
+  kind : String
+  object_alignment_id : String
+  changed_fact_ids : Array[String]
+  atomic_difference_ids : Array[String]
+  evidence_event_ids : Array[String]
+  evidence_domains : Array[VisualEvidenceDomain]
+}
+
+pub(all) struct VisualObjectChangeCoverage {
+  object_change_count : Int
+  assigned_object_change_count : Int
+  residual_object_change_count : Int
+  residual_kinds : Array[VisualEvidenceDomain]
 }
 
 pub(all) struct VisualObjectSummary {
@@ -510,8 +521,19 @@ pub(all) struct VisualSceneAnalysis {
   before_relations : Array[VisualRelationSummary]
   after_relations : Array[VisualRelationSummary]
   alignments : Array[VisualObjectAlignment]
-  events : Array[VisualChangeEvent]
+  object_changes : Array[VisualObjectChange]
+  events : Array[VisualSceneChange]
   evidence_coverage : VisualEvidenceCoverage
+}
+
+pub(all) struct VisualSceneChange {
+  id : String
+  kind : String
+  scope : String
+  object_change_ids : Array[String]
+  changed_fact_ids : Array[String]
+  effect_count : Int
+  affected_subject_count : Int
 }
 
 pub(all) struct VisualSceneSummary {

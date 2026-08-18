@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -13,6 +13,16 @@
     "changed_fraction": 0.2421875,
     "linear_rgba_rmse": 0.34798527267687634
   },
+  "changed_facts": [
+    {
+      "id": "fact:viewport:0:0:viewBox",
+      "subject": "svg:0",
+      "property": "viewBox",
+      "before": "0 0 16 16",
+      "after": "0 0 8 8",
+      "affected_subject_count": 1
+    }
+  ],
   "scene": {
     "summary": {
       "status": "computed",
@@ -79,13 +89,13 @@
         "ambiguity": "none"
       }
     ],
-    "events": [
+    "object_changes": [
       {
-        "id": "scene-event:0",
+        "id": "object-change:0",
         "kind": "layout.reflow",
-        "scope": "object",
-        "object_alignment_ids": [
-          "object-alignment:0"
+        "object_alignment_id": "object-alignment:0",
+        "changed_fact_ids": [
+          "fact:viewport:0:0:viewBox"
         ],
         "difference_ids": [
           "diff:alignment:0:viewport:fact:viewport:0:0:viewBox",
@@ -95,7 +105,6 @@
         "evidence_event_ids": [
           "event:alignment:0:transform"
         ],
-        "evidence_difference_count": 3,
         "evidence_domains": [
           {
             "domain": "document.viewport",
@@ -112,11 +121,34 @@
         ]
       }
     ],
+    "events": [
+      {
+        "id": "scene-change:0",
+        "kind": "layout.reflow",
+        "scope": "object",
+        "object_change_ids": [
+          "object-change:0"
+        ],
+        "changed_fact_ids": [
+          "fact:viewport:0:0:viewBox"
+        ],
+        "effect_count": 3,
+        "affected_subject_count": 1
+      }
+    ],
     "evidence_coverage": {
-      "effective_difference_count": 3,
-      "classified_difference_count": 3,
-      "residual_difference_count": 0,
-      "residual_domains": []
+      "difference_to_object": {
+        "effective_difference_count": 3,
+        "assigned_difference_count": 3,
+        "unresolved_difference_count": 0,
+        "unresolved_domains": []
+      },
+      "object_to_scene": {
+        "object_change_count": 1,
+        "assigned_object_change_count": 1,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [

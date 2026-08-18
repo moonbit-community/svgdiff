@@ -8,7 +8,7 @@ External observation identity format: `svgdiff-color-observation/1`
 
 Last verified: 2026-07-17
 
-The current product remains fixed to sRGB source interpretation and `linear_srgb_premultiplied_rgba_f64` raster evidence. Out-of-profile CSS colors, embedded ICC data, non-v1 PNG color metadata, HDR metadata, and high-bit-depth samples retain precise partial coverage Diagnostics. This decision neither converts them nor changes Schema `4.0`.
+The current product remains fixed to sRGB source interpretation and `linear_srgb_premultiplied_rgba_f64` raster evidence. Out-of-profile CSS colors, embedded ICC data, non-v1 PNG color metadata, HDR metadata, and high-bit-depth samples retain precise partial coverage Diagnostics. This decision neither converts them nor changes Schema `5.0`.
 
 A future color profile must be an executable contract, not a gamut label. It must close source decoding, color conversion, interpolation, compositing, reference output, perceptual measurement, numeric behavior, resources, and implementation identity. The governing decision is [ADR 0100](adr/0100-stage-color-management-beyond-srgb.md); evidence is recorded in the [research note](research/color-management-profiles.md) and under [`evaluation/color-profile-decision`](../evaluation/color-profile-decision/).
 

@@ -1,6 +1,6 @@
 # Agent Report Guide
 
-Status: current schema `4.0` interpretation guide
+Status: current schema `5.0` interpretation guide
 
 Last verified: 2026-08-18
 
@@ -11,14 +11,15 @@ The report is designed for a text-only Agent. Read it in this order:
    profile-scoped equality.
 3. Read `comparison` to establish viewport and requested perceptual inputs.
 4. Read `canvas` for whole-image measurements.
-5. Read `scene.summary`, then the object/relation alignments and coherent scene
-   events. Keep its six conclusion axes independent.
-6. Enumerate every item in every `difference_groups` group, including items
+5. Read `changed_facts` once as the canonical cause inventory.
+6. Read `scene.summary`, then object/relation alignments, Object Changes, and
+   Scene Changes. Keep its six conclusion axes independent.
+7. Enumerate every item in every `difference_groups` group, including items
    whose owning event has a measured-zero rendered outcome.
-7. Follow each difference into its owning `events` entry for the rendered
+8. Follow each difference into its owning `events` entry for the rendered
    outcome, shared isolated-subject measurements, localization, and possible
    causes.
-8. Read every linked and top-level `limitations` entry before describing
+9. Read every linked and top-level `limitations` entry before describing
    unavailable evidence.
 
 ## Scene interpretation
@@ -30,10 +31,22 @@ with changed layout and style. `ambiguous` alignments are deliberate
 abstentions, not missing implementation detail, and unmatched objects establish
 insertions or deletions only when the alignment evidence supports that result.
 
-Scene events summarize coherent changes and link to compact evidence domains
-and representative primitive IDs. They are navigation and conclusion units;
-the primitive `difference_groups` and `events` remain the complete evidence
-inventory for audit and localization.
+Object Changes are the bridge from subject-level evidence to one accepted
+Visual Object Alignment. Scene Changes summarize coherent patterns by
+referencing Object Change IDs; they never directly own or sample Atomic
+Differences. They are navigation and conclusion units; the primitive
+`difference_groups` and `events` remain the complete evidence inventory for
+audit and localization.
+
+Coherence is causal, not merely categorical. Same-kind Object Changes are
+grouped only when shared Changed Fact IDs connect them. A viewport edit may
+therefore form one systemic Scene Change across many objects, while independent
+local geometry edits remain separate Scene Changes.
+
+Do not conflate cardinalities. A Scene Change's Changed Fact IDs count unique
+causes, `effect_count` counts unique Atomic Differences, its affected-subject
+count describes primitive outcomes, and its Object Change IDs count Visual
+Objects. Fan-out is expected: one cause may have many effects and objects.
 
 ## Difference interpretation
 

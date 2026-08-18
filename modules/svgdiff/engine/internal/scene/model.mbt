@@ -33,6 +33,7 @@ priv struct VisualScene {
 /// report assembly. Its implementation stays private to the scene package.
 pub struct VisualSceneContext {
   analysis : @model.VisualSceneAnalysis
+  object_change_plans : Array[(String, String)]
   before_subject_owners : Array[String?]
   after_subject_owners : Array[String?]
   before_subject_owner_entries : Array[(String, String)]

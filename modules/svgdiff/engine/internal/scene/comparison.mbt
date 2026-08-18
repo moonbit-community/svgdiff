@@ -13,292 +13,21 @@
 // limitations under the License.
 
 ///|
-fn scene_event(
-  kind : String,
-  alignment_ids : Array[String],
-  index : Int,
-) -> @model.VisualChangeEvent {
-  {
-    id: "scene-event:\{index}",
-    kind,
-    scope: if alignment_ids.length() > 1 {
-      "systemic"
-    } else if alignment_ids.length() == 1 {
-      "object"
-    } else {
-      "comparison"
-    },
-    object_alignment_ids: alignment_ids,
-    atomic_difference_ids: [],
-    evidence_event_ids: [],
-    evidence_difference_count: 0,
-    evidence_domains: [],
-  }
-}
-
-///|
-fn difference_supports_scene_event(kind : String, domain : String) -> Bool {
-  match kind {
-    "content.change" => domain.has_prefix("text.")
-    "object.presence" => domain.has_prefix("presence.")
-    "relation.change" => domain.has_prefix("document.structure.")
-    "layout.reflow" | "layout.global_affine" =>
-      domain.has_prefix("geometry.position") ||
-      domain.has_prefix("geometry.size") ||
-      domain.has_prefix("geometry.transform") ||
-      domain.has_prefix("document.viewport")
-    "style.change" =>
-      domain.has_prefix("paint.") ||
-      domain.has_prefix("geometry.stroke") ||
-      domain.has_prefix("compositing.") ||
-      domain.has_prefix("opacity.") ||
-      domain.has_prefix("effect.") ||
-      domain.has_prefix("effects.") ||
-      domain.has_prefix("filter.") ||
-      domain.has_prefix("mask.") ||
-      domain.has_prefix("clip.")
-    "representation.change" =>
-      domain.has_prefix("geometry.path.") ||
-      domain.has_prefix("document.structure.")
-    _ => false
-  }
-}
-
-///|
-fn subject_reference_id(reference : @model.SubjectReference) -> String {
-  match reference.instance_context {
-    Some(context) => context.instance_id
-    None =>
-      reference.authored_id.unwrap_or(
-        "\{reference.kind}:\{reference.source_index}",
-      )
-  }
-}
-
-///|
-fn subject_owner(
-  entries : Array[(String, String)],
-  reference : @model.SubjectReference,
-) -> String? {
-  let id = subject_reference_id(reference)
-  for entry in entries {
-    if entry.0 == id && entry.1.has_prefix("object-alignment:") {
-      return Some(entry.1)
-    }
-  }
-  None
-}
-
-///|
-fn subject_alignment_owners(
-  context : VisualSceneContext,
-  alignment : @model.SubjectAlignment,
-) -> Array[String] {
-  let owners : Array[String] = []
-  for reference in alignment.before {
-    match subject_owner(context.before_subject_owner_entries, reference) {
-      Some(owner) if !owners.contains(owner) => owners.push(owner)
-      _ => ()
-    }
-  }
-  for reference in alignment.after {
-    match subject_owner(context.after_subject_owner_entries, reference) {
-      Some(owner) if !owners.contains(owner) => owners.push(owner)
-      _ => ()
-    }
-  }
-  owners
-}
-
-///|
-fn scene_change_difference(difference : @model.AtomicDifference) -> Bool {
-  difference.computed_relation.status == "different" ||
-  difference.computed_relation.status == "not_applicable"
-}
-
-///|
-fn scene_accounted_difference(difference : @model.AtomicDifference) -> Bool {
-  difference.computed_relation.status != "equivalent"
-}
-
-///|
-pub fn complete_visual_scene(
-  context : VisualSceneContext,
-  differences : Array[@model.AtomicDifference],
-  evidence_events : Array[@model.VisualEvent],
-  subject_alignments : Array[@model.SubjectAlignment],
-) -> @model.VisualSceneAnalysis {
-  let analysis = context.analysis
-  let difference_owners : Map[String, Array[String]] = Map([])
-  for alignment in subject_alignments {
-    difference_owners[alignment.id] = subject_alignment_owners(
-      context, alignment,
-    )
-  }
-  let scene_differences = differences.filter(scene_change_difference)
-  let accounted_differences = differences.filter(scene_accounted_difference)
-  let style_changed = scene_differences.any(difference => {
-    difference_supports_scene_event("style.change", difference.domain)
-  })
-  let summary = {
-    ..analysis.summary,
-    style: if analysis.summary.style == "preserved" && style_changed {
-      "changed"
-    } else {
-      analysis.summary.style
-    },
-  }
-  let events = analysis.events.copy()
-  fn owners_for_kind(kind : String) -> Array[String] {
-    let owners : Array[String] = []
-    for difference in scene_differences {
-      if !difference_supports_scene_event(kind, difference.domain) {
-        continue
-      }
-      match difference.subject_alignment_id {
-        Some(id) =>
-          match difference_owners.get(id) {
-            Some(ids) =>
-              for owner in ids {
-                if !owners.contains(owner) {
-                  owners.push(owner)
-                }
-              }
-            None => ()
-          }
-        None => ()
-      }
-    }
-    owners.sort()
-    owners
-  }
-  fn ensure_event(kind : String, owner_ids : Array[String]) -> Unit {
-    if !events.any(event => event.kind == kind) {
-      events.push(scene_event(kind, owner_ids, events.length()))
-    }
-  }
-  if style_changed {
-    ensure_event("style.change", owners_for_kind("style.change"))
-  }
-  let scene_events : Array[@model.VisualChangeEvent] = []
-  let classified_difference_ids : Array[String] = []
-  for scene_event in events {
-    let supporting = scene_differences.filter(difference => {
-      if !difference_supports_scene_event(scene_event.kind, difference.domain) {
-        return false
-      }
-      if difference.domain.has_prefix("document.viewport") &&
-        (
-          scene_event.kind == "layout.reflow" ||
-          scene_event.kind == "layout.global_affine"
-        ) {
-        return true
-      }
-      let owners = difference.subject_alignment_id
-        .bind(id => difference_owners.get(id))
-        .unwrap_or([])
-      if scene_event.object_alignment_ids.is_empty() {
-        owners.is_empty()
-      } else {
-        owners.any(owner => scene_event.object_alignment_ids.contains(owner))
-      }
-    })
-    let evidence_domains : Array[@model.VisualEvidenceDomain] = []
-    let representative_ids : Array[String] = []
-    for difference in supporting {
-      let mut found = false
-      for index, evidence_domain in evidence_domains {
-        if evidence_domain.domain == difference.domain {
-          evidence_domains[index] = {
-            ..evidence_domain,
-            count: evidence_domain.count + 1,
-          }
-          found = true
-          break
-        }
-      }
-      if !found {
-        evidence_domains.push({ domain: difference.domain, count: 1 })
-        representative_ids.push(difference.id)
-      }
-    }
-    let supporting_ids = supporting.map(difference => difference.id)
-    for id in supporting_ids {
-      if !classified_difference_ids.contains(id) {
-        classified_difference_ids.push(id)
-      }
-    }
-    let event_ids = [
-      for event in evidence_events if event.atomic_difference_ids.any(id => {
-        supporting_ids.contains(id)
-      }) => event.id
-    ]
-    scene_events.push({
-      ..scene_event,
-      atomic_difference_ids: representative_ids,
-      evidence_event_ids: event_ids,
-      evidence_difference_count: supporting.length(),
-      evidence_domains,
-    })
-  }
-  let residual_difference_ids = [
-    for difference in accounted_differences if !classified_difference_ids.contains(
-      difference.id,
-    ) => difference.id
-  ]
-  let residual_domains : Array[@model.VisualEvidenceDomain] = []
-  for difference in accounted_differences {
-    if !residual_difference_ids.contains(difference.id) {
-      continue
-    }
-    let mut found = false
-    for index, evidence_domain in residual_domains {
-      if evidence_domain.domain == difference.domain {
-        residual_domains[index] = {
-          ..evidence_domain,
-          count: evidence_domain.count + 1,
-        }
-        found = true
-        break
-      }
-    }
-    if !found {
-      residual_domains.push({ domain: difference.domain, count: 1 })
-    }
-  }
-  {
-    ..analysis,
-    summary,
-    events: scene_events,
-    evidence_coverage: {
-      effective_difference_count: accounted_differences.length(),
-      classified_difference_count: classified_difference_ids.length(),
-      residual_difference_count: residual_difference_ids.length(),
-      residual_domains,
-    },
-  }
-}
-
-///|
-fn scene_events(
+fn object_change_plans(
   before : VisualScene,
   after : VisualScene,
   summary : @model.VisualSceneSummary,
   alignments : Array[@model.VisualObjectAlignment],
   layout_kind : String,
-) -> Array[@model.VisualChangeEvent] {
-  let events : Array[@model.VisualChangeEvent] = []
+) -> Array[(String, String)] {
+  let plans : Array[(String, String)] = []
   fn append(
     kind : String,
     selected : Array[@model.VisualObjectAlignment],
   ) -> Unit {
-    events.push(
-      scene_event(
-        kind,
-        selected.map(alignment => alignment.id),
-        events.length(),
-      ),
-    )
+    for alignment in selected {
+      plans.push((kind, alignment.id))
+    }
   }
   if summary.content == "changed" {
     append(
@@ -362,7 +91,7 @@ fn scene_events(
       }),
     )
   }
-  events
+  plans
 }
 
 ///|
@@ -406,8 +135,12 @@ pub fn prepare_visual_scene(
   let before = build_visual_scene(before_svg, "before", profile)
   let after = build_visual_scene(after_svg, "after", profile)
   let alignments = align_scene_objects(before, after)
+  let (analysis, object_change_plans) = analyze_visual_scene(
+    before, after, alignments,
+  )
   {
-    analysis: analyze_visual_scene(before, after, alignments),
+    analysis,
+    object_change_plans,
     before_subject_owners: scene_subject_ownership(before, alignments, "before"),
     after_subject_owners: scene_subject_ownership(after, alignments, "after"),
     before_subject_owner_entries: scene_subject_owner_entries(
@@ -424,14 +157,14 @@ fn analyze_visual_scene(
   before : VisualScene,
   after : VisualScene,
   alignments : Array[@model.VisualObjectAlignment],
-) -> @model.VisualSceneAnalysis {
+) -> (@model.VisualSceneAnalysis, Array[(String, String)]) {
   if before.objects.is_empty() &&
     after.objects.is_empty() &&
     before.semantic_text.is_empty() &&
     after.semantic_text.is_empty() &&
     before.relations.is_empty() &&
     after.relations.is_empty() {
-    return @model.empty_visual_scene_analysis()
+    return (@model.empty_visual_scene_analysis(), [])
   }
   let unresolved = alignments.any(alignment => {
     alignment.relation == "unresolved"
@@ -518,7 +251,7 @@ fn analyze_visual_scene(
     before_relation_count: before.relations.length(),
     after_relation_count: after.relations.length(),
   }
-  {
+  let analysis : @model.VisualSceneAnalysis = {
     summary,
     before_objects: [
       for object in before.objects => object.summary
@@ -529,14 +262,27 @@ fn analyze_visual_scene(
     before_relations: before.relations,
     after_relations: after.relations,
     alignments,
-    events: scene_events(before, after, summary, alignments, layout_kind),
+    object_changes: [],
+    events: [],
     evidence_coverage: {
-      effective_difference_count: 0,
-      classified_difference_count: 0,
-      residual_difference_count: 0,
-      residual_domains: [],
+      difference_to_object: {
+        effective_difference_count: 0,
+        assigned_difference_count: 0,
+        unresolved_difference_count: 0,
+        unresolved_domains: [],
+      },
+      object_to_scene: {
+        object_change_count: 0,
+        assigned_object_change_count: 0,
+        residual_object_change_count: 0,
+        residual_kinds: [],
+      },
     },
   }
+  (
+    analysis,
+    object_change_plans(before, after, summary, alignments, layout_kind),
+  )
 }
 
 ///|
@@ -631,5 +377,11 @@ pub fn compare_visual_scenes(
   after_svg : String,
   profile : @model.ComparisonProfile,
 ) -> @model.VisualSceneAnalysis raise {
-  prepare_visual_scene(before_svg, after_svg, profile).analysis()
+  complete_visual_scene(
+    prepare_visual_scene(before_svg, after_svg, profile),
+    [],
+    [],
+    [],
+    [],
+  )
 }

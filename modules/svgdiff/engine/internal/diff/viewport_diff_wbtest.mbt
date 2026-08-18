@@ -132,6 +132,41 @@ test "viewport and transform causes fan out to every affected leaf" {
   ]
   assert_eq(viewport_facts.length(), 1)
   assert_eq(viewport_facts[0].affected_subject_ids, ["a", "b"])
+  guard report.visual_scene.events.filter(event => {
+      event.kind == "layout.reflow" || event.kind == "layout.global_affine"
+    })
+    is [layout] else {
+    fail("expected one scene layout change")
+  }
+  assert_true(layout.changed_fact_ids.contains(viewport_fact_id))
+  assert_eq(
+    layout.changed_fact_ids.filter(id => id == viewport_fact_id).length(),
+    1,
+  )
+  assert_eq(layout.object_change_ids.length(), 2)
+  assert_eq(layout.affected_subject_count, 2)
+  assert_true(layout.effect_count > layout.changed_fact_ids.length())
+  for change in report.visual_scene.object_changes {
+    if layout.object_change_ids.contains(change.id) {
+      assert_true(change.changed_fact_ids.contains(viewport_fact_id))
+    }
+  }
+}
+
+///|
+test "independent layout facts remain separate scene changes" {
+  let before = "<svg width='16' height='16'><rect id='a' width='2' height='2'/><rect id='b' x='8' width='2' height='2'/></svg>"
+  let after = "<svg width='16' height='16'><rect id='a' width='3' height='2'/><rect id='b' x='8' width='4' height='2'/></svg>"
+  let report = compare(before, after, ComparisonProfile::v1_default())
+  let layout = report.visual_scene.events.filter(event => {
+    event.kind == "layout.reflow" || event.kind == "layout.global_affine"
+  })
+  assert_eq(layout.length(), 2)
+  assert_eq(layout[0].object_change_ids.length(), 1)
+  assert_eq(layout[1].object_change_ids.length(), 1)
+  assert_false(
+    layout[0].changed_fact_ids.any(id => layout[1].changed_fact_ids.contains(id)),
+  )
 }
 
 ///|

@@ -253,6 +253,8 @@ def assert_report_links(case: dict[str, Any], report: dict[str, Any]) -> None:
     after_object_ids = {item["id"] for item in scene["after_objects"]}
     alignment_ids = {item["id"] for item in scene["alignments"]}
     evidence_event_ids = {item["id"] for item in report["events"]}
+    changed_fact_ids = {item["id"] for item in report["changed_facts"]}
+    evidence_events_by_id = {item["id"]: item for item in report["events"]}
     summary = scene["summary"]
     if summary["before_object_count"] != len(before_object_ids):
         raise ValueError(f"{case['id']}: before object count mismatch")
@@ -290,19 +292,56 @@ def assert_report_links(case: dict[str, Any], report: dict[str, Any]) -> None:
         "style.change": "style",
         "representation.change": "representation",
     }
+    object_changes = {item["id"]: item for item in scene["object_changes"]}
+    for change in object_changes.values():
+        if change["object_alignment_id"] not in alignment_ids:
+            raise ValueError(f"{case['id']}: unknown object change alignment link")
+        if not set(change["changed_fact_ids"]) <= changed_fact_ids:
+            raise ValueError(f"{case['id']}: unknown object change fact link")
+        if not set(change["difference_ids"]) <= difference_ids:
+            raise ValueError(f"{case['id']}: unknown object change difference link")
+        if not set(change["evidence_event_ids"]) <= evidence_event_ids:
+            raise ValueError(f"{case['id']}: unknown object change evidence event link")
+        if len(change["difference_ids"]) != sum(
+            item["count"] for item in change["evidence_domains"]
+        ):
+            raise ValueError(f"{case['id']}: object change evidence count mismatch")
     for event in scene["events"]:
         if summary[event_axes[event["kind"]]] != "changed":
             raise ValueError(f"{case['id']}: scene event contradicts its axis")
-        if not set(event["object_alignment_ids"]) <= alignment_ids:
-            raise ValueError(f"{case['id']}: unknown scene alignment link")
-        if not set(event["difference_ids"]) <= difference_ids:
-            raise ValueError(f"{case['id']}: unknown scene difference link")
-        if not set(event["evidence_event_ids"]) <= evidence_event_ids:
-            raise ValueError(f"{case['id']}: unknown scene evidence event link")
-        if event["evidence_difference_count"] != sum(
-            item["count"] for item in event["evidence_domains"]
-        ):
-            raise ValueError(f"{case['id']}: scene evidence count mismatch")
+        selected_ids = set(event["object_change_ids"])
+        if not selected_ids <= object_changes.keys():
+            raise ValueError(f"{case['id']}: unknown scene object change link")
+        selected = [object_changes[item] for item in selected_ids]
+        expected_facts = {
+            item for change in selected for item in change["changed_fact_ids"]
+        }
+        expected_differences = {
+            item for change in selected for item in change["difference_ids"]
+        }
+        expected_subjects = {
+            evidence_events_by_id[item]["subject"]
+            for change in selected
+            for item in change["evidence_event_ids"]
+        }
+        if set(event["changed_fact_ids"]) != expected_facts:
+            raise ValueError(f"{case['id']}: scene fact closure mismatch")
+        if event["effect_count"] != len(expected_differences):
+            raise ValueError(f"{case['id']}: scene effect count mismatch")
+        if event["affected_subject_count"] != len(expected_subjects):
+            raise ValueError(f"{case['id']}: scene subject count mismatch")
+    difference_coverage = scene["evidence_coverage"]["difference_to_object"]
+    if difference_coverage["effective_difference_count"] != (
+        difference_coverage["assigned_difference_count"]
+        + difference_coverage["unresolved_difference_count"]
+    ):
+        raise ValueError(f"{case['id']}: atomic-to-object coverage mismatch")
+    object_coverage = scene["evidence_coverage"]["object_to_scene"]
+    if object_coverage["object_change_count"] != (
+        object_coverage["assigned_object_change_count"]
+        + object_coverage["residual_object_change_count"]
+    ):
+        raise ValueError(f"{case['id']}: object-to-scene coverage mismatch")
 
 
 def assert_representative_states(reports: dict[str, dict[str, Any]]) -> None:

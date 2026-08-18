@@ -96,7 +96,7 @@ fn main {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  guard report.schema_version == "4.0" else { abort("wrong schema") }
+  guard report.schema_version == "5.0" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
   guard report.impact_assessment.policy_id == "event_rendered_pareto/v1" else {

@@ -8,7 +8,7 @@ import {
 // Values
 pub fn compare_visual_scenes(String, String, @model.ComparisonProfile) -> @model.VisualSceneAnalysis raise
 
-pub fn complete_visual_scene(VisualSceneContext, Array[@model.AtomicDifference], Array[@model.VisualEvent], Array[@model.SubjectAlignment]) -> @model.VisualSceneAnalysis
+pub fn complete_visual_scene(VisualSceneContext, Array[@model.ChangedFact], Array[@model.AtomicDifference], Array[@model.VisualEvent], Array[@model.SubjectAlignment]) -> @model.VisualSceneAnalysis
 
 pub fn prepare_visual_scene(String, String, @model.ComparisonProfile) -> VisualSceneContext raise
 
@@ -17,6 +17,7 @@ pub fn prepare_visual_scene(String, String, @model.ComparisonProfile) -> VisualS
 // Types and methods
 pub struct VisualSceneContext {
   analysis : @model.VisualSceneAnalysis
+  object_change_plans : Array[(String, String)]
   before_subject_owners : Array[String?]
   after_subject_owners : Array[String?]
   before_subject_owner_entries : Array[(String, String)]

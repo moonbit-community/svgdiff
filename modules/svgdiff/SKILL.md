@@ -14,13 +14,13 @@ test:
 moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg --agent-json
 ```
 
-Run the published module version `0.9.0` directly:
+Run the published module version `0.10.0` directly:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.9.0 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.10.0 before.svg after.svg --agent-json
 ```
 
-The command writes canonical Structured Report schema `4.0` JSON by default;
+The command writes canonical Structured Report schema `5.0` JSON by default;
 pass `--agent-json` for the same report without formatting whitespace. It
 accepts exactly two guest-visible SVG paths. Use `-` for at most one input to
 read it from stdin.
@@ -68,21 +68,24 @@ moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
 1. Read `analysis_status` and `scene.summary` first. Treat `content`,
    `object_set`, `relation_graph`, `layout`, `style`, and `representation` as
    independent conclusions; do not collapse them into one severity score.
-2. Read `scene.events` as the coherent user-perceived changes. Follow their
-   representative Difference and evidence Event IDs when details are needed.
-3. Enumerate every item in every `difference_groups` group, including
+2. Read `changed_facts` as the canonical cause inventory. Then read
+   `scene.object_changes` and `scene.events`: Scene Changes reference Object
+   Changes only. Keep cause, effect, subject, and object counts distinct.
+3. Check both `scene.evidence_coverage` transitions; unresolved Atomic
+   Differences and residual Object Changes remain evidence, not equality.
+4. Enumerate every item in every `difference_groups` group, including
    effective-equivalent changes and changes whose owning event measures zero.
-4. Treat each item's sparse `magnitude` as direct evidence for that Atomic
+5. Treat each item's sparse `magnitude` as direct evidence for that Atomic
    Difference. Omitted fields are not zero.
-5. Follow `events[].difference_ids` for the owning rendered outcome, optional
+6. Follow `events[].difference_ids` for the owning rendered outcome, optional
    shared `isolated_subject` measurements, conservative regions, and possible
    causes.
-6. A `sound_overapproximation` cause set may contain false positives but
+7. A `sound_overapproximation` cause set may contain false positives but
    includes every actual cause within complete supported coverage. It does not
    prove that every candidate contributed.
-7. Report every entry in `limitations` before making equality or magnitude
+8. Report every entry in `limitations` before making equality or magnitude
    claims.
-8. Keep changed fraction, linear RGBA RMSE, perceptual response, geometry,
+9. Keep changed fraction, linear RGBA RMSE, perceptual response, geometry,
    coverage, and other domain magnitudes independent. Do not invent a universal
    severity score or suppress small differences.
 

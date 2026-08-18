@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "failed",
   "comparison": {
     "viewport": {
@@ -11,6 +11,7 @@
     "status": "not_computed",
     "reason": "rendered_evidence_unavailable"
   },
+  "changed_facts": [],
   "scene": {
     "summary": {
       "status": "not_computed",
@@ -30,12 +31,21 @@
     "before_relations": [],
     "after_relations": [],
     "alignments": [],
+    "object_changes": [],
     "events": [],
     "evidence_coverage": {
-      "effective_difference_count": 0,
-      "classified_difference_count": 0,
-      "residual_difference_count": 0,
-      "residual_domains": []
+      "difference_to_object": {
+        "effective_difference_count": 0,
+        "assigned_difference_count": 0,
+        "unresolved_difference_count": 0,
+        "unresolved_domains": []
+      },
+      "object_to_scene": {
+        "object_change_count": 0,
+        "assigned_object_change_count": 0,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [],

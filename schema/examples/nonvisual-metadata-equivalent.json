@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -13,6 +13,7 @@
     "changed_fraction": 0,
     "linear_rgba_rmse": 0
   },
+  "changed_facts": [],
   "scene": {
     "summary": {
       "status": "computed",
@@ -79,12 +80,21 @@
         "ambiguity": "none"
       }
     ],
+    "object_changes": [],
     "events": [],
     "evidence_coverage": {
-      "effective_difference_count": 0,
-      "classified_difference_count": 0,
-      "residual_difference_count": 0,
-      "residual_domains": []
+      "difference_to_object": {
+        "effective_difference_count": 0,
+        "assigned_difference_count": 0,
+        "unresolved_difference_count": 0,
+        "unresolved_domains": []
+      },
+      "object_to_scene": {
+        "object_change_count": 0,
+        "assigned_object_change_count": 0,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [],

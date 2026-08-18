@@ -1,10 +1,10 @@
 # Raw Magnitudes and Impact Assessment Boundary
 
-Status: internal typed-model policy; not serialized by schema `4.0`
+Status: internal typed-model policy; not serialized by schema `5.0`
 
 Last verified: 2026-07-17
 
-The engine retains a typed `ImpactAssessment` for internal experiments and legacy library callers. Schema `4.0` deliberately does not serialize it. The assessment is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
+The engine retains a typed `ImpactAssessment` for internal experiments and legacy library callers. Schema `5.0` deliberately does not serialize it. The assessment is not a severity label, universal similarity score, visibility judgment, equality rule, or total cross-domain ranking.
 
 The concise report instead exposes independent raw measurements on grouped
 differences and events. It keeps measurements direct to an Atomic Difference on

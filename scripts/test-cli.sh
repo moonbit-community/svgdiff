@@ -28,7 +28,7 @@ moon run --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/report.json" 2>"$tmp/report.err"
 test ! -s "$tmp/report.err"
 jq -e '
-  .schema_version == "4.0" and
+  .schema_version == "5.0" and
   .analysis_status == "complete" and
   .comparison == {"viewport":{"width":16,"height":16}} and
   .canvas.status == "computed" and
@@ -101,7 +101,7 @@ grep -F "$diff_id" "$tmp/summary.md" >/dev/null
 
 cat testdata/before.svg | moon run --target native modules/svgdiff/cmd/svgdiff -- \
   - testdata/after.svg >"$tmp/stdin-before.json"
-jq -e '.schema_version == "4.0" and .analysis_status == "complete"' \
+jq -e '.schema_version == "5.0" and .analysis_status == "complete"' \
   "$tmp/stdin-before.json" >/dev/null
 
 printf '%s\n' \
@@ -121,8 +121,8 @@ grep -q -- '--agent-json' "$tmp/help.txt"
 grep -q -- '--summary <summary>' "$tmp/help.txt"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
-grep -q '^svgdiff 0.9.0$' "$tmp/version.txt"
-grep -q '^schema: 4.0$' "$tmp/version.txt"
+grep -q '^svgdiff 0.10.0$' "$tmp/version.txt"
+grep -q '^schema: 5.0$' "$tmp/version.txt"
 
 moon runwasm modules/svgdiff/cmd/svgdiff \
   testdata/before.svg testdata/after.svg \
@@ -196,7 +196,7 @@ assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/resource-failed.json" 2>"$tmp/resource-failed.err"
 test ! -s "$tmp/resource-failed.err"
 jq -e '
-  .schema_version == "4.0" and
+  .schema_version == "5.0" and
   .analysis_status == "failed" and
   .difference_groups == [] and
   .events == [] and

@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -13,6 +13,16 @@
     "changed_fraction": 0.5,
     "linear_rgba_rmse": 0.12352941176470601
   },
+  "changed_facts": [
+    {
+      "id": "fact:mask:fade:fill-opacity",
+      "subject": "fade",
+      "property": "fill-opacity",
+      "before": "0.5",
+      "after": "0.75",
+      "affected_subject_count": 1
+    }
+  ],
   "scene": {
     "summary": {
       "status": "computed",
@@ -79,17 +89,26 @@
         "ambiguity": "none"
       }
     ],
+    "object_changes": [],
     "events": [],
     "evidence_coverage": {
-      "effective_difference_count": 1,
-      "classified_difference_count": 0,
-      "residual_difference_count": 1,
-      "residual_domains": [
-        {
-          "domain": "resource.mask.alpha",
-          "count": 1
-        }
-      ]
+      "difference_to_object": {
+        "effective_difference_count": 1,
+        "assigned_difference_count": 0,
+        "unresolved_difference_count": 1,
+        "unresolved_domains": [
+          {
+            "domain": "resource.mask.alpha",
+            "count": 1
+          }
+        ]
+      },
+      "object_to_scene": {
+        "object_change_count": 0,
+        "assigned_object_change_count": 0,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [

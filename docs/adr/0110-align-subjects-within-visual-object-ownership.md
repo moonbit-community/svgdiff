@@ -25,26 +25,13 @@ pairwise identity. At the rendered-subject layer, a selected minimum-cost edge
 is rejected when an equally good local competitor shares either endpoint, even
 if deterministic optimization can choose one global assignment.
 
-Visual Change Events are a non-owning derived view over the authoritative
-Atomic Difference and primitive Event inventories. Events spanning multiple
-Object Alignments use `scope: systemic`; single-object and comparison-wide
-events use `object` and `comparison`. They retain one representative Atomic
-Difference per domain, domain cardinalities, and every supporting primitive
-Event ID. Atomic Differences still have exactly one primitive Event owner, so
-ADR 0040 remains in force.
-
-Scene evidence compression is lossless by construction. The unique union of
-non-equivalent Atomic Differences supporting emitted scene events is counted as
-classified evidence. Every other non-equivalent Atomic Difference, including
-an indeterminate relation, is counted as a residual and summarized by domain.
-The required invariant is:
-
-```text
-classified_difference_count + residual_difference_count
-  == effective_difference_count
-```
+Schema `5.0` supersedes this ADR's original direct Atomic-to-Scene projection.
+Visual Object ownership and alignment abstention remain unchanged, but ADR 0111
+now requires Object Changes between Atomic Differences and Scene Changes.
+Atomic Differences still have exactly one primitive Event owner, so ADR 0040
+remains in force.
 
 This decision improves reports only when the proposed object ownership and
-pattern memberships survive these checks. It does not prove that object
+object ownership survives these checks. It does not prove that object
 extraction matches every human grouping, calibrate identity confidence, infer
 semantic importance, or replace the complete primitive evidence inventory.

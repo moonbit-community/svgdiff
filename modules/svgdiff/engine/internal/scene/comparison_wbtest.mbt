@@ -156,10 +156,12 @@ test "scene content follows aligned objects instead of only the global text set"
   )
   assert_eq(analysis.summary.content, "changed")
   assert_eq(analysis.summary.object_set, "preserved")
+  let content_changes = analysis.events.filter(event => {
+    event.kind == "content.change"
+  })
+  assert_eq(content_changes.length(), 2)
   assert_true(
-    analysis.events.any(event => {
-      event.kind == "content.change" && event.object_alignment_ids.length() == 2
-    }),
+    content_changes.all(event => event.object_change_ids.length() == 1),
   )
 }
 
@@ -243,9 +245,11 @@ test "scene events localize only their affected object alignments" {
     after,
     @model.ComparisonProfile::v1_default(),
   )
-  let layout = analysis.events.filter(event => event.kind == "layout.reflow")[0]
-  let style = analysis.events.filter(event => event.kind == "style.change")[0]
-  assert_eq(layout.object_alignment_ids.length(), 1)
-  assert_eq(style.object_alignment_ids.length(), 1)
-  assert_true(layout.object_alignment_ids[0] != style.object_alignment_ids[0])
+  let layout = analysis.object_changes.filter(change => {
+      change.kind == "layout.reflow"
+    })[0]
+  let style = analysis.object_changes.filter(change => {
+      change.kind == "style.change"
+    })[0]
+  assert_true(layout.object_alignment_id != style.object_alignment_id)
 }

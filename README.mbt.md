@@ -103,10 +103,10 @@ The [`modules/svgdiff/cmd/svgdiff`](modules/svgdiff/cmd/svgdiff) package is the
 shared native and portable WASIp1 CLI. It reads two guest-visible SVG files and
 supports the same arguments, outputs, explicit resources, and optional
 deterministic checkpoint budget on both targets.
-Run version `0.9.0` directly from Mooncakes:
+Run version `0.10.0` directly from Mooncakes:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.9.0 before.svg after.svg --agent-json
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.10.0 before.svg after.svg --agent-json
 ```
 
 From a source checkout, verify it with the repository fixtures:
@@ -121,7 +121,7 @@ guest-visible filesystem and resource boundary.
 
 ## Library API
 
-Install module version `0.9.0` with `moon add Milky2018/svgdiff@0.9.0`. Its focused [registry README](modules/svgdiff/README.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
+Install module version `0.10.0` with `moon add Milky2018/svgdiff@0.10.0`. Its focused [registry README](modules/svgdiff/README.mbt.md) and [Mooncakes page](https://mooncakes.io/docs/Milky2018/svgdiff) describe the consumable package. Repository-only design, evaluation, and maintenance artifacts are deliberately excluded from registry archives.
 
 The root package exposes unlimited and cooperatively controlled comparison operations:
 
@@ -132,7 +132,7 @@ compare_with_control(before_svg, after_svg, comparison_profile, control) -> Stru
 compare_with_control_and_resources(before_svg, after_svg, comparison_profile, before_resources, after_resources, control) -> StructuredReport raises ComparisonInterrupted
 ```
 
-The current JSON contract is version `4.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). Its primary semantic surface is `scene`: aligned Visual Objects and relations, six orthogonal conclusions, and coherent scene events. `comparison`, `canvas`, categorized `difference_groups`, primitive evidence `events`, and actual `limitations` retain complete traceability and measurements. Successful coverage rows, primitive alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
+The current JSON contract is version `5.0`; its contract is described by the [JSON Schema](schema/svgdiff-report.schema.json) and [core comparison model](docs/core-model.md). Its primary semantic surface is `scene`: aligned Visual Objects and relations, six orthogonal conclusions, per-object changes, and coherent scene changes. Compact `changed_facts` retain canonical causes once, while `comparison`, `canvas`, categorized `difference_groups`, primitive evidence `events`, and actual `limitations` retain traceability and measurements. Cause, effect, subject, and object counts remain distinct across the typed causal hierarchy. Successful coverage rows outside the two scene transitions, primitive alignment scoring, source-resolution tables, ordering policies, renderer adapter chains, Impact witnesses, unrequested metrics, and null placeholders remain internal. Numeric zero is always retained when measured; an unavailable value is omitted, while a blocked expected computation is represented by a limitation.
 
 Admitted scalar spatial changes retain exact continuous magnitudes in canonical local user units and CSS pixels, plus viewport-diagonal and entity-relative fractions when their mappings and nonzero bounds are available. Admitted two-sided entity changes can additionally retain a bounded symmetric painted-boundary displacement distribution and an alpha-only coverage difference with absolute CSS area and a normalized union fraction. These parameter, boundary, and coverage measurements remain independent from analytic geometry, RGB color, and whole-event raster outcomes, so a tiny nonzero edit is not erased when canonical pixels are unchanged and no field is treated as a visibility or severity label.
 
@@ -182,7 +182,7 @@ test "compare two SVG strings" {
     viewport_height: 24,
   }
   let report = @svgdiff.compare(before, after, profile)
-  assert_eq(report.schema_version, "4.0")
+  assert_eq(report.schema_version, "5.0")
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.visual_scene.summary.object_set, "preserved")
   assert_eq(report.visual_scene.summary.layout, "changed")

@@ -1,23 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://milky2018.github.io/svgdiff/schema/4.0",
-  "title": "SVG Diff Structured Report 4.0",
+  "$id": "https://milky2018.github.io/svgdiff/schema/5.0",
+  "title": "SVG Diff Structured Report 5.0",
   "type": "object",
   "required": [
     "schema_version",
     "analysis_status",
     "comparison",
     "canvas",
+    "changed_facts",
     "scene",
     "difference_groups",
     "events",
     "limitations"
   ],
   "properties": {
-    "schema_version": { "const": "4.0" },
+    "schema_version": { "const": "5.0" },
     "analysis_status": { "enum": ["complete", "partial", "failed"] },
     "comparison": { "$ref": "#/$defs/comparison" },
     "canvas": { "$ref": "#/$defs/canvas" },
+    "changed_facts": { "type": "array", "items": { "$ref": "#/$defs/changedFact" } },
     "scene": { "$ref": "#/$defs/scene" },
     "difference_groups": {
       "type": "array",
@@ -34,9 +36,22 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "changedFact": {
+      "type": "object",
+      "required": ["id", "subject", "property", "affected_subject_count"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 },
+        "property": { "type": "string", "minLength": 1 },
+        "before": { "type": "string" },
+        "after": { "type": "string" },
+        "affected_subject_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
     "scene": {
       "type": "object",
-      "required": ["summary", "before_objects", "after_objects", "before_relations", "after_relations", "alignments", "events", "evidence_coverage"],
+      "required": ["summary", "before_objects", "after_objects", "before_relations", "after_relations", "alignments", "object_changes", "events", "evidence_coverage"],
       "properties": {
         "summary": { "$ref": "#/$defs/sceneSummary" },
         "before_objects": { "type": "array", "items": { "$ref": "#/$defs/visualObject" } },
@@ -44,7 +59,8 @@
         "before_relations": { "type": "array", "items": { "$ref": "#/$defs/visualRelation" } },
         "after_relations": { "type": "array", "items": { "$ref": "#/$defs/visualRelation" } },
         "alignments": { "type": "array", "items": { "$ref": "#/$defs/visualObjectAlignment" } },
-        "events": { "type": "array", "items": { "$ref": "#/$defs/visualChangeEvent" } },
+        "object_changes": { "type": "array", "items": { "$ref": "#/$defs/visualObjectChange" } },
+        "events": { "type": "array", "items": { "$ref": "#/$defs/visualSceneChange" } },
         "evidence_coverage": { "$ref": "#/$defs/visualEvidenceCoverage" }
       },
       "additionalProperties": false
@@ -111,50 +127,68 @@
       },
       "additionalProperties": false
     },
-    "visualChangeEvent": {
+    "visualEvidenceDomain": {
       "type": "object",
-      "required": ["id", "kind", "scope", "object_alignment_ids", "difference_ids", "evidence_event_ids", "evidence_difference_count", "evidence_domains"],
+      "required": ["domain", "count"],
+      "properties": {
+        "domain": { "type": "string", "minLength": 1 },
+        "count": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "visualObjectChange": {
+      "type": "object",
+      "required": ["id", "kind", "object_alignment_id", "changed_fact_ids", "difference_ids", "evidence_event_ids", "evidence_domains"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["content.change", "object.presence", "relation.change", "layout.reflow", "layout.global_affine", "style.change", "representation.change"] },
+        "object_alignment_id": { "type": "string", "minLength": 1 },
+        "changed_fact_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "difference_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_event_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_domains": { "type": "array", "items": { "$ref": "#/$defs/visualEvidenceDomain" } }
+      },
+      "additionalProperties": false
+    },
+    "visualSceneChange": {
+      "type": "object",
+      "required": ["id", "kind", "scope", "object_change_ids", "changed_fact_ids", "effect_count", "affected_subject_count"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "kind": { "enum": ["content.change", "object.presence", "relation.change", "layout.reflow", "layout.global_affine", "style.change", "representation.change"] },
         "scope": { "enum": ["object", "systemic", "comparison"] },
-        "object_alignment_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "difference_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "evidence_event_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "evidence_difference_count": { "type": "integer", "minimum": 0 },
-        "evidence_domains": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["domain", "count"],
-            "properties": {
-              "domain": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 1 }
-            },
-            "additionalProperties": false
-          }
-        }
+        "object_change_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "changed_fact_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "effect_count": { "type": "integer", "minimum": 0 },
+        "affected_subject_count": { "type": "integer", "minimum": 0 }
       },
       "additionalProperties": false
     },
     "visualEvidenceCoverage": {
       "type": "object",
-      "required": ["effective_difference_count", "classified_difference_count", "residual_difference_count", "residual_domains"],
+      "required": ["difference_to_object", "object_to_scene"],
       "properties": {
-        "effective_difference_count": { "type": "integer", "minimum": 0 },
-        "classified_difference_count": { "type": "integer", "minimum": 0 },
-        "residual_difference_count": { "type": "integer", "minimum": 0 },
-        "residual_domains": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["domain", "count"],
-            "properties": {
-              "domain": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 1 }
-            },
-            "additionalProperties": false
-          }
+        "difference_to_object": {
+          "type": "object",
+          "required": ["effective_difference_count", "assigned_difference_count", "unresolved_difference_count", "unresolved_domains"],
+          "properties": {
+            "effective_difference_count": { "type": "integer", "minimum": 0 },
+            "assigned_difference_count": { "type": "integer", "minimum": 0 },
+            "unresolved_difference_count": { "type": "integer", "minimum": 0 },
+            "unresolved_domains": { "type": "array", "items": { "$ref": "#/$defs/visualEvidenceDomain" } }
+          },
+          "additionalProperties": false
+        },
+        "object_to_scene": {
+          "type": "object",
+          "required": ["object_change_count", "assigned_object_change_count", "residual_object_change_count", "residual_kinds"],
+          "properties": {
+            "object_change_count": { "type": "integer", "minimum": 0 },
+            "assigned_object_change_count": { "type": "integer", "minimum": 0 },
+            "residual_object_change_count": { "type": "integer", "minimum": 0 },
+            "residual_kinds": { "type": "array", "items": { "$ref": "#/$defs/visualEvidenceDomain" } }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

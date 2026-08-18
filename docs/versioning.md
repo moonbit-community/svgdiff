@@ -10,13 +10,13 @@ Last verified: 2026-08-18
 
 | Domain | Current identity | Authority | What it versions |
 | --- | --- | --- | --- |
-| MoonBit module and CLI | `0.9.0` | `modules/svgdiff/moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
-| Structured Report | `4.0` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
+| MoonBit module and CLI | `0.10.0` | `modules/svgdiff/moon.mod` | Public MoonBit declarations, root-package behavior, executable ABIs, CLI syntax, stream behavior, and exit statuses. |
+| Structured Report | `5.0` | `schema/svgdiff-report.schema.json` and `ToJson for StructuredReport` | Serialized fields, value meanings, requiredness, units, references, and interpretation rules. |
 | Agent projection | `svgdiff-agent-projection/2` | `schema/svgdiff-agent-projection.schema.json` and [`agent-projection.md`](agent-projection.md) | JSONL record envelope, header contents, section order, sequence and count integrity, and lossless reconstruction. |
-| Limitations | Schema `4.0` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
+| Limitations | Schema `5.0` plus each stable limitation `code` | `docs/feature-coverage.md`, public report types, and producer tests | Machine-readable conditions that constrain a conclusion and the evidence layers they affect. |
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
-| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `4.0`. |
-| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `4.0`. |
+| Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `5.0`. |
+| Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `5.0`. |
 | Renderer conformance | `svgdiff-renderer-conformance-profile/27` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
@@ -198,6 +198,23 @@ project's pre-1.0 policy, so the module advances to a new minor line. Renderer
 identity, conformance profile `/27`, Diagnostic catalog, ordering policy,
 Impact policy, CLI syntax, and Agent projection record protocol remain
 unchanged.
+
+Schema `5.0` replaces the direct Atomic Difference-to-scene projection with a
+typed causal hierarchy. Compact Changed Facts become a required top-level
+inventory; Object Changes reference canonical causes, all supporting Atomic
+Differences and primitive Events, and exactly one Object Alignment; Scene
+Changes reference Object Changes only and retain distinct cause, effect,
+subject, and object cardinalities. Evidence coverage now accounts separately
+for Atomic-to-Object and Object-to-Scene transitions. These required fields,
+removed event fields, reference changes, and changed aggregation semantics are
+report-breaking. Schema `4.0` consumers must migrate or reject `5.0`; no legacy
+producer is retained.
+
+Module `0.10.0` implements Schema `5.0`. The public report types and serialized
+contract change incompatibly under the pre-1.0 policy, so the module advances
+to a new minor line. Renderer identity, conformance profile `/27`, Diagnostic
+catalog, ordering policy, Impact policy, CLI syntax, and Agent projection record
+protocol remain unchanged.
 
 ## Structured Report schema versions
 

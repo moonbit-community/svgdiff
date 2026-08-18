@@ -752,29 +752,56 @@ pub(all) struct VisualEvidenceDomain {
 }
 
 ///|
-/// One coherent scene- or object-level visual change.
-pub(all) struct VisualChangeEvent {
+/// One evidence-backed change to one aligned Visual Object.
+///
+/// Changed Facts are canonical causes. Atomic Differences and primitive Events
+/// remain subject-level effects and observations; their IDs are referenced
+/// here without copying their payloads.
+pub(all) struct VisualObjectChange {
   id : String
   kind : String
-  scope : String
-  object_alignment_ids : Array[String]
+  object_alignment_id : String
+  changed_fact_ids : Array[String]
   atomic_difference_ids : Array[String]
   evidence_event_ids : Array[String]
-  evidence_difference_count : Int
   evidence_domains : Array[VisualEvidenceDomain]
 }
 
 ///|
-/// Lossless accounting for effective Atomic Differences at the scene layer.
-///
-/// A difference is classified when at least one Visual Change Event references
-/// it as supporting evidence. Residual differences remain authoritative in the
-/// Atomic Difference inventory and are never silently discarded.
-pub(all) struct VisualEvidenceCoverage {
+/// One coherent scene pattern derived exclusively from Visual Object Changes.
+pub(all) struct VisualSceneChange {
+  id : String
+  kind : String
+  scope : String
+  object_change_ids : Array[String]
+  changed_fact_ids : Array[String]
+  effect_count : Int
+  affected_subject_count : Int
+}
+
+///|
+/// Lossless accounting for the Atomic Difference to Object Change transition.
+pub(all) struct VisualDifferenceCoverage {
   effective_difference_count : Int
-  classified_difference_count : Int
-  residual_difference_count : Int
-  residual_domains : Array[VisualEvidenceDomain]
+  assigned_difference_count : Int
+  unresolved_difference_count : Int
+  unresolved_domains : Array[VisualEvidenceDomain]
+}
+
+///|
+/// Lossless accounting for the Object Change to Scene Change transition.
+pub(all) struct VisualObjectChangeCoverage {
+  object_change_count : Int
+  assigned_object_change_count : Int
+  residual_object_change_count : Int
+  residual_kinds : Array[VisualEvidenceDomain]
+}
+
+///|
+/// Coverage at both causal aggregation transitions.
+pub(all) struct VisualEvidenceCoverage {
+  difference_to_object : VisualDifferenceCoverage
+  object_to_scene : VisualObjectChangeCoverage
 }
 
 ///|
@@ -803,7 +830,8 @@ pub(all) struct VisualSceneAnalysis {
   before_relations : Array[VisualRelationSummary]
   after_relations : Array[VisualRelationSummary]
   alignments : Array[VisualObjectAlignment]
-  events : Array[VisualChangeEvent]
+  object_changes : Array[VisualObjectChange]
+  events : Array[VisualSceneChange]
   evidence_coverage : VisualEvidenceCoverage
 }
 
@@ -828,18 +856,27 @@ pub fn empty_visual_scene_analysis() -> VisualSceneAnalysis {
     before_relations: [],
     after_relations: [],
     alignments: [],
+    object_changes: [],
     events: [],
     evidence_coverage: {
-      effective_difference_count: 0,
-      classified_difference_count: 0,
-      residual_difference_count: 0,
-      residual_domains: [],
+      difference_to_object: {
+        effective_difference_count: 0,
+        assigned_difference_count: 0,
+        unresolved_difference_count: 0,
+        unresolved_domains: [],
+      },
+      object_to_scene: {
+        object_change_count: 0,
+        assigned_object_change_count: 0,
+        residual_object_change_count: 0,
+        residual_kinds: [],
+      },
     },
   }
 }
 
 ///|
-/// Complete schema `4.0` result of one SVG comparison.
+/// Complete schema `5.0` result of one SVG comparison.
 ///
 /// Read `analysis_status` and `diagnostics` before interpreting an empty
 /// `atomic_differences` array as profile-scoped equality.
@@ -861,13 +898,13 @@ pub(all) struct StructuredReport {
 }
 
 ///|
-/// Serialize this report as indented schema `4.0` JSON.
+/// Serialize this report as indented schema `5.0` JSON.
 pub fn StructuredReport::to_json_string(self : StructuredReport) -> String {
   ToJson::to_json(self).stringify(indent=2)
 }
 
 ///|
-/// Serialize this report as whitespace-free schema `4.0` JSON.
+/// Serialize this report as whitespace-free schema `5.0` JSON.
 ///
 /// This serialization contains the same fields and evidence as
 /// `to_json_string`; it only removes presentation whitespace.

@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -13,6 +13,14 @@
     "changed_fraction": 0.078125,
     "linear_rgba_rmse": 0.13975424859373686
   },
+  "changed_facts": [
+    {
+      "id": "fact:auto:diff:entity:label:text",
+      "subject": "alignment:0",
+      "property": "text.content",
+      "affected_subject_count": 1
+    }
+  ],
   "scene": {
     "summary": {
       "status": "computed",
@@ -32,28 +40,26 @@
     "before_relations": [],
     "after_relations": [],
     "alignments": [],
-    "events": [
-      {
-        "id": "scene-event:0",
-        "kind": "content.change",
-        "scope": "comparison",
-        "object_alignment_ids": [],
-        "difference_ids": [],
-        "evidence_event_ids": [],
-        "evidence_difference_count": 0,
-        "evidence_domains": []
-      }
-    ],
+    "object_changes": [],
+    "events": [],
     "evidence_coverage": {
-      "effective_difference_count": 1,
-      "classified_difference_count": 0,
-      "residual_difference_count": 1,
-      "residual_domains": [
-        {
-          "domain": "text.content",
-          "count": 1
-        }
-      ]
+      "difference_to_object": {
+        "effective_difference_count": 1,
+        "assigned_difference_count": 0,
+        "unresolved_difference_count": 1,
+        "unresolved_domains": [
+          {
+            "domain": "text.content",
+            "count": 1
+          }
+        ]
+      },
+      "object_to_scene": {
+        "object_change_count": 0,
+        "assigned_object_change_count": 0,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [

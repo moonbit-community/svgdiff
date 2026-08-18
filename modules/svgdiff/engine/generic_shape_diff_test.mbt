@@ -468,7 +468,7 @@ test "group opacity is compositing rather than inherited child opacity" {
 }
 
 ///|
-test "scene event retains every owning primitive event without duplicating differences" {
+test "object change retains all effects before scene aggregation" {
   let before = shape_svg(
     "<g id='panel'><rect id='left' x='1' y='1' width='6' height='6' fill='red'/><rect id='right' x='11' y='1' width='6' height='6' fill='red'/><text x='1' y='18'>Panel</text></g>",
   )
@@ -485,16 +485,20 @@ test "scene event retains every owning primitive event without duplicating diffe
   })
   guard style_events is [event] else { fail("expected a scene style event") }
   assert_eq(event.scope, "object")
-  assert_eq(event.object_alignment_ids.length(), 1)
-  assert_eq(event.evidence_difference_count, 2)
-  assert_eq(event.atomic_difference_ids.length(), 1)
-  assert_eq(event.evidence_event_ids.length(), 2)
+  assert_eq(event.object_change_ids.length(), 1)
+  assert_eq(event.effect_count, 2)
+  assert_eq(event.affected_subject_count, 2)
+  guard report.visual_scene.object_changes is [change] else {
+    fail("expected one object style change")
+  }
+  assert_eq(change.atomic_difference_ids.length(), 2)
+  assert_eq(change.evidence_event_ids.length(), 2)
+  let coverage = report.visual_scene.evidence_coverage.difference_to_object
   assert_eq(
-    report.visual_scene.evidence_coverage.effective_difference_count,
-    report.visual_scene.evidence_coverage.classified_difference_count +
-    report.visual_scene.evidence_coverage.residual_difference_count,
+    coverage.effective_difference_count,
+    coverage.assigned_difference_count + coverage.unresolved_difference_count,
   )
-  assert_eq(report.visual_scene.evidence_coverage.residual_difference_count, 0)
+  assert_eq(coverage.unresolved_difference_count, 0)
 }
 
 ///|
@@ -589,13 +593,13 @@ test "gradient references use computed gradient semantics" {
       diagnostic.code != "paint_server_analysis_unsupported"
     }),
   )
-  let coverage = report.visual_scene.evidence_coverage
+  let coverage = report.visual_scene.evidence_coverage.difference_to_object
   assert_eq(
     coverage.effective_difference_count,
-    coverage.classified_difference_count + coverage.residual_difference_count,
+    coverage.assigned_difference_count + coverage.unresolved_difference_count,
   )
   assert_true(
-    coverage.residual_domains.any(domain => {
+    coverage.unresolved_domains.any(domain => {
       domain.domain == "resource.gradient.stop.stop_color" && domain.count == 1
     }),
   )

@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "partial",
   "comparison": {
     "viewport": {
@@ -13,6 +13,24 @@
     "changed_fraction": 0.4375,
     "linear_rgba_rmse": 0.21673971242293488
   },
+  "changed_facts": [
+    {
+      "id": "fact:alignment:0:d:segment:0:parameter:y",
+      "subject": "alignment:0",
+      "property": "d.segment.0.y",
+      "before": "M2 2",
+      "after": "M2 14",
+      "affected_subject_count": 1
+    },
+    {
+      "id": "fact:alignment:0:d:segment:1:parameter:y",
+      "subject": "alignment:0",
+      "property": "d.segment.1.y",
+      "before": "L14 14",
+      "after": "L14 2",
+      "affected_subject_count": 1
+    }
+  ],
   "scene": {
     "summary": {
       "status": "computed",
@@ -21,7 +39,7 @@
       "relation_graph": "preserved",
       "layout": "preserved",
       "style": "preserved",
-      "representation": "preserved",
+      "representation": "changed",
       "before_object_count": 1,
       "after_object_count": 1,
       "before_relation_count": 0,
@@ -79,17 +97,59 @@
         "ambiguity": "none"
       }
     ],
-    "events": [],
+    "object_changes": [
+      {
+        "id": "object-change:0",
+        "kind": "representation.change",
+        "object_alignment_id": "object-alignment:0",
+        "changed_fact_ids": [
+          "fact:alignment:0:d:segment:0:parameter:y",
+          "fact:alignment:0:d:segment:1:parameter:y"
+        ],
+        "difference_ids": [
+          "diff:alignment:0:d:segment:0:parameter:y",
+          "diff:alignment:0:d:segment:1:parameter:y"
+        ],
+        "evidence_event_ids": [
+          "event:alignment:0"
+        ],
+        "evidence_domains": [
+          {
+            "domain": "geometry.path.parameter",
+            "count": 2
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "id": "scene-change:0",
+        "kind": "representation.change",
+        "scope": "object",
+        "object_change_ids": [
+          "object-change:0"
+        ],
+        "changed_fact_ids": [
+          "fact:alignment:0:d:segment:0:parameter:y",
+          "fact:alignment:0:d:segment:1:parameter:y"
+        ],
+        "effect_count": 2,
+        "affected_subject_count": 1
+      }
+    ],
     "evidence_coverage": {
-      "effective_difference_count": 2,
-      "classified_difference_count": 0,
-      "residual_difference_count": 2,
-      "residual_domains": [
-        {
-          "domain": "geometry.path.parameter",
-          "count": 2
-        }
-      ]
+      "difference_to_object": {
+        "effective_difference_count": 2,
+        "assigned_difference_count": 2,
+        "unresolved_difference_count": 0,
+        "unresolved_domains": []
+      },
+      "object_to_scene": {
+        "object_change_count": 1,
+        "assigned_object_change_count": 1,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [

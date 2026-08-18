@@ -574,20 +574,52 @@ fn compact_visual_relation(value : VisualRelationSummary) -> Json {
 }
 
 ///|
-fn compact_visual_change_event(value : VisualChangeEvent) -> Json {
+fn compact_changed_fact(value : ChangedFact) -> Json {
+  let fields : Map[String, Json] = Map([])
+  fields["id"] = value.id.to_json()
+  fields["subject"] = value.subject_id.to_json()
+  fields["property"] = value.property.to_json()
+  match value.before {
+    Some(fact) => fields["before"] = fact.authored_value.to_json()
+    None => ()
+  }
+  match value.after {
+    Some(fact) => fields["after"] = fact.authored_value.to_json()
+    None => ()
+  }
+  fields["affected_subject_count"] = value.affected_subject_ids
+    .length()
+    .to_json()
+  Json::object(fields)
+}
+
+///|
+fn compact_visual_object_change(value : VisualObjectChange) -> Json {
   {
     "id": value.id,
     "kind": value.kind,
-    "scope": value.scope,
-    "object_alignment_ids": value.object_alignment_ids,
+    "object_alignment_id": value.object_alignment_id,
+    "changed_fact_ids": value.changed_fact_ids,
     "difference_ids": value.atomic_difference_ids,
     "evidence_event_ids": value.evidence_event_ids,
-    "evidence_difference_count": value.evidence_difference_count,
     "evidence_domains": [
       for item in value.evidence_domains => {
         { "domain": item.domain, "count": item.count }
       }
     ],
+  }
+}
+
+///|
+fn compact_visual_scene_change(value : VisualSceneChange) -> Json {
+  {
+    "id": value.id,
+    "kind": value.kind,
+    "scope": value.scope,
+    "object_change_ids": value.object_change_ids,
+    "changed_fact_ids": value.changed_fact_ids,
+    "effect_count": value.effect_count,
+    "affected_subject_count": value.affected_subject_count,
   }
 }
 
@@ -626,18 +658,34 @@ fn compact_visual_scene(value : VisualSceneAnalysis) -> Json {
         compact_visual_object_alignment(alignment)
       }
     ],
+    "object_changes": [
+      for change in value.object_changes => compact_visual_object_change(change)
+    ],
     "events": [
-      for event in value.events => compact_visual_change_event(event)
+      for event in value.events => compact_visual_scene_change(event)
     ],
     "evidence_coverage": {
-      "effective_difference_count": value.evidence_coverage.effective_difference_count,
-      "classified_difference_count": value.evidence_coverage.classified_difference_count,
-      "residual_difference_count": value.evidence_coverage.residual_difference_count,
-      "residual_domains": [
-        for item in value.evidence_coverage.residual_domains => {
-          { "domain": item.domain, "count": item.count }
-        }
-      ],
+      "difference_to_object": {
+        "effective_difference_count": value.evidence_coverage.difference_to_object.effective_difference_count,
+        "assigned_difference_count": value.evidence_coverage.difference_to_object.assigned_difference_count,
+        "unresolved_difference_count": value.evidence_coverage.difference_to_object.unresolved_difference_count,
+        "unresolved_domains": [
+          for
+            item in value.evidence_coverage.difference_to_object.unresolved_domains => {
+            { "domain": item.domain, "count": item.count }
+          }
+        ],
+      },
+      "object_to_scene": {
+        "object_change_count": value.evidence_coverage.object_to_scene.object_change_count,
+        "assigned_object_change_count": value.evidence_coverage.object_to_scene.assigned_object_change_count,
+        "residual_object_change_count": value.evidence_coverage.object_to_scene.residual_object_change_count,
+        "residual_kinds": [
+          for item in value.evidence_coverage.object_to_scene.residual_kinds => {
+            { "domain": item.domain, "count": item.count }
+          }
+        ],
+      },
     },
   }
 }
@@ -649,6 +697,9 @@ pub impl ToJson for StructuredReport with fn to_json(self) {
     "analysis_status": self.analysis_status,
     "comparison": compact_comparison(self.profile),
     "canvas": compact_canvas_outcome(self.canvas_outcome),
+    "changed_facts": [
+      for fact in self.changed_facts => compact_changed_fact(fact)
+    ],
     "scene": compact_visual_scene(self.visual_scene),
     "difference_groups": compact_difference_groups(self),
     "events": [

@@ -114,6 +114,7 @@ ADRs record why a decision was made at a point in time. They are historical reco
 | [0108](0108-delegate-proven-rendering-to-svg-0.3.1.md) | Accepted, implemented | Delegate passing cascade, native geometry, mask-content, and filter-graph rendering to `Milky2018/svg@0.3.1` while retaining only reproduced residual adapters. |
 | [0109](0109-keep-event-localization-conservative-without-contribution-evidence.md) | Accepted, implemented | Use isolation to tighten candidates and prove zero while keeping all Event regions conservative without contribution evidence. |
 | [0110](0110-align-subjects-within-visual-object-ownership.md) | Accepted, implemented | Align objects before their rendered subjects, abstain on ambiguous identity, and expose lossless systemic scene patterns. |
+| [0111](0111-derive-scene-changes-through-object-changes.md) | Accepted, implemented | Preserve cause, effect, subject, and object cardinalities through a typed Atomic-to-Object-to-Scene DAG. |
 
 ## CLI and distribution decisions
 

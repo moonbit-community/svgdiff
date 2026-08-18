@@ -16,7 +16,7 @@ grep -Fx 'Semantic concern policy: small target preserved in full and compact in
 
 jq -e '
   .schema_version == "svgdiff-semantic-concern-results/1" and
-  .report_schema_version == "4.0" and
+  .report_schema_version == "5.0" and
   .analysis_status == "complete" and
   .caller_concern_source == "external_evaluation_query" and
   .engine_inferred_semantic_importance == false and

@@ -4,7 +4,7 @@ Status: optional transport contract
 
 Projection identity: `svgdiff-agent-projection/2`
 
-Source report identity: Structured Report Schema `4.0`
+Source report identity: Structured Report Schema `5.0`
 
 Last verified: 2026-07-22
 
@@ -16,7 +16,7 @@ usually smaller and easier for both humans and Agents.
 Records have this fixed order:
 
 1. one `header` containing `schema_version`, `analysis_status`, `comparison`,
-   `canvas`, and the primary `scene` conclusion;
+   `canvas`, `changed_facts`, and the primary `scene` conclusion;
 2. one record per `difference_groups` item;
 3. one record per `events` item;
 4. one record per `limitations` item.
@@ -26,7 +26,7 @@ sequence. Section records also carry the section name and index. A consumer
 must reject unknown identities, sequence gaps, section reordering, index gaps,
 count mismatches, extra records, or missing records.
 
-The projection is lossless with respect to the concise Schema `4.0` JSON, not
+The projection is lossless with respect to the concise Schema `5.0` JSON, not
 the engine's private typed analysis graph. The repository validator rebuilds
 the ordinary report and checks exact JSON equality:
 

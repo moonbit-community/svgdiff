@@ -178,7 +178,7 @@ test "shared CLI comparison emits selected Agent JSON" {
     @svgdiff.ResourceBundle::empty(),
   )
   let json = @cli.serialize_report(report, config)
-  assert_true(json.contains("\"schema_version\":\"4.0\""))
+  assert_true(json.contains("\"schema_version\":\"5.0\""))
   assert_true(json.contains("\"difference_groups\""))
   assert_true(json.contains("\"events\""))
   assert_true(json.contains("\"limitations\""))

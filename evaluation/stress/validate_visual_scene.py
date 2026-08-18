@@ -75,19 +75,86 @@ def main() -> None:
         "style.change",
         "representation.change",
     }
+    assert len(scene["object_changes"]) == 27
+    object_changes = {change["id"]: change for change in scene["object_changes"]}
+    assigned_change_ids = [
+        change_id
+        for event in scene["events"]
+        for change_id in event["object_change_ids"]
+    ]
+    assert len(assigned_change_ids) == len(set(assigned_change_ids)) == 27
+    assert set(assigned_change_ids) == set(object_changes)
     assert all(
-        len(event["difference_ids"]) <= len(event["evidence_domains"])
+        all(
+            object_changes[change_id]["kind"] == event["kind"]
+            for change_id in event["object_change_ids"]
+        )
         for event in scene["events"]
     )
-    assert all(event["scope"] == "systemic" for event in scene["events"])
-    assert all(event["evidence_event_ids"] for event in scene["events"])
-    coverage = scene["evidence_coverage"]
-    assert coverage["classified_difference_count"] + coverage[
-        "residual_difference_count"
-    ] == coverage["effective_difference_count"]
-    assert sum(item["count"] for item in coverage["residual_domains"]) == coverage[
-        "residual_difference_count"
+    for event in scene["events"]:
+        remaining = set(event["object_change_ids"])
+        reached = {remaining.pop()}
+        while remaining:
+            connected = {
+                candidate
+                for candidate in remaining
+                if any(
+                    set(object_changes[candidate]["changed_fact_ids"])
+                    & set(object_changes[current]["changed_fact_ids"])
+                    for current in reached
+                )
+            }
+            assert connected
+            reached |= connected
+            remaining -= connected
+    for index, left in enumerate(scene["events"]):
+        for right in scene["events"][index + 1 :]:
+            if left["kind"] == right["kind"]:
+                assert not set(left["changed_fact_ids"]) & set(right["changed_fact_ids"])
+    layout_events = [
+        event for event in scene["events"] if event["kind"] == "layout.reflow"
     ]
+    assert len(layout_events) == 1
+    layout = layout_events[0]
+    viewport_fact_ids = {
+        fact["id"]
+        for fact in report["changed_facts"]
+        if fact["id"].startswith("fact:viewport:0:0:")
+    }
+    assert viewport_fact_ids == {
+        "fact:viewport:0:0:width",
+        "fact:viewport:0:0:height",
+        "fact:viewport:0:0:viewBox",
+        "fact:viewport:0:0:preserveAspectRatio",
+    }
+    assert viewport_fact_ids <= set(layout["changed_fact_ids"])
+    assert layout["scope"] == "systemic"
+    assert len(layout["object_change_ids"]) == 9
+    assert layout["effect_count"] > len(layout["changed_fact_ids"])
+    assert layout["affected_subject_count"] > len(viewport_fact_ids)
+    difference_coverage = scene["evidence_coverage"]["difference_to_object"]
+    assert difference_coverage["assigned_difference_count"] + difference_coverage[
+        "unresolved_difference_count"
+    ] == difference_coverage["effective_difference_count"]
+    assert sum(
+        item["count"] for item in difference_coverage["unresolved_domains"]
+    ) == difference_coverage["unresolved_difference_count"]
+    object_coverage = scene["evidence_coverage"]["object_to_scene"]
+    assert object_coverage == {
+        "object_change_count": 27,
+        "assigned_object_change_count": 27,
+        "residual_object_change_count": 0,
+        "residual_kinds": [],
+    }
+    assert all(
+        set(event["changed_fact_ids"])
+        == {
+            fact_id
+            for change_id in event["object_change_ids"]
+            for fact_id in object_changes[change_id]["changed_fact_ids"]
+        }
+        for event in scene["events"]
+    )
     print("Visual scene banking acceptance: ok")
 
 

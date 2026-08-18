@@ -258,6 +258,7 @@ fn finish_report(
       (
         @scene.complete_visual_scene(
           context,
+          report.changed_facts,
           report.atomic_differences,
           report.events,
           combined_alignments,

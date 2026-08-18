@@ -1,21 +1,22 @@
 # Concise Agent JSON
 
-Status: current schema `4.0` serialization contract
+Status: current schema `5.0` serialization contract
 
 Last verified: 2026-08-18
 
 `svgdiff before.svg after.svg` emits an indented Structured Report. Adding
 `--agent-json` removes formatting whitespace but produces the same JSON value.
 
-The formal report has eight top-level fields:
+The formal report has nine top-level fields:
 
 - `schema_version` and `analysis_status` establish the contract and whether an
   equality conclusion is allowed;
 - `comparison` records only caller-relevant comparison inputs such as the
   viewport and requested perceptual conditions;
 - `canvas` records whole-canvas measurements once;
+- `changed_facts` records each canonical source cause once in compact form;
 - `scene` records aligned Visual Objects and relations, six orthogonal scene
-  conclusions, and coherent scene-level change events;
+  conclusions, Object Changes, and coherent Scene Changes;
 - `difference_groups` contains every Atomic Difference, grouped by visual
   domain and kept in the engine's domain-specific magnitude order;
 - `events` links differences to rendered outcomes, localization, and possible
@@ -23,7 +24,7 @@ The formal report has eight top-level fields:
 - `limitations` contains only actual conditions that constrain a conclusion.
 
 The serializer deliberately excludes successful coverage rows, renderer
-adapter chains, alignment candidates and scores, Changed Fact tables, Source
+adapter chains, alignment candidates and scores, full Changed Fact provenance, Source
 Resolution tables, source spans, evidence-layer bookkeeping, ordering-policy
 vectors, Impact frontier witnesses, duplicate pixel/CSS rectangles, RGBA8
 duplicates, FLIP pixel maps, unrequested metric statuses, and null placeholders.
@@ -45,17 +46,25 @@ conclusions independent. An object alignment may be one-to-one, set-to-set, or
 explicitly unmatched; unresolved many-to-many correspondence is retained as
 abstention rather than forced into an arbitrary pairing or mislabeled as
 presence change. Object-owned rendered subjects cannot pair across accepted
-object correspondences. Scene events expose `object`, `systemic`, or
-`comparison` scope and reference compact evidence domains plus representative
-primitive IDs instead of repeating the whole underlying inventory.
+object correspondences. Each `scene.object_changes` entry owns one object
+alignment and references all supporting Atomic Differences, primitive Events,
+and Changed Facts. Scene events expose `object`, `systemic`, or `comparison`
+scope and reference Object Change IDs only.
 
-`scene.evidence_coverage` is the losslessness check for this compression.
-`classified_difference_count + residual_difference_count` equals
-`effective_difference_count`, where effective means every non-`equivalent`
-relation, including `indeterminate`. `residual_domains` reports compact counts
-for effective Atomic Differences that did not support an emitted scene pattern;
-their full records remain in `difference_groups` and their owning primitive
-Events remain in `events`.
+`scene.evidence_coverage` checks both aggregation transitions.
+`difference_to_object.assigned_difference_count + unresolved_difference_count`
+equals `effective_difference_count`, where effective means every
+non-`equivalent` relation, including `indeterminate`. `object_to_scene` likewise
+accounts for every Object Change as assigned or residual. Unresolved domain and
+residual-kind cardinalities remain explicit; full Atomic records remain in
+`difference_groups` and their primitive Events remain in `events`.
+
+For each Scene Change, keep four cardinalities distinct:
+`changed_fact_ids.length` is the cause count, `effect_count` is the unique
+Atomic Difference count, `affected_subject_count` is the primitive subject
+count, and `object_change_ids.length` is the object count. One viewport fact may
+therefore cause many effects across several objects without being counted once
+per affected subject.
 
 Each difference retains its stable ID, affected subject and role, semantic
 `kind`, exact local authored before/after values, effective relation, available

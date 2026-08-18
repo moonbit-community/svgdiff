@@ -989,7 +989,7 @@ fn generic_basic_shape_report(
     }
   }
   Some({
-    schema_version: "4.0",
+    schema_version: "5.0",
     analysis_status: "complete",
     canvas_outcome: not_computed_canvas_outcome("rendered_evidence_unavailable"),
     impact_assessment: empty_impact_assessment(),

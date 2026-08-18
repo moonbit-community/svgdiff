@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "5.0",
   "analysis_status": "complete",
   "comparison": {
     "viewport": {
@@ -13,6 +13,16 @@
     "changed_fraction": 0.5,
     "linear_rgba_rmse": 0.28720999496756916
   },
+  "changed_facts": [
+    {
+      "id": "fact:alignment:group-opacity:0:opacity",
+      "subject": "layer",
+      "property": "opacity",
+      "before": "1",
+      "after": "0.5",
+      "affected_subject_count": 3
+    }
+  ],
   "scene": {
     "summary": {
       "status": "computed",
@@ -167,19 +177,40 @@
         "ambiguity": "none"
       }
     ],
-    "events": [
+    "object_changes": [
       {
-        "id": "scene-event:0",
+        "id": "object-change:0",
         "kind": "style.change",
-        "scope": "comparison",
-        "object_alignment_ids": [],
+        "object_alignment_id": "object-alignment:1",
+        "changed_fact_ids": [
+          "fact:alignment:group-opacity:0:opacity"
+        ],
         "difference_ids": [
           "diff:alignment:group-opacity:0:opacity"
         ],
         "evidence_event_ids": [
           "event:alignment:group-opacity:0"
         ],
-        "evidence_difference_count": 1,
+        "evidence_domains": [
+          {
+            "domain": "compositing.opacity",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "object-change:1",
+        "kind": "style.change",
+        "object_alignment_id": "object-alignment:2",
+        "changed_fact_ids": [
+          "fact:alignment:group-opacity:0:opacity"
+        ],
+        "difference_ids": [
+          "diff:alignment:group-opacity:0:opacity"
+        ],
+        "evidence_event_ids": [
+          "event:alignment:group-opacity:0"
+        ],
         "evidence_domains": [
           {
             "domain": "compositing.opacity",
@@ -188,11 +219,35 @@
         ]
       }
     ],
+    "events": [
+      {
+        "id": "scene-change:0",
+        "kind": "style.change",
+        "scope": "systemic",
+        "object_change_ids": [
+          "object-change:0",
+          "object-change:1"
+        ],
+        "changed_fact_ids": [
+          "fact:alignment:group-opacity:0:opacity"
+        ],
+        "effect_count": 1,
+        "affected_subject_count": 1
+      }
+    ],
     "evidence_coverage": {
-      "effective_difference_count": 1,
-      "classified_difference_count": 1,
-      "residual_difference_count": 0,
-      "residual_domains": []
+      "difference_to_object": {
+        "effective_difference_count": 1,
+        "assigned_difference_count": 1,
+        "unresolved_difference_count": 0,
+        "unresolved_domains": []
+      },
+      "object_to_scene": {
+        "object_change_count": 2,
+        "assigned_object_change_count": 2,
+        "residual_object_change_count": 0,
+        "residual_kinds": []
+      }
     }
   },
   "difference_groups": [

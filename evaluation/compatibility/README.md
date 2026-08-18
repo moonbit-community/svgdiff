@@ -1,13 +1,13 @@
 # Structured Report compatibility
 
-Schema `4.0` is the sole retained product JSON contract. This repository does
+Schema `5.0` is the sole retained product JSON contract. This repository does
 not ship legacy schemas, canonical legacy examples, or migration wrappers.
 
 The compatibility gate verifies that:
 
-- the registry contains exactly the current Schema `4.0`;
+- the registry contains exactly the current Schema `5.0`;
 - its canonical examples validate;
-- the current producer emits `4.0`;
+- the current producer emits `5.0`;
 - an unknown schema is rejected before fields are interpreted.
 
 Run:

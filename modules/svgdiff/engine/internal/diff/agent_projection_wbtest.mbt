@@ -24,7 +24,7 @@ test "Agent projection partitions the concise report sections" {
   match @json.parse(lines[0]) {
     {
       "projection_version": "svgdiff-agent-projection/2",
-      "source_schema_version": "4.0",
+      "source_schema_version": "5.0",
       "record_type": "header",
       "sequence": 0,
       "section_counts": {
@@ -33,7 +33,12 @@ test "Agent projection partitions the concise report sections" {
         "limitations": 0,
         ..
       },
-      "value": { "schema_version": "4.0", "analysis_status": "complete", .. },
+      "value": {
+        "schema_version": "5.0",
+        "analysis_status": "complete",
+        "changed_facts": [_],
+        ..
+      },
       ..
     } => ()
     _ => fail("expected concise projection header")

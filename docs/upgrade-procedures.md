@@ -244,7 +244,7 @@ Historical metric choices and candidates are described in [`visual-difference-me
 
 ## JSON Schema upgrade
 
-Schema `4.0` is the only retained Structured Report consumer contract. A change to required fields, field meaning, enum values, omission behavior, identifier references, or numeric units requires an explicit compatibility review and direct migration of current consumers; obsolete schema artifacts are deleted rather than maintained indefinitely.
+Schema `5.0` is the only retained Structured Report consumer contract. A change to required fields, field meaning, enum values, omission behavior, identifier references, or numeric units requires an explicit compatibility review and direct migration of current consumers; obsolete schema artifacts are deleted rather than maintained indefinitely.
 
 The independent source-audit schema follows the same discipline but is not entered in the Structured Report registry. Validate [`svgdiff-source-audit.schema.json`](../schema/svgdiff-source-audit.schema.json), its canonical example, and the public `SourceAudit*` interface whenever audit identity, paths, values, spans, status, or failures change.
 

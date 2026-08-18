@@ -43,7 +43,7 @@ test "wasm ABI compares two in-memory SVG strings" {
   @debug.assert_eq(compare(length), status_ok)
   @debug.assert_eq(result_error_kind(), error_none)
   match @json.parse(read_test_result()) {
-    { "schema_version": "4.0", "analysis_status": "complete", .. } => ()
+    { "schema_version": "5.0", "analysis_status": "complete", .. } => ()
     _ => fail("expected a complete Structured Report")
   }
 }
