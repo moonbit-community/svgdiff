@@ -1418,7 +1418,7 @@
     }
   ],
   "conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
-  "fixture_source_set_sha256": "493865ec8a2e89d7edbddd1563deed9111af55ca874ee40832d6206ef2787528",
+  "fixture_source_set_sha256": "659273edf5b3143c6e0f4e07952000ae71d2f6b6e5969c43e65c3b92da71a7e9",
   "raster_representation": "premultiplied_rgba8",
   "renderer_id": "Milky2018/svg@0.5.2",
   "schema_version": "svgdiff-renderer-conformance/1",
