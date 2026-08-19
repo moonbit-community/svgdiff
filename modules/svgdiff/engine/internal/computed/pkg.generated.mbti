@@ -122,6 +122,8 @@ pub(all) enum SvgLengthDirection {
   Vertical
   Unspecified
 } derive(Eq)
+pub fn SvgLengthDirection::equal(Self, Self) -> Bool
+pub fn SvgLengthDirection::not_equal(Self, Self) -> Bool
 
 pub(all) struct ViewBoxValue {
   min_x : Double

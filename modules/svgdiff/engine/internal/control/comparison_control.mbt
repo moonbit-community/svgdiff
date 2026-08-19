@@ -63,3 +63,9 @@ pub fn ComparisonGuard::checkpoint(
   }
   self.completed_checkpoints += 1
 }
+
+///|
+pub extend ComparisonInterrupted with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend ComparisonInterrupted with Eq::{not_equal, equal}

@@ -428,3 +428,15 @@ pub fn audit_nonvisual_metadata(
     diagnostics: [],
   }
 }
+
+///|
+pub extend SourceAuditFact with ToJson::{to_json}
+
+///|
+pub extend SourceAuditDifference with ToJson::{to_json}
+
+///|
+pub extend SourceAuditDiagnostic with ToJson::{to_json}
+
+///|
+pub extend SourceAuditReport with ToJson::{to_json}

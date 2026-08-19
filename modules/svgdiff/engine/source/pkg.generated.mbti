@@ -20,6 +20,7 @@ pub(all) struct SourceAuditDiagnostic {
   source_role : String
   source_span : @model.ReportSourceSpan?
 } derive(ToJson)
+pub fn SourceAuditDiagnostic::to_json(Self) -> Json
 
 pub(all) struct SourceAuditDifference {
   id : String
@@ -29,6 +30,7 @@ pub(all) struct SourceAuditDifference {
   before : SourceAuditFact?
   after : SourceAuditFact?
 } derive(ToJson)
+pub fn SourceAuditDifference::to_json(Self) -> Json
 
 pub(all) struct SourceAuditFact {
   kind : String
@@ -37,6 +39,7 @@ pub(all) struct SourceAuditFact {
   authored_value : String
   source_span : @model.ReportSourceSpan
 } derive(ToJson)
+pub fn SourceAuditFact::to_json(Self) -> Json
 
 pub(all) struct SourceAuditReport {
   audit_schema_version : String
@@ -45,6 +48,7 @@ pub(all) struct SourceAuditReport {
   diagnostics : Array[SourceAuditDiagnostic]
 } derive(ToJson)
 pub fn SourceAuditReport::to_compact_json_string(Self) -> String
+pub fn SourceAuditReport::to_json(Self) -> Json
 pub fn SourceAuditReport::to_json_string(Self) -> String
 
 // Type aliases

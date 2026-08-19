@@ -463,3 +463,6 @@ pub fn serialize_report(
     report.to_json_string()
   }
 }
+
+///|
+pub extend Resource with @moonbitlang/core/json.FromJson::{from_json}

@@ -19,11 +19,13 @@ pub(all) struct AffineTransform {
 } derive(Eq)
 pub fn AffineTransform::apply_direction_angle(Self, Double) -> Double
 pub fn AffineTransform::apply_point(Self, Double, Double) -> (Double, Double)
+pub fn AffineTransform::equal(Self, Self) -> Bool
 pub fn AffineTransform::has_proven_renderer_conformance(Self) -> Bool
 pub fn AffineTransform::identity() -> Self
 pub fn AffineTransform::is_identity(Self) -> Bool
 pub fn AffineTransform::max_linear_scale(Self) -> Double
 pub fn AffineTransform::multiply(Self, Self) -> Self
+pub fn AffineTransform::not_equal(Self, Self) -> Bool
 pub fn AffineTransform::rotate(Double) -> Self
 pub fn AffineTransform::scale(Double, Double) -> Self
 pub fn AffineTransform::signature(Self) -> String

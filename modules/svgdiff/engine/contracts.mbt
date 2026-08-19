@@ -111,3 +111,9 @@ pub(all) suberror ComparisonInterrupted {
   Cancelled
   CheckpointBudgetExceeded(max_checkpoints~ : Int)
 } derive(Debug, Eq)
+
+///|
+pub extend ComparisonInterrupted with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend ComparisonInterrupted with Eq::{not_equal, equal}

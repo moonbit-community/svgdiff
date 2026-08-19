@@ -23,6 +23,8 @@ pub(all) suberror DecodeError {
   CorruptData(String)
   DecodeLimitExceeded(String)
 }
+pub fn DecodeError::output(Self, &Logger) -> Unit
+pub fn DecodeError::to_string(Self) -> String
 pub impl Show for DecodeError
 
 // Types and methods
@@ -31,18 +33,26 @@ pub(all) struct ImageData {
   height : Int
   data : Bytes
 } derive(Eq)
+pub fn ImageData::equal(Self, Self) -> Bool
+pub fn ImageData::not_equal(Self, Self) -> Bool
 
 pub(all) enum RasterColorCondition {
   SrgbCompatible
   EmbeddedColorProfile(String)
   HdrOrHighBitDepth(String)
 } derive(Eq, @debug.Debug)
+pub fn RasterColorCondition::equal(Self, Self) -> Bool
+pub fn RasterColorCondition::not_equal(Self, Self) -> Bool
+pub fn RasterColorCondition::to_repr(Self) -> @debug.Repr
 
 pub(all) struct RasterColorMetadata {
   width : Int
   height : Int
   condition : RasterColorCondition
 } derive(Eq, @debug.Debug)
+pub fn RasterColorMetadata::equal(Self, Self) -> Bool
+pub fn RasterColorMetadata::not_equal(Self, Self) -> Bool
+pub fn RasterColorMetadata::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

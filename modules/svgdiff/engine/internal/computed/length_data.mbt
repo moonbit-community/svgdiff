@@ -94,3 +94,6 @@ pub fn parse_svg_length_at(
     profile,
   )
 }
+
+///|
+pub extend SvgLengthDirection with Eq::{not_equal, equal}

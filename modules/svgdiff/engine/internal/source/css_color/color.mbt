@@ -576,3 +576,15 @@ pub fn SrgbaColor::renderer_hex(self : SrgbaColor) -> String {
 pub fn SrgbaColor::signature(self : SrgbaColor) -> String {
   "rgba(\{self.red},\{self.green},\{self.blue},\{self.alpha})"
 }
+
+///|
+pub extend SrgbaColor with Eq::{not_equal, equal}
+
+///|
+pub extend SrgbaColor with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend SolidColorParse with Eq::{not_equal, equal}
+
+///|
+pub extend SolidColorParse with @moonbitlang/core/debug.Debug::{to_repr}

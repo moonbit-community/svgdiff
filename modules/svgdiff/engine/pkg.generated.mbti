@@ -25,6 +25,9 @@ pub(all) suberror ComparisonInterrupted {
   Cancelled
   CheckpointBudgetExceeded(max_checkpoints~ : Int)
 } derive(Eq, @debug.Debug)
+pub fn ComparisonInterrupted::equal(Self, Self) -> Bool
+pub fn ComparisonInterrupted::not_equal(Self, Self) -> Bool
+pub fn ComparisonInterrupted::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) struct ComparisonArtifact {

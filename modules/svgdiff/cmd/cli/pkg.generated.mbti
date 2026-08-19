@@ -46,6 +46,7 @@ pub struct Resource {
   media_type : String
   path : String
 } derive(@json.FromJson)
+pub fn Resource::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 
 // Type aliases
 

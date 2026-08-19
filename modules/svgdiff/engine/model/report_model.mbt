@@ -913,3 +913,195 @@ pub fn StructuredReport::to_compact_json_string(
 ) -> String {
   ToJson::to_json(self).stringify()
 }
+
+///|
+pub extend PerceptualBackground with ToJson::{to_json}
+
+///|
+pub extend PerceptualBackground with Eq::{not_equal, equal}
+
+///|
+pub extend FlipViewingConditions with ToJson::{to_json}
+
+///|
+pub extend FlipViewingConditions with Eq::{not_equal, equal}
+
+///|
+pub extend FlipErrorThreshold with ToJson::{to_json}
+
+///|
+pub extend FlipErrorThreshold with Eq::{not_equal, equal}
+
+///|
+pub extend ComparisonProfile with ToJson::{to_json}
+
+///|
+pub extend ComputedRelation with ToJson::{to_json}
+
+///|
+pub extend RenderedMagnitude with ToJson::{to_json}
+
+///|
+pub extend IntrinsicRasterMagnitude with ToJson::{to_json}
+
+///|
+pub extend PerceptualColorMagnitude with ToJson::{to_json}
+
+///|
+pub extend PerceptualColorMagnitude with Eq::{not_equal, equal}
+
+///|
+pub extend PerceptualColorEvidence with ToJson::{to_json}
+
+///|
+pub extend PerceptualColorEvidence with Eq::{not_equal, equal}
+
+///|
+pub extend PerceptualFlipMap with ToJson::{to_json}
+
+///|
+pub extend PerceptualFlipMap with Eq::{not_equal, equal}
+
+///|
+pub extend PerceptualFlipAreaAboveThreshold with ToJson::{to_json}
+
+///|
+pub extend PerceptualFlipAreaAboveThreshold with Eq::{not_equal, equal}
+
+///|
+pub extend PerceptualFlipStatistics with Eq::{not_equal, equal}
+
+///|
+pub extend PerceptualFlipStatistics with ToJson::{to_json}
+
+///|
+pub extend PerceptualFlipEvidence with ToJson::{to_json}
+
+///|
+pub extend PerceptualFlipEvidence with Eq::{not_equal, equal}
+
+///|
+pub extend RenderedEvidence with ToJson::{to_json}
+
+///|
+pub extend CanvasPerceptualFlipEvidence with ToJson::{to_json}
+
+///|
+pub extend CanvasOutcome with ToJson::{to_json}
+
+///|
+pub extend CauseEnvelope with ToJson::{to_json}
+
+///|
+pub extend DifferenceRegion with ToJson::{to_json}
+
+///|
+pub extend PresenceMagnitude with ToJson::{to_json}
+
+///|
+pub extend TransformTranslationMagnitude with ToJson::{to_json}
+
+///|
+pub extend TransformRotationMagnitude with ToJson::{to_json}
+
+///|
+pub extend TransformScaleMagnitude with ToJson::{to_json}
+
+///|
+pub extend TransformSkewMagnitude with ToJson::{to_json}
+
+///|
+pub extend TransformResidualMagnitude with ToJson::{to_json}
+
+///|
+pub extend TransformEffectMagnitude with ToJson::{to_json}
+
+///|
+pub extend PaintedBoundaryDisplacementMagnitude with ToJson::{to_json}
+
+///|
+pub extend PaintedBoundaryDisplacementMagnitude with Eq::{not_equal, equal}
+
+///|
+pub extend PaintedCoverageDifferenceMagnitude with ToJson::{to_json}
+
+///|
+pub extend PaintedCoverageDifferenceMagnitude with Eq::{not_equal, equal}
+
+///|
+pub extend DifferenceMagnitude with ToJson::{to_json}
+
+///|
+pub extend DomainOrdering with ToJson::{to_json}
+
+///|
+pub extend ReportSourceSpan with ToJson::{to_json}
+
+///|
+pub extend DiagnosticSourceLocation with ToJson::{to_json}
+
+///|
+pub extend DeclaredVisualFact with ToJson::{to_json}
+
+///|
+pub extend ResolvedVisualFact with ToJson::{to_json}
+
+///|
+pub extend SourceResolutionPair with ToJson::{to_json}
+
+///|
+pub extend SubjectInstanceContext with ToJson::{to_json}
+
+///|
+pub extend SubjectReference with ToJson::{to_json}
+
+///|
+pub extend AlignmentEvidence with ToJson::{to_json}
+
+///|
+pub extend SubjectAlignment with ToJson::{to_json}
+
+///|
+pub extend ChangedFact with ToJson::{to_json}
+
+///|
+pub extend AtomicDifference with ToJson::{to_json}
+
+///|
+pub extend VisualEvent with ToJson::{to_json}
+
+///|
+pub extend ImpactMeasurement with ToJson::{to_json}
+
+///|
+pub extend ImpactMeasurement with Eq::{not_equal, equal}
+
+///|
+pub extend ImpactFrontierGroup with Eq::{not_equal, equal}
+
+///|
+pub extend ImpactFrontierGroup with ToJson::{to_json}
+
+///|
+pub extend ImpactDominationWitness with ToJson::{to_json}
+
+///|
+pub extend ImpactDominationWitness with Eq::{not_equal, equal}
+
+///|
+pub extend ImpactAssessment with ToJson::{to_json}
+
+///|
+pub extend ImpactAssessment with Eq::{not_equal, equal}
+
+///|
+pub extend Diagnostic with ToJson::{to_json}
+
+///|
+pub extend FeatureCoverage with ToJson::{to_json}
+
+///|
+pub extend RendererCapabilityGap with ToJson::{to_json}
+
+///|
+pub extend StructuredReport with ToJson::{to_json}

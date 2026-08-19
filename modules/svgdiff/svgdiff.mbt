@@ -254,3 +254,9 @@ pub fn compare_artifact_with_control_and_resources(
       }
   }
 }
+
+///|
+pub extend ComparisonInterrupted with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend ComparisonInterrupted with Eq::{not_equal, equal}

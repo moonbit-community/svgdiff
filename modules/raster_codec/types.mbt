@@ -113,3 +113,21 @@ fn bytes_per_pixel(ct : ColorType, bit_depth : Int) -> Int {
     bits / 8
   }
 }
+
+///|
+pub extend ImageData with Eq::{not_equal, equal}
+
+///|
+pub extend RasterColorCondition with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend RasterColorCondition with Eq::{not_equal, equal}
+
+///|
+pub extend RasterColorMetadata with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend RasterColorMetadata with Eq::{not_equal, equal}
+
+///|
+pub extend DecodeError with Show::{to_string, output}

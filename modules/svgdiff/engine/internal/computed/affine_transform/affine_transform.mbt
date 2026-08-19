@@ -333,3 +333,6 @@ pub fn parse_transform_list(value : String) -> TransformListParse {
   }
   ValidTransformList({ matrix, signature: signature.to_string() })
 }
+
+///|
+pub extend AffineTransform with Eq::{not_equal, equal}

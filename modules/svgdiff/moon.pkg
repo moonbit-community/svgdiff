@@ -1,6 +1,7 @@
 import {
   "Milky2018/svgdiff/engine",
   "Milky2018/xml",
+  "moonbitlang/core/debug",
   "moonbitlang/x/codec/base64",
   "moonbitlang/core/json",
 }
