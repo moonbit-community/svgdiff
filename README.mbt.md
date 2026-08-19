@@ -12,7 +12,7 @@ Try it online at <https://milky2018.github.io/svgdiff/>.
 Run the WASIp1 command directly from Mooncakes:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.10.0 before.svg after.svg
+moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.10.1 before.svg after.svg
 ```
 
 Run the repository version:
@@ -41,7 +41,7 @@ arguments or file I/O errors.
 ## Library
 
 ```sh
-moon add Milky2018/svgdiff@0.10.0
+moon add Milky2018/svgdiff@0.10.1
 ```
 
 ```mbt check

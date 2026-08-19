@@ -27,7 +27,7 @@ jq -e '
 PATH="$bindir:$PATH" svgdiff --help >help.txt
 PATH="$bindir:$PATH" svgdiff --version >version.txt
 grep -q '^Usage: svgdiff ' help.txt
-grep -q '^svgdiff 0.10.0$' version.txt
+grep -q '^svgdiff 0.10.1$' version.txt
 grep -q '^schema: 5.0$' version.txt
 
 PATH="$bindir:$PATH" svgdiff \
