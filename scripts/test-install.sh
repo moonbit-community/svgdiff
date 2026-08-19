@@ -31,7 +31,7 @@ grep -q '^svgdiff 0.10.0$' version.txt
 grep -q '^schema: 5.0$' version.txt
 grep -q '^agent-projection: svgdiff-agent-projection/2$' version.txt
 grep -q '^renderer: svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.5.2$' version.txt
-grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/28$' version.txt
+grep -q '^renderer-conformance-profile: svgdiff-renderer-conformance-profile/29$' version.txt
 grep -q '^impact-policy: event_rendered_pareto/v1$' version.txt
 
 PATH="$bindir:$PATH" svgdiff \

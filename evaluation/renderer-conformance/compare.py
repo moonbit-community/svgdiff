@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import platform
 import re
 import struct
 import subprocess
@@ -13,6 +14,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUIRED_CATEGORIES = {"geometry", "paint", "alpha", "clipping", "compositing"}
+
+
+def host_platform_id() -> str:
+    system = platform.system()
+    machine = platform.machine().lower()
+    systems = {"Darwin": "macos", "Linux": "linux", "Windows": "windows"}
+    machines = {
+        "aarch64": "arm64",
+        "amd64": "x64",
+        "arm64": "arm64",
+        "x86_64": "x64",
+    }
+    if system not in systems or machine not in machines:
+        raise ValueError(f"unsupported renderer conformance host: {system}/{machine}")
+    return f"{systems[system]}-{machines[machine]}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -260,13 +276,14 @@ def main() -> None:
     ]
     report = {
         "schema_version": "svgdiff-renderer-conformance/1",
-        "conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
+        "conformance_profile_id": "svgdiff-renderer-conformance-profile/29",
         "renderer_id": "Milky2018/svg@0.5.2",
         "raster_representation": "premultiplied_rgba8",
         "browser_environment": {
             "browser_engine": browser_environment["browser_engine"],
             "browser_version": browser_version_match.group(1),
             "device_pixel_ratio": browser_environment["device_pixel_ratio"],
+            "host_platform": host_platform_id(),
             "playwright_cli_version": browser_environment["playwright_cli_version"],
         },
         "fixture_source_set_sha256": hashlib.sha256(

@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT = Path(__file__).with_name("gate.v1.json")
-EXPECTED_PROFILE = "svgdiff-renderer-conformance-profile/28"
+EXPECTED_PROFILE = "svgdiff-renderer-conformance-profile/29"
 EXPECTED_CHAINS = {
     "renderer_observation",
     "divergence_disposition",

@@ -9,6 +9,4 @@ trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp"
 cd "$root"
 sh scripts/run-renderer-conformance.sh "$report"
-diff -u evaluation/renderer-conformance/baseline.v1.json "$report"
-
-printf 'Renderer conformance baseline: reproduced exactly\n'
+python3 evaluation/renderer-conformance/validate_baseline.py --report "$report"

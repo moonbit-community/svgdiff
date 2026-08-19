@@ -10,7 +10,7 @@
   <rect id="front-hard-light" x="0" y="8" width="4" height="4" fill="#9d7fa7"/>
   <rect id="front-soft-light" x="4" y="8" width="4" height="4" fill="#bf6f56"/>
   <rect id="front-difference" x="8" y="8" width="4" height="4" fill="#643296"/>
-  <rect id="front-exclusion" x="12" y="8" width="4" height="4" fill="#8f84ab"/>
+  <rect id="front-exclusion" x="12" y="8" width="4" height="4" fill="#8f84ac"/>
   <rect id="front-hue" x="0" y="12" width="4" height="4" fill="#408bd6"/>
   <rect id="front-saturation" x="4" y="12" width="4" height="4" fill="#af6c4b"/>
   <rect id="front-color" x="8" y="12" width="4" height="4" fill="#5486b8"/>

@@ -17,7 +17,7 @@ Last verified: 2026-08-18
 | Nonvisual source audit | `1.0` | `schema/svgdiff-source-audit.schema.json` and public `SourceAudit*` types | Source-audit fields, fact identity, paths, values, provenance, status, and failure semantics independently from visual reports. |
 | Same-domain ordering | `v2_domain_lexicographic` | typed `DomainOrdering.policy_id` and its tests | Internal component construction, order, direction, null behavior, and tie-breaking; not serialized in Schema `5.0`. |
 | Impact Assessment | `event_rendered_pareto/v1` | typed `ImpactAssessment.policy_id`, [Impact Assessment contract](impact-assessment.md), and its tests | Internal candidate-event bookkeeping; not serialized in Schema `5.0`. |
-| Renderer conformance | `svgdiff-renderer-conformance-profile/28` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
+| Renderer conformance | `svgdiff-renderer-conformance-profile/29` | comparison profile and renderer-conformance artifacts | Accepted fixtures, divergences, guards, tolerances, normalizers, compositors, and Rendered Evidence claims. |
 
 The renderer package identity and raster representation are also report semantics, but their upgrade rules are already defined in [Component Upgrade Procedures](upgrade-procedures.md). They are not aliases for any version above.
 
@@ -215,9 +215,11 @@ contract change incompatibly under the pre-1.0 policy, so the module advances
 to a new minor line. It also corrects the production identity to the resolved
 `Milky2018/svg@0.5.2`, delegates absolute-unit, percentage, nested-viewport, and
 percentage-stroke rendering directly to that dependency, and records the
-reproduced 98-exact/43-divergent Chromium baseline as conformance profile `/28`.
-The Diagnostic catalog, ordering policy, Impact policy, CLI syntax, and Agent
-projection record protocol remain unchanged.
+98-exact/43-divergent Chromium baseline as conformance profile `/29`. That
+profile admits exact `macos-arm64` and `linux-x64` measurement variants for
+three host-sensitive browser fixtures without changing their classifications
+or dispositions. The Diagnostic catalog, ordering policy, Impact policy, CLI
+syntax, and Agent projection record protocol remain unchanged.
 
 ## Structured Report schema versions
 

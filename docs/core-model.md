@@ -55,7 +55,7 @@ The internal `ComparisonProfile` records:
 - `color_interpretation`, fixed to `srgb`;
 - `raster_representation`, fixed to `linear_srgb_premultiplied_rgba_f64`;
 - `renderer_id`, currently fixed by the producer to `svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.5.2`.
-- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/28`.
+- `renderer_conformance_profile_id`, currently fixed by the producer to `svgdiff-renderer-conformance-profile/29`.
 - `perceptual_background`, either null or one explicit normalized opaque sRGB8 color for display-dependent measurements.
 - `flip_viewing_conditions`, either null or one explicit finite `pixels_per_degree` value in the supported `[1, 4096]` range.
 - `flip_error_threshold`, either null or one explicit finite FLIP reporting threshold in `[0, 1]`.

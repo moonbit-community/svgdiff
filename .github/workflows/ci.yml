@@ -47,6 +47,9 @@ jobs:
       - name: Validate WebAssembly entry
         run: sh scripts/test-wasm.sh
 
+      - name: Validate renderer baseline comparison policy
+        run: sh scripts/test-renderer-baseline-comparison.sh
+
       - name: Install Chromium for browser validation
         run: npx --yes --package "@playwright/cli@0.1.17" playwright-cli install-browser chromium --with-deps
 

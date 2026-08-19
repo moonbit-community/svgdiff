@@ -1,7 +1,7 @@
 {
   "schema_version": "svgdiff-m2-renderer-coverage-gate/1",
   "milestone": "M2",
-  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
+  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/29",
   "baseline": {
     "path": "evaluation/renderer-conformance/baseline.v1.json",
     "total_cases": 141,
