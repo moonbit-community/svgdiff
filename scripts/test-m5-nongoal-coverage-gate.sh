@@ -25,7 +25,7 @@ run_unsupported_self_comparison() {
   svg=$tmp/$name.svg
   report=$tmp/$name.json
   tee "$svg" >/dev/null
-  assert_status 0 "$cli" "$svg" "$svg" >"$report"
+  assert_status 0 "$cli" "$svg" "$svg" --width 16 --height 16 >"$report"
   python3 - "$report" "$expected_diagnostic" <<'PY'
 import json
 from pathlib import Path
@@ -33,22 +33,14 @@ import sys
 
 report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 expected_diagnostic = sys.argv[2]
-codes = {diagnostic["code"] for diagnostic in report["diagnostics"]}
-limited = any(
-    "limited" in (
-        row["source_semantics"],
-        row["computed_appearance"],
-        row["rendered_evidence"],
-    )
-    for row in report["coverage_matrix"]
-)
+codes = {limitation["code"] for limitation in report["limitations"]}
 if report["analysis_status"] != "partial":
     raise SystemExit("unsupported self-comparison did not remain partial")
 if expected_diagnostic not in codes:
     raise SystemExit(f"missing expected diagnostic: {expected_diagnostic}")
-if not limited:
-    raise SystemExit("unsupported self-comparison has no limited coverage cell")
-if report["atomic_differences"]:
+if not report["limitations"]:
+    raise SystemExit("unsupported self-comparison has no limitation")
+if any(group["items"] for group in report["difference_groups"]):
     raise SystemExit("self-comparison unexpectedly produced Atomic Differences")
 PY
 }

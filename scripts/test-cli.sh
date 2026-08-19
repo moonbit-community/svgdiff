@@ -192,7 +192,8 @@ assert_status 2 moon run --target native modules/svgdiff/cmd/svgdiff -- \
 test ! -s "$tmp/invalid-background.out"
 
 assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
-  testdata/before.svg testdata/after.svg --width 8193 --agent-json \
+  testdata/before.svg testdata/after.svg \
+  --width 8193 --height 1 --agent-json \
   >"$tmp/resource-failed.json" 2>"$tmp/resource-failed.err"
 test ! -s "$tmp/resource-failed.err"
 jq -e '
@@ -210,7 +211,7 @@ jq -e '
 
 printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
 assert_status 1 moon run --target native modules/svgdiff/cmd/svgdiff -- \
-  "$tmp/malformed.svg" testdata/after.svg \
+  "$tmp/malformed.svg" testdata/after.svg --width 16 --height 16 \
   >"$tmp/failed.json" 2>"$tmp/failed.err"
 test ! -s "$tmp/failed.err"
 jq -e '

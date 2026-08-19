@@ -50,7 +50,9 @@ const result = invoke({
 });
 assert.equal(result.status, 0, result.text);
 assert.equal(result.errorKind, 0);
-const report = JSON.parse(result.text);
+const response = JSON.parse(result.text);
+assert.match(response.difference_rgba_base64, /^[A-Za-z0-9+/]+={0,2}$/);
+const report = response.report;
 assert.equal(report.schema_version, "5.0");
 assert.equal(report.analysis_status, "complete");
 assert.equal(report.canvas.changed_fraction, 0.25);

@@ -119,7 +119,7 @@ fn main {
         {
           locator: "asset.png",
           media_type: "image/png",
-          bytes: Bytes::default(),
+          bytes: Default::default(),
         },
       ],
     },

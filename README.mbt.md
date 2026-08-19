@@ -251,7 +251,7 @@ test "serialize JSON and build the HTML presentation" {
   let compact_json = report.to_compact_json_string()
   let html = @svgdiff.render_html_report(before, after, report)
   let summary = @svgdiff.render_markdown_summary(report)
-  assert_true(json.find("\"schema_version\": \"4.0\"") is Some(_))
+  assert_true(json.find("\"schema_version\": \"5.0\"") is Some(_))
   assert_true(compact_json.length() < json.length())
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
@@ -291,7 +291,7 @@ Container opacity, admitted container masks, bounded filter graphs, and opaque b
 
 The typed engine model retains renderer capability-gap and coverage records for proof and conformance tests. The concise JSON does not expose those implementation inventories; it emits only encountered consequences through `limitations`. An empty limitation list does not claim global SVG support.
 
-The production renderer is `Milky2018/svg@0.3.1`. Cascade, ordinary inheritance, native numeric geometry and stroke semantics, mask content paint, missing-filter behavior, and valid admitted filter graphs are delegated directly to that dependency. Private adapters remain only for reproduced gaps: unsupported named colors, fractional and inherited paint opacity, computed container opacity, unsupported length units, inline CSS geometry, compact point syntax, mask edge cases, detached-branch paint state, isolated group/mask composition, empty-filter outcome, and opaque blend composition. They rewrite only the renderer-input copy; the original source remains authoritative for authored facts, provenance, and spans.
+The production renderer is `Milky2018/svg@0.5.2`. Cascade, ordinary inheritance, native numeric, absolute-unit, and percentage geometry and stroke semantics, mask content paint, missing-filter behavior, and valid admitted filter graphs are delegated directly to that dependency. Private adapters remain only for reproduced gaps: unsupported named colors, fractional and inherited paint opacity, computed container opacity, viewport-relative length units, inline CSS geometry, compact point syntax, mask edge cases, detached-branch paint state, isolated group/mask composition, empty-filter outcome, and opaque blend composition. They rewrite only the renderer-input copy; the original source remains authoritative for authored facts, provenance, and spans.
 
 The complete implementation boundary, including guarded partial cases, is in the [current v1 support contract](docs/v1-scope.md).
 

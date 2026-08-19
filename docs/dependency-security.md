@@ -2,7 +2,7 @@
 
 Status: current maintenance ledger
 
-Last verified: 2026-07-21
+Last verified: 2026-08-19
 
 This ledger records the licenses shipped with the currently resolved packages, the security boundary implemented by schema `5.0`, and external blockers that still affect development or coverage. It is not a release SBOM or legal opinion.
 
@@ -19,11 +19,11 @@ The [terminal operational gate](../evaluation/terminal-operational-gate/README.m
 | Dependency | Relationship | Resolved version | Manifest license | License file in installed package |
 | --- | --- | ---: | --- | --- |
 | `Milky2018/xml` | Direct; authored XML and Source Spans | `0.4.0` | Apache-2.0 | Yes |
-| `Milky2018/svg` | Direct; scene and canonical v1 renderer | `0.3.1` | Apache-2.0 | No |
-| `mizchi/css` | Transitive through `Milky2018/svg` | `0.7.3` | Apache-2.0 | No |
+| `Milky2018/svg` | Direct; scene and canonical v1 renderer | `0.5.2` | Apache-2.0 | No |
+| `Milky2018/css` | Transitive through `Milky2018/svg` | `0.5.2` | Apache-2.0 | No |
 | `mizchi/pixelmatch` | Direct; baseline image difference support | `0.6.1` | Apache-2.0 | Yes |
-| `moonbitlang/async` | Direct module dependency | `0.19.1` | Apache-2.0 | Yes |
-| `moonbitlang/x` | Direct module dependency | `0.4.40` | Apache-2.0 | No |
+| `moonbitlang/async` | Direct module dependency | `0.20.5` | Apache-2.0 | Yes |
+| `moonbitlang/x` | Direct module dependency | `0.4.49` | Apache-2.0 | No |
 | `moonbitlang/quickcheck` | Direct module dependency retained by `moon info` | `0.14.0` | Apache-2.0 | Yes |
 | `Milky2018/svgdiff-raster-codec` | Direct local workspace module; bounded admitted PNG/JPEG subset decoding and color-metadata inspection | `0.1.1` | Apache-2.0 | Project-owned source and LICENSE |
 | `mizchi/image` | Transitive through `pixelmatch` | `0.1.2` | Apache-2.0 | No |
@@ -91,7 +91,7 @@ These gaps do not permit false complete analysis, and fixed limits plus local-re
 
 | Item | Live upstream status on 2026-07-14 | Project impact | Current safe behavior |
 | --- | --- | --- | --- |
-| [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Superseded for this project by `Milky2018/svg@0.3.1` | The current raw dependency passes the focused style-precedence fixtures, but that does not establish complete CSS conformance | Delegate the passing cascade path to the dependency; retain analyzer-side unsupported-syntax Diagnostics without a renderer precedence normalizer |
+| [`mizchi/svg#4`](https://github.com/mizchi/svg/pull/4): inline style precedence | Superseded for this project by `Milky2018/svg@0.5.2` | The current raw dependency passes the focused style-precedence fixtures, but that does not establish complete CSS conformance | Delegate the passing cascade path to the dependency; retain analyzer-side unsupported-syntax Diagnostics without a renderer precedence normalizer |
 | [`mizchi/image-mbt#3`](https://github.com/mizchi/image-mbt/pull/3): derive `Debug` for assert-equality types | Open, ready for review | Direct `mizchi/image` dependencies fail while compiling packaged upstream tests, but the decoder implementation remains usable | Keep canvas and direct image dependencies out of production; maintain the narrow attributed workspace codec without patching the dependency cache |
 | `moonbitlang/x@0.4.40` `Rational[Int64]` lacks `Debug` in dependency `assert_eq` tests | No matching open upstream PR found in the 2026-07-14 check | `moon doc` fails while checking transitive dependency tests | Use `moon ide doc` and `moon info`; project check, tests, and CLI remain green |
 

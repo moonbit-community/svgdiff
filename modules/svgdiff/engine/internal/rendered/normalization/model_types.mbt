@@ -49,7 +49,6 @@ using @effects {resolve_blend_semantic_document_or_raise}
 ///|
 using @geometry {
   type BasicShapeGeometryResolution,
-  parse_alignment_number,
   resolve_basic_shape_geometry_with_context,
   resolve_stroke_geometry_with_context,
   shape_fact,

@@ -107,6 +107,7 @@ printf '%s\n' \
 printf '%s\n' '<svg><rect></svg>' >"$tmp/failed.svg"
 set +e
 "$cli" "$tmp/failed.svg" testdata/after.svg \
+  --width 16 --height 16 \
   --agent-json --output "$tmp/failed.json" --html "$tmp/failed.html"
 failed_status=$?
 set -e
@@ -451,7 +452,7 @@ jq -e '
     "hasRegion": true,
     "hasFact": true,
     "hasCause": true,
-    "hasCompatibility": true
+    "hasCompatibility": false
   } and
   .hiddenSelection.visible == true and
   .hiddenSelection.events == 0 and

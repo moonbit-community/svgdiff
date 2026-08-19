@@ -56,9 +56,11 @@ moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli=$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 "$cli" testdata/before.svg testdata/before.svg >"$tmp/complete.json"
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><script/></svg>' >"$tmp/partial.svg"
-"$cli" "$tmp/partial.svg" "$tmp/partial.svg" >"$tmp/partial.json"
+"$cli" "$tmp/partial.svg" "$tmp/partial.svg" \
+  --width 16 --height 16 >"$tmp/partial.json"
 printf '%s\n' '<svg><rect></svg>' >"$tmp/failed.svg"
-assert_status 1 "$cli" "$tmp/failed.svg" testdata/before.svg >"$tmp/failed.json"
+assert_status 1 "$cli" "$tmp/failed.svg" testdata/before.svg \
+  --width 16 --height 16 >"$tmp/failed.json"
 python3 - "$tmp/complete.json" "$tmp/partial.json" "$tmp/failed.json" <<'PY'
 import json
 from pathlib import Path
@@ -68,17 +70,13 @@ reports = [json.loads(Path(path).read_text(encoding="utf-8")) for path in sys.ar
 expected = ["complete", "partial", "failed"]
 if [report["analysis_status"] for report in reports] != expected:
     raise SystemExit("complete/partial/failed production status composition changed")
-if reports[1]["atomic_differences"]:
+if any(group["items"] for group in reports[1]["difference_groups"]):
     raise SystemExit("unsupported self-comparison unexpectedly produced differences")
-if not reports[1]["diagnostics"] or not reports[2]["diagnostics"]:
-    raise SystemExit("partial or failed report lacks Diagnostics")
+if not reports[1]["limitations"] or not reports[2]["limitations"]:
+    raise SystemExit("partial or failed report lacks limitations")
 for report in reports[1:]:
-    if not any(
-        "limited" in (row["source_semantics"], row["computed_appearance"], row["rendered_evidence"])
-        or "failed" in (row["source_semantics"], row["computed_appearance"], row["rendered_evidence"])
-        for row in report["coverage_matrix"]
-    ):
-        raise SystemExit("non-complete report lacks limiting or failed coverage")
+    if not all(limitation["affects"] for limitation in report["limitations"]):
+        raise SystemExit("non-complete report limitation lacks affected evidence layers")
 PY
 
 printf 'Terminal evidence-or-Diagnostic coverage gate: passed\n'

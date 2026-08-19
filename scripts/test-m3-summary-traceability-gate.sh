@@ -60,7 +60,8 @@ validate_summary_case partial 0 \
   evaluation/corpus/cases/unsupported-path-change/after.svg \
   --width 16 --height 16
 printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
-validate_summary_case failed 1 "$tmp/malformed.svg" testdata/after.svg
+validate_summary_case failed 1 "$tmp/malformed.svg" testdata/after.svg \
+  --width 16 --height 16
 python3 evaluation/m3-summary-traceability-gate/negative_summary_controls.py \
   --report "$tmp/complete.json" --summary "$tmp/complete.md"
 
@@ -71,7 +72,7 @@ assert_status 0 "$cli" \
   evaluation/corpus/cases/unsupported-path-change/after.svg \
   --width 16 --height 16 --agent-json >"$tmp/partial-compact.json"
 assert_status 1 "$cli" "$tmp/malformed.svg" testdata/after.svg \
-  --agent-json >"$tmp/failed-compact.json"
+  --width 16 --height 16 --agent-json >"$tmp/failed-compact.json"
 for name in complete partial failed; do
   test "$(jq -S -c . "$tmp/$name-compact.json")" = \
     "$(jq -S -c . "$tmp/$name.json")"

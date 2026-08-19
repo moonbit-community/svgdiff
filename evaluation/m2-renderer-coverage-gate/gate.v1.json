@@ -1,16 +1,16 @@
 {
   "schema_version": "svgdiff-m2-renderer-coverage-gate/1",
   "milestone": "M2",
-  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
+  "renderer_conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
   "baseline": {
     "path": "evaluation/renderer-conformance/baseline.v1.json",
     "total_cases": 141,
-    "exact_cases": 94,
-    "divergent_cases": 47
+    "exact_cases": 98,
+    "divergent_cases": 43
   },
   "dispositions": {
     "path": "evaluation/renderer-conformance/dispositions.v1.json",
-    "required_cases": 47,
+    "required_cases": 43,
     "allowed_kinds": ["diagnostic", "normalizer", "compositor"]
   },
   "safety_chains": [

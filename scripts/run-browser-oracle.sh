@@ -3,11 +3,16 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 manifest="$root/evaluation/browser-oracle/manifest.json"
+playwright_config="$root/.playwright/cli.config.json"
 playwright_version=${SVGDIFF_PLAYWRIGHT_CLI_VERSION:-0.1.17}
 playwright_cli_bin=${SVGDIFF_PLAYWRIGHT_CLI_BIN:-}
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 OUTPUT_DIRECTORY" >&2
+  exit 2
+fi
+if [ ! -f "$playwright_config" ]; then
+  echo "Browser oracle config is missing: $playwright_config" >&2
   exit 2
 fi
 if [ -z "$playwright_cli_bin" ] && ! command -v npx >/dev/null 2>&1; then
@@ -42,12 +47,12 @@ pw() {
   if [ "$1" = open ]; then
     if [ -n "$playwright_cli_bin" ]; then
       "$playwright_cli_bin" --session "$session" "$@" \
-        --config "$root/.playwright/cli.config.json"
+        --config "$playwright_config"
       return
     fi
     npx --yes --package "@playwright/cli@$playwright_version" \
       playwright-cli --session "$session" "$@" \
-      --config "$root/.playwright/cli.config.json"
+      --config "$playwright_config"
     return
   fi
   if [ -n "$playwright_cli_bin" ]; then

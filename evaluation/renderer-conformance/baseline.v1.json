@@ -138,13 +138,13 @@
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.765625,
-      "changed_pixels": 196,
+      "changed_pixel_fraction": 0.4765625,
+      "changed_pixels": 122,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-radial-user-space",
-      "max_channel_delta": 128,
-      "premultiplied_rgba8_rmse": 0.16681181504
+      "max_channel_delta": 116,
+      "premultiplied_rgba8_rmse": 0.049544220953
     },
     {
       "category": "paint",
@@ -158,13 +158,13 @@
     },
     {
       "category": "paint",
-      "changed_pixel_fraction": 0.41796875,
-      "changed_pixels": 107,
+      "changed_pixel_fraction": 0.32421875,
+      "changed_pixels": 83,
       "comparison": "divergent",
       "coverage_claim": "guarded",
       "id": "gradient-multi-stop-opacity",
-      "max_channel_delta": 237,
-      "premultiplied_rgba8_rmse": 0.171046781653
+      "max_channel_delta": 31,
+      "premultiplied_rgba8_rmse": 0.028667304132
     },
     {
       "category": "alpha",
@@ -598,23 +598,23 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.0625,
-      "changed_pixels": 16,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "supported",
       "id": "length-absolute",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.160943399299
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.25,
-      "changed_pixels": 64,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "supported",
       "id": "length-percentage",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.335410196625
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
@@ -628,23 +628,23 @@
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.0625,
-      "changed_pixels": 16,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "supported",
       "id": "length-nested-viewport",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.15612494996
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
-      "changed_pixel_fraction": 0.59375,
-      "changed_pixels": 152,
-      "comparison": "divergent",
+      "changed_pixel_fraction": 0.0,
+      "changed_pixels": 0,
+      "comparison": "exact",
       "coverage_claim": "guarded",
       "id": "length-stroke",
-      "max_channel_delta": 255,
-      "premultiplied_rgba8_rmse": 0.357994864422
+      "max_channel_delta": 0,
+      "premultiplied_rgba8_rmse": 0.0
     },
     {
       "category": "geometry",
@@ -1338,13 +1338,13 @@
     },
     {
       "category": "compositing",
-      "changed_pixel_fraction": 0.1875,
-      "changed_pixels": 48,
+      "changed_pixel_fraction": 0.0625,
+      "changed_pixels": 16,
       "comparison": "divergent",
       "coverage_claim": "supported",
       "id": "blend-modes",
-      "max_channel_delta": 11,
-      "premultiplied_rgba8_rmse": 0.00955568073
+      "max_channel_delta": 1,
+      "premultiplied_rgba8_rmse": 0.000490196078
     },
     {
       "category": "compositing",
@@ -1417,10 +1417,10 @@
       "premultiplied_rgba8_rmse": 0.0
     }
   ],
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
   "fixture_source_set_sha256": "493865ec8a2e89d7edbddd1563deed9111af55ca874ee40832d6206ef2787528",
   "raster_representation": "premultiplied_rgba8",
-  "renderer_id": "Milky2018/svg@0.3.1",
+  "renderer_id": "Milky2018/svg@0.5.2",
   "schema_version": "svgdiff-renderer-conformance/1",
   "summary": {
     "cases": 141,
@@ -1442,8 +1442,8 @@
       },
       "geometry": {
         "cases": 54,
-        "divergent": 26,
-        "exact": 28
+        "divergent": 22,
+        "exact": 32
       },
       "paint": {
         "cases": 49,
@@ -1451,8 +1451,8 @@
         "exact": 33
       }
     },
-    "divergent": 47,
-    "exact": 94,
+    "divergent": 43,
+    "exact": 98,
     "exploratory": 0,
     "guarded": 58,
     "supported": 83

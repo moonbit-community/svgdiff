@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-m3-summary-traceability-gate/1",
-  "report_schema_version": "4.0",
+  "report_schema_version": "5.0",
   "agent_projection_version": "svgdiff-agent-projection/2",
   "impact_policy_id": "event_rendered_pareto/v1",
   "markdown_authority": "derived_presentation_only",

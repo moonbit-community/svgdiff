@@ -2,7 +2,7 @@
 
 Status: versioned QA-only evaluation
 
-Last verified: 2026-07-20
+Last verified: 2026-08-19
 
 This evaluation measures what single-scale SSIM and five-level MS-SSIM can contribute as secondary raster diagnostics. It deliberately does not add either metric to Structured Report, Difference Magnitude, equality, Impact Assessment, Agent tasks, or release acceptance.
 

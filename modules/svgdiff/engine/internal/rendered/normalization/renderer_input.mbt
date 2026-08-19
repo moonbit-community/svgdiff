@@ -868,7 +868,13 @@ fn renderer_shape_geometry_edits(
 
 ///|
 fn renderer_geometry_value_requires_materialization(value : String) -> Bool {
-  parse_alignment_number(Some(value.trim().to_owned())) is None
+  renderer_value_uses_viewport_relative_unit(value)
+}
+
+///|
+fn renderer_value_uses_viewport_relative_unit(value : String) -> Bool {
+  let normalized = value.to_lower()
+  ["vw", "vh", "vmin", "vmax"].any(unit => normalized.contains(unit))
 }
 
 ///|
@@ -1040,18 +1046,16 @@ fn renderer_stroke_value_requires_materialization(value : String) -> Bool {
     .replace_all(old="\t", new=" ")
     .replace_all(old="\n", new=" ")
     .replace_all(old="\r", new=" ")
-  let mut saw_number = false
   for token in normalized.split(" ") {
     let token = token.trim()
     if token == "" {
       continue
     }
-    if parse_alignment_number(Some(token.to_owned())) is None {
-      return token != "none"
+    if renderer_value_uses_viewport_relative_unit(token.to_owned()) {
+      return true
     }
-    saw_number = true
   }
-  !saw_number
+  false
 }
 
 ///|

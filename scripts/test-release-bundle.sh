@@ -99,7 +99,7 @@ jq -e \
   .product.module_version == $version and
   .product.report_schema_version == "5.0" and
   .product.agent_projection_version == "svgdiff-agent-projection/2" and
-  .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/27" and
+  .product.renderer_conformance_profile_id == "svgdiff-renderer-conformance-profile/28" and
   .product.ordering_policy_id == "v2_domain_lexicographic" and
   .product.impact_policy_id == "event_rendered_pareto/v1" and
   (.resolved_dependencies | length) == 10

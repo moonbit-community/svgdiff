@@ -53,6 +53,9 @@ jobs:
       - name: Validate GitHub Pages browser product
         run: sh scripts/test-pages.sh
 
+      - name: Reproduce renderer conformance baseline
+        run: sh scripts/test-renderer-conformance.sh
+
       - name: Validate CLI and version identity
         run: |
           sh scripts/test-cli.sh

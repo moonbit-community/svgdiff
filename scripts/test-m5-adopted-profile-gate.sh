@@ -98,13 +98,10 @@ import sys
 
 manifest = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 report = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
-profile = report["profile"]
 if report["analysis_status"] != "complete":
     raise SystemExit("current supported self-comparison is not complete")
-if profile["comparison_dpr"] != 1 or profile["color_interpretation"] != "srgb":
-    raise SystemExit("current static execution profile changed")
-if profile["raster_representation"] != "linear_srgb_premultiplied_rgba_f64":
-    raise SystemExit("current raster profile changed")
+if report["comparison"] != {"viewport": {"width": 16, "height": 16}}:
+    raise SystemExit("current default comparison profile changed")
 
 def strings(value):
     if isinstance(value, str):

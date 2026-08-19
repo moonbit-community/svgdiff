@@ -710,7 +710,7 @@
       "id": "resource-limit-failure",
       "before": "testdata/before.svg",
       "after": "testdata/after.svg",
-      "cli_args": ["--width", "8193"],
+      "cli_args": ["--width", "8193", "--height", "1"],
       "expected_exit_status": 1,
       "output": "schema/examples/resource-limit-failure.json",
       "expected": {

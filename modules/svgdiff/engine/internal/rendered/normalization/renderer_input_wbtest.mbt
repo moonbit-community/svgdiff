@@ -139,7 +139,7 @@ test "renderer input keeps unsupported inline geometry and point syntax adapters
 }
 
 ///|
-test "renderer input resolves unsupported authored length units" {
+test "renderer input delegates supported lengths and resolves viewport units" {
   let profile = {
     ..ComparisonProfile::v1_default(),
     viewport_width: 200,
@@ -150,9 +150,9 @@ test "renderer input resolves unsupported authored length units" {
   let normalized = normalize_renderer_input_with_profile(source, profile)
   for
     expected in [
-      "width=\"200\"", "height=\"100\"", "markerWidth=\"100\"", "markerHeight=\"50\"",
-      "refX=\"96\"", "refY=\"10\"", "x1=\"100\"", "y1=\"50\"", "x2=\"300\"", "y2=\"150\"",
-      "stroke-width=\"31.62277660168379\"", "stroke-dasharray=\"31.62277660168379 37.79527559055118\"",
+      "width=\"200\"", "height=\"100\"", "markerWidth=\"25%\"", "markerHeight=\"25%\"",
+      "refX=\"1in\"", "refY=\"10\"", "x1=\"25%\"", "y1=\"25%\"", "x2=\"75%\"", "y2=\"75%\"",
+      "stroke-width=\"10%\"", "stroke-dasharray=\"10% 1cm\"",
     ] {
     assert_true(normalized.find(expected) is Some(_))
   }

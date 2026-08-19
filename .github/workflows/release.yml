@@ -145,6 +145,9 @@ jobs:
       - name: Update MoonBit registry
         run: moon update
 
+      - name: Install Chromium for renderer conformance
+        run: npx --yes --package "@playwright/cli@0.1.17" playwright-cli install-browser chromium --with-deps
+
       - name: Download release candidates
         uses: actions/download-artifact@v4
         with:
@@ -164,6 +167,7 @@ jobs:
           sh scripts/test-agent-projection.sh
           sh scripts/test-versioning.sh
           sh scripts/test-module-package.sh
+          sh scripts/test-renderer-conformance.sh
           sh scripts/test-schema-examples.sh
           sh scripts/test-compatibility.sh
           sh scripts/test-cross-platform-determinism.sh

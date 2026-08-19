@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-renderer-conformance-dispositions/1",
-  "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
+  "conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
   "cases": [
     {
       "id": "gradient-stop-before",
@@ -171,38 +171,11 @@
       "reason": "The pinned renderer paints 40 pixels that Chromium suppresses for a zero-width marker viewport."
     },
     {
-      "id": "length-absolute",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-unit-normalizer@1",
-      "canonical_case_id": "length-absolute-canonical",
-      "reason": "Chromium renders the authored absolute units identically to the canonical user-unit fixture, and the production normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "length-percentage",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-unit-normalizer@1",
-      "canonical_case_id": "length-percentage-canonical",
-      "reason": "Chromium renders the SVG percentages identically to their nearest-viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
       "id": "length-viewport-relative",
       "disposition": "normalizer",
       "normalizer_id": "svgdiff/length-unit-normalizer@1",
       "canonical_case_id": "length-viewport-relative-canonical",
       "reason": "Chromium renders the viewport-relative units identically to their Comparison Viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "length-nested-viewport",
-      "disposition": "normalizer",
-      "normalizer_id": "svgdiff/length-unit-normalizer@1",
-      "canonical_case_id": "length-nested-viewport-canonical",
-      "reason": "Chromium renders nested SVG percentages identically to their nearest-viewport canonical values, and the production normalizer proves that equivalence before invoking the pinned renderer."
-    },
-    {
-      "id": "length-stroke",
-      "disposition": "diagnostic",
-      "diagnostic_code": "renderer_stroke_outline_raster_unproven",
-      "reason": "The pinned renderer and Chromium disagree on the active stroke outline after resolving percentage width and absolute dash lengths."
     },
     {
       "id": "length-marker",
@@ -268,7 +241,7 @@
       "id": "use-group-inheritance",
       "disposition": "diagnostic",
       "diagnostic_code": "renderer_use_inherited_paint_raster_unproven",
-      "reason": "Milky2018/svg@0.3.1 still differs from Chromium when currentColor is inherited from a use host into a referenced group; production guards that instance-rendering path."
+      "reason": "Milky2018/svg@0.5.2 still differs from Chromium when currentColor is inherited from a use host into a referenced group; production guards that instance-rendering path."
     },
     {
       "id": "embedded-raster-png",

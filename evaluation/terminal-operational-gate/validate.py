@@ -105,8 +105,9 @@ def validate_workflows(ci: str, release: str, environments: dict, bindings: dict
         "python evaluation/determinism/compare_platforms.py",
         "sha256sum svgdiff-*.tar.gz >SHA256SUMS",
         "gh release create",
-        "test \"$(jq -r '.source.dirty'",
-        "test \"$(jq -r '.source.revision'",
+        "jq -e '.source.dirty == false'",
+        "jq -e --arg revision \"$GITHUB_SHA\"",
+        "'.source.revision == $revision'",
     )
     for token in required_release:
         require(token in release, f"release workflow binding missing: {token}")

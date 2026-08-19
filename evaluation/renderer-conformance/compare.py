@@ -260,8 +260,8 @@ def main() -> None:
     ]
     report = {
         "schema_version": "svgdiff-renderer-conformance/1",
-        "conformance_profile_id": "svgdiff-renderer-conformance-profile/27",
-        "renderer_id": "Milky2018/svg@0.3.1",
+        "conformance_profile_id": "svgdiff-renderer-conformance-profile/28",
+        "renderer_id": "Milky2018/svg@0.5.2",
         "raster_representation": "premultiplied_rgba8",
         "browser_environment": {
             "browser_engine": browser_environment["browser_engine"],

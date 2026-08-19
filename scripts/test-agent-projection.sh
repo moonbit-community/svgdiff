@@ -51,10 +51,12 @@ validate_case flip \
 printf '%s\n' '<svg><rect></svg>' >"$tmp/malformed.svg"
 set +e
 moon run --target native modules/svgdiff/cmd/svgdiff -- \
-  "$tmp/malformed.svg" testdata/after.svg >"$tmp/failed-report.json"
+  "$tmp/malformed.svg" testdata/after.svg --width 16 --height 16 \
+  >"$tmp/failed-report.json"
 report_status=$?
 moon run --target native modules/svgdiff/cmd/svgdiff -- \
-  "$tmp/malformed.svg" testdata/after.svg --agent-projection \
+  "$tmp/malformed.svg" testdata/after.svg --width 16 --height 16 \
+  --agent-projection \
   >"$tmp/failed-projection.jsonl"
 projection_status=$?
 set -e

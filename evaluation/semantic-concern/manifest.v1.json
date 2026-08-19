@@ -1,6 +1,6 @@
 {
   "schema_version": "svgdiff-semantic-concern-input/1",
-  "report_schema_version": "4.0",
+  "report_schema_version": "5.0",
   "impact_policy_id": "event_rendered_pareto/v1",
   "case": {
     "id": "dominated-small-event",

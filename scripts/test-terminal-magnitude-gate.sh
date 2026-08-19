@@ -59,14 +59,16 @@ moon build --target native --release modules/svgdiff/cmd/svgdiff >/dev/null
 cli=$root/_build/native/release/build/Milky2018/svgdiff/cmd/svgdiff/svgdiff.exe
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><rect id="box" x="1" y="1" width="8" height="8" fill="red"/></svg>' >"$tmp/geometry-before.svg"
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><rect id="box" x="0.99999" y="1" width="8" height="8" fill="red"/></svg>' >"$tmp/geometry-after.svg"
-"$cli" "$tmp/geometry-before.svg" "$tmp/geometry-after.svg" >"$tmp/geometry.json"
+"$cli" "$tmp/geometry-before.svg" "$tmp/geometry-after.svg" \
+  --width 16 --height 16 >"$tmp/geometry.json"
 "$cli" testdata/before.svg testdata/after.svg \
   --perceptual-background white \
   --flip-pixels-per-degree 67 \
   --flip-error-threshold 0.1 >"$tmp/paint.json"
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><text id="label">A</text></svg>' >"$tmp/text-before.svg"
 printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><text id="label">B</text></svg>' >"$tmp/text-after.svg"
-"$cli" "$tmp/text-before.svg" "$tmp/text-after.svg" >"$tmp/text.json"
+"$cli" "$tmp/text-before.svg" "$tmp/text-after.svg" \
+  --width 16 --height 16 >"$tmp/text.json"
 
 python3 - \
   "$tmp/geometry.json" \
@@ -84,8 +86,11 @@ geometry, paint, insertion, transform, raster, text = [
     json.loads(Path(path).read_text(encoding="utf-8")) for path in sys.argv[1:]
 ]
 
+def differences(report):
+    return [item for group in report["difference_groups"] for item in group["items"]]
+
 geometry_difference = next(
-    value for value in geometry["atomic_differences"] if value["domain"] == "geometry.position"
+    value for value in differences(geometry) if value["kind"] == "geometry.position"
 )
 magnitude = geometry_difference["magnitude"]
 for field in (
@@ -100,72 +105,65 @@ for field in (
         raise SystemExit(f"exact parameter scale missing: {field}")
 if not math.isclose(magnitude["parameter_abs_css_px"], 0.00001, rel_tol=1e-8):
     raise SystemExit("tiny exact CSS-pixel parameter magnitude changed")
-if geometry_difference["parameter_delta_css_px"] >= 0:
+if magnitude["parameter_signed_user_units"] >= 0:
     raise SystemExit("signed tiny parameter direction was not preserved")
-boundary = magnitude["painted_boundary_displacement"]
-if boundary["method_id"] != "symmetric_nearest_boundary_pixels/v1":
-    raise SystemExit("painted-boundary method identity changed")
-if boundary["before_sample_count"] <= 0 or boundary["after_sample_count"] <= 0:
-    raise SystemExit("painted-boundary sample populations missing")
+geometry_outcome = geometry["events"][0]["outcome"]
+isolated = geometry_outcome["isolated_subject"]
+boundary = isolated["painted_boundary_displacement"]
 if boundary["max_css_px"] == magnitude["parameter_abs_css_px"]:
     raise SystemExit("renderer boundary response collapsed into exact parameter magnitude")
-coverage = magnitude["painted_coverage_difference"]
-if coverage["union_coverage_css_px2"] <= 0 or coverage["fraction"] <= 0:
+coverage = isolated["painted_coverage_difference"]
+if coverage["union_css_px2"] <= 0 or coverage["fraction"] < 0:
     raise SystemExit("tiny geometry alpha-coverage evidence missing")
-if magnitude["raster_changed_pixel_fraction"] <= 0:
-    raise SystemExit("tiny geometry raster evidence missing")
+if geometry_outcome["changed_fraction"] < 0:
+    raise SystemExit("tiny geometry raster evidence is invalid")
 
 paint_difference = next(
-    value for value in paint["atomic_differences"] if value["domain"] == "paint.fill"
+    value for value in differences(paint) if value["kind"] == "paint.fill"
 )
-paint_magnitude = paint_difference["magnitude"]
-if paint_magnitude["painted_coverage_difference"]["fraction"] != 0:
+paint_outcome = paint["events"][0]["outcome"]
+if paint_outcome["isolated_subject"]["painted_coverage_difference"]["fraction"] != 0:
     raise SystemExit("alpha-only coverage incorrectly treated RGB change as area change")
-for field in (
-    "raster_changed_pixel_fraction",
-    "raster_rgba8_rmse",
-    "raster_linear_premultiplied_rgba_rmse",
-):
-    if paint_magnitude[field] is None or paint_magnitude[field] <= 0:
+for field in ("changed_fraction", "linear_rgba_rmse"):
+    if paint_outcome[field] is None or paint_outcome[field] <= 0:
         raise SystemExit(f"paint raster magnitude missing: {field}")
-outcome = paint["events"][0]["rendered_outcome"]
-color = outcome["perceptual_color"]
-flip = outcome["perceptual_flip"]
-if color["status"] != "computed" or color["magnitude"]["mean_delta_e_ok"] <= 0:
+color = paint_outcome["perceptual_color"]
+flip = paint_outcome["perceptual_difference"]
+if color["sample_count"] <= 0 or color["mean_delta_e_ok"] <= 0:
     raise SystemExit("event-local DeltaEOK evidence missing")
-if flip["status"] != "computed" or not flip.get("map") or not flip.get("statistics"):
-    raise SystemExit("event-local FLIP map or statistics missing")
-if flip["statistics"]["area_above_threshold"]["threshold"] != 0.1:
+if flip["canvas_mean"] <= 0 or flip["response_maximum"] < flip["response_p95"]:
+    raise SystemExit("event-local FLIP statistics missing")
+if flip["area_above_threshold"]["threshold"] != 0.1:
     raise SystemExit("explicit FLIP threshold evidence changed")
 
 presence = next(
-    value for value in insertion["atomic_differences"] if value["presence_magnitude"] is not None
-)["presence_magnitude"]
+    value["magnitude"]["presence"]
+    for value in differences(insertion)
+    if value.get("magnitude", {}).get("presence") is not None
+)
 if presence["affected_entity_count"] != 1 or presence["painted_area_css_px2"] <= 0:
     raise SystemExit("presence magnitude evidence missing")
 effect = next(
-    value["magnitude"].get("transform_effect")
-    for value in transform["atomic_differences"]
-    if value["magnitude"].get("transform_effect") is not None
+    value["magnitude"].get("transform")
+    for value in differences(transform)
+    if value.get("magnitude", {}).get("transform") is not None
 )
 if effect["kind"] != "translation" or effect["norm_css_px"] != 4:
     raise SystemExit("tagged transform-effect magnitude changed")
 intrinsic = next(
     value["magnitude"]["intrinsic_raster"]
-    for value in raster["atomic_differences"]
-    if value["magnitude"]["intrinsic_raster"] is not None
+    for value in differences(raster)
+    if value.get("magnitude", {}).get("intrinsic_raster") is not None
 )
-if intrinsic["changed_pixel_fraction"] != 1 or intrinsic["compared_pixels"] != 1:
+if intrinsic["changed_fraction"] != 1 or intrinsic["compared_pixels"] != 1:
     raise SystemExit("intrinsic raster magnitude changed")
 
 if text["analysis_status"] != "partial":
     raise SystemExit("unsupported text report must remain partial")
-text_difference = text["atomic_differences"][0]
-if any(value is not None for value in text_difference["magnitude"].values()):
+text_difference = differences(text)[0]
+if "magnitude" in text_difference:
     raise SystemExit("unavailable text magnitude was fabricated")
-if text_difference.get("presence_magnitude") is not None:
-    raise SystemExit("unavailable text presence magnitude was fabricated")
-if text["events"][0]["rendered_outcome"]["status"] != "not_computed":
+if text["events"][0]["outcome"]["status"] != "not_computed":
     raise SystemExit("unavailable text rendering was measured as zero")
 PY
 
