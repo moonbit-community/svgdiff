@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <defs>
-    <filter id="shift" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="objectBoundingBox">
-      <feOffset dx="0.25" dy="0.2"/>
-    </filter>
-  </defs>
-  <rect id="box" x="2" y="2" width="8" height="5" fill="#2080e0" filter="url(#shift)"/>
-</svg>

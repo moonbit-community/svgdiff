@@ -1,3 +1,0 @@
-# Separate Difference Domain from Computed Relation
-
-Atomic Differences classify what changed with a Difference Domain and separately record whether the resolved before and after facts are equivalent, different, indeterminate, or not applicable with a reason-bearing Computed Relation. `not_applicable` is reserved for structurally absent facts such as insertion and deletion, while `indeterminate` requires Diagnostics; representation and visibility are not Domains because mixing them with geometry or paint would conflate semantic area, equivalence, rendered measurements, and impact in one taxonomy.

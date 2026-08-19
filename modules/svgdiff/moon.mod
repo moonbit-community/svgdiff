@@ -36,11 +36,5 @@ import {
 }
 
 options(
-  exclude: [
-    "cmd/svgdiff_wasm",
-    "evaluation",
-    "*_test.mbt",
-    "*_wbtest.mbt",
-    "engine/README.md",
-  ],
+  exclude: [ "cmd/svgdiff_wasm", "*_test.mbt", "*_wbtest.mbt" ],
 )

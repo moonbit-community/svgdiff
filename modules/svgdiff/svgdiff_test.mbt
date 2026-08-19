@@ -96,7 +96,7 @@ test "root comparison exposes exact parameter scales" {
 }
 
 ///|
-test "root package keeps nonvisual source audit separate" {
+test "root package ignores nonvisual source content" {
   let before = "<svg data-build='a'><title>Before</title><rect width='8' height='8'/></svg>"
   let after = "<svg data-build='b'><title>After</title><rect width='8' height='8'/></svg>"
   let comparison = @svgdiff.compare(
@@ -107,21 +107,6 @@ test "root package keeps nonvisual source audit separate" {
   assert_eq(comparison.analysis_status, "complete")
   assert_true(comparison.atomic_differences.is_empty())
   assert_true(!comparison.to_compact_json_string().contains("source-audit"))
-  let audit : @svgdiff.SourceAuditReport = @svgdiff.audit_nonvisual_metadata(
-    before, after,
-  )
-  assert_eq(audit.audit_schema_version, "1.0")
-  assert_eq(audit.analysis_status, "complete")
-  assert_eq(audit.differences.length(), 2)
-  match @json.parse(audit.to_json_string()) {
-    {
-      "audit_schema_version": "1.0",
-      "analysis_status": "complete",
-      "differences": [_, _],
-      ..
-    } => ()
-    _ => fail("source-only audit did not serialize through the root seam")
-  }
 }
 
 ///|
@@ -207,41 +192,11 @@ test "v1 profile records canonical rendering conditions" {
     "<svg width='16' height='16'><rect width='8' height='8' fill='blue' opacity='0.5'/></svg>",
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  assert_eq(report.profile.comparison_dpr, 1.0)
-  assert_eq(report.profile.color_interpretation, "srgb")
-  assert_eq(
-    report.profile.raster_representation,
-    "linear_srgb_premultiplied_rgba_f64",
-  )
-  assert_eq(
-    report.profile.renderer_id,
-    "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.5.2",
-  )
   match report.events[0].rendered_outcome.magnitude {
     Some(magnitude) =>
       assert_true(magnitude.linear_premultiplied_rgba_rmse > 0.0)
     None => fail("expected canonical rendered magnitude")
   }
-}
-
-///|
-test "comparison normalizes fixed v1 rendering conditions" {
-  let requested = {
-    ..@svgdiff.ComparisonProfile::v1_default(),
-    comparison_dpr: 2.0,
-    color_interpretation: "display-p3",
-    raster_representation: "invented",
-    renderer_id: "another-renderer",
-  }
-  let report = @svgdiff.compare(
-    "<svg width='16' height='16'/>", "<svg width='16' height='16'/>", requested,
-  )
-  assert_eq(report.profile.comparison_dpr, 1.0)
-  assert_eq(report.profile.color_interpretation, "srgb")
-  assert_eq(
-    report.profile.renderer_id,
-    "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.5.2",
-  )
 }
 
 ///|
@@ -269,7 +224,6 @@ test "explicit perceptual background is normalized and preserved independently" 
   assert_true(raw.profile.perceptual_background is None)
   let with_background = @svgdiff.compare(before, after, {
     ..@svgdiff.ComparisonProfile::v1_default(),
-    comparison_dpr: 2.0,
     perceptual_background: Some(background),
   })
   guard with_background.profile.perceptual_background is Some(recorded) else {
@@ -278,7 +232,6 @@ test "explicit perceptual background is normalized and preserved independently" 
   assert_eq(recorded.red(), 51)
   assert_eq(recorded.green(), 102)
   assert_eq(recorded.blue(), 153)
-  assert_eq(with_background.profile.comparison_dpr, 1.0)
   let events : Array[@svgdiff.VisualEvent] = []
   for index, event in with_background.events {
     events.push({

@@ -78,11 +78,6 @@ pub impl ToJson for ChangedFact
 pub(all) struct ComparisonProfile {
   viewport_width : Int
   viewport_height : Int
-  comparison_dpr : Double
-  color_interpretation : String
-  raster_representation : String
-  renderer_id : String
-  renderer_conformance_profile_id : String
   perceptual_background : PerceptualBackground?
   flip_viewing_conditions : FlipViewingConditions?
   flip_error_threshold : FlipErrorThreshold?
@@ -427,7 +422,6 @@ pub(all) struct StructuredReport {
   events : Array[VisualEvent]
   diagnostics : Array[Diagnostic]
 }
-pub fn StructuredReport::to_agent_projection_json_lines(Self) -> String
 pub fn StructuredReport::to_compact_json_string(Self) -> String
 pub fn StructuredReport::to_json(Self) -> Json
 pub fn StructuredReport::to_json_string(Self) -> String

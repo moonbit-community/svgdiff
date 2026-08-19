@@ -53,10 +53,6 @@ pub using @engine {
   type ReportSourceSpan,
   type ResolvedVisualFact,
   type SourceResolutionPair,
-  type SourceAuditDiagnostic,
-  type SourceAuditDifference,
-  type SourceAuditFact,
-  type SourceAuditReport,
   type StructuredReport,
   type SubjectAlignment,
   type SubjectInstanceContext,
@@ -71,19 +67,6 @@ pub using @engine {
 }
 
 ///|
-/// Audit nonvisual metadata without adding it to visual Atomic Differences.
-///
-/// This independent source-only operation inventories exact authored content
-/// inside SVG `title`, `desc`, and `metadata` elements plus unprefixed
-/// `aria-*` and `data-*` attributes. It never changes comparison results.
-pub fn audit_nonvisual_metadata(
-  before_svg : String,
-  after_svg : String,
-) -> SourceAuditReport {
-  @engine.audit_nonvisual_metadata(before_svg, after_svg)
-}
-
-///|
 /// Compare with separate explicit resource bundles for the two SVG sources.
 ///
 /// Bundle locators are opaque exact-match keys. The engine performs no file or
@@ -95,16 +78,8 @@ pub fn compare_with_resources(
   before_resources : ResourceBundle,
   after_resources : ResourceBundle,
 ) -> StructuredReport {
-  let canonical_profile = {
-    ..ComparisonProfile::v1_default(),
-    viewport_width: profile.viewport_width,
-    viewport_height: profile.viewport_height,
-    perceptual_background: profile.perceptual_background,
-    flip_viewing_conditions: profile.flip_viewing_conditions,
-    flip_error_threshold: profile.flip_error_threshold,
-  }
   let report = @engine.compare_with_resources(
-    before_svg, after_svg, canonical_profile, before_resources, after_resources,
+    before_svg, after_svg, profile, before_resources, after_resources,
   )
   { ..report, schema_version: "5.0" }
 }
@@ -123,16 +98,13 @@ pub(all) struct ComparisonArtifact {
 }
 
 ///|
-/// Compare two deterministic static SVG sources under one schema `4.0` profile.
+/// Compare two deterministic static SVG sources under one profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
 /// preserves `profile.viewport_width`, `profile.viewport_height`, the optional
 /// Perceptual Background, optional FLIP Viewing Conditions, and optional FLIP
-/// error threshold, and pins DPR,
-/// color interpretation, raster representation, renderer identity, and
-/// renderer conformance profile to the v1 defaults. Unsupported semantics
-/// produce Diagnostics and reduce `analysis_status` instead of being treated
-/// as equality.
+/// error threshold. Unsupported semantics produce Diagnostics and reduce
+/// `analysis_status` instead of being treated as equality.
 ///
 /// Inspect `analysis_status` before using an empty `atomic_differences` array as
 /// a profile-scoped equality conclusion.
@@ -141,15 +113,7 @@ pub fn compare(
   after_svg : String,
   profile : ComparisonProfile,
 ) -> StructuredReport {
-  let canonical_profile = {
-    ..ComparisonProfile::v1_default(),
-    viewport_width: profile.viewport_width,
-    viewport_height: profile.viewport_height,
-    perceptual_background: profile.perceptual_background,
-    flip_viewing_conditions: profile.flip_viewing_conditions,
-    flip_error_threshold: profile.flip_error_threshold,
-  }
-  let report = @engine.compare(before_svg, after_svg, canonical_profile)
+  let report = @engine.compare(before_svg, after_svg, profile)
   { ..report, schema_version: "5.0" }
 }
 
@@ -165,18 +129,8 @@ pub fn compare_with_control(
   profile : ComparisonProfile,
   control : ComparisonControl,
 ) -> StructuredReport raise ComparisonInterrupted {
-  let canonical_profile = {
-    ..ComparisonProfile::v1_default(),
-    viewport_width: profile.viewport_width,
-    viewport_height: profile.viewport_height,
-    perceptual_background: profile.perceptual_background,
-    flip_viewing_conditions: profile.flip_viewing_conditions,
-    flip_error_threshold: profile.flip_error_threshold,
-  }
   try
-    @engine.compare_with_control(
-      before_svg, after_svg, canonical_profile, control,
-    )
+    @engine.compare_with_control(before_svg, after_svg, profile, control)
   catch {
     Cancelled => raise Cancelled
     CheckpointBudgetExceeded(max_checkpoints~) =>
@@ -196,18 +150,9 @@ pub fn compare_with_control_and_resources(
   after_resources : ResourceBundle,
   control : ComparisonControl,
 ) -> StructuredReport raise ComparisonInterrupted {
-  let canonical_profile = {
-    ..ComparisonProfile::v1_default(),
-    viewport_width: profile.viewport_width,
-    viewport_height: profile.viewport_height,
-    perceptual_background: profile.perceptual_background,
-    flip_viewing_conditions: profile.flip_viewing_conditions,
-    flip_error_threshold: profile.flip_error_threshold,
-  }
   try
     @engine.compare_with_control_and_resources(
-      before_svg, after_svg, canonical_profile, before_resources, after_resources,
-      control,
+      before_svg, after_svg, profile, before_resources, after_resources, control,
     )
   catch {
     Cancelled => raise Cancelled
@@ -229,18 +174,9 @@ pub fn compare_artifact_with_control_and_resources(
   after_resources : ResourceBundle,
   control : ComparisonControl,
 ) -> ComparisonArtifact raise ComparisonInterrupted {
-  let canonical_profile = {
-    ..ComparisonProfile::v1_default(),
-    viewport_width: profile.viewport_width,
-    viewport_height: profile.viewport_height,
-    perceptual_background: profile.perceptual_background,
-    flip_viewing_conditions: profile.flip_viewing_conditions,
-    flip_error_threshold: profile.flip_error_threshold,
-  }
   try
     @engine.compare_artifact_with_control_and_resources(
-      before_svg, after_svg, canonical_profile, before_resources, after_resources,
-      control,
+      before_svg, after_svg, profile, before_resources, after_resources, control,
     )
   catch {
     Cancelled => raise Cancelled

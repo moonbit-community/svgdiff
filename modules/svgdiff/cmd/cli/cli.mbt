@@ -25,9 +25,7 @@ pub struct Config {
   after_path : String
   output_path : String?
   html_path : String?
-  summary_path : String?
   agent_json : Bool
-  agent_projection : Bool
   width : Int?
   height : Int?
   perceptual_background : @svgdiff.PerceptualBackground?
@@ -45,16 +43,9 @@ pub suberror CliError {
 
 ///|
 fn version_text(command_name : String) -> String {
-  let profile = @svgdiff.ComparisonProfile::v1_default()
   (
     $|\{command_name} 0.10.0
-    $|engine: 0.10.0
     $|schema: 5.0
-    $|agent-projection: svgdiff-agent-projection/2
-    $|renderer: \{profile.renderer_id}
-    $|renderer-conformance-profile: \{profile.renderer_conformance_profile_id}
-    $|ordering-policy: v2_domain_lexicographic
-    $|impact-policy: event_rendered_pareto/v1
   )
 }
 
@@ -109,12 +100,6 @@ fn command(name : String) -> @argparse.Command {
       FlagArg(
         "agent-json",
         about="Remove JSON formatting whitespace without removing evidence",
-        conflicts_with=["agent-projection"],
-      ),
-      FlagArg(
-        "agent-projection",
-        about="Emit lossless line-addressable Agent projection JSONL",
-        conflicts_with=["agent-json"],
       ),
     ],
     options=[
@@ -158,19 +143,10 @@ fn command(name : String) -> @argparse.Command {
         about="Supply one after-side resource JSON object",
         action=Append,
       ),
-      OptionArg(
-        "output",
-        about="Write JSON or Agent projection JSONL to FILE",
-        allow_hyphen_values=true,
-      ),
+      OptionArg("output", about="Write JSON to FILE", allow_hyphen_values=true),
       OptionArg(
         "html",
         about="Also write the self-contained HTML presentation",
-        allow_hyphen_values=true,
-      ),
-      OptionArg(
-        "summary",
-        about="Also write a derived non-authoritative Markdown summary",
         allow_hyphen_values=true,
       ),
     ],
@@ -304,9 +280,7 @@ pub fn parse(args : ArrayView[String]) -> Config raise CliError {
     after_path,
     output_path: matches.values.get("output").map(args => args[0]),
     html_path: matches.values.get("html").map(args => args[0]),
-    summary_path: matches.values.get("summary").map(args => args[0]),
     agent_json: matches.flags.get("agent-json").unwrap_or(false),
-    agent_projection: matches.flags.get("agent-projection").unwrap_or(false),
     width,
     height,
     perceptual_background,
@@ -405,7 +379,6 @@ fn comparison_profile(
       })
   }
   {
-    ..@svgdiff.ComparisonProfile::v1_default(),
     viewport_width,
     viewport_height,
     perceptual_background: config.perceptual_background,
@@ -455,9 +428,7 @@ pub fn serialize_report(
   report : @svgdiff.StructuredReport,
   config : Config,
 ) -> String {
-  if config.agent_projection {
-    report.to_agent_projection_json_lines()
-  } else if config.agent_json {
+  if config.agent_json {
     report.to_compact_json_string()
   } else {
     report.to_json_string()

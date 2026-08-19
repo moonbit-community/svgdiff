@@ -115,8 +115,7 @@ pub fn compare(request_len : Int) -> Int {
     Ok(request) => request
     Err(failure) => return finish_error(failure.error_kind, failure.message)
   }
-  let profile = {
-    ..@svgdiff.ComparisonProfile::v1_default(),
+  let profile : @svgdiff.ComparisonProfile = {
     viewport_width: request.viewport_width,
     viewport_height: request.viewport_height,
     perceptual_background: request.perceptual_background,

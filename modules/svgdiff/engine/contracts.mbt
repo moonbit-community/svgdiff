@@ -64,14 +64,6 @@ pub using @model {
 }
 
 ///|
-pub using @source {
-  type SourceAuditDiagnostic,
-  type SourceAuditDifference,
-  type SourceAuditFact,
-  type SourceAuditReport,
-}
-
-///|
 pub(all) struct ResourceBundleEntry {
   locator : String
   media_type : String

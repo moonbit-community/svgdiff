@@ -24,7 +24,7 @@ unzip -Z1 "$codec_archive" | sed '/\/$/d' >"$tmp/codec-package-list.txt"
 
 while IFS= read -r path; do
   case "$path" in
-    LICENSE | README.md | README.mbt.md | SKILL.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt | markdown_summary.mbt)
+    LICENSE | README.md | README.mbt.md | SKILL.md | moon.mod | moon.pkg | pkg.generated.mbti | svgdiff.mbt | html_report.mbt | html_report_assets.mbt)
       ;;
     engine/* | cmd/cli/* | cmd/svgdiff/*)
       case "$path" in
@@ -52,7 +52,7 @@ while IFS= read -r path; do
   esac
 done <"$tmp/codec-package-list.txt"
 
-for required in LICENSE README.mbt.md SKILL.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt markdown_summary.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt cmd/cli/moon.pkg cmd/cli/cli.mbt cmd/svgdiff/moon.pkg cmd/svgdiff/main.mbt; do
+for required in LICENSE README.mbt.md SKILL.md moon.mod moon.pkg svgdiff.mbt html_report.mbt html_report_assets.mbt engine/moon.pkg engine/internal/source/css_color/moon.pkg engine/internal/source/css_color/color.mbt engine/internal/source/number_parser/moon.pkg engine/internal/source/number_parser/number_parser.mbt engine/model/report_model.mbt engine/internal/diff/comparison_pipeline.mbt cmd/cli/moon.pkg cmd/cli/cli.mbt cmd/svgdiff/moon.pkg cmd/svgdiff/main.mbt; do
   grep -Fx "$required" "$tmp/package-list.txt" >/dev/null
 done
 
@@ -99,16 +99,6 @@ fn main {
   guard report.schema_version == "5.0" else { abort("wrong schema") }
   guard report.analysis_status == "complete" else { abort("incomplete report") }
   guard report.atomic_differences.length() > 0 else { abort("missing difference") }
-  guard report.impact_assessment.policy_id == "event_rendered_pareto/v1" else {
-    abort("missing Impact Assessment")
-  }
-  guard report.impact_assessment.candidate_event_count == report.events.length() else {
-    abort("Impact Assessment candidate drift")
-  }
-  let summary = @svgdiff.render_markdown_summary(report)
-  guard summary.contains("Derived presentation only") else {
-    abort("Markdown summary API unavailable")
-  }
   let resource_svg = "<svg xmlns='http://www.w3.org/2000/svg'><image href='asset.png'/></svg>"
   let bundled = @svgdiff.compare_with_resources(
     resource_svg,

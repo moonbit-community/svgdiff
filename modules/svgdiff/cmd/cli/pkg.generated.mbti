@@ -28,9 +28,7 @@ pub struct Config {
   after_path : String
   output_path : String?
   html_path : String?
-  summary_path : String?
   agent_json : Bool
-  agent_projection : Bool
   width : Int?
   height : Int?
   perceptual_background : @model.PerceptualBackground?

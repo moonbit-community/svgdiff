@@ -35,10 +35,8 @@ using @model {
 }
 
 ///|
-using @source_audit {visual_semantic_input}
-
-///|
 using @source_semantics {
+  visual_semantic_input,
   ascii_url_start,
   type RectDeclaredFacts,
   css_custom_property_name,

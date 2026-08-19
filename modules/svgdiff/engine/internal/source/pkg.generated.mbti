@@ -143,6 +143,8 @@ pub fn upsert_declared_fact(Array[@model.DeclaredVisualFact], @model.DeclaredVis
 
 pub fn use_target_index(StructuralDocument, StructuralSourceNode) -> Int?
 
+pub fn visual_semantic_input(String) -> String
+
 pub fn visual_subject_kind(String) -> Bool
 
 // Errors

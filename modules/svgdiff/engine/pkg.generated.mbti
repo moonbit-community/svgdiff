@@ -3,13 +3,10 @@ package "Milky2018/svgdiff/engine"
 
 import {
   "Milky2018/svgdiff/engine/model",
-  "Milky2018/svgdiff/engine/source",
   "moonbitlang/core/debug",
 }
 
 // Values
-pub fn audit_nonvisual_metadata(String, String) -> @source.SourceAuditReport
-
 pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
 pub fn compare_artifact_with_control_and_resources(String, String, @model.ComparisonProfile, ResourceBundle, ResourceBundle, ComparisonControl) -> ComparisonArtifact raise ComparisonInterrupted
@@ -122,14 +119,6 @@ pub using @model {type RendererCapabilityGap}
 pub using @model {type ReportSourceSpan}
 
 pub using @model {type ResolvedVisualFact}
-
-pub using @source {type SourceAuditDiagnostic}
-
-pub using @source {type SourceAuditDifference}
-
-pub using @source {type SourceAuditFact}
-
-pub using @source {type SourceAuditReport}
 
 pub using @model {type SourceResolutionPair}
 

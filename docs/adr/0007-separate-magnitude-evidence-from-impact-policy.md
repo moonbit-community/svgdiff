@@ -1,3 +1,0 @@
-# Separate magnitude evidence from impact policy
-
-Atomic Differences and Visual Events will retain a multidimensional Difference Magnitude rather than a universal similarity scalar. An optional Impact Assessment may annotate or rank those measurements through an explicit versioned policy, but it cannot replace continuous values or determine whether a Difference exists; parameter displacement, contour change, painted area, raster error, color perception, and perceptual image error are incommensurate facts, and any mandatory classification or single weighted score would otherwise conceal both evidence and changing product judgment.

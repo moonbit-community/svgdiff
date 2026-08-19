@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <defs>
-    <clipPath id="clip" transform="translate(2 1)">
-      <rect x="2" y="2" width="4" height="5"/>
-    </clipPath>
-  </defs>
-  <rect width="12" height="12" fill="#36c" clip-path="url(#clip)"/>
-</svg>

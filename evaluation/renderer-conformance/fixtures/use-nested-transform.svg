@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <defs>
-    <rect id="shape" width="3" height="2" fill="#f00"/>
-    <use id="inner" href="#shape" x="1" y="2"/>
-  </defs>
-  <g transform="translate(2 1)">
-    <use href="#inner" x="3" y="4" transform="scale(2)"/>
-  </g>
-</svg>

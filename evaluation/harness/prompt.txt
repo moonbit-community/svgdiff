@@ -1,3 +1,0 @@
-Read the concise SVG Diff Structured Report and return an evidence-grounded comparison.
-
-State whether analysis is complete, partial, or failed. Enumerate every item under difference_groups, including differences with zero rendered magnitude. For each difference, preserve its kind, subject, authored before/after values, effective relation, sparse numeric magnitudes, linked event regions, and possible-cause Atomic Difference IDs. Report every limitation without treating omitted measurements as zero. Treat sound_overapproximation as a completeness guarantee for the candidate set, not proof that every candidate is causal. Describe the candidate visual events in report order without inventing a universal severity ranking. Cite report-local IDs for each claim.

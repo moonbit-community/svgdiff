@@ -4,13 +4,10 @@ package "Milky2018/svgdiff"
 import {
   "Milky2018/svgdiff/engine",
   "Milky2018/svgdiff/engine/model",
-  "Milky2018/svgdiff/engine/source",
   "moonbitlang/core/debug",
 }
 
 // Values
-pub fn audit_nonvisual_metadata(String, String) -> @source.SourceAuditReport
-
 pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
 pub fn compare_artifact_with_control_and_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle, @engine.ComparisonControl) -> ComparisonArtifact raise ComparisonInterrupted
@@ -22,8 +19,6 @@ pub fn compare_with_control_and_resources(String, String, @model.ComparisonProfi
 pub fn compare_with_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport
 
 pub fn render_html_report(String, String, @model.StructuredReport, Bytes?) -> String
-
-pub fn render_markdown_summary(@model.StructuredReport) -> String
 
 // Errors
 pub(all) suberror ComparisonInterrupted {
@@ -116,14 +111,6 @@ pub using @model {type ResolvedVisualFact}
 pub using @engine {type ResourceBundle}
 
 pub using @engine {type ResourceBundleEntry}
-
-pub using @source {type SourceAuditDiagnostic}
-
-pub using @source {type SourceAuditDifference}
-
-pub using @source {type SourceAuditFact}
-
-pub using @source {type SourceAuditReport}
 
 pub using @model {type SourceResolutionPair}
 

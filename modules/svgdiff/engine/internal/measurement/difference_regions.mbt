@@ -1059,13 +1059,8 @@ fn directional_boundary_distances(
 pub fn painted_boundary_displacement_distribution(
   before : @svg.Image,
   after : @svg.Image,
-  comparison_dpr : Double,
 ) -> PaintedBoundaryDisplacementMagnitude? {
-  if before.width() != after.width() ||
-    before.height() != after.height() ||
-    comparison_dpr <= 0.0 ||
-    comparison_dpr.is_nan() ||
-    comparison_dpr.is_inf() {
+  if before.width() != after.width() || before.height() != after.height() {
     return None
   }
   let before_count = painted_boundary_count(before)
@@ -1096,9 +1091,9 @@ pub fn painted_boundary_displacement_distribution(
     method_id: "symmetric_nearest_boundary_pixels/v1",
     before_sample_count: before_count,
     after_sample_count: after_count,
-    mean_css_px: total / sample_count.to_double() / comparison_dpr,
-    p95_css_px: samples[p95_index] / comparison_dpr,
-    max_css_px: samples[sample_count - 1] / comparison_dpr,
+    mean_css_px: total / sample_count.to_double(),
+    p95_css_px: samples[p95_index],
+    max_css_px: samples[sample_count - 1],
   })
 }
 
@@ -1106,13 +1101,8 @@ pub fn painted_boundary_displacement_distribution(
 pub fn painted_coverage_difference(
   before : @svg.Image,
   after : @svg.Image,
-  comparison_dpr : Double,
 ) -> PaintedCoverageDifferenceMagnitude? {
-  if before.width() != after.width() ||
-    before.height() != after.height() ||
-    comparison_dpr <= 0.0 ||
-    comparison_dpr.is_nan() ||
-    comparison_dpr.is_inf() {
+  if before.width() != after.width() || before.height() != after.height() {
     return None
   }
   let mut before_coverage = 0.0
@@ -1127,13 +1117,12 @@ pub fn painted_coverage_difference(
     absolute_difference += (before_alpha - after_alpha).abs()
     union_coverage += before_alpha.max(after_alpha)
   }
-  let css_pixel_area = comparison_dpr * comparison_dpr
   Some({
     method_id: "symmetric_alpha_coverage_l1_over_union/v1",
-    before_coverage_css_px2: before_coverage / css_pixel_area,
-    after_coverage_css_px2: after_coverage / css_pixel_area,
-    absolute_difference_css_px2: absolute_difference / css_pixel_area,
-    union_coverage_css_px2: union_coverage / css_pixel_area,
+    before_coverage_css_px2: before_coverage,
+    after_coverage_css_px2: after_coverage,
+    absolute_difference_css_px2: absolute_difference,
+    union_coverage_css_px2: union_coverage,
     fraction: if union_coverage == 0.0 {
       0.0
     } else {
@@ -1167,19 +1156,13 @@ pub fn isolated_subjects_painted_measurements(
     before_image.height() != after_image.height() {
     return None
   }
-  guard painted_coverage_difference(
-      before_image,
-      after_image,
-      profile.comparison_dpr,
-    )
+  guard painted_coverage_difference(before_image, after_image)
     is Some(coverage_difference) else {
     return None
   }
   Some({
     boundary_displacement: painted_boundary_displacement_distribution(
-      before_image,
-      after_image,
-      profile.comparison_dpr,
+      before_image, after_image,
     ),
     coverage_difference,
   })
@@ -1241,8 +1224,7 @@ fn generic_presence_magnitude_for_difference(
     Some(pixels) => pixels
     None => return difference.presence_magnitude
   }
-  let painted_area = painted_pixels.to_double() /
-    (profile.comparison_dpr * profile.comparison_dpr)
+  let painted_area = painted_pixels.to_double()
   Some({
     affected_entity_count: entity_count,
     bounds_area_css_px2: bounds_area,

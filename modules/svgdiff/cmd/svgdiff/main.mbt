@@ -104,15 +104,7 @@ async fn execute(config : @cli.Config) -> Int noraise {
     let report = artifact.report
     let json = @cli.serialize_report(report, config)
     match config.output_path {
-      Some(path) =>
-        write_file(
-          path,
-          if config.agent_projection {
-            json + "\n"
-          } else {
-            json
-          },
-        )
+      Some(path) => write_file(path, json)
       None => write_stdout(json + "\n")
     }
     match config.html_path {
@@ -126,10 +118,6 @@ async fn execute(config : @cli.Config) -> Int noraise {
             artifact.difference_rgba,
           ),
         )
-      None => ()
-    }
-    match config.summary_path {
-      Some(path) => write_file(path, @lib.render_markdown_summary(report))
       None => ()
     }
     if report.analysis_status == "failed" {

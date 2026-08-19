@@ -32,9 +32,9 @@ pub fn filter_event_side_bounds(@model.VisualEvent, Array[@effects.ResolvedFilte
 
 pub fn isolated_subjects_painted_measurements(Array[@ir.SourceSubject], Array[@ir.SourceSubject], @model.ComparisonProfile) -> IsolatedPaintMeasurements?
 
-pub fn painted_boundary_displacement_distribution(@svg.Image, @svg.Image, Double) -> @model.PaintedBoundaryDisplacementMagnitude?
+pub fn painted_boundary_displacement_distribution(@svg.Image, @svg.Image) -> @model.PaintedBoundaryDisplacementMagnitude?
 
-pub fn painted_coverage_difference(@svg.Image, @svg.Image, Double) -> @model.PaintedCoverageDifferenceMagnitude?
+pub fn painted_coverage_difference(@svg.Image, @svg.Image) -> @model.PaintedCoverageDifferenceMagnitude?
 
 pub fn parameter_entity_fraction_from_bounds(Double, Array[@computed.CssBounds?]) -> Double?
 

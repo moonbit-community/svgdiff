@@ -1,9 +1,5 @@
 # Shell Completions
 
-Status: maintained CLI support
-
-Last verified: 2026-07-14
-
 Install completion for the shell you use:
 
 ```sh
@@ -20,7 +16,3 @@ autoload -Uz compinit && compinit
 ```
 
 The definitions complete both SVG operands, the explicit stdin marker, output paths, and every current long option. `scripts/test-completions.sh` checks option synchronization against executable `--help`, available shell parsers, Bash behavior, and deterministic installation.
-
-## Package-manager boundary
-
-No Homebrew, Scoop, or similar package definition is published yet. The release workflow now supplies versioned archives, checksums, provenance metadata, licenses, and a supported platform matrix. A package definition still requires a stable repository URL and observed published-release history; it should be added only when those external coordinates exist. An unversioned source-build formula would duplicate `scripts/install.sh` without providing a stable distribution contract.

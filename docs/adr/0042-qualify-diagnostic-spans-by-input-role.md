@@ -1,3 +1,0 @@
-# Qualify Diagnostic Source Spans by input role
-
-Every current Diagnostic carries a `source_locations` array whose entries pair `before` or `after` with a half-open UTF-16 Source Span in that exact input. Input-anchored parser failures and analysis limitations retain the narrowest available parser span, and one stable Diagnostic merges all applicable locations without duplicating its report-local ID; comparison-global synthetic Diagnostics use an empty array rather than fabricated provenance. Schema `1.2` makes the field optional so legacy absence means “not reported,” while current producers always emit it; the required public MoonBit record field moves the module to `0.3.0`.

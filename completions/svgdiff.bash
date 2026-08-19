@@ -3,13 +3,13 @@ _svgdiff() {
   COMPREPLY=()
   current=${COMP_WORDS[COMP_CWORD]}
   previous=${COMP_WORDS[COMP_CWORD-1]:-}
-  options='--width --height --max-checkpoints --perceptual-background --flip-pixels-per-degree --flip-error-threshold --before-resource --after-resource --output --html --summary --agent-json --agent-projection --help --version'
+  options='--width --height --max-checkpoints --perceptual-background --flip-pixels-per-degree --flip-error-threshold --before-resource --after-resource --output --html --agent-json --help --version'
 
   case "$previous" in
     --width|--height|--max-checkpoints|--perceptual-background|--flip-pixels-per-degree|--flip-error-threshold)
       return
       ;;
-    --output|--html|--summary)
+    --output|--html)
       COMPREPLY=($(compgen -f -- "$current"))
       return
       ;;

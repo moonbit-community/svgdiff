@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <defs>
-    <mask id="fade" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
-      <rect width="8" height="16" fill="white" fill-opacity="0.75"/>
-    </mask>
-  </defs>
-  <rect id="box" width="16" height="16" fill="blue" mask="url(#fade)"/>
-</svg>

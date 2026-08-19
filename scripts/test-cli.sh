@@ -83,7 +83,7 @@ jq -e '
 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --width 32 --height 24 \
   --output "$tmp/output.json" --html "$tmp/report.html" \
-  --summary "$tmp/summary.md" >"$tmp/output.stdout" 2>"$tmp/output.err"
+  >"$tmp/output.stdout" 2>"$tmp/output.err"
 test ! -s "$tmp/output.stdout"
 test ! -s "$tmp/output.err"
 jq -e '
@@ -95,9 +95,6 @@ grep -q 'sandbox=""' "$tmp/report.html"
 grep -q 'id="report-data"' "$tmp/report.html"
 grep -q '&quot;difference_groups&quot;' "$tmp/report.html"
 ! grep -q '&quot;coverage_matrix&quot;' "$tmp/report.html"
-grep -q '^# SVG Diff Summary$' "$tmp/summary.md"
-diff_id=$(jq -r '.difference_groups[0].items[0].id' "$tmp/output.json")
-grep -F "$diff_id" "$tmp/summary.md" >/dev/null
 
 cat testdata/before.svg | moon run --target native modules/svgdiff/cmd/svgdiff -- \
   - testdata/after.svg >"$tmp/stdin-before.json"
@@ -118,7 +115,6 @@ jq -e '
 moon run --target native modules/svgdiff/cmd/svgdiff -- --help >"$tmp/help.txt"
 grep -q '^Usage: svgdiff ' "$tmp/help.txt"
 grep -q -- '--agent-json' "$tmp/help.txt"
-grep -q -- '--summary <summary>' "$tmp/help.txt"
 
 moon run --target native modules/svgdiff/cmd/svgdiff -- --version >"$tmp/version.txt"
 grep -q '^svgdiff 0.10.0$' "$tmp/version.txt"
@@ -127,17 +123,10 @@ grep -q '^schema: 5.0$' "$tmp/version.txt"
 moon runwasm modules/svgdiff/cmd/svgdiff \
   testdata/before.svg testdata/after.svg \
   --output "$wasi_tmp/report.json" \
-  --html "$wasi_tmp/report.html" \
-  --summary "$wasi_tmp/summary.md"
+  --html "$wasi_tmp/report.html"
 test "$(jq -S -c . "$wasi_tmp/report.json")" = \
   "$(jq -S -c . "$tmp/report.json")"
 grep -q '<!doctype html>' "$wasi_tmp/report.html"
-grep -q '^# SVG Diff Summary$' "$wasi_tmp/summary.md"
-
-moon runwasm modules/svgdiff/cmd/svgdiff \
-  testdata/before.svg testdata/after.svg \
-  --agent-projection --output "$wasi_tmp/report.jsonl"
-grep -q 'svgdiff-agent-projection/2' "$wasi_tmp/report.jsonl"
 
 python3 -c \
   'import base64, pathlib, sys; pathlib.Path(sys.argv[1]).write_bytes(base64.b64decode(sys.argv[2]))' \

@@ -34,14 +34,6 @@ fn diff_control(control : ComparisonControl) -> @control.ComparisonControl {
 }
 
 ///|
-pub fn audit_nonvisual_metadata(
-  before_svg : String,
-  after_svg : String,
-) -> @source.SourceAuditReport {
-  @source.audit_nonvisual_metadata(before_svg, after_svg)
-}
-
-///|
 pub fn compare(
   before_svg : String,
   after_svg : String,

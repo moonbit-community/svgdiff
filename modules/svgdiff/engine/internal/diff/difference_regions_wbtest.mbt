@@ -221,7 +221,7 @@ test "painted boundary distribution reports symmetric nearest-rank statistics" {
     after.set_pixel(x, 1, painted)
   }
   after.set_pixel(30, 1, painted)
-  guard painted_boundary_displacement_distribution(before, after, 1.0)
+  guard painted_boundary_displacement_distribution(before, after)
     is Some(distribution) else {
     fail("expected a boundary distribution")
   }
@@ -231,20 +231,13 @@ test "painted boundary distribution reports symmetric nearest-rank statistics" {
   assert_eq(distribution.mean_css_px, 0.275)
   assert_eq(distribution.p95_css_px, 0.0)
   assert_eq(distribution.max_css_px, 10.0)
-  guard painted_boundary_displacement_distribution(after, before, 1.0)
+  guard painted_boundary_displacement_distribution(after, before)
     is Some(reverse) else {
     fail("expected a reversed boundary distribution")
   }
   assert_eq(reverse.mean_css_px, distribution.mean_css_px)
   assert_eq(reverse.p95_css_px, distribution.p95_css_px)
   assert_eq(reverse.max_css_px, distribution.max_css_px)
-  guard painted_boundary_displacement_distribution(before, after, 2.0)
-    is Some(high_dpr) else {
-    fail("expected a DPR-normalized boundary distribution")
-  }
-  assert_eq(high_dpr.mean_css_px, 0.1375)
-  assert_eq(high_dpr.p95_css_px, 0.0)
-  assert_eq(high_dpr.max_css_px, 5.0)
 }
 
 ///|
@@ -252,7 +245,7 @@ test "painted boundary distribution distinguishes both-empty from one-empty" {
   let empty = @svg.Image::new(4, 4)
   let painted = @svg.Image::new(4, 4)
   painted.set_pixel(1, 1, @svg.Color::rgb(255, 0, 0))
-  guard painted_boundary_displacement_distribution(empty, empty, 1.0)
+  guard painted_boundary_displacement_distribution(empty, empty)
     is Some(distribution) else {
     fail("expected explicit empty-boundary equality")
   }
@@ -262,28 +255,28 @@ test "painted boundary distribution distinguishes both-empty from one-empty" {
   assert_eq(distribution.p95_css_px, 0.0)
   assert_eq(distribution.max_css_px, 0.0)
   assert_true(
-    painted_boundary_displacement_distribution(empty, painted, 1.0) is None,
+    painted_boundary_displacement_distribution(empty, painted) is None,
   )
 }
 
 ///|
-test "painted coverage difference uses alpha only and normalizes CSS area" {
+test "painted coverage difference uses alpha only" {
   let before = @svg.Image::new(2, 1)
   let after = @svg.Image::new(2, 1)
   before.set_pixel(0, 0, @svg.Color::rgba(255, 0, 0, 255))
   before.set_pixel(1, 0, @svg.Color::rgba(0, 0, 255, 128))
   after.set_pixel(0, 0, @svg.Color::rgba(0, 255, 0, 255))
   after.set_pixel(1, 0, @svg.Color::rgba(0, 0, 0, 64))
-  guard painted_coverage_difference(before, after, 2.0) is Some(coverage) else {
+  guard painted_coverage_difference(before, after) is Some(coverage) else {
     fail("expected a painted-coverage difference")
   }
   assert_eq(coverage.method_id, "symmetric_alpha_coverage_l1_over_union/v1")
-  assert_eq(coverage.before_coverage_css_px2, 383.0 / 255.0 / 4.0)
-  assert_eq(coverage.after_coverage_css_px2, 319.0 / 255.0 / 4.0)
-  assert_eq(coverage.absolute_difference_css_px2, 64.0 / 255.0 / 4.0)
-  assert_eq(coverage.union_coverage_css_px2, 383.0 / 255.0 / 4.0)
+  assert_eq(coverage.before_coverage_css_px2, 383.0 / 255.0)
+  assert_eq(coverage.after_coverage_css_px2, 319.0 / 255.0)
+  assert_eq(coverage.absolute_difference_css_px2, 64.0 / 255.0)
+  assert_eq(coverage.union_coverage_css_px2, 383.0 / 255.0)
   assert_eq(coverage.fraction, 64.0 / 383.0)
-  guard painted_coverage_difference(after, before, 2.0) is Some(reverse) else {
+  guard painted_coverage_difference(after, before) is Some(reverse) else {
     fail("expected a reversed painted-coverage difference")
   }
   assert_eq(reverse.before_coverage_css_px2, coverage.after_coverage_css_px2)
@@ -303,7 +296,7 @@ test "painted coverage difference distinguishes equal empty and disjoint support
   let after = @svg.Image::new(2, 1)
   before.set_pixel(0, 0, @svg.Color::rgb(255, 0, 0))
   after.set_pixel(1, 0, @svg.Color::rgb(0, 255, 0))
-  guard painted_coverage_difference(empty, empty, 1.0) is Some(equal) else {
+  guard painted_coverage_difference(empty, empty) is Some(equal) else {
     fail("expected measured empty coverage equality")
   }
   assert_eq(equal.before_coverage_css_px2, 0.0)
@@ -311,7 +304,7 @@ test "painted coverage difference distinguishes equal empty and disjoint support
   assert_eq(equal.absolute_difference_css_px2, 0.0)
   assert_eq(equal.union_coverage_css_px2, 0.0)
   assert_eq(equal.fraction, 0.0)
-  guard painted_coverage_difference(before, after, 1.0) is Some(disjoint) else {
+  guard painted_coverage_difference(before, after) is Some(disjoint) else {
     fail("expected disjoint coverage evidence")
   }
   assert_eq(disjoint.before_coverage_css_px2, 1.0)
@@ -319,7 +312,7 @@ test "painted coverage difference distinguishes equal empty and disjoint support
   assert_eq(disjoint.absolute_difference_css_px2, 2.0)
   assert_eq(disjoint.union_coverage_css_px2, 2.0)
   assert_eq(disjoint.fraction, 1.0)
-  guard painted_coverage_difference(before, empty, 1.0) is Some(one_empty) else {
+  guard painted_coverage_difference(before, empty) is Some(one_empty) else {
     fail("expected one-empty coverage evidence")
   }
   assert_eq(one_empty.fraction, 1.0)

@@ -29,8 +29,8 @@ fn assert_parse_error(args : Array[String], expected? : String) -> Unit raise {
 test "CLI parses paths viewport and output" {
   let config = @cli.parse([
     "svgdiff", "before.svg", "after.svg", "--width", "32", "--height", "24", "--output",
-    "report.json", "--html", "report.html", "--summary", "summary.md", "--agent-json",
-    "--before-resource", "{\"locator\":\"asset.png\",\"media_type\":\"image/png\",\"path\":\"before.png\"}",
+    "report.json", "--html", "report.html", "--agent-json", "--before-resource",
+    "{\"locator\":\"asset.png\",\"media_type\":\"image/png\",\"path\":\"before.png\"}",
     "--before-resource", "{\"locator\":\"mask.png\",\"media_type\":\"image/png\",\"path\":\"before-mask.png\"}",
     "--after-resource", "{\"locator\":\"asset.png\",\"media_type\":\"image/png\",\"path\":\"after.png\"}",
     "--perceptual-background", "#336699", "--flip-pixels-per-degree", "67", "--flip-error-threshold",
@@ -42,9 +42,7 @@ test "CLI parses paths viewport and output" {
   assert_eq(config.height, Some(24))
   assert_eq(config.output_path, Some("report.json"))
   assert_eq(config.html_path, Some("report.html"))
-  assert_eq(config.summary_path, Some("summary.md"))
   assert_true(config.agent_json)
-  assert_false(config.agent_projection)
   assert_eq(config.max_checkpoints, Some(8192))
   assert_eq(config.before_resources.length(), 2)
   assert_eq(config.before_resources[0].locator, "asset.png")
@@ -76,21 +74,7 @@ test "CLI keeps canonical JSON as the default" {
   assert_true(config.width is None)
   assert_true(config.height is None)
   assert_false(config.agent_json)
-  assert_false(config.agent_projection)
-  assert_true(config.summary_path is None)
   assert_true(config.max_checkpoints is None)
-}
-
-///|
-test "CLI selects one lossless Agent projection mode" {
-  let config = @cli.parse([
-    "svgdiff", "before.svg", "after.svg", "--agent-projection",
-  ])
-  assert_false(config.agent_json)
-  assert_true(config.agent_projection)
-  assert_parse_error([
-    "svgdiff", "before.svg", "after.svg", "--agent-json", "--agent-projection",
-  ])
 }
 
 ///|

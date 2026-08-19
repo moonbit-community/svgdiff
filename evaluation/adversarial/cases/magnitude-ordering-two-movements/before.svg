@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <rect id="small" x="1" y="2" width="2" height="2" fill="red"/>
-  <rect id="large" x="9" y="10" width="2" height="2" fill="blue"/>
-</svg>

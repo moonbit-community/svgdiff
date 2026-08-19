@@ -97,20 +97,10 @@ pub fn FlipErrorThreshold::value(self : FlipErrorThreshold) -> Double {
 }
 
 ///|
-/// Rendering and normalization conditions recorded for one comparison.
-///
-/// The root schema `4.0` API accepts caller-provided viewport dimensions,
-/// Perceptual Background, FLIP Viewing Conditions, and FLIP error threshold,
-/// and canonicalizes the
-/// remaining fields to `v1_default`.
+/// Rendering conditions for one comparison.
 pub(all) struct ComparisonProfile {
   viewport_width : Int
   viewport_height : Int
-  comparison_dpr : Double
-  color_interpretation : String
-  raster_representation : String
-  renderer_id : String
-  renderer_conformance_profile_id : String
   perceptual_background : PerceptualBackground?
   flip_viewing_conditions : FlipViewingConditions?
   flip_error_threshold : FlipErrorThreshold?
@@ -121,11 +111,6 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
   let fields : Map[String, Json] = Map([])
   fields["viewport_width"] = self.viewport_width.to_json()
   fields["viewport_height"] = self.viewport_height.to_json()
-  fields["comparison_dpr"] = self.comparison_dpr.to_json()
-  fields["color_interpretation"] = self.color_interpretation.to_json()
-  fields["raster_representation"] = self.raster_representation.to_json()
-  fields["renderer_id"] = self.renderer_id.to_json()
-  fields["renderer_conformance_profile_id"] = self.renderer_conformance_profile_id.to_json()
   fields["perceptual_background"] = nullable_report_value(
     self.perceptual_background,
   )
@@ -139,7 +124,7 @@ pub impl ToJson for ComparisonProfile with fn to_json(self) {
 }
 
 ///|
-/// Return the fixed schema `4.0` profile with a `16 x 16` viewport.
+/// Return the default profile with a `16 x 16` viewport.
 ///
 /// Callers may copy the record with different positive viewport dimensions,
 /// an explicitly parsed Perceptual Background, invariant-checked FLIP Viewing
@@ -148,11 +133,6 @@ pub fn ComparisonProfile::v1_default() -> ComparisonProfile {
   {
     viewport_width: 16,
     viewport_height: 16,
-    comparison_dpr: 1.0,
-    color_interpretation: "srgb",
-    raster_representation: "linear_srgb_premultiplied_rgba_f64",
-    renderer_id: "svgdiff/residual-paint-normalizer@1+opacity-used-value-normalizer@1+length-unit-normalizer@1+shape-css-points-normalizer@1+stroke-length-normalizer@1+mask-edge-semantics-normalizer@1+isolated-group-compositor@1+static-mask-compositor@1+empty-filter-outcome-adapter@1+static-blend-compositor@1+Milky2018/svg@0.5.2",
-    renderer_conformance_profile_id: "svgdiff-renderer-conformance-profile/29",
     perceptual_background: None,
     flip_viewing_conditions: None,
     flip_error_threshold: None,

@@ -14,12 +14,6 @@ python3 -m http.server 4173 --directory _site
 Open <http://127.0.0.1:4173>. Do not open `web/index.html` directly: Worker and
 WebAssembly loading require an HTTP origin. `_site` is generated and ignored.
 
-Run the real-browser acceptance gate with:
-
-```sh
-sh scripts/test-pages.sh
-```
-
 ## Runtime seams
 
 - `app.js` owns input, profile controls, file/drop admission, page state, and
@@ -29,8 +23,8 @@ sh scripts/test-pages.sh
   decomposition. `examples.js` adds seven pinned real-world or equivalence
   cases with attribution in `THIRD_PARTY_NOTICES.md`. Selecting an example
   performs no network request.
-- `svgdiff-worker.js` is the only browser adapter for the fixed-memory ABI 1
-  transaction. It accepts one complete request with a deterministic checkpoint
+- `svgdiff-worker.js` is the browser adapter for one comparison transaction. It
+  accepts one complete request with a deterministic checkpoint
   budget and returns an envelope containing compact Structured Report JSON and
   the canonical engine-produced Difference raster, or a host error without a
   partial report.
@@ -51,6 +45,6 @@ override.
 
 ## Deployment
 
-`.github/workflows/pages.yml` builds, validates, uploads, and deploys `_site`
+`.github/workflows/pages.yml` builds, uploads, and deploys `_site`
 with GitHub's Pages artifact workflow. Repository maintainers must select
 **GitHub Actions** as the Pages publishing source in repository settings.

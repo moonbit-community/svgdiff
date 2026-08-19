@@ -32,16 +32,13 @@ flag from the runner's flags:
 moon runwasm modules/svgdiff/cmd/svgdiff -- --help
 ```
 
-Inspect the exact engine, schema, renderer, conformance, and policy identities
-before interpreting or retaining a report:
+Inspect the command and report schema versions before retaining a report:
 
 ```sh
 moon runwasm modules/svgdiff/cmd/svgdiff -- --version
 ```
 
-Record this output alongside reports that will be persisted, compared, or
-handed off. The report schema version alone does not identify every
-rendering-related implementation input.
+Record this output alongside reports that will be persisted or handed off.
 
 Useful explicit comparison inputs:
 
