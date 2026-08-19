@@ -9,6 +9,8 @@ import {
 }
 
 // Values
+pub fn canonical_difference_rgba(@svg.Image, @svg.Image) -> Bytes?
+
 pub fn composite_linear_srgb_channel(Int, Double, Int) -> Double
 
 pub fn computed_canvas_perceptual_flip_evidence(Double) -> @model.CanvasPerceptualFlipEvidence
@@ -78,6 +80,18 @@ pub fn to_pixelmatch_image(@svg.Image) -> @pixelmatch.Image
 // Errors
 
 // Types and methods
+pub struct CanonicalRasterCapture {
+  mut pair : CanonicalRasterPair?
+}
+pub fn CanonicalRasterCapture::difference_rgba(Self) -> Bytes?
+pub fn CanonicalRasterCapture::new() -> Self
+pub fn CanonicalRasterCapture::store(Self, @svg.Image, @svg.Image) -> Unit
+
+pub(all) struct CanonicalRasterPair {
+  before : @svg.Image
+  after : @svg.Image
+}
+
 pub(all) struct FlipPixelBounds {
   pixel_x : Int
   pixel_y : Int

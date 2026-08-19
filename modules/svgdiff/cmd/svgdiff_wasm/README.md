@@ -13,9 +13,10 @@ The module exports `memory`, `abi_version`, `transfer_ptr`,
 
 Write one UTF-8 JSON request into `memory` at `transfer_ptr()`, call
 `compare(requestLength)`, then read `result_len()` bytes from the same address.
-Status `0` returns a compact Structured Report JSON document. Status `1`
-returns a UTF-8 host-request error and exposes its numeric kind through
-`result_error_kind()`.
+Status `0` returns a compact JSON envelope containing `report` (the Structured
+Report object) and `difference_rgba_base64` (the canonical engine-produced
+width × height × 4 RGBA Difference bytes). Status `1` returns a UTF-8
+host-request error and exposes its numeric kind through `result_error_kind()`.
 
 ABI version 1 accepts:
 

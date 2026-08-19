@@ -13,13 +13,15 @@ pub fn audit_nonvisual_metadata(String, String) -> @source.SourceAuditReport
 
 pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
+pub fn compare_artifact_with_control_and_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle, @engine.ComparisonControl) -> ComparisonArtifact raise ComparisonInterrupted
+
 pub fn compare_with_control(String, String, @model.ComparisonProfile, @engine.ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
 pub fn compare_with_control_and_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle, @engine.ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
 pub fn compare_with_resources(String, String, @model.ComparisonProfile, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport
 
-pub fn render_html_report(String, String, @model.StructuredReport) -> String
+pub fn render_html_report(String, String, @model.StructuredReport, Bytes?) -> String
 
 pub fn render_markdown_summary(@model.StructuredReport) -> String
 
@@ -30,6 +32,10 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Eq, @debug.Debug)
 
 // Types and methods
+pub(all) struct ComparisonArtifact {
+  report : @model.StructuredReport
+  difference_rgba : Bytes?
+}
 
 // Type aliases
 pub using @model {type AlignmentEvidence}

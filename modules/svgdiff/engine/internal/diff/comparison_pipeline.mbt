@@ -20,6 +20,7 @@ fn compare_without_resource_limits(
   limits : ResourceLimits,
   resources : ComparisonResourceBundles,
   comparison_guard : ComparisonGuard,
+  raster_capture : @rendered.CanonicalRasterCapture?,
 ) -> StructuredReport raise ComparisonInterrupted {
   comparison_guard.checkpoint()
   let preflight_diagnostics : Array[Diagnostic] = []
@@ -126,6 +127,7 @@ fn compare_without_resource_limits(
           resources,
           comparison_guard,
           scene_context,
+          raster_capture,
         )
       }
       let has_embedded_image_alignment = subject_alignments.any(alignment => {
@@ -172,6 +174,7 @@ fn compare_without_resource_limits(
           resources,
           comparison_guard,
           scene_context,
+          raster_capture,
         )
       }
       match
@@ -186,7 +189,7 @@ fn compare_without_resource_limits(
           }
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard, scene_context,
+            limits, resources, comparison_guard, scene_context, raster_capture,
           )
         }
         None => ()
@@ -195,7 +198,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard, scene_context,
+            limits, resources, comparison_guard, scene_context, raster_capture,
           )
         None => ()
       }
@@ -203,7 +206,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard, scene_context,
+            limits, resources, comparison_guard, scene_context, raster_capture,
           )
         None => ()
       }
@@ -211,7 +214,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           return finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard, scene_context,
+            limits, resources, comparison_guard, scene_context, raster_capture,
           )
         None => ()
       }
@@ -222,7 +225,7 @@ fn compare_without_resource_limits(
         Some(report) =>
           finish_report(
             report, preflight_diagnostics, subject_alignments, before_svg, after_svg,
-            limits, resources, comparison_guard, scene_context,
+            limits, resources, comparison_guard, scene_context, raster_capture,
           )
         None =>
           finish_report(
@@ -262,6 +265,7 @@ fn compare_without_resource_limits(
             resources,
             comparison_guard,
             scene_context,
+            raster_capture,
           )
       }
     }
@@ -308,6 +312,7 @@ pub fn compare_with_resources(
       default_resource_limits(),
       { before: before_resources, after: after_resources },
       ComparisonGuard::new(ComparisonControl::unlimited()),
+      None,
     )
   catch {
     _ => abort("unlimited comparison was interrupted")
@@ -331,6 +336,7 @@ pub fn compare_with_control(
     default_resource_limits(),
     ComparisonResourceBundles::empty(),
     ComparisonGuard::new(control),
+    None,
   )
 }
 
@@ -351,5 +357,34 @@ pub fn compare_with_control_and_resources(
     default_resource_limits(),
     { before: before_resources, after: after_resources },
     ComparisonGuard::new(control),
+    None,
   )
+}
+
+///|
+pub(all) struct ComparisonArtifact {
+  report : StructuredReport
+  difference_rgba : Bytes?
+}
+
+///|
+pub fn compare_artifact_with_control_and_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+  control : ComparisonControl,
+) -> ComparisonArtifact raise ComparisonInterrupted {
+  let capture = @rendered.CanonicalRasterCapture::new()
+  let report = compare_with_resource_limits_controlled(
+    before_svg,
+    after_svg,
+    profile,
+    default_resource_limits(),
+    { before: before_resources, after: after_resources },
+    ComparisonGuard::new(control),
+    Some(capture),
+  )
+  { report, difference_rgba: capture.difference_rgba() }
 }

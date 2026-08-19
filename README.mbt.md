@@ -41,6 +41,10 @@ Run the native CLI from the repository root:
 moon run --target native modules/svgdiff/cmd/svgdiff -- before.svg after.svg
 ```
 
+When `--width` and `--height` are omitted, the CLI uses the before SVG root
+`width` and `height` (unitless or `px`), falling back to its `viewBox` size.
+Both options must be supplied together when overriding that viewport.
+
 Set the common comparison viewport or write the report to a file:
 
 ```sh
@@ -66,8 +70,10 @@ Add `--html report.html` to generate a self-contained interactive report with
 side-by-side sandboxed SVG previews, the exact Impact frontier, every Atomic
 Difference, non-null magnitudes, linked events, regions, conservative possible
 causes, Diagnostics, persistent region highlighting, and the complete JSON
-payload. The HTML only presents report evidence; it does not recompute severity,
-visibility, equality, ordering, or causality.
+payload. Its Difference canvas displays the same canonical engine raster pair
+used for report measurements; the browser does not rasterize the SVGs again.
+The HTML does not recompute severity, visibility, equality, ordering, or
+causality.
 
 Add `--summary summary.md` to write a deterministic natural-language orientation
 as a separate Markdown file. The Markdown is derived presentation only: it
@@ -273,7 +279,7 @@ or create severity, visibility, equality, or unique-cause claims.
 
 The typed engine Diagnostics retain `source_locations`: each location names the `before` or `after` SVG and a half-open UTF-16 span. Malformed XML retains the parser's exact error span. The concise JSON deliberately omits source spans and exposes only the condition code, subject, and affected evidence layers in `limitations`.
 
-Scripts, animation, event state, `foreignObject`, selectors outside the documented deterministic static scope, cascade layers and non-author origins, complete CSS tokenization and registered custom properties, system colors, complete path semantics, marker child paint/cascade/context paint, external marker references, path-length calibration, font- or environment-relative lengths, arithmetic length syntax, filter primitives beyond direct static `feOffset`, CSS filter functions, general mask content, CSS image or multi-layer masks, and deterministic font shaping are not currently evaluated. `revert-layer`, malformed or excluded variable syntax, and excessive variable expansion remain explicitly guarded. Local marker attachments and admitted marker lengths are parsed into deterministic placements and conservative clipped envelopes, but marker Chromium fixtures diverge from the pinned renderer and remain guarded. Path data is strictly parsed into normalized absolute segments with authored spans. SVG `transform` lists and root or nested viewport mappings are strictly parsed into cumulative affine matrices; authored declarations remain visible even when mappings are equivalent. Canonical typed transform effects separately report translation, rotation, signed scale, skew, or an exact singular residual matrix. Integer axis-aligned transforms and viewport mappings have accepted browser-conformance fixtures, while general affine rasterization and non-integer viewport mappings remain guarded. Transform events select pixel components through cumulative before/after conservative painted bounds; exact continuous transformed outlines remain deferred. Root intrinsic `width` and `height` never select separate before/after canvases: the profile supplies one common Comparison Viewport. Resource-local transforms and automatic viewport inference remain later roadmap items. Unsupported content is never silently treated as equal.
+Scripts, animation, event state, `foreignObject`, selectors outside the documented deterministic static scope, cascade layers and non-author origins, complete CSS tokenization and registered custom properties, system colors, complete path semantics, marker child paint/cascade/context paint, external marker references, path-length calibration, font- or environment-relative lengths, arithmetic length syntax, filter primitives beyond direct static `feOffset`, CSS filter functions, general mask content, CSS image or multi-layer masks, and deterministic font shaping are not currently evaluated. `revert-layer`, malformed or excluded variable syntax, and excessive variable expansion remain explicitly guarded. Local marker attachments and admitted marker lengths are parsed into deterministic placements and conservative clipped envelopes, but marker Chromium fixtures diverge from the pinned renderer and remain guarded. Path data is strictly parsed into normalized absolute segments with authored spans. SVG `transform` lists and root or nested viewport mappings are strictly parsed into cumulative affine matrices; authored declarations remain visible even when mappings are equivalent. Canonical typed transform effects separately report translation, rotation, signed scale, skew, or an exact singular residual matrix. Integer axis-aligned transforms and viewport mappings have accepted browser-conformance fixtures, while general affine rasterization and non-integer viewport mappings remain guarded. Transform events select pixel components through cumulative before/after conservative painted bounds; exact continuous transformed outlines remain deferred. Root intrinsic `width` and `height` never select separate before/after canvases: the profile supplies one common Comparison Viewport, and the CLI may derive that common viewport from the before SVG. Resource-local transforms and engine-level viewport inference remain later roadmap items. Unsupported content is never silently treated as equal.
 
 The [M5 explicit non-goal coverage gate](evaluation/m5-nongoal-coverage-gate/README.md) keeps deterministic and platform fonts, beyond-sRGB color, multi-renderer comparison, scripts, interaction, animation, `foreignObject`, and generalized external resources explicit without presenting them as current capabilities. Matching unsupported inputs remain partial, and browser or platform observations cannot repair canonical coverage. The separate [M5 adopted-profile environment gate](evaluation/m5-adopted-profile-gate/README.md) proves that the current advanced adopted set is empty and requires implementation, concrete profile, and pinned environment evidence before it can grow.
 

@@ -164,6 +164,7 @@ fn finish_report(
   resources : ComparisonResourceBundles,
   comparison_guard : ComparisonGuard,
   scene_context : @scene.VisualSceneContext?,
+  raster_capture : @rendered.CanonicalRasterCapture?,
 ) -> StructuredReport raise ComparisonInterrupted {
   comparison_guard.checkpoint()
   let (report, extra_alignments) = attach_group_opacity_differences(
@@ -224,6 +225,7 @@ fn finish_report(
   let report = match
     attach_difference_regions(
       report, before_svg, after_svg, rendered_alignments, resources, limits, comparison_guard,
+      raster_capture,
     ) {
     RegionsAttached(report) => report
     AttachmentRegionLimitExceeded =>

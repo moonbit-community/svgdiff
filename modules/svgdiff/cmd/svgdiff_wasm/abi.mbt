@@ -124,10 +124,12 @@ pub fn compare(request_len : Int) -> Int {
     flip_error_threshold: request.flip_error_threshold,
   }
   let should_cancel : () -> Bool = () => false
-  let report = @svgdiff.compare_with_control(
+  let artifact = @svgdiff.compare_artifact_with_control_and_resources(
     request.before_svg,
     request.after_svg,
     profile,
+    @svgdiff.ResourceBundle::empty(),
+    @svgdiff.ResourceBundle::empty(),
     { should_cancel, max_checkpoints: Some(request.max_checkpoints) },
   ) catch {
     CheckpointBudgetExceeded(max_checkpoints~) =>
@@ -138,7 +140,17 @@ pub fn compare(request_len : Int) -> Int {
     Cancelled =>
       return finish_error(error_checkpoint_budget, "comparison cancelled")
   }
-  finish_success(report.to_compact_json_string())
+  let difference_base64 = match artifact.difference_rgba {
+    Some(bytes) => @base64.encode(bytes[:])
+    None => ""
+  }
+  finish_success(
+    "{\"report\":" +
+    artifact.report.to_compact_json_string() +
+    ",\"difference_rgba_base64\":\"" +
+    difference_base64 +
+    "\"}",
+  )
 }
 
 ///|

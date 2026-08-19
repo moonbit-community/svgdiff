@@ -31,8 +31,9 @@ self.addEventListener("message", async (event) => {
   const { id, request } = event.data;
   try {
     const instance = await instancePromise;
-    const reportText = invoke(instance, request);
-    self.postMessage({ id, ok: true, reportText });
+    const result = JSON.parse(invoke(instance, request));
+    const reportText = JSON.stringify(result.report);
+    self.postMessage({ id, ok: true, reportText, differenceRgbaBase64: result.difference_rgba_base64 });
   } catch (error) {
     self.postMessage({ id, ok: false, message: error.message || String(error) });
   }

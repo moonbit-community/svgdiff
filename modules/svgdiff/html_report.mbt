@@ -78,11 +78,14 @@ fn sandbox_document(source : String, width : Int, height : Int) -> String {
 /// The original SVG sources are embedded as sandboxed preview documents. The
 /// supplied Structured Report remains the sole source of classification,
 /// ordering, magnitude, localization, and Diagnostics; this function does not
-/// run comparison again. Review marks and navigation are session-only UI state.
+/// run comparison again. `difference_rgba` is the canonical raster artifact
+/// returned by the comparison that produced `report`. Review marks and
+/// navigation are session-only UI state.
 pub fn render_html_report(
   before_svg : String,
   after_svg : String,
   report : StructuredReport,
+  difference_rgba : Bytes?,
 ) -> String {
   let width = report.profile.viewport_width
   let height = report.profile.viewport_height
@@ -91,6 +94,10 @@ pub fn render_html_report(
   let after_document = sandbox_document(after_svg, width, height)
   let styles = html_report_styles()
   let script = html_report_script()
+  let difference_base64 = match difference_rgba {
+    Some(bytes) => @base64.encode(bytes[:])
+    None => ""
+  }
   let html =
     $|<!doctype html>
     $|<html lang="en"><head><meta charset="utf-8">
@@ -114,8 +121,9 @@ pub fn render_html_report(
     $|<details class="diagnostics-panel"><summary id="diagnostics-summary">Diagnostics</summary><div id="diagnostics"></div></details>
     $|<details class="json-panel"><summary>Raw Report JSON</summary><p class="raw-help">Canonical evidence for programs and text-only Agents. Search, copy, or download it directly.</p><div class="raw-actions"><button type="button" id="copy-json">Copy JSON</button><button type="button" id="download-json">Download JSON</button><span id="raw-status" role="status"></span></div><textarea id="report-data" readonly aria-label="Complete Structured Report JSON">\{report_json}</textarea></details>
     $|</aside></main><script>
+    $|const SVGDIFF_DIFFERENCE_RGBA_BASE64="\{difference_base64}";
     $|\{script}
-    $|SvgdiffReportInspector.mount(document);
+    $|SvgdiffReportInspector.mount(document,{differenceRgbaBase64:SVGDIFF_DIFFERENCE_RGBA_BASE64});
     $|</script></body></html>
   html
 }

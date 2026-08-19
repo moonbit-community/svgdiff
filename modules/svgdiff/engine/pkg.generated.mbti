@@ -12,6 +12,8 @@ pub fn audit_nonvisual_metadata(String, String) -> @source.SourceAuditReport
 
 pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
+pub fn compare_artifact_with_control_and_resources(String, String, @model.ComparisonProfile, ResourceBundle, ResourceBundle, ComparisonControl) -> ComparisonArtifact raise ComparisonInterrupted
+
 pub fn compare_with_control(String, String, @model.ComparisonProfile, ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
 
 pub fn compare_with_control_and_resources(String, String, @model.ComparisonProfile, ResourceBundle, ResourceBundle, ComparisonControl) -> @model.StructuredReport raise ComparisonInterrupted
@@ -25,6 +27,11 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Eq, @debug.Debug)
 
 // Types and methods
+pub(all) struct ComparisonArtifact {
+  report : @model.StructuredReport
+  difference_rgba : Bytes?
+}
+
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
   max_checkpoints : Int?

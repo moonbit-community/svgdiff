@@ -10,6 +10,8 @@ import {
 // Values
 pub fn compare(String, String, @model.ComparisonProfile) -> @model.StructuredReport
 
+pub fn compare_artifact_with_control_and_resources(String, String, @model.ComparisonProfile, @resource_model.ResourceBundle, @resource_model.ResourceBundle, @control.ComparisonControl) -> ComparisonArtifact raise @control.ComparisonInterrupted
+
 pub fn compare_with_control(String, String, @model.ComparisonProfile, @control.ComparisonControl) -> @model.StructuredReport raise @control.ComparisonInterrupted
 
 pub fn compare_with_control_and_resources(String, String, @model.ComparisonProfile, @resource_model.ResourceBundle, @resource_model.ResourceBundle, @control.ComparisonControl) -> @model.StructuredReport raise @control.ComparisonInterrupted
@@ -19,6 +21,10 @@ pub fn compare_with_resources(String, String, @model.ComparisonProfile, @resourc
 // Errors
 
 // Types and methods
+pub(all) struct ComparisonArtifact {
+  report : @model.StructuredReport
+  difference_rgba : Bytes?
+}
 
 // Type aliases
 

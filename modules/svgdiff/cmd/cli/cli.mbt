@@ -28,8 +28,8 @@ pub struct Config {
   summary_path : String?
   agent_json : Bool
   agent_projection : Bool
-  width : Int
-  height : Int
+  width : Int?
+  height : Int?
   perceptual_background : @svgdiff.PerceptualBackground?
   flip_viewing_conditions : @svgdiff.FlipViewingConditions?
   flip_error_threshold : @svgdiff.FlipErrorThreshold?
@@ -120,14 +120,12 @@ fn command(name : String) -> @argparse.Command {
     options=[
       OptionArg(
         "width",
-        about="Comparison viewport width in CSS pixels",
-        default_values=["16"],
+        about="Comparison viewport width in CSS pixels; defaults to the before SVG intrinsic width",
         allow_hyphen_values=true,
       ),
       OptionArg(
         "height",
-        about="Comparison viewport height in CSS pixels",
-        default_values=["16"],
+        about="Comparison viewport height in CSS pixels; defaults to the before SVG intrinsic height",
         allow_hyphen_values=true,
       ),
       OptionArg(
@@ -186,30 +184,32 @@ pub fn parse(args : ArrayView[String]) -> Config raise CliError {
   let matches = @argparse.parse(command(name), argv~, env=Map([])) catch {
     error => raise InvalidArguments(error.to_string())
   }
-  guard matches.values
-    is {
-      "before": [before_path],
-      "after": [after_path],
-      "width": [width_text],
-      "height": [height_text],
-      ..
-    } else {
+  guard matches.values is { "before": [before_path], "after": [after_path], .. } else {
     raise InvalidArguments("Invalid command arguments")
   }
   if before_path == "-" && after_path == "-" {
     raise InvalidArguments("Only one SVG input may use stdin (-)")
   }
-  let width = @string.parse_int(width_text) catch {
-    _ => raise InvalidArguments("--width requires a positive integer")
-  }
-  guard width > 0 else {
-    raise InvalidArguments("--width requires a positive integer")
-  }
-  let height = @string.parse_int(height_text) catch {
-    _ => raise InvalidArguments("--height requires a positive integer")
-  }
-  guard height > 0 else {
-    raise InvalidArguments("--height requires a positive integer")
+  let (width, height) = match
+    (matches.values.get("width"), matches.values.get("height")) {
+    (None, None) => (None, None)
+    (Some([width_text]), Some([height_text])) => {
+      let width = @string.parse_int(width_text) catch {
+        _ => raise InvalidArguments("--width requires a positive integer")
+      }
+      guard width > 0 else {
+        raise InvalidArguments("--width requires a positive integer")
+      }
+      let height = @string.parse_int(height_text) catch {
+        _ => raise InvalidArguments("--height requires a positive integer")
+      }
+      guard height > 0 else {
+        raise InvalidArguments("--height requires a positive integer")
+      }
+      (Some(width), Some(height))
+    }
+    _ =>
+      raise InvalidArguments("--width and --height must be provided together")
   }
   let perceptual_background = matches.values
     .get("perceptual-background")
@@ -319,24 +319,131 @@ pub fn parse(args : ArrayView[String]) -> Config raise CliError {
 }
 
 ///|
+fn svg_intrinsic_length(source : String) -> Double? {
+  let value = source.trim().to_owned()
+  let number = match value.strip_suffix("px") {
+    Some(value) => value.trim().to_owned()
+    None => value
+  }
+  let parsed = @string.parse_double(number) catch { _ => return None }
+  if parsed.is_nan() || parsed.is_inf() || parsed <= 0.0 {
+    None
+  } else {
+    Some(parsed)
+  }
+}
+
+///|
+fn svg_view_box_size(source : String) -> (Double, Double)? {
+  let values : Array[Double] = []
+  for token in source.replace_all(old=",", new=" ").split(" ") {
+    let token = token.trim()
+    if token == "" {
+      continue
+    }
+    let value = @string.parse_double(token) catch { _ => return None }
+    if value.is_nan() || value.is_inf() {
+      return None
+    }
+    values.push(value)
+  }
+  match values {
+    [_, _, width, height] if width > 0.0 && height > 0.0 =>
+      Some((width, height))
+    _ => None
+  }
+}
+
+///|
+fn intrinsic_viewport(before_svg : String) -> (Int, Int)? {
+  let events = @xml.NamespaceReader::from_string(before_svg).read_events_until_eof() catch {
+    _ => return None
+  }
+  for event in events {
+    let element = match event.kind {
+      Start(element) | Empty(element) => element
+      _ => continue
+    }
+    if element.name.local_name != "svg" {
+      return None
+    }
+    let mut width : Double? = None
+    let mut height : Double? = None
+    let mut view_box : (Double, Double)? = None
+    for attribute in element.attributes {
+      match attribute.name.local_name {
+        "width" => width = svg_intrinsic_length(attribute.value)
+        "height" => height = svg_intrinsic_length(attribute.value)
+        "viewBox" => view_box = svg_view_box_size(attribute.value)
+        _ => ()
+      }
+    }
+    let dimensions = match (width, height, view_box) {
+      (Some(width), Some(height), _) => Some((width, height))
+      (_, _, Some(size)) => Some(size)
+      _ => None
+    }
+    return dimensions.map(dimensions => {
+      (dimensions.0.ceil().to_int(), dimensions.1.ceil().to_int())
+    })
+  }
+  None
+}
+
+///|
+fn comparison_profile(
+  before_svg : String,
+  config : Config,
+) -> @svgdiff.ComparisonProfile raise CliError {
+  let (viewport_width, viewport_height) = match (config.width, config.height) {
+    (Some(width), Some(height)) => (width, height)
+    _ =>
+      intrinsic_viewport(before_svg).unwrap_or_else(() => {
+        raise InvalidArguments(
+          "Before SVG does not declare a usable intrinsic viewport; specify --width and --height",
+        )
+      })
+  }
+  {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    viewport_width,
+    viewport_height,
+    perceptual_background: config.perceptual_background,
+    flip_viewing_conditions: config.flip_viewing_conditions,
+    flip_error_threshold: config.flip_error_threshold,
+  }
+}
+
+///|
 pub fn compare_sources(
   before_svg : String,
   after_svg : String,
   config : Config,
   before_resources : @svgdiff.ResourceBundle,
   after_resources : @svgdiff.ResourceBundle,
-) -> @svgdiff.StructuredReport raise @svgdiff.ComparisonInterrupted {
+) -> @svgdiff.StructuredReport raise {
   @svgdiff.compare_with_control_and_resources(
     before_svg,
     after_svg,
-    {
-      ..@svgdiff.ComparisonProfile::v1_default(),
-      viewport_width: config.width,
-      viewport_height: config.height,
-      perceptual_background: config.perceptual_background,
-      flip_viewing_conditions: config.flip_viewing_conditions,
-      flip_error_threshold: config.flip_error_threshold,
-    },
+    comparison_profile(before_svg, config),
+    before_resources,
+    after_resources,
+    { should_cancel: () => false, max_checkpoints: config.max_checkpoints },
+  )
+}
+
+///|
+pub fn compare_sources_with_artifact(
+  before_svg : String,
+  after_svg : String,
+  config : Config,
+  before_resources : @svgdiff.ResourceBundle,
+  after_resources : @svgdiff.ResourceBundle,
+) -> @svgdiff.ComparisonArtifact raise {
+  @svgdiff.compare_artifact_with_control_and_resources(
+    before_svg,
+    after_svg,
+    comparison_profile(before_svg, config),
     before_resources,
     after_resources,
     { should_cancel: () => false, max_checkpoints: config.max_checkpoints },

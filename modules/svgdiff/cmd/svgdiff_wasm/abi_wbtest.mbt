@@ -43,8 +43,15 @@ test "wasm ABI compares two in-memory SVG strings" {
   @debug.assert_eq(compare(length), status_ok)
   @debug.assert_eq(result_error_kind(), error_none)
   match @json.parse(read_test_result()) {
-    { "schema_version": "5.0", "analysis_status": "complete", .. } => ()
-    _ => fail("expected a complete Structured Report")
+    {
+      "report": { "schema_version": "5.0", "analysis_status": "complete", .. },
+      "difference_rgba_base64": String(difference),
+      ..
+    } => assert_true(difference.length() > 0)
+    _ =>
+      fail(
+        "expected a complete Structured Report and canonical Difference raster",
+      )
   }
 }
 
@@ -56,11 +63,14 @@ test "wasm ABI applies explicit viewport dimensions" {
   @debug.assert_eq(compare(length), status_ok)
   match @json.parse(read_test_result()) {
     {
-      "comparison": {
-        "viewport": { "width": 32, "height": 24, .. },
-        "perceptual_background": { "red": 51, "green": 102, "blue": 153, .. },
-        "flip_pixels_per_degree": 60,
-        "flip_error_threshold": 0.05,
+      "report": {
+        "comparison": {
+          "viewport": { "width": 32, "height": 24, .. },
+          "perceptual_background": { "red": 51, "green": 102, "blue": 153, .. },
+          "flip_pixels_per_degree": 60,
+          "flip_error_threshold": 0.05,
+          ..
+        },
         ..
       },
       ..
@@ -87,8 +97,13 @@ test "wasm ABI accepts an explicit raw transparent profile" {
   @debug.assert_eq(compare(request), status_ok)
   let result = read_test_result()
   match @json.parse(result) {
-    { "comparison": { "viewport": { "width": 16, "height": 16, .. }, .. }, .. } =>
-      ()
+    {
+      "report": {
+        "comparison": { "viewport": { "width": 16, "height": 16, .. }, .. },
+        ..
+      },
+      ..
+    } => ()
     _ => fail("expected an explicit raw transparent comparison profile")
   }
   assert_false(result.contains("perceptual_background"))

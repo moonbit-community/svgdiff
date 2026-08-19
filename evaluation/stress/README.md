@@ -28,21 +28,21 @@ deletion, and changes limited to layout, effective style, and representation:
 sh scripts/test-visual-scene.sh
 ```
 
-Run a deliberately coarse diagnostic comparison with:
+Run the comparison at the before SVG intrinsic viewport with:
 
 ```sh
 moon run --target native modules/svgdiff/cmd/svgdiff -- \
   evaluation/stress/cases/banking-domain-cross-generator/before.svg \
   evaluation/stress/cases/banking-domain-cross-generator/after.svg \
-  --width 16 --height 16 \
   --agent-json \
   --output /tmp/svgdiff-banking.json \
   --html /tmp/svgdiff-banking.html
 ```
 
-The small observation viewport limits raster work but does not reduce source
-semantic analysis. Do not add this case to a routine suite without defining
-explicit time, memory, report-size, and interaction acceptance criteria.
+The CLI resolves this fixture to `892 x 906`; an explicit paired viewport can
+still be supplied for a separate profile. Do not add this case to a routine
+suite without defining explicit time, memory, report-size, and interaction
+acceptance criteria.
 
 ### Diagnostic baseline
 
@@ -50,6 +50,12 @@ The 2026-08-18 native diagnostic run produced 891 Atomic Differences, 216
 Visual Events, and 506 top-level Diagnostics. The `16 x 16` compact report was
 692 KB; the `256 x 256` compact report was 1.09 MB with 1,801 Regions. These
 figures are observations, not compatibility assertions.
+
+The 2026-08-19 intrinsic-viewport run completed in about 40 seconds locally. It
+produced a 2.6 MB compact report with viewport `892 x 906`, 688 Atomic
+Differences, 196 Visual Events, 506 Diagnostics, and a computed canvas response
+of 133,113 changed pixels (about 16.47%). The self-contained HTML was 10 MB,
+including the exact engine-produced Difference raster used by the report run.
 
 The case originally exposed two scaling defects. Comparison-wide Cause
 Envelopes repeated all 506 Diagnostic IDs for every Region, making the coarse

@@ -117,6 +117,12 @@ pub(all) suberror ComparisonInterrupted {
 } derive(Debug, Eq)
 
 ///|
+pub(all) struct ComparisonArtifact {
+  report : StructuredReport
+  difference_rgba : Bytes?
+}
+
+///|
 /// Compare two deterministic static SVG sources under one schema `4.0` profile.
 ///
 /// The two SVG strings are analyzed under a shared viewport. The root API
@@ -209,5 +215,42 @@ pub fn compare_with_control_and_resources(
       raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
     report => { ..report, schema_version: "5.0" }
+  }
+}
+
+///|
+/// Compare explicit resources and return the canonical raster difference used
+/// by rendered measurements together with the Structured Report.
+pub fn compare_artifact_with_control_and_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+  control : ComparisonControl,
+) -> ComparisonArtifact raise ComparisonInterrupted {
+  let canonical_profile = {
+    ..ComparisonProfile::v1_default(),
+    viewport_width: profile.viewport_width,
+    viewport_height: profile.viewport_height,
+    perceptual_background: profile.perceptual_background,
+    flip_viewing_conditions: profile.flip_viewing_conditions,
+    flip_error_threshold: profile.flip_error_threshold,
+  }
+  try
+    @engine.compare_artifact_with_control_and_resources(
+      before_svg, after_svg, canonical_profile, before_resources, after_resources,
+      control,
+    )
+  catch {
+    Cancelled => raise Cancelled
+    CheckpointBudgetExceeded(max_checkpoints~) =>
+      raise CheckpointBudgetExceeded(max_checkpoints~)
+  } noraise {
+    artifact =>
+      {
+        report: { ..artifact.report, schema_version: "5.0" },
+        difference_rgba: artifact.difference_rgba,
+      }
   }
 }

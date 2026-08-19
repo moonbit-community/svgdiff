@@ -202,7 +202,7 @@ function createWorker() {
     if (!pending || event.data.id !== pending.id) return;
     const current = pending;
     pending = null;
-    if (event.data.ok) current.resolve(event.data.reportText);
+    if (event.data.ok) current.resolve({ reportText: event.data.reportText, differenceRgbaBase64: event.data.differenceRgbaBase64 });
     else current.reject(new Error(event.data.message));
   });
   next.addEventListener("error", (event) => {
@@ -267,7 +267,7 @@ function comparisonRequest() {
   };
 }
 
-function renderReport(report, reportText) {
+function renderReport(report, reportText, differenceRgbaBase64) {
   const fragment = elements.reportTemplate.content.cloneNode(true);
   elements.resultRoot.replaceChildren(fragment);
   elements.resultRoot.style.setProperty("--canvas-ratio", `${report.comparison.viewport.width}/${report.comparison.viewport.height}`);
@@ -275,7 +275,7 @@ function renderReport(report, reportText) {
   frames[0].srcdoc = previewDocument(elements.beforeSource.value, report.comparison.viewport.width, report.comparison.viewport.height);
   frames[1].srcdoc = previewDocument(elements.afterSource.value, report.comparison.viewport.width, report.comparison.viewport.height);
   elements.resultRoot.querySelector("#report-data").value = JSON.stringify(report, null, 2);
-  window.SvgdiffReportInspector.mount(elements.resultRoot);
+  window.SvgdiffReportInspector.mount(elements.resultRoot, { differenceRgbaBase64 });
   elements.resultSection.hidden = false;
   elements.resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
   elements.resultRoot.dataset.compactReportBytes = String(new TextEncoder().encode(reportText).length);
@@ -297,9 +297,9 @@ async function compare() {
     const request = comparisonRequest();
     setComparing(true);
     setStatus("Comparing in a dedicated Web Worker…", "running");
-    const reportText = await runInWorker(request);
+    const { reportText, differenceRgbaBase64 } = await runInWorker(request);
     const report = JSON.parse(reportText);
-    renderReport(report, reportText);
+    renderReport(report, reportText, differenceRgbaBase64);
     const differenceCount = report.difference_groups.reduce((count, group) => count + group.items.length, 0);
     const perceptual = typeof report.canvas?.perceptual_difference === "number" ? "three canvas scores computed" : "perceptual score not requested";
     setStatus(`Complete browser transaction: ${report.analysis_status} report, ${differenceCount} Atomic Differences, ${perceptual}.`, "");

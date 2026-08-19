@@ -9,7 +9,9 @@ import {
 }
 
 // Values
-pub fn compare_sources(String, String, Config, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport raise @svgdiff.ComparisonInterrupted
+pub fn compare_sources(String, String, Config, @engine.ResourceBundle, @engine.ResourceBundle) -> @model.StructuredReport raise
+
+pub fn compare_sources_with_artifact(String, String, Config, @engine.ResourceBundle, @engine.ResourceBundle) -> @svgdiff.ComparisonArtifact raise
 
 pub fn parse(ArrayView[String]) -> Config raise CliError
 
@@ -29,8 +31,8 @@ pub struct Config {
   summary_path : String?
   agent_json : Bool
   agent_projection : Bool
-  width : Int
-  height : Int
+  width : Int?
+  height : Int?
   perceptual_background : @model.PerceptualBackground?
   flip_viewing_conditions : @model.FlipViewingConditions?
   flip_error_threshold : @model.FlipErrorThreshold?

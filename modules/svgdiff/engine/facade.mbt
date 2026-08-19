@@ -108,3 +108,27 @@ pub fn compare_with_control_and_resources(
       raise CheckpointBudgetExceeded(max_checkpoints~)
   }
 }
+
+///|
+pub fn compare_artifact_with_control_and_resources(
+  before_svg : String,
+  after_svg : String,
+  profile : @model.ComparisonProfile,
+  before_resources : ResourceBundle,
+  after_resources : ResourceBundle,
+  control : ComparisonControl,
+) -> ComparisonArtifact raise ComparisonInterrupted {
+  let artifact = @diff.compare_artifact_with_control_and_resources(
+    before_svg,
+    after_svg,
+    profile,
+    diff_bundle(before_resources),
+    diff_bundle(after_resources),
+    diff_control(control),
+  ) catch {
+    Cancelled => raise Cancelled
+    CheckpointBudgetExceeded(max_checkpoints~) =>
+      raise CheckpointBudgetExceeded(max_checkpoints~)
+  }
+  { report: artifact.report, difference_rgba: artifact.difference_rgba }
+}

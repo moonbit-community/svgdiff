@@ -592,7 +592,7 @@ test "HTML report is self contained and binds report regions" {
     after,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  let html = @svgdiff.render_html_report(before, after, report)
+  let html = @svgdiff.render_html_report(before, after, report, None)
   assert_true(html.find("<!doctype html>") is Some(_))
   assert_true(html.find("sandbox=\"\"") is Some(_))
   assert_true(html.find("default-src &#39;none&#39;") is Some(_))
@@ -609,10 +609,14 @@ test "HTML report is self contained and binds report regions" {
   assert_true(
     html.find("RGB channel difference; black pixels are equal") is Some(_),
   )
-  assert_true(html.find("data:image/svg+xml") is Some(_))
-  assert_true(html.find("encodeURI(source).replace(/#/g,'%23')") is Some(_))
-  assert_true(html.find("URL.createObjectURL(new Blob([source]") is None)
-  assert_true(html.find("before[index]===after[index]?0:255") is Some(_))
+  assert_true(html.find("SVGDIFF_DIFFERENCE_RGBA_BASE64=") is Some(_))
+  assert_true(
+    html.find("differenceRgbaBase64:SVGDIFF_DIFFERENCE_RGBA_BASE64") is Some(_),
+  )
+  assert_true(html.find("atob(encoded)") is Some(_))
+  assert_true(html.find("new Image()") is None)
+  assert_true(html.find("drawImage(") is None)
+  assert_true(html.find("previewSvgSource") is None)
   assert_true(html.find("(value*100).toFixed(2)") is Some(_))
   assert_true(html.find("Not measured") is Some(_))
   assert_true(html.find("Visual object conclusion") is Some(_))
@@ -642,6 +646,42 @@ test "HTML report is self contained and binds report regions" {
 }
 
 ///|
+test "comparison artifact preserves the canonical rendered Difference" {
+  let before = "<svg width='4' height='4'><rect width='4' height='4' fill='red'/></svg>"
+  let after = "<svg width='4' height='4'><rect width='4' height='4' fill='blue'/></svg>"
+  let profile = {
+    ..@svgdiff.ComparisonProfile::v1_default(),
+    viewport_width: 4,
+    viewport_height: 4,
+  }
+  let artifact = @svgdiff.compare_artifact_with_control_and_resources(
+    before,
+    after,
+    profile,
+    @svgdiff.ResourceBundle::empty(),
+    @svgdiff.ResourceBundle::empty(),
+    @svgdiff.ComparisonControl::unlimited(),
+  )
+  guard artifact.difference_rgba is Some(difference) else {
+    fail("expected canonical Difference bytes")
+  }
+  assert_eq(difference.length(), 4 * 4 * 4)
+  assert_eq(difference[0].to_int(), 255)
+  assert_eq(difference[1].to_int(), 0)
+  assert_eq(difference[2].to_int(), 255)
+  assert_eq(difference[3].to_int(), 255)
+  let html = @svgdiff.render_html_report(
+    before,
+    after,
+    artifact.report,
+    Some(difference),
+  )
+  assert_true(
+    html.find("differenceRgbaBase64:SVGDIFF_DIFFERENCE_RGBA_BASE64") is Some(_),
+  )
+}
+
+///|
 test "HTML report escapes textarea termination in source evidence" {
   let source = "<svg width='16' height='16'><rect data-note='</textarea><script>bad()</script>'/></svg>"
   let report = @svgdiff.compare(
@@ -649,7 +689,7 @@ test "HTML report escapes textarea termination in source evidence" {
     source,
     @svgdiff.ComparisonProfile::v1_default(),
   )
-  let html = @svgdiff.render_html_report(source, source, report)
+  let html = @svgdiff.render_html_report(source, source, report, None)
   assert_true(html.find("</textarea><script>bad()") is None)
   assert_true(html.find("&lt;/textarea&gt;") is Some(_))
 }
@@ -685,7 +725,7 @@ test "HTML report presents partial analysis without serialized impact internals"
       ],
     },
   }
-  let html = @svgdiff.render_html_report("<svg/>", "<svg/>", report)
+  let html = @svgdiff.render_html_report("<svg/>", "<svg/>", report, None)
   assert_true(
     html.find("&quot;analysis_status&quot;: &quot;partial&quot;") is Some(_),
   )

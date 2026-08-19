@@ -79,20 +79,29 @@ async fn execute(config : @cli.Config) -> Int noraise {
     let after_svg = read_svg(config.after_path)
     let before_resources = read_resource_bundle(config.before_resources)
     let after_resources = read_resource_bundle(config.after_resources)
-    let report = @cli.compare_sources(
+    let artifact = @cli.compare_sources_with_artifact(
       before_svg, after_svg, config, before_resources, after_resources,
     ) catch {
-      CheckpointBudgetExceeded(max_checkpoints~) => {
+      @lib.CheckpointBudgetExceeded(max_checkpoints~) => {
         write_error(
           "Deterministic checkpoint budget \{max_checkpoints} exhausted",
         )
         return 1
       }
-      Cancelled => {
+      @lib.Cancelled => {
         write_error("Comparison cancelled")
         return 1
       }
+      @cli.InvalidArguments(message) => {
+        write_error(message)
+        return 2
+      }
+      error => {
+        write_error("Command failed: \{error}")
+        return 2
+      }
     }
+    let report = artifact.report
     let json = @cli.serialize_report(report, config)
     match config.output_path {
       Some(path) =>
@@ -108,7 +117,15 @@ async fn execute(config : @cli.Config) -> Int noraise {
     }
     match config.html_path {
       Some(path) =>
-        write_file(path, @lib.render_html_report(before_svg, after_svg, report))
+        write_file(
+          path,
+          @lib.render_html_report(
+            before_svg,
+            after_svg,
+            report,
+            artifact.difference_rgba,
+          ),
+        )
       None => ()
     }
     match config.summary_path {

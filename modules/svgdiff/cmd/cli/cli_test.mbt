@@ -38,8 +38,8 @@ test "CLI parses paths viewport and output" {
   ])
   assert_eq(config.before_path, "before.svg")
   assert_eq(config.after_path, "after.svg")
-  assert_eq(config.width, 32)
-  assert_eq(config.height, 24)
+  assert_eq(config.width, Some(32))
+  assert_eq(config.height, Some(24))
   assert_eq(config.output_path, Some("report.json"))
   assert_eq(config.html_path, Some("report.html"))
   assert_eq(config.summary_path, Some("summary.md"))
@@ -73,6 +73,8 @@ test "CLI parses paths viewport and output" {
 ///|
 test "CLI keeps canonical JSON as the default" {
   let config = @cli.parse(["svgdiff", "before.svg", "after.svg"])
+  assert_true(config.width is None)
+  assert_true(config.height is None)
   assert_false(config.agent_json)
   assert_false(config.agent_projection)
   assert_true(config.summary_path is None)
@@ -109,7 +111,15 @@ test "CLI rejects missing and invalid arguments" {
   assert_parse_error(["svgdiff"])
   assert_parse_error(
     ["svgdiff", "a.svg", "b.svg", "--width", "0"],
-    expected="--width requires a positive integer",
+    expected="--width and --height must be provided together",
+  )
+  assert_parse_error(
+    ["svgdiff", "a.svg", "b.svg", "--width", "1", "--height", "0"],
+    expected="--height requires a positive integer",
+  )
+  assert_parse_error(
+    ["svgdiff", "a.svg", "b.svg", "--height", "1"],
+    expected="--width and --height must be provided together",
   )
   assert_parse_error(["svgdiff", "a.svg", "b.svg", "--unknown", "x"])
   assert_parse_error(
@@ -183,4 +193,56 @@ test "shared CLI comparison emits selected Agent JSON" {
   assert_true(json.contains("\"events\""))
   assert_true(json.contains("\"limitations\""))
   assert_false(json.contains("\n"))
+}
+
+///|
+test "CLI comparison uses the before SVG intrinsic pixel viewport" {
+  let config = @cli.parse(["svgdiff", "before.svg", "after.svg"])
+  let before = "<svg width='892px' height='906px'><rect width='1' height='1'/></svg>"
+  let report = @cli.compare_sources(
+    before,
+    before,
+    config,
+    @svgdiff.ResourceBundle::empty(),
+    @svgdiff.ResourceBundle::empty(),
+  )
+  assert_eq(report.profile.viewport_width, 892)
+  assert_eq(report.profile.viewport_height, 906)
+}
+
+///|
+test "CLI comparison falls back to the before SVG viewBox" {
+  let config = @cli.parse(["svgdiff", "before.svg", "after.svg"])
+  let before = "<svg viewBox='0 0 40 24'><rect width='1' height='1'/></svg>"
+  let report = @cli.compare_sources(
+    before,
+    before,
+    config,
+    @svgdiff.ResourceBundle::empty(),
+    @svgdiff.ResourceBundle::empty(),
+  )
+  assert_eq(report.profile.viewport_width, 40)
+  assert_eq(report.profile.viewport_height, 24)
+}
+
+///|
+test "CLI comparison requires an explicit viewport when the SVG has none" {
+  let config = @cli.parse(["svgdiff", "before.svg", "after.svg"])
+  try
+    @cli.compare_sources(
+      "<svg><rect width='1' height='1'/></svg>",
+      "<svg><rect width='1' height='1'/></svg>",
+      config,
+      @svgdiff.ResourceBundle::empty(),
+      @svgdiff.ResourceBundle::empty(),
+    )
+  catch {
+    @cli.InvalidArguments(message) =>
+      assert_eq(
+        message, "Before SVG does not declare a usable intrinsic viewport; specify --width and --height",
+      )
+    _ => fail("expected InvalidArguments")
+  } noraise {
+    _ => fail("expected intrinsic viewport resolution to fail")
+  }
 }

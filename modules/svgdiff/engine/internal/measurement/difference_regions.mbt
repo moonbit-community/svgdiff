@@ -1346,6 +1346,7 @@ pub fn attach_difference_regions(
   resources : ComparisonResourceBundles,
   limits : ResourceLimits,
   comparison_guard : ComparisonGuard,
+  raster_capture : @rendered.CanonicalRasterCapture?,
 ) -> DifferenceRegionAttachment raise ComparisonInterrupted {
   comparison_guard.checkpoint()
   let before = extract_source_subjects_with_profile_or_raise(
@@ -1397,6 +1398,11 @@ pub fn attach_difference_regions(
     ) {
     (Some(before_image), Some(after_image)) => Some((before_image, after_image))
     _ => None
+  }
+  match (raster_capture, rendered_images) {
+    (Some(capture), Some((before_image, after_image))) =>
+      capture.store(before_image, after_image)
+    _ => ()
   }
   let pixel_regions = match rendered_images {
     Some((before_image, after_image)) =>

@@ -334,6 +334,7 @@ fn compare_with_resource_limits_controlled(
   limits : ResourceLimits,
   resources : ComparisonResourceBundles,
   comparison_guard : ComparisonGuard,
+  raster_capture : @rendered.CanonicalRasterCapture?,
 ) -> StructuredReport raise ComparisonInterrupted {
   comparison_guard.checkpoint()
   match raster_limit(profile, limits) {
@@ -381,6 +382,7 @@ fn compare_with_resource_limits_controlled(
   }
   let report = compare_without_resource_limits(
     before_semantic_input, after_semantic_input, profile, limits, resources, comparison_guard,
+    raster_capture,
   )
   comparison_guard.checkpoint()
   let report = enforce_output_resource_limits(report, limits)
@@ -403,6 +405,7 @@ fn compare_with_resource_limits(
       limits,
       ComparisonResourceBundles::empty(),
       ComparisonGuard::new(ComparisonControl::unlimited()),
+      None,
     )
   catch {
     _ => abort("unlimited comparison was interrupted")

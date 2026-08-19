@@ -101,6 +101,12 @@ pub fn ComparisonControl::unlimited() -> ComparisonControl {
 }
 
 ///|
+pub(all) struct ComparisonArtifact {
+  report : StructuredReport
+  difference_rgba : Bytes?
+}
+
+///|
 pub(all) suberror ComparisonInterrupted {
   Cancelled
   CheckpointBudgetExceeded(max_checkpoints~ : Int)

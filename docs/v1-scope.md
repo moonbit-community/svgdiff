@@ -26,7 +26,7 @@ The [terminal multidimensional magnitude gate](../evaluation/terminal-magnitude-
 
 | Condition | Current behavior |
 | --- | --- |
-| Viewport | One explicit width and height shared by both inputs. CLI default: `16 x 16`. |
+| Viewport | One width and height shared by both inputs. The library requires an explicit profile; the CLI derives omitted dimensions from the before SVG intrinsic size and accepts a paired explicit override. |
 | DPR | Fixed to `1.0`. |
 | Color interpretation | sRGB for the supported color slice. |
 | Raster arithmetic | Canonical numeric error uses linear-sRGB premultiplied RGBA; renderer-native RGBA8 RMSE is also retained. |
@@ -138,7 +138,7 @@ V1 does not completely analyze:
 - generalized URL/base resolution, request/response snapshots, recursive external closure, and prefetch acquisition; the accepted [Resource Snapshot Bundle boundary](general-resource-snapshot-bundles.md) preserves current opaque raster behavior and defines future offline artifacts without implementing them;
 - complete path semantics, including exact arc/continuous-curve bounds and continuous boundary distance, and browser-conformant stroke and paint evaluation; normalized path points and non-arc control hulls participate in device-space correspondence only, while the current bounded isolated alpha-boundary and coverage measurements remain raster observations;
 - exact continuous transformed outlines beyond the cumulative conservative painted bounds now used to select event-local pixel components;
-- automatic Comparison Viewport derivation, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, or dynamic viewport variants; object-bounding-box coordinates are implemented only for static gradient consumers and admitted numeric rectangular clip or mask coordinates;
+- engine-level Comparison Viewport derivation beyond the CLI root `width`/`height` or `viewBox` adapter, CSS sizing/cascade for SVG viewport properties, font/environment-relative lengths, arithmetic length functions, or dynamic viewport variants; object-bounding-box coordinates are implemented only for static gradient consumers and admitted numeric rectangular clip or mask coordinates;
 - CSS-layout-dependent basic-shape or stroke lengths, exact continuous transformed stroke outlines, `pathLength` calibration, or exact transform-aware shape masks beyond cumulative conservative painted bounds;
 - selector escapes, namespaces, pseudo-classes/elements, functional selectors, comments, at-rules, non-author cascade origins, layers, scoping, registered custom properties, animation taint, complete CSS tokenization, system palette selection, or custom-property syntax outside the admitted balanced subset; the accepted [interaction-state boundary](interaction-state-profiles.md) defines future typed checkpoint handling without implementing selector support;
 - external or animated gradients, non-sRGB gradient interpolation, patterns, marker child paint/cascade, `context-fill`/`context-stroke`, external marker references, unsupported relative marker lengths, visible marker overflow, embedded SVG images, unbundled or unsupported external images, final raster-image compositing, structural effects outside the admitted aligned-subject and conservative-overlap slice, symbol overflow clipping, external use documents, or dynamic instance-tree behavior;

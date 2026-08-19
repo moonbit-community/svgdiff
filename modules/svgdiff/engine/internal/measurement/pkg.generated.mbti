@@ -8,6 +8,7 @@ import {
   "Milky2018/svgdiff/engine/internal/computed/effects",
   "Milky2018/svgdiff/engine/internal/control",
   "Milky2018/svgdiff/engine/internal/ir",
+  "Milky2018/svgdiff/engine/internal/rendered",
   "Milky2018/svgdiff/engine/internal/resource_model",
   "Milky2018/svgdiff/engine/model",
 }
@@ -21,7 +22,7 @@ pub fn append_path_geometry_differences(@model.SubjectAlignment, @ir.SourceSubje
 
 pub fn attach_difference_magnitudes(@model.StructuredReport, String, String) -> @model.StructuredReport
 
-pub fn attach_difference_regions(@model.StructuredReport, String, String, Array[@model.SubjectAlignment], @resource_model.ComparisonResourceBundles, @resource_model.ResourceLimits, @control.ComparisonGuard) -> DifferenceRegionAttachment raise @control.ComparisonInterrupted
+pub fn attach_difference_regions(@model.StructuredReport, String, String, Array[@model.SubjectAlignment], @resource_model.ComparisonResourceBundles, @resource_model.ResourceLimits, @control.ComparisonGuard, @rendered.CanonicalRasterCapture?) -> DifferenceRegionAttachment raise @control.ComparisonInterrupted
 
 pub fn common_parameter_directional_css_scale(@affine_transform.AffineTransform, @affine_transform.AffineTransform, @computed.SvgLengthDirection) -> Double?
 
