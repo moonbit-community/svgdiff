@@ -5,7 +5,7 @@ how large the rendered change is, where it occurred, and which authored facts
 may have caused it. The JSON report is designed for programs and text-only
 agents; the HTML report provides the same result for people.
 
-Try it online at <https://milky2018.github.io/svgdiff/>.
+Try it online at <https://moonbit-community.github.io/svgdiff/>.
 
 ## CLI
 
