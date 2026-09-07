@@ -1134,7 +1134,7 @@ pub fn attach_gradient_differences(
       ) => id
     ]
     if !ids.is_empty() {
-      events.push({ ..event, atomic_difference_ids: ids })
+      events.push({ ..event, atomic_difference_ids: ids, })
     }
   }
   let groups : Array[GradientDifferenceGroup] = []

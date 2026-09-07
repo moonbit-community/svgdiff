@@ -73,7 +73,7 @@ pub(all) struct CssStylesheetMatch {
 
 ///|
 pub fn empty_css_stylesheet_match() -> CssStylesheetMatch {
-  { candidates: [], complete: true }
+  { candidates: [], complete: true, }
 }
 
 ///|
@@ -243,7 +243,7 @@ fn parse_static_css_selector(source : String) -> CssSelector? {
     if simples.is_empty() {
       return None
     }
-    parts.push({ simples, combinator_to_left })
+    parts.push({ simples, combinator_to_left, })
     let whitespace_end = skip_css_whitespace(selector, position)
     let had_whitespace = whitespace_end > position
     position = whitespace_end
@@ -267,7 +267,7 @@ fn parse_static_css_selector(source : String) -> CssSelector? {
       return None
     }
   }
-  Some({ parts, specificity: { inline_style: 0, ids, classes, types } })
+  Some({ parts, specificity: { inline_style: 0, ids, classes, types, }, })
 }
 
 ///|
@@ -505,7 +505,7 @@ pub fn parse_static_css_document_or_raise(
       _ => ()
     }
   }
-  { nodes, stylesheets, complete: stylesheets.complete }
+  { nodes, stylesheets, complete: stylesheets.complete, }
 }
 
 ///|
@@ -523,7 +523,7 @@ pub fn css_stylesheet_match_for_source(
     }
   }
   if node_index < 0 {
-    return { candidates, complete: false }
+    return { candidates, complete: false, }
   }
   for rule in document.stylesheets.rules {
     match parse_static_css_selector(rule.selector) {
@@ -542,5 +542,5 @@ pub fn css_stylesheet_match_for_source(
       None => complete = false
     }
   }
-  { candidates, complete }
+  { candidates, complete, }
 }

@@ -114,7 +114,12 @@ pub fn resolve_marker_attachments(
     }
     values.push((property, value))
   }
-  { values, effective_facts, invalid_facts, complete: invalid_facts.is_empty() }
+  {
+    values,
+    effective_facts,
+    invalid_facts,
+    complete: invalid_facts.is_empty(),
+  }
 }
 
 ///|
@@ -200,7 +205,7 @@ pub fn marker_empty_content_fact(offset : Int) -> DeclaredVisualFact {
     authored_value: "",
     declared_value: "",
     origin: "resource_content",
-    source_span: { start_offset: offset, end_offset: offset },
+    source_span: { start_offset: offset, end_offset: offset, },
   }
 }
 
@@ -618,7 +623,7 @@ pub fn extract_marker_resources_or_raise(
                 authored_value: content,
                 declared_value: content,
                 origin: "resource_content",
-                source_span: { start_offset, end_offset },
+                source_span: { start_offset, end_offset, },
               }
             }
             None => ()
@@ -661,7 +666,7 @@ pub fn marker_line_segment(
       @math.atan2(end_y - start_y, end_x - start_x) * 180.0 / 3.141592653589793,
     )
   }
-  { end_x, end_y, start_angle: angle, end_angle: angle }
+  { end_x, end_y, start_angle: angle, end_angle: angle, }
 }
 
 ///|
@@ -802,13 +807,17 @@ pub fn marker_subpaths_for_path(
   for evidence in segments {
     match evidence.normalized {
       MoveTo(x, y) => {
-        subpaths.push({ start_x: x, start_y: y, segments: [] })
+        subpaths.push({ start_x: x, start_y: y, segments: [], })
         current_x = x
         current_y = y
       }
       LineTo(x, y) => {
         if subpaths.is_empty() {
-          subpaths.push({ start_x: current_x, start_y: current_y, segments: [] })
+          subpaths.push({
+            start_x: current_x,
+            start_y: current_y,
+            segments: [],
+          })
         }
         subpaths[subpaths.length() - 1].segments.push(
           marker_line_segment(current_x, current_y, x, y),
@@ -818,7 +827,11 @@ pub fn marker_subpaths_for_path(
       }
       CubicTo(x1, y1, x2, y2, x, y) => {
         if subpaths.is_empty() {
-          subpaths.push({ start_x: current_x, start_y: current_y, segments: [] })
+          subpaths.push({
+            start_x: current_x,
+            start_y: current_y,
+            segments: [],
+          })
         }
         subpaths[subpaths.length() - 1].segments.push(
           marker_cubic_segment(current_x, current_y, x1, y1, x2, y2, x, y),
@@ -828,7 +841,11 @@ pub fn marker_subpaths_for_path(
       }
       QuadraticTo(x1, y1, x, y) => {
         if subpaths.is_empty() {
-          subpaths.push({ start_x: current_x, start_y: current_y, segments: [] })
+          subpaths.push({
+            start_x: current_x,
+            start_y: current_y,
+            segments: [],
+          })
         }
         subpaths[subpaths.length() - 1].segments.push(
           marker_quadratic_segment(current_x, current_y, x1, y1, x, y),
@@ -838,7 +855,11 @@ pub fn marker_subpaths_for_path(
       }
       ArcTo(rx, ry, rotation, large, sweep, x, y) => {
         if subpaths.is_empty() {
-          subpaths.push({ start_x: current_x, start_y: current_y, segments: [] })
+          subpaths.push({
+            start_x: current_x,
+            start_y: current_y,
+            segments: [],
+          })
         }
         match
           marker_arc_segment(
@@ -955,7 +976,7 @@ pub fn marker_rounded_rect_subpath(
       None => ()
     }
   }
-  { start_x, start_y, segments }
+  { start_x, start_y, segments, }
 }
 
 ///|
@@ -989,7 +1010,7 @@ pub fn marker_ellipse_subpath(
     previous_x = point.0
     previous_y = point.1
   }
-  { start_x, start_y, segments }
+  { start_x, start_y, segments, }
 }
 
 ///|
@@ -1139,7 +1160,7 @@ pub fn marker_vertices_for_subject(
   let vertices : Array[MarkerVertex] = []
   for subpath in marker_subpaths_for_subject(subject) {
     if subpath.segments.is_empty() {
-      vertices.push({ x: subpath.start_x, y: subpath.start_y, auto_angle: 0.0 })
+      vertices.push({ x: subpath.start_x, y: subpath.start_y, auto_angle: 0.0, })
       continue
     }
     let first_outgoing = marker_effective_start_angle(subpath.segments, 0)
@@ -1159,7 +1180,7 @@ pub fn marker_vertices_for_subject(
       } else {
         incoming
       }
-      vertices.push({ x: segment.end_x, y: segment.end_y, auto_angle: angle })
+      vertices.push({ x: segment.end_x, y: segment.end_y, auto_angle: angle, })
     }
   }
   vertices
@@ -1197,7 +1218,7 @@ pub fn marker_placement_bounds(
   width : Double,
   height : Double,
 ) -> CssBounds {
-  transform_bounds({ x: 0.0, y: 0.0, width, height }, transform)
+  transform_bounds({ x: 0.0, y: 0.0, width, height, }, transform)
 }
 
 ///|

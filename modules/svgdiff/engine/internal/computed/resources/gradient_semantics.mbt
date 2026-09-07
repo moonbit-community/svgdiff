@@ -141,7 +141,7 @@ pub fn gradient_source_attribute(
   attribute : @xml.NamespaceAttribute,
   property : String,
 ) -> GradientAttributeSource {
-  { name: property, fact: presentation_fact(input, property, attribute) }
+  { name: property, fact: presentation_fact(input, property, attribute), }
 }
 
 ///|
@@ -251,7 +251,7 @@ pub fn push_gradient_issue(
         )
       })
     }) {
-    issues.push({ code, subject_id, fact })
+    issues.push({ code, subject_id, fact, })
   }
 }
 
@@ -420,7 +420,7 @@ pub fn extract_gradient_document_or_raise(
       }
     }
   }
-  { profile, hierarchy, gradients, issues }
+  { profile, hierarchy, gradients, issues, }
 }
 
 ///|
@@ -634,7 +634,7 @@ pub fn computed_gradient_stop(
         host.subject_id,
         color_resolution.reported.declaration,
       )
-      { red: 0, green: 0, blue: 0, alpha: 1.0 }
+      { red: 0, green: 0, blue: 0, alpha: 1.0, }
     }
   }
   let stop_opacity = match
@@ -693,7 +693,7 @@ pub fn gradient_field(
   fact : DeclaredVisualFact?,
   complete : Bool,
 ) -> ComputedGradientField {
-  { name, value, number, fact, complete }
+  { name, value, number, fact, complete, }
 }
 
 ///|
@@ -891,7 +891,7 @@ pub fn gradient_coordinate_transform(
   }
   let bounds = subject
     .map(source_subject_geometry_bounds)
-    .unwrap_or(Some({ x: 0.0, y: 0.0, width: 1.0, height: 1.0 }))
+    .unwrap_or(Some({ x: 0.0, y: 0.0, width: 1.0, height: 1.0, }))
   match bounds {
     Some(bounds) => {
       let implicit = AffineTransform::translate(bounds.x, bounds.y).multiply(
@@ -934,7 +934,7 @@ pub fn resolve_computed_gradient(
     "gradient_spread_method_syntax_unsupported",
   )
   let length_viewport : ViewportContext = if units.value == "objectBoundingBox" {
-    { width: 1.0, height: 1.0 }
+    { width: 1.0, height: 1.0, }
   } else {
     subject
     .map(subject => subject.viewport)

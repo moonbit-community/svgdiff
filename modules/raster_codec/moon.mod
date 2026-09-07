@@ -1,6 +1,6 @@
 name = "Milky2018/svgdiff-raster-codec"
 
-version = "0.1.1"
+version = "0.1.2"
 
 readme = "README.mbt.md"
 
@@ -13,9 +13,5 @@ preferred_target = "native"
 description = "Bounded PNG and baseline JPEG decoding for svgdiff embedded resources."
 
 import {
-  "mizchi/zlib@0.4.6",
+  "mizchi/zlib@0.4.9",
 }
-
-options(
-  exclude: [ "*_test.mbt", "*_wbtest.mbt" ],
-)

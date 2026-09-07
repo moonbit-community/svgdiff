@@ -71,7 +71,7 @@ pub fn visual_semantic_input(input : String) -> String {
   if spans.is_empty() {
     return input
   }
-  let output = StringBuilder::new()
+  let output = StringBuilder()
   let mut cursor = 0
   for span in spans {
     output.write_string(

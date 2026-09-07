@@ -140,7 +140,7 @@ fn blend_append_dependency_facts(
       if fact.id == fact_id {
         let merged = fact.affected_subject_ids.copy()
         append_unique_subjects(merged, affected_subject_ids)
-        changed_facts[index] = { ..fact, affected_subject_ids: merged }
+        changed_facts[index] = { ..fact, affected_subject_ids: merged, }
         found = true
         break
       }

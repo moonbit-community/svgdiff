@@ -81,7 +81,7 @@ pub fn compare_with_resources(
   let report = @engine.compare_with_resources(
     before_svg, after_svg, profile, before_resources, after_resources,
   )
-  { ..report, schema_version: "5.0" }
+  { ..report, schema_version: "5.0", }
 }
 
 ///|
@@ -114,7 +114,7 @@ pub fn compare(
   profile : ComparisonProfile,
 ) -> StructuredReport {
   let report = @engine.compare(before_svg, after_svg, profile)
-  { ..report, schema_version: "5.0" }
+  { ..report, schema_version: "5.0", }
 }
 
 ///|
@@ -136,7 +136,7 @@ pub fn compare_with_control(
     CheckpointBudgetExceeded(max_checkpoints~) =>
       raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
-    report => { ..report, schema_version: "5.0" }
+    report => { ..report, schema_version: "5.0", }
   }
 }
 
@@ -159,7 +159,7 @@ pub fn compare_with_control_and_resources(
     CheckpointBudgetExceeded(max_checkpoints~) =>
       raise CheckpointBudgetExceeded(max_checkpoints~)
   } noraise {
-    report => { ..report, schema_version: "5.0" }
+    report => { ..report, schema_version: "5.0", }
   }
 }
 
@@ -185,7 +185,7 @@ pub fn compare_artifact_with_control_and_resources(
   } noraise {
     artifact =>
       {
-        report: { ..artifact.report, schema_version: "5.0" },
+        report: { ..artifact.report, schema_version: "5.0", },
         difference_rgba: artifact.difference_rgba,
       }
   }

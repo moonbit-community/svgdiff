@@ -52,7 +52,7 @@ pub fn parse_stroke_dasharray_with_context(
   viewport : ViewportContext,
   profile : ComparisonProfile,
 ) -> (Array[Double], Bool) {
-  let parser : NumberParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0, }
   let values : Array[Double] = []
   ignore(parser.skip_whitespace())
   if parser.position == source.length() {

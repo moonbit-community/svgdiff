@@ -143,7 +143,7 @@ pub fn compact_embedded_image_href_fact(
 ) -> DeclaredVisualFact? {
   fact.map(value => {
     let summary = embedded_image_href_summary(raster)
-    { ..value, authored_value: summary, declared_value: summary }
+    { ..value, authored_value: summary, declared_value: summary, }
   })
 }
 

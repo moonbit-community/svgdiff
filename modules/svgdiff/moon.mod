@@ -11,7 +11,7 @@
 
 name = "Milky2018/svgdiff"
 
-version = "0.10.1"
+version = "0.10.2"
 
 readme = "README.mbt.md"
 
@@ -29,12 +29,8 @@ import {
   "moonbitlang/async@0.20.5",
   "mizchi/pixelmatch@0.6.1",
   "Milky2018/xml@0.4.0",
-  "moonbitlang/x@0.4.49",
+  "moonbitlang/x@0.5.1",
   "moonbitlang/quickcheck@0.14.0",
   "Milky2018/svgdiff-raster-codec@0.1.1",
   "Milky2018/svg@0.5.2",
 }
-
-options(
-  exclude: [ "cmd/svgdiff_wasm", "*_test.mbt", "*_wbtest.mbt" ],
-)

@@ -69,7 +69,7 @@ fn parse_ihdr(data : Bytes) -> IhdrData raise DecodeError {
   if bit_depth != 8 {
     raise UnsupportedFeature("only 8-bit PNG samples are supported")
   }
-  { width, height, bit_depth, color_type: ct }
+  { width, height, bit_depth, color_type: ct, }
 }
 
 ///|
@@ -115,7 +115,7 @@ fn parse_chunks(raw : Bytes) -> Array[PngChunk] raise DecodeError {
     } else {
       Bytes::new(0)
     }
-    chunks.push({ chunk_type: ct, data: chunk_data })
+    chunks.push({ chunk_type: ct, data: chunk_data, })
     pos = pos + 12 + length
     if ct == "IEND" {
       saw_iend = true
@@ -134,7 +134,7 @@ fn parse_png_ihdr(chunks : Array[PngChunk]) -> IhdrData raise DecodeError {
     raise MissingChunk("IHDR")
   }
   match chunks[0] {
-    { chunk_type: "IHDR", data } => parse_ihdr(data)
+    { chunk_type: "IHDR", data, } => parse_ihdr(data)
     _ => raise MissingChunk("IHDR must be first chunk")
   }
 }
@@ -297,5 +297,5 @@ pub fn decode_png_bounded(
     let dst_offset = y * ihdr.width * 4
     rgba_buf.blit_from_bytes(dst_offset, row, 0, ihdr.width * 4)
   })
-  { width: ihdr.width, height: ihdr.height, data: Bytes::from_array(rgba_buf) }
+  { width: ihdr.width, height: ihdr.height, data: Bytes::from_array(rgba_buf), }
 }

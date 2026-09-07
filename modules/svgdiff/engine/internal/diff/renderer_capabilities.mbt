@@ -99,5 +99,5 @@ fn attach_renderer_capability_gaps(
   gaps.sort_by(fn(left, right) {
     left.capability_id.compare(right.capability_id)
   })
-  { ..report, renderer_capability_gaps: gaps }
+  { ..report, renderer_capability_gaps: gaps, }
 }

@@ -55,7 +55,7 @@ fn embedded_png_url(payload : String) -> String {
 ///|
 fn embedded_test_percent_encode(bytes : Bytes) -> String {
   let hex = "0123456789ABCDEF"
-  let output = StringBuilder::new()
+  let output = StringBuilder()
   for byte in bytes {
     let value = byte.to_int()
     output.write_string(
@@ -453,7 +453,7 @@ test "unsupported embedded image placement and instances remain explicit" {
 ///|
 test "embedded raster admission enforces decoded byte limit" {
   let svg = embedded_image_svg(embedded_png_url(embedded_red_png_base64))
-  let limits = { ..default_resource_limits(), max_embedded_data_bytes: 8 }
+  let limits = { ..default_resource_limits(), max_embedded_data_bytes: 8, }
   let report = compare_with_resource_limits(
     svg,
     svg,
@@ -507,7 +507,7 @@ test "embedded raster resource boundaries are exact and cumulative" {
         spaced,
         spaced,
         ComparisonProfile::v1_default(),
-        { ..exact, max_embedded_data_uri_bytes: href.length() - 1 },
+        { ..exact, max_embedded_data_uri_bytes: href.length() - 1, },
       ),
       "embedded_raster_data_uri_bytes.before",
     ),

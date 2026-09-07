@@ -185,7 +185,7 @@ test "repeated acyclic use expansion accepts exact budget and rejects one less" 
     source,
     "<svg></svg>",
     ComparisonProfile::v1_default(),
-    { ..default_resource_limits(), max_expanded_elements: 18 },
+    { ..default_resource_limits(), max_expanded_elements: 18, },
   )
   assert_true(
     has_reference_failure(
@@ -205,7 +205,7 @@ test "propagated reference graph edges reject one-past before allocation" {
     source,
     "<svg></svg>",
     ComparisonProfile::v1_default(),
-    { ..default_resource_limits(), max_reference_graph_edges: 1 },
+    { ..default_resource_limits(), max_reference_graph_edges: 1, },
   )
   assert_true(has_resource_limit(exceeded, "reference_graph_edges.before"))
   assert_eq(exceeded.diagnostics[0].source_locations.length(), 1)
@@ -217,7 +217,7 @@ test "input byte limit uses UTF-8 bytes at the exact boundary" {
   let source = "<svg><!--中😀--></svg>"
   assert_eq(utf8_byte_length("中😀"), 7)
   let exact = utf8_byte_length(source)
-  let limits = { ..default_resource_limits(), max_input_bytes: exact }
+  let limits = { ..default_resource_limits(), max_input_bytes: exact, }
   assert_not_resource_failure(
     compare_with_resource_limits(
       source,
@@ -250,7 +250,7 @@ test "input byte limit uses UTF-8 bytes at the exact boundary" {
 test "element count limit rejects the first extra element" {
   let exact = "<svg><rect/></svg>"
   let exceeded = "<svg><rect/><circle/></svg>"
-  let limits = { ..default_resource_limits(), max_elements: 2 }
+  let limits = { ..default_resource_limits(), max_elements: 2, }
   assert_not_resource_failure(
     compare_with_resource_limits(
       exact,
@@ -273,7 +273,7 @@ test "element count limit rejects the first extra element" {
 test "nesting depth limit rejects the first extra level" {
   let exact = "<svg><g></g></svg>"
   let exceeded = "<svg><g><g></g></g></svg>"
-  let limits = { ..default_resource_limits(), max_nesting_depth: 2 }
+  let limits = { ..default_resource_limits(), max_nesting_depth: 2, }
   assert_not_resource_failure(
     compare_with_resource_limits(
       exact,
@@ -297,7 +297,7 @@ test "path data limit uses non-separator lexical units" {
   let exact = "<svg><path d='M0'/></svg>"
   let exceeded = "<svg><path d='M00'/></svg>"
   assert_eq(path_data_units("M 0,0\nL1"), 5)
-  let limits = { ..default_resource_limits(), max_path_data_units: 2 }
+  let limits = { ..default_resource_limits(), max_path_data_units: 2, }
   assert_not_resource_failure(
     compare_with_resource_limits(
       exact,
@@ -320,7 +320,7 @@ test "path data limit uses non-separator lexical units" {
 test "reference limit counts href and every CSS url token" {
   let exact = "<svg><rect href='#a' fill='url(#a)'/></svg>"
   let exceeded = "<svg><rect href='#a' fill='url(#a)' stroke='URL(#b)'/></svg>"
-  let limits = { ..default_resource_limits(), max_references: 2 }
+  let limits = { ..default_resource_limits(), max_references: 2, }
   assert_not_resource_failure(
     compare_with_resource_limits(
       exact,
@@ -355,14 +355,14 @@ test "raster limits reject excess dimension and pixel area before rendering" {
   assert_not_resource_failure(
     compare_with_resource_limits(source, source, exact_profile, exact_limits),
   )
-  let wide_profile = { ..exact_profile, viewport_width: 17 }
+  let wide_profile = { ..exact_profile, viewport_width: 17, }
   assert_true(
     has_resource_limit(
       compare_with_resource_limits(source, source, wide_profile, exact_limits),
       "raster_dimensions",
     ),
   )
-  let area_limits = { ..exact_limits, max_raster_dimension: 17 }
+  let area_limits = { ..exact_limits, max_raster_dimension: 17, }
   assert_true(
     has_resource_limit(
       compare_with_resource_limits(source, source, wide_profile, area_limits),
@@ -375,7 +375,7 @@ test "raster limits reject excess dimension and pixel area before rendering" {
 test "region limit rejects a report instead of truncating its inventory" {
   let before = "<svg width='16' height='16'><rect id='box' x='2' y='2' width='8' height='8' fill='red'/></svg>"
   let after = before.replace_all(old="red", new="blue")
-  let exact_limits = { ..default_resource_limits(), max_regions: 1 }
+  let exact_limits = { ..default_resource_limits(), max_regions: 1, }
   let exact = compare_with_resource_limits(
     before,
     after,
@@ -388,7 +388,7 @@ test "region limit rejects a report instead of truncating its inventory" {
     before,
     after,
     ComparisonProfile::v1_default(),
-    { ..exact_limits, max_regions: 0 },
+    { ..exact_limits, max_regions: 0, },
   )
   assert_true(has_resource_limit(report, "regions"))
   assert_true(report.atomic_differences.is_empty())
@@ -417,14 +417,14 @@ test "report byte limit covers both built-in JSON serializations" {
       source,
       source,
       ComparisonProfile::v1_default(),
-      { ..default_resource_limits(), max_report_bytes: exact_bytes },
+      { ..default_resource_limits(), max_report_bytes: exact_bytes, },
     ),
   )
   let report = compare_with_resource_limits(
     source,
     source,
     ComparisonProfile::v1_default(),
-    { ..default_resource_limits(), max_report_bytes: exact_bytes - 1 },
+    { ..default_resource_limits(), max_report_bytes: exact_bytes - 1, },
   )
   assert_true(has_resource_limit(report, "report_bytes"))
   assert_true(

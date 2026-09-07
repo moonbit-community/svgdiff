@@ -33,7 +33,7 @@ fn structural_aligned_subjects(
         subjects_for_references(after, alignment.after),
       ) {
       ([before_subject], [after_subject]) =>
-        result.push({ alignment, before: before_subject, after: after_subject })
+        result.push({ alignment, before: before_subject, after: after_subject, })
       _ => ()
     }
   }
@@ -98,7 +98,7 @@ fn append_structural_fact_to_consequences(
       differences.push(difference)
     }
   }
-  { ..report, atomic_differences: differences }
+  { ..report, atomic_differences: differences, }
 }
 
 ///|
@@ -115,7 +115,7 @@ fn append_structural_difference_to_event(
       event.atomic_difference_ids.any(id => consequence_ids.contains(id)) {
       let difference_ids = event.atomic_difference_ids.copy()
       difference_ids.push(difference_id)
-      events.push({ ..event, atomic_difference_ids: difference_ids })
+      events.push({ ..event, atomic_difference_ids: difference_ids, })
       attached = true
     } else {
       events.push(event)

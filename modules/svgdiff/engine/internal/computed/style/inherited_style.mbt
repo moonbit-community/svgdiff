@@ -45,7 +45,7 @@ pub fn record_paint_server_target(
   targets : Array[PaintServerTarget],
 ) -> Unit {
   match authored_subject_id(element) {
-    Some(id) => targets.push({ id, kind: element.name.local_name })
+    Some(id) => targets.push({ id, kind: element.name.local_name, })
     None => ()
   }
 }
@@ -368,11 +368,11 @@ pub fn resolve_custom_property(
 ) -> CustomValueResolution {
   let key = "\{element_index}:\{property}"
   if stack.contains(key) {
-    return { value: None, dependencies: [], complete: true }
+    return { value: None, dependencies: [], complete: true, }
   }
   if stack.length() >= 64 {
     push_unique(hierarchy.coverage_codes, "css_variable_expansion_limit")
-    return { value: None, dependencies: [], complete: false }
+    return { value: None, dependencies: [], complete: false, }
   }
   stack.push(key)
   let element = hierarchy.elements[element_index]
@@ -381,13 +381,13 @@ pub fn resolve_custom_property(
       match element.parent_index {
         Some(parent) =>
           resolve_custom_property(hierarchy, parent, property, stack)
-        None => { value: None, dependencies: [], complete: true }
+        None => { value: None, dependencies: [], complete: true, }
       }
     Some(declaration) => {
-      let dependencies = [{ owner_id: element.subject_id, property }]
+      let dependencies = [{ owner_id: element.subject_id, property, }]
       let keyword = declaration.declared_value.trim().to_owned().to_lower()
       if keyword == "initial" {
-        { value: None, dependencies, complete: true }
+        { value: None, dependencies, complete: true, }
       } else if keyword == "inherit" ||
         keyword == "unset" ||
         keyword == "revert" {
@@ -403,11 +403,11 @@ pub fn resolve_custom_property(
               complete: inherited.complete,
             }
           }
-          None => { value: None, dependencies, complete: true }
+          None => { value: None, dependencies, complete: true, }
         }
       } else if keyword == "revert-layer" {
         push_unique(hierarchy.coverage_codes, "css_revert_layer_unsupported")
-        { value: None, dependencies, complete: false }
+        { value: None, dependencies, complete: false, }
       } else {
         match
           substitute_css_variables(
@@ -423,18 +423,18 @@ pub fn resolve_custom_property(
                 hierarchy.coverage_codes,
                 "css_variable_expansion_limit",
               )
-              { value: None, dependencies, complete: false }
+              { value: None, dependencies, complete: false, }
             } else {
-              { value: Some(value), dependencies, complete: true }
+              { value: Some(value), dependencies, complete: true, }
             }
           }
           InvalidSubstitution(referenced) => {
             append_style_dependencies(dependencies, referenced)
-            { value: None, dependencies, complete: true }
+            { value: None, dependencies, complete: true, }
           }
           UnsupportedSubstitution(referenced) => {
             append_style_dependencies(dependencies, referenced)
-            { value: None, dependencies, complete: false }
+            { value: None, dependencies, complete: false, }
           }
         }
       }
@@ -535,7 +535,7 @@ pub fn computed_fact_from_resolution(
 ) -> DeclaredVisualFact? {
   match declaration {
     Some(declaration) =>
-      Some({ ..declaration, property, declared_value: value })
+      Some({ ..declaration, property, declared_value: value, })
     None => None
   }
 }
@@ -565,7 +565,7 @@ pub fn substituted_visual_value_valid(
 ) -> Bool {
   let normalized = value.trim().to_owned().to_lower()
   let profile = ComparisonProfile::v1_default()
-  let viewport : ViewportContext = { width: 16.0, height: 16.0 }
+  let viewport : ViewportContext = { width: 16.0, height: 16.0, }
   match property {
     "fill" | "stroke" | "color" | "stop-color" =>
       substituted_paint_value_valid(property, normalized)
@@ -686,19 +686,19 @@ pub fn canonical_paint_color(
 ) -> CanonicalPaintValue {
   match @css_color.parse_solid_color(value) {
     Resolved(color) =>
-      { value: color.signature(), complete: true, uses_current_color: false }
+      { value: color.signature(), complete: true, uses_current_color: false, }
     CurrentColor =>
-      { value: "currentcolor", complete: true, uses_current_color: true }
+      { value: "currentcolor", complete: true, uses_current_color: true, }
     SystemColor(_) => {
       push_unique(
         hierarchy.coverage_codes,
         "system_color_environment_unsupported",
       )
-      { value, complete: false, uses_current_color: false }
+      { value, complete: false, uses_current_color: false, }
     }
     Invalid => {
       push_unique(hierarchy.coverage_codes, paint_color_issue_code(value))
-      { value, complete: false, uses_current_color: false }
+      { value, complete: false, uses_current_color: false, }
     }
   }
 }
@@ -710,7 +710,7 @@ pub fn canonical_paint_fallback(
 ) -> CanonicalPaintValue {
   match fallback {
     None | Some(PaintFallbackNone) =>
-      { value: "none", complete: true, uses_current_color: false }
+      { value: "none", complete: true, uses_current_color: false, }
     Some(PaintFallbackColor(value)) => canonical_paint_color(hierarchy, value)
   }
 }
@@ -721,17 +721,17 @@ pub fn canonical_paint_value(
   source : String,
 ) -> CanonicalPaintValue {
   match parse_paint_value(source) {
-    NoPaint => { value: "none", complete: true, uses_current_color: false }
+    NoPaint => { value: "none", complete: true, uses_current_color: false, }
     SolidPaint(value) => canonical_paint_color(hierarchy, value)
     LocalPaintServer(id, fallback) =>
       if valid_local_paint_server(hierarchy, id) {
-        { value: "url(#\{id})", complete: true, uses_current_color: false }
+        { value: "url(#\{id})", complete: true, uses_current_color: false, }
       } else {
         canonical_paint_fallback(hierarchy, fallback)
       }
     ExternalPaintServer | ContextPaint => {
       push_unique(hierarchy.coverage_codes, "paint_value_semantics_unsupported")
-      { value: source, complete: false, uses_current_color: false }
+      { value: source, complete: false, uses_current_color: false, }
     }
     InvalidPaint => {
       let normalized = source.trim().to_owned()
@@ -743,7 +743,7 @@ pub fn canonical_paint_value(
           paint_color_issue_code(normalized)
         },
       )
-      { value: source, complete: false, uses_current_color: false }
+      { value: source, complete: false, uses_current_color: false, }
     }
   }
 }
@@ -1015,7 +1015,7 @@ pub fn computed_visual_for_index(
     None =>
       initial_computed_visual(element.subject_id, property, None, "initial", [])
     Some(declaration) => {
-      let dependencies = [{ owner_id: element.subject_id, property }]
+      let dependencies = [{ owner_id: element.subject_id, property, }]
       let had_variable = declaration.declared_value.to_lower().find("var(")
         is Some(_)
       let substitution = if had_variable {

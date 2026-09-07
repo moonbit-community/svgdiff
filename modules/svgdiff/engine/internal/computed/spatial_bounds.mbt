@@ -30,7 +30,7 @@ pub fn union_bounds(left : CssBounds?, right : CssBounds?) -> CssBounds? {
       let min_y = left.y.min(right.y)
       let max_x = (left.x + left.width).max(right.x + right.width)
       let max_y = (left.y + left.height).max(right.y + right.height)
-      Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+      Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y, })
     }
   }
 }
@@ -44,7 +44,7 @@ pub fn intersect_bounds(left : CssBounds, right : CssBounds) -> CssBounds? {
   if max_x <= min_x || max_y <= min_y {
     None
   } else {
-    Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+    Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y, })
   }
 }
 
@@ -82,5 +82,5 @@ pub fn transform_bounds(
     max_x = max_x.max(transformed_x)
     max_y = max_y.max(transformed_y)
   }
-  { x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y }
+  { x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y, }
 }

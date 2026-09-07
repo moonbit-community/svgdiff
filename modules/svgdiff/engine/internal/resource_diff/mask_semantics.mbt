@@ -717,5 +717,5 @@ pub fn attach_mask_differences(
       })
     }
   }
-  { ..report, changed_facts, atomic_differences: differences, events }
+  { ..report, changed_facts, atomic_differences: differences, events, }
 }

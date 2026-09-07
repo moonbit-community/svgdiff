@@ -14,7 +14,7 @@
 
 ///|
 test "CSS Color 3 equivalent spellings share one canonical sRGB value" {
-  let expected = Resolved({ red: 255, green: 0, blue: 0, alpha: 1.0 })
+  let expected = Resolved({ red: 255, green: 0, blue: 0, alpha: 1.0, })
   for
     value in [
       "red", "RED", "#f00", "#ff0000", "rgb(255,0,0)", "rgb(100%, 0%, 0%)", "rgba(255,0,0,1)",
@@ -28,19 +28,19 @@ test "CSS Color 3 equivalent spellings share one canonical sRGB value" {
 test "solid colors retain independent alpha" {
   assert_eq(
     parse_solid_color("#0f08"),
-    Resolved({ red: 0, green: 255, blue: 0, alpha: 136.0 / 255.0 }),
+    Resolved({ red: 0, green: 255, blue: 0, alpha: 136.0 / 255.0, }),
   )
   assert_eq(
     parse_solid_color("#00ff0080"),
-    Resolved({ red: 0, green: 255, blue: 0, alpha: 128.0 / 255.0 }),
+    Resolved({ red: 0, green: 255, blue: 0, alpha: 128.0 / 255.0, }),
   )
   assert_eq(
     parse_solid_color("rgba(0,255,0,0.25)"),
-    Resolved({ red: 0, green: 255, blue: 0, alpha: 0.25 }),
+    Resolved({ red: 0, green: 255, blue: 0, alpha: 0.25, }),
   )
   assert_eq(
     parse_solid_color("transparent"),
-    Resolved({ red: 0, green: 0, blue: 0, alpha: 0.0 }),
+    Resolved({ red: 0, green: 0, blue: 0, alpha: 0.0, }),
   )
 }
 
@@ -48,11 +48,11 @@ test "solid colors retain independent alpha" {
 test "RGB and HSL components clamp and hue wraps" {
   assert_eq(
     parse_solid_color("rgb(300,-1,127.5)"),
-    Resolved({ red: 255, green: 0, blue: 128, alpha: 1.0 }),
+    Resolved({ red: 255, green: 0, blue: 128, alpha: 1.0, }),
   )
   assert_eq(
     parse_solid_color("hsl(-120,100%,50%)"),
-    Resolved({ red: 0, green: 0, blue: 255, alpha: 1.0 }),
+    Resolved({ red: 0, green: 0, blue: 255, alpha: 1.0, }),
   )
 }
 
@@ -82,7 +82,7 @@ test "alpha values accept numbers and percentages and clamp" {
 test "representative extended named colors match the CSS table" {
   assert_eq(
     parse_solid_color("lightgoldenrodyellow"),
-    Resolved({ red: 250, green: 250, blue: 210, alpha: 1.0 }),
+    Resolved({ red: 250, green: 250, blue: 210, alpha: 1.0, }),
   )
   guard parse_solid_color("tomato") is Resolved(color) else {
     fail("tomato must be a named color")

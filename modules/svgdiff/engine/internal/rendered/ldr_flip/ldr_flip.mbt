@@ -125,7 +125,7 @@ fn flip_ycxcz_to_xyz(color : FlipYCxCz) -> FlipLinearRgb {
   let y = (color.luminance + 16.0) / 116.0
   let x = y + color.red_green / 500.0
   let z = y - color.blue_yellow / 200.0
-  { red: x * 0.950428545, green: y, blue: z * 1.088900371 }
+  { red: x * 0.950428545, green: y, blue: z * 1.088900371, }
 }
 
 ///|
@@ -164,10 +164,10 @@ fn flip_hyab(left : FlipLab, right : FlipLab) -> Double {
 ///|
 fn flip_color_max_distance() -> Double {
   let green = flip_xyz_to_lab(
-    flip_linear_rgb_to_xyz({ red: 0.0, green: 1.0, blue: 0.0 }),
+    flip_linear_rgb_to_xyz({ red: 0.0, green: 1.0, blue: 0.0, }),
   )
   let blue = flip_xyz_to_lab(
-    flip_linear_rgb_to_xyz({ red: 0.0, green: 0.0, blue: 1.0 }),
+    flip_linear_rgb_to_xyz({ red: 0.0, green: 0.0, blue: 1.0, }),
   )
   @math.pow(flip_hyab(green, blue), 0.7)
 }
@@ -224,8 +224,8 @@ fn flip_spatial_filters(
     let red_green = flip_gaussian_alternative(squared, 1.0, 0.0053)
     let blue_yellow_first = flip_gaussian_sqrt(squared, 34.1, 0.04)
     let blue_yellow_second = flip_gaussian_sqrt(squared, 13.5, 0.025)
-    luminance_red_green.push({ first: luminance, second: red_green })
-    blue_yellow.push({ first: blue_yellow_first, second: blue_yellow_second })
+    luminance_red_green.push({ first: luminance, second: red_green, })
+    blue_yellow.push({ first: blue_yellow_first, second: blue_yellow_second, })
     luminance_sum += luminance
     red_green_sum += red_green
     blue_yellow_first_sum += blue_yellow_first
@@ -281,7 +281,11 @@ fn flip_feature_filter(pixels_per_degree : Double) -> Array[FlipFeatureWeight] {
     } else {
       second_negative -= second
     }
-    filter.push({ gaussian, first_derivative: first, second_derivative: second })
+    filter.push({
+      gaussian,
+      first_derivative: first,
+      second_derivative: second,
+    })
   }
   for index in 0..<width {
     let weight = filter[index]
@@ -379,7 +383,7 @@ fn flip_filtered_lab(
       cz_weight.second * source.blue_yellow_second
   }
   let linear = flip_xyz_to_linear_rgb(
-    flip_ycxcz_to_xyz({ luminance, red_green, blue_yellow }),
+    flip_ycxcz_to_xyz({ luminance, red_green, blue_yellow, }),
   )
   flip_xyz_to_lab(
     flip_linear_rgb_to_xyz({

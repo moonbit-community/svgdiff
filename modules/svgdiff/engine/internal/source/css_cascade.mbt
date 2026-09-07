@@ -45,12 +45,12 @@ pub(all) struct CssStylesheetParse {
 
 ///|
 fn presentation_specificity() -> CssSpecificity {
-  { inline_style: 0, ids: 0, classes: 0, types: 0 }
+  { inline_style: 0, ids: 0, classes: 0, types: 0, }
 }
 
 ///|
 fn inline_specificity() -> CssSpecificity {
-  { inline_style: 1, ids: 0, classes: 0, types: 0 }
+  { inline_style: 1, ids: 0, classes: 0, types: 0, }
 }
 
 ///|
@@ -89,7 +89,7 @@ fn stylesheet_cascade_candidate(
   specificity : CssSpecificity,
   source_order : Int,
 ) -> CssCascadeCandidate {
-  { declaration, important, specificity, cascade_source: 1, source_order }
+  { declaration, important, specificity, cascade_source: 1, source_order, }
 }
 
 ///|
@@ -281,7 +281,7 @@ fn parse_stylesheet_text(
       selector_position += 1
     }
   }
-  { rules, complete }
+  { rules, complete, }
 }
 
 ///|
@@ -311,5 +311,5 @@ pub fn parse_document_stylesheets_or_raise(
       _ => ()
     }
   }
-  { rules, complete }
+  { rules, complete, }
 }

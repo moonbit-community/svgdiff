@@ -25,7 +25,7 @@ pub fn to_pixelmatch_image(image : @svg.Image) -> @pixelmatch.Image {
 ///|
 pub fn exact_pixel_options() -> @pixelmatch.Options {
   let defaults = @pixelmatch.Options::default()
-  { ..defaults, threshold: 0.0, include_aa: true, detect_shift: false }
+  { ..defaults, threshold: 0.0, include_aa: true, detect_shift: false, }
 }
 
 ///|
@@ -183,14 +183,14 @@ pub fn not_computed_canvas_outcome(reason_code : String) -> CanvasOutcome {
 pub fn computed_perceptual_color_evidence(
   magnitude : PerceptualColorMagnitude,
 ) -> PerceptualColorEvidence {
-  { status: "computed", reason_code: None, magnitude: Some(magnitude) }
+  { status: "computed", reason_code: None, magnitude: Some(magnitude), }
 }
 
 ///|
 pub fn not_computed_perceptual_color_evidence(
   reason_code : String,
 ) -> PerceptualColorEvidence {
-  { status: "not_computed", reason_code: Some(reason_code), magnitude: None }
+  { status: "not_computed", reason_code: Some(reason_code), magnitude: None, }
 }
 
 ///|

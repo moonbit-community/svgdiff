@@ -72,7 +72,7 @@ pub fn clip_source_fact(
     authored_value: source,
     declared_value: source,
     origin: "resource_content",
-    source_span: { start_offset, end_offset },
+    source_span: { start_offset, end_offset, },
   }
 }
 
@@ -93,7 +93,7 @@ pub fn clip_issue(
         (fact.source_span.start_offset, fact.source_span.end_offset)
       })
     }) {
-    document.issues.push({ code, subject_id, fact })
+    document.issues.push({ code, subject_id, fact, })
   }
 }
 

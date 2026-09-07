@@ -155,7 +155,7 @@ test "root package exposes explicit resource bundles without implicit loading" {
     source,
     source,
     @svgdiff.ComparisonProfile::v1_default(),
-    { entries: [entry] },
+    { entries: [entry], },
     empty,
   )
   assert_true(
@@ -175,7 +175,7 @@ test "root controlled resource API preserves typed cancellation" {
       @svgdiff.ComparisonProfile::v1_default(),
       @svgdiff.ResourceBundle::empty(),
       @svgdiff.ResourceBundle::empty(),
-      { should_cancel: () => true, max_checkpoints: None },
+      { should_cancel: () => true, max_checkpoints: None, },
     )
   catch {
     Cancelled => ()
@@ -244,7 +244,7 @@ test "explicit perceptual background is normalized and preserved independently" 
   }
   let without_profile_background = {
     ..with_background,
-    profile: { ..with_background.profile, perceptual_background: None },
+    profile: { ..with_background.profile, perceptual_background: None, },
     events,
   }
   assert_eq(
@@ -477,7 +477,7 @@ test "checkpoint budget counts deterministic engine work" {
       before,
       after,
       @svgdiff.ComparisonProfile::v1_default(),
-      { should_cancel, max_checkpoints: Some(1) },
+      { should_cancel, max_checkpoints: Some(1), },
     )
   catch {
     CheckpointBudgetExceeded(max_checkpoints=1) => ()

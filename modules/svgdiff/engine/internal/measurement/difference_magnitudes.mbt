@@ -359,7 +359,7 @@ priv struct IsolatedPaintMeasurementCache {
 
 ///|
 fn IsolatedPaintMeasurementCache::new() -> IsolatedPaintMeasurementCache {
-  { comparisons: 0, raster_pixels: 0, entries: [] }
+  { comparisons: 0, raster_pixels: 0, entries: [], }
 }
 
 ///|
@@ -420,7 +420,7 @@ fn IsolatedPaintMeasurementCache::measure(
     self.raster_pixels += work_pixels
     isolated_subjects_painted_measurements(before, after, profile)
   }
-  self.entries.push({ alignment_id, measurements })
+  self.entries.push({ alignment_id, measurements, })
   measurements
 }
 
@@ -661,7 +661,7 @@ fn ordering_for_magnitude(
         push_measurement(components, magnitude.raster_rgba8_rmse)
       }
   }
-  { policy_id: "v2_domain_lexicographic", components }
+  { policy_id: "v2_domain_lexicographic", components, }
 }
 
 ///|
@@ -763,7 +763,7 @@ pub fn attach_difference_magnitudes(
     ids.sort_by(fn(left, right) {
       difference_rank(differences, left) - difference_rank(differences, right)
     })
-    events.push({ ..event, atomic_difference_ids: ids })
+    events.push({ ..event, atomic_difference_ids: ids, })
   }
-  { ..report, atomic_differences: differences, events }
+  { ..report, atomic_differences: differences, events, }
 }

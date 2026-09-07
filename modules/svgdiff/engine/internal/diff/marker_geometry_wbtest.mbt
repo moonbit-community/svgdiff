@@ -231,11 +231,11 @@ test "marker instance bounds compose orientation units viewport reference and tr
   assert_eq(reverse.marker_placements.length(), 2)
   assert_true(
     reverse.marker_placements[0].bounds
-    is { x: 8.0, y: -1.0, width: 2.0, height: 1.0 },
+    is { x: 8.0, y: -1.0, width: 2.0, height: 1.0, },
   )
   assert_true(
     reverse.marker_placements[1].bounds
-    is { x: 20.0, y: 0.0, width: 2.0, height: 1.0 },
+    is { x: 20.0, y: 0.0, width: 2.0, height: 1.0, },
   )
 
   let viewport = marker_test_subject(
@@ -243,7 +243,7 @@ test "marker instance bounds compose orientation units viewport reference and tr
   )
   assert_true(
     viewport.marker_placements[0].bounds
-    is { x: 15.0, y: 15.0, width: 10.0, height: 10.0 },
+    is { x: 15.0, y: 15.0, width: 10.0, height: 10.0, },
   )
 
   let scaled = marker_test_subject(
@@ -251,7 +251,7 @@ test "marker instance bounds compose orientation units viewport reference and tr
   )
   assert_true(
     scaled.marker_placements[0].bounds
-    is { x: 11.0, y: 7.0, width: 6.0, height: 3.0 },
+    is { x: 11.0, y: 7.0, width: 6.0, height: 3.0, },
   )
 }
 

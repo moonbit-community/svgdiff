@@ -67,7 +67,7 @@ pub fn inspect_png_color_metadata(
   if chunks.is_empty() {
     raise MissingChunk("IHDR")
   }
-  guard chunks[0] is { chunk_type: "IHDR", data } else {
+  guard chunks[0] is { chunk_type: "IHDR", data, } else {
     raise MissingChunk("IHDR must be first chunk")
   }
   if data.length() != 13 {
@@ -165,7 +165,7 @@ pub fn inspect_png_color_metadata(
         _ => SrgbCompatible
       }
   }
-  { width, height, condition }
+  { width, height, condition, }
 }
 
 ///|
@@ -272,5 +272,5 @@ pub fn inspect_jpeg_color_metadata(
     _ if embedded_icc => EmbeddedColorProfile("jpeg_icc_app2")
     _ => SrgbCompatible
   }
-  { width: image_width, height: image_height, condition }
+  { width: image_width, height: image_height, condition, }
 }

@@ -14,7 +14,7 @@
 
 ///|
 fn blend_test_profile() -> ComparisonProfile {
-  { ..ComparisonProfile::v1_default(), viewport_width: 8, viewport_height: 8 }
+  { ..ComparisonProfile::v1_default(), viewport_width: 8, viewport_height: 8, }
 }
 
 ///|

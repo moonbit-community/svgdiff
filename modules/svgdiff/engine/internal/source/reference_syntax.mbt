@@ -27,7 +27,7 @@ fn percent_hex_value(character : Char) -> Int? {
 
 ///|
 pub fn decode_local_fragment(value : String) -> String {
-  let output = StringBuilder::new()
+  let output = StringBuilder()
   let mut index = 0
   while index < value.length() {
     let character = value[index].unsafe_to_char()
@@ -98,7 +98,7 @@ pub(all) struct ParsedResourceLocator {
 pub fn parse_resource_locator(value : String) -> ParsedResourceLocator {
   let locator = value.trim().to_owned()
   if locator == "" || locator == "#" {
-    return { kind: "invalid", locator, target_id: None }
+    return { kind: "invalid", locator, target_id: None, }
   }
   if locator.has_prefix("#") {
     return {
@@ -110,9 +110,9 @@ pub fn parse_resource_locator(value : String) -> ParsedResourceLocator {
     }
   }
   if locator.to_lower().has_prefix("data:") {
-    { kind: "data", locator, target_id: None }
+    { kind: "data", locator, target_id: None, }
   } else {
-    { kind: "external", locator, target_id: None }
+    { kind: "external", locator, target_id: None, }
   }
 }
 
@@ -157,7 +157,7 @@ pub fn resource_url_locators(value : String) -> Array[ParsedResourceLocator] {
       locator.has_suffix("'") ||
       locator.has_prefix("\"") ||
       locator.has_suffix("\"") {
-      locators.push({ kind: "invalid", locator, target_id: None })
+      locators.push({ kind: "invalid", locator, target_id: None, })
       index = cursor + 1
       continue
     }

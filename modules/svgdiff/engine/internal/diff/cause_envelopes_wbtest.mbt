@@ -154,7 +154,7 @@ test "cause attachment reaches same-subject tokens outside direct event links" {
   }
   let propagated_id = "fact:propagated:left-transform"
   let changed_facts = report.changed_facts.copy()
-  changed_facts.push({ ..left_fact, id: propagated_id, property: "transform" })
+  changed_facts.push({ ..left_fact, id: propagated_id, property: "transform", })
   let attached = attach_cause_envelopes({ ..report, changed_facts, })
   guard attached.events.filter(event => {
       event.difference_regions.any(region => {
@@ -216,7 +216,7 @@ test "resource and relationship events query direct-fact subject fan-out" {
   clip_facts.push(
     influence_test_fact("fact:unrelated:extra", "paint.fill", ["other"]),
   )
-  let clip_augmented = { ..clip_report, changed_facts: clip_facts }
+  let clip_augmented = { ..clip_report, changed_facts: clip_facts, }
   let clip_candidates = event_may_influence_fact_ids(
     clip_event,
     clip_augmented,
@@ -434,7 +434,7 @@ test "mask and filter transfer reaches effect consumers and descendants" {
   mask_facts.push(
     influence_test_fact("fact:mask-child-input", "paint.fill", ["box"]),
   )
-  let mask_augmented = { ..mask, changed_facts: mask_facts }
+  let mask_augmented = { ..mask, changed_facts: mask_facts, }
   assert_true(
     event_may_influence_fact_ids(
       mask_event,
@@ -466,7 +466,7 @@ test "mask and filter transfer reaches effect consumers and descendants" {
   filter_facts.push(
     influence_test_fact("fact:filter-input", "paint.fill", ["box"]),
   )
-  let filter_augmented = { ..filter, changed_facts: filter_facts }
+  let filter_augmented = { ..filter, changed_facts: filter_facts, }
   assert_true(
     event_may_influence_fact_ids(
       filter_event,

@@ -14,7 +14,7 @@
 
 ///|
 fn flip_rgb(red : Double, green : Double, blue : Double) -> FlipLinearRgb {
-  { red, green, blue }
+  { red, green, blue, }
 }
 
 ///|

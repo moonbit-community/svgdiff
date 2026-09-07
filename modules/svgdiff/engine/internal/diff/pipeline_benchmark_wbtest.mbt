@@ -14,7 +14,7 @@
 
 ///|
 fn pipeline_benchmark_svg(fill : String) -> String {
-  let output = StringBuilder::new()
+  let output = StringBuilder()
   output.write_string(
     "<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'>",
   )

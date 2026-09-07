@@ -53,7 +53,7 @@ fn blend_issue(
   fact : DeclaredVisualFact?,
 ) -> Unit {
   if !issues.any(issue => issue.code == code && issue.subject_id == subject_id) {
-    issues.push({ code, subject_id, fact })
+    issues.push({ code, subject_id, fact, })
   }
 }
 
@@ -357,7 +357,7 @@ pub fn resolve_blend_semantic_document_or_raise(
     (surface_count > 0 && surface_count > 64 * 1024 * 1024 / viewport_pixels) {
     blend_issue(issues, "blend_surface_budget_exceeded", "document", None)
   }
-  { hierarchy, sites, issues, active, complete: issues.is_empty() }
+  { hierarchy, sites, issues, active, complete: issues.is_empty(), }
 }
 
 ///|

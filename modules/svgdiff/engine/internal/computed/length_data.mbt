@@ -42,7 +42,7 @@ pub fn parse_svg_length(
   if value == "" {
     return None
   }
-  let parser : NumberParser = { data: value, position: 0 }
+  let parser : NumberParser = { data: value, position: 0, }
   guard parser.parse_number() is Some(number) else { return None }
   if number.is_nan() || number.is_inf() {
     return None

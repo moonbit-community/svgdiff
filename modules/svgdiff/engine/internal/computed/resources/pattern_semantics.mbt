@@ -141,7 +141,7 @@ pub fn push_pattern_issue(
         )
       })
     }) {
-    issues.push({ code, subject_id, fact })
+    issues.push({ code, subject_id, fact, })
   }
 }
 
@@ -187,7 +187,7 @@ pub fn pattern_from_element(
   for attribute in element.attributes {
     let name = attribute.name.local_name
     if pattern_attribute_names().contains(name) {
-      attributes.push({ name, fact: presentation_fact(input, name, attribute) })
+      attributes.push({ name, fact: presentation_fact(input, name, attribute), })
     }
   }
   Some({
@@ -347,7 +347,7 @@ pub fn extract_pattern_document_or_raise(
       )
     }
   }
-  { profile, hierarchy, patterns, child_subjects, issues }
+  { profile, hierarchy, patterns, child_subjects, issues, }
 }
 
 ///|
@@ -507,7 +507,7 @@ pub fn computed_pattern_field(
   fact : DeclaredVisualFact?,
   complete : Bool,
 ) -> ComputedPatternField {
-  { name, value, number, fact, complete }
+  { name, value, number, fact, complete, }
 }
 
 ///|
@@ -657,7 +657,7 @@ pub fn pattern_coordinate_base(
   match
     subject
     .map(source_subject_geometry_bounds)
-    .unwrap_or(Some({ x: 0.0, y: 0.0, width: 1.0, height: 1.0 })) {
+    .unwrap_or(Some({ x: 0.0, y: 0.0, width: 1.0, height: 1.0, })) {
     Some(bounds) => {
       let implicit = AffineTransform::translate(bounds.x, bounds.y).multiply(
         AffineTransform::scale(bounds.width, bounds.height),
@@ -712,7 +712,7 @@ pub fn pattern_cloned_child_hierarchy(
   let mut index = chain.length() - 1
   while index >= 0 {
     let original = elements[chain[index]]
-    elements.push({ ..original, parent_index: Some(parent) })
+    elements.push({ ..original, parent_index: Some(parent), })
     parent = elements.length() - 1
     index -= 1
   }
@@ -823,13 +823,13 @@ pub fn normalize_pattern_child_paint_rules(
           _ => fact.declared_value
         }
       }
-      upsert_declared_fact(facts, { ..fact, declared_value: computed })
+      upsert_declared_fact(facts, { ..fact, declared_value: computed, })
     }
     None => ()
   }
   match declared_fact_in_array(facts, "clip-rule") {
     Some(fact) =>
-      upsert_declared_fact(facts, { ..fact, declared_value: "inactive" })
+      upsert_declared_fact(facts, { ..fact, declared_value: "inactive", })
     None => ()
   }
 }
@@ -979,7 +979,7 @@ pub fn resolve_computed_pattern(
     document, pattern, "patternContentUnits", "userSpaceOnUse",
   )
   let viewport : ViewportContext = if units.value == "objectBoundingBox" {
-    { width: 1.0, height: 1.0 }
+    { width: 1.0, height: 1.0, }
   } else {
     subject
     .map(subject => subject.viewport)
@@ -1065,7 +1065,7 @@ pub fn resolve_computed_pattern(
   let mut view_box_signature = "none"
   let mut child_viewport : ViewportContext = if content_units.value ==
     "objectBoundingBox" {
-    { width: 1.0, height: 1.0 }
+    { width: 1.0, height: 1.0, }
   } else {
     subject.map(subject => subject.viewport).unwrap_or(viewport)
   }
@@ -1076,7 +1076,7 @@ pub fn resolve_computed_pattern(
           view_box_signature = normalized_view_box_signature(view_box)
           for index, field in fields {
             if field.name == "patternContentUnits" {
-              fields[index] = { ..field, value: "ignored_by_viewBox" }
+              fields[index] = { ..field, value: "ignored_by_viewBox", }
               break
             }
           }
@@ -1107,7 +1107,7 @@ pub fn resolve_computed_pattern(
               viewport_complete,
             ),
           )
-          child_viewport = { width: view_box.width, height: view_box.height }
+          child_viewport = { width: view_box.width, height: view_box.height, }
           tile_matrix.multiply(
             equivalent_viewport_transform(
               view_box, x, y, width, height, preserve,

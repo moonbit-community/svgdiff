@@ -33,7 +33,7 @@ pub(all) suberror ComparisonInterrupted {
 /// Construct a control that never interrupts comparison work.
 pub fn ComparisonControl::unlimited() -> ComparisonControl {
   let should_cancel : () -> Bool = () => false
-  { should_cancel, max_checkpoints: None }
+  { should_cancel, max_checkpoints: None, }
 }
 
 ///|
@@ -44,7 +44,7 @@ pub(all) struct ComparisonGuard {
 
 ///|
 pub fn ComparisonGuard::new(control : ComparisonControl) -> ComparisonGuard {
-  { control, completed_checkpoints: 0 }
+  { control, completed_checkpoints: 0, }
 }
 
 ///|

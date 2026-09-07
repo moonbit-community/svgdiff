@@ -27,7 +27,7 @@ pub fn PerceptualBackground::parse_srgb(
 ) -> PerceptualBackground? {
   match @css_color.parse_solid_color(source) {
     Resolved(color) if color.alpha == 1.0 =>
-      Some({ red: color.red, green: color.green, blue: color.blue })
+      Some({ red: color.red, green: color.green, blue: color.blue, })
     _ => None
   }
 }

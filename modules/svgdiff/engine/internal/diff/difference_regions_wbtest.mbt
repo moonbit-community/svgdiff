@@ -113,14 +113,14 @@ test "side bounds preserve movement insertion and deletion before union" {
     extract_source_subjects_with_profile_or_raise(after, profile),
   )
   assert_true(
-    movement_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0 }),
+    movement_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
   assert_true(
-    movement_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0 }),
+    movement_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
   assert_true(
     side_bounds_union(movement_sides)
-    is Some({ x: 1.0, y: 2.0, width: 10.0, height: 5.0 }),
+    is Some({ x: 1.0, y: 2.0, width: 10.0, height: 5.0, }),
   )
 
   let empty = "<svg width='20' height='20'/>"
@@ -138,7 +138,7 @@ test "side bounds preserve movement insertion and deletion before union" {
   )
   assert_true(insertion_sides.before is None)
   assert_true(
-    insertion_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0 }),
+    insertion_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
 
   let deleted = compare(before, empty, profile)
@@ -154,7 +154,7 @@ test "side bounds preserve movement insertion and deletion before union" {
     extract_source_subjects_with_profile_or_raise(empty, profile),
   )
   assert_true(
-    deletion_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0 }),
+    deletion_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
   assert_true(deletion_sides.after is None)
 }
@@ -180,10 +180,10 @@ test "clip and filter localization retain distinct effect bounds by side" {
     extract_source_subjects_with_profile_or_raise(clip_after, profile),
   )
   assert_true(
-    clip_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0 }),
+    clip_sides.before is Some({ x: 1.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
   assert_true(
-    clip_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0 }),
+    clip_sides.after is Some({ x: 7.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
 
   let filter_before =
@@ -202,10 +202,10 @@ test "clip and filter localization retain distinct effect bounds by side" {
     fail("expected filter side bounds")
   }
   assert_true(
-    filter_sides.before is Some({ x: 3.0, y: 2.0, width: 4.0, height: 5.0 }),
+    filter_sides.before is Some({ x: 3.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
   assert_true(
-    filter_sides.after is Some({ x: 5.0, y: 2.0, width: 4.0, height: 5.0 }),
+    filter_sides.after is Some({ x: 5.0, y: 2.0, width: 4.0, height: 5.0, }),
   )
 }
 
@@ -344,11 +344,11 @@ test "stroke bounds distinguish ordinary and non-scaling expansion" {
     )[0]
   assert_true(
     source_subject_bounds(ordinary)
-    is Some({ x: 16.0, y: 16.0, width: 28.0, height: 8.0 }),
+    is Some({ x: 16.0, y: 16.0, width: 28.0, height: 8.0, }),
   )
   assert_true(
     source_subject_bounds(non_scaling)
-    is Some({ x: 18.0, y: 18.0, width: 24.0, height: 4.0 }),
+    is Some({ x: 18.0, y: 18.0, width: 24.0, height: 4.0, }),
   )
 }
 
@@ -429,7 +429,7 @@ test "degenerate SVG arcs follow line and omitted-segment rules" {
     )[0]
   assert_true(
     source_subject_bounds(line)
-    is Some({ x: 1.0, y: 2.0, width: 8.0, height: 2.0 }),
+    is Some({ x: 1.0, y: 2.0, width: 8.0, height: 2.0, }),
   )
   let omitted = extract_source_subjects_or_raise(
       "<svg><path d='M1 2 A5 5 0 1 1 1 2'/></svg>",

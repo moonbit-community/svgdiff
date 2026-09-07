@@ -294,7 +294,7 @@ test "event-local FLIP budget exhaustion does not alter other evidence" {
     before,
     after,
     flip_test_profile(),
-    { ..default_resource_limits(), max_perceptual_map_pixels: 1 },
+    { ..default_resource_limits(), max_perceptual_map_pixels: 1, },
   )
   assert_eq(
     limited.events[0].rendered_outcome.perceptual_flip.reason_code,

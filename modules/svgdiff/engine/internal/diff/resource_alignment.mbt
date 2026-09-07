@@ -207,7 +207,7 @@ fn attach_resource_alignment_ids(report : StructuredReport) -> StructuredReport 
           None => sole_resource_alignment(report.subject_alignments, kinds)
         }
     }
-    differences.push({ ..difference, subject_alignment_id: alignment_id })
+    differences.push({ ..difference, subject_alignment_id: alignment_id, })
   }
-  { ..report, atomic_differences: differences }
+  { ..report, atomic_differences: differences, }
 }

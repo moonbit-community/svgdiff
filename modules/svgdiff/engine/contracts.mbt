@@ -77,7 +77,7 @@ pub(all) struct ResourceBundle {
 
 ///|
 pub fn ResourceBundle::empty() -> ResourceBundle {
-  { entries: [] }
+  { entries: [], }
 }
 
 ///|
@@ -89,7 +89,7 @@ pub(all) struct ComparisonControl {
 ///|
 pub fn ComparisonControl::unlimited() -> ComparisonControl {
   let should_cancel : () -> Bool = () => false
-  { should_cancel, max_checkpoints: None }
+  { should_cancel, max_checkpoints: None, }
 }
 
 ///|

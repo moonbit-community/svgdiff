@@ -22,7 +22,7 @@ fn stroke_geometry_test_fact(
     authored_value: value,
     declared_value: value,
     origin: "presentation_attribute",
-    source_span: { start_offset: 1, end_offset: value.length() + 1 },
+    source_span: { start_offset: 1, end_offset: value.length() + 1, },
   }
 }
 
@@ -95,7 +95,7 @@ test "stroke dash lists duplicate odd values and normalize offsets" {
 ///|
 test "stroke dash grammar accepts compact signs and exponents" {
   let profile = ComparisonProfile::v1_default()
-  let viewport : ViewportContext = { width: 16.0, height: 16.0 }
+  let viewport : ViewportContext = { width: 16.0, height: 16.0, }
   let (values, complete) = parse_stroke_dasharray_with_context(
     ".5e1 3-2", viewport, profile,
   )
@@ -147,7 +147,7 @@ fn test_resolve_stroke_geometry(
 ) -> StrokeGeometryResolution {
   resolve_stroke_geometry_with_context(
     facts,
-    { width: 16.0, height: 16.0 },
+    { width: 16.0, height: 16.0, },
     ComparisonProfile::v1_default(),
   )
 }

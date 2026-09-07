@@ -47,9 +47,9 @@ fn ensure_changed_fact_tokens(report : StructuredReport) -> StructuredReport {
         ],
       })
     }
-    differences.push({ ..difference, changed_fact_ids: ids })
+    differences.push({ ..difference, changed_fact_ids: ids, })
   }
-  { ..report, changed_facts, atomic_differences: differences }
+  { ..report, changed_facts, atomic_differences: differences, }
 }
 
 ///|
@@ -161,11 +161,11 @@ pub fn build_subject_influence_index(
         }
       }
       if !found {
-        entries.push({ subject_id, fact_ids: [fact.id] })
+        entries.push({ subject_id, fact_ids: [fact.id], })
       }
     }
   }
-  { fact_order, entries }
+  { fact_order, entries, }
 }
 
 ///|
@@ -365,7 +365,7 @@ pub fn attach_cause_envelopes(
         },
       })
     }
-    events.push({ ..event, difference_regions: regions })
+    events.push({ ..event, difference_regions: regions, })
   }
   { ..report, events, }
 }

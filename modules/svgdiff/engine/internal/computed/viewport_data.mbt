@@ -68,12 +68,12 @@ pub(all) struct SourceViewportResolution {
 
 ///|
 pub fn default_preserve_aspect_ratio() -> PreserveAspectRatioValue {
-  { alignment: XMidYMid, fit: Meet }
+  { alignment: XMidYMid, fit: Meet, }
 }
 
 ///|
 pub fn parse_view_box_value(source : String) -> ViewBoxValue? {
-  let parser : NumberParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0, }
   let values : Array[Double] = []
   ignore(parser.skip_whitespace())
   while parser.position < source.length() {
@@ -97,7 +97,7 @@ pub fn parse_view_box_value(source : String) -> ViewBoxValue? {
   }
   match values {
     [min_x, min_y, width, height] if width > 0.0 && height > 0.0 =>
-      Some({ min_x, min_y, width, height })
+      Some({ min_x, min_y, width, height, })
     _ => None
   }
 }
@@ -137,21 +137,21 @@ pub fn parse_preserve_aspect_ratio_value(
   match normalized_viewport_tokens(source) {
     [alignment] =>
       match viewport_alignment(alignment) {
-        Some(ViewportNone) => Some({ alignment: ViewportNone, fit: Meet })
-        Some(alignment) => Some({ alignment, fit: Meet })
+        Some(ViewportNone) => Some({ alignment: ViewportNone, fit: Meet, })
+        Some(alignment) => Some({ alignment, fit: Meet, })
         None => None
       }
     [alignment, fit] =>
       match viewport_alignment(alignment) {
         Some(ViewportNone) =>
           match fit {
-            "meet" | "slice" => Some({ alignment: ViewportNone, fit: Meet })
+            "meet" | "slice" => Some({ alignment: ViewportNone, fit: Meet, })
             _ => None
           }
         Some(alignment) =>
           match fit {
-            "meet" => Some({ alignment, fit: Meet })
-            "slice" => Some({ alignment, fit: Slice })
+            "meet" => Some({ alignment, fit: Meet, })
+            "slice" => Some({ alignment, fit: Slice, })
             _ => None
           }
         None => None
@@ -418,10 +418,10 @@ pub fn source_viewport_resolution(
   }
   let child_context = match view_box {
     Some(view_box) if complete =>
-      { width: view_box.width, height: view_box.height }
-    _ => { width, height }
+      { width: view_box.width, height: view_box.height, }
+    _ => { width, height, }
   }
-  { facts, invalid_facts, matrix, child_context, complete }
+  { facts, invalid_facts, matrix, child_context, complete, }
 }
 
 ///|

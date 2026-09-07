@@ -14,7 +14,7 @@
 
 ///|
 test "SVG lengths resolve absolute CSS units without losing precision" {
-  let viewport : ViewportContext = { width: 200.0, height: 100.0 }
+  let viewport : ViewportContext = { width: 200.0, height: 100.0, }
   let profile = {
     ..ComparisonProfile::v1_default(),
     viewport_width: 200,
@@ -41,7 +41,7 @@ test "SVG lengths resolve absolute CSS units without losing precision" {
 
 ///|
 test "SVG percentages use directional nearest viewport bases" {
-  let viewport : ViewportContext = { width: 200.0, height: 100.0 }
+  let viewport : ViewportContext = { width: 200.0, height: 100.0, }
   let profile = {
     ..ComparisonProfile::v1_default(),
     viewport_width: 800,
@@ -55,7 +55,7 @@ test "SVG percentages use directional nearest viewport bases" {
 
 ///|
 test "SVG viewport units use the explicit initial comparison viewport" {
-  let nested : ViewportContext = { width: 20.0, height: 10.0 }
+  let nested : ViewportContext = { width: 20.0, height: 10.0, }
   let profile = {
     ..ComparisonProfile::v1_default(),
     viewport_width: 800,
@@ -75,7 +75,7 @@ test "SVG viewport units use the explicit initial comparison viewport" {
 
 ///|
 test "environment-dependent and arithmetic SVG lengths remain unsupported" {
-  let viewport : ViewportContext = { width: 200.0, height: 100.0 }
+  let viewport : ViewportContext = { width: 200.0, height: 100.0, }
   let profile = {
     ..ComparisonProfile::v1_default(),
     viewport_width: 200,
@@ -134,7 +134,7 @@ test "stroke lengths share absolute percentage and viewport resolution" {
     viewport_width: 200,
     viewport_height: 100,
   }
-  let viewport : ViewportContext = { width: 200.0, height: 100.0 }
+  let viewport : ViewportContext = { width: 200.0, height: 100.0, }
   let resolution = resolve_stroke_geometry_with_context(
     [
       stroke_geometry_test_fact("stroke-width", "1in"),

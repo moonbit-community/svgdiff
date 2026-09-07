@@ -25,7 +25,7 @@ pub struct CanonicalRasterCapture {
 
 ///|
 pub fn CanonicalRasterCapture::new() -> CanonicalRasterCapture {
-  { pair: None }
+  { pair: None, }
 }
 
 ///|
@@ -34,7 +34,7 @@ pub fn CanonicalRasterCapture::store(
   before : @svg.Image,
   after : @svg.Image,
 ) -> Unit {
-  self.pair = Some({ before, after })
+  self.pair = Some({ before, after, })
 }
 
 ///|

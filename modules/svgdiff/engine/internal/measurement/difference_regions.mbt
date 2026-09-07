@@ -104,7 +104,7 @@ fn coalesce_pixel_regions(
     regions.push(merged)
   }
   for index, region in regions {
-    regions[index] = { ..region, id: "region:pixel:\{index}" }
+    regions[index] = { ..region, id: "region:pixel:\{index}", }
   }
   regions
 }
@@ -382,7 +382,7 @@ priv struct EventIsolationBudget {
 
 ///|
 fn EventIsolationBudget::new() -> EventIsolationBudget {
-  { comparisons: 0, raster_pixels: 0 }
+  { comparisons: 0, raster_pixels: 0, }
 }
 
 ///|

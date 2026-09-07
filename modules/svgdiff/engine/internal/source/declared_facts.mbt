@@ -342,7 +342,7 @@ pub fn inline_style_facts(
     ) {
     complete = false
   }
-  { facts: cascade_visual_declarations(candidates), candidates, complete }
+  { facts: cascade_visual_declarations(candidates), candidates, complete, }
 }
 
 ///|
@@ -385,7 +385,11 @@ pub fn rect_declared_facts_from_element(
   if !stylesheet_match.complete {
     push_unique(coverage_codes, "css_cascade_unsupported")
   }
-  { subject_id, facts: cascade_visual_declarations(candidates), coverage_codes }
+  {
+    subject_id,
+    facts: cascade_visual_declarations(candidates),
+    coverage_codes,
+  }
 }
 
 ///|

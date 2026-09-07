@@ -53,7 +53,7 @@ test "viewport lengths use the shared SVG unit resolver" {
     viewport_width: 80,
     viewport_height: 40,
   }
-  let viewport : ViewportContext = { width: 80.0, height: 40.0 }
+  let viewport : ViewportContext = { width: 80.0, height: 40.0, }
   assert_eq(
     parse_viewport_length("12", Horizontal, viewport, profile).unwrap().value,
     12.0,

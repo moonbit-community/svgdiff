@@ -93,7 +93,7 @@ pub(all) struct PathBoundaryBudget {
 
 ///|
 pub fn PathBoundaryBudget::new() -> PathBoundaryBudget {
-  { comparisons: 0, raster_pixels: 0 }
+  { comparisons: 0, raster_pixels: 0, }
 }
 
 ///|

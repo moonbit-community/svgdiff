@@ -37,7 +37,7 @@ pub fn points_bounds(subject : SourceSubject) -> CssBounds? {
     max_y = max_y.max(points[index + 1])
     index += 2
   }
-  Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+  Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y, })
 }
 
 ///|
@@ -126,7 +126,7 @@ pub fn path_control_hull_bounds(subject : SourceSubject) -> CssBounds? {
   if !drawable || point_count == 0 {
     None
   } else {
-    Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+    Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y, })
   }
 }
 
@@ -169,7 +169,7 @@ pub fn source_subject_geometry_bounds(subject : SourceSubject) -> CssBounds? {
         (Some(rx), Some(ry)) => {
           let cx = bounds_number(subject, "cx").unwrap_or(0.0)
           let cy = bounds_number(subject, "cy").unwrap_or(0.0)
-          Some({ x: cx - rx, y: cy - ry, width: rx * 2.0, height: ry * 2.0 })
+          Some({ x: cx - rx, y: cy - ry, width: rx * 2.0, height: ry * 2.0, })
         }
         _ => None
       }

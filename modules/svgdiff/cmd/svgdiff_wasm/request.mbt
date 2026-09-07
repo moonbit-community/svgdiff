@@ -135,7 +135,7 @@ fn decode_compare_request(
 
 ///|
 fn[T] invalid_request(message : String) -> Result[T, WasmFailure] {
-  Err({ error_kind: error_invalid_request, message })
+  Err({ error_kind: error_invalid_request, message, })
 }
 
 ///|

@@ -29,7 +29,7 @@ fn transform_component_relation(
   reason_code : String,
   diagnostic_ids : Array[String],
 ) -> ComputedRelation {
-  { status: "different", reason_code, missing_side: None, diagnostic_ids }
+  { status: "different", reason_code, missing_side: None, diagnostic_ids, }
 }
 
 ///|

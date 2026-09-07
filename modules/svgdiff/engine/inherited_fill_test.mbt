@@ -515,7 +515,7 @@ test "malformed variable syntax remains explicitly guarded" {
 
 ///|
 test "excessive variable expansion remains explicitly guarded" {
-  let declarations = StringBuilder::new()
+  let declarations = StringBuilder()
   for index in 0..<65 {
     declarations.write_string("--v\{index}:var(--v\{index + 1});")
   }

@@ -214,5 +214,5 @@ pub fn svg_arc_bounds(
       max_y = max_y.max(y)
     }
   }
-  Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y })
+  Some({ x: min_x, y: min_y, width: max_x - min_x, height: max_y - min_y, })
 }

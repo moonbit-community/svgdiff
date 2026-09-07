@@ -310,7 +310,7 @@ pub fn compare_with_resources(
       after_svg,
       profile,
       default_resource_limits(),
-      { before: before_resources, after: after_resources },
+      { before: before_resources, after: after_resources, },
       ComparisonGuard::new(ComparisonControl::unlimited()),
       None,
     )
@@ -355,7 +355,7 @@ pub fn compare_with_control_and_resources(
     after_svg,
     profile,
     default_resource_limits(),
-    { before: before_resources, after: after_resources },
+    { before: before_resources, after: after_resources, },
     ComparisonGuard::new(control),
     None,
   )
@@ -382,9 +382,9 @@ pub fn compare_artifact_with_control_and_resources(
     after_svg,
     profile,
     default_resource_limits(),
-    { before: before_resources, after: after_resources },
+    { before: before_resources, after: after_resources, },
     ComparisonGuard::new(control),
     Some(capture),
   )
-  { report, difference_rgba: capture.difference_rgba() }
+  { report, difference_rgba: capture.difference_rgba(), }
 }

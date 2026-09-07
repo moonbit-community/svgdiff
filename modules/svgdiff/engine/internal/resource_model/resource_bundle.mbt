@@ -32,7 +32,7 @@ pub(all) struct ResourceBundle {
 ///|
 /// Construct a bundle that supplies no external resources.
 pub fn ResourceBundle::empty() -> ResourceBundle {
-  { entries: [] }
+  { entries: [], }
 }
 
 ///|
@@ -43,7 +43,7 @@ pub(all) struct ComparisonResourceBundles {
 
 ///|
 pub fn ComparisonResourceBundles::empty() -> ComparisonResourceBundles {
-  { before: ResourceBundle::empty(), after: ResourceBundle::empty() }
+  { before: ResourceBundle::empty(), after: ResourceBundle::empty(), }
 }
 
 ///|

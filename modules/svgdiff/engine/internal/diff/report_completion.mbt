@@ -100,7 +100,7 @@ fn attach_subject_alignments(
         None => ()
       }
     }
-    differences.push({ ..difference, subject_alignment_id: alignment_id })
+    differences.push({ ..difference, subject_alignment_id: alignment_id, })
   }
   {
     schema_version: report.schema_version,

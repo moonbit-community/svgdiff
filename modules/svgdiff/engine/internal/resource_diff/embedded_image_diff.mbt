@@ -501,7 +501,7 @@ fn append_embedded_image_correspondence(
             missing_side: None,
             diagnostic_ids: [],
           },
-          { ..empty_difference_magnitude(), intrinsic_raster: Some(intrinsic) },
+          { ..empty_difference_magnitude(), intrinsic_raster: Some(intrinsic), },
           difference_ids,
         )
       }

@@ -774,5 +774,5 @@ pub fn attach_filter_differences(
       difference_regions: [],
     })
   }
-  { ..report, changed_facts, atomic_differences: differences, events }
+  { ..report, changed_facts, atomic_differences: differences, events, }
 }

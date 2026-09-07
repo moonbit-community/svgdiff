@@ -22,7 +22,7 @@ fn shape_geometry_test_fact(
     authored_value: value,
     declared_value: value,
     origin: "presentation_attribute",
-    source_span: { start_offset: 1, end_offset: value.length() + 1 },
+    source_span: { start_offset: 1, end_offset: value.length() + 1, },
   }
 }
 
@@ -142,7 +142,7 @@ fn test_resolve_basic_shape_geometry(
   resolve_basic_shape_geometry_with_context(
     kind,
     facts,
-    { width: 16.0, height: 16.0 },
+    { width: 16.0, height: 16.0, },
     profile,
   )
 }

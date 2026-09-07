@@ -111,7 +111,7 @@ pub fn generic_effective_paint(
   guard generic_subject_alpha(subject, "opacity") is Some(opacity) else {
     return Some(color.signature())
   }
-  Some({ ..color, alpha: color.alpha * paint_opacity * opacity }.signature())
+  Some({ ..color, alpha: color.alpha * paint_opacity * opacity, }.signature())
 }
 
 ///|

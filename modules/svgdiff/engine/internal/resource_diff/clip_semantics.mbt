@@ -397,5 +397,5 @@ pub fn attach_clip_path_differences(
       }
     }
   }
-  { ..report, changed_facts, atomic_differences: differences, events }
+  { ..report, changed_facts, atomic_differences: differences, events, }
 }

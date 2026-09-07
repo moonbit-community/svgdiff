@@ -566,7 +566,7 @@ test "filter excluded semantics retain precise diagnostics" {
 
 ///|
 test "filter graph execution has a fixed primitive budget" {
-  let source = StringBuilder::new()
+  let source = StringBuilder()
   source.write_string("<svg><defs><filter id='f'>")
   for _ in 0..<257 {
     source.write_string("<feOffset/>")

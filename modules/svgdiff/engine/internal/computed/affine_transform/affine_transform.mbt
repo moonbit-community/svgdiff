@@ -36,7 +36,7 @@ pub(all) enum TransformListParse {
 
 ///|
 pub fn AffineTransform::identity() -> AffineTransform {
-  { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: 0.0, f: 0.0 }
+  { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: 0.0, f: 0.0, }
 }
 
 ///|
@@ -58,12 +58,12 @@ pub fn AffineTransform::max_linear_scale(self : AffineTransform) -> Double {
 
 ///|
 pub fn AffineTransform::translate(tx : Double, ty : Double) -> AffineTransform {
-  { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: tx, f: ty }
+  { a: 1.0, b: 0.0, c: 0.0, d: 1.0, e: tx, f: ty, }
 }
 
 ///|
 pub fn AffineTransform::scale(sx : Double, sy : Double) -> AffineTransform {
-  { a: sx, b: 0.0, c: 0.0, d: sy, e: 0.0, f: 0.0 }
+  { a: sx, b: 0.0, c: 0.0, d: sy, e: 0.0, f: 0.0, }
 }
 
 ///|
@@ -87,17 +87,17 @@ fn exact_rotation_components(degrees : Double) -> (Double, Double) {
 ///|
 pub fn AffineTransform::rotate(degrees : Double) -> AffineTransform {
   let (cosine, sine) = exact_rotation_components(degrees)
-  { a: cosine, b: sine, c: -sine, d: cosine, e: 0.0, f: 0.0 }
+  { a: cosine, b: sine, c: -sine, d: cosine, e: 0.0, f: 0.0, }
 }
 
 ///|
 pub fn AffineTransform::skew_x(degrees : Double) -> AffineTransform {
-  { a: 1.0, b: 0.0, c: exact_skew_tangent(degrees), d: 1.0, e: 0.0, f: 0.0 }
+  { a: 1.0, b: 0.0, c: exact_skew_tangent(degrees), d: 1.0, e: 0.0, f: 0.0, }
 }
 
 ///|
 pub fn AffineTransform::skew_y(degrees : Double) -> AffineTransform {
-  { a: 1.0, b: exact_skew_tangent(degrees), c: 0.0, d: 1.0, e: 0.0, f: 0.0 }
+  { a: 1.0, b: exact_skew_tangent(degrees), c: 0.0, d: 1.0, e: 0.0, f: 0.0, }
 }
 
 ///|
@@ -252,7 +252,7 @@ fn parse_transform_arguments(
 
 ///|
 fn normalized_argument_signature(arguments : Array[Double]) -> String {
-  let result = StringBuilder::new()
+  let result = StringBuilder()
   for index, argument in arguments {
     if index > 0 {
       result.write_char(',')
@@ -268,7 +268,7 @@ fn transform_function_matrix(
   arguments : Array[Double],
 ) -> AffineTransform? {
   match (name, arguments) {
-    ("matrix", [a, b, c, d, e, f]) => Some({ a, b, c, d, e, f })
+    ("matrix", [a, b, c, d, e, f]) => Some({ a, b, c, d, e, f, })
     ("translate", [tx]) => Some(AffineTransform::translate(tx, 0.0))
     ("translate", [tx, ty]) => Some(AffineTransform::translate(tx, ty))
     ("scale", [scale]) => Some(AffineTransform::scale(scale, scale))
@@ -288,9 +288,9 @@ fn transform_function_matrix(
 
 ///|
 pub fn parse_transform_list(value : String) -> TransformListParse {
-  let parser : @number_parser.NumberParser = { data: value, position: 0 }
+  let parser : @number_parser.NumberParser = { data: value, position: 0, }
   let mut matrix = AffineTransform::identity()
-  let signature = StringBuilder::new()
+  let signature = StringBuilder()
   let mut function_count = 0
   ignore(parser.skip_whitespace())
   while parser.position < value.length() {
@@ -331,7 +331,7 @@ pub fn parse_transform_list(value : String) -> TransformListParse {
       return InvalidTransformList
     }
   }
-  ValidTransformList({ matrix, signature: signature.to_string() })
+  ValidTransformList({ matrix, signature: signature.to_string(), })
 }
 
 ///|

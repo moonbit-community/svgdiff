@@ -178,5 +178,5 @@ pub fn empty_impact_assessment() -> ImpactAssessment {
 
 ///|
 pub fn attach_impact_assessment(report : StructuredReport) -> StructuredReport {
-  { ..report, impact_assessment: impact_assessment_for_events(report.events) }
+  { ..report, impact_assessment: impact_assessment_for_events(report.events), }
 }

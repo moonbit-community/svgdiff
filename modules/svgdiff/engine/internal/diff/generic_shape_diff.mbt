@@ -682,7 +682,7 @@ fn append_or_merge_changed_fact(
         }
       }
       affected.sort()
-      changed_facts[index] = { ..fact, affected_subject_ids: affected }
+      changed_facts[index] = { ..fact, affected_subject_ids: affected, }
       return
     }
   }

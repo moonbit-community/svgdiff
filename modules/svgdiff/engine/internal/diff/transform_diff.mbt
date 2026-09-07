@@ -618,5 +618,5 @@ fn attach_transform_differences(
       _ => ()
     }
   }
-  { ..report, changed_facts, atomic_differences: differences, events }
+  { ..report, changed_facts, atomic_differences: differences, events, }
 }

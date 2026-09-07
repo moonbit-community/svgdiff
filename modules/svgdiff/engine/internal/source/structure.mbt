@@ -194,7 +194,7 @@ pub fn extract_structural_document_or_raise(
       _ => ()
     }
   }
-  { nodes, id_indices }
+  { nodes, id_indices, }
 }
 
 ///|

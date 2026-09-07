@@ -122,5 +122,5 @@ pub fn compare_artifact_with_control_and_resources(
     CheckpointBudgetExceeded(max_checkpoints~) =>
       raise CheckpointBudgetExceeded(max_checkpoints~)
   }
-  { report: artifact.report, difference_rgba: artifact.difference_rgba }
+  { report: artifact.report, difference_rgba: artifact.difference_rgba, }
 }

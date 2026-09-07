@@ -29,7 +29,7 @@ pub fn rendered_plan_fill_hierarchy(
       node.kind == "radialGradient" ||
       node.kind == "pattern" {
       match authored_subject_id(node.element) {
-        Some(id) => paint_server_targets.push({ id, kind: node.kind })
+        Some(id) => paint_server_targets.push({ id, kind: node.kind, })
         None => ()
       }
     }
@@ -91,7 +91,7 @@ pub fn source_use_transform_site(
         match
           parse_viewport_length(attribute.value, direction, viewport, profile) {
           Some(resolved) => {
-            facts.push({ ..fact, declared_value: resolved.value.to_string() })
+            facts.push({ ..fact, declared_value: resolved.value.to_string(), })
             if attribute.name.local_name == "x" {
               x = resolved.value
             } else {
@@ -161,7 +161,7 @@ pub fn source_instanced_viewport_resolution(
             profile,
           ) {
           Some(resolved) if !positive || resolved.value > 0.0 => {
-            facts.push({ ..fact, declared_value: resolved.value.to_string() })
+            facts.push({ ..fact, declared_value: resolved.value.to_string(), })
             resolved.value
           }
           _ => {
@@ -271,10 +271,10 @@ pub fn source_instanced_viewport_resolution(
     AffineTransform::identity()
   }
   let child_context : ViewportContext = match view_box {
-    Some(value) if complete => { width: value.width, height: value.height }
-    _ => { width, height }
+    Some(value) if complete => { width: value.width, height: value.height, }
+    _ => { width, height, }
   }
-  { facts, invalid_facts, matrix, child_context, complete }
+  { facts, invalid_facts, matrix, child_context, complete, }
 }
 
 ///|

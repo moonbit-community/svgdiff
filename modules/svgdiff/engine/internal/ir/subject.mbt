@@ -103,7 +103,7 @@ pub fn source_subject_resolution(
 ) -> ResolvedVisualFact? {
   for fact in subject.resolved_visual_facts {
     if fact.property == property {
-      return Some({ ..fact, subject_id: source_subject_id(subject) })
+      return Some({ ..fact, subject_id: source_subject_id(subject), })
     }
   }
   None

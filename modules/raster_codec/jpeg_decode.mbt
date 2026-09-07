@@ -26,7 +26,7 @@ priv struct JpegBitReader {
 
 ///|
 fn JpegBitReader::new(data : Bytes, pos : Int) -> JpegBitReader {
-  { data, pos, bit_buf: 0, bits_left: 0 }
+  { data, pos, bit_buf: 0, bits_left: 0, }
 }
 
 ///|
@@ -104,7 +104,7 @@ fn build_huffman_table(
     }
     code = code << 1
   }
-  { min_code, max_code, val_ptr, values }
+  { min_code, max_code, val_ptr, values, }
 }
 
 ///|
@@ -388,9 +388,9 @@ pub fn decode_jpeg_bounded(
         if v > max_v {
           max_v = v
         }
-        components.push({ id, h_sample: h, v_sample: v, quant_id: qid })
+        components.push({ id, h_sample: h, v_sample: v, quant_id: qid, })
       }
-      frame_info = Some({ width, height, components, max_h, max_v })
+      frame_info = Some({ width, height, components, max_h, max_v, })
     } else if marker == 0xC4 {
       // DHT - Define Huffman Table
       let mut hpos = pos + 2
@@ -653,7 +653,7 @@ pub fn decode_jpeg_bounded(
       }
     }
   }
-  { width: fi.width, height: fi.height, data: Bytes::from_array(out_buf) }
+  { width: fi.width, height: fi.height, data: Bytes::from_array(out_buf), }
 }
 
 ///|

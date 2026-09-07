@@ -18,7 +18,7 @@ fn test_raster_bundle(
   media_type : String,
   payload : String,
 ) -> ResourceBundle raise {
-  { entries: [{ locator, media_type, bytes: @base64.decode(payload[:]) }] }
+  { entries: [{ locator, media_type, bytes: @base64.decode(payload[:]), }], }
 }
 
 ///|
@@ -157,8 +157,8 @@ test "invalid bundle configuration fails before source comparison" {
   let bytes = @base64.decode(embedded_red_png_base64[:])
   let duplicate : ResourceBundle = {
     entries: [
-      { locator: "asset.png", media_type: "image/png", bytes },
-      { locator: " asset.png ", media_type: "image/png", bytes },
+      { locator: "asset.png", media_type: "image/png", bytes, },
+      { locator: " asset.png ", media_type: "image/png", bytes, },
     ],
   }
   let report = compare_with_resources(
@@ -178,7 +178,7 @@ test "invalid bundle configuration fails before source comparison" {
   for locator in ["", "#local", "data:image/png;base64,x"] {
     assert_true(
       validate_resource_bundle(
-        { entries: [{ locator, media_type: "image/png", bytes }] },
+        { entries: [{ locator, media_type: "image/png", bytes, }], },
         "before",
         default_resource_limits(),
       )
@@ -187,7 +187,7 @@ test "invalid bundle configuration fails before source comparison" {
   }
   assert_true(
     validate_resource_bundle(
-      { entries: [{ locator: "asset", media_type: "image/gif", bytes }] },
+      { entries: [{ locator: "asset", media_type: "image/gif", bytes, }], },
       "before",
       default_resource_limits(),
     )
@@ -199,7 +199,7 @@ test "invalid bundle configuration fails before source comparison" {
 test "bundle admission budgets have exact boundaries" {
   let bytes = @base64.decode(embedded_red_png_base64[:])
   let bundle : ResourceBundle = {
-    entries: [{ locator: "asset.png", media_type: "image/png", bytes }],
+    entries: [{ locator: "asset.png", media_type: "image/png", bytes, }],
   }
   let exact = {
     ..default_resource_limits(),
@@ -264,7 +264,7 @@ test "controlled bundle comparison observes cancellation" {
       ComparisonProfile::v1_default(),
       bundle,
       bundle,
-      { should_cancel: () => true, max_checkpoints: None },
+      { should_cancel: () => true, max_checkpoints: None, },
     )
   catch {
     Cancelled => ()

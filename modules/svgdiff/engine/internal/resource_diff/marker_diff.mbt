@@ -43,14 +43,17 @@ fn marker_resource_pairs(
     }
     if selected >= 0 {
       used[selected] = true
-      pairs.push({ before: Some(before_resource), after: Some(after[selected]) })
+      pairs.push({
+        before: Some(before_resource),
+        after: Some(after[selected]),
+      })
     } else {
-      pairs.push({ before: Some(before_resource), after: None })
+      pairs.push({ before: Some(before_resource), after: None, })
     }
   }
   for index, after_resource in after {
     if !used[index] {
-      pairs.push({ before: None, after: Some(after_resource) })
+      pairs.push({ before: None, after: Some(after_resource), })
     }
   }
   pairs
@@ -485,7 +488,7 @@ pub fn attach_marker_resource_differences(
       _ => ()
     }
   }
-  { ..report, changed_facts, atomic_differences: differences, events }
+  { ..report, changed_facts, atomic_differences: differences, events, }
 }
 
 ///|

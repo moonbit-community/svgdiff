@@ -116,7 +116,7 @@ fn append_atomic_to_owner_event(
   }
   for event in source_events {
     if event.atomic_difference_ids.contains(difference.id) {
-      events.push({ ..event, atomic_difference_ids: [difference.id] })
+      events.push({ ..event, atomic_difference_ids: [difference.id], })
       return
     }
   }
@@ -146,7 +146,7 @@ fn compose_analysis_reports(
   let differences = base_report.atomic_differences.copy()
   let events = [
     for event in base_report.events => {
-      { ..event, atomic_difference_ids: event.atomic_difference_ids.copy() }
+      { ..event, atomic_difference_ids: event.atomic_difference_ids.copy(), }
     }
   ]
   let original_base_count = differences.length()

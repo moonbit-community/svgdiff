@@ -539,7 +539,7 @@ pub fn parse_path_attribute_data(
   if raw_data.find("&") is None {
     return parse_path_data(raw_data, base_offset)
   }
-  let decoded = StringBuilder::new()
+  let decoded = StringBuilder()
   let boundaries : Array[Int] = [0]
   let mut position = 0
   while position < raw_data.length() {
@@ -613,12 +613,12 @@ fn numeric_path_parameter(
   name : String,
   value : Double,
 ) -> NormalizedPathParameter {
-  { name, value: value.to_string(), numeric_value: Some(value) }
+  { name, value: value.to_string(), numeric_value: Some(value), }
 }
 
 ///|
 fn flag_path_parameter(name : String, value : Bool) -> NormalizedPathParameter {
-  { name, value: value.to_string(), numeric_value: None }
+  { name, value: value.to_string(), numeric_value: None, }
 }
 
 ///|

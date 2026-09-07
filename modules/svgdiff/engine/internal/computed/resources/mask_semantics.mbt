@@ -92,7 +92,7 @@ pub fn mask_issue(
         (value.source_span.start_offset, value.source_span.end_offset)
       })
     }) {
-    document.issues.push({ code, subject_id, fact })
+    document.issues.push({ code, subject_id, fact, })
   }
 }
 
@@ -107,9 +107,9 @@ pub fn mask_dynamic_kind(kind : String) -> Bool {
 ///|
 pub fn mask_default_length(property : String) -> MaskLength {
   match property {
-    "x" | "y" => { value: -0.1, percentage: true }
-    "width" | "height" => { value: 1.2, percentage: true }
-    _ => { value: 0.0, percentage: false }
+    "x" | "y" => { value: -0.1, percentage: true, }
+    "width" | "height" => { value: 1.2, percentage: true, }
+    _ => { value: 0.0, percentage: false, }
   }
 }
 
@@ -129,11 +129,11 @@ pub fn mask_length_from_fact(
       is Some(value) else {
       return (mask_default_length(property), false)
     }
-    return ({ value: value / 100.0, percentage: true }, true)
+    return ({ value: value / 100.0, percentage: true, }, true)
   }
   if units == "objectBoundingBox" {
     return match parse_shape_number(source) {
-      Some(value) => ({ value, percentage: false }, true)
+      Some(value) => ({ value, percentage: false, }, true)
       None => (mask_default_length(property), false)
     }
   }
@@ -147,7 +147,7 @@ pub fn mask_length_from_fact(
       },
       profile,
     ) {
-    Some(value) => ({ value, percentage: false }, true)
+    Some(value) => ({ value, percentage: false, }, true)
     None => (mask_default_length(property), false)
   }
 }
@@ -889,7 +889,7 @@ pub fn mask_application_bounds(
     return (None, false)
   }
   let region_host : CssBounds = if resource.mask_units == "objectBoundingBox" {
-    { x: 0.0, y: 0.0, width: 1.0, height: 1.0 }
+    { x: 0.0, y: 0.0, width: 1.0, height: 1.0, }
   } else {
     host_local
   }

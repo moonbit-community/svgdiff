@@ -58,7 +58,7 @@ pub fn canonical_shape_number(value : Double) -> String {
 
 ///|
 pub fn parse_shape_number(source : String) -> Double? {
-  let parser : NumberParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0, }
   ignore(parser.skip_whitespace())
   guard parser.parse_number() is Some(value) else { return None }
   ignore(parser.skip_whitespace())
@@ -220,7 +220,7 @@ pub fn resolved_shape_number_value(
 
 ///|
 pub fn parse_shape_points(source : String) -> (Array[Double], Bool, Bool) {
-  let parser : NumberParser = { data: source, position: 0 }
+  let parser : NumberParser = { data: source, position: 0, }
   let values : Array[Double] = []
   ignore(parser.skip_whitespace())
   while parser.position < source.length() {

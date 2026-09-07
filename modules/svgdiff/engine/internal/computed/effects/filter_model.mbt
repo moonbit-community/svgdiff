@@ -131,16 +131,16 @@ fn filter_issue(
         (value.source_span.start_offset, value.source_span.end_offset)
       })
     }) {
-    document.issues.push({ code, subject_id, fact })
+    document.issues.push({ code, subject_id, fact, })
   }
 }
 
 ///|
 fn filter_default_length(property : String) -> FilterLength {
   match property {
-    "x" | "y" => { value: -0.1, percentage: true }
-    "width" | "height" => { value: 1.2, percentage: true }
-    _ => { value: 0.0, percentage: false }
+    "x" | "y" => { value: -0.1, percentage: true, }
+    "width" | "height" => { value: 1.2, percentage: true, }
+    _ => { value: 0.0, percentage: false, }
   }
 }
 
@@ -162,11 +162,11 @@ fn filter_length_from_fact(
       is Some(value) else {
       return (filter_default_length(property), false)
     }
-    return ({ value: value / 100.0, percentage: true }, true)
+    return ({ value: value / 100.0, percentage: true, }, true)
   }
   if units == "objectBoundingBox" {
     return match parse_shape_number(source) {
-      Some(value) => ({ value, percentage: false }, true)
+      Some(value) => ({ value, percentage: false, }, true)
       None => (filter_default_length(property), false)
     }
   }
@@ -180,7 +180,7 @@ fn filter_length_from_fact(
       },
       profile,
     ) {
-    Some(value) => ({ value, percentage: false }, true)
+    Some(value) => ({ value, percentage: false, }, true)
     None => (filter_default_length(property), false)
   }
 }
@@ -842,7 +842,7 @@ fn filter_region_for_bounds(
   if width <= 0.0 || height <= 0.0 {
     None
   } else {
-    Some({ x, y, width, height })
+    Some({ x, y, width, height, })
   }
 }
 

@@ -164,7 +164,7 @@ fn parse_hex_color(source : String) -> SrgbaColor? {
       } else {
         1.0
       }
-      Some({ red: red * 17, green: green * 17, blue: blue * 17, alpha })
+      Some({ red: red * 17, green: green * 17, blue: blue * 17, alpha, })
     }
     7 | 9 => {
       guard parse_hex_pair(source, 1) is Some(red) else { return None }
@@ -176,7 +176,7 @@ fn parse_hex_color(source : String) -> SrgbaColor? {
       } else {
         1.0
       }
-      Some({ red, green, blue, alpha })
+      Some({ red, green, blue, alpha, })
     }
     _ => None
   }
@@ -294,7 +294,7 @@ fn parse_hsl_color(source : String, alpha_required : Bool) -> SrgbaColor? {
   }
   if saturation == 0.0 {
     let channel = clamp_byte(lightness * 255.0)
-    return Some({ red: channel, green: channel, blue: channel, alpha })
+    return Some({ red: channel, green: channel, blue: channel, alpha, })
   }
   let m2 = if lightness <= 0.5 {
     lightness * (saturation + 1.0)
@@ -508,7 +508,7 @@ pub fn parse_solid_color(source : String) -> SolidColorParse {
     return CurrentColor
   }
   if value == "transparent" {
-    return Resolved({ red: 0, green: 0, blue: 0, alpha: 0.0 })
+    return Resolved({ red: 0, green: 0, blue: 0, alpha: 0.0, })
   }
   if system_color_keyword(value) {
     return SystemColor(value)

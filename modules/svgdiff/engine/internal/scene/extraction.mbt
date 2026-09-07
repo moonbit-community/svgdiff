@@ -128,7 +128,7 @@ fn scene_object_bounds(
   }
   match bounds {
     Some(value) =>
-      Some({ x: value.x, y: value.y, width: value.width, height: value.height })
+      Some({ x: value.x, y: value.y, width: value.width, height: value.height, })
     None => None
   }
 }

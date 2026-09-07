@@ -36,7 +36,7 @@ pub fn empty_difference_magnitude() -> DifferenceMagnitude {
 
 ///|
 pub fn empty_domain_ordering() -> DomainOrdering {
-  { policy_id: "v2_domain_lexicographic", components: [] }
+  { policy_id: "v2_domain_lexicographic", components: [], }
 }
 
 ///|
@@ -44,7 +44,7 @@ pub fn diagnostic_location(
   source_role : String,
   span : ReportSourceSpan,
 ) -> DiagnosticSourceLocation {
-  { source_role, source_span: span }
+  { source_role, source_span: span, }
 }
 
 ///|
@@ -65,7 +65,7 @@ pub fn unlocated_diagnostic(
   subject_id : String,
   affected_evidence_layers : Array[String],
 ) -> Diagnostic {
-  { id, code, subject_id, affected_evidence_layers, source_locations: [] }
+  { id, code, subject_id, affected_evidence_layers, source_locations: [], }
 }
 
 ///|

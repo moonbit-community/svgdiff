@@ -179,13 +179,13 @@ fn evidence_domains(
     let mut found = false
     for index, domain in domains {
       if domain.domain == difference.domain {
-        domains[index] = { ..domain, count: domain.count + 1 }
+        domains[index] = { ..domain, count: domain.count + 1, }
         found = true
         break
       }
     }
     if !found {
-      domains.push({ domain: difference.domain, count: 1 })
+      domains.push({ domain: difference.domain, count: 1, })
     }
   }
   domains
@@ -239,13 +239,13 @@ fn object_change_coverage(
     let mut found = false
     for index, item in residual_kinds {
       if item.domain == change.kind {
-        residual_kinds[index] = { ..item, count: item.count + 1 }
+        residual_kinds[index] = { ..item, count: item.count + 1, }
         found = true
         break
       }
     }
     if !found {
-      residual_kinds.push({ domain: change.kind, count: 1 })
+      residual_kinds.push({ domain: change.kind, count: 1, })
     }
   }
   {

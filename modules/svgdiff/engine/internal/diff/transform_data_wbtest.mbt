@@ -38,7 +38,7 @@ fn apply_transform(
 test "transform list supports every SVG transform function" {
   assert_true(
     parsed_transform("matrix(1 2 3 4 5 6)").matrix ==
-    { a: 1.0, b: 2.0, c: 3.0, d: 4.0, e: 5.0, f: 6.0 },
+    { a: 1.0, b: 2.0, c: 3.0, d: 4.0, e: 5.0, f: 6.0, },
   )
   assert_eq(parsed_transform("translate(2)").matrix.e, 2.0)
   assert_eq(parsed_transform("translate(2 3)").matrix.f, 3.0)
@@ -46,7 +46,7 @@ test "transform list supports every SVG transform function" {
   assert_eq(parsed_transform("scale(2 3)").matrix.d, 3.0)
   assert_true(
     parsed_transform("rotate(90)").matrix ==
-    { a: 0.0, b: 1.0, c: -1.0, d: 0.0, e: 0.0, f: 0.0 },
+    { a: 0.0, b: 1.0, c: -1.0, d: 0.0, e: 0.0, f: 0.0, },
   )
   assert_true(parsed_transform("skewX(0)").matrix.is_identity())
   assert_true(parsed_transform("skewY(0)").matrix.is_identity())

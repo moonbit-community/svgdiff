@@ -1,0 +1,14 @@
+.DS_Store
+_build/
+_site/
+dist/
+target/
+target
+.mooncakes/
+.moonagent/
+.playwright-cli/
+__pycache__/
+*.py[cod]
+
+*_test.mbt
+*_wbtest.mbt

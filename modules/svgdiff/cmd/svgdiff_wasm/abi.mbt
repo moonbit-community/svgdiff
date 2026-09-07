@@ -129,7 +129,7 @@ pub fn compare(request_len : Int) -> Int {
     profile,
     @svgdiff.ResourceBundle::empty(),
     @svgdiff.ResourceBundle::empty(),
-    { should_cancel, max_checkpoints: Some(request.max_checkpoints) },
+    { should_cancel, max_checkpoints: Some(request.max_checkpoints), },
   ) catch {
     CheckpointBudgetExceeded(max_checkpoints~) =>
       return finish_error(

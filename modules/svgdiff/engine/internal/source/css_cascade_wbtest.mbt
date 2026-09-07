@@ -24,7 +24,7 @@ fn cascade_test_fact(
     authored_value: value,
     declared_value: value,
     origin,
-    source_span: { start_offset: offset, end_offset: offset + value.length() },
+    source_span: { start_offset: offset, end_offset: offset + value.length(), },
   }
 }
 
@@ -65,7 +65,7 @@ test "CSS cascade compares importance specificity and source order" {
       "green",
       "stylesheet_rule",
       false,
-      { inline_style: 0, ids: 0, classes: 1, types: 0 },
+      { inline_style: 0, ids: 0, classes: 1, types: 0, },
       2,
     ),
     cascade_test_candidate(
@@ -79,7 +79,7 @@ test "CSS cascade compares importance specificity and source order" {
       "purple",
       "stylesheet_rule",
       true,
-      { inline_style: 0, ids: 0, classes: 1, types: 0 },
+      { inline_style: 0, ids: 0, classes: 1, types: 0, },
       4,
     ),
   ]
@@ -99,14 +99,14 @@ test "CSS cascade uses selector specificity before source order" {
       "red",
       "stylesheet_rule",
       false,
-      { inline_style: 0, ids: 1, classes: 0, types: 0 },
+      { inline_style: 0, ids: 1, classes: 0, types: 0, },
       1,
     ),
     cascade_test_candidate(
       "blue",
       "stylesheet_rule",
       false,
-      { inline_style: 0, ids: 0, classes: 3, types: 2 },
+      { inline_style: 0, ids: 0, classes: 3, types: 2, },
       20,
     ),
   ]
@@ -158,7 +158,7 @@ test "inline specificity also wins among important author declarations" {
   let stylesheet = stylesheet_cascade_candidate(
     cascade_test_fact("fill", "blue", "stylesheet_rule", 20),
     true,
-    { inline_style: 0, ids: 4, classes: 0, types: 0 },
+    { inline_style: 0, ids: 4, classes: 0, types: 0, },
     20,
   )
   let inline = inline_cascade_candidate(

@@ -190,7 +190,7 @@ test "resource policy keeps unused definitions source-only and ignores unused bu
   let invalid_bytes = @base64.decode("AA=="[:])
   let unused_bundle : ResourceBundle = {
     entries: [
-      { locator: "unused.png", media_type: "image/png", bytes: invalid_bytes },
+      { locator: "unused.png", media_type: "image/png", bytes: invalid_bytes, },
     ],
   }
   let visible = "<svg><rect id='box' width='8' height='8' fill='red'/></svg>"
@@ -210,7 +210,7 @@ test "resource policy keeps unused definitions source-only and ignores unused bu
   )
   let invalid_unused_bundle : ResourceBundle = {
     entries: [
-      { locator: "unused.png", media_type: "image/gif", bytes: invalid_bytes },
+      { locator: "unused.png", media_type: "image/gif", bytes: invalid_bytes, },
     ],
   }
   assert_eq(

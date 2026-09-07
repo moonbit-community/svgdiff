@@ -401,7 +401,7 @@ pub fn compare_sources(
     comparison_profile(before_svg, config),
     before_resources,
     after_resources,
-    { should_cancel: () => false, max_checkpoints: config.max_checkpoints },
+    { should_cancel: () => false, max_checkpoints: config.max_checkpoints, },
   )
 }
 
@@ -419,7 +419,7 @@ pub fn compare_sources_with_artifact(
     comparison_profile(before_svg, config),
     before_resources,
     after_resources,
-    { should_cancel: () => false, max_checkpoints: config.max_checkpoints },
+    { should_cancel: () => false, max_checkpoints: config.max_checkpoints, },
   )
 }
 
