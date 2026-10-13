@@ -17,8 +17,8 @@ pub(all) struct FillSourceElement {
   subject_id : String
   has_authored_id : Bool
   kind : String
-  source_offset : Int
-  parent_index : Int?
+  source_offset : Int32
+  parent_index : Int32?
   visual_declarations : Array[DeclaredVisualFact]
   resource_content : Bool
 }
@@ -167,17 +167,17 @@ pub fn visual_declarations_from_element(
 pub fn add_fill_source_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
+  source_offset : Int32,
   stylesheet_match : CssStylesheetMatch,
-  parent_index : Int?,
+  parent_index : Int32?,
   elements : Array[FillSourceElement],
   rect_subject_ids : Array[String],
   all_entity_subject_ids : Array[String],
   coverage_codes : Array[String],
-  svg_count : Int,
-  group_count : Int,
-  rect_count : Int,
-) -> Int {
+  svg_count : Int32,
+  group_count : Int32,
+  rect_count : Int32,
+) -> Int32 {
   let kind = element.name.local_name
   let generated_index = match kind {
     "svg" => svg_count
@@ -234,7 +234,7 @@ pub fn add_fill_source_element(
 pub fn fill_source_element(
   hierarchy : FillHierarchy,
   subject_id : String,
-) -> (Int, FillSourceElement)? {
+) -> (Int32, FillSourceElement)? {
   for index, element in hierarchy.elements {
     if element.subject_id == subject_id {
       return Some((index, element))
@@ -354,7 +354,7 @@ pub fn custom_property_declaration(
 }
 
 ///|
-pub fn var_function_at(value : String, index : Int) -> Bool {
+pub fn var_function_at(value : String, index : Int32) -> Bool {
   index + 4 <= value.length() &&
   source_range_slice(value, index, index + 4).to_lower() == "var("
 }
@@ -362,7 +362,7 @@ pub fn var_function_at(value : String, index : Int) -> Bool {
 ///|
 pub fn resolve_custom_property(
   hierarchy : FillHierarchy,
-  element_index : Int,
+  element_index : Int32,
   property : String,
   stack : Array[String],
 ) -> CustomValueResolution {
@@ -447,7 +447,7 @@ pub fn resolve_custom_property(
 ///|
 pub fn substitute_css_variables(
   hierarchy : FillHierarchy,
-  element_index : Int,
+  element_index : Int32,
   value : String,
   stack : Array[String],
 ) -> CssSubstitutionResult {
@@ -911,7 +911,7 @@ pub fn initial_computed_visual(
 ///|
 pub fn inherited_computed_visual(
   hierarchy : FillHierarchy,
-  element_index : Int,
+  element_index : Int32,
   property : String,
 ) -> ComputedVisualResolution {
   let element = hierarchy.elements[element_index]
@@ -949,7 +949,7 @@ pub fn inherited_computed_visual(
 ///|
 pub fn explicit_defaulted_visual(
   hierarchy : FillHierarchy,
-  element_index : Int,
+  element_index : Int32,
   property : String,
   declaration : DeclaredVisualFact,
   keyword : String,
@@ -1005,7 +1005,7 @@ pub fn explicit_defaulted_visual(
 ///|
 pub fn computed_visual_for_index(
   hierarchy : FillHierarchy,
-  index : Int,
+  index : Int32,
   property : String,
 ) -> ComputedVisualResolution {
   let element = hierarchy.elements[index]
@@ -1307,7 +1307,7 @@ pub fn extract_fill_hierarchy_or_raise(input : String) -> FillHierarchy raise {
   let rect_subject_ids : Array[String] = []
   let all_entity_subject_ids : Array[String] = []
   let coverage_codes : Array[String] = []
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   let mut svg_count = 0
   let mut group_count = 0
   let mut rect_count = 0

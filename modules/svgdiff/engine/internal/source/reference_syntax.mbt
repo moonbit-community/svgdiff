@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-fn percent_hex_value(character : Char) -> Int? {
+fn percent_hex_value(character : Char) -> Int32? {
   if character >= '0' && character <= '9' {
     Some(character.to_int() - '0'.to_int())
   } else if character >= 'a' && character <= 'f' {
@@ -65,7 +65,7 @@ pub fn local_href_target(value : String) -> String? {
 }
 
 ///|
-pub fn ascii_url_start(value : String, index : Int) -> Bool {
+pub fn ascii_url_start(value : String, index : Int32) -> Bool {
   if index + 3 >= value.length() {
     return false
   }

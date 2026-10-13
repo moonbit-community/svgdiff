@@ -17,15 +17,15 @@ pub(all) struct ResourceDependencyNode {
   subject_id : String
   kind : String
   authored_id : String?
-  source_offset : Int
+  source_offset : Int32
   span : @xml.SourceSpan
-  definition_index : Int?
+  definition_index : Int32?
 }
 
 ///|
 pub(all) struct ResourceDependencyEdge {
-  source_node_index : Int
-  owner_definition_indices : Array[Int]
+  source_node_index : Int32
+  owner_definition_indices : Array[Int32]
   relation : String
   locator_kind : String
   locator : String
@@ -38,10 +38,10 @@ pub(all) struct ResourceDependencyEdge {
 ///|
 pub(all) struct ReferenceDefinition {
   id : String
-  node_indices : Array[Int]
+  node_indices : Array[Int32]
   resource_kinds : Array[String]
-  mut descendant_elements : Int
-  edge_indices : Array[Int]
+  mut descendant_elements : Int32
+  edge_indices : Array[Int32]
 }
 
 ///|
@@ -49,10 +49,10 @@ pub(all) struct ResourceDependencyGraph {
   nodes : Array[ResourceDependencyNode]
   edges : Array[ResourceDependencyEdge]
   definitions : Array[ReferenceDefinition]
-  indices : Map[String, Int]
-  global_use_edge_indices : Array[Int]
-  mut total_elements : Int
-  mut edge_instances : Int
+  indices : Map[String, Int32]
+  global_use_edge_indices : Array[Int32]
+  mut total_elements : Int32
+  mut edge_instances : Int32
   mut edge_limit_span : @xml.SourceSpan?
 }
 
@@ -75,8 +75,8 @@ pub fn ResourceDependencyGraph::definition_index(
   self : ResourceDependencyGraph,
   id : String,
   kind : String,
-  node_index : Int,
-) -> Int {
+  node_index : Int32,
+) -> Int32 {
   match self.indices.get(id) {
     Some(index) => {
       if reference_resource_kind(kind) {
@@ -136,8 +136,11 @@ fn element_authored_id(element : @xml.NamespaceElement) -> String? {
 }
 
 ///|
-fn unique_active_definitions(active : Array[Int], own : Int?) -> Array[Int] {
-  let unique : Array[Int] = []
+fn unique_active_definitions(
+  active : Array[Int32],
+  own : Int32?,
+) -> Array[Int32] {
+  let unique : Array[Int32] = []
   for index in active {
     if !unique.contains(index) {
       unique.push(index)
@@ -188,14 +191,14 @@ fn resource_dependency_relation(
 ///|
 fn append_resource_dependency_edge(
   graph : ResourceDependencyGraph,
-  source_node_index : Int,
-  owners : Array[Int],
+  source_node_index : Int32,
+  owners : Array[Int32],
   relation : String,
   locator : ParsedResourceLocator,
   span : @xml.SourceSpan,
   expands : Bool,
   resource_dependency : Bool,
-  edge_limit : Int,
+  edge_limit : Int32,
 ) -> Unit {
   if graph.edge_limit_span is Some(_) {
     return
@@ -228,11 +231,11 @@ fn append_resource_dependency_edge(
 ///|
 fn record_resource_dependency_edges(
   graph : ResourceDependencyGraph,
-  source_node_index : Int,
-  owners : Array[Int],
+  source_node_index : Int32,
+  owners : Array[Int32],
   element_kind : String,
   attribute : @xml.NamespaceAttribute,
-  edge_limit : Int,
+  edge_limit : Int32,
 ) -> Unit {
   if graph.edge_limit_span is Some(_) {
     return
@@ -274,11 +277,11 @@ fn record_resource_dependency_edges(
 ///|
 fn record_stylesheet_resource_dependencies(
   graph : ResourceDependencyGraph,
-  source_node_index : Int,
-  owners : Array[Int],
+  source_node_index : Int32,
+  owners : Array[Int32],
   value : String,
   span : @xml.SourceSpan,
-  edge_limit : Int,
+  edge_limit : Int32,
 ) -> Unit {
   for locator in resource_url_locators(value) {
     append_resource_dependency_edge(
@@ -294,12 +297,12 @@ fn record_stylesheet_resource_dependencies(
 ///|
 pub fn build_resource_dependency_graph(
   input : String,
-  edge_limit : Int,
+  edge_limit : Int32,
 ) -> ResourceDependencyGraph raise {
   let graph = ResourceDependencyGraph::new()
-  let active_definitions : Array[Int] = []
-  let frames : Array[Int?] = []
-  let node_frames : Array[Int] = []
+  let active_definitions : Array[Int32] = []
+  let frames : Array[Int32?] = []
+  let node_frames : Array[Int32] = []
   let reader = @xml.NamespaceReader::from_string(input)
   while !reader.is_eof() {
     let event = reader.read_event()
@@ -398,7 +401,7 @@ pub fn build_resource_dependency_graph(
 fn graph_edge_target(
   graph : ResourceDependencyGraph,
   edge : ResourceDependencyEdge,
-) -> Int? {
+) -> Int32? {
   guard edge.locator_kind == "local" && edge.locator.has_prefix("#") else {
     return None
   }
@@ -429,14 +432,14 @@ pub fn resource_dependency_forward_targets(
   graph : ResourceDependencyGraph,
   subject_id : String,
 ) -> Array[String] {
-  let pending : Array[Int] = []
+  let pending : Array[Int32] = []
   for edge_index, edge in graph.edges {
     if graph.nodes[edge.source_node_index].subject_id == subject_id {
       pending.push(edge_index)
     }
   }
-  let visited_edges : Array[Int] = []
-  let visited_definitions : Array[Int] = []
+  let visited_edges : Array[Int32] = []
+  let visited_definitions : Array[Int32] = []
   let targets : Array[String] = []
   let mut cursor = 0
   while cursor < pending.length() {
@@ -553,8 +556,8 @@ pub fn reference_cycle_diagnostic(
     if states[root] != 0 {
       continue
     }
-    let stack_nodes : Array[Int] = [root]
-    let stack_edges : Array[Int] = [0]
+    let stack_nodes : Array[Int32] = [root]
+    let stack_edges : Array[Int32] = [0]
     states[root] = 1
     while !stack_nodes.is_empty() {
       let top = stack_nodes.length() - 1
@@ -604,7 +607,7 @@ pub fn reference_cycle_diagnostic(
 fn expansion_target_index(
   graph : ResourceDependencyGraph,
   edge : ResourceDependencyEdge,
-) -> Int? {
+) -> Int32? {
   guard edge.expands &&
     edge.relation == "use_instance" &&
     edge.target_id is Some(target_id) else {
@@ -617,7 +620,7 @@ fn expansion_target_index(
 pub fn reference_expansion_diagnostic(
   graph : ResourceDependencyGraph,
   source_role : String,
-  limit : Int,
+  limit : Int32,
 ) -> Diagnostic? {
   let count = graph.definitions.length()
   let indegrees = Array::make(count, 0)
@@ -630,13 +633,13 @@ pub fn reference_expansion_diagnostic(
       }
     }
   }
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   for index in 0..<count {
     if indegrees[index] == 0 {
       queue.push(index)
     }
   }
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   let mut cursor = 0
   while cursor < queue.length() {
     let node = queue[cursor]

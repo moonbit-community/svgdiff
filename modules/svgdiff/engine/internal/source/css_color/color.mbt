@@ -15,9 +15,9 @@
 ///|
 /// A deterministic sRGB solid color with straight alpha.
 pub(all) struct SrgbaColor {
-  red : Int
-  green : Int
-  blue : Int
+  red : Int32
+  green : Int32
+  blue : Int32
   alpha : Double
 } derive(Eq, Debug)
 
@@ -42,7 +42,7 @@ fn clamp_unit(value : Double) -> Double {
 }
 
 ///|
-fn clamp_byte(value : Double) -> Int {
+fn clamp_byte(value : Double) -> Int32 {
   let clamped = if value < 0.0 {
     0.0
   } else if value > 255.0 {
@@ -131,7 +131,7 @@ pub fn parse_alpha_value(source : String) -> Double? {
 }
 
 ///|
-fn hex_digit(code : UInt16) -> Int? {
+fn hex_digit(code : UInt16) -> Int32? {
   if code >= '0' && code <= '9' {
     Some(code.to_int() - '0'.to_int())
   } else if code >= 'a' && code <= 'f' {
@@ -144,7 +144,7 @@ fn hex_digit(code : UInt16) -> Int? {
 }
 
 ///|
-fn parse_hex_pair(source : String, start : Int) -> Int? {
+fn parse_hex_pair(source : String, start : Int32) -> Int32? {
   guard hex_digit(source[start]) is Some(high) else { return None }
   guard hex_digit(source[start + 1]) is Some(low) else { return None }
   Some(high * 16 + low)
@@ -544,7 +544,7 @@ pub fn parse_solid_color(source : String) -> SolidColorParse {
 }
 
 ///|
-fn hex_character(value : Int) -> String {
+fn hex_character(value : Int32) -> String {
   let digit = value % 16
   if digit < 10 {
     digit.to_string()
@@ -561,7 +561,7 @@ fn hex_character(value : Int) -> String {
 }
 
 ///|
-fn hex_byte(value : Int) -> String {
+fn hex_byte(value : Int32) -> String {
   hex_character(value / 16) + hex_character(value)
 }
 

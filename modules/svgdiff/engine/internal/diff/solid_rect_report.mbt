@@ -15,7 +15,7 @@
 ///|
 priv enum RectComputedFact {
   RectNumber(Double)
-  RectColor(Int, Int, Int, Int)
+  RectColor(Int32, Int32, Int32, Int32)
 }
 
 ///|

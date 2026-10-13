@@ -21,9 +21,9 @@ pub(all) struct OklabColor {
 
 ///|
 pub fn composite_linear_srgb_channel(
-  foreground : Int,
+  foreground : Int32,
   alpha : Double,
-  background : Int,
+  background : Int32,
 ) -> Double {
   srgb8_to_linear(foreground) * alpha +
   srgb8_to_linear(background) * (1.0 - alpha)

@@ -22,7 +22,7 @@ pub(all) struct PatternAttributeSource {
 pub(all) struct PatternSource {
   subject_id : String
   authored_id : String?
-  hierarchy_index : Int
+  hierarchy_index : Int32
   attributes : Array[PatternAttributeSource]
   href_fact : DeclaredVisualFact?
   mut has_non_descriptive_child : Bool
@@ -170,7 +170,7 @@ pub fn preferred_pattern_href(
 pub fn pattern_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
+  source_offset : Int32,
   hierarchy : FillHierarchy,
 ) -> PatternSource? {
   if element.name.local_name != "pattern" {
@@ -208,7 +208,7 @@ pub fn extract_pattern_document_or_raise(
   let hierarchy = extract_fill_hierarchy_or_raise(source)
   let patterns : Array[PatternSource] = []
   let issues : Array[PatternSemanticIssue] = []
-  let mut current_pattern : Int? = None
+  let mut current_pattern : Int32? = None
   let mut depth = 0
   let reader = @xml.NamespaceReader::from_string(source)
   for event in reader.read_events_until_eof() {
@@ -682,7 +682,7 @@ pub fn pattern_cloned_child_hierarchy(
   host : PatternSource,
   provider : PatternSource,
   child : SourceSubject,
-) -> (FillHierarchy, Int)? {
+) -> (FillHierarchy, Int32)? {
   let mut child_index = -1
   for index, element in document.hierarchy.elements {
     if element.kind == child.kind &&
@@ -694,8 +694,8 @@ pub fn pattern_cloned_child_hierarchy(
   if child_index < 0 {
     return None
   }
-  let chain : Array[Int] = []
-  let mut current : Int? = Some(child_index)
+  let chain : Array[Int32] = []
+  let mut current : Int32? = Some(child_index)
   while current is Some(_) {
     guard current is Some(index) else { break }
     if index == provider.hierarchy_index {

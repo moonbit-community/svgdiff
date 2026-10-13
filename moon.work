@@ -1,4 +1,6 @@
 members = [
   "./modules/svgdiff",
   "./modules/raster_codec",
+  "./modules/image_compat",
+  "./modules/pixelmatch",
 ]

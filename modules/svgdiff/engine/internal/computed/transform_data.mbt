@@ -14,7 +14,7 @@
 
 ///|
 pub(all) struct SourceTransformSite {
-  node_index : Int
+  node_index : Int32
   subject_id : String
   authored_id : String?
   kind : String
@@ -31,7 +31,7 @@ pub(all) struct SourceTransformSite {
 pub fn source_transform_site(
   input : String,
   element : @xml.NamespaceElement,
-  node_index : Int,
+  node_index : Int32,
 ) -> SourceTransformSite {
   let subject_id = authored_subject_id(element).unwrap_or(
     generated_subject_id(element.name.local_name, node_index),

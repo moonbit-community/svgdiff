@@ -18,7 +18,7 @@ priv struct SceneObject {
   identity : String?
   style_signatures : Array[String]
   primitive_signatures : Array[String]
-  primitive_indices : Array[Int]
+  primitive_indices : Array[Int32]
 }
 
 ///|
@@ -42,16 +42,16 @@ pub struct VisualSceneContext {
 
 ///|
 priv struct AlignmentCandidate {
-  before_index : Int
-  after_index : Int
-  common_text : Int
-  total_text : Int
+  before_index : Int32
+  after_index : Int32
+  common_text : Int32
+  total_text : Int32
 }
 
 ///|
 priv struct GeometricCandidate {
-  before_index : Int
-  after_index : Int
+  before_index : Int32
+  after_index : Int32
   score : Double
   basis : String
 }

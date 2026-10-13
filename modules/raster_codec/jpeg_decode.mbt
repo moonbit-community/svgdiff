@@ -19,18 +19,18 @@
 ///|
 priv struct JpegBitReader {
   data : Bytes
-  mut pos : Int
-  mut bit_buf : Int
-  mut bits_left : Int
+  mut pos : Int32
+  mut bit_buf : Int32
+  mut bits_left : Int32
 }
 
 ///|
-fn JpegBitReader::new(data : Bytes, pos : Int) -> JpegBitReader {
+fn JpegBitReader::new(data : Bytes, pos : Int32) -> JpegBitReader {
   { data, pos, bit_buf: 0, bits_left: 0, }
 }
 
 ///|
-fn JpegBitReader::next_byte(self : JpegBitReader) -> Int raise DecodeError {
+fn JpegBitReader::next_byte(self : JpegBitReader) -> Int32 raise DecodeError {
   if self.pos >= self.data.length() {
     raise CorruptData("unexpected end of JPEG data")
   }
@@ -55,8 +55,8 @@ fn JpegBitReader::next_byte(self : JpegBitReader) -> Int raise DecodeError {
 ///|
 fn JpegBitReader::read_bits(
   self : JpegBitReader,
-  count : Int,
-) -> Int raise DecodeError {
+  count : Int32,
+) -> Int32 raise DecodeError {
   if count < 0 || count > 16 {
     raise CorruptData("invalid JPEG bit count")
   }
@@ -71,23 +71,23 @@ fn JpegBitReader::read_bits(
 }
 
 ///|
-fn JpegBitReader::read_bit(self : JpegBitReader) -> Int raise DecodeError {
+fn JpegBitReader::read_bit(self : JpegBitReader) -> Int32 raise DecodeError {
   self.read_bits(1)
 }
 
 ///|
 priv struct HuffmanTable {
   // For each code length 1..16, store the symbols
-  min_code : FixedArray[Int] // min code value at each length
-  max_code : FixedArray[Int] // max code value at each length (-1 if none)
-  val_ptr : FixedArray[Int] // index into values for each length
-  values : Array[Int]
+  min_code : FixedArray[Int32] // min code value at each length
+  max_code : FixedArray[Int32] // max code value at each length (-1 if none)
+  val_ptr : FixedArray[Int32] // index into values for each length
+  values : Array[Int32]
 }
 
 ///|
 fn build_huffman_table(
-  bits : FixedArray[Int],
-  values : Array[Int],
+  bits : FixedArray[Int32],
+  values : Array[Int32],
 ) -> HuffmanTable {
   let min_code = FixedArray::make(17, 0)
   let max_code = FixedArray::make(17, -1)
@@ -111,7 +111,7 @@ fn build_huffman_table(
 fn decode_huffman(
   br : JpegBitReader,
   table : HuffmanTable,
-) -> Int raise DecodeError {
+) -> Int32 raise DecodeError {
   let mut code = 0
   for length in 1..<=16 {
     code = (code << 1) | br.read_bit()
@@ -127,7 +127,7 @@ fn decode_huffman(
 }
 
 ///|
-fn receive_extend(br : JpegBitReader, nbits : Int) -> Int raise DecodeError {
+fn receive_extend(br : JpegBitReader, nbits : Int32) -> Int32 raise DecodeError {
   if nbits == 0 {
     return 0
   }
@@ -165,7 +165,7 @@ let idct_c : FixedArray[Double] = {
 
 ///|
 // IDCT using pre-computed cosine table
-fn idct_block(coeff : FixedArray[Int], output : FixedArray[Int]) -> Unit {
+fn idct_block(coeff : FixedArray[Int32], output : FixedArray[Int32]) -> Unit {
   let tmp = FixedArray::make(64, 0.0)
   // First pass: columns
   for x in 0..<8 {
@@ -200,37 +200,37 @@ fn idct_block(coeff : FixedArray[Int], output : FixedArray[Int]) -> Unit {
 
 ///|
 priv struct JpegComponent {
-  id : Int
-  h_sample : Int
-  v_sample : Int
-  quant_id : Int
+  id : Int32
+  h_sample : Int32
+  v_sample : Int32
+  quant_id : Int32
 }
 
 ///|
 priv struct JpegFrameInfo {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   components : Array[JpegComponent]
-  max_h : Int
-  max_v : Int
+  max_h : Int32
+  max_v : Int32
 }
 
 ///|
 priv struct JpegScanComponent {
-  comp_idx : Int
-  dc_table_id : Int
-  ac_table_id : Int
+  comp_idx : Int32
+  dc_table_id : Int32
+  ac_table_id : Int32
 }
 
 ///|
-fn read_u16be_at(data : Bytes, pos : Int) -> Int {
+fn read_u16be_at(data : Bytes, pos : Int32) -> Int32 {
   ((data[pos].to_int() & 0xFF) << 8) | (data[pos + 1].to_int() & 0xFF)
 }
 
 ///|
 fn validate_huffman_code_lengths(
-  bits : FixedArray[Int],
-  total : Int,
+  bits : FixedArray[Int32],
+  total : Int32,
 ) -> Unit raise DecodeError {
   if total > 256 {
     raise CorruptData("too many Huffman symbols")
@@ -263,14 +263,14 @@ fn jpeg_sampling_supported(frame : JpegFrameInfo) -> Bool {
 ///|
 pub fn decode_jpeg_bounded(
   data : Bytes,
-  max_dimension~ : Int,
-  max_pixels~ : Int,
+  max_dimension~ : Int32,
+  max_pixels~ : Int32,
 ) -> ImageData raise DecodeError {
   if data.length() < 2 || data[0].to_int() != 0xFF || data[1].to_int() != 0xD8 {
     raise InvalidSignature("not a JPEG file")
   }
   let mut pos = 2
-  let quant_tables : FixedArray[FixedArray[Int]?] = FixedArray::make(4, None)
+  let quant_tables : FixedArray[FixedArray[Int32]?] = FixedArray::make(4, None)
   let dc_tables : FixedArray[HuffmanTable?] = FixedArray::make(4, None)
   let ac_tables : FixedArray[HuffmanTable?] = FixedArray::make(4, None)
   let mut frame_info : JpegFrameInfo? = None
@@ -417,7 +417,7 @@ pub fn decode_jpeg_bounded(
         if hend - hpos < total {
           raise CorruptData("truncated Huffman values")
         }
-        let values : Array[Int] = []
+        let values : Array[Int32] = []
         for i in 0..<total {
           values.push(data[hpos + i].to_int())
         }
@@ -450,7 +450,7 @@ pub fn decode_jpeg_bounded(
         let cs = data[soff].to_int()
         let td_ta = data[soff + 1].to_int()
         // Find component index
-        let mut comp_idx : Int? = None
+        let mut comp_idx : Int32? = None
         for j in 0..<fi.components.length() {
           if fi.components[j].id == cs {
             comp_idx = Some(j)
@@ -512,7 +512,7 @@ pub fn decode_jpeg_bounded(
   let mcu_rows = (fi.height + mcu_h - 1) / mcu_h
   // Allocate component buffers
   let ncomp = fi.components.length()
-  let comp_bufs : Array[FixedArray[Int]] = []
+  let comp_bufs : Array[FixedArray[Int32]] = []
   for i in 0..<ncomp {
     let c = fi.components[i]
     let cw = mcu_cols * c.h_sample * 8
@@ -657,7 +657,7 @@ pub fn decode_jpeg_bounded(
 }
 
 ///|
-fn clamp_byte(v : Int) -> Byte {
+fn clamp_byte(v : Int32) -> Byte {
   if v < 0 {
     b'\x00'
   } else if v > 255 {

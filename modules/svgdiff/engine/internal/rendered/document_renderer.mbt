@@ -15,8 +15,8 @@
 ///|
 pub fn render_product_document_to_image(
   document : @svg.SVGDocument,
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
 ) -> @svg.Image {
   @svg.render_svg_document(
     document,

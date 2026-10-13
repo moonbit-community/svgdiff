@@ -4,5 +4,8 @@ import {
   "Milky2018/svgdiff/engine/internal/control",
   "Milky2018/svgdiff/engine/internal/resource_model",
   "moonbitlang/core/debug",
-  "moonbitlang/core/json",
 }
+
+import {
+  "moonbitlang/core/json",
+} for "test"

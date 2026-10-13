@@ -17,7 +17,7 @@ fn cascade_test_fact(
   property : String,
   value : String,
   origin : String,
-  offset : Int,
+  offset : Int32,
 ) -> DeclaredVisualFact {
   {
     property,
@@ -34,7 +34,7 @@ fn cascade_test_candidate(
   origin : String,
   important : Bool,
   specificity : CssSpecificity,
-  source_order : Int,
+  source_order : Int32,
 ) -> CssCascadeCandidate {
   {
     declaration: cascade_test_fact("fill", value, origin, source_order),

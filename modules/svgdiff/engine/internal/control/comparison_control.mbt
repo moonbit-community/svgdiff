@@ -19,14 +19,14 @@
 /// `max_checkpoints = None` disables deterministic work interruption.
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
-  max_checkpoints : Int?
+  max_checkpoints : Int32?
 }
 
 ///|
 /// The comparison stopped before a Structured Report was established.
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  CheckpointBudgetExceeded(max_checkpoints~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int32)
 } derive(Debug, Eq)
 
 ///|
@@ -39,7 +39,7 @@ pub fn ComparisonControl::unlimited() -> ComparisonControl {
 ///|
 pub(all) struct ComparisonGuard {
   control : ComparisonControl
-  mut completed_checkpoints : Int
+  mut completed_checkpoints : Int32
 }
 
 ///|

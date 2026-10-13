@@ -301,17 +301,17 @@ test "event-local FLIP budget exhaustion does not alter other evidence" {
     Some("perceptual_map_budget_exceeded"),
   )
   assert_eq(
-    limited.events[0].rendered_outcome.magnitude.to_json(),
-    ordinary.events[0].rendered_outcome.magnitude.to_json(),
+    Json(limited.events[0].rendered_outcome.magnitude),
+    Json(ordinary.events[0].rendered_outcome.magnitude),
   )
   assert_eq(
     limited.events[0].rendered_outcome.perceptual_color.to_json(),
     ordinary.events[0].rendered_outcome.perceptual_color.to_json(),
   )
   assert_eq(
-    limited.events[0].difference_regions.to_json(),
-    ordinary.events[0].difference_regions.to_json(),
+    Json(limited.events[0].difference_regions),
+    Json(ordinary.events[0].difference_regions),
   )
   assert_eq(limited.analysis_status, ordinary.analysis_status)
-  assert_eq(limited.diagnostics.to_json(), ordinary.diagnostics.to_json())
+  assert_eq(Json(limited.diagnostics), Json(ordinary.diagnostics))
 }

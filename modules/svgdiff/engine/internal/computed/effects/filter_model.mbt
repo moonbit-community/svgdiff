@@ -20,7 +20,7 @@ pub(all) struct FilterLength {
 
 ///|
 pub(all) struct FilterOffsetPrimitive {
-  index : Int
+  index : Int32
   subject_id : String
   presence_fact : DeclaredVisualFact
   input : String
@@ -37,22 +37,22 @@ pub(all) struct FilterOffsetPrimitive {
 
 ///|
 pub(all) struct FilterPrimitiveSource {
-  position : Int
+  position : Int32
   kind : String
   subject_id : String
-  start_offset : Int
-  end_offset : Int
-  offset_index : Int?
+  start_offset : Int32
+  end_offset : Int32
+  offset_index : Int32?
 }
 
 ///|
 priv struct PendingFilterPrimitiveSource {
-  resource_index : Int
-  position : Int
+  resource_index : Int32
+  position : Int32
   kind : String
   subject_id : String
-  start_offset : Int
-  offset_index : Int?
+  start_offset : Int32
+  offset_index : Int32?
 }
 
 ///|
@@ -94,13 +94,13 @@ pub(all) struct FilterSemanticDocument {
 pub(all) struct ResolvedFilterHost {
   owner_id : String
   owner_authored_id : String?
-  owner_render_index : Int?
+  owner_render_index : Int32?
   filter_fact : DeclaredVisualFact
   resource_id : String?
   resource : FilterResource?
   target_bounds : CssBounds?
   filter_region : CssBounds?
-  primitive_offsets : Array[(Int, Int)]
+  primitive_offsets : Array[(Int32, Int32)]
   primitive_bounds : Array[CssBounds?]
   effect_bounds : CssBounds?
   complete : Bool
@@ -189,8 +189,8 @@ fn filter_length_from_fact(
 fn filter_resource_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  start_offset : Int,
-  end_offset : Int,
+  start_offset : Int32,
+  end_offset : Int32,
   hierarchy : FillHierarchy,
   profile : ComparisonProfile,
 ) -> FilterResource {
@@ -260,11 +260,11 @@ fn filter_resource_from_element(
 
 ///|
 fn filter_pending_primitive_source(
-  resource_index : Int,
+  resource_index : Int32,
   resource : FilterResource,
   kind : String,
-  start_offset : Int,
-  offset_index : Int?,
+  start_offset : Int32,
+  offset_index : Int32?,
 ) -> PendingFilterPrimitiveSource {
   let position = resource.primitive_sources.length()
   {
@@ -281,7 +281,7 @@ fn filter_pending_primitive_source(
 fn filter_finish_primitive_source(
   resource : FilterResource,
   pending : PendingFilterPrimitiveSource,
-  end_offset : Int,
+  end_offset : Int32,
 ) -> FilterPrimitiveSource {
   let source = {
     position: pending.position,
@@ -304,8 +304,8 @@ fn filter_metadata_child(kind : String) -> Bool {
 fn filter_offset_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  start_offset : Int,
-  end_offset : Int,
+  start_offset : Int32,
+  end_offset : Int32,
   resource : FilterResource,
 ) -> FilterOffsetPrimitive {
   let index = resource.primitives.length()
@@ -398,7 +398,7 @@ fn filter_result_name_admitted(value : String) -> Bool {
 ///|
 fn filter_input_available(
   primitives : Array[FilterOffsetPrimitive],
-  index : Int,
+  index : Int32,
   input : String,
 ) -> Bool {
   if input == "SourceGraphic" ||
@@ -427,7 +427,7 @@ pub fn extract_filter_semantic_document_or_raise(
     issues: [],
   }
   let reader = @xml.NamespaceReader::from_string(input)
-  let mut active : Int? = None
+  let mut active : Int32? = None
   let mut pending_primitive : PendingFilterPrimitiveSource? = None
   let mut depth = 0
   for event in reader.read_events_until_eof() {
@@ -764,12 +764,12 @@ fn filter_id_kind(document : FilterSemanticDocument, id : String) -> String? {
 }
 
 ///|
-fn max_filter_primitives_per_graph() -> Int {
+fn max_filter_primitives_per_graph() -> Int32 {
   256
 }
 
 ///|
-fn max_filter_surface_work_pixels_per_source() -> Int {
+fn max_filter_surface_work_pixels_per_source() -> Int32 {
   16_777_216
 }
 
@@ -847,7 +847,11 @@ fn filter_region_for_bounds(
 }
 
 ///|
-fn filter_translate_bounds(bounds : CssBounds, dx : Int, dy : Int) -> CssBounds {
+fn filter_translate_bounds(
+  bounds : CssBounds,
+  dx : Int32,
+  dy : Int32,
+) -> CssBounds {
   {
     x: bounds.x + dx.to_double(),
     y: bounds.y + dy.to_double(),
@@ -859,7 +863,7 @@ fn filter_translate_bounds(bounds : CssBounds, dx : Int, dy : Int) -> CssBounds 
 ///|
 fn filter_source_subject(
   subjects : Array[SourceSubject],
-  source_offset : Int,
+  source_offset : Int32,
 ) -> SourceSubject? {
   for subject in subjects {
     if subject.source_offset == source_offset &&
@@ -944,7 +948,7 @@ pub fn resolve_filter_hosts_or_raise(
       None => ()
     }
     let mut region : CssBounds? = None
-    let offsets : Array[(Int, Int)] = []
+    let offsets : Array[(Int32, Int32)] = []
     let primitive_bounds : Array[CssBounds?] = []
     match (resource, target_bounds) {
       (Some(resource), Some(bounds)) => {

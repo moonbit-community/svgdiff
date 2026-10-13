@@ -1,0 +1,9 @@
+import {
+  "Milky2018/svgdiff-pixelmatch" @pixelmatch,
+  "Milky2018/svgdiff-image-compat" @image,
+  "moonbitlang/core/bench",
+} for "test"
+
+options(
+  link: { "native": { "cc-link-flags": "-lz" } },
+)

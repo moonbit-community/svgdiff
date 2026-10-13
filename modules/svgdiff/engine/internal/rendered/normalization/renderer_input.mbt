@@ -14,8 +14,8 @@
 
 ///|
 priv struct RendererValueEdit {
-  start_offset : Int
-  end_offset : Int
+  start_offset : Int32
+  end_offset : Int32
   replacement : String
 }
 
@@ -281,7 +281,7 @@ fn normalize_renderer_residual_paint(
 ///|
 fn renderer_structural_node_at(
   document : StructuralDocument,
-  source_offset : Int,
+  source_offset : Int32,
 ) -> StructuralSourceNode? {
   for node in document.nodes {
     if node.source_offset == source_offset {
@@ -296,7 +296,7 @@ fn renderer_group_opacity_value(
   hierarchy : FillHierarchy,
   document : StructuralDocument,
   source_element : FillSourceElement,
-  source_offset : Int,
+  source_offset : Int32,
 ) -> (String, Bool, DeclaredVisualFact?)? {
   guard computed_visual_for_subject(
       hierarchy,
@@ -653,7 +653,7 @@ fn renderer_attribute(
 fn renderer_element_insert_offset(
   input : String,
   span : @xml.SourceSpan,
-) -> Int {
+) -> Int32 {
   let mut offset = span.end.offset - 1
   while offset > span.start.offset && input[offset] != '>' {
     offset -= 1

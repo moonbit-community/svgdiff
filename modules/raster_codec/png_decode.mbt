@@ -18,7 +18,7 @@ let png_signature : FixedArray[Byte] = [
 ]
 
 ///|
-fn read_u32be(data : Bytes, offset : Int) -> UInt {
+fn read_u32be(data : Bytes, offset : Int32) -> UInt32 {
   let b0 = data[offset].to_int() & 0xFF
   let b1 = data[offset + 1].to_int() & 0xFF
   let b2 = data[offset + 2].to_int() & 0xFF
@@ -27,7 +27,7 @@ fn read_u32be(data : Bytes, offset : Int) -> UInt {
 }
 
 ///|
-fn read_i32be(data : Bytes, offset : Int) -> Int {
+fn read_i32be(data : Bytes, offset : Int32) -> Int32 {
   let b0 = data[offset].to_int() & 0xFF
   let b1 = data[offset + 1].to_int() & 0xFF
   let b2 = data[offset + 2].to_int() & 0xFF
@@ -36,7 +36,7 @@ fn read_i32be(data : Bytes, offset : Int) -> Int {
 }
 
 ///|
-fn chunk_type_str(data : Bytes, offset : Int) -> String {
+fn chunk_type_str(data : Bytes, offset : Int32) -> String {
   String::from_array([
     data[offset].to_int().unsafe_to_char(),
     data[offset + 1].to_int().unsafe_to_char(),
@@ -217,8 +217,8 @@ fn decode_png_scanlines(
   ihdr : IhdrData,
   idat_parts : Array[Bytes],
   palette : Bytes?,
-  max_decompressed_size : Int,
-  on_row : (Int, Bytes) -> Unit,
+  max_decompressed_size : Int32,
+  on_row : (Int32, Bytes) -> Unit,
 ) -> Unit raise DecodeError {
   // Concatenate IDAT data
   let total_idat_len = idat_parts.fold(init=0, fn(acc, b) { acc + b.length() })
@@ -275,8 +275,8 @@ fn decode_png_scanlines(
 ///|
 pub fn decode_png_bounded(
   raw : Bytes,
-  max_dimension~ : Int,
-  max_pixels~ : Int,
+  max_dimension~ : Int32,
+  max_pixels~ : Int32,
 ) -> ImageData raise DecodeError {
   let chunks = parse_chunks(raw)
   let ihdr = parse_png_ihdr(chunks)

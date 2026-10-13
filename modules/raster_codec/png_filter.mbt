@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-fn paeth_predictor(a : Int, b : Int, c : Int) -> Int {
+fn paeth_predictor(a : Int32, b : Int32, c : Int32) -> Int32 {
   let p = a + b - c
   let pa = if p > a { p - a } else { a - p }
   let pb = if p > b { p - b } else { b - p }
@@ -31,10 +31,10 @@ fn paeth_predictor(a : Int, b : Int, c : Int) -> Int {
 /// Reconstruct a filtered scanline (decode side).
 /// `filter_type`: 0=None, 1=Sub, 2=Up, 3=Average, 4=Paeth
 fn reconstruct_row(
-  filter_type : Int,
+  filter_type : Int32,
   row : Bytes,
   prev : Bytes,
-  bpp : Int,
+  bpp : Int32,
 ) -> Bytes raise DecodeError {
   let len = row.length()
   let buf = FixedArray::make(len, b'\x00')

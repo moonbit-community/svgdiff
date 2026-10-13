@@ -71,7 +71,7 @@ fn add_viewport_fact_changes_for_alignment(
   changes : Array[TransformFactChange],
   before_sites : Array[SourceTransformSite],
   after_sites : Array[SourceTransformSite],
-  site_alignment : Array[(Int?, Int?)],
+  site_alignment : Array[(Int32?, Int32?)],
   affected_subject_ids : Array[String],
 ) -> Unit {
   for pair in site_alignment {
@@ -182,7 +182,7 @@ fn append_viewport_differences(
   alignment : SubjectAlignment,
   before : SourceSubject,
   after : SourceSubject,
-  site_alignment : Array[(Int?, Int?)],
+  site_alignment : Array[(Int32?, Int32?)],
   changes : Array[TransformFactChange],
   differences : Array[AtomicDifference],
   difference_ids : Array[String],

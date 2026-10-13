@@ -21,7 +21,7 @@ pub(all) struct GradientAttributeSource {
 ///|
 pub(all) struct GradientStopSource {
   subject_id : String
-  hierarchy_index : Int
+  hierarchy_index : Int32
   offset_fact : DeclaredVisualFact?
 }
 
@@ -30,8 +30,8 @@ pub(all) struct GradientSource {
   subject_id : String
   authored_id : String?
   kind : String
-  hierarchy_index : Int
-  source_index : Int
+  hierarchy_index : Int32
+  source_index : Int32
   attributes : Array[GradientAttributeSource]
   href_fact : DeclaredVisualFact?
   stops : Array[GradientStopSource]
@@ -125,8 +125,8 @@ pub fn gradient_dynamic_child(kind : String) -> Bool {
 pub fn gradient_hierarchy_index(
   hierarchy : FillHierarchy,
   kind : String,
-  source_offset : Int,
-) -> Int? {
+  source_offset : Int32,
+) -> Int32? {
   for index, element in hierarchy.elements {
     if element.kind == kind && element.source_offset == source_offset {
       return Some(index)
@@ -169,7 +169,7 @@ pub fn preferred_gradient_href(
 pub fn gradient_source_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_index : Int,
+  source_index : Int32,
   hierarchy : FillHierarchy,
 ) -> GradientSource? {
   let kind = element.name.local_name
@@ -206,7 +206,7 @@ pub fn gradient_source_from_element(
 pub fn gradient_stop_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_index : Int,
+  source_index : Int32,
   hierarchy : FillHierarchy,
 ) -> GradientStopSource? {
   guard gradient_hierarchy_index(hierarchy, "stop", source_index)
@@ -283,7 +283,7 @@ pub fn extract_gradient_document_or_raise(
   let gradients : Array[GradientSource] = []
   let issues : Array[GradientSemanticIssue] = []
   let color_interpolation_facts : Array[DeclaredVisualFact] = []
-  let mut current_gradient : Int? = None
+  let mut current_gradient : Int32? = None
   let mut gradient_depth = 0
   let reader = @xml.NamespaceReader::from_string(source)
   for event in reader.read_events_until_eof() {
@@ -586,7 +586,7 @@ pub fn computed_gradient_stop(
   document : GradientDocument,
   host : GradientSource,
   source : GradientStopSource,
-  stop_index : Int,
+  stop_index : Int32,
   minimum_offset : Double,
 ) -> ComputedGradientStop {
   let elements = document.hierarchy.elements.copy()

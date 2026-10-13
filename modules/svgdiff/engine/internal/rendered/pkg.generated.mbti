@@ -3,9 +3,9 @@ package "Milky2018/svgdiff/engine/internal/rendered"
 
 import {
   "Milky2018/svg",
+  "Milky2018/svgdiff-pixelmatch",
   "Milky2018/svgdiff/engine/internal/rendered/ldr_flip",
   "Milky2018/svgdiff/engine/model",
-  "mizchi/pixelmatch",
 }
 
 // Values
@@ -35,7 +35,7 @@ pub fn event_local_perceptual_color_evidence(@svg.Image, @svg.Image, Array[@mode
 
 pub fn event_local_perceptual_flip_evidence(@svg.Image, @svg.Image, Array[@model.DifferenceRegion], @model.PerceptualBackground, @model.FlipViewingConditions, @model.FlipErrorThreshold?, Int, Int) -> PerceptualFlipComputation
 
-pub fn exact_pixel_options() -> @pixelmatch.Options
+pub fn exact_pixel_options() -> @svgdiff-pixelmatch.Options
 
 pub fn expand_flip_bounds(FlipPixelBounds, Int, Int, Int) -> FlipPixelBounds
 
@@ -75,7 +75,7 @@ pub fn selected_raw_difference_bounds(@svg.Image, @svg.Image, Array[@model.Diffe
 
 pub fn srgb8_to_linear(Int) -> Double
 
-pub fn to_pixelmatch_image(@svg.Image) -> @pixelmatch.Image
+pub fn to_pixelmatch_image(@svg.Image) -> @svgdiff-pixelmatch.Image
 
 // Errors
 

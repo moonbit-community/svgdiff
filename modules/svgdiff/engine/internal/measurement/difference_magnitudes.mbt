@@ -352,8 +352,8 @@ priv struct IsolatedPaintCacheEntry {
 
 ///|
 priv struct IsolatedPaintMeasurementCache {
-  mut comparisons : Int
-  mut raster_pixels : Int
+  mut comparisons : Int32
+  mut raster_pixels : Int32
   entries : Array[IsolatedPaintCacheEntry]
 }
 
@@ -668,7 +668,7 @@ fn ordering_for_magnitude(
 fn compare_ordering_components(
   left : Array[Double],
   right : Array[Double],
-) -> Int {
+) -> Int32 {
   let shared = left.length().min(right.length())
   for index in 0..<shared {
     if left[index] > right[index] {
@@ -682,7 +682,7 @@ fn compare_ordering_components(
 }
 
 ///|
-fn difference_rank(differences : Array[AtomicDifference], id : String) -> Int {
+fn difference_rank(differences : Array[AtomicDifference], id : String) -> Int32 {
   for index, difference in differences {
     if difference.id == id {
       return index

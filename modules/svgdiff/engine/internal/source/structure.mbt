@@ -16,9 +16,9 @@
 pub(all) struct StructuralSourceNode {
   source_id : String
   kind : String
-  source_offset : Int
-  parent_index : Int?
-  children : Array[Int]
+  source_offset : Int32
+  parent_index : Int32?
+  children : Array[Int32]
   element : @xml.NamespaceElement
   direct_text : String
   definition_content : Bool
@@ -28,13 +28,13 @@ pub(all) struct StructuralSourceNode {
 ///|
 pub(all) struct StructuralDocument {
   nodes : Array[StructuralSourceNode]
-  id_indices : Map[String, Int]
+  id_indices : Map[String, Int32]
 }
 
 ///|
 pub(all) struct RenderedSubjectPlan {
-  source_node_index : Int
-  rendered_ancestry : Array[Int]
+  source_node_index : Int32
+  rendered_ancestry : Array[Int32]
   use_path : Array[String]
   instance_id : String?
   definition_subject_id : String
@@ -97,11 +97,11 @@ pub fn structural_href_fact(
 pub fn add_structural_source_node(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  parent_index : Int?,
+  source_offset : Int32,
+  parent_index : Int32?,
   nodes : Array[StructuralSourceNode],
-  id_indices : Map[String, Int],
-) -> Int {
+  id_indices : Map[String, Int32],
+) -> Int32 {
   let kind = element.name.local_name
   let source_id = authored_subject_id(element).unwrap_or(
     generated_subject_id(kind, source_offset),
@@ -139,8 +139,8 @@ pub fn extract_structural_document_or_raise(
   input : String,
 ) -> StructuralDocument raise {
   let nodes : Array[StructuralSourceNode] = []
-  let id_indices : Map[String, Int] = Map([])
-  let stack : Array[Int?] = []
+  let id_indices : Map[String, Int32] = Map([])
+  let stack : Array[Int32?] = []
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -201,7 +201,7 @@ pub fn extract_structural_document_or_raise(
 pub fn use_target_index(
   document : StructuralDocument,
   node : StructuralSourceNode,
-) -> Int? {
+) -> Int32? {
   guard node.kind == "use" else { return None }
   guard node.href_fact is Some(fact) else { return None }
   guard local_href_target(fact.declared_value) is Some(target_id) else {
@@ -234,11 +234,11 @@ pub fn rendered_instance_id(
 ///|
 pub fn append_rendered_subject_plans(
   document : StructuralDocument,
-  node_index : Int,
-  rendered_ancestry : Array[Int],
+  node_index : Int32,
+  rendered_ancestry : Array[Int32],
   use_path : Array[String],
   plans : Array[RenderedSubjectPlan],
-  active_use_targets : Array[Int],
+  active_use_targets : Array[Int32],
 ) -> Unit {
   let node = document.nodes[node_index]
   if use_path.is_empty() && node.definition_content {
@@ -298,8 +298,8 @@ pub fn rendered_subject_plans(
 ///|
 pub fn structural_same_kind_ordinal(
   document : StructuralDocument,
-  node_index : Int,
-) -> Int {
+  node_index : Int32,
+) -> Int32 {
   let node = document.nodes[node_index]
   let mut ordinal = 0
   match node.parent_index {
@@ -328,7 +328,7 @@ pub fn structural_same_kind_ordinal(
 ///|
 pub fn structural_path_segment(
   document : StructuralDocument,
-  node_index : Int,
+  node_index : Int32,
 ) -> String {
   let node = document.nodes[node_index]
   "\{node.kind}[\{structural_same_kind_ordinal(document, node_index)}]"

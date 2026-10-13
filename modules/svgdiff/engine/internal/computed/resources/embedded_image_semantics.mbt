@@ -68,7 +68,7 @@ pub fn embedded_image_fact(
 pub fn embedded_image_cascade_facts(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
+  source_offset : Int32,
   css_document : CssStaticDocument,
 ) -> Array[DeclaredVisualFact] {
   let candidates : Array[CssCascadeCandidate] = []
@@ -262,8 +262,8 @@ pub fn embedded_image_preserve_aspect_ratio(
 pub fn embedded_image_subject_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  source_index : Int,
+  source_offset : Int32,
+  source_index : Int32,
   transform_chain : Array[SourceTransformSite],
   viewport : ViewportContext,
   profile : ComparisonProfile,
@@ -519,7 +519,7 @@ pub fn embedded_image_subject_bounds(
 pub fn embedded_image_unique_id_count(
   subjects : Array[EmbeddedImageSubject],
   id : String,
-) -> Int {
+) -> Int32 {
   let mut count = 0
   for subject in subjects {
     if subject.reference.authored_id == Some(id) {

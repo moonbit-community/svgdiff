@@ -395,11 +395,11 @@ fn append_transform_preflight_diagnostics(
 fn object_bbox_clip_child_offsets(
   input : String,
   profile : ComparisonProfile,
-) -> Array[Int] {
+) -> Array[Int32] {
   let document = extract_clip_semantic_document_or_raise(input, profile) catch {
     _ => return []
   }
-  let offsets : Array[Int] = []
+  let offsets : Array[Int32] = []
   for resource in document.resources {
     if resource.complete &&
       resource.units == "objectBoundingBox" &&
@@ -424,11 +424,11 @@ fn object_bbox_clip_child_offsets(
 fn admitted_mask_content_offsets(
   input : String,
   profile : ComparisonProfile,
-) -> Array[Int] {
+) -> Array[Int32] {
   let document = extract_mask_semantic_document_or_raise(input, profile) catch {
     _ => return []
   }
-  let offsets : Array[Int] = []
+  let offsets : Array[Int32] = []
   for resource in document.resources {
     if resource.complete && resource.rect_source_offset is Some(offset) {
       offsets.push(offset)

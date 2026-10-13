@@ -53,9 +53,9 @@ pub(all) struct CssSelectorAttribute {
 pub(all) struct CssSelectorNode {
   local_name : String
   attributes : Array[CssSelectorAttribute]
-  parent_index : Int?
-  previous_sibling_index : Int?
-  source_offset : Int
+  parent_index : Int32?
+  previous_sibling_index : Int32?
+  source_offset : Int32
 }
 
 ///|
@@ -97,8 +97,8 @@ fn css_identifier_continue(code_unit : UInt16) -> Bool {
 ///|
 fn parse_static_css_identifier(
   source : String,
-  position : Int,
-) -> (String, Int)? {
+  position : Int32,
+) -> (String, Int32)? {
   if position >= source.length() {
     return None
   }
@@ -119,7 +119,7 @@ fn parse_static_css_identifier(
 }
 
 ///|
-fn skip_css_whitespace(source : String, position : Int) -> Int {
+fn skip_css_whitespace(source : String, position : Int32) -> Int32 {
   let mut end = position
   while end < source.length() && is_declaration_whitespace(source[end]) {
     end += 1
@@ -130,8 +130,8 @@ fn skip_css_whitespace(source : String, position : Int) -> Int {
 ///|
 fn parse_static_attribute_selector(
   source : String,
-  position : Int,
-) -> (CssSimpleSelector, Int)? {
+  position : Int32,
+) -> (CssSimpleSelector, Int32)? {
   let mut current = skip_css_whitespace(source, position + 1)
   guard parse_static_css_identifier(source, current) is Some((name, name_end)) else {
     return None
@@ -347,8 +347,8 @@ fn css_compound_matches(part : CssSelectorPart, node : CssSelectorNode) -> Bool 
 fn css_selector_matches_from(
   document : CssStaticDocument,
   selector : CssSelector,
-  part_index : Int,
-  node_index : Int,
+  part_index : Int32,
+  node_index : Int32,
 ) -> Bool {
   if !css_compound_matches(
       selector.parts[part_index],
@@ -400,7 +400,7 @@ fn css_selector_matches_from(
 fn css_selector_matches(
   document : CssStaticDocument,
   selector : CssSelector,
-  node_index : Int,
+  node_index : Int32,
 ) -> Bool {
   !selector.parts.is_empty() &&
   css_selector_matches_from(
@@ -414,9 +414,9 @@ fn css_selector_matches(
 ///|
 fn css_selector_node(
   element : @xml.NamespaceElement,
-  parent_index : Int?,
-  previous_sibling_index : Int?,
-  source_offset : Int,
+  parent_index : Int32?,
+  previous_sibling_index : Int32?,
+  source_offset : Int32,
 ) -> CssSelectorNode {
   let attributes : Array[CssSelectorAttribute] = []
   for attribute in element.attributes {
@@ -438,12 +438,12 @@ fn css_selector_node(
 ///|
 fn add_css_selector_node(
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  stack : Array[Int],
+  source_offset : Int32,
+  stack : Array[Int32],
   nodes : Array[CssSelectorNode],
-  last_children : Array[Int?],
-  root_previous : Int?,
-) -> (Int, Int?) {
+  last_children : Array[Int32?],
+  root_previous : Int32?,
+) -> (Int32, Int32?) {
   let parent_index = stack.last()
   let previous_sibling_index = match parent_index {
     Some(parent) => last_children[parent]
@@ -472,9 +472,9 @@ pub fn parse_static_css_document_or_raise(
 ) -> CssStaticDocument raise {
   let stylesheets = parse_document_stylesheets_or_raise(input)
   let nodes : Array[CssSelectorNode] = []
-  let last_children : Array[Int?] = []
-  let stack : Array[Int] = []
-  let mut root_previous : Int? = None
+  let last_children : Array[Int32?] = []
+  let stack : Array[Int32] = []
+  let mut root_previous : Int32? = None
   let reader = @xml.NamespaceReader::from_string(input)
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -511,7 +511,7 @@ pub fn parse_static_css_document_or_raise(
 ///|
 pub fn css_stylesheet_match_for_source(
   document : CssStaticDocument,
-  source_offset : Int,
+  source_offset : Int32,
 ) -> CssStylesheetMatch {
   let candidates : Array[CssCascadeCandidate] = []
   let mut complete = document.complete

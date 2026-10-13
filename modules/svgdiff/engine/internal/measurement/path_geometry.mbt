@@ -87,8 +87,8 @@ fn path_staged_magnitude(
 
 ///|
 pub(all) struct PathBoundaryBudget {
-  mut comparisons : Int
-  mut raster_pixels : Int
+  mut comparisons : Int32
+  mut raster_pixels : Int32
 }
 
 ///|
@@ -130,10 +130,10 @@ fn same_path_parameter(
 
 ///|
 fn positional_path_segment_alignment(
-  before_length : Int,
-  after_length : Int,
-) -> Array[(Int?, Int?)] {
-  let alignment : Array[(Int?, Int?)] = []
+  before_length : Int32,
+  after_length : Int32,
+) -> Array[(Int32?, Int32?)] {
+  let alignment : Array[(Int32?, Int32?)] = []
   let shared = before_length.min(after_length)
   for index in 0..<shared {
     alignment.push((Some(index), Some(index)))
@@ -151,7 +151,7 @@ fn positional_path_segment_alignment(
 fn path_segment_edit_cost(
   before : PathSegmentEvidence,
   after : PathSegmentEvidence,
-) -> Int {
+) -> Int32 {
   if normalized_path_segment_signature(before.normalized) ==
     normalized_path_segment_signature(after.normalized) {
     0
@@ -167,7 +167,7 @@ fn path_segment_edit_cost(
 fn align_path_segments(
   before : Array[PathSegmentEvidence],
   after : Array[PathSegmentEvidence],
-) -> Array[(Int?, Int?)] {
+) -> Array[(Int32?, Int32?)] {
   let before_length = before.length()
   let after_length = after.length()
   if after_length + 1 > 65536 / (before_length + 1) {
@@ -195,7 +195,7 @@ fn align_path_segments(
         .min(costs[(before_index - 1) * width + after_index - 1] + substitution)
     }
   }
-  let reversed : Array[(Int?, Int?)] = []
+  let reversed : Array[(Int32?, Int32?)] = []
   let mut before_index = before_length
   let mut after_index = after_length
   while before_index > 0 || after_index > 0 {
@@ -222,7 +222,7 @@ fn align_path_segments(
       after_index -= 1
     }
   }
-  let alignment : Array[(Int?, Int?)] = []
+  let alignment : Array[(Int32?, Int32?)] = []
   let mut index = reversed.length() - 1
   while index >= 0 {
     alignment.push(reversed[index])
@@ -235,7 +235,7 @@ fn align_path_segments(
 fn path_segment_alignment_changed(
   before : Array[PathSegmentEvidence],
   after : Array[PathSegmentEvidence],
-  alignment : Array[(Int?, Int?)],
+  alignment : Array[(Int32?, Int32?)],
 ) -> Bool {
   for pair in alignment {
     let (before_index, after_index) = pair

@@ -26,14 +26,14 @@ pub struct Config {
   output_path : String?
   html_path : String?
   agent_json : Bool
-  width : Int?
-  height : Int?
+  width : Int32?
+  height : Int32?
   perceptual_background : @svgdiff.PerceptualBackground?
   flip_viewing_conditions : @svgdiff.FlipViewingConditions?
   flip_error_threshold : @svgdiff.FlipErrorThreshold?
   before_resources : Array[Resource]
   after_resources : Array[Resource]
-  max_checkpoints : Int?
+  max_checkpoints : Int32?
 }
 
 ///|
@@ -329,7 +329,7 @@ fn svg_view_box_size(source : String) -> (Double, Double)? {
 }
 
 ///|
-fn intrinsic_viewport(before_svg : String) -> (Int, Int)? {
+fn intrinsic_viewport(before_svg : String) -> (Int32, Int32)? {
   let events = @xml.NamespaceReader::from_string(before_svg).read_events_until_eof() catch {
     _ => return None
   }

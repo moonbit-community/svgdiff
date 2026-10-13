@@ -16,7 +16,7 @@
 /// A cursor over one source string for SVG-style finite numbers.
 pub(all) struct NumberParser {
   data : String
-  mut position : Int
+  mut position : Int32
 }
 
 ///|

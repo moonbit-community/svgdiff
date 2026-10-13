@@ -64,7 +64,7 @@ pub(all) struct SourceSubject {
   mask_complete : Bool
   mask_effect_bounds : CssBounds?
   mask_issue_codes : Array[String]
-  source_offset : Int
+  source_offset : Int32
 }
 
 ///|

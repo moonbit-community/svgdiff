@@ -38,7 +38,7 @@ pub fn CanonicalRasterCapture::store(
 }
 
 ///|
-fn displayed_channel(color : @svg.Color, channel : Int) -> Int {
+fn displayed_channel(color : @svg.Color, channel : Int32) -> Int32 {
   let value = match channel {
     0 => color.r
     1 => color.g

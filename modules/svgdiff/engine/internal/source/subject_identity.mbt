@@ -26,6 +26,6 @@ pub fn authored_subject_id(element : @xml.NamespaceElement) -> String? {
 }
 
 ///|
-pub fn generated_subject_id(kind : String, index : Int) -> String {
+pub fn generated_subject_id(kind : String, index : Int32) -> String {
   "\{kind}:\{index}"
 }

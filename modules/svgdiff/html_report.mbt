@@ -26,7 +26,7 @@ fn escape_html(value : String) -> String {
 fn preview_element_insert_offset(
   source : String,
   span : @xml.SourceSpan,
-) -> Int {
+) -> Int32 {
   let mut offset = span.end.offset - 1
   while offset > span.start.offset && source[offset] != '>' {
     offset -= 1
@@ -39,7 +39,7 @@ fn preview_element_insert_offset(
 }
 
 ///|
-fn preview_source(source : String, width : Int, height : Int) -> String {
+fn preview_source(source : String, width : Int32, height : Int32) -> String {
   let reader = @xml.NamespaceReader::from_string(source)
   let events = reader.read_events_until_eof() catch { _ => return source }
   for event in events {
@@ -66,7 +66,7 @@ fn preview_source(source : String, width : Int, height : Int) -> String {
 }
 
 ///|
-fn sandbox_document(source : String, width : Int, height : Int) -> String {
+fn sandbox_document(source : String, width : Int32, height : Int32) -> String {
   escape_html(
     "<!doctype html><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}body>svg{display:block;width:100%!important;height:100%!important}</style>\{preview_source(source, width, height)}",
   )

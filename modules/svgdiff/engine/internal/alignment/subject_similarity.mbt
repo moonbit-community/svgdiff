@@ -104,7 +104,7 @@ fn resource_alignment_score_kind(score_kind : String) -> String {
 ///|
 fn structural_node_path_signature(
   document : StructuralDocument,
-  node_index : Int,
+  node_index : Int32,
 ) -> String {
   let segment = structural_path_segment(document, node_index)
   match document.nodes[node_index].parent_index {
@@ -144,7 +144,7 @@ fn structural_signature_attribute(
 ///|
 fn structural_node_semantic_signature(
   document : StructuralDocument,
-  node_index : Int,
+  node_index : Int32,
 ) -> String {
   let node = document.nodes[node_index]
   let attributes : Array[String] = []

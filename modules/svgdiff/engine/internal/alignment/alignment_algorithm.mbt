@@ -84,8 +84,8 @@ fn alignment_refs(subjects : Array[SourceSubject]) -> Array[SubjectReference] {
 fn subject_owners_compatible(
   before_owners : Array[String?],
   after_owners : Array[String?],
-  before_index : Int,
-  after_index : Int,
+  before_index : Int32,
+  after_index : Int32,
 ) -> Bool {
   let before_owner = before_owners.get(before_index).unwrap_or(None)
   let after_owner = after_owners.get(after_index).unwrap_or(None)
@@ -94,7 +94,7 @@ fn subject_owners_compatible(
 
 ///|
 fn make_alignment(
-  index : Int,
+  index : Int32,
   relation : String,
   before : Array[SourceSubject],
   after : Array[SourceSubject],
@@ -116,8 +116,8 @@ fn make_alignment(
 pub fn alignment_evidence(
   score_kind : String,
   selected_score : Double?,
-  candidate_count : Int,
-  equal_score_candidate_count : Int,
+  candidate_count : Int32,
+  equal_score_candidate_count : Int32,
   ambiguity : String,
 ) -> AlignmentEvidence {
   {
@@ -133,7 +133,7 @@ pub fn alignment_evidence(
 
 ///|
 fn make_structural_alignment(
-  index : Int,
+  index : Int32,
   relation : String,
   before : Array[StructuralAlignmentSubject],
   after : Array[StructuralAlignmentSubject],
@@ -170,7 +170,7 @@ fn make_structural_alignment(
 ///|
 fn structural_selection_evidence(
   score_kind : String,
-  candidate_count : Int,
+  candidate_count : Int32,
 ) -> AlignmentEvidence {
   alignment_evidence(
     score_kind,
@@ -189,7 +189,7 @@ fn structural_selection_evidence(
 pub fn align_structural_subjects_with_guard(
   before : Array[StructuralAlignmentSubject],
   after : Array[StructuralAlignmentSubject],
-  start_index : Int,
+  start_index : Int32,
   comparison_guard : ComparisonGuard,
 ) -> Array[SubjectAlignment] raise ComparisonInterrupted {
   let alignments : Array[SubjectAlignment] = []
@@ -200,8 +200,8 @@ pub fn align_structural_subjects_with_guard(
     if before_used[before_index] {
       continue
     }
-    let before_candidates : Array[Int] = []
-    let after_candidates : Array[Int] = []
+    let before_candidates : Array[Int32] = []
+    let after_candidates : Array[Int32] = []
     for index, subject in before {
       if !before_used[index] &&
         subject.reference.kind == before_subject.reference.kind &&
@@ -252,7 +252,7 @@ pub fn align_structural_subjects_with_guard(
     guard before_subject.reference.authored_id is Some(authored_id) else {
       continue
     }
-    let candidates : Array[Int] = []
+    let candidates : Array[Int32] = []
     for after_index, after_subject in after {
       if !after_used[after_index] &&
         after_subject.reference.kind == before_subject.reference.kind &&
@@ -301,7 +301,7 @@ pub fn align_structural_subjects_with_guard(
     if before_used[before_index] {
       continue
     }
-    let candidates : Array[Int] = []
+    let candidates : Array[Int32] = []
     for after_index, after_subject in after {
       if !after_used[after_index] &&
         after_subject.reference.kind == before_subject.reference.kind &&
@@ -340,8 +340,8 @@ pub fn align_structural_subjects_with_guard(
   unmatched_kinds.sort()
   for kind in unmatched_kinds {
     comparison_guard.checkpoint()
-    let before_indices : Array[Int] = []
-    let after_indices : Array[Int] = []
+    let before_indices : Array[Int32] = []
+    let after_indices : Array[Int32] = []
     for index, subject in before {
       if !before_used[index] && subject.reference.kind == kind {
         before_indices.push(index)
@@ -421,7 +421,7 @@ fn subject_distance(
 
 ///|
 fn sort_subject_indices(
-  indices : Array[Int],
+  indices : Array[Int32],
   subjects : Array[SourceSubject],
 ) -> Unit {
   indices.sort_by(fn(left, right) {
@@ -438,13 +438,13 @@ fn sort_subject_indices(
 
 ///|
 fn minimum_cost_subject_pairs_with_guard(
-  before_indices : Array[Int],
-  after_indices : Array[Int],
+  before_indices : Array[Int32],
+  after_indices : Array[Int32],
   before : Array[SourceSubject],
   after : Array[SourceSubject],
   profile : ComparisonProfile,
   comparison_guard : ComparisonGuard,
-) -> Array[(Int, Int)] raise ComparisonInterrupted {
+) -> Array[(Int32, Int32)] raise ComparisonInterrupted {
   if before_indices.is_empty() || after_indices.is_empty() {
     return []
   }
@@ -519,7 +519,7 @@ fn minimum_cost_subject_pairs_with_guard(
       }
     }
   }
-  let pairs : Array[(Int, Int)] = []
+  let pairs : Array[(Int32, Int32)] = []
   for column in 1..<=column_count {
     if matching[column] == 0 {
       continue
@@ -594,8 +594,8 @@ pub fn align_source_subjects_with_guard(
       continue
     }
     let signature = repeated_subject_equivalence_signature(before_subject)
-    let before_candidates : Array[Int] = []
-    let after_candidates : Array[Int] = []
+    let before_candidates : Array[Int32] = []
+    let after_candidates : Array[Int32] = []
     for index, subject in before {
       if !before_used[index] &&
         before_owners.get(index).unwrap_or(None) ==
@@ -703,7 +703,7 @@ pub fn align_source_subjects_with_guard(
       continue
     }
     let candidates : Array[SourceSubject] = []
-    let candidate_indices : Array[Int] = []
+    let candidate_indices : Array[Int32] = []
     for after_index, after_subject in after {
       if !after_used[after_index] &&
         subject_owners_compatible(
@@ -738,7 +738,7 @@ pub fn align_source_subjects_with_guard(
       continue
     }
     let candidates : Array[SourceSubject] = []
-    let candidate_indices : Array[Int] = []
+    let candidate_indices : Array[Int32] = []
     for before_index, before_subject in before {
       if !before_used[before_index] &&
         subject_owners_compatible(
@@ -798,7 +798,7 @@ pub fn align_source_subjects_with_guard(
       }
     }
     for owner in owner_keys {
-      let before_indices : Array[Int] = []
+      let before_indices : Array[Int32] = []
       for index, subject in before {
         if !before_used[index] &&
           subject.kind == kind &&
@@ -806,7 +806,7 @@ pub fn align_source_subjects_with_guard(
           before_indices.push(index)
         }
       }
-      let after_indices : Array[Int] = []
+      let after_indices : Array[Int32] = []
       for index, subject in after {
         if !after_used[index] &&
           subject.kind == kind &&

@@ -16,7 +16,7 @@
 fn selector_test_node_by_id(
   document : CssStaticDocument,
   id : String,
-) -> Int raise {
+) -> Int32 raise {
   for index, node in document.nodes {
     if css_selector_attribute(node, "id") == Some(id) {
       return index
@@ -29,7 +29,7 @@ fn selector_test_node_by_id(
 fn selector_test_matches(
   document : CssStaticDocument,
   source : String,
-  node_index : Int,
+  node_index : Int32,
 ) -> Bool raise {
   guard parse_static_css_selector(source) is Some(selector) else {
     fail("selector should parse: " + source)

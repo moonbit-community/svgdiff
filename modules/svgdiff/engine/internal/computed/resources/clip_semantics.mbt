@@ -29,8 +29,8 @@ pub(all) struct ClipRectResource {
   transform_fact : DeclaredVisualFact?
   transform : AffineTransform
   transform_complete : Bool
-  mut child_count : Int
-  mut rect_source_offset : Int?
+  mut child_count : Int32
+  mut rect_source_offset : Int32?
   mut rect_facts : Array[DeclaredVisualFact]
   mut rect_transform_fact : DeclaredVisualFact?
   mut rect_transform : AffineTransform
@@ -63,8 +63,8 @@ pub fn clip_attribute(
 pub fn clip_source_fact(
   input : String,
   property : String,
-  start_offset : Int,
-  end_offset : Int,
+  start_offset : Int32,
+  end_offset : Int32,
 ) -> DeclaredVisualFact {
   let source = source_range_slice(input, start_offset, end_offset)
   {
@@ -115,7 +115,7 @@ pub fn clip_transform_from_fact(
 ///|
 pub fn clip_hierarchy_subject_id_at(
   hierarchy : FillHierarchy,
-  source_offset : Int,
+  source_offset : Int32,
   fallback_kind : String,
 ) -> String {
   for element in hierarchy.elements {
@@ -130,8 +130,8 @@ pub fn clip_hierarchy_subject_id_at(
 pub fn clip_resource_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  source_end_offset : Int,
+  source_offset : Int32,
+  source_end_offset : Int32,
   hierarchy : FillHierarchy,
 ) -> ClipRectResource {
   let authored_id = authored_subject_id(element)
@@ -222,11 +222,11 @@ pub fn clip_resolved_number(
 pub fn clip_record_direct_child(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  source_end_offset : Int,
+  source_offset : Int32,
+  source_end_offset : Int32,
   profile : ComparisonProfile,
   document : ClipSemanticDocument,
-  resource_index : Int,
+  resource_index : Int32,
 ) -> Unit {
   let resource = document.resources[resource_index]
   let kind = element.name.local_name
@@ -347,7 +347,7 @@ pub fn extract_clip_semantic_document_or_raise(
     issues: [],
   }
   let reader = @xml.NamespaceReader::from_string(input)
-  let mut active : Int? = None
+  let mut active : Int32? = None
   let mut depth = 0
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -565,8 +565,8 @@ pub fn clip_target_kind(
 pub fn clip_active_resolution_for_subject(
   hierarchy : FillHierarchy,
   subject : SourceSubject,
-) -> (String, String, ResolvedVisualFact, Int)? {
-  let mut index : Int? = None
+) -> (String, String, ResolvedVisualFact, Int32)? {
+  let mut index : Int32? = None
   for current_index, element in hierarchy.elements {
     if element.source_offset == subject.source_offset {
       index = Some(current_index)
@@ -600,7 +600,7 @@ pub fn clip_active_resolution_for_subject(
 ///|
 pub fn clip_owner_transform(
   subject : SourceSubject,
-  owner_depth : Int,
+  owner_depth : Int32,
 ) -> (AffineTransform, Bool) {
   if owner_depth >= subject.transform_chain.length() {
     return (subject.cumulative_transform, false)
@@ -621,7 +621,7 @@ pub fn clip_owner_transform(
 ///|
 pub fn clip_application_bounds(
   subject : SourceSubject,
-  owner_depth : Int,
+  owner_depth : Int32,
   resource : ClipRectResource,
 ) -> (CssBounds?, Bool) {
   guard resource.rect_bounds is Some(rect) else { return (None, false) }

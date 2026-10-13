@@ -99,7 +99,11 @@ test "renderer style precedence normalization preserves a visual change" {
 test "inline important cascade remains complete and renderer-equivalent" {
   let before = "<svg width='16' height='16'><rect id='box' width='16' height='16' fill='blue' style='fill:red!important;fill:green'/></svg>"
   let after = "<svg width='16' height='16'><rect id='box' width='16' height='16' fill='red'/></svg>"
-  let report = compare(before, after, ComparisonProfile::v1_default())
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
   assert_eq(report.analysis_status, "complete")
   let fill = report.atomic_differences.filter(difference => {
       difference.domain == "paint.fill"
@@ -208,7 +212,11 @@ test "supported class stylesheet selector can prove equality" {
 test "stylesheet specificity winner is renderer-equivalent to canonical paint" {
   let before = "<svg width='16' height='16'><style>rect { fill: blue; } #box { fill: red; }</style><rect id='box' width='16' height='16'/></svg>"
   let after = "<svg width='16' height='16'><rect id='box' width='16' height='16' fill='red'/></svg>"
-  let report = compare(before, after, ComparisonProfile::v1_default())
+  let report = @engine.compare(
+    before,
+    after,
+    @engine.ComparisonProfile::v1_default(),
+  )
   assert_eq(report.analysis_status, "complete")
   assert_eq(report.atomic_differences.length(), 1)
   let fill = report.atomic_differences[0]

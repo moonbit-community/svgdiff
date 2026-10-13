@@ -1,0 +1,108 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/svgdiff-pixelmatch"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn compensated_diff(Image, Image, Array[ShiftRegion], Double) -> Int
+
+pub fn detect_global_shift(FixedArray[Double], FixedArray[Double], Int) -> Int
+
+pub fn detect_piecewise_shift(FixedArray[Double], FixedArray[Double], Int, window_size? : Int) -> Array[ShiftRegion]
+
+pub fn diff_report(Image, Image, Options, grid_size? : Int) -> DiffReport
+
+pub fn luminance_profile(Image) -> FixedArray[Double]
+
+pub fn match_ratio(Image, Image, Options) -> Double
+
+pub fn pixelmatch(Image, Image, Image?, Options) -> Int
+
+pub fn pixelmatch_fast(Image, Image, Double) -> Int
+
+pub fn pixelmatch_simple(Image, Image, Double) -> Int
+
+pub fn pixelmatch_simple_prefilter(Image, Image, Double) -> Int
+
+// Errors
+
+// Types and methods
+pub(all) struct Color {
+  r : Int
+  g : Int
+  b : Int
+  a : Int
+} derive(Eq, @debug.Debug)
+pub fn Color::equal(Self, Self) -> Bool
+pub fn Color::not_equal(Self, Self) -> Bool
+pub fn Color::output(Self, &Logger) -> Unit
+pub fn Color::rgb(Int, Int, Int) -> Self
+pub fn Color::rgba(Int, Int, Int, Int) -> Self
+pub fn Color::to_repr(Self) -> @debug.Repr
+pub fn Color::to_string(Self) -> String
+pub impl Show for Color
+
+pub(all) struct DiffRegion {
+  x : Int
+  y : Int
+  width : Int
+  height : Int
+  diff_pixels : Int
+  region_type : String
+}
+
+pub(all) struct DiffReport {
+  width : Int
+  height : Int
+  total_pixels : Int
+  diff_count : Int
+  aa_count : Int
+  match_ratio : Double
+  grid : Array[Array[Int]]
+  grid_cols : Int
+  grid_rows : Int
+  regions : Array[DiffRegion]
+  shift_only : Bool
+  content_change_count : Int
+  global_shift : Int
+  shift_regions : Array[ShiftRegion]
+  compensated_diff_count : Int
+}
+pub fn DiffReport::to_compact(Self) -> String
+pub fn DiffReport::to_compact_with_hints(Self) -> String
+pub fn DiffReport::to_json(Self) -> String
+pub fn DiffReport::to_text(Self) -> String
+
+pub(all) struct Image {
+  width : Int
+  height : Int
+  data : FixedArray[Int]
+}
+pub fn Image::from_pixels(Int, Int, Array[Color]) -> Self
+pub fn Image::get_pixel(Self, Int, Int) -> Color
+pub fn Image::new(Int, Int) -> Self
+pub fn Image::set_pixel(Self, Int, Int, Color) -> Unit
+
+pub(all) struct Options {
+  threshold : Double
+  include_aa : Bool
+  alpha : Double
+  aa_color : Color
+  diff_color : Color
+  diff_color_alt : Color?
+  diff_mask : Bool
+  detect_shift : Bool
+}
+pub fn Options::default() -> Self
+
+pub(all) struct ShiftRegion {
+  y_start : Int
+  y_end : Int
+  shift : Int
+}
+
+// Type aliases
+
+// Traits

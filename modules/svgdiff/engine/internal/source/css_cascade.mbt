@@ -14,10 +14,10 @@
 
 ///|
 pub(all) struct CssSpecificity {
-  inline_style : Int
-  ids : Int
-  classes : Int
-  types : Int
+  inline_style : Int32
+  ids : Int32
+  classes : Int32
+  types : Int32
 }
 
 ///|
@@ -25,8 +25,8 @@ pub(all) struct CssCascadeCandidate {
   declaration : DeclaredVisualFact
   important : Bool
   specificity : CssSpecificity
-  cascade_source : Int
-  source_order : Int
+  cascade_source : Int32
+  source_order : Int32
 }
 
 ///|
@@ -56,7 +56,7 @@ fn inline_specificity() -> CssSpecificity {
 ///|
 pub fn presentation_cascade_candidate(
   declaration : DeclaredVisualFact,
-  source_order : Int,
+  source_order : Int32,
 ) -> CssCascadeCandidate {
   {
     declaration,
@@ -71,7 +71,7 @@ pub fn presentation_cascade_candidate(
 fn inline_cascade_candidate(
   declaration : DeclaredVisualFact,
   important : Bool,
-  source_order : Int,
+  source_order : Int32,
 ) -> CssCascadeCandidate {
   {
     declaration,
@@ -87,7 +87,7 @@ fn stylesheet_cascade_candidate(
   declaration : DeclaredVisualFact,
   important : Bool,
   specificity : CssSpecificity,
-  source_order : Int,
+  source_order : Int32,
 ) -> CssCascadeCandidate {
   { declaration, important, specificity, cascade_source: 1, source_order, }
 }
@@ -96,7 +96,7 @@ fn stylesheet_cascade_candidate(
 fn compare_css_specificity(
   left : CssSpecificity,
   right : CssSpecificity,
-) -> Int {
+) -> Int32 {
   let inline_order = left.inline_style.compare(right.inline_style)
   if inline_order != 0 {
     return inline_order
@@ -162,7 +162,7 @@ pub fn cascade_visual_declarations(
 ///|
 fn parse_stylesheet_declarations(
   source : String,
-  source_start : Int,
+  source_start : Int32,
   specificity : CssSpecificity,
 ) -> (Array[CssCascadeCandidate], Bool) {
   let candidates : Array[CssCascadeCandidate] = []
@@ -206,7 +206,7 @@ fn parse_stylesheet_declarations(
 ///|
 fn parse_stylesheet_text(
   source : String,
-  source_start : Int,
+  source_start : Int32,
 ) -> CssStylesheetParse {
   let rules : Array[CssStylesheetRule] = []
   let mut complete = true

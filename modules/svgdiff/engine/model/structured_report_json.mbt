@@ -42,12 +42,14 @@ fn compact_rendered_magnitude(value : RenderedMagnitude) -> Json {
 ///|
 fn compact_canvas_outcome(value : CanvasOutcome) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["status"] = value.status.to_json()
+  fields["status"] = Json(value.status)
   match value.magnitude {
     Some(magnitude) => {
-      fields["changed_pixels"] = magnitude.changed_pixels.to_json()
-      fields["changed_fraction"] = magnitude.changed_pixel_fraction.to_json()
-      fields["linear_rgba_rmse"] = magnitude.linear_premultiplied_rgba_rmse.to_json()
+      fields["changed_pixels"] = Json(magnitude.changed_pixels)
+      fields["changed_fraction"] = Json(magnitude.changed_pixel_fraction)
+      fields["linear_rgba_rmse"] = Json(
+        magnitude.linear_premultiplied_rgba_rmse,
+      )
     }
     None => put_optional(fields, "reason", value.reason_code)
   }
@@ -71,11 +73,11 @@ fn compact_comparison(profile : ComparisonProfile) -> Json {
   put_optional(fields, "perceptual_background", profile.perceptual_background)
   match profile.flip_viewing_conditions {
     Some(value) =>
-      fields["flip_pixels_per_degree"] = value.pixels_per_degree().to_json()
+      fields["flip_pixels_per_degree"] = Json(value.pixels_per_degree())
     None => ()
   }
   match profile.flip_error_threshold {
-    Some(value) => fields["flip_error_threshold"] = value.value().to_json()
+    Some(value) => fields["flip_error_threshold"] = Json(value.value())
     None => ()
   }
   Json::object(fields)
@@ -84,8 +86,8 @@ fn compact_comparison(profile : ComparisonProfile) -> Json {
 ///|
 fn compact_intrinsic_raster(value : IntrinsicRasterMagnitude) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["before_size"] = [value.before_width, value.before_height].to_json()
-  fields["after_size"] = [value.after_width, value.after_height].to_json()
+  fields["before_size"] = Json([value.before_width, value.before_height])
+  fields["after_size"] = Json([value.after_width, value.after_height])
   put_optional(fields, "compared_pixels", value.compared_pixels)
   put_optional(fields, "changed_pixels", value.changed_pixels)
   put_optional(fields, "changed_fraction", value.changed_pixel_fraction)
@@ -274,22 +276,24 @@ fn compact_difference(
   difference : AtomicDifference,
 ) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["id"] = difference.id.to_json()
-  fields["subject"] = difference_subject(report, difference).to_json()
-  fields["subject_role"] = difference.subject_role.to_json()
-  fields["kind"] = difference.domain.to_json()
+  fields["id"] = Json(difference.id)
+  fields["subject"] = Json(difference_subject(report, difference))
+  fields["subject_role"] = Json(difference.subject_role)
+  fields["kind"] = Json(difference.domain)
   fields["source"] = {
     "before": authored_before(difference),
     "after": authored_after(difference),
   }
   let effective : Map[String, Json] = Map([])
-  effective["relation"] = difference.computed_relation.status.to_json()
+  effective["relation"] = Json(difference.computed_relation.status)
   if difference.computed_relation.status == "indeterminate" ||
     difference.computed_relation.status == "not_applicable" {
-    effective["reason"] = difference.computed_relation.reason_code.to_json()
+    effective["reason"] = Json(difference.computed_relation.reason_code)
   }
   if !difference.computed_relation.diagnostic_ids.is_empty() {
-    effective["limitation_ids"] = difference.computed_relation.diagnostic_ids.to_json()
+    effective["limitation_ids"] = Json(
+      difference.computed_relation.diagnostic_ids,
+    )
   }
   fields["effective"] = Json::object(effective)
   match compact_difference_magnitude(report, difference) {
@@ -415,21 +419,23 @@ fn compact_isolated_subject(value : CompactIsolatedSubject) -> Json {
 ///|
 fn compact_region(report : StructuredReport, region : DifferenceRegion) -> Json {
   let cause : Map[String, Json] = Map([])
-  cause["guarantee"] = region.cause_envelope.guarantee.to_json()
-  cause["coverage"] = region.cause_envelope.coverage.to_json()
-  cause["scope"] = region.cause_envelope.fallback_scope.to_json()
+  cause["guarantee"] = Json(region.cause_envelope.guarantee)
+  cause["coverage"] = Json(region.cause_envelope.coverage)
+  cause["scope"] = Json(region.cause_envelope.fallback_scope)
   if region.cause_envelope.fallback_scope != "comparison" {
-    cause["candidate_difference_ids"] = candidate_difference_ids(
-      report,
-      region.cause_envelope.candidate_changed_fact_ids,
-    ).to_json()
+    cause["candidate_difference_ids"] = Json(
+      candidate_difference_ids(
+        report,
+        region.cause_envelope.candidate_changed_fact_ids,
+      ),
+    )
   }
   let comparison_limitation_ids = [
     for diagnostic in report.diagnostics => diagnostic.id
   ]
   if !region.cause_envelope.diagnostic_ids.is_empty() &&
     region.cause_envelope.diagnostic_ids != comparison_limitation_ids {
-    cause["limitation_ids"] = region.cause_envelope.diagnostic_ids.to_json()
+    cause["limitation_ids"] = Json(region.cause_envelope.diagnostic_ids)
   }
   {
     "id": region.id,
@@ -456,7 +462,7 @@ fn compact_event_outcome(
   isolated_subject : CompactIsolatedSubject?,
 ) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["status"] = value.status.to_json()
+  fields["status"] = Json(value.status)
   match value.magnitude {
     Some(magnitude) => {
       let compact = compact_rendered_magnitude(magnitude)
@@ -478,10 +484,10 @@ fn compact_event_outcome(
   match value.perceptual_flip {
     { status: "computed", statistics: Some(statistics), .. } => {
       let flip : Map[String, Json] = Map([])
-      flip["canvas_mean"] = statistics.canvas_mean.to_json()
-      flip["event_region_mean"] = statistics.event_region_mean.to_json()
-      flip["response_p95"] = statistics.response_p95.to_json()
-      flip["response_maximum"] = statistics.response_maximum.to_json()
+      flip["canvas_mean"] = Json(statistics.canvas_mean)
+      flip["event_region_mean"] = Json(statistics.event_region_mean)
+      flip["response_p95"] = Json(statistics.response_p95)
+      flip["response_maximum"] = Json(statistics.response_maximum)
       put_optional(
         flip,
         "area_above_threshold",
@@ -527,23 +533,23 @@ fn compact_limitation(value : Diagnostic) -> Json {
 
 ///|
 fn compact_visual_object_bounds(value : VisualObjectBounds) -> Json {
-  [value.x, value.y, value.width, value.height].to_json()
+  Json([value.x, value.y, value.width, value.height])
 }
 
 ///|
 fn compact_visual_object(value : VisualObjectSummary) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["id"] = value.id.to_json()
-  fields["role"] = value.role.to_json()
+  fields["id"] = Json(value.id)
+  fields["role"] = Json(value.role)
   put_optional(fields, "label", value.label)
   if !value.semantic_text.is_empty() {
-    fields["text"] = value.semantic_text.to_json()
+    fields["text"] = Json(value.semantic_text)
   }
   if !value.symbolic_text.is_empty() {
-    fields["symbols"] = value.symbolic_text.to_json()
+    fields["symbols"] = Json(value.symbolic_text)
   }
-  fields["primitives"] = value.primitive_kinds.to_json()
-  fields["subjects"] = value.subject_ids.to_json()
+  fields["primitives"] = Json(value.primitive_kinds)
+  fields["subjects"] = Json(value.subject_ids)
   match value.bounds {
     Some(bounds) => fields["bounds"] = compact_visual_object_bounds(bounds)
     None => ()
@@ -566,30 +572,28 @@ fn compact_visual_object_alignment(value : VisualObjectAlignment) -> Json {
 ///|
 fn compact_visual_relation(value : VisualRelationSummary) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["id"] = value.id.to_json()
+  fields["id"] = Json(value.id)
   put_optional(fields, "label", value.label)
-  fields["endpoints"] = value.endpoint_object_ids.to_json()
-  fields["endpoint_basis"] = value.endpoint_basis.to_json()
+  fields["endpoints"] = Json(value.endpoint_object_ids)
+  fields["endpoint_basis"] = Json(value.endpoint_basis)
   Json::object(fields)
 }
 
 ///|
 fn compact_changed_fact(value : ChangedFact) -> Json {
   let fields : Map[String, Json] = Map([])
-  fields["id"] = value.id.to_json()
-  fields["subject"] = value.subject_id.to_json()
-  fields["property"] = value.property.to_json()
+  fields["id"] = Json(value.id)
+  fields["subject"] = Json(value.subject_id)
+  fields["property"] = Json(value.property)
   match value.before {
-    Some(fact) => fields["before"] = fact.authored_value.to_json()
+    Some(fact) => fields["before"] = Json(fact.authored_value)
     None => ()
   }
   match value.after {
-    Some(fact) => fields["after"] = fact.authored_value.to_json()
+    Some(fact) => fields["after"] = Json(fact.authored_value)
     None => ()
   }
-  fields["affected_subject_count"] = value.affected_subject_ids
-    .length()
-    .to_json()
+  fields["affected_subject_count"] = Json(value.affected_subject_ids.length())
   Json::object(fields)
 }
 

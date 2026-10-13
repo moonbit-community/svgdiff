@@ -136,8 +136,8 @@ pub fn rect_property_order() -> Array[String] {
 ///|
 pub fn source_range_slice(
   input : String,
-  start_offset : Int,
-  end_offset : Int,
+  start_offset : Int32,
+  end_offset : Int32,
 ) -> String {
   let view = input.view(start_offset~, end_offset~)
   view.to_owned()
@@ -152,7 +152,7 @@ fn is_declaration_whitespace(code_unit : UInt16) -> Bool {
 }
 
 ///|
-pub fn trim_range(value : String, start : Int, end : Int) -> (Int, Int) {
+pub fn trim_range(value : String, start : Int32, end : Int32) -> (Int32, Int32) {
   let mut trimmed_start = start
   let mut trimmed_end = end
   while trimmed_start < trimmed_end &&
@@ -208,9 +208,9 @@ pub fn presentation_fact(
 ///|
 fn parse_css_declaration_segment(
   raw_style : String,
-  attribute_start : Int,
-  segment_start : Int,
-  segment_end : Int,
+  attribute_start : Int32,
+  segment_start : Int32,
+  segment_end : Int32,
   origin : String,
   specificity : CssSpecificity,
   candidates : Array[CssCascadeCandidate],

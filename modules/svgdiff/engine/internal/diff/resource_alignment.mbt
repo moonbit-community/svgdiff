@@ -108,7 +108,7 @@ fn nearest_resource_alignment_for_offset(
   alignments : Array[SubjectAlignment],
   kinds : Array[String],
   source_role : String,
-  source_offset : Int,
+  source_offset : Int32,
 ) -> String? {
   let mut selected : String? = None
   let mut selected_offset = -1

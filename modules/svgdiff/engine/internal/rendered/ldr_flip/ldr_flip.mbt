@@ -188,19 +188,19 @@ fn flip_gaussian_sqrt(x_squared : Double, a : Double, b : Double) -> Double {
 }
 
 ///|
-pub fn flip_spatial_filter_radius(pixels_per_degree : Double) -> Int {
+pub fn flip_spatial_filter_radius(pixels_per_degree : Double) -> Int32 {
   (3.0 * (0.04 / (2.0 * @math.PI * @math.PI)).sqrt() * pixels_per_degree)
   .ceil()
   .to_int()
 }
 
 ///|
-pub fn flip_feature_filter_radius(pixels_per_degree : Double) -> Int {
+pub fn flip_feature_filter_radius(pixels_per_degree : Double) -> Int32 {
   (3.0 * 0.5 * 0.082 * pixels_per_degree).ceil().to_int()
 }
 
 ///|
-pub fn flip_response_radius(pixels_per_degree : Double) -> Int {
+pub fn flip_response_radius(pixels_per_degree : Double) -> Int32 {
   flip_spatial_filter_radius(pixels_per_degree) +
   flip_feature_filter_radius(pixels_per_degree)
 }
@@ -309,7 +309,12 @@ fn flip_feature_filter(pixels_per_degree : Double) -> Array[FlipFeatureWeight] {
 }
 
 ///|
-fn flip_pixel_index(x : Int, y : Int, width : Int, height : Int) -> Int {
+fn flip_pixel_index(
+  x : Int32,
+  y : Int32,
+  width : Int32,
+  height : Int32,
+) -> Int32 {
   y.clamp(min=0, max=height - 1) * width + x.clamp(min=0, max=width - 1)
 }
 
@@ -321,8 +326,8 @@ fn flip_to_ycxcz(values : Array[FlipLinearRgb]) -> Array[FlipYCxCz] {
 ///|
 fn flip_spatial_first_pass(
   image : Array[FlipYCxCz],
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   ycx_filter : Array[FlipSpatialWeight],
   cz_filter : Array[FlipSpatialWeight],
 ) -> Array[FlipSpatialIntermediate] {
@@ -362,10 +367,10 @@ fn flip_spatial_first_pass(
 ///|
 fn flip_filtered_lab(
   intermediate : Array[FlipSpatialIntermediate],
-  x : Int,
-  y : Int,
-  width : Int,
-  height : Int,
+  x : Int32,
+  y : Int32,
+  width : Int32,
+  height : Int32,
   ycx_filter : Array[FlipSpatialWeight],
   cz_filter : Array[FlipSpatialWeight],
 ) -> FlipLab {
@@ -398,8 +403,8 @@ fn flip_filtered_lab(
 fn flip_color_difference(
   reference : Array[FlipYCxCz],
   candidate : Array[FlipYCxCz],
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   pixels_per_degree : Double,
 ) -> Array[Double] {
   let (ycx_filter, cz_filter) = flip_spatial_filters(pixels_per_degree)
@@ -434,8 +439,8 @@ fn flip_color_difference(
 ///|
 fn flip_feature_first_pass(
   image : Array[FlipYCxCz],
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   filter : Array[FlipFeatureWeight],
 ) -> Array[FlipFeatureIntermediate] {
   let result : Array[FlipFeatureIntermediate] = Array::make(width * height, {
@@ -471,10 +476,10 @@ fn flip_feature_first_pass(
 ///|
 fn flip_feature_magnitude(
   intermediate : Array[FlipFeatureIntermediate],
-  x : Int,
-  y : Int,
-  width : Int,
-  height : Int,
+  x : Int32,
+  y : Int32,
+  width : Int32,
+  height : Int32,
   filter : Array[FlipFeatureWeight],
 ) -> (Double, Double) {
   let radius = filter.length() / 2
@@ -500,8 +505,8 @@ fn flip_feature_magnitude(
 pub fn ldr_flip_error_map(
   reference : Array[FlipLinearRgb],
   candidate : Array[FlipLinearRgb],
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   pixels_per_degree : Double,
 ) -> FlipErrorMap {
   let reference_ycxcz = flip_to_ycxcz(reference)
@@ -543,6 +548,6 @@ pub fn ldr_flip_error_map(
 }
 
 ///|
-pub fn quantize_flip_u16(value : Double) -> Int {
+pub fn quantize_flip_u16(value : Double) -> Int32 {
   (flip_clamp_unit(value) * 65535.0).round().to_int()
 }

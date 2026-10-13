@@ -43,7 +43,7 @@ let embedded_12_bit_jpeg_base64 = "/9j/wQALDAABAAEBAREA/9k="
 let embedded_red_png_percent = "%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%06%00%00%00%1F%15%C4%89%00%00%00%0DIDATx%9Cc%F8%CF%C0%F0%1F%00%05%00%01%FF%89%99=%1D%00%00%00%00IEND%AEB`%82"
 
 ///|
-fn embedded_image_svg(href : String, attributes? : String = "") -> String {
+fn embedded_image_svg(href : String, attributes~ : String = "") -> String {
   "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><image id='photo' \{attributes} href='\{href}'/></svg>"
 }
 

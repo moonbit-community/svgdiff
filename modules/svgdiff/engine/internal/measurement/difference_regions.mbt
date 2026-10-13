@@ -39,7 +39,7 @@ pub(all) enum DifferenceRegionAttachment {
 fn pixel_regions_within_gap(
   left : DifferenceRegion,
   right : DifferenceRegion,
-  gap : Int,
+  gap : Int32,
 ) -> Bool {
   left.pixel_x <= right.pixel_x + right.pixel_width + gap &&
   right.pixel_x <= left.pixel_x + left.pixel_width + gap &&
@@ -51,7 +51,7 @@ fn pixel_regions_within_gap(
 fn merge_pixel_regions(
   left : DifferenceRegion,
   right : DifferenceRegion,
-  total_pixels : Int,
+  total_pixels : Int32,
 ) -> DifferenceRegion {
   let min_x = left.pixel_x.min(right.pixel_x)
   let min_y = left.pixel_y.min(right.pixel_y)
@@ -80,8 +80,8 @@ fn merge_pixel_regions(
 ///|
 fn coalesce_pixel_regions(
   input : Array[DifferenceRegion],
-  total_pixels : Int,
-  gap : Int,
+  total_pixels : Int32,
+  gap : Int32,
 ) -> Array[DifferenceRegion] {
   // Treat nearby tiny antialias islands as one observed outcome. The exact
   // changed-pixel count is preserved; only its bounds are coalesced, so
@@ -179,7 +179,7 @@ fn embedded_image_alignment_side_bounds(
 pub fn pixel_difference_regions(
   before : @svg.Image,
   after : @svg.Image,
-  max_regions : Int,
+  max_regions : Int32,
 ) -> DifferenceRegionExtraction {
   let width = before.width()
   let height = before.height()
@@ -192,7 +192,7 @@ pub fn pixel_difference_regions(
     if visited[start] || !pixels_differ(before, after, start) {
       continue
     }
-    let queue : Array[Int] = [start]
+    let queue : Array[Int32] = [start]
     visited[start] = true
     let mut cursor = 0
     let mut min_x = start % width
@@ -210,7 +210,7 @@ pub fn pixel_difference_regions(
       max_x = max_x.max(x)
       min_y = min_y.min(y)
       max_y = max_y.max(y)
-      let neighbors : Array[Int] = []
+      let neighbors : Array[Int32] = []
       if x > 0 {
         neighbors.push(current - 1)
       }
@@ -376,8 +376,8 @@ fn isolated_subjects_image_or_empty(
 
 ///|
 priv struct EventIsolationBudget {
-  mut comparisons : Int
-  mut raster_pixels : Int
+  mut comparisons : Int32
+  mut raster_pixels : Int32
 }
 
 ///|
@@ -897,7 +897,7 @@ fn isolated_subjects_image(
 fn isolated_presence_painted_pixels(
   subjects : Array[SourceSubject],
   profile : ComparisonProfile,
-) -> Int? {
+) -> Int32? {
   let image = match isolated_subjects_image(subjects, profile) {
     Some(image) => image
     None => return None
@@ -913,7 +913,7 @@ fn isolated_presence_painted_pixels(
 }
 
 ///|
-fn painted_boundary_pixel(image : @svg.Image, x : Int, y : Int) -> Bool {
+fn painted_boundary_pixel(image : @svg.Image, x : Int32, y : Int32) -> Bool {
   let width = image.width()
   let height = image.height()
   let index = y * width + x
@@ -931,7 +931,7 @@ fn painted_boundary_pixel(image : @svg.Image, x : Int, y : Int) -> Bool {
 }
 
 ///|
-fn painted_boundary_count(image : @svg.Image) -> Int {
+fn painted_boundary_count(image : @svg.Image) -> Int32 {
   let mut count = 0
   for y in 0..<image.height() {
     for x in 0..<image.width() {

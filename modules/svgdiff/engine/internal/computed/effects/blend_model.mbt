@@ -22,7 +22,7 @@ pub(all) struct BlendSemanticIssue {
 ///|
 pub(all) struct BlendSite {
   owner_id : String
-  source_index : Int
+  source_index : Int32
   kind : String
   blend_fact : DeclaredVisualFact?
   blend_resolution : ResolvedVisualFact
@@ -60,8 +60,8 @@ fn blend_issue(
 ///|
 fn blend_element_is_descendant_of(
   hierarchy : FillHierarchy,
-  element_index : Int,
-  ancestor_index : Int,
+  element_index : Int32,
+  ancestor_index : Int32,
 ) -> Bool {
   if element_index == ancestor_index {
     return true
@@ -79,8 +79,8 @@ fn blend_element_is_descendant_of(
 ///|
 fn blend_nearest_isolation_boundary(
   hierarchy : FillHierarchy,
-  element_index : Int,
-) -> Int {
+  element_index : Int32,
+) -> Int32 {
   let mut current = hierarchy.elements[element_index].parent_index
   while current is Some(index) {
     match
@@ -100,7 +100,7 @@ fn blend_nearest_isolation_boundary(
 ///|
 fn blend_backdrop_prefix_ids(
   hierarchy : FillHierarchy,
-  element_index : Int,
+  element_index : Int32,
 ) -> Array[String] {
   let boundary = blend_nearest_isolation_boundary(hierarchy, element_index)
   let ids : Array[String] = [hierarchy.elements[element_index].subject_id]
@@ -223,7 +223,7 @@ fn blend_subject_issue_code(
 ///|
 fn blend_container_effect_active(
   hierarchy : FillHierarchy,
-  element_index : Int,
+  element_index : Int32,
 ) -> Bool {
   let subject_id = hierarchy.elements[element_index].subject_id
   for property in ["clip-path", "mask", "filter", "opacity"] {

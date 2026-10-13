@@ -14,7 +14,7 @@
 
 ///|
 fn png_iccp_valid(data : Bytes) -> Bool {
-  let mut separator : Int? = None
+  let mut separator : Int32? = None
   for index in 0..<data.length() {
     if data[index] == b'\x00' {
       separator = Some(index)
@@ -32,7 +32,7 @@ fn png_iccp_valid(data : Bytes) -> Bool {
 }
 
 ///|
-fn png_bit_depth_valid(bit_depth : Int, color_type : Int) -> Bool {
+fn png_bit_depth_valid(bit_depth : Int32, color_type : Int32) -> Bool {
   match color_type {
     0 =>
       bit_depth == 1 ||
@@ -48,7 +48,7 @@ fn png_bit_depth_valid(bit_depth : Int, color_type : Int) -> Bool {
 
 ///|
 fn png_chromaticities_are_srgb(data : Bytes) -> Bool {
-  let srgb : FixedArray[UInt] = [
+  let srgb : FixedArray[UInt32] = [
     31270U, 32900U, 64000U, 33000U, 30000U, 60000U, 15000U, 6000U,
   ]
   for index in 0..<srgb.length() {
@@ -171,8 +171,8 @@ pub fn inspect_png_color_metadata(
 ///|
 fn jpeg_segment_has_icc_profile(
   data : Bytes,
-  payload_start : Int,
-  payload_end : Int,
+  payload_start : Int32,
+  payload_end : Int32,
 ) -> Bool raise DecodeError {
   let signature : FixedArray[Byte] = [
     b'I', b'C', b'C', b'_', b'P', b'R', b'O', b'F', b'I', b'L', b'E', b'\x00',
@@ -192,7 +192,7 @@ fn jpeg_segment_has_icc_profile(
 }
 
 ///|
-fn jpeg_start_of_frame_marker(marker : Int) -> Bool {
+fn jpeg_start_of_frame_marker(marker : Int32) -> Bool {
   marker == 0xC0 ||
   marker == 0xC1 ||
   marker == 0xC2 ||
@@ -216,9 +216,9 @@ pub fn inspect_jpeg_color_metadata(
     raise InvalidSignature("not a JPEG file")
   }
   let mut position = 2
-  let mut width : Int? = None
-  let mut height : Int? = None
-  let mut precision : Int? = None
+  let mut width : Int32? = None
+  let mut height : Int32? = None
+  let mut precision : Int32? = None
   let mut embedded_icc = false
   while position + 1 < data.length() {
     if data[position].to_int() != 0xFF {

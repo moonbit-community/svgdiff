@@ -125,7 +125,7 @@ fn embedded_rasters_both_decoded(
 fn embedded_raw_rgba8_squared_error(
   before : Bytes,
   after : Bytes,
-  index : Int,
+  index : Int32,
 ) -> Double {
   let mut sum = 0.0
   for channel in 0..<4 {
@@ -141,7 +141,7 @@ fn embedded_raw_rgba8_squared_error(
 fn embedded_linear_premultiplied_squared_error(
   before : Bytes,
   after : Bytes,
-  index : Int,
+  index : Int32,
 ) -> Double {
   let before_alpha = before[index + 3].to_int().to_double() / 255.0
   let after_alpha = after[index + 3].to_int().to_double() / 255.0

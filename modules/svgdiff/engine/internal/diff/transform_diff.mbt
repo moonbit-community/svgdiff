@@ -26,7 +26,7 @@ priv struct TransformFactChange {
 fn transform_site_match_cost(
   before : SourceTransformSite,
   after : SourceTransformSite,
-) -> Int {
+) -> Int32 {
   if before.kind != after.kind {
     2
   } else if before.authored_id is Some(_) &&
@@ -41,7 +41,7 @@ fn transform_site_match_cost(
 fn align_transform_sites(
   before : Array[SourceTransformSite],
   after : Array[SourceTransformSite],
-) -> Array[(Int?, Int?)] {
+) -> Array[(Int32?, Int32?)] {
   let before_length = before.length()
   let after_length = after.length()
   let width = after_length + 1
@@ -66,7 +66,7 @@ fn align_transform_sites(
         .min(costs[(before_index - 1) * width + after_index - 1] + substitution)
     }
   }
-  let reversed : Array[(Int?, Int?)] = []
+  let reversed : Array[(Int32?, Int32?)] = []
   let mut before_index = before_length
   let mut after_index = after_length
   while before_index > 0 || after_index > 0 {
@@ -93,7 +93,7 @@ fn align_transform_sites(
       after_index -= 1
     }
   }
-  let result : Array[(Int?, Int?)] = []
+  let result : Array[(Int32?, Int32?)] = []
   let mut index = reversed.length() - 1
   while index >= 0 {
     result.push(reversed[index])
@@ -105,7 +105,7 @@ fn align_transform_sites(
 ///|
 fn transform_site_fact(
   sites : Array[SourceTransformSite],
-  index : Int?,
+  index : Int32?,
 ) -> DeclaredVisualFact? {
   match index {
     Some(index) => sites[index].fact
@@ -116,7 +116,7 @@ fn transform_site_fact(
 ///|
 fn transform_site_at(
   sites : Array[SourceTransformSite],
-  index : Int?,
+  index : Int32?,
 ) -> SourceTransformSite? {
   match index {
     Some(index) => Some(sites[index])
@@ -191,7 +191,7 @@ fn add_transform_fact_change(
   changes : Array[TransformFactChange],
   before_sites : Array[SourceTransformSite],
   after_sites : Array[SourceTransformSite],
-  pair : (Int?, Int?),
+  pair : (Int32?, Int32?),
   affected_subject_ids : Array[String],
 ) -> Unit {
   let (before_index, after_index) = pair
@@ -227,7 +227,7 @@ fn transform_fact_changes_for_alignment(
   after : SourceSubject,
   affected_subject_ids : Array[String],
   changes : Array[TransformFactChange],
-) -> Array[(Int?, Int?)] {
+) -> Array[(Int32?, Int32?)] {
   let site_alignment = align_transform_sites(
     before.transform_chain,
     after.transform_chain,
@@ -429,7 +429,7 @@ fn append_transform_difference(
   alignment : SubjectAlignment,
   before : SourceSubject,
   after : SourceSubject,
-  site_alignment : Array[(Int?, Int?)],
+  site_alignment : Array[(Int32?, Int32?)],
   changes : Array[TransformFactChange],
   differences : Array[AtomicDifference],
   difference_ids : Array[String],

@@ -43,16 +43,16 @@ pub(all) struct MaskRectResource {
   mask_type_fact : DeclaredVisualFact?
   color_interpolation : String
   color_interpolation_fact : DeclaredVisualFact?
-  mut child_count : Int
-  mut rect_source_offset : Int?
+  mut child_count : Int32
+  mut rect_source_offset : Int32?
   mut rect_facts : Array[DeclaredVisualFact]
   mut rect_transform_fact : DeclaredVisualFact?
   mut rect_transform : AffineTransform
   mut rect_bounds : CssBounds?
   mut color_signature : String
-  mut color_red : Int
-  mut color_green : Int
-  mut color_blue : Int
+  mut color_red : Int32
+  mut color_green : Int32
+  mut color_blue : Int32
   mut content_alpha : Double
   mut content_luminance : Double
   mut complete : Bool
@@ -156,8 +156,8 @@ pub fn mask_length_from_fact(
 pub fn mask_resource_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  source_end_offset : Int,
+  source_offset : Int32,
+  source_end_offset : Int32,
   hierarchy : FillHierarchy,
   profile : ComparisonProfile,
 ) -> MaskRectResource {
@@ -307,11 +307,11 @@ pub fn mask_content_resolved_number(
 pub fn mask_record_direct_child(
   input : String,
   element : @xml.NamespaceElement,
-  source_offset : Int,
-  source_end_offset : Int,
+  source_offset : Int32,
+  source_end_offset : Int32,
   profile : ComparisonProfile,
   document : MaskSemanticDocument,
-  resource_index : Int,
+  resource_index : Int32,
 ) -> Unit {
   let resource = document.resources[resource_index]
   let kind = element.name.local_name
@@ -536,7 +536,7 @@ pub fn extract_mask_semantic_document_or_raise(
     issues: [],
   }
   let reader = @xml.NamespaceReader::from_string(input)
-  let mut active : Int? = None
+  let mut active : Int32? = None
   let mut depth = 0
   for event in reader.read_events_until_eof() {
     match event.kind {
@@ -747,8 +747,8 @@ pub fn mask_target_kind(
 pub fn mask_active_resolution_for_subject(
   hierarchy : FillHierarchy,
   subject : SourceSubject,
-) -> (String, String, String, ResolvedVisualFact, Int)? {
-  let mut index : Int? = None
+) -> (String, String, String, ResolvedVisualFact, Int32)? {
+  let mut index : Int32? = None
   for current_index, element in hierarchy.elements {
     if element.source_offset == subject.source_offset {
       index = Some(current_index)
@@ -799,7 +799,7 @@ pub fn mask_owner_has_group_opacity(
     if !group_opacity_container(element.kind) {
       continue
     }
-    let mut current : Int? = Some(index)
+    let mut current : Int32? = Some(index)
     let mut below_owner = false
     while current is Some(current_index) {
       if current_index == owner_index {
@@ -862,7 +862,7 @@ pub fn mask_region_local_bounds(
 ///|
 pub fn mask_application_bounds(
   subject : SourceSubject,
-  owner_depth : Int,
+  owner_depth : Int32,
   resource : MaskRectResource,
   effective_mode : String,
 ) -> (CssBounds?, Bool) {

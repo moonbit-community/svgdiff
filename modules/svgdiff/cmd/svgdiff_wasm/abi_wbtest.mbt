@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-fn write_test_request(request : String) -> Int {
+fn write_test_request(request : String) -> Int32 {
   let bytes = @utf8.encode(request)
   for index in 0..<bytes.length() {
     wasm_store_u8(transfer_start + index, bytes[index].to_int())

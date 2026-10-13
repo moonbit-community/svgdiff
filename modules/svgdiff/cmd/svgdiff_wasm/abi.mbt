@@ -19,49 +19,49 @@
 /// arena, calls `compare`, and reads the UTF-8 result body from the same arena.
 
 ///|
-let abi_version_number : Int = 1
+let abi_version_number : Int32 = 1
 
 ///|
-let transfer_start : Int = 1048576
+let transfer_start : Int32 = 1048576
 
 ///|
-let transfer_size : Int = 41943040
+let transfer_size : Int32 = 41943040
 
 ///|
-let status_ok : Int = 0
+let status_ok : Int32 = 0
 
 ///|
-let status_error : Int = 1
+let status_error : Int32 = 1
 
 ///|
-let error_none : Int = 0
+let error_none : Int32 = 0
 
 ///|
-let error_request_length : Int = 1
+let error_request_length : Int32 = 1
 
 ///|
-let error_invalid_utf8 : Int = 2
+let error_invalid_utf8 : Int32 = 2
 
 ///|
-let error_invalid_json : Int = 3
+let error_invalid_json : Int32 = 3
 
 ///|
-let error_unsupported_version : Int = 4
+let error_unsupported_version : Int32 = 4
 
 ///|
-let error_invalid_request : Int = 5
+let error_invalid_request : Int32 = 5
 
 ///|
-let error_result_too_large : Int = 6
+let error_result_too_large : Int32 = 6
 
 ///|
-let error_checkpoint_budget : Int = 7
+let error_checkpoint_budget : Int32 = 7
 
 ///|
 priv struct WasmResultState {
-  mut length : Int
-  mut error_kind : Int
-  mut required_length : Int
+  mut length : Int32
+  mut error_kind : Int32
+  mut required_length : Int32
 }
 
 ///|
@@ -72,37 +72,37 @@ let wasm_result_state : WasmResultState = {
 }
 
 ///|
-pub fn abi_version() -> Int {
+pub fn abi_version() -> Int32 {
   abi_version_number
 }
 
 ///|
-pub fn transfer_ptr() -> Int {
+pub fn transfer_ptr() -> Int32 {
   transfer_start
 }
 
 ///|
-pub fn transfer_capacity() -> Int {
+pub fn transfer_capacity() -> Int32 {
   transfer_size
 }
 
 ///|
-pub fn result_len() -> Int {
+pub fn result_len() -> Int32 {
   wasm_result_state.length
 }
 
 ///|
-pub fn result_error_kind() -> Int {
+pub fn result_error_kind() -> Int32 {
   wasm_result_state.error_kind
 }
 
 ///|
-pub fn result_required_len() -> Int {
+pub fn result_required_len() -> Int32 {
   wasm_result_state.required_length
 }
 
 ///|
-pub fn compare(request_len : Int) -> Int {
+pub fn compare(request_len : Int32) -> Int32 {
   reset_result_state()
   let request_text = match read_request(request_len) {
     Ok(text) => text
@@ -160,7 +160,7 @@ fn reset_result_state() -> Unit {
 }
 
 ///|
-fn read_request(request_len : Int) -> Result[String, WasmFailure] {
+fn read_request(request_len : Int32) -> Result[String, WasmFailure] {
   if request_len < 0 || request_len > transfer_size {
     return Err({
       error_kind: error_request_length,
@@ -183,17 +183,17 @@ fn read_request(request_len : Int) -> Result[String, WasmFailure] {
 }
 
 ///|
-fn finish_success(body : String) -> Int {
+fn finish_success(body : String) -> Int32 {
   finish_result(body, error_none)
 }
 
 ///|
-fn finish_error(error_kind : Int, message : String) -> Int {
+fn finish_error(error_kind : Int32, message : String) -> Int32 {
   finish_result(message, error_kind)
 }
 
 ///|
-fn finish_result(body : String, error_kind : Int) -> Int {
+fn finish_result(body : String, error_kind : Int32) -> Int32 {
   let bytes = @utf8.encode(body)
   wasm_result_state.required_length = bytes.length()
   if bytes.length() > transfer_size {
@@ -225,11 +225,11 @@ fn write_transfer_bytes(bytes : Bytes) -> Unit {
 }
 
 ///|
-extern "wasm" fn wasm_load_u8(ptr : Int) -> Int =
+extern "wasm" fn wasm_load_u8(ptr : Int32) -> Int32 =
   #|(func (param i32) (result i32)
   #|  (i32.load8_u (local.get 0)))
 
 ///|
-extern "wasm" fn wasm_store_u8(ptr : Int, value : Int) -> Unit =
+extern "wasm" fn wasm_store_u8(ptr : Int32, value : Int32) -> Unit =
   #|(func (param i32 i32)
   #|  (i32.store8 (local.get 0) (local.get 1)))

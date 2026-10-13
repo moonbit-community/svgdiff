@@ -15,9 +15,9 @@
 ///|
 /// One explicit opaque sRGB8 background for future perceptual compositing.
 pub struct PerceptualBackground {
-  red : Int
-  green : Int
-  blue : Int
+  red : Int32
+  green : Int32
+  blue : Int32
 } derive(ToJson, Eq)
 
 ///|
@@ -33,17 +33,17 @@ pub fn PerceptualBackground::parse_srgb(
 }
 
 ///|
-pub fn PerceptualBackground::red(self : PerceptualBackground) -> Int {
+pub fn PerceptualBackground::red(self : PerceptualBackground) -> Int32 {
   self.red
 }
 
 ///|
-pub fn PerceptualBackground::green(self : PerceptualBackground) -> Int {
+pub fn PerceptualBackground::green(self : PerceptualBackground) -> Int32 {
   self.green
 }
 
 ///|
-pub fn PerceptualBackground::blue(self : PerceptualBackground) -> Int {
+pub fn PerceptualBackground::blue(self : PerceptualBackground) -> Int32 {
   self.blue
 }
 
@@ -99,8 +99,8 @@ pub fn FlipErrorThreshold::value(self : FlipErrorThreshold) -> Double {
 ///|
 /// Rendering conditions for one comparison.
 pub(all) struct ComparisonProfile {
-  viewport_width : Int
-  viewport_height : Int
+  viewport_width : Int32
+  viewport_height : Int32
   perceptual_background : PerceptualBackground?
   flip_viewing_conditions : FlipViewingConditions?
   flip_error_threshold : FlipErrorThreshold?
@@ -109,8 +109,8 @@ pub(all) struct ComparisonProfile {
 ///|
 pub impl ToJson for ComparisonProfile with fn to_json(self) {
   let fields : Map[String, Json] = Map([])
-  fields["viewport_width"] = self.viewport_width.to_json()
-  fields["viewport_height"] = self.viewport_height.to_json()
+  fields["viewport_width"] = Json(self.viewport_width)
+  fields["viewport_height"] = Json(self.viewport_height)
   fields["perceptual_background"] = nullable_report_value(
     self.perceptual_background,
   )

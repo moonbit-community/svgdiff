@@ -428,7 +428,7 @@ pub fn source_viewport_resolution(
 pub fn source_transform_site_with_viewport(
   input : String,
   element : @xml.NamespaceElement,
-  node_index : Int,
+  node_index : Int32,
   profile : ComparisonProfile,
   parent_context : ViewportContext?,
 ) -> (SourceTransformSite, ViewportContext?) {

@@ -18,26 +18,26 @@
 /// This type stays package-private so production callers share one versioned
 /// contract while whitebox tests can exercise exact boundaries cheaply.
 pub(all) struct ResourceLimits {
-  max_input_bytes : Int
-  max_elements : Int
-  max_path_data_units : Int
-  max_nesting_depth : Int
-  max_references : Int
-  max_reference_graph_edges : Int
-  max_expanded_elements : Int
-  max_embedded_data_uri_bytes : Int
-  max_embedded_data_bytes : Int
-  max_embedded_raster_dimension : Int
-  max_embedded_raster_pixels : Int
-  max_resource_bundle_entries : Int
-  max_resource_bundle_entry_bytes : Int
-  max_resource_bundle_bytes : Int
-  max_raster_dimension : Int
-  max_raster_pixels : Int
-  max_regions : Int
-  max_perceptual_map_pixels : Int
-  max_perceptual_flip_samples : Int
-  max_report_bytes : Int
+  max_input_bytes : Int32
+  max_elements : Int32
+  max_path_data_units : Int32
+  max_nesting_depth : Int32
+  max_references : Int32
+  max_reference_graph_edges : Int32
+  max_expanded_elements : Int32
+  max_embedded_data_uri_bytes : Int32
+  max_embedded_data_bytes : Int32
+  max_embedded_raster_dimension : Int32
+  max_embedded_raster_pixels : Int32
+  max_resource_bundle_entries : Int32
+  max_resource_bundle_entry_bytes : Int32
+  max_resource_bundle_bytes : Int32
+  max_raster_dimension : Int32
+  max_raster_pixels : Int32
+  max_regions : Int32
+  max_perceptual_map_pixels : Int32
+  max_perceptual_flip_samples : Int32
+  max_report_bytes : Int32
 }
 
 ///|
@@ -67,7 +67,7 @@ pub fn default_resource_limits() -> ResourceLimits {
 }
 
 ///|
-pub fn utf8_character_bytes(character : Char) -> Int {
+pub fn utf8_character_bytes(character : Char) -> Int32 {
   let codepoint = character.to_int()
   if codepoint <= 0x7f {
     1
@@ -81,14 +81,14 @@ pub fn utf8_character_bytes(character : Char) -> Int {
 }
 
 ///|
-pub fn utf8_byte_length(value : String) -> Int {
+pub fn utf8_byte_length(value : String) -> Int32 {
   value.fold(init=0, fn(length, character) {
     length + utf8_character_bytes(character)
   })
 }
 
 ///|
-pub fn utf8_byte_length_exceeds(value : String, limit : Int) -> Bool {
+pub fn utf8_byte_length_exceeds(value : String, limit : Int32) -> Bool {
   let mut length = 0
   for character in value {
     length += utf8_character_bytes(character)

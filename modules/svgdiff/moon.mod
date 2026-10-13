@@ -11,7 +11,7 @@
 
 name = "Milky2018/svgdiff"
 
-version = "0.10.3"
+version = "0.10.4"
 
 readme = "README.mbt.md"
 
@@ -26,11 +26,11 @@ preferred_target = "wasm"
 description = "Deterministic visual-semantic SVG comparison with typed reports for programs and text-only agents."
 
 import {
-  "moonbitlang/async@0.21.2",
-  "mizchi/pixelmatch@0.6.1",
-  "Milky2018/xml@0.4.1",
-  "moonbitlang/x@0.5.1",
-  "moonbitlang/quickcheck@0.14.0",
-  "Milky2018/svgdiff-raster-codec@0.1.1",
-  "Milky2018/svg@0.5.3",
+  "moonbitlang/async@0.22.4",
+  "Milky2018/svgdiff-pixelmatch@0.1.0",
+  "Milky2018/xml@0.6.1",
+  "moonbitlang/x@0.5.5",
+  "moonbitlang/quickcheck@0.15.0",
+  "Milky2018/svgdiff-raster-codec@0.1.3",
+  "Milky2018/svg@0.6.0",
 }

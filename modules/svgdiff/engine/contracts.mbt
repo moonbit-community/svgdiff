@@ -83,7 +83,7 @@ pub fn ResourceBundle::empty() -> ResourceBundle {
 ///|
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
-  max_checkpoints : Int?
+  max_checkpoints : Int32?
 }
 
 ///|
@@ -101,7 +101,7 @@ pub(all) struct ComparisonArtifact {
 ///|
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  CheckpointBudgetExceeded(max_checkpoints~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int32)
 } derive(Debug, Eq)
 
 ///|

@@ -27,7 +27,7 @@ pub(all) struct ComputedRelation {
 ///|
 /// Continuous canonical raster measurements for one rendered outcome.
 pub(all) struct RenderedMagnitude {
-  changed_pixels : Int
+  changed_pixels : Int32
   changed_pixel_fraction : Double
   rgba8_rmse : Double
   linear_premultiplied_rgba_rmse : Double
@@ -36,12 +36,12 @@ pub(all) struct RenderedMagnitude {
 ///|
 /// Intrinsic decoded-raster comparison, independent of final SVG compositing.
 pub(all) struct IntrinsicRasterMagnitude {
-  before_width : Int
-  before_height : Int
-  after_width : Int
-  after_height : Int
-  compared_pixels : Int?
-  changed_pixels : Int?
+  before_width : Int32
+  before_height : Int32
+  after_width : Int32
+  after_height : Int32
+  compared_pixels : Int32?
+  changed_pixels : Int32?
   changed_pixel_fraction : Double?
   rgba8_rmse : Double?
   linear_premultiplied_rgba_rmse : Double?
@@ -52,7 +52,7 @@ pub(all) struct IntrinsicRasterMagnitude {
 /// background compositing.
 pub(all) struct PerceptualColorMagnitude {
   method_id : String
-  sample_count : Int
+  sample_count : Int32
   mean_delta_e_ok : Double
 } derive(ToJson, Eq)
 
@@ -68,10 +68,10 @@ pub(all) struct PerceptualColorEvidence {
 /// Deterministic quantized LDR-FLIP map for one selected rendered outcome.
 pub(all) struct PerceptualFlipMap {
   method_id : String
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
+  pixel_x : Int32
+  pixel_y : Int32
+  pixel_width : Int32
+  pixel_height : Int32
   encoding : String
   quantization_step : Double
   values_base64 : String
@@ -81,7 +81,7 @@ pub(all) struct PerceptualFlipMap {
 /// Explicit-threshold spatial extent for one event-local LDR-FLIP response.
 pub(all) struct PerceptualFlipAreaAboveThreshold {
   threshold : Double
-  pixel_count : Int
+  pixel_count : Int32
   canvas_fraction : Double
 } derive(ToJson, Eq)
 
@@ -89,9 +89,9 @@ pub(all) struct PerceptualFlipAreaAboveThreshold {
 /// Separate pooled domains over one unquantized LDR-FLIP map.
 pub(all) struct PerceptualFlipStatistics {
   method_id : String
-  canvas_pixel_count : Int
-  event_region_sample_count : Int
-  response_sample_count : Int
+  canvas_pixel_count : Int32
+  event_region_sample_count : Int32
+  response_sample_count : Int32
   canvas_mean : Double
   event_region_mean : Double
   response_p95 : Double
@@ -102,14 +102,14 @@ pub(all) struct PerceptualFlipStatistics {
 ///|
 pub impl ToJson for PerceptualFlipStatistics with fn to_json(self) {
   let fields : Map[String, Json] = Map([])
-  fields["method_id"] = self.method_id.to_json()
-  fields["canvas_pixel_count"] = self.canvas_pixel_count.to_json()
-  fields["event_region_sample_count"] = self.event_region_sample_count.to_json()
-  fields["response_sample_count"] = self.response_sample_count.to_json()
-  fields["canvas_mean"] = self.canvas_mean.to_json()
-  fields["event_region_mean"] = self.event_region_mean.to_json()
-  fields["response_p95"] = self.response_p95.to_json()
-  fields["response_maximum"] = self.response_maximum.to_json()
+  fields["method_id"] = Json(self.method_id)
+  fields["canvas_pixel_count"] = Json(self.canvas_pixel_count)
+  fields["event_region_sample_count"] = Json(self.event_region_sample_count)
+  fields["response_sample_count"] = Json(self.response_sample_count)
+  fields["canvas_mean"] = Json(self.canvas_mean)
+  fields["event_region_mean"] = Json(self.event_region_mean)
+  fields["response_p95"] = Json(self.response_p95)
+  fields["response_maximum"] = Json(self.response_maximum)
   fields["area_above_threshold"] = nullable_report_value(
     self.area_above_threshold,
   )
@@ -173,15 +173,15 @@ pub(all) struct CauseEnvelope {
 pub(all) struct DifferenceRegion {
   id : String
   source : String
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
+  pixel_x : Int32
+  pixel_y : Int32
+  pixel_width : Int32
+  pixel_height : Int32
   css_x : Double
   css_y : Double
   css_width : Double
   css_height : Double
-  changed_pixels : Int
+  changed_pixels : Int32
   viewport_fraction : Double
   cause_envelope : CauseEnvelope
 } derive(ToJson)
@@ -189,7 +189,7 @@ pub(all) struct DifferenceRegion {
 ///|
 /// Numeric footprint of inserted or deleted visual subjects.
 pub(all) struct PresenceMagnitude {
-  affected_entity_count : Int
+  affected_entity_count : Int32
   bounds_area_css_px2 : Double
   bounds_viewport_fraction : Double
   painted_area_css_px2 : Double
@@ -309,8 +309,8 @@ pub impl ToJson for TransformEffectMagnitude with fn to_json(self) {
 /// Symmetric nearest-boundary statistics from the pinned renderer's alpha support.
 pub(all) struct PaintedBoundaryDisplacementMagnitude {
   method_id : String
-  before_sample_count : Int
-  after_sample_count : Int
+  before_sample_count : Int32
+  after_sample_count : Int32
   mean_css_px : Double
   p95_css_px : Double
   max_css_px : Double
@@ -417,8 +417,8 @@ pub(all) struct DomainOrdering {
 ///|
 /// Half-open UTF-16 offsets into the original SVG source.
 pub(all) struct ReportSourceSpan {
-  start_offset : Int
-  end_offset : Int
+  start_offset : Int32
+  end_offset : Int32
 } derive(ToJson)
 
 ///|
@@ -447,7 +447,7 @@ pub(all) struct ResolvedVisualFact {
   resolution : String
   declaration_owner_id : String?
   declaration : DeclaredVisualFact?
-  inheritance_depth : Int
+  inheritance_depth : Int32
 } derive(ToJson)
 
 ///|
@@ -473,7 +473,7 @@ pub(all) struct SubjectInstanceContext {
 ///|
 /// Report-local reference to one visual subject in an input SVG.
 pub(all) struct SubjectReference {
-  source_index : Int
+  source_index : Int32
   kind : String
   authored_id : String?
   instance_context : SubjectInstanceContext?
@@ -497,8 +497,8 @@ pub impl ToJson for SubjectReference with fn to_json(self) {
 pub(all) struct AlignmentEvidence {
   score_kind : String
   selected_score : Double?
-  candidate_count : Int
-  equal_score_candidate_count : Int
+  candidate_count : Int32
+  equal_score_candidate_count : Int32
   ambiguity : String
   confidence : Double?
   confidence_status : String
@@ -578,14 +578,14 @@ pub(all) struct AtomicDifference {
 ///|
 pub impl ToJson for AtomicDifference with fn to_json(self) {
   let fields : Map[String, Json] = Map([])
-  fields["id"] = self.id.to_json()
-  fields["subject_role"] = self.subject_role.to_json()
+  fields["id"] = Json(self.id)
+  fields["subject_role"] = Json(self.subject_role)
   fields["subject_alignment_id"] = nullable_report_value(
     self.subject_alignment_id,
   )
-  fields["domain"] = self.domain.to_json()
-  fields["source_before"] = self.source_before.to_json()
-  fields["source_after"] = self.source_after.to_json()
+  fields["domain"] = Json(self.domain)
+  fields["source_before"] = Json(self.source_before)
+  fields["source_after"] = Json(self.source_after)
   match self.source_fact_before {
     Some(value) => fields["source_fact_before"] = value.to_json()
     None => ()
@@ -594,11 +594,11 @@ pub impl ToJson for AtomicDifference with fn to_json(self) {
     Some(value) => fields["source_fact_after"] = value.to_json()
     None => ()
   }
-  fields["changed_fact_ids"] = self.changed_fact_ids.to_json()
-  fields["evidence_layers"] = self.evidence_layers.to_json()
+  fields["changed_fact_ids"] = Json(self.changed_fact_ids)
+  fields["evidence_layers"] = Json(self.evidence_layers)
   fields["computed_relation"] = self.computed_relation.to_json()
   match self.parameter_delta_css_px {
-    Some(value) => fields["parameter_delta_css_px"] = value.to_json()
+    Some(value) => fields["parameter_delta_css_px"] = Json(value)
     None => ()
   }
   match self.presence_magnitude {
@@ -638,8 +638,8 @@ pub(all) struct ImpactFrontierGroup {
 ///|
 pub impl ToJson for ImpactFrontierGroup with fn to_json(self) {
   let fields : Map[String, Json] = Map([])
-  fields["event_ids"] = self.event_ids.to_json()
-  fields["atomic_difference_ids"] = self.atomic_difference_ids.to_json()
+  fields["event_ids"] = Json(self.event_ids)
+  fields["atomic_difference_ids"] = Json(self.atomic_difference_ids)
   fields["measurements"] = nullable_report_value(self.measurements)
   Json::object(fields)
 }
@@ -659,7 +659,7 @@ pub(all) struct ImpactAssessment {
   status : String
   calibration_status : String
   input_fields : Array[String]
-  candidate_event_count : Int
+  candidate_event_count : Int32
   frontier_relation : String
   frontier_groups : Array[ImpactFrontierGroup]
   domination_witnesses : Array[ImpactDominationWitness]
@@ -748,7 +748,7 @@ pub(all) struct VisualRelationSummary {
 /// Cardinality summary for one Atomic Difference domain supporting a scene event.
 pub(all) struct VisualEvidenceDomain {
   domain : String
-  count : Int
+  count : Int32
 }
 
 ///|
@@ -775,25 +775,25 @@ pub(all) struct VisualSceneChange {
   scope : String
   object_change_ids : Array[String]
   changed_fact_ids : Array[String]
-  effect_count : Int
-  affected_subject_count : Int
+  effect_count : Int32
+  affected_subject_count : Int32
 }
 
 ///|
 /// Lossless accounting for the Atomic Difference to Object Change transition.
 pub(all) struct VisualDifferenceCoverage {
-  effective_difference_count : Int
-  assigned_difference_count : Int
-  unresolved_difference_count : Int
+  effective_difference_count : Int32
+  assigned_difference_count : Int32
+  unresolved_difference_count : Int32
   unresolved_domains : Array[VisualEvidenceDomain]
 }
 
 ///|
 /// Lossless accounting for the Object Change to Scene Change transition.
 pub(all) struct VisualObjectChangeCoverage {
-  object_change_count : Int
-  assigned_object_change_count : Int
-  residual_object_change_count : Int
+  object_change_count : Int32
+  assigned_object_change_count : Int32
+  residual_object_change_count : Int32
   residual_kinds : Array[VisualEvidenceDomain]
 }
 
@@ -815,10 +815,10 @@ pub(all) struct VisualSceneSummary {
   layout : String
   style : String
   representation : String
-  before_object_count : Int
-  after_object_count : Int
-  before_relation_count : Int
-  after_relation_count : Int
+  before_object_count : Int32
+  after_object_count : Int32
+  before_relation_count : Int32
+  after_relation_count : Int32
 }
 
 ///|

@@ -28,11 +28,11 @@ pub(all) enum EmbeddedRasterDataUrlResult {
 }
 
 ///|
-fn data_url_hex_value(character : Char) -> Int? {
+fn data_url_hex_value(character : Char) -> Int32? {
   match character {
-    '0'..='9' => Some(character.to_int() - '0'.to_int())
-    'a'..='f' => Some(character.to_int() - 'a'.to_int() + 10)
-    'A'..='F' => Some(character.to_int() - 'A'.to_int() + 10)
+    '0'..<='9' => Some(character.to_int() - '0'.to_int())
+    'a'..<='f' => Some(character.to_int() - 'a'.to_int() + 10)
+    'A'..<='F' => Some(character.to_int() - 'A'.to_int() + 10)
     _ => None
   }
 }
@@ -84,7 +84,7 @@ fn valid_base64_payload(source : String) -> Bool {
   for index in 0..<source.length() {
     let character = source[index].to_int().unsafe_to_char()
     let ordinary = match character {
-      'A'..='Z' | 'a'..='z' | '0'..='9' | '+' | '/' => true
+      'A'..<='Z' | 'a'..<='z' | '0'..<='9' | '+' | '/' => true
       _ => false
     }
     if character == '=' {

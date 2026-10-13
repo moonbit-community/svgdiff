@@ -47,7 +47,7 @@ test "each event raster magnitude is local to its region union" {
     @engine.ComparisonProfile::v1_default(),
   )
   assert_eq(report.events.length(), 2)
-  let counts : Array[Int] = []
+  let counts : Array[Int32] = []
   for event in report.events {
     match event.rendered_outcome.magnitude {
       Some(magnitude) => {

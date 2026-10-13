@@ -13,12 +13,12 @@
 // limitations under the License.
 
 ///|
-pub fn image_pixel_count(image : @svg.Image) -> Int {
+pub fn image_pixel_count(image : @svg.Image) -> Int32 {
   image.width() * image.height()
 }
 
 ///|
-pub fn image_pixel_at(image : @svg.Image, index : Int) -> @svg.Color {
+pub fn image_pixel_at(image : @svg.Image, index : Int32) -> @svg.Color {
   let width = image.width()
   image.get_pixel(index % width, index / width)
 }
@@ -27,7 +27,7 @@ pub fn image_pixel_at(image : @svg.Image, index : Int) -> @svg.Color {
 pub fn pixels_differ(
   before : @svg.Image,
   after : @svg.Image,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   let left = image_pixel_at(before, index)
   let right = image_pixel_at(after, index)
@@ -39,8 +39,8 @@ pub fn pixels_differ(
 
 ///|
 pub fn pixel_in_regions(
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
   regions : Array[DifferenceRegion],
 ) -> Bool {
   regions.any(region => {

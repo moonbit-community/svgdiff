@@ -23,7 +23,7 @@ pub fn rendered_plan_fill_hierarchy(
   let paint_server_targets : Array[PaintServerTarget] = []
   let entity_ids : Array[String] = []
   let coverage_codes : Array[String] = []
-  let mut parent_index : Int? = None
+  let mut parent_index : Int32? = None
   for node in document.nodes {
     if node.kind == "linearGradient" ||
       node.kind == "radialGradient" ||
@@ -66,7 +66,7 @@ pub fn rendered_plan_fill_hierarchy(
 pub fn source_use_transform_site(
   input : String,
   node : StructuralSourceNode,
-  node_index : Int,
+  node_index : Int32,
   profile : ComparisonProfile,
   viewport : ViewportContext,
 ) -> SourceTransformSite {
@@ -282,7 +282,7 @@ pub fn source_instanced_viewport_site(
   input : String,
   use_node : StructuralSourceNode,
   target_node : StructuralSourceNode,
-  node_index : Int,
+  node_index : Int32,
   profile : ComparisonProfile,
   parent_context : ViewportContext,
 ) -> (SourceTransformSite, ViewportContext) {
@@ -342,7 +342,7 @@ pub fn use_rendered_diagnostic(
 ///|
 pub fn structural_subtree_uses_current_color(
   document : StructuralDocument,
-  node_index : Int,
+  node_index : Int32,
 ) -> Bool {
   let node = document.nodes[node_index]
   for attribute in node.element.attributes {
@@ -565,9 +565,9 @@ pub fn empty_rendered_scene_supported(input : String) -> Bool raise {
 ///|
 pub fn structural_resource_content(
   document : StructuralDocument,
-  node_index : Int,
+  node_index : Int32,
 ) -> Bool {
-  let mut current : Int? = Some(node_index)
+  let mut current : Int32? = Some(node_index)
   while current is Some(index) {
     let kind = document.nodes[index].kind
     if kind == "linearGradient" ||
@@ -587,13 +587,13 @@ pub fn structural_resource_content(
 ///|
 pub fn rendered_plan_contains_node(
   plans : Array[RenderedSubjectPlan],
-  node_index : Int,
+  node_index : Int32,
 ) -> Bool {
   plans.any(plan => plan.rendered_ancestry.contains(node_index))
 }
 
 ///|
-pub fn unused_definition_indices(document : StructuralDocument) -> Array[Int] {
+pub fn unused_definition_indices(document : StructuralDocument) -> Array[Int32] {
   let plans = rendered_subject_plans(document)
   [
     for index, node in document.nodes if node.definition_content &&

@@ -55,7 +55,7 @@ fn failed_resource_report(
 }
 
 ///|
-fn path_data_units(value : String) -> Int {
+fn path_data_units(value : String) -> Int32 {
   let mut units = 0
   for character in value {
     match character.to_int() {
@@ -67,7 +67,7 @@ fn path_data_units(value : String) -> Int {
 }
 
 ///|
-fn reference_count(attribute : @xml.NamespaceAttribute) -> Int {
+fn reference_count(attribute : @xml.NamespaceAttribute) -> Int32 {
   let mut count = if attribute.name.local_name == "href" { 1 } else { 0 }
   let url_parts = attribute.value.to_lower().split("url(").count()
   if url_parts > 1 {
@@ -217,7 +217,7 @@ fn source_limit(
 }
 
 ///|
-fn total_region_count(report : StructuredReport) -> Int {
+fn total_region_count(report : StructuredReport) -> Int32 {
   let mut count = 0
   for event in report.events {
     count += event.difference_regions.length()
@@ -226,7 +226,7 @@ fn total_region_count(report : StructuredReport) -> Int {
 }
 
 ///|
-fn json_serialized_bytes(value : Json, indent : Int, depth : Int) -> Int {
+fn json_serialized_bytes(value : Json, indent : Int32, depth : Int32) -> Int32 {
   match value {
     Null => 4
     True => 4
@@ -286,7 +286,7 @@ fn json_serialized_bytes(value : Json, indent : Int, depth : Int) -> Int {
 ///|
 /// Count both public JSON representations without allocating either complete
 /// serialized String. String and number leaves remain bounded allocations.
-fn serialized_report_bytes(report : StructuredReport) -> Int {
+fn serialized_report_bytes(report : StructuredReport) -> Int32 {
   let json = ToJson::to_json(report)
   let compact = json_serialized_bytes(json, 0, 0)
   let indented = json_serialized_bytes(json, 2, 0)

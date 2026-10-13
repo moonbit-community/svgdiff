@@ -17,7 +17,7 @@ pub fn subject_from_element(
   input : String,
   element : @xml.NamespaceElement,
   stylesheet_match : CssStylesheetMatch,
-  source_index : Int,
+  source_index : Int32,
   hierarchy_signature : String,
   structural_parent_path_signature : String,
   instance_resolution_signature : String,
@@ -29,7 +29,7 @@ pub fn subject_from_element(
   profile : ComparisonProfile,
   resource_owner_id : String?,
   clip_path_owner_id : String?,
-  source_offset : Int,
+  source_offset : Int32,
   instance_context : SubjectInstanceContext?,
 ) -> SourceSubject {
   let facts : Array[DeclaredVisualFact] = []
@@ -529,7 +529,7 @@ pub fn source_subject_from_rendered_plan(
   css_document : CssStaticDocument,
   document : StructuralDocument,
   plan : RenderedSubjectPlan,
-  source_index : Int,
+  source_index : Int32,
 ) -> SourceSubject {
   let computed_hierarchy = rendered_plan_fill_hierarchy(
     input, css_document, document, plan,
@@ -550,7 +550,7 @@ pub fn source_subject_from_rendered_plan(
     height: profile.viewport_height.to_double(),
   }
   let mut first_node = true
-  let mut previous_node_index : Int? = None
+  let mut previous_node_index : Int32? = None
   for node_index in plan.rendered_ancestry {
     let node = document.nodes[node_index]
     let stylesheet_match = css_stylesheet_match_for_source(
@@ -710,7 +710,7 @@ pub fn extract_pattern_child_subjects_with_profile_or_raise(
 ///|
 pub fn extract_source_subjects_or_raise(
   input : String,
-  profile? : ComparisonProfile = ComparisonProfile::v1_default(),
+  profile~ : ComparisonProfile = ComparisonProfile::v1_default(),
 ) -> Array[SourceSubject] raise {
   extract_source_subjects_with_profile_or_raise(input, profile)
 }

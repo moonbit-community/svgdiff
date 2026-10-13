@@ -3,5 +3,8 @@ import {
   "Milky2018/xml",
   "moonbitlang/core/debug",
   "moonbitlang/x/codec/base64",
-  "moonbitlang/core/json",
 }
+
+import {
+  "moonbitlang/core/json",
+} for "test"

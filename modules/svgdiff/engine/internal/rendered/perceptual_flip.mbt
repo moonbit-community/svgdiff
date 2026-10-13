@@ -14,17 +14,17 @@
 
 ///|
 pub(all) struct FlipPixelBounds {
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
+  pixel_x : Int32
+  pixel_y : Int32
+  pixel_width : Int32
+  pixel_height : Int32
 }
 
 ///|
 pub(all) struct PerceptualFlipComputation {
   evidence : PerceptualFlipEvidence
-  output_pixels : Int
-  convolution_samples : Int
+  output_pixels : Int32
+  convolution_samples : Int32
 }
 
 ///|
@@ -78,9 +78,9 @@ pub fn selected_raw_difference_bounds(
 ///|
 pub fn expand_flip_bounds(
   bounds : FlipPixelBounds,
-  radius : Int,
-  width : Int,
-  height : Int,
+  radius : Int32,
+  width : Int32,
+  height : Int32,
 ) -> FlipPixelBounds {
   let pixel_x = (bounds.pixel_x - radius).max(0)
   let pixel_y = (bounds.pixel_y - radius).max(0)
@@ -137,7 +137,7 @@ pub fn empty_perceptual_flip_map() -> PerceptualFlipMap {
 pub fn perceptual_flip_statistics(
   response_values : Array[Double],
   event_region_values : Array[Double],
-  canvas_pixel_count : Int,
+  canvas_pixel_count : Int32,
   threshold : FlipErrorThreshold?,
 ) -> PerceptualFlipStatistics {
   let mut response_sum = 0.0
@@ -202,8 +202,8 @@ pub fn event_local_perceptual_flip_evidence(
   background : PerceptualBackground,
   viewing : FlipViewingConditions,
   threshold : FlipErrorThreshold?,
-  remaining_output_pixels : Int,
-  remaining_convolution_samples : Int,
+  remaining_output_pixels : Int32,
+  remaining_convolution_samples : Int32,
 ) -> PerceptualFlipComputation {
   if before.width() != after.width() || before.height() != after.height() {
     return {

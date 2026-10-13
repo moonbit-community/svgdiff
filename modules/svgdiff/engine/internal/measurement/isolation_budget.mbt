@@ -14,9 +14,9 @@
 
 ///|
 fn isolated_render_budget_allows(
-  comparisons : Int,
-  raster_pixels : Int,
-  pixels : Int,
+  comparisons : Int32,
+  raster_pixels : Int32,
+  pixels : Int32,
 ) -> Bool {
   comparisons < 64 &&
   pixels <= 1_048_576 &&

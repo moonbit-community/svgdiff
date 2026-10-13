@@ -15,7 +15,7 @@
 ///|
 priv struct OpacityGroup {
   subject_id : String
-  source_index : Int
+  source_index : Int32
   kind : String
   fact : DeclaredVisualFact?
   resolution : ResolvedVisualFact
@@ -28,7 +28,7 @@ priv struct OpacityGroup {
 ///|
 fn group_opacity_affected_subject_ids(
   hierarchy : FillHierarchy,
-  group_index : Int,
+  group_index : Int32,
 ) -> Array[String] {
   let ids : Array[String] = [hierarchy.elements[group_index].subject_id]
   for index, element in hierarchy.elements {

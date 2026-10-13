@@ -17,10 +17,10 @@ pub(all) struct DecodedEmbeddedRaster {
   source_kind : String
   media_type : String
   encoding : String
-  encoded_bytes : Int
+  encoded_bytes : Int32
   encoded_sha256 : String
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   rgba8 : Bytes
   rgba8_sha256 : String
 }
@@ -30,10 +30,10 @@ pub(all) struct UnsupportedEmbeddedRasterColor {
   source_kind : String
   media_type : String
   encoding : String
-  encoded_bytes : Int
+  encoded_bytes : Int32
   encoded_sha256 : String
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   diagnostic_code : String
   detail : String
 }
@@ -59,9 +59,9 @@ pub fn decode_raster_bytes(
   media_type : String,
   source_kind : String,
   encoding : String,
-  max_bytes : Int,
-  max_dimension : Int,
-  max_pixels : Int,
+  max_bytes : Int32,
+  max_dimension : Int32,
+  max_pixels : Int32,
 ) -> EmbeddedRasterDecodeResult {
   if bytes.length() > max_bytes {
     return EmbeddedRasterLimitExceeded(
@@ -146,11 +146,11 @@ pub fn decode_raster_bytes(
 pub fn decode_embedded_raster(
   authored : String,
   bundle : ResourceBundle,
-  max_data_uri_bytes : Int,
-  max_data_bytes : Int,
-  max_bundle_entry_bytes : Int,
-  max_dimension : Int,
-  max_pixels : Int,
+  max_data_uri_bytes : Int32,
+  max_data_bytes : Int32,
+  max_bundle_entry_bytes : Int32,
+  max_dimension : Int32,
+  max_pixels : Int32,
 ) -> EmbeddedRasterDecodeResult {
   let source = authored.trim().to_owned()
   if source.length() > max_data_uri_bytes &&

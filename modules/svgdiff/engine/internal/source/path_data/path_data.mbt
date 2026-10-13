@@ -48,9 +48,9 @@ pub(all) enum PathDataParse {
 priv struct PathDataParser {
   data : String
   raw_data : String
-  source_boundaries : Array[Int]
-  base_offset : Int
-  mut position : Int
+  source_boundaries : Array[Int32]
+  base_offset : Int32
+  mut position : Int32
   mut x : Double
   mut y : Double
   mut subpath_x : Double
@@ -65,15 +65,15 @@ priv struct PathDataParser {
 ///|
 /// Authored byte offsets retained by the path sub-syntax parser.
 pub(all) struct PathSourceSpan {
-  start_offset : Int
-  end_offset : Int
+  start_offset : Int32
+  end_offset : Int32
 }
 
 ///|
 fn source_range_slice(
   input : String,
-  start_offset : Int,
-  end_offset : Int,
+  start_offset : Int32,
+  end_offset : Int32,
 ) -> String {
   input.view(start_offset~, end_offset~).to_owned()
 }
@@ -82,8 +82,8 @@ fn source_range_slice(
 fn PathDataParser::new(
   data : String,
   raw_data : String,
-  source_boundaries : Array[Int],
-  base_offset : Int,
+  source_boundaries : Array[Int32],
+  base_offset : Int32,
 ) -> PathDataParser {
   {
     data,
@@ -164,7 +164,7 @@ fn PathDataParser::prepare_argument(self : PathDataParser) -> Bool {
 ///|
 fn PathDataParser::parse_number(
   self : PathDataParser,
-  prepared? : Bool = false,
+  prepared~ : Bool = false,
 ) -> Double? {
   if !prepared && !self.prepare_argument() {
     return None
@@ -232,7 +232,7 @@ fn PathDataParser::parse_number(
 ///|
 fn PathDataParser::parse_flag(
   self : PathDataParser,
-  prepared? : Bool = false,
+  prepared~ : Bool = false,
 ) -> Bool? {
   if !prepared && !self.prepare_argument() {
     return None
@@ -258,13 +258,13 @@ fn PathDataParser::finish_segment(
   self : PathDataParser,
   command : UInt16,
   explicit : Bool,
-  start : Int,
+  start : Int32,
   normalized : NormalizedPathSegment,
 ) -> PathSegmentEvidence {
   let source_start = self.source_boundaries[start]
   let source_end = self.source_boundaries[self.position]
   {
-    authored_command: Int::unsafe_to_char(command.to_int()).to_string(),
+    authored_command: Int32::unsafe_to_char(command.to_int()).to_string(),
     explicit_command: explicit,
     authored_value: source_range_slice(self.raw_data, source_start, source_end),
     source_span: {
@@ -285,7 +285,7 @@ fn PathDataParser::parse_group(
   self : PathDataParser,
   command : UInt16,
   explicit : Bool,
-  start : Int,
+  start : Int32,
   prepared : Bool,
 ) -> PathSegmentEvidence? {
   let relative = command >= 'a' && command <= 'z'
@@ -461,8 +461,8 @@ fn PathDataParser::parse_group(
 fn parse_mapped_path_data(
   data : String,
   raw_data : String,
-  source_boundaries : Array[Int],
-  base_offset : Int,
+  source_boundaries : Array[Int32],
+  base_offset : Int32,
 ) -> PathDataParse {
   let parser = PathDataParser::new(
     data, raw_data, source_boundaries, base_offset,
@@ -523,8 +523,8 @@ fn parse_mapped_path_data(
 }
 
 ///|
-pub fn parse_path_data(data : String, base_offset : Int) -> PathDataParse {
-  let boundaries : Array[Int] = []
+pub fn parse_path_data(data : String, base_offset : Int32) -> PathDataParse {
+  let boundaries : Array[Int32] = []
   for offset in 0..<=data.length() {
     boundaries.push(offset)
   }
@@ -534,13 +534,13 @@ pub fn parse_path_data(data : String, base_offset : Int) -> PathDataParse {
 ///|
 pub fn parse_path_attribute_data(
   raw_data : String,
-  base_offset : Int,
+  base_offset : Int32,
 ) -> PathDataParse {
   if raw_data.find("&") is None {
     return parse_path_data(raw_data, base_offset)
   }
   let decoded = StringBuilder()
-  let boundaries : Array[Int] = [0]
+  let boundaries : Array[Int32] = [0]
   let mut position = 0
   while position < raw_data.length() {
     if raw_data[position] != '&' {

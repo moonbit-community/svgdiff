@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-fn production_domain_count(report : StructuredReport, prefix : String) -> Int {
+fn production_domain_count(report : StructuredReport, prefix : String) -> Int32 {
   report.atomic_differences
   .filter(difference => difference.domain.has_prefix(prefix))
   .length()

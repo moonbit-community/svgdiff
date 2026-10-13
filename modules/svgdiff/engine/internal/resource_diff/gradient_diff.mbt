@@ -208,9 +208,9 @@ fn append_gradient_component_difference(
   after_source : String,
   before_fact~ : DeclaredVisualFact?,
   after_fact~ : DeclaredVisualFact?,
-  dependency_fact_ids? : Array[String] = [],
-  source_semantics? : Bool = true,
-  emit_computed_only? : Bool = true,
+  dependency_fact_ids~ : Array[String] = [],
+  source_semantics~ : Bool = true,
+  emit_computed_only~ : Bool = true,
   before_computed : String,
   after_computed : String,
   before_number : Double?,
@@ -802,7 +802,7 @@ fn gradient_rendered_evidence(
 fn event_index_for_alignment(
   events : Array[VisualEvent],
   alignment : SubjectAlignment,
-) -> Int? {
+) -> Int32? {
   for index, event in events {
     if event.primary_subject_id == alignment.id ||
       alignment.before.any(reference => {
@@ -822,7 +822,7 @@ fn difference_index_for_alignment_domain(
   differences : Array[AtomicDifference],
   alignment_id : String,
   domain : String,
-) -> Int? {
+) -> Int32? {
   for index, difference in differences {
     if difference.subject_alignment_id == Some(alignment_id) &&
       difference.domain == domain {

@@ -14,8 +14,8 @@
 
 ///|
 pub(all) struct ImageData {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   data : Bytes
 } derive(Eq)
 
@@ -28,8 +28,8 @@ pub(all) enum RasterColorCondition {
 
 ///|
 pub(all) struct RasterColorMetadata {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   condition : RasterColorCondition
 } derive(Debug, Eq)
 
@@ -57,9 +57,9 @@ impl Show for ColorType with fn output(self, logger) {
 
 ///|
 priv struct IhdrData {
-  width : Int
-  height : Int
-  bit_depth : Int
+  width : Int32
+  height : Int32
+  bit_depth : Int32
   color_type : ColorType
 }
 
@@ -86,7 +86,7 @@ pub impl Show for DecodeError with fn output(self, logger) {
 }
 
 ///|
-fn color_type_from_png(value : Int) -> ColorType raise DecodeError {
+fn color_type_from_png(value : Int32) -> ColorType raise DecodeError {
   match value {
     0 => Grayscale
     2 => Rgb
@@ -98,7 +98,7 @@ fn color_type_from_png(value : Int) -> ColorType raise DecodeError {
 }
 
 ///|
-fn bytes_per_pixel(ct : ColorType, bit_depth : Int) -> Int {
+fn bytes_per_pixel(ct : ColorType, bit_depth : Int32) -> Int32 {
   let channels = match ct {
     Grayscale => 1
     Rgb => 3

@@ -55,7 +55,7 @@ fn influence_test_alignment(
 
 ///|
 fn influence_test_reference(
-  source_index : Int,
+  source_index : Int32,
   authored_id : String?,
   instance_id : String?,
 ) -> SubjectReference {

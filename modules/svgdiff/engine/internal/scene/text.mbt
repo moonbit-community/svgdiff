@@ -31,7 +31,7 @@ fn symbolic_scene_text(value : String) -> Bool {
     return false
   }
   match text[0] {
-    'A'..='Z' => true
+    'A'..<='Z' => true
     _ => false
   }
 }
@@ -44,7 +44,7 @@ fn scene_text_signature(values : Array[String]) -> String {
 }
 
 ///|
-fn multiset_common_count(left : Array[String], right : Array[String]) -> Int {
+fn multiset_common_count(left : Array[String], right : Array[String]) -> Int32 {
   let used = Array::make(right.length(), false)
   let mut count = 0
   for value in left {

@@ -14,7 +14,7 @@
 
 ///|
 priv struct WasmFailure {
-  error_kind : Int
+  error_kind : Int32
   message : String
 }
 
@@ -22,12 +22,12 @@ priv struct WasmFailure {
 priv struct WasmCompareRequest {
   before_svg : String
   after_svg : String
-  viewport_width : Int
-  viewport_height : Int
+  viewport_width : Int32
+  viewport_height : Int32
   perceptual_background : @svgdiff.PerceptualBackground?
   flip_viewing_conditions : @svgdiff.FlipViewingConditions?
   flip_error_threshold : @svgdiff.FlipErrorThreshold?
-  max_checkpoints : Int
+  max_checkpoints : Int32
 }
 
 ///|
@@ -170,7 +170,7 @@ fn required_string(
 fn required_int(
   fields : Map[String, Json],
   key : String,
-) -> Result[Int, String] {
+) -> Result[Int32, String] {
   match fields.get(key) {
     Some(Number(value, ..)) => {
       let integer = value.to_int()
@@ -189,7 +189,7 @@ fn required_int(
 fn required_positive_int(
   fields : Map[String, Json],
   key : String,
-) -> Result[Int, String] {
+) -> Result[Int32, String] {
   match required_int(fields, key) {
     Ok(value) if value > 0 => Ok(value)
     Ok(_) => Err("field `\{key}` must be positive")

@@ -15,8 +15,8 @@
 ///|
 fn node_descends_from(
   document : @source_semantics.StructuralDocument,
-  node_index : Int,
-  ancestor_index : Int,
+  node_index : Int32,
+  ancestor_index : Int32,
 ) -> Bool {
   let mut current = document.nodes[node_index].parent_index
   while current is Some(index) {
@@ -31,7 +31,7 @@ fn node_descends_from(
 ///|
 fn plan_descends_from(
   plan : @source_semantics.RenderedSubjectPlan,
-  node_index : Int,
+  node_index : Int32,
 ) -> Bool {
   plan.rendered_ancestry.contains(node_index)
 }
@@ -39,7 +39,7 @@ fn plan_descends_from(
 ///|
 fn group_text(
   document : @source_semantics.StructuralDocument,
-  group_index : Int,
+  group_index : Int32,
 ) -> (Array[String], Array[String]) {
   let texts : Array[String] = []
   for index, node in document.nodes {
@@ -76,8 +76,8 @@ fn group_text(
 ///|
 fn group_primitive_indices(
   plans : Array[@source_semantics.RenderedSubjectPlan],
-  group_index : Int,
-) -> Array[Int] {
+  group_index : Int32,
+) -> Array[Int32] {
   [
     for index, plan in plans if plan_descends_from(plan, group_index) => index
   ]
@@ -86,7 +86,7 @@ fn group_primitive_indices(
 ///|
 fn primitive_kinds(
   subjects : Array[@ir.SourceSubject],
-  indices : Array[Int],
+  indices : Array[Int32],
 ) -> Array[String] {
   let kinds = [ for index in indices => subjects[index].kind ]
   kinds.sort()
@@ -117,7 +117,7 @@ fn primitive_style_signature(subject : @ir.SourceSubject) -> String {
 ///|
 fn scene_object_bounds(
   subjects : Array[@ir.SourceSubject],
-  indices : Array[Int],
+  indices : Array[Int32],
 ) -> @model.VisualObjectBounds? {
   let mut bounds : @computed.CssBounds? = None
   for index in indices {
@@ -137,8 +137,8 @@ fn scene_object_bounds(
 fn qualifying_entity_groups(
   document : @source_semantics.StructuralDocument,
   plans : Array[@source_semantics.RenderedSubjectPlan],
-) -> Array[Int] {
-  let raw : Array[Int] = []
+) -> Array[Int32] {
+  let raw : Array[Int32] = []
   for index, node in document.nodes {
     if node.kind != "g" || node.definition_content {
       continue
@@ -162,8 +162,8 @@ fn qualifying_entity_groups(
 ///|
 fn node_in_any_group(
   document : @source_semantics.StructuralDocument,
-  node_index : Int,
-  groups : Array[Int],
+  node_index : Int32,
+  groups : Array[Int32],
 ) -> Bool {
   groups.any(group => {
     node_index == group || node_descends_from(document, node_index, group)
@@ -173,9 +173,9 @@ fn node_in_any_group(
 ///|
 fn relation_group_candidates(
   document : @source_semantics.StructuralDocument,
-  entity_groups : Array[Int],
-) -> Array[Int] {
-  let raw : Array[Int] = []
+  entity_groups : Array[Int32],
+) -> Array[Int32] {
+  let raw : Array[Int32] = []
   for index, node in document.nodes {
     if node.kind != "g" ||
       node.definition_content ||
@@ -238,10 +238,10 @@ fn relation_edge_class(value : String) -> Bool {
 fn relation_primitive_indices(
   document : @source_semantics.StructuralDocument,
   plans : Array[@source_semantics.RenderedSubjectPlan],
-  entity_groups : Array[Int],
-  relation_groups : Array[Int],
-) -> Array[Int] {
-  let indices : Array[Int] = []
+  entity_groups : Array[Int32],
+  relation_groups : Array[Int32],
+) -> Array[Int32] {
+  let indices : Array[Int32] = []
   for primitive_index, plan in plans {
     let node_index = plan.source_node_index
     if node_in_any_group(document, node_index, relation_groups) {
@@ -267,10 +267,10 @@ fn relation_primitive_indices(
 fn relation_subject_indices(
   document : @source_semantics.StructuralDocument,
   plans : Array[@source_semantics.RenderedSubjectPlan],
-  entity_groups : Array[Int],
-  relation_groups : Array[Int],
-) -> Array[Int] {
-  let indices : Array[Int] = []
+  entity_groups : Array[Int32],
+  relation_groups : Array[Int32],
+) -> Array[Int32] {
+  let indices : Array[Int32] = []
   for primitive_index, plan in plans {
     let node = document.nodes[plan.source_node_index]
     if node.kind != "path" ||
@@ -375,7 +375,7 @@ fn nearest_object_id(
 ///|
 fn build_relations(
   subjects : Array[@ir.SourceSubject],
-  relation_indices : Array[Int],
+  relation_indices : Array[Int32],
   objects : Array[SceneObject],
   side : String,
 ) -> Array[@model.VisualRelationSummary] {

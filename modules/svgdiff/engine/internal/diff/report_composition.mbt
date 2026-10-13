@@ -151,7 +151,7 @@ fn compose_analysis_reports(
   ]
   let original_base_count = differences.length()
   for extra in extra_report.atomic_differences {
-    let mut duplicate_index : Int? = None
+    let mut duplicate_index : Int32? = None
     for index in 0..<original_base_count {
       if same_analysis_atomic_difference(
           base_report,

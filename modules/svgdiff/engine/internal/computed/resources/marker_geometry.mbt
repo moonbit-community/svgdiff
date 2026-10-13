@@ -22,7 +22,7 @@ pub(all) struct MarkerAttachmentResolution {
 
 ///|
 pub(all) struct MarkerResource {
-  node_index : Int
+  node_index : Int32
   subject_id : String
   authored_id : String?
   facts : Array[DeclaredVisualFact]
@@ -199,7 +199,7 @@ pub fn marker_attribute(
 }
 
 ///|
-pub fn marker_empty_content_fact(offset : Int) -> DeclaredVisualFact {
+pub fn marker_empty_content_fact(offset : Int32) -> DeclaredVisualFact {
   {
     property: "content",
     authored_value: "",
@@ -298,8 +298,8 @@ pub fn marker_reference_coordinate(
 pub fn marker_resource_from_element(
   input : String,
   element : @xml.NamespaceElement,
-  node_index : Int,
-  content_offset : Int,
+  node_index : Int32,
+  content_offset : Int32,
   viewport : ViewportContext,
   profile : ComparisonProfile,
 ) -> MarkerResource {
@@ -551,7 +551,7 @@ pub fn extract_marker_resources_or_raise(
   profile : ComparisonProfile,
 ) -> Array[MarkerResource] raise {
   let resources : Array[MarkerResource] = []
-  let resource_stack : Array[(Int, Int)] = []
+  let resource_stack : Array[(Int32, Int32)] = []
   let viewport_contexts : Array[ViewportContext] = []
   let mut node_index = 0
   let reader = @xml.NamespaceReader::from_string(input)
@@ -1092,7 +1092,7 @@ pub fn marker_subpaths_for_subject(
 ///|
 pub fn marker_effective_start_angle(
   segments : Array[MarkerSegment],
-  index : Int,
+  index : Int32,
 ) -> Double {
   match segments[index].start_angle {
     Some(angle) => return angle
@@ -1118,7 +1118,7 @@ pub fn marker_effective_start_angle(
 ///|
 pub fn marker_effective_end_angle(
   segments : Array[MarkerSegment],
-  index : Int,
+  index : Int32,
 ) -> Double {
   match segments[index].end_angle {
     Some(angle) => return angle

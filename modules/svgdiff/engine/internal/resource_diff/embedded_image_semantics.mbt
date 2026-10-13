@@ -14,7 +14,7 @@
 
 ///|
 pub fn embedded_image_alignment(
-  index : Int,
+  index : Int32,
   relation : String,
   before : EmbeddedImageSubject?,
   after : EmbeddedImageSubject?,

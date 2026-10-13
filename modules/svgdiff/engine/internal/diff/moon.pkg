@@ -23,11 +23,7 @@ import {
   "Milky2018/svgdiff/engine/internal/source/css_color",
   "Milky2018/xml",
   "Milky2018/svg",
-  "moonbitlang/core/json",
-  "moonbitlang/core/bench",
-  "moonbitlang/core/double",
   "moonbitlang/core/math",
-  "moonbitlang/core/string",
 }
 
 import {
@@ -35,4 +31,7 @@ import {
   "Milky2018/svgdiff/engine/internal/source/embedded_data_url",
   "Milky2018/svgdiff/engine/internal/source/path_data",
   "moonbitlang/x/codec/base64",
+  "moonbitlang/core/bench",
+  "moonbitlang/core/double",
+  "moonbitlang/core/json",
 } for "wbtest"

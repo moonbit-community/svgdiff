@@ -73,7 +73,7 @@ async fn write_error(message : String) -> Unit noraise {
 }
 
 ///|
-async fn execute(config : @cli.Config) -> Int noraise {
+async fn execute(config : @cli.Config) -> Int32 noraise {
   try {
     let before_svg = read_svg(config.before_path)
     let after_svg = read_svg(config.after_path)
@@ -138,7 +138,7 @@ async fn execute(config : @cli.Config) -> Int noraise {
 }
 
 ///|
-async fn run(args : ArrayView[String]) -> Int noraise {
+async fn run(args : ArrayView[String]) -> Int32 noraise {
   let config = @cli.parse(args) catch {
     InvalidArguments(message) => {
       write_error(message)

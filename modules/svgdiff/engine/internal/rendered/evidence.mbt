@@ -38,7 +38,7 @@ pub fn raw_rgba8_squared_error(left : @svg.Color, right : @svg.Color) -> Double 
 }
 
 ///|
-pub fn srgb8_to_linear(value : Int) -> Double {
+pub fn srgb8_to_linear(value : Int32) -> Double {
   let channel = value.to_double() / 255.0
   if channel <= 0.04045 {
     channel / 12.92

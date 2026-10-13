@@ -26,7 +26,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s latest
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - name: Set up MoonBit on Windows
         if: runner.os == 'Windows'

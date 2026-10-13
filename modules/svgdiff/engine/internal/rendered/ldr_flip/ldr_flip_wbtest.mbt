@@ -20,7 +20,7 @@ fn flip_rgb(red : Double, green : Double, blue : Double) -> FlipLinearRgb {
 ///|
 fn assert_flip_quantized(
   actual : FlipErrorMap,
-  expected : Array[Int],
+  expected : Array[Int32],
 ) -> Unit raise {
   assert_eq(actual.values.length(), expected.length())
   for index, value in actual.values {
