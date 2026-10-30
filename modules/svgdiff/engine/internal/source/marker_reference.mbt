@@ -36,26 +36,18 @@ pub fn parse_marker_reference(source : String) -> MarkerReferenceParse {
   if !value.to_lower().has_prefix("url(") || !value.has_suffix(")") {
     return InvalidMarkerReference
   }
-  let mut inner = value
-    .view(start_offset=4, end_offset=value.length() - 1)
-    .to_owned()
-    .trim()
-    .to_owned()
+  let mut inner = value[4:value.length() - 1].to_owned().trim().to_owned()
   if inner.length() >= 2 &&
     (
       (inner.has_prefix("'") && inner.has_suffix("'")) ||
       (inner.has_prefix("\"") && inner.has_suffix("\""))
     ) {
-    inner = inner
-      .view(start_offset=1, end_offset=inner.length() - 1)
-      .to_owned()
-      .trim()
-      .to_owned()
+    inner = inner[1:inner.length() - 1].to_owned().trim().to_owned()
   }
   if inner.length() <= 1 || !inner.has_prefix("#") {
     return InvalidMarkerReference
   }
-  let id = inner.view(start_offset=1, end_offset=inner.length()).to_owned()
+  let id = inner[1:inner.length()].to_owned()
   if id.find("#") is Some(_) ||
     id.find(" ") is Some(_) ||
     id.find("\t") is Some(_) ||

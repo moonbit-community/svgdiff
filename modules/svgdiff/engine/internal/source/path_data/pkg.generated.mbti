@@ -8,9 +8,9 @@ pub fn normalized_path_segment_parameters(NormalizedPathSegment) -> Array[Normal
 
 pub fn normalized_path_segment_signature(NormalizedPathSegment) -> String
 
-pub fn parse_path_attribute_data(String, Int) -> PathDataParse
+pub fn parse_path_attribute_data(String, Int32) -> PathDataParse
 
-pub fn parse_path_data(String, Int) -> PathDataParse
+pub fn parse_path_data(String, Int32) -> PathDataParse
 
 pub fn path_segments_signature(Array[PathSegmentEvidence]) -> String
 
@@ -46,8 +46,8 @@ pub(all) struct PathSegmentEvidence {
 }
 
 pub(all) struct PathSourceSpan {
-  start_offset : Int
-  end_offset : Int
+  start_offset : Int32
+  end_offset : Int32
 }
 
 // Type aliases

@@ -37,7 +37,7 @@ pub(all) struct BlendSemanticIssue {
 
 pub(all) struct BlendSite {
   owner_id : String
-  source_index : Int
+  source_index : Int32
   kind : String
   blend_fact : @model.DeclaredVisualFact?
   blend_resolution : @model.ResolvedVisualFact
@@ -63,7 +63,7 @@ pub(all) struct FilterLength {
 }
 
 pub(all) struct FilterOffsetPrimitive {
-  index : Int
+  index : Int32
   subject_id : String
   presence_fact : @model.DeclaredVisualFact
   input : String
@@ -79,12 +79,12 @@ pub(all) struct FilterOffsetPrimitive {
 }
 
 pub(all) struct FilterPrimitiveSource {
-  position : Int
+  position : Int32
   kind : String
   subject_id : String
-  start_offset : Int
-  end_offset : Int
-  offset_index : Int?
+  start_offset : Int32
+  end_offset : Int32
+  offset_index : Int32?
 }
 
 pub(all) struct FilterResource {
@@ -122,13 +122,13 @@ pub(all) struct FilterSemanticIssue {
 pub(all) struct ResolvedFilterHost {
   owner_id : String
   owner_authored_id : String?
-  owner_render_index : Int?
+  owner_render_index : Int32?
   filter_fact : @model.DeclaredVisualFact
   resource_id : String?
   resource : FilterResource?
   target_bounds : @computed.CssBounds?
   filter_region : @computed.CssBounds?
-  primitive_offsets : Array[(Int, Int)]
+  primitive_offsets : Array[(Int32, Int32)]
   primitive_bounds : Array[@computed.CssBounds?]
   effect_bounds : @computed.CssBounds?
   complete : Bool

@@ -29,7 +29,7 @@ pub fn attach_mask_differences(@model.StructuredReport, String, String) -> @mode
 
 pub fn attach_pattern_differences(@model.StructuredReport, String, String) -> @model.StructuredReport
 
-pub fn embedded_image_alignment(Int, String, @resources.EmbeddedImageSubject?, @resources.EmbeddedImageSubject?, String) -> @model.SubjectAlignment
+pub fn embedded_image_alignment(Int32, String, @resources.EmbeddedImageSubject?, @resources.EmbeddedImageSubject?, String) -> @model.SubjectAlignment
 
 pub fn embedded_image_alignments(Array[@resources.EmbeddedImageSubject], Array[@resources.EmbeddedImageSubject]) -> Array[@model.SubjectAlignment]
 

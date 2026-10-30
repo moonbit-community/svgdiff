@@ -47,24 +47,16 @@ fn parsed_effect_reference(source : String) -> (String, String?) {
     !value.has_suffix(")") {
     return ("invalid", None)
   }
-  let mut locator = value
-    .view(start_offset=4, end_offset=value.length() - 1)
-    .to_owned()
-    .trim()
-    .to_owned()
+  let mut locator = value[4:value.length() - 1].to_owned().trim().to_owned()
   if locator.length() >= 2 &&
     (
       (locator.has_prefix("'") && locator.has_suffix("'")) ||
       (locator.has_prefix("\"") && locator.has_suffix("\""))
     ) {
-    locator = locator
-      .view(start_offset=1, end_offset=locator.length() - 1)
-      .to_owned()
-      .trim()
-      .to_owned()
+    locator = locator[1:locator.length() - 1].to_owned().trim().to_owned()
   }
   if locator.length() > 1 && locator.has_prefix("#") {
-    let id = decode_local_fragment(locator.view(start_offset=1).to_owned())
+    let id = decode_local_fragment(locator[1:].to_owned())
     if id != "" &&
       id.find("#") is None &&
       id.find(" ") is None &&

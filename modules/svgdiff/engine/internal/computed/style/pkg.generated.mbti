@@ -10,7 +10,7 @@ import {
 }
 
 // Values
-pub fn add_fill_source_element(String, @xml.NamespaceElement, Int, @source.CssStylesheetMatch, Int?, Array[FillSourceElement], Array[String], Array[String], Array[String], Int, Int, Int) -> Int
+pub fn add_fill_source_element(String, @xml.NamespaceElement, Int32, @source.CssStylesheetMatch, Int32?, Array[FillSourceElement], Array[String], Array[String], Array[String], Int32, Int32, Int32) -> Int32
 
 pub fn append_renderer_paint_overrides(FillHierarchy, String, String, String, Array[@model.DeclaredVisualFact]) -> Unit
 
@@ -32,7 +32,7 @@ pub fn computed_fact_from_resolution(String, String, @model.DeclaredVisualFact?)
 
 pub fn computed_visual_facts_for_subject(FillHierarchy, String) -> Array[@model.DeclaredVisualFact]
 
-pub fn computed_visual_for_index(FillHierarchy, Int, String) -> ComputedVisualResolution
+pub fn computed_visual_for_index(FillHierarchy, Int32, String) -> ComputedVisualResolution
 
 pub fn computed_visual_for_subject(FillHierarchy, String, String) -> ComputedVisualResolution?
 
@@ -40,7 +40,7 @@ pub fn css_wide_keyword(String) -> Bool
 
 pub fn custom_property_declaration(FillSourceElement, String) -> @model.DeclaredVisualFact?
 
-pub fn explicit_defaulted_visual(FillHierarchy, Int, String, @model.DeclaredVisualFact, String, Array[StyleDependency]) -> ComputedVisualResolution
+pub fn explicit_defaulted_visual(FillHierarchy, Int32, String, @model.DeclaredVisualFact, String, Array[StyleDependency]) -> ComputedVisualResolution
 
 pub fn extract_fill_hierarchy(String) -> FillHierarchyExtraction
 
@@ -48,7 +48,7 @@ pub fn extract_fill_hierarchy_or_raise(String) -> FillHierarchy raise
 
 pub fn fill_entity_kind(String) -> Bool
 
-pub fn fill_source_element(FillHierarchy, String) -> (Int, FillSourceElement)?
+pub fn fill_source_element(FillHierarchy, String) -> (Int32, FillSourceElement)?
 
 pub fn generic_computed_string(String, String) -> String
 
@@ -60,7 +60,7 @@ pub fn generic_effective_paint(@ir.SourceSubject, String, @model.DeclaredVisualF
 
 pub fn generic_subject_alpha(@ir.SourceSubject, String) -> Double?
 
-pub fn inherited_computed_visual(FillHierarchy, Int, String) -> ComputedVisualResolution
+pub fn inherited_computed_visual(FillHierarchy, Int32, String) -> ComputedVisualResolution
 
 pub fn inherited_visual_properties() -> Array[String]
 
@@ -80,7 +80,7 @@ pub fn renderer_computed_override_facts_for_subject(FillHierarchy, String) -> Ar
 
 pub fn resolution_source_changed(@model.ResolvedVisualFact?, @model.ResolvedVisualFact?) -> Bool
 
-pub fn resolve_custom_property(FillHierarchy, Int, String, Array[String]) -> CustomValueResolution
+pub fn resolve_custom_property(FillHierarchy, Int32, String, Array[String]) -> CustomValueResolution
 
 pub fn resolved_style_property(String) -> Bool
 
@@ -90,7 +90,7 @@ pub fn resolved_visual_for_subject(FillHierarchy, String, String) -> @model.Reso
 
 pub fn resolved_visual_properties() -> Array[String]
 
-pub fn substitute_css_variables(FillHierarchy, Int, String, Array[String]) -> CssSubstitutionResult
+pub fn substitute_css_variables(FillHierarchy, Int32, String, Array[String]) -> CssSubstitutionResult
 
 pub fn substituted_paint_value_valid(String, String) -> Bool
 
@@ -98,7 +98,7 @@ pub fn substituted_visual_value_valid(String, String) -> Bool
 
 pub fn valid_local_paint_server(FillHierarchy, String) -> Bool
 
-pub fn var_function_at(String, Int) -> Bool
+pub fn var_function_at(String, Int32) -> Bool
 
 pub fn visual_declarations_from_element(String, @xml.NamespaceElement, @source.CssStylesheetMatch, Array[String]) -> Array[@model.DeclaredVisualFact]
 
@@ -148,8 +148,8 @@ pub(all) struct FillSourceElement {
   subject_id : String
   has_authored_id : Bool
   kind : String
-  source_offset : Int
-  parent_index : Int?
+  source_offset : Int32
+  parent_index : Int32?
   visual_declarations : Array[@model.DeclaredVisualFact]
   resource_content : Bool
 }

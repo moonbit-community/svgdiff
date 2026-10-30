@@ -45,9 +45,9 @@ pub fn preserve_aspect_ratio_signature(PreserveAspectRatioValue) -> String
 
 pub fn shortest_transform_angle_delta(Double, Double) -> Double
 
-pub fn source_transform_site(String, @xml.NamespaceElement, Int) -> SourceTransformSite
+pub fn source_transform_site(String, @xml.NamespaceElement, Int32) -> SourceTransformSite
 
-pub fn source_transform_site_with_viewport(String, @xml.NamespaceElement, Int, @model.ComparisonProfile, ViewportContext?) -> (SourceTransformSite, ViewportContext?)
+pub fn source_transform_site_with_viewport(String, @xml.NamespaceElement, Int32, @model.ComparisonProfile, ViewportContext?) -> (SourceTransformSite, ViewportContext?)
 
 pub fn source_viewport_resolution(String, @xml.NamespaceElement, @model.ComparisonProfile, ViewportContext?) -> SourceViewportResolution
 
@@ -96,7 +96,7 @@ pub(all) struct ResolvedViewportLength {
 }
 
 pub(all) struct SourceTransformSite {
-  node_index : Int
+  node_index : Int32
   subject_id : String
   authored_id : String?
   kind : String

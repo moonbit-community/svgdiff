@@ -403,7 +403,7 @@ pub fn same_document_pattern_target(
         )
         return None
       }
-      match pattern_by_id(document, value.view(start_offset=1).to_owned()) {
+      match pattern_by_id(document, value[1:].to_owned()) {
         Some(target) if target.subject_id != pattern.subject_id => Some(target)
         _ => {
           push_pattern_issue(

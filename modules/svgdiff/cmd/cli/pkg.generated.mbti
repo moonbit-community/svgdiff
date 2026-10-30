@@ -29,14 +29,14 @@ pub struct Config {
   output_path : String?
   html_path : String?
   agent_json : Bool
-  width : Int?
-  height : Int?
+  width : Int32?
+  height : Int32?
   perceptual_background : @model.PerceptualBackground?
   flip_viewing_conditions : @model.FlipViewingConditions?
   flip_error_threshold : @model.FlipErrorThreshold?
   before_resources : Array[Resource]
   after_resources : Array[Resource]
-  max_checkpoints : Int?
+  max_checkpoints : Int32?
 }
 
 pub struct Resource {

@@ -582,9 +582,9 @@ fn marker_resource_side_bounds_for_event(
   if !event.id.has_prefix("event:marker-resource:") {
     return None
   }
-  let suffix = event.id.view(start_offset="event:marker-resource:".length())
+  let suffix = event.id["event:marker-resource:".length():]
   let resource_id = match suffix.find(":presence") {
-    Some(offset) => suffix.view(end_offset=offset).to_owned()
+    Some(offset) => suffix[:offset].to_owned()
     None => suffix.to_owned()
   }
   Some({
@@ -814,18 +814,14 @@ fn filter_bounds_for_event_hosts(
 ) -> CssBounds? {
   let mut bounds : CssBounds? = None
   if event.id.has_prefix("event:filter-host:") {
-    let owner_id = event.id
-      .view(start_offset="event:filter-host:".length())
-      .to_owned()
+    let owner_id = event.id["event:filter-host:".length():].to_owned()
     for host in hosts {
       if host.owner_id == owner_id {
         bounds = union_bounds(bounds, filter_host_conservative_bounds(host))
       }
     }
   } else if event.id.has_prefix("event:filter:") {
-    let resource_id = event.id
-      .view(start_offset="event:filter:".length())
-      .to_owned()
+    let resource_id = event.id["event:filter:".length():].to_owned()
     for host in hosts {
       if host.resource_id == Some(resource_id) {
         bounds = union_bounds(bounds, filter_host_conservative_bounds(host))

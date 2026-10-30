@@ -38,7 +38,7 @@ pub fn painted_coverage_difference(@svg.Image, @svg.Image) -> @model.PaintedCove
 
 pub fn parameter_entity_fraction_from_bounds(Double, Array[@computed.CssBounds?]) -> Double?
 
-pub fn pixel_difference_regions(@svg.Image, @svg.Image, Int) -> DifferenceRegionExtraction
+pub fn pixel_difference_regions(@svg.Image, @svg.Image, Int32) -> DifferenceRegionExtraction
 
 pub fn rendered_magnitude_for_regions(@svg.Image, @svg.Image, Array[@model.DifferenceRegion]) -> @model.RenderedMagnitude
 
@@ -65,8 +65,8 @@ pub(all) struct IsolatedPaintMeasurements {
 }
 
 pub(all) struct PathBoundaryBudget {
-  mut comparisons : Int
-  mut raster_pixels : Int
+  mut comparisons : Int32
+  mut raster_pixels : Int32
 }
 pub fn PathBoundaryBudget::measure(Self, @ir.SourceSubject, @ir.SourceSubject, @model.ComparisonProfile) -> IsolatedPaintMeasurements?
 pub fn PathBoundaryBudget::new() -> Self

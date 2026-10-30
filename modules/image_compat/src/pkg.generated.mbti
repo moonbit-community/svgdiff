@@ -8,25 +8,25 @@ import {
 // Values
 pub fn decode_bmp(Bytes) -> ImageData raise DecodeError
 
-pub fn decode_bmp_stream(Bytes, on_row~ : (Int, Bytes) -> Unit) -> (Int, Int) raise DecodeError
+pub fn decode_bmp_stream(Bytes, on_row~ : (Int32, Bytes) -> Unit) -> (Int32, Int32) raise DecodeError
 
-pub fn decode_image_stream(Bytes, on_row~ : (Int, Bytes) -> Unit) -> StreamImageInfo raise DecodeError
+pub fn decode_image_stream(Bytes, on_row~ : (Int32, Bytes) -> Unit) -> StreamImageInfo raise DecodeError
 
 pub fn decode_jpeg(Bytes) -> ImageData raise DecodeError
 
 pub fn decode_png(Bytes) -> ImageData raise DecodeError
 
-pub fn decode_png_stream(Bytes, on_row~ : (Int, Bytes) -> Unit) -> IhdrData raise DecodeError
+pub fn decode_png_stream(Bytes, on_row~ : (Int32, Bytes) -> Unit) -> IhdrData raise DecodeError
 
 pub fn encode_bmp(ImageData) -> Bytes raise EncodeError
 
-pub fn encode_jpeg(ImageData, quality? : Int) -> Bytes raise EncodeError
+pub fn encode_jpeg(ImageData, quality? : Int32) -> Bytes raise EncodeError
 
 pub fn encode_png(ImageData) -> Bytes raise EncodeError
 
 pub fn package_name() -> String
 
-pub fn resize(ImageData, Int, Int, ResizeMethod) -> ImageData raise EncodeError
+pub fn resize(ImageData, Int32, Int32, ResizeMethod) -> ImageData raise EncodeError
 
 // Errors
 pub(all) suberror DecodeError {
@@ -61,21 +61,21 @@ pub fn ColorType::not_equal(Self, Self) -> Bool
 pub fn ColorType::to_repr(Self) -> @debug.Repr
 
 pub(all) struct IhdrData {
-  width : Int
-  height : Int
-  bit_depth : Int
+  width : Int32
+  height : Int32
+  bit_depth : Int32
   color_type : ColorType
-  compression : Int
-  filter : Int
-  interlace : Int
+  compression : Int32
+  filter : Int32
+  interlace : Int32
 } derive(Eq, @debug.Debug)
 pub fn IhdrData::equal(Self, Self) -> Bool
 pub fn IhdrData::not_equal(Self, Self) -> Bool
 pub fn IhdrData::to_repr(Self) -> @debug.Repr
 
 pub(all) struct ImageData {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   data : Bytes
 } derive(Eq, @debug.Debug)
 pub fn ImageData::equal(Self, Self) -> Bool
@@ -101,8 +101,8 @@ pub fn ResizeMethod::to_repr(Self) -> @debug.Repr
 
 pub(all) struct StreamImageInfo {
   format : ImageFormat
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
 } derive(Eq, @debug.Debug)
 pub fn StreamImageInfo::equal(Self, Self) -> Bool
 pub fn StreamImageInfo::not_equal(Self, Self) -> Bool

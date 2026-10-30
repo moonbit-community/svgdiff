@@ -215,18 +215,18 @@ pub fn marker_angle_degrees(source : String) -> Double? {
   if value == "" {
     return None
   }
-  let mut number = value.view()
+  let mut number = value[:]
   let mut multiplier = 1.0
   if value.has_suffix("deg") {
-    number = value.view(end_offset=value.length() - 3)
+    number = value[:value.length() - 3]
   } else if value.has_suffix("grad") {
-    number = value.view(end_offset=value.length() - 4)
+    number = value[:value.length() - 4]
     multiplier = 0.9
   } else if value.has_suffix("rad") {
-    number = value.view(end_offset=value.length() - 3)
+    number = value[:value.length() - 3]
     multiplier = 180.0 / 3.141592653589793
   } else if value.has_suffix("turn") {
-    number = value.view(end_offset=value.length() - 4)
+    number = value[:value.length() - 4]
     multiplier = 360.0
   }
   match parse_shape_number(number.to_owned()) {
@@ -265,10 +265,7 @@ pub fn marker_reference_coordinate(
       if value.has_suffix("%") {
         match view_box {
           Some(box) =>
-            match
-              parse_shape_number(
-                value.view(end_offset=value.length() - 1).to_owned(),
-              ) {
+            match parse_shape_number(value[:value.length() - 1].to_owned()) {
               Some(percentage) =>
                 if axis == "x" {
                   Some(box.min_x + box.width * percentage / 100.0)

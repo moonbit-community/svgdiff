@@ -38,12 +38,7 @@ test "marker attachment shorthand and longhands retain authored provenance" {
   assert_eq(shorthand.authored_value, " url(#base) ")
   assert_eq(shorthand.origin, "presentation_attribute")
   assert_eq(
-    source
-    .view(
-      start_offset=shorthand.source_span.start_offset,
-      end_offset=shorthand.source_span.end_offset,
-    )
-    .to_owned(),
+    source[shorthand.source_span.start_offset:shorthand.source_span.end_offset].to_owned(),
     " url(#base) ",
   )
   guard shape_fact(subject.facts, "marker-mid") is Some(mid) else {
@@ -70,12 +65,7 @@ test "marker attachments inherit and a local longhand overrides the shorthand" {
   assert_eq(start.origin, "presentation_attribute")
   assert_eq(start.authored_value, "url(#base)")
   assert_eq(
-    source
-    .view(
-      start_offset=start.source_span.start_offset,
-      end_offset=start.source_span.end_offset,
-    )
-    .to_owned(),
+    source[start.source_span.start_offset:start.source_span.end_offset].to_owned(),
     "url(#base)",
   )
 }
@@ -104,12 +94,7 @@ test "marker resources resolve defaults and canonical values" {
   assert_eq(width.authored_value, "3.0")
   assert_eq(width.declared_value, "3")
   assert_eq(
-    source
-    .view(
-      start_offset=width.source_span.start_offset,
-      end_offset=width.source_span.end_offset,
-    )
-    .to_owned(),
+    source[width.source_span.start_offset:width.source_span.end_offset].to_owned(),
     "3.0",
   )
 }

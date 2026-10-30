@@ -123,9 +123,7 @@ pub fn mask_length_from_fact(
   guard fact is Some(fact) else { return (mask_default_length(property), true) }
   let source = fact.declared_value.trim().to_owned()
   if source.has_suffix("%") {
-    guard parse_shape_number(
-        source.view(end_offset=source.length() - 1).to_owned(),
-      )
+    guard parse_shape_number(source[:source.length() - 1].to_owned())
       is Some(value) else {
       return (mask_default_length(property), false)
     }
@@ -262,9 +260,9 @@ pub fn mask_content_number(
   let value = source.trim().to_owned()
   if units == "objectBoundingBox" {
     if value.has_suffix("%") {
-      return parse_shape_number(
-        value.view(end_offset=value.length() - 1).to_owned(),
-      ).map(number => number / 100.0)
+      return parse_shape_number(value[:value.length() - 1].to_owned()).map(number => {
+        number / 100.0
+      })
     }
     return parse_shape_number(value)
   }

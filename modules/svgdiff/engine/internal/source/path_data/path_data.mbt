@@ -75,7 +75,7 @@ fn source_range_slice(
   start_offset : Int32,
   end_offset : Int32,
 ) -> String {
-  input.view(start_offset~, end_offset~).to_owned()
+  input[start_offset:end_offset].to_owned()
 }
 
 ///|
@@ -212,7 +212,7 @@ fn PathDataParser::parse_number(
   let start_offset = start
   let end_offset = self.position
   let value = try
-    @string.parse_double(self.data.view(start_offset~, end_offset~))
+    @string.parse_double(self.data[start_offset:end_offset])
   catch {
     _ => {
       self.position = start

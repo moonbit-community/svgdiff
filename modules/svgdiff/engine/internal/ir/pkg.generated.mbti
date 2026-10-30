@@ -74,7 +74,7 @@ pub(all) struct SourceSubject {
   mask_complete : Bool
   mask_effect_bounds : @computed.CssBounds?
   mask_issue_codes : Array[String]
-  source_offset : Int
+  source_offset : Int32
 }
 
 pub(all) struct StructuralAlignmentSubject {
