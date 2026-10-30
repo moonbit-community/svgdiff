@@ -7,13 +7,13 @@ import {
 }
 
 // Values
-pub fn add_structural_source_node(String, @xml.NamespaceElement, Int, Int?, Array[StructuralSourceNode], Map[String, Int]) -> Int
+pub fn add_structural_source_node(String, @xml.NamespaceElement, Int32, Int32?, Array[StructuralSourceNode], Map[String, Int32]) -> Int32
 
-pub fn append_rendered_subject_plans(StructuralDocument, Int, Array[Int], Array[String], Array[RenderedSubjectPlan], Array[Int]) -> Unit
+pub fn append_rendered_subject_plans(StructuralDocument, Int32, Array[Int32], Array[String], Array[RenderedSubjectPlan], Array[Int32]) -> Unit
 
 pub fn ascii_reference_whitespace(Char) -> Bool
 
-pub fn ascii_url_start(String, Int) -> Bool
+pub fn ascii_url_start(String, Int32) -> Bool
 
 pub fn authored_subject_id(@xml.NamespaceElement) -> String?
 
@@ -31,7 +31,7 @@ pub fn cascade_visual_declarations(Array[CssCascadeCandidate]) -> Array[@model.D
 
 pub fn css_custom_property_name(String) -> Bool
 
-pub fn css_stylesheet_match_for_source(CssStaticDocument, Int) -> CssStylesheetMatch
+pub fn css_stylesheet_match_for_source(CssStaticDocument, Int32) -> CssStylesheetMatch
 
 pub fn declared_fact(RectDeclaredFacts, String) -> @model.DeclaredVisualFact?
 
@@ -49,7 +49,7 @@ pub fn extract_structural_document_or_raise(String) -> StructuralDocument raise
 
 pub fn fill_hierarchy_kind(String) -> Bool
 
-pub fn generated_subject_id(String, Int) -> String
+pub fn generated_subject_id(String, Int32) -> String
 
 pub fn group_opacity_container(String) -> Bool
 
@@ -95,7 +95,7 @@ pub fn parse_resource_locator(String) -> ParsedResourceLocator
 
 pub fn parse_static_css_document_or_raise(String) -> CssStaticDocument raise
 
-pub fn presentation_cascade_candidate(@model.DeclaredVisualFact, Int) -> CssCascadeCandidate
+pub fn presentation_cascade_candidate(@model.DeclaredVisualFact, Int32) -> CssCascadeCandidate
 
 pub fn presentation_fact(String, String, @xml.NamespaceAttribute) -> @model.DeclaredVisualFact
 
@@ -113,7 +113,7 @@ pub fn rendered_subject_plans(StructuralDocument) -> Array[RenderedSubjectPlan]
 
 pub fn resource_url_locators(String) -> Array[ParsedResourceLocator]
 
-pub fn source_range_slice(String, Int, Int) -> String
+pub fn source_range_slice(String, Int32, Int32) -> String
 
 pub fn source_slice(String, @xml.SourceSpan) -> String
 
@@ -125,9 +125,9 @@ pub fn structural_node_attribute_value(StructuralSourceNode, String) -> String?
 
 pub fn structural_parent_path_signature(StructuralDocument, RenderedSubjectPlan) -> String
 
-pub fn structural_path_segment(StructuralDocument, Int) -> String
+pub fn structural_path_segment(StructuralDocument, Int32) -> String
 
-pub fn structural_same_kind_ordinal(StructuralDocument, Int) -> Int
+pub fn structural_same_kind_ordinal(StructuralDocument, Int32) -> Int32
 
 pub fn structural_source_kind(String) -> Bool
 
@@ -137,11 +137,11 @@ pub fn supported_presentation_property(String) -> Bool
 
 pub fn supported_use_target(String) -> Bool
 
-pub fn trim_range(String, Int, Int) -> (Int, Int)
+pub fn trim_range(String, Int32, Int32) -> (Int32, Int32)
 
 pub fn upsert_declared_fact(Array[@model.DeclaredVisualFact], @model.DeclaredVisualFact) -> Unit
 
-pub fn use_target_index(StructuralDocument, StructuralSourceNode) -> Int?
+pub fn use_target_index(StructuralDocument, StructuralSourceNode) -> Int32?
 
 pub fn visual_semantic_input(String) -> String
 
@@ -161,8 +161,8 @@ pub(all) struct CssCascadeCandidate {
   declaration : @model.DeclaredVisualFact
   important : Bool
   specificity : CssSpecificity
-  cascade_source : Int
-  source_order : Int
+  cascade_source : Int32
+  source_order : Int32
 }
 
 pub(all) struct CssSelectorAttribute {
@@ -174,16 +174,16 @@ pub(all) struct CssSelectorAttribute {
 pub(all) struct CssSelectorNode {
   local_name : String
   attributes : Array[CssSelectorAttribute]
-  parent_index : Int?
-  previous_sibling_index : Int?
-  source_offset : Int
+  parent_index : Int32?
+  previous_sibling_index : Int32?
+  source_offset : Int32
 }
 
 pub(all) struct CssSpecificity {
-  inline_style : Int
-  ids : Int
-  classes : Int
-  types : Int
+  inline_style : Int32
+  ids : Int32
+  classes : Int32
+  types : Int32
 }
 
 pub(all) struct CssStaticDocument {
@@ -272,8 +272,8 @@ pub(all) enum RectFactExtraction {
 }
 
 pub(all) struct RenderedSubjectPlan {
-  source_node_index : Int
-  rendered_ancestry : Array[Int]
+  source_node_index : Int32
+  rendered_ancestry : Array[Int32]
   use_path : Array[String]
   instance_id : String?
   definition_subject_id : String
@@ -281,15 +281,15 @@ pub(all) struct RenderedSubjectPlan {
 
 pub(all) struct StructuralDocument {
   nodes : Array[StructuralSourceNode]
-  id_indices : Map[String, Int]
+  id_indices : Map[String, Int32]
 }
 
 pub(all) struct StructuralSourceNode {
   source_id : String
   kind : String
-  source_offset : Int
-  parent_index : Int?
-  children : Array[Int]
+  source_offset : Int32
+  parent_index : Int32?
+  children : Array[Int32]
   element : @xml.NamespaceElement
   direct_text : String
   definition_content : Bool

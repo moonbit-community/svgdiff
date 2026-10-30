@@ -14,9 +14,15 @@
 
 ///|
 pub fn source_slice(input : String, span : @xml.SourceSpan) -> String {
-  let view = input.view(
-    start_offset=span.start.offset,
-    end_offset=span.end.offset,
-  )
+  let view = source_range_view(input, span.start.offset, span.end.offset)
   "\{view}"
+}
+
+///|
+// Preserve the raw UTF-16 offsets and bounds checks of the original source API.
+fn source_range_view(input : String, start : Int32, end : Int32) -> StringView {
+  guard start >= 0 && start <= end && end <= input.length() else {
+    abort("Invalid index for View")
+  }
+  input.unsafe_view(start~, end~)
 }

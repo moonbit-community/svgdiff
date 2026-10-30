@@ -139,7 +139,7 @@ pub fn source_range_slice(
   start_offset : Int32,
   end_offset : Int32,
 ) -> String {
-  let view = input.view(start_offset~, end_offset~)
+  let view = source_range_view(input, start_offset, end_offset)
   view.to_owned()
 }
 

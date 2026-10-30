@@ -56,7 +56,7 @@ fn pattern_for_key(
   key : String,
 ) -> PatternSource? {
   if key.has_prefix("id:") {
-    let id = key.view(start_offset=3).to_owned()
+    let id = key[3:].to_owned()
     for pattern in patterns {
       if pattern.authored_id == Some(id) {
         return Some(pattern)
@@ -64,7 +64,7 @@ fn pattern_for_key(
     }
     return None
   }
-  let index = parse_alignment_number(Some(key.view(start_offset=10).to_owned()))
+  let index = parse_alignment_number(Some(key[10:].to_owned()))
     .map(number => number.to_int())
     .unwrap_or(-1)
   let anonymous = patterns.filter(pattern => pattern.authored_id is None)

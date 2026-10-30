@@ -116,9 +116,9 @@ fn percentage(source : String) -> Double? {
   if !value.has_suffix("%") {
     return None
   }
-  strict_number(
-    value.view(start_offset=0, end_offset=value.length() - 1).to_owned(),
-  ).map(number => number / 100.0)
+  strict_number(value[0:value.length() - 1].to_owned()).map(number => {
+    number / 100.0
+  })
 }
 
 ///|
@@ -187,9 +187,7 @@ fn comma_arguments(source : String, name : String) -> Array[String]? {
   if !source.has_prefix(name + "(") || !source.has_suffix(")") {
     return None
   }
-  let body = source
-    .view(start_offset=name.length() + 1, end_offset=source.length() - 1)
-    .to_owned()
+  let body = source[name.length() + 1:source.length() - 1].to_owned()
   if body.find("(") is Some(_) || body.find(")") is Some(_) {
     return None
   }

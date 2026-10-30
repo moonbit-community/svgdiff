@@ -57,11 +57,7 @@ pub fn local_href_target(value : String) -> String? {
   if normalized.length() <= 1 || normalized[0].unsafe_to_char() != '#' {
     return None
   }
-  Some(
-    decode_local_fragment(
-      normalized.view(start_offset=1, end_offset=normalized.length()).to_owned(),
-    ),
-  )
+  Some(decode_local_fragment(normalized[1:normalized.length()].to_owned()))
 }
 
 ///|
@@ -104,9 +100,7 @@ pub fn parse_resource_locator(value : String) -> ParsedResourceLocator {
     return {
       kind: "local",
       locator,
-      target_id: Some(
-        decode_local_fragment(locator.view(start_offset=1).to_owned()),
-      ),
+      target_id: Some(decode_local_fragment(locator[1:].to_owned())),
     }
   }
   if locator.to_lower().has_prefix("data:") {
@@ -133,26 +127,18 @@ pub fn resource_url_locators(value : String) -> Array[ParsedResourceLocator] {
     if cursor >= value.length() {
       locators.push({
         kind: "invalid",
-        locator: value.view(start_offset=start).to_owned().trim().to_owned(),
+        locator: value[start:].to_owned().trim().to_owned(),
         target_id: None,
       })
       break
     }
-    let mut locator = value
-      .view(start_offset=start, end_offset=cursor)
-      .to_owned()
-      .trim()
-      .to_owned()
+    let mut locator = value[start:cursor].to_owned().trim().to_owned()
     if locator.length() >= 2 &&
       (
         (locator.has_prefix("'") && locator.has_suffix("'")) ||
         (locator.has_prefix("\"") && locator.has_suffix("\""))
       ) {
-      locator = locator
-        .view(start_offset=1, end_offset=locator.length() - 1)
-        .to_owned()
-        .trim()
-        .to_owned()
+      locator = locator[1:locator.length() - 1].to_owned().trim().to_owned()
     } else if locator.has_prefix("'") ||
       locator.has_suffix("'") ||
       locator.has_prefix("\"") ||

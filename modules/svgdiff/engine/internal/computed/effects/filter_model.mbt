@@ -156,9 +156,7 @@ fn filter_length_from_fact(
   }
   let source = fact.declared_value.trim().to_owned()
   if source.has_suffix("%") {
-    guard parse_shape_number(
-        source.view(end_offset=source.length() - 1).to_owned(),
-      )
+    guard parse_shape_number(source[:source.length() - 1].to_owned())
       is Some(value) else {
       return (filter_default_length(property), false)
     }

@@ -57,7 +57,7 @@ fn preview_source(source : String, width : Int32, height : Int32) -> String {
         // CSS sizing alone does not scale the user space of a root SVG without
         // viewBox. Adapt only the sandbox copy to the Comparison Viewport.
         let offset = preview_element_insert_offset(source, event.span)
-        return "\{source.view(end_offset=offset)} viewBox=\"0 0 \{width} \{height}\"\{source.view(start_offset=offset)}"
+        return "\{source[:offset]} viewBox=\"0 0 \{width} \{height}\"\{source[offset:]}"
       }
       _ => ()
     }

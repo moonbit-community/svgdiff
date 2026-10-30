@@ -24,9 +24,9 @@ pub fn SolidColorParse::not_equal(Self, Self) -> Bool
 pub fn SolidColorParse::to_repr(Self) -> @debug.Repr
 
 pub(all) struct SrgbaColor {
-  red : Int
-  green : Int
-  blue : Int
+  red : Int32
+  green : Int32
+  blue : Int32
   alpha : Double
 } derive(Eq, @debug.Debug)
 pub fn SrgbaColor::equal(Self, Self) -> Bool

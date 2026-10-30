@@ -2,15 +2,15 @@
 package "Milky2018/svgdiff/engine/internal/rendered/ldr_flip"
 
 // Values
-pub fn flip_feature_filter_radius(Double) -> Int
+pub fn flip_feature_filter_radius(Double) -> Int32
 
-pub fn flip_response_radius(Double) -> Int
+pub fn flip_response_radius(Double) -> Int32
 
-pub fn flip_spatial_filter_radius(Double) -> Int
+pub fn flip_spatial_filter_radius(Double) -> Int32
 
-pub fn ldr_flip_error_map(Array[FlipLinearRgb], Array[FlipLinearRgb], Int, Int, Double) -> FlipErrorMap
+pub fn ldr_flip_error_map(Array[FlipLinearRgb], Array[FlipLinearRgb], Int32, Int32, Double) -> FlipErrorMap
 
-pub fn quantize_flip_u16(Double) -> Int
+pub fn quantize_flip_u16(Double) -> Int32
 
 // Errors
 
