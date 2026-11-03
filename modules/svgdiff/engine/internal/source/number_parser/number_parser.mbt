@@ -84,9 +84,7 @@ pub fn NumberParser::parse_number(self : NumberParser) -> Double? {
     }
   }
   let value = try
-    @string.parse_double(
-      self.data.view(start_offset=start, end_offset=self.position),
-    )
+    @string.parse_double(self.data.exact_view(start~, end=self.position))
   catch {
     _ => {
       self.position = start

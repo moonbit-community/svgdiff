@@ -106,15 +106,13 @@ pub fn parse_paint_url(source : String) -> ParsedPaintValue {
     value[cursor].unsafe_to_char() != ')' {
     return InvalidPaint
   }
-  let target = value
-    .view(start_offset=target_start, end_offset=target_end)
-    .to_owned()
+  let target = value.exact_view(start=target_start, end=target_end).to_owned()
   if target.any(character => ascii_reference_whitespace(character)) {
     return InvalidPaint
   }
   cursor += 1
   let remainder = value
-    .view(start_offset=cursor, end_offset=value.length())
+    .exact_view(start=cursor, end=value.length())
     .to_owned()
     .trim()
     .to_owned()
@@ -127,7 +125,7 @@ pub fn parse_paint_url(source : String) -> ParsedPaintValue {
     }
   }
   if target.length() > 1 && target.has_prefix("#") {
-    let id = target.view(start_offset=1, end_offset=target.length()).to_owned()
+    let id = target.exact_view(start=1, end=target.length()).to_owned()
     if id.find("#") is Some(_) {
       return InvalidPaint
     }

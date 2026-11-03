@@ -54,18 +54,18 @@ test "moving fill to an ancestor preserves resolved fill and changes provenance"
       assert_eq(after_declaration.authored_value, "red")
       assert_eq(
         before_source
-        .view(
-          start_offset=before_declaration.source_span.start_offset,
-          end_offset=before_declaration.source_span.end_offset,
+        .exact_view(
+          start=before_declaration.source_span.start_offset,
+          end=before_declaration.source_span.end_offset,
         )
         .to_owned(),
         "red",
       )
       assert_eq(
         after_source
-        .view(
-          start_offset=after_declaration.source_span.start_offset,
-          end_offset=after_declaration.source_span.end_offset,
+        .exact_view(
+          start=after_declaration.source_span.start_offset,
+          end=after_declaration.source_span.end_offset,
         )
         .to_owned(),
         "red",

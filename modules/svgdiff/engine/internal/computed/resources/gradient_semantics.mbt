@@ -479,7 +479,7 @@ pub fn same_document_gradient_target(
         )
         return None
       }
-      let id = value.view(start_offset=1).to_owned()
+      let id = value.exact_view(start=1).to_owned()
       match gradient_by_id(document, id) {
         Some(target) => Some(target)
         None => {

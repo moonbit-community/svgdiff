@@ -37,7 +37,7 @@ pub fn parse_marker_reference(source : String) -> MarkerReferenceParse {
     return InvalidMarkerReference
   }
   let mut inner = value
-    .view(start_offset=4, end_offset=value.length() - 1)
+    .exact_view(start=4, end=value.length() - 1)
     .to_owned()
     .trim()
     .to_owned()
@@ -47,7 +47,7 @@ pub fn parse_marker_reference(source : String) -> MarkerReferenceParse {
       (inner.has_prefix("\"") && inner.has_suffix("\""))
     ) {
     inner = inner
-      .view(start_offset=1, end_offset=inner.length() - 1)
+      .exact_view(start=1, end=inner.length() - 1)
       .to_owned()
       .trim()
       .to_owned()
@@ -55,7 +55,7 @@ pub fn parse_marker_reference(source : String) -> MarkerReferenceParse {
   if inner.length() <= 1 || !inner.has_prefix("#") {
     return InvalidMarkerReference
   }
-  let id = inner.view(start_offset=1, end_offset=inner.length()).to_owned()
+  let id = inner.exact_view(start=1, end=inner.length()).to_owned()
   if id.find("#") is Some(_) ||
     id.find(" ") is Some(_) ||
     id.find("\t") is Some(_) ||

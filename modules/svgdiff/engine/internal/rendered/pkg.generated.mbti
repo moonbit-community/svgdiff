@@ -11,7 +11,7 @@ import {
 // Values
 pub fn canonical_difference_rgba(@svg.Image, @svg.Image) -> Bytes?
 
-pub fn composite_linear_srgb_channel(Int, Double, Int) -> Double
+pub fn composite_linear_srgb_channel(Int32, Double, Int32) -> Double
 
 pub fn computed_canvas_perceptual_flip_evidence(Double) -> @model.CanvasPerceptualFlipEvidence
 
@@ -33,15 +33,15 @@ pub fn encode_flip_u16_base64(Array[Double]) -> String
 
 pub fn event_local_perceptual_color_evidence(@svg.Image, @svg.Image, Array[@model.DifferenceRegion], @model.PerceptualBackground) -> @model.PerceptualColorEvidence
 
-pub fn event_local_perceptual_flip_evidence(@svg.Image, @svg.Image, Array[@model.DifferenceRegion], @model.PerceptualBackground, @model.FlipViewingConditions, @model.FlipErrorThreshold?, Int, Int) -> PerceptualFlipComputation
+pub fn event_local_perceptual_flip_evidence(@svg.Image, @svg.Image, Array[@model.DifferenceRegion], @model.PerceptualBackground, @model.FlipViewingConditions, @model.FlipErrorThreshold?, Int32, Int32) -> PerceptualFlipComputation
 
 pub fn exact_pixel_options() -> @svgdiff-pixelmatch.Options
 
-pub fn expand_flip_bounds(FlipPixelBounds, Int, Int, Int) -> FlipPixelBounds
+pub fn expand_flip_bounds(FlipPixelBounds, Int32, Int32, Int32) -> FlipPixelBounds
 
-pub fn image_pixel_at(@svg.Image, Int) -> @svg.Color
+pub fn image_pixel_at(@svg.Image, Int32) -> @svg.Color
 
-pub fn image_pixel_count(@svg.Image) -> Int
+pub fn image_pixel_count(@svg.Image) -> Int32
 
 pub fn linear_premultiplied_rgba_squared_error(@svg.Color, @svg.Color) -> Double
 
@@ -57,15 +57,15 @@ pub fn not_computed_perceptual_flip_evidence(String) -> @model.PerceptualFlipEvi
 
 pub fn not_computed_rendered_evidence(String) -> @model.RenderedEvidence
 
-pub fn perceptual_flip_statistics(Array[Double], Array[Double], Int, @model.FlipErrorThreshold?) -> @model.PerceptualFlipStatistics
+pub fn perceptual_flip_statistics(Array[Double], Array[Double], Int32, @model.FlipErrorThreshold?) -> @model.PerceptualFlipStatistics
 
-pub fn pixel_in_regions(Int, Int, Array[@model.DifferenceRegion]) -> Bool
+pub fn pixel_in_regions(Int32, Int32, Array[@model.DifferenceRegion]) -> Bool
 
-pub fn pixels_differ(@svg.Image, @svg.Image, Int) -> Bool
+pub fn pixels_differ(@svg.Image, @svg.Image, Int32) -> Bool
 
 pub fn raw_rgba8_squared_error(@svg.Color, @svg.Color) -> Double
 
-pub fn render_product_document_to_image(@svg.SVGDocument, Int, Int) -> @svg.Image
+pub fn render_product_document_to_image(@svg.SVGDocument, Int32, Int32) -> @svg.Image
 
 pub fn rendered_difference(@svg.SVGDocument, @svg.SVGDocument, @model.ComparisonProfile) -> @model.RenderedMagnitude
 
@@ -73,7 +73,7 @@ pub fn rendered_image_difference(@svg.Image, @svg.Image) -> @model.RenderedMagni
 
 pub fn selected_raw_difference_bounds(@svg.Image, @svg.Image, Array[@model.DifferenceRegion]) -> FlipPixelBounds?
 
-pub fn srgb8_to_linear(Int) -> Double
+pub fn srgb8_to_linear(Int32) -> Double
 
 pub fn to_pixelmatch_image(@svg.Image) -> @svgdiff-pixelmatch.Image
 
@@ -93,10 +93,10 @@ pub(all) struct CanonicalRasterPair {
 }
 
 pub(all) struct FlipPixelBounds {
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
+  pixel_x : Int32
+  pixel_y : Int32
+  pixel_width : Int32
+  pixel_height : Int32
 }
 
 pub(all) struct OklabColor {
@@ -107,8 +107,8 @@ pub(all) struct OklabColor {
 
 pub(all) struct PerceptualFlipComputation {
   evidence : @model.PerceptualFlipEvidence
-  output_pixels : Int
-  convolution_samples : Int
+  output_pixels : Int32
+  convolution_samples : Int32
 }
 
 // Type aliases

@@ -20,7 +20,7 @@ pub fn compare_with_resources(String, String, @model.ComparisonProfile, Resource
 // Errors
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  CheckpointBudgetExceeded(max_checkpoints~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int32)
 } derive(Eq, @debug.Debug)
 pub fn ComparisonInterrupted::equal(Self, Self) -> Bool
 pub fn ComparisonInterrupted::not_equal(Self, Self) -> Bool
@@ -34,7 +34,7 @@ pub(all) struct ComparisonArtifact {
 
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
-  max_checkpoints : Int?
+  max_checkpoints : Int32?
 }
 pub fn ComparisonControl::unlimited() -> Self
 

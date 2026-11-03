@@ -203,11 +203,7 @@ fn parse_transform_name(parser : @number_parser.NumberParser) -> String? {
   if parser.position == start {
     None
   } else {
-    Some(
-      parser.data
-      .view(start_offset=start, end_offset=parser.position)
-      .to_owned(),
-    )
+    Some(parser.data.exact_view(start~, end=parser.position).to_owned())
   }
 }
 

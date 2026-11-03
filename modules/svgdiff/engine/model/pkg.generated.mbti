@@ -10,8 +10,8 @@ pub fn empty_visual_scene_analysis() -> VisualSceneAnalysis
 pub(all) struct AlignmentEvidence {
   score_kind : String
   selected_score : Double?
-  candidate_count : Int
-  equal_score_candidate_count : Int
+  candidate_count : Int32
+  equal_score_candidate_count : Int32
   ambiguity : String
   confidence : Double?
   confidence_status : String
@@ -76,8 +76,8 @@ pub fn ChangedFact::to_json(Self) -> Json
 pub impl ToJson for ChangedFact
 
 pub(all) struct ComparisonProfile {
-  viewport_width : Int
-  viewport_height : Int
+  viewport_width : Int32
+  viewport_height : Int32
   perceptual_background : PerceptualBackground?
   flip_viewing_conditions : FlipViewingConditions?
   flip_error_threshold : FlipErrorThreshold?
@@ -142,15 +142,15 @@ pub impl ToJson for DifferenceMagnitude
 pub(all) struct DifferenceRegion {
   id : String
   source : String
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
+  pixel_x : Int32
+  pixel_y : Int32
+  pixel_width : Int32
+  pixel_height : Int32
   css_x : Double
   css_y : Double
   css_width : Double
   css_height : Double
-  changed_pixels : Int
+  changed_pixels : Int32
   viewport_fraction : Double
   cause_envelope : CauseEnvelope
 } derive(ToJson)
@@ -195,7 +195,7 @@ pub(all) struct ImpactAssessment {
   status : String
   calibration_status : String
   input_fields : Array[String]
-  candidate_event_count : Int
+  candidate_event_count : Int32
   frontier_relation : String
   frontier_groups : Array[ImpactFrontierGroup]
   domination_witnesses : Array[ImpactDominationWitness]
@@ -232,12 +232,12 @@ pub fn ImpactMeasurement::not_equal(Self, Self) -> Bool
 pub fn ImpactMeasurement::to_json(Self) -> Json
 
 pub(all) struct IntrinsicRasterMagnitude {
-  before_width : Int
-  before_height : Int
-  after_width : Int
-  after_height : Int
-  compared_pixels : Int?
-  changed_pixels : Int?
+  before_width : Int32
+  before_height : Int32
+  after_width : Int32
+  after_height : Int32
+  compared_pixels : Int32?
+  changed_pixels : Int32?
   changed_pixel_fraction : Double?
   rgba8_rmse : Double?
   linear_premultiplied_rgba_rmse : Double?
@@ -246,8 +246,8 @@ pub fn IntrinsicRasterMagnitude::to_json(Self) -> Json
 
 pub(all) struct PaintedBoundaryDisplacementMagnitude {
   method_id : String
-  before_sample_count : Int
-  after_sample_count : Int
+  before_sample_count : Int32
+  after_sample_count : Int32
   mean_css_px : Double
   p95_css_px : Double
   max_css_px : Double
@@ -269,16 +269,16 @@ pub fn PaintedCoverageDifferenceMagnitude::not_equal(Self, Self) -> Bool
 pub fn PaintedCoverageDifferenceMagnitude::to_json(Self) -> Json
 
 pub struct PerceptualBackground {
-  red : Int
-  green : Int
-  blue : Int
+  red : Int32
+  green : Int32
+  blue : Int32
 } derive(Eq, ToJson)
-pub fn PerceptualBackground::blue(Self) -> Int
+pub fn PerceptualBackground::blue(Self) -> Int32
 pub fn PerceptualBackground::equal(Self, Self) -> Bool
-pub fn PerceptualBackground::green(Self) -> Int
+pub fn PerceptualBackground::green(Self) -> Int32
 pub fn PerceptualBackground::not_equal(Self, Self) -> Bool
 pub fn PerceptualBackground::parse_srgb(String) -> Self?
-pub fn PerceptualBackground::red(Self) -> Int
+pub fn PerceptualBackground::red(Self) -> Int32
 pub fn PerceptualBackground::to_json(Self) -> Json
 
 pub(all) struct PerceptualColorEvidence {
@@ -292,7 +292,7 @@ pub fn PerceptualColorEvidence::to_json(Self) -> Json
 
 pub(all) struct PerceptualColorMagnitude {
   method_id : String
-  sample_count : Int
+  sample_count : Int32
   mean_delta_e_ok : Double
 } derive(Eq, ToJson)
 pub fn PerceptualColorMagnitude::equal(Self, Self) -> Bool
@@ -301,7 +301,7 @@ pub fn PerceptualColorMagnitude::to_json(Self) -> Json
 
 pub(all) struct PerceptualFlipAreaAboveThreshold {
   threshold : Double
-  pixel_count : Int
+  pixel_count : Int32
   canvas_fraction : Double
 } derive(Eq, ToJson)
 pub fn PerceptualFlipAreaAboveThreshold::equal(Self, Self) -> Bool
@@ -320,10 +320,10 @@ pub fn PerceptualFlipEvidence::to_json(Self) -> Json
 
 pub(all) struct PerceptualFlipMap {
   method_id : String
-  pixel_x : Int
-  pixel_y : Int
-  pixel_width : Int
-  pixel_height : Int
+  pixel_x : Int32
+  pixel_y : Int32
+  pixel_width : Int32
+  pixel_height : Int32
   encoding : String
   quantization_step : Double
   values_base64 : String
@@ -334,9 +334,9 @@ pub fn PerceptualFlipMap::to_json(Self) -> Json
 
 pub(all) struct PerceptualFlipStatistics {
   method_id : String
-  canvas_pixel_count : Int
-  event_region_sample_count : Int
-  response_sample_count : Int
+  canvas_pixel_count : Int32
+  event_region_sample_count : Int32
+  response_sample_count : Int32
   canvas_mean : Double
   event_region_mean : Double
   response_p95 : Double
@@ -349,7 +349,7 @@ pub fn PerceptualFlipStatistics::to_json(Self) -> Json
 pub impl ToJson for PerceptualFlipStatistics
 
 pub(all) struct PresenceMagnitude {
-  affected_entity_count : Int
+  affected_entity_count : Int32
   bounds_area_css_px2 : Double
   bounds_viewport_fraction : Double
   painted_area_css_px2 : Double
@@ -367,7 +367,7 @@ pub(all) struct RenderedEvidence {
 pub fn RenderedEvidence::to_json(Self) -> Json
 
 pub(all) struct RenderedMagnitude {
-  changed_pixels : Int
+  changed_pixels : Int32
   changed_pixel_fraction : Double
   rgba8_rmse : Double
   linear_premultiplied_rgba_rmse : Double
@@ -382,8 +382,8 @@ pub(all) struct RendererCapabilityGap {
 pub fn RendererCapabilityGap::to_json(Self) -> Json
 
 pub(all) struct ReportSourceSpan {
-  start_offset : Int
-  end_offset : Int
+  start_offset : Int32
+  end_offset : Int32
 } derive(ToJson)
 pub fn ReportSourceSpan::to_json(Self) -> Json
 
@@ -394,7 +394,7 @@ pub(all) struct ResolvedVisualFact {
   resolution : String
   declaration_owner_id : String?
   declaration : DeclaredVisualFact?
-  inheritance_depth : Int
+  inheritance_depth : Int32
 } derive(ToJson)
 pub fn ResolvedVisualFact::to_json(Self) -> Json
 
@@ -446,7 +446,7 @@ pub(all) struct SubjectInstanceContext {
 pub fn SubjectInstanceContext::to_json(Self) -> Json
 
 pub(all) struct SubjectReference {
-  source_index : Int
+  source_index : Int32
   kind : String
   authored_id : String?
   instance_context : SubjectInstanceContext?
@@ -509,9 +509,9 @@ pub(all) struct TransformTranslationMagnitude {
 pub fn TransformTranslationMagnitude::to_json(Self) -> Json
 
 pub(all) struct VisualDifferenceCoverage {
-  effective_difference_count : Int
-  assigned_difference_count : Int
-  unresolved_difference_count : Int
+  effective_difference_count : Int32
+  assigned_difference_count : Int32
+  unresolved_difference_count : Int32
   unresolved_domains : Array[VisualEvidenceDomain]
 }
 
@@ -531,7 +531,7 @@ pub(all) struct VisualEvidenceCoverage {
 
 pub(all) struct VisualEvidenceDomain {
   domain : String
-  count : Int
+  count : Int32
 }
 
 pub(all) struct VisualObjectAlignment {
@@ -561,9 +561,9 @@ pub(all) struct VisualObjectChange {
 }
 
 pub(all) struct VisualObjectChangeCoverage {
-  object_change_count : Int
-  assigned_object_change_count : Int
-  residual_object_change_count : Int
+  object_change_count : Int32
+  assigned_object_change_count : Int32
+  residual_object_change_count : Int32
   residual_kinds : Array[VisualEvidenceDomain]
 }
 
@@ -605,8 +605,8 @@ pub(all) struct VisualSceneChange {
   scope : String
   object_change_ids : Array[String]
   changed_fact_ids : Array[String]
-  effect_count : Int
-  affected_subject_count : Int
+  effect_count : Int32
+  affected_subject_count : Int32
 }
 
 pub(all) struct VisualSceneSummary {
@@ -617,10 +617,10 @@ pub(all) struct VisualSceneSummary {
   layout : String
   style : String
   representation : String
-  before_object_count : Int
-  after_object_count : Int
-  before_relation_count : Int
-  after_relation_count : Int
+  before_object_count : Int32
+  after_object_count : Int32
+  before_relation_count : Int32
+  after_relation_count : Int32
 }
 
 // Type aliases

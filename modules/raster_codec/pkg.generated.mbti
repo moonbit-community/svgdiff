@@ -6,9 +6,9 @@ import {
 }
 
 // Values
-pub fn decode_jpeg_bounded(Bytes, max_dimension~ : Int, max_pixels~ : Int) -> ImageData raise DecodeError
+pub fn decode_jpeg_bounded(Bytes, max_dimension~ : Int32, max_pixels~ : Int32) -> ImageData raise DecodeError
 
-pub fn decode_png_bounded(Bytes, max_dimension~ : Int, max_pixels~ : Int) -> ImageData raise DecodeError
+pub fn decode_png_bounded(Bytes, max_dimension~ : Int32, max_pixels~ : Int32) -> ImageData raise DecodeError
 
 pub fn inspect_jpeg_color_metadata(Bytes) -> RasterColorMetadata raise DecodeError
 
@@ -29,8 +29,8 @@ pub impl Show for DecodeError
 
 // Types and methods
 pub(all) struct ImageData {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   data : Bytes
 } derive(Eq)
 pub fn ImageData::equal(Self, Self) -> Bool
@@ -46,8 +46,8 @@ pub fn RasterColorCondition::not_equal(Self, Self) -> Bool
 pub fn RasterColorCondition::to_repr(Self) -> @debug.Repr
 
 pub(all) struct RasterColorMetadata {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   condition : RasterColorCondition
 } derive(Eq, @debug.Debug)
 pub fn RasterColorMetadata::equal(Self, Self) -> Bool

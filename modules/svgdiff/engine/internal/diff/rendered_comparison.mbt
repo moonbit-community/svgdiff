@@ -14,10 +14,7 @@
 
 ///|
 fn source_slice(input : String, span : @xml.SourceSpan) -> String {
-  let view = input.view(
-    start_offset=span.start.offset,
-    end_offset=span.end.offset,
-  )
+  let view = input.exact_view(start=span.start.offset, end=span.end.offset)
   "\{view}"
 }
 

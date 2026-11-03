@@ -59,7 +59,7 @@ pub fn local_href_target(value : String) -> String? {
   }
   Some(
     decode_local_fragment(
-      normalized.view(start_offset=1, end_offset=normalized.length()).to_owned(),
+      normalized.exact_view(start=1, end=normalized.length()).to_owned(),
     ),
   )
 }
@@ -105,7 +105,7 @@ pub fn parse_resource_locator(value : String) -> ParsedResourceLocator {
       kind: "local",
       locator,
       target_id: Some(
-        decode_local_fragment(locator.view(start_offset=1).to_owned()),
+        decode_local_fragment(locator.exact_view(start=1).to_owned()),
       ),
     }
   }
@@ -133,13 +133,13 @@ pub fn resource_url_locators(value : String) -> Array[ParsedResourceLocator] {
     if cursor >= value.length() {
       locators.push({
         kind: "invalid",
-        locator: value.view(start_offset=start).to_owned().trim().to_owned(),
+        locator: value.exact_view(start~).to_owned().trim().to_owned(),
         target_id: None,
       })
       break
     }
     let mut locator = value
-      .view(start_offset=start, end_offset=cursor)
+      .exact_view(start~, end=cursor)
       .to_owned()
       .trim()
       .to_owned()
@@ -149,7 +149,7 @@ pub fn resource_url_locators(value : String) -> Array[ParsedResourceLocator] {
         (locator.has_prefix("\"") && locator.has_suffix("\""))
       ) {
       locator = locator
-        .view(start_offset=1, end_offset=locator.length() - 1)
+        .exact_view(start=1, end=locator.length() - 1)
         .to_owned()
         .trim()
         .to_owned()

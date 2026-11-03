@@ -47,7 +47,7 @@ pub fn parse_svg_length(
   if number.is_nan() || number.is_inf() {
     return None
   }
-  let unit = value.view(start_offset=parser.position).to_owned().to_lower()
+  let unit = value.exact_view(start=parser.position).to_owned().to_lower()
   let multiplier = match unit {
     "" | "px" => 1.0
     "in" => 96.0
@@ -88,7 +88,7 @@ pub fn parse_svg_length_at(
     }
   }
   parse_svg_length(
-    parser.data.view(start_offset=start, end_offset=parser.position).to_owned(),
+    parser.data.exact_view(start~, end=parser.position).to_owned(),
     direction,
     viewport,
     profile,

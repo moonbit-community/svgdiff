@@ -29,7 +29,7 @@ fn svg_nonvisual_content_element(name : @xml.XmlName) -> Bool {
 
 ///|
 fn report_span_slice(input : String, span : ReportSourceSpan) -> String {
-  "\{input.view(start_offset=span.start_offset, end_offset=span.end_offset)}"
+  "\{input.exact_view(start=span.start_offset, end=span.end_offset)}"
 }
 
 ///|

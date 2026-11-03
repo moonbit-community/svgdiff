@@ -48,7 +48,7 @@ fn parsed_effect_reference(source : String) -> (String, String?) {
     return ("invalid", None)
   }
   let mut locator = value
-    .view(start_offset=4, end_offset=value.length() - 1)
+    .exact_view(start=4, end=value.length() - 1)
     .to_owned()
     .trim()
     .to_owned()
@@ -58,13 +58,13 @@ fn parsed_effect_reference(source : String) -> (String, String?) {
       (locator.has_prefix("\"") && locator.has_suffix("\""))
     ) {
     locator = locator
-      .view(start_offset=1, end_offset=locator.length() - 1)
+      .exact_view(start=1, end=locator.length() - 1)
       .to_owned()
       .trim()
       .to_owned()
   }
   if locator.length() > 1 && locator.has_prefix("#") {
-    let id = decode_local_fragment(locator.view(start_offset=1).to_owned())
+    let id = decode_local_fragment(locator.exact_view(start=1).to_owned())
     if id != "" &&
       id.find("#") is None &&
       id.find(" ") is None &&

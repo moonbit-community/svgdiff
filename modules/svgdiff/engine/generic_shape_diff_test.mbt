@@ -391,18 +391,18 @@ test "matched stylesheet declarations reach every generic aligned subject" {
     assert_eq(after_fact.authored_value, "blue")
     assert_eq(
       before
-      .view(
-        start_offset=before_fact.source_span.start_offset,
-        end_offset=before_fact.source_span.end_offset,
+      .exact_view(
+        start=before_fact.source_span.start_offset,
+        end=before_fact.source_span.end_offset,
       )
       .to_owned(),
       "red",
     )
     assert_eq(
       after
-      .view(
-        start_offset=after_fact.source_span.start_offset,
-        end_offset=after_fact.source_span.end_offset,
+      .exact_view(
+        start=after_fact.source_span.start_offset,
+        end=after_fact.source_span.end_offset,
       )
       .to_owned(),
       "blue",

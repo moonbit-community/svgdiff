@@ -14,7 +14,7 @@ pub fn attach_cause_envelopes(@model.StructuredReport) -> @model.StructuredRepor
 
 pub fn attach_impact_assessment(@model.StructuredReport) -> @model.StructuredReport
 
-pub fn build_resource_dependency_graph(String, Int) -> ResourceDependencyGraph raise
+pub fn build_resource_dependency_graph(String, Int32) -> ResourceDependencyGraph raise
 
 pub fn build_subject_influence_index(Array[@model.ChangedFact]) -> SubjectInfluenceIndex
 
@@ -32,7 +32,7 @@ pub fn influence_operation_for_domain(String) -> InfluenceOperation
 
 pub fn reference_cycle_diagnostic(ResourceDependencyGraph, String) -> @model.Diagnostic?
 
-pub fn reference_expansion_diagnostic(ResourceDependencyGraph, String, Int) -> @model.Diagnostic?
+pub fn reference_expansion_diagnostic(ResourceDependencyGraph, String, Int32) -> @model.Diagnostic?
 
 pub fn reference_safety_diagnostic(String, String, @resource_model.ResourceLimits) -> @model.Diagnostic? raise
 
@@ -60,15 +60,15 @@ pub(all) enum InfluenceOperation {
 
 pub(all) struct ReferenceDefinition {
   id : String
-  node_indices : Array[Int]
+  node_indices : Array[Int32]
   resource_kinds : Array[String]
-  mut descendant_elements : Int
-  edge_indices : Array[Int]
+  mut descendant_elements : Int32
+  edge_indices : Array[Int32]
 }
 
 pub(all) struct ResourceDependencyEdge {
-  source_node_index : Int
-  owner_definition_indices : Array[Int]
+  source_node_index : Int32
+  owner_definition_indices : Array[Int32]
   relation : String
   locator_kind : String
   locator : String
@@ -82,22 +82,22 @@ pub(all) struct ResourceDependencyGraph {
   nodes : Array[ResourceDependencyNode]
   edges : Array[ResourceDependencyEdge]
   definitions : Array[ReferenceDefinition]
-  indices : Map[String, Int]
-  global_use_edge_indices : Array[Int]
-  mut total_elements : Int
-  mut edge_instances : Int
+  indices : Map[String, Int32]
+  global_use_edge_indices : Array[Int32]
+  mut total_elements : Int32
+  mut edge_instances : Int32
   mut edge_limit_span : @xml.SourceSpan?
 }
-pub fn ResourceDependencyGraph::definition_index(Self, String, String, Int) -> Int
+pub fn ResourceDependencyGraph::definition_index(Self, String, String, Int32) -> Int32
 pub fn ResourceDependencyGraph::new() -> Self
 
 pub(all) struct ResourceDependencyNode {
   subject_id : String
   kind : String
   authored_id : String?
-  source_offset : Int
+  source_offset : Int32
   span : @xml.SourceSpan
-  definition_index : Int?
+  definition_index : Int32?
 }
 
 pub(all) struct SubjectInfluenceEntry {

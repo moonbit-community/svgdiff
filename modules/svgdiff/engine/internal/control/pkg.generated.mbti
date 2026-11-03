@@ -10,7 +10,7 @@ import {
 // Errors
 pub(all) suberror ComparisonInterrupted {
   Cancelled
-  CheckpointBudgetExceeded(max_checkpoints~ : Int)
+  CheckpointBudgetExceeded(max_checkpoints~ : Int32)
 } derive(Eq, @debug.Debug)
 pub fn ComparisonInterrupted::equal(Self, Self) -> Bool
 pub fn ComparisonInterrupted::not_equal(Self, Self) -> Bool
@@ -19,13 +19,13 @@ pub fn ComparisonInterrupted::to_repr(Self) -> @debug.Repr
 // Types and methods
 pub(all) struct ComparisonControl {
   should_cancel : () -> Bool
-  max_checkpoints : Int?
+  max_checkpoints : Int32?
 }
 pub fn ComparisonControl::unlimited() -> Self
 
 pub(all) struct ComparisonGuard {
   control : ComparisonControl
-  mut completed_checkpoints : Int
+  mut completed_checkpoints : Int32
 }
 pub fn ComparisonGuard::checkpoint(Self) -> Unit raise ComparisonInterrupted
 pub fn ComparisonGuard::new(ComparisonControl) -> Self
