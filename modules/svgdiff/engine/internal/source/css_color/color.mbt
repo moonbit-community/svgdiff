@@ -14,21 +14,23 @@
 
 ///|
 /// A deterministic sRGB solid color with straight alpha.
+#derive(Eq, Debug)
 pub(all) struct SrgbaColor {
   red : Int32
   green : Int32
   blue : Int32
   alpha : Double
-} derive(Eq, Debug)
+}
 
 ///|
 /// The strict result of parsing one supported SVG solid-color token.
+#derive(Eq, Debug)
 pub(all) enum SolidColorParse {
   Resolved(SrgbaColor)
   CurrentColor
   SystemColor(String)
   Invalid
-} derive(Eq, Debug)
+}
 
 ///|
 fn clamp_unit(value : Double) -> Double {

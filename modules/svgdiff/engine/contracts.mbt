@@ -99,10 +99,11 @@ pub(all) struct ComparisonArtifact {
 }
 
 ///|
+#derive(Debug, Eq)
 pub(all) suberror ComparisonInterrupted {
   Cancelled
   CheckpointBudgetExceeded(max_checkpoints~ : Int32)
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend ComparisonInterrupted with @moonbitlang/core/debug.Debug::{to_repr}

@@ -13,22 +13,24 @@ pub fn parse_solid_color(String) -> SolidColorParse
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) enum SolidColorParse {
   Resolved(SrgbaColor)
   CurrentColor
   SystemColor(String)
   Invalid
-} derive(Eq, @debug.Debug)
+}
 pub fn SolidColorParse::equal(Self, Self) -> Bool
 pub fn SolidColorParse::not_equal(Self, Self) -> Bool
 pub fn SolidColorParse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct SrgbaColor {
   red : Int32
   green : Int32
   blue : Int32
   alpha : Double
-} derive(Eq, @debug.Debug)
+}
 pub fn SrgbaColor::equal(Self, Self) -> Bool
 pub fn SrgbaColor::not_equal(Self, Self) -> Bool
 pub fn SrgbaColor::renderer_hex(Self) -> String

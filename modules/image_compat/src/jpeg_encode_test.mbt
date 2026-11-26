@@ -88,7 +88,7 @@ test "jpeg_encode invalid dimensions and data length" {
   let img_invalid_dim : @svgdiff-image-compat.ImageData = {
     width: 0,
     height: 1,
-    data: Bytes::new(0),
+    data: Bytes::make(0, b'\x00'),
   }
   try @svgdiff-image-compat.encode_jpeg(img_invalid_dim) catch {
     _ => ()
@@ -99,7 +99,7 @@ test "jpeg_encode invalid dimensions and data length" {
   let img_invalid_data : @svgdiff-image-compat.ImageData = {
     width: 2,
     height: 2,
-    data: Bytes::new(4),
+    data: Bytes::make(4, b'\x00'),
   }
   try @svgdiff-image-compat.encode_jpeg(img_invalid_data) catch {
     _ => ()

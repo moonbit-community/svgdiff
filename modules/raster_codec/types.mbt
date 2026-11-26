@@ -13,25 +13,28 @@
 // limitations under the License.
 
 ///|
+#derive(Eq)
 pub(all) struct ImageData {
   width : Int32
   height : Int32
   data : Bytes
-} derive(Eq)
+}
 
 ///|
+#derive(Debug, Eq)
 pub(all) enum RasterColorCondition {
   SrgbCompatible
   EmbeddedColorProfile(String)
   HdrOrHighBitDepth(String)
-} derive(Debug, Eq)
+}
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct RasterColorMetadata {
   width : Int32
   height : Int32
   condition : RasterColorCondition
-} derive(Debug, Eq)
+}
 
 ///|
 priv enum ColorType {

@@ -117,11 +117,12 @@ pub(all) struct SourceViewportResolution {
   complete : Bool
 }
 
+#derive(Eq)
 pub(all) enum SvgLengthDirection {
   Horizontal
   Vertical
   Unspecified
-} derive(Eq)
+}
 pub fn SvgLengthDirection::equal(Self, Self) -> Bool
 pub fn SvgLengthDirection::not_equal(Self, Self) -> Bool
 

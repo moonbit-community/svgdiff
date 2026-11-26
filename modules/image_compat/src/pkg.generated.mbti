@@ -49,17 +49,19 @@ pub fn EncodeError::to_string(Self) -> String
 pub impl Show for EncodeError
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub enum ColorType {
   Grayscale
   Rgb
   Indexed
   GrayscaleAlpha
   Rgba
-} derive(Eq, @debug.Debug)
+}
 pub fn ColorType::equal(Self, Self) -> Bool
 pub fn ColorType::not_equal(Self, Self) -> Bool
 pub fn ColorType::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct IhdrData {
   width : Int32
   height : Int32
@@ -68,42 +70,46 @@ pub(all) struct IhdrData {
   compression : Int32
   filter : Int32
   interlace : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn IhdrData::equal(Self, Self) -> Bool
 pub fn IhdrData::not_equal(Self, Self) -> Bool
 pub fn IhdrData::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ImageData {
   width : Int32
   height : Int32
   data : Bytes
-} derive(Eq, @debug.Debug)
+}
 pub fn ImageData::equal(Self, Self) -> Bool
 pub fn ImageData::not_equal(Self, Self) -> Bool
 pub fn ImageData::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ImageFormat {
   Png
   Bmp
-} derive(Eq, @debug.Debug)
+}
 pub fn ImageFormat::equal(Self, Self) -> Bool
 pub fn ImageFormat::not_equal(Self, Self) -> Bool
 pub fn ImageFormat::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ResizeMethod {
   Nearest
   Bilinear
   Bicubic
-} derive(Eq, @debug.Debug)
+}
 pub fn ResizeMethod::equal(Self, Self) -> Bool
 pub fn ResizeMethod::not_equal(Self, Self) -> Bool
 pub fn ResizeMethod::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct StreamImageInfo {
   format : ImageFormat
   width : Int32
   height : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn StreamImageInfo::equal(Self, Self) -> Bool
 pub fn StreamImageInfo::not_equal(Self, Self) -> Bool
 pub fn StreamImageInfo::to_repr(Self) -> @debug.Repr

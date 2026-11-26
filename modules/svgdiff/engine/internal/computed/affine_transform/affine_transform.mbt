@@ -13,6 +13,7 @@
 // limitations under the License.
 
 ///|
+#derive(Eq)
 pub(all) struct AffineTransform {
   a : Double
   b : Double
@@ -20,7 +21,7 @@ pub(all) struct AffineTransform {
   d : Double
   e : Double
   f : Double
-} derive(Eq)
+}
 
 ///|
 pub(all) struct NormalizedTransformList {

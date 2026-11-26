@@ -123,7 +123,7 @@ test "decode_bmp invalid signature" {
 
 ///|
 test "decode_bmp too short" {
-  let bmp = Bytes::new(10)
+  let bmp = Bytes::make(10, b'\x00')
   let mut got_error = false
   try {
     let _ = @svgdiff-image-compat.decode_bmp(bmp)

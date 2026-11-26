@@ -17,24 +17,27 @@
 ///
 /// `status` is `equivalent`, `different`, `indeterminate`, or
 /// `not_applicable`; `reason_code` and Diagnostic references explain why.
+#derive(ToJson)
 pub(all) struct ComputedRelation {
   status : String
   reason_code : String
   missing_side : String?
   diagnostic_ids : Array[String]
-} derive(ToJson)
+}
 
 ///|
 /// Continuous canonical raster measurements for one rendered outcome.
+#derive(ToJson)
 pub(all) struct RenderedMagnitude {
   changed_pixels : Int32
   changed_pixel_fraction : Double
   rgba8_rmse : Double
   linear_premultiplied_rgba_rmse : Double
-} derive(ToJson)
+}
 
 ///|
 /// Intrinsic decoded-raster comparison, independent of final SVG compositing.
+#derive(ToJson)
 pub(all) struct IntrinsicRasterMagnitude {
   before_width : Int32
   before_height : Int32
@@ -45,27 +48,30 @@ pub(all) struct IntrinsicRasterMagnitude {
   changed_pixel_fraction : Double?
   rgba8_rmse : Double?
   linear_premultiplied_rgba_rmse : Double?
-} derive(ToJson)
+}
 
 ///|
 /// Displayed-color magnitude for one selected rendered outcome after explicit
 /// background compositing.
+#derive(ToJson, Eq)
 pub(all) struct PerceptualColorMagnitude {
   method_id : String
   sample_count : Int32
   mean_delta_e_ok : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Availability and optional event-local perceptual-color magnitude.
+#derive(ToJson, Eq)
 pub(all) struct PerceptualColorEvidence {
   status : String
   reason_code : String?
   magnitude : PerceptualColorMagnitude?
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Deterministic quantized LDR-FLIP map for one selected rendered outcome.
+#derive(ToJson, Eq)
 pub(all) struct PerceptualFlipMap {
   method_id : String
   pixel_x : Int32
@@ -75,18 +81,20 @@ pub(all) struct PerceptualFlipMap {
   encoding : String
   quantization_step : Double
   values_base64 : String
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Explicit-threshold spatial extent for one event-local LDR-FLIP response.
+#derive(ToJson, Eq)
 pub(all) struct PerceptualFlipAreaAboveThreshold {
   threshold : Double
   pixel_count : Int32
   canvas_fraction : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Separate pooled domains over one unquantized LDR-FLIP map.
+#derive(Eq)
 pub(all) struct PerceptualFlipStatistics {
   method_id : String
   canvas_pixel_count : Int32
@@ -97,7 +105,7 @@ pub(all) struct PerceptualFlipStatistics {
   response_p95 : Double
   response_maximum : Double
   area_above_threshold : PerceptualFlipAreaAboveThreshold?
-} derive(Eq)
+}
 
 ///|
 pub impl ToJson for PerceptualFlipStatistics with fn to_json(self) {
@@ -118,58 +126,64 @@ pub impl ToJson for PerceptualFlipStatistics with fn to_json(self) {
 
 ///|
 /// Availability and optional event-local LDR-FLIP map.
+#derive(ToJson, Eq)
 pub(all) struct PerceptualFlipEvidence {
   status : String
   reason_code : String?
   map : PerceptualFlipMap?
   statistics : PerceptualFlipStatistics?
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Availability and optional magnitude of canonical rendered evidence.
 ///
 /// A computed zero magnitude is distinct from `not_computed`.
+#derive(ToJson)
 pub(all) struct RenderedEvidence {
   status : String
   reason_code : String?
   magnitude : RenderedMagnitude?
   perceptual_color : PerceptualColorEvidence
   perceptual_flip : PerceptualFlipEvidence
-} derive(ToJson)
+}
 
 ///|
 /// Availability and comparison-wide LDR-FLIP mean.
+#derive(ToJson)
 pub(all) struct CanvasPerceptualFlipEvidence {
   status : String
   reason_code : String?
   method_id : String?
   canvas_mean : Double?
-} derive(ToJson)
+}
 
 ///|
 /// Measurements computed once from the final before and after canvases.
+#derive(ToJson)
 pub(all) struct CanvasOutcome {
   status : String
   reason_code : String?
   magnitude : RenderedMagnitude?
   perceptual_flip : CanvasPerceptualFlipEvidence
-} derive(ToJson)
+}
 
 ///|
 /// Conservative Changed Fact candidates for one Difference Region.
 ///
 /// A `sound_overapproximation` contains every actual changed cause within
 /// complete analysis coverage, but may contain false positives.
+#derive(ToJson)
 pub(all) struct CauseEnvelope {
   guarantee : String
   coverage : String
   fallback_scope : String
   candidate_changed_fact_ids : Array[String]
   diagnostic_ids : Array[String]
-} derive(ToJson)
+}
 
 ///|
 /// Pixel-space and CSS-space localization of one visual outcome component.
+#derive(ToJson)
 pub(all) struct DifferenceRegion {
   id : String
   source : String
@@ -184,20 +198,22 @@ pub(all) struct DifferenceRegion {
   changed_pixels : Int32
   viewport_fraction : Double
   cause_envelope : CauseEnvelope
-} derive(ToJson)
+}
 
 ///|
 /// Numeric footprint of inserted or deleted visual subjects.
+#derive(ToJson)
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int32
   bounds_area_css_px2 : Double
   bounds_viewport_fraction : Double
   painted_area_css_px2 : Double
   painted_viewport_fraction : Double
-} derive(ToJson)
+}
 
 ///|
 /// Viewport-space translation change and its Euclidean CSS-pixel magnitude.
+#derive(ToJson)
 pub(all) struct TransformTranslationMagnitude {
   before_x_css_px : Double
   before_y_css_px : Double
@@ -206,44 +222,48 @@ pub(all) struct TransformTranslationMagnitude {
   delta_x_css_px : Double
   delta_y_css_px : Double
   norm_css_px : Double
-} derive(ToJson)
+}
 
 ///|
 /// Canonical paired rotation values and shortest signed angular change.
+#derive(ToJson)
 pub(all) struct TransformRotationMagnitude {
   before_degrees : Double
   after_degrees : Double
   signed_delta_degrees : Double
   abs_delta_degrees : Double
-} derive(ToJson)
+}
 
 ///|
 /// Canonical signed axis scales and their largest absolute paired delta.
+#derive(ToJson)
 pub(all) struct TransformScaleMagnitude {
   before_x : Double
   before_y : Double
   after_x : Double
   after_y : Double
   max_abs_delta : Double
-} derive(ToJson)
+}
 
 ///|
 /// Canonical paired X-skew values and shortest signed angular change.
+#derive(ToJson)
 pub(all) struct TransformSkewMagnitude {
   before_degrees : Double
   after_degrees : Double
   signed_delta_degrees : Double
   abs_delta_degrees : Double
-} derive(ToJson)
+}
 
 ///|
 /// Exact singular linear transforms retained without a coefficient score.
+#derive(ToJson)
 pub(all) struct TransformResidualMagnitude {
   before_matrix : Array[Double]
   after_matrix : Array[Double]
   before_determinant : Double
   after_determinant : Double
-} derive(ToJson)
+}
 
 ///|
 /// Tagged raw magnitude for one canonical transform-effect domain.
@@ -307,6 +327,7 @@ pub impl ToJson for TransformEffectMagnitude with fn to_json(self) {
 
 ///|
 /// Symmetric nearest-boundary statistics from the pinned renderer's alpha support.
+#derive(ToJson, Eq)
 pub(all) struct PaintedBoundaryDisplacementMagnitude {
   method_id : String
   before_sample_count : Int32
@@ -314,10 +335,11 @@ pub(all) struct PaintedBoundaryDisplacementMagnitude {
   mean_css_px : Double
   p95_css_px : Double
   max_css_px : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Symmetric alpha-only isolated painted-coverage comparison.
+#derive(ToJson, Eq)
 pub(all) struct PaintedCoverageDifferenceMagnitude {
   method_id : String
   before_coverage_css_px2 : Double
@@ -325,7 +347,7 @@ pub(all) struct PaintedCoverageDifferenceMagnitude {
   absolute_difference_css_px2 : Double
   union_coverage_css_px2 : Double
   fraction : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Domain-appropriate magnitude vector for one Atomic Difference.
@@ -409,37 +431,42 @@ pub impl ToJson for DifferenceMagnitude with fn to_json(self) {
 
 ///|
 /// Versioned lexicographic components for ordering differences in one domain.
+#derive(ToJson)
 pub(all) struct DomainOrdering {
   policy_id : String
   components : Array[Double]
-} derive(ToJson)
+}
 
 ///|
 /// Half-open UTF-16 offsets into the original SVG source.
+#derive(ToJson)
 pub(all) struct ReportSourceSpan {
   start_offset : Int32
   end_offset : Int32
-} derive(ToJson)
+}
 
 ///|
 /// One source-qualified location establishing a Diagnostic.
+#derive(ToJson)
 pub(all) struct DiagnosticSourceLocation {
   source_role : String
   source_span : ReportSourceSpan
-} derive(ToJson)
+}
 
 ///|
 /// One supported authored visual declaration with exact source provenance.
+#derive(ToJson)
 pub(all) struct DeclaredVisualFact {
   property : String
   authored_value : String
   declared_value : String
   origin : String
   source_span : ReportSourceSpan
-} derive(ToJson)
+}
 
 ///|
 /// One supported visual fact after declaration precedence and inheritance.
+#derive(ToJson)
 pub(all) struct ResolvedVisualFact {
   subject_id : String
   property : String
@@ -448,27 +475,29 @@ pub(all) struct ResolvedVisualFact {
   declaration_owner_id : String?
   declaration : DeclaredVisualFact?
   inheritance_depth : Int32
-} derive(ToJson)
+}
 
 ///|
 /// Before and after resolved facts for one subject property.
+#derive(ToJson)
 pub(all) struct SourceResolutionPair {
   subject_id : String
   property : String
   before : ResolvedVisualFact?
   after : ResolvedVisualFact?
-} derive(ToJson)
+}
 
 ///|
 /// Placement identity for a subject rendered through one or more `use` hosts.
 ///
 /// The corresponding authored definition keeps its own identity and Source
 /// Spans; `instance_id` identifies only this rendered outcome.
+#derive(ToJson)
 pub(all) struct SubjectInstanceContext {
   instance_id : String
   definition_subject_id : String
   use_path : Array[String]
-} derive(ToJson)
+}
 
 ///|
 /// Report-local reference to one visual subject in an input SVG.
@@ -519,6 +548,7 @@ pub impl ToJson for AlignmentEvidence with fn to_json(self) {
 
 ///|
 /// Set-to-set relationship between before and after visual subjects.
+#derive(ToJson)
 pub(all) struct SubjectAlignment {
   id : String
   subject_role : String
@@ -527,7 +557,7 @@ pub(all) struct SubjectAlignment {
   after : Array[SubjectReference]
   basis : String
   evidence : AlignmentEvidence
-} derive(ToJson)
+}
 
 ///|
 /// One changed supported authored fact and the subjects it may affect.
@@ -612,28 +642,31 @@ pub impl ToJson for AtomicDifference with fn to_json(self) {
 
 ///|
 /// Agent-facing grouping of Atomic Differences around one subject outcome.
+#derive(ToJson)
 pub(all) struct VisualEvent {
   id : String
   primary_subject_id : String
   atomic_difference_ids : Array[String]
   rendered_outcome : RenderedEvidence
   difference_regions : Array[DifferenceRegion]
-} derive(ToJson)
+}
 
 ///|
 /// Common whole-canvas event measurements used by one Impact Assessment.
+#derive(ToJson, Eq)
 pub(all) struct ImpactMeasurement {
   changed_pixel_fraction : Double
   linear_premultiplied_rgba_rmse : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// One singleton or exact measured-tie group on the main-event frontier.
+#derive(Eq)
 pub(all) struct ImpactFrontierGroup {
   event_ids : Array[String]
   atomic_difference_ids : Array[String]
   measurements : ImpactMeasurement?
-} derive(Eq)
+}
 
 ///|
 pub impl ToJson for ImpactFrontierGroup with fn to_json(self) {
@@ -646,14 +679,16 @@ pub impl ToJson for ImpactFrontierGroup with fn to_json(self) {
 
 ///|
 /// One deterministic explanation for excluding a dominated event.
+#derive(ToJson, Eq)
 pub(all) struct ImpactDominationWitness {
   dominant_event_id : String
   dominated_event_id : String
   rule_id : String
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Additive versioned main-event assessment that preserves partial ordering.
+#derive(ToJson, Eq)
 pub(all) struct ImpactAssessment {
   policy_id : String
   status : String
@@ -663,23 +698,25 @@ pub(all) struct ImpactAssessment {
   frontier_relation : String
   frontier_groups : Array[ImpactFrontierGroup]
   domination_witnesses : Array[ImpactDominationWitness]
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Structured coverage limitation or analysis failure.
+#derive(ToJson)
 pub(all) struct Diagnostic {
   id : String
   code : String
   subject_id : String
   affected_evidence_layers : Array[String]
   source_locations : Array[DiagnosticSourceLocation]
-} derive(ToJson)
+}
 
 ///|
 /// Coverage of one encountered feature at each canonical evidence layer.
 ///
 /// Layer status is `covered`, `limited`, `not_applicable`, or `failed`.
 /// Diagnostics explain every limited or failed row.
+#derive(ToJson)
 pub(all) struct FeatureCoverage {
   feature_id : String
   subject_id : String
@@ -687,18 +724,19 @@ pub(all) struct FeatureCoverage {
   computed_appearance : String
   rendered_evidence : String
   diagnostic_ids : Array[String]
-} derive(ToJson)
+}
 
 ///|
 /// One renderer capability gap encountered by the current comparison.
 ///
 /// `support_status` is `guarded` or `unavailable`. Diagnostic references remain
 /// the authority for affected subjects and evidence layers.
+#derive(ToJson)
 pub(all) struct RendererCapabilityGap {
   capability_id : String
   support_status : String
   diagnostic_ids : Array[String]
-} derive(ToJson)
+}
 
 ///|
 /// Canvas-space bounds owned by one extracted Visual Object.

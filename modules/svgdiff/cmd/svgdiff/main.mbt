@@ -152,6 +152,6 @@ async fn run(args : ArrayView[String]) -> Int32 noraise {
 async fn main {
   let code = run(@env.args())
   if code != 0 {
-    @sys.exit(code)
+    @env.exit(code)
   }
 }

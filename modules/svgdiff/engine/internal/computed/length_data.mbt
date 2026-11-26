@@ -13,11 +13,12 @@
 // limitations under the License.
 
 ///|
+#derive(Eq)
 pub(all) enum SvgLengthDirection {
   Horizontal
   Vertical
   Unspecified
-} derive(Eq)
+}
 
 ///|
 pub fn svg_length_percentage_basis(

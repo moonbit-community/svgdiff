@@ -1,9 +1,9 @@
 name = "Milky2018/svgdiff-pixelmatch"
 
-version = "0.1.0"
+version = "0.1.1"
 
 import {
-  "Milky2018/svgdiff-image-compat@0.1.0",
+  "Milky2018/svgdiff-image-compat@0.1.1",
 }
 
 readme = "README.md"

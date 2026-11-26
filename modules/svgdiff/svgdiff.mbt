@@ -86,10 +86,11 @@ pub fn compare_with_resources(
 
 ///|
 /// The controlled comparison stopped before a report was established.
+#derive(Debug, Eq)
 pub(all) suberror ComparisonInterrupted {
   Cancelled
   CheckpointBudgetExceeded(max_checkpoints~ : Int32)
-} derive(Debug, Eq)
+}
 
 ///|
 pub(all) struct ComparisonArtifact {

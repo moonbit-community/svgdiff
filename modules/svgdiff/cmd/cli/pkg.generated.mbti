@@ -39,12 +39,13 @@ pub struct Config {
   max_checkpoints : Int32?
 }
 
+#derive(@json.FromJson)
 pub struct Resource {
   locator : String
   media_type : String
   path : String
-} derive(@json.FromJson)
-pub fn Resource::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+}
+pub fn Resource::from_json(@json.Json, @json.DecodeContext) -> Self raise @json.JsonDecodeError
 
 // Type aliases
 

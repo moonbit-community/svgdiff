@@ -1,27 +1,31 @@
 ///|
+#derive(Eq, Debug)
 pub(all) enum ResizeMethod {
   Nearest
   Bilinear
   Bicubic
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct ImageData {
   width : Int32
   height : Int32
   data : Bytes
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub enum ColorType {
   Grayscale
   Rgb
   Indexed
   GrayscaleAlpha
   Rgba
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct IhdrData {
   width : Int32
   height : Int32
@@ -30,20 +34,22 @@ pub(all) struct IhdrData {
   compression : Int32
   filter : Int32
   interlace : Int32
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum ImageFormat {
   Png
   Bmp
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct StreamImageInfo {
   format : ImageFormat
   width : Int32
   height : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub(all) suberror DecodeError {

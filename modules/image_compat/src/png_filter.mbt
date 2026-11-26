@@ -192,7 +192,7 @@ test "paeth_predictor" {
 ///|
 test "reconstruct_row filter none" {
   let row = b"\x0A\x14\x1E"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let result = reconstruct_row(0, row, prev, 1)
   assert_eq(result, b"\x0A\x14\x1E")
 }
@@ -203,7 +203,7 @@ test "reconstruct_row filter sub" {
   // filtered: [10, 20, 30]
   // reconstructed: [10, 10+20=30, 30+30=60]
   let row = b"\x0A\x14\x1E"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let result = reconstruct_row(1, row, prev, 1)
   assert_eq(result, b"\x0A\x1E\x3C")
 }
@@ -225,7 +225,7 @@ test "reconstruct_row filter average" {
   // [1]: a=10, b=0, avg=5, out=25
   // [2]: a=25, b=0, avg=12, out=42
   let row = b"\x0A\x14\x1E"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let result = reconstruct_row(3, row, prev, 1)
   assert_eq(result[0].to_int(), 10)
   assert_eq(result[1].to_int(), 25)
@@ -237,7 +237,7 @@ test "reconstruct_row filter paeth" {
   // Paeth with prev all zeros, bpp=1
   // Same as Sub when prev is zero
   let row = b"\x0A\x14\x1E"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let result = reconstruct_row(4, row, prev, 1)
   assert_eq(result, b"\x0A\x1E\x3C")
 }
@@ -245,7 +245,7 @@ test "reconstruct_row filter paeth" {
 ///|
 test "apply_filter_none roundtrip" {
   let row = b"\x0A\x14\x1E"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let filtered = apply_filter_none(row, prev, 1)
   let reconstructed = reconstruct_row(0, Bytes::from_array(filtered), prev, 1)
   assert_eq(reconstructed, row)
@@ -254,7 +254,7 @@ test "apply_filter_none roundtrip" {
 ///|
 test "apply_filter_sub roundtrip" {
   let row = b"\x0A\x1E\x32"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let filtered = apply_filter_sub(row, prev, 1)
   // [10, 30-10=20, 50-30=20]
   assert_eq(filtered[0].to_int(), 10)
@@ -280,7 +280,7 @@ test "apply_filter_up roundtrip" {
 ///|
 test "apply_filter_average roundtrip" {
   let row = b"\x0A\x19\x2A"
-  let prev = Bytes::new(3)
+  let prev = Bytes::make(3, b'\x00')
   let filtered = apply_filter_average(row, prev, 1)
   let reconstructed = reconstruct_row(3, Bytes::from_array(filtered), prev, 1)
   assert_eq(reconstructed, row)
@@ -299,7 +299,7 @@ test "apply_filter_paeth roundtrip" {
 test "apply_filter_sub wrapping" {
   // Test with values that wrap around 256
   let row = b"\x02\x01"
-  let prev = Bytes::new(2)
+  let prev = Bytes::make(2, b'\x00')
   let filtered = apply_filter_sub(row, prev, 1)
   // [2, (1-2+256)%256=255]
   assert_eq(filtered[0].to_int(), 2)

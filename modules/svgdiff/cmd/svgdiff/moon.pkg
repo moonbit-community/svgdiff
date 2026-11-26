@@ -1,11 +1,9 @@
 import {
   "Milky2018/svgdiff" @lib,
   "Milky2018/svgdiff/cmd/cli",
-  "moonbitlang/async",
   "moonbitlang/async/stdio",
   "moonbitlang/core/env",
   "moonbitlang/x/fs",
-  "moonbitlang/x/sys",
 }
 
 pkgtype(kind: "executable")

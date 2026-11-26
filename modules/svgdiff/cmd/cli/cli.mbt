@@ -13,11 +13,12 @@
 // limitations under the License.
 
 ///|
+#derive(FromJson)
 pub struct Resource {
   locator : String
   media_type : String
   path : String
-} derive(FromJson)
+}
 
 ///|
 pub struct Config {
@@ -44,7 +45,7 @@ pub suberror CliError {
 ///|
 fn version_text(command_name : String) -> String {
   (
-    $|\{command_name} 0.10.6
+    $|\{command_name} 0.10.7
     $|schema: 5.0
   )
 }

@@ -1,9 +1,9 @@
 name = "Milky2018/svgdiff-image-compat"
 
-version = "0.1.0"
+version = "0.1.1"
 
 import {
-  "mizchi/zlib@0.4.10",
+  "mizchi/zlib@0.4.12",
 }
 
 readme = "README.mbt.md"

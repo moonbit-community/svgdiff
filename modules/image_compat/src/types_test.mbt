@@ -11,7 +11,7 @@ test "ImageData creation" {
   let img : @svgdiff-image-compat.ImageData = {
     width: 2,
     height: 2,
-    data: Bytes::new(16),
+    data: Bytes::make(16, b'\x00'),
   }
   assert_eq(img.width, 2)
   assert_eq(img.height, 2)

@@ -28,28 +28,31 @@ pub fn DecodeError::to_string(Self) -> String
 pub impl Show for DecodeError
 
 // Types and methods
+#derive(Eq)
 pub(all) struct ImageData {
   width : Int32
   height : Int32
   data : Bytes
-} derive(Eq)
+}
 pub fn ImageData::equal(Self, Self) -> Bool
 pub fn ImageData::not_equal(Self, Self) -> Bool
 
+#derive(Eq, @debug.Debug)
 pub(all) enum RasterColorCondition {
   SrgbCompatible
   EmbeddedColorProfile(String)
   HdrOrHighBitDepth(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn RasterColorCondition::equal(Self, Self) -> Bool
 pub fn RasterColorCondition::not_equal(Self, Self) -> Bool
 pub fn RasterColorCondition::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RasterColorMetadata {
   width : Int32
   height : Int32
   condition : RasterColorCondition
-} derive(Eq, @debug.Debug)
+}
 pub fn RasterColorMetadata::equal(Self, Self) -> Bool
 pub fn RasterColorMetadata::not_equal(Self, Self) -> Bool
 pub fn RasterColorMetadata::to_repr(Self) -> @debug.Repr

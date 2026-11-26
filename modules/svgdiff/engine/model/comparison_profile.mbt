@@ -14,11 +14,12 @@
 
 ///|
 /// One explicit opaque sRGB8 background for future perceptual compositing.
+#derive(ToJson, Eq)
 pub struct PerceptualBackground {
   red : Int32
   green : Int32
   blue : Int32
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Parse one deterministic opaque sRGB color for perceptual compositing.
@@ -49,9 +50,10 @@ pub fn PerceptualBackground::blue(self : PerceptualBackground) -> Int32 {
 
 ///|
 /// Explicit LDR-FLIP viewing conditions with a bounded filter domain.
+#derive(ToJson, Eq)
 pub struct FlipViewingConditions {
   pixels_per_degree : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Construct supported LDR-FLIP viewing conditions.
@@ -77,9 +79,10 @@ pub fn FlipViewingConditions::pixels_per_degree(
 
 ///|
 /// Explicit optional reporting threshold for LDR-FLIP error values.
+#derive(ToJson, Eq)
 pub struct FlipErrorThreshold {
   value : Double
-} derive(ToJson, Eq)
+}
 
 ///|
 /// Construct one finite FLIP reporting threshold in the metric's `[0, 1]` range.

@@ -24,10 +24,11 @@ pub(all) struct ComparisonControl {
 
 ///|
 /// The comparison stopped before a Structured Report was established.
+#derive(Debug, Eq)
 pub(all) suberror ComparisonInterrupted {
   Cancelled
   CheckpointBudgetExceeded(max_checkpoints~ : Int32)
-} derive(Debug, Eq)
+}
 
 ///|
 /// Construct a control that never interrupts comparison work.

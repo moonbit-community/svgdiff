@@ -113,7 +113,7 @@ fn parse_chunks(raw : Bytes) -> Array[PngChunk] raise DecodeError {
       buf.blit_from_bytes(0, raw, pos + 8, length)
       Bytes::from_array(buf)
     } else {
-      Bytes::new(0)
+      Bytes::make(0, b'\x00')
     }
     chunks.push({ chunk_type: ct, data: chunk_data, })
     pos = pos + 12 + length
@@ -249,7 +249,7 @@ fn decode_png_scanlines(
     )
   }
   // Process each scanline
-  let mut prev_row = Bytes::new(stride)
+  let mut prev_row = Bytes::make(stride, b'\x00')
   for y in 0..<ihdr.height {
     let row_offset = y * (1 + stride)
     let filter_type = decompressed[row_offset].to_int()

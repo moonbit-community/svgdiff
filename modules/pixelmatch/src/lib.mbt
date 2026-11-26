@@ -4,12 +4,13 @@
 
 ///|
 /// RGBA color representation
+#derive(Debug, Eq)
 pub(all) struct Color {
   r : Int32
   g : Int32
   b : Int32
   a : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 pub impl Show for Color with fn output(self, logger) {

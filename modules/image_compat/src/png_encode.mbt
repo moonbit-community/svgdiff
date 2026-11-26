@@ -76,7 +76,7 @@ pub fn encode_png(img : ImageData) -> Bytes raise EncodeError {
   let bpp = 4
   let raw_len = height * (1 + stride)
   let raw = FixedArray::make(raw_len, b'\x00')
-  let mut prev_row = Bytes::new(stride)
+  let mut prev_row = Bytes::make(stride, b'\x00')
   for y in 0..<height {
     let raw_offset = y * (1 + stride)
     let src_offset = y * stride
@@ -98,7 +98,7 @@ pub fn encode_png(img : ImageData) -> Bytes raise EncodeError {
   // IEND
   let iend_chunk = encode_chunk(
     [b'\x49', b'\x45', b'\x4E', b'\x44'],
-    Bytes::new(0),
+    Bytes::make(0, b'\x00'),
   )
   // Concatenate all parts
   let total_len = 8 +
@@ -168,7 +168,7 @@ test "encode_png roundtrip 4x4" {
 
 ///|
 test "encode_png invalid dimensions" {
-  let img : ImageData = { width: 0, height: 1, data: Bytes::new(0), }
+  let img : ImageData = { width: 0, height: 1, data: Bytes::make(0, b'\x00'), }
   let mut got_error = false
   try {
     let _ = encode_png(img)
@@ -180,7 +180,7 @@ test "encode_png invalid dimensions" {
 
 ///|
 test "encode_png invalid data length" {
-  let img : ImageData = { width: 2, height: 2, data: Bytes::new(4), }
+  let img : ImageData = { width: 2, height: 2, data: Bytes::make(4, b'\x00'), }
   let mut got_error = false
   try {
     let _ = encode_png(img)

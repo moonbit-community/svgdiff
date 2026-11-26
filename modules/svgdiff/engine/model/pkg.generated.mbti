@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Milky2018/svgdiff/engine/model"
 
+import {
+  "moonbitlang/core/json",
+}
+
 // Values
 pub fn empty_visual_scene_analysis() -> VisualSceneAnalysis
 
@@ -16,8 +20,8 @@ pub(all) struct AlignmentEvidence {
   confidence : Double?
   confidence_status : String
 }
-pub fn AlignmentEvidence::to_json(Self) -> Json
-pub impl ToJson for AlignmentEvidence
+pub fn AlignmentEvidence::to_json(Self) -> @json.Json
+pub impl @json.ToJson for AlignmentEvidence
 
 pub(all) struct AtomicDifference {
   id : String
@@ -36,33 +40,36 @@ pub(all) struct AtomicDifference {
   magnitude : DifferenceMagnitude
   domain_ordering : DomainOrdering
 }
-pub fn AtomicDifference::to_json(Self) -> Json
-pub impl ToJson for AtomicDifference
+pub fn AtomicDifference::to_json(Self) -> @json.Json
+pub impl @json.ToJson for AtomicDifference
 
+#derive(@json.ToJson)
 pub(all) struct CanvasOutcome {
   status : String
   reason_code : String?
   magnitude : RenderedMagnitude?
   perceptual_flip : CanvasPerceptualFlipEvidence
-} derive(ToJson)
-pub fn CanvasOutcome::to_json(Self) -> Json
+}
+pub fn CanvasOutcome::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct CanvasPerceptualFlipEvidence {
   status : String
   reason_code : String?
   method_id : String?
   canvas_mean : Double?
-} derive(ToJson)
-pub fn CanvasPerceptualFlipEvidence::to_json(Self) -> Json
+}
+pub fn CanvasPerceptualFlipEvidence::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct CauseEnvelope {
   guarantee : String
   coverage : String
   fallback_scope : String
   candidate_changed_fact_ids : Array[String]
   diagnostic_ids : Array[String]
-} derive(ToJson)
-pub fn CauseEnvelope::to_json(Self) -> Json
+}
+pub fn CauseEnvelope::to_json(Self) -> @json.Json
 
 pub(all) struct ChangedFact {
   id : String
@@ -72,8 +79,8 @@ pub(all) struct ChangedFact {
   after : DeclaredVisualFact?
   affected_subject_ids : Array[String]
 }
-pub fn ChangedFact::to_json(Self) -> Json
-pub impl ToJson for ChangedFact
+pub fn ChangedFact::to_json(Self) -> @json.Json
+pub impl @json.ToJson for ChangedFact
 
 pub(all) struct ComparisonProfile {
   viewport_width : Int32
@@ -82,41 +89,45 @@ pub(all) struct ComparisonProfile {
   flip_viewing_conditions : FlipViewingConditions?
   flip_error_threshold : FlipErrorThreshold?
 }
-pub fn ComparisonProfile::to_json(Self) -> Json
+pub fn ComparisonProfile::to_json(Self) -> @json.Json
 pub fn ComparisonProfile::v1_default() -> Self
-pub impl ToJson for ComparisonProfile
+pub impl @json.ToJson for ComparisonProfile
 
+#derive(@json.ToJson)
 pub(all) struct ComputedRelation {
   status : String
   reason_code : String
   missing_side : String?
   diagnostic_ids : Array[String]
-} derive(ToJson)
-pub fn ComputedRelation::to_json(Self) -> Json
+}
+pub fn ComputedRelation::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct DeclaredVisualFact {
   property : String
   authored_value : String
   declared_value : String
   origin : String
   source_span : ReportSourceSpan
-} derive(ToJson)
-pub fn DeclaredVisualFact::to_json(Self) -> Json
+}
+pub fn DeclaredVisualFact::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct Diagnostic {
   id : String
   code : String
   subject_id : String
   affected_evidence_layers : Array[String]
   source_locations : Array[DiagnosticSourceLocation]
-} derive(ToJson)
-pub fn Diagnostic::to_json(Self) -> Json
+}
+pub fn Diagnostic::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct DiagnosticSourceLocation {
   source_role : String
   source_span : ReportSourceSpan
-} derive(ToJson)
-pub fn DiagnosticSourceLocation::to_json(Self) -> Json
+}
+pub fn DiagnosticSourceLocation::to_json(Self) -> @json.Json
 
 pub(all) struct DifferenceMagnitude {
   parameter_abs_user_units : Double?
@@ -136,9 +147,10 @@ pub(all) struct DifferenceMagnitude {
   intrinsic_raster : IntrinsicRasterMagnitude?
   transform_effect : TransformEffectMagnitude?
 }
-pub fn DifferenceMagnitude::to_json(Self) -> Json
-pub impl ToJson for DifferenceMagnitude
+pub fn DifferenceMagnitude::to_json(Self) -> @json.Json
+pub impl @json.ToJson for DifferenceMagnitude
 
+#derive(@json.ToJson)
 pub(all) struct DifferenceRegion {
   id : String
   source : String
@@ -153,15 +165,17 @@ pub(all) struct DifferenceRegion {
   changed_pixels : Int32
   viewport_fraction : Double
   cause_envelope : CauseEnvelope
-} derive(ToJson)
-pub fn DifferenceRegion::to_json(Self) -> Json
+}
+pub fn DifferenceRegion::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct DomainOrdering {
   policy_id : String
   components : Array[Double]
-} derive(ToJson)
-pub fn DomainOrdering::to_json(Self) -> Json
+}
+pub fn DomainOrdering::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct FeatureCoverage {
   feature_id : String
   subject_id : String
@@ -169,27 +183,30 @@ pub(all) struct FeatureCoverage {
   computed_appearance : String
   rendered_evidence : String
   diagnostic_ids : Array[String]
-} derive(ToJson)
-pub fn FeatureCoverage::to_json(Self) -> Json
+}
+pub fn FeatureCoverage::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub struct FlipErrorThreshold {
   value : Double
-} derive(Eq, ToJson)
+}
 pub fn FlipErrorThreshold::equal(Self, Self) -> Bool
 pub fn FlipErrorThreshold::from_value(Double) -> Self?
 pub fn FlipErrorThreshold::not_equal(Self, Self) -> Bool
-pub fn FlipErrorThreshold::to_json(Self) -> Json
+pub fn FlipErrorThreshold::to_json(Self) -> @json.Json
 pub fn FlipErrorThreshold::value(Self) -> Double
 
+#derive(Eq, @json.ToJson)
 pub struct FlipViewingConditions {
   pixels_per_degree : Double
-} derive(Eq, ToJson)
+}
 pub fn FlipViewingConditions::equal(Self, Self) -> Bool
 pub fn FlipViewingConditions::from_pixels_per_degree(Double) -> Self?
 pub fn FlipViewingConditions::not_equal(Self, Self) -> Bool
 pub fn FlipViewingConditions::pixels_per_degree(Self) -> Double
-pub fn FlipViewingConditions::to_json(Self) -> Json
+pub fn FlipViewingConditions::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct ImpactAssessment {
   policy_id : String
   status : String
@@ -199,38 +216,42 @@ pub(all) struct ImpactAssessment {
   frontier_relation : String
   frontier_groups : Array[ImpactFrontierGroup]
   domination_witnesses : Array[ImpactDominationWitness]
-} derive(Eq, ToJson)
+}
 pub fn ImpactAssessment::equal(Self, Self) -> Bool
 pub fn ImpactAssessment::not_equal(Self, Self) -> Bool
-pub fn ImpactAssessment::to_json(Self) -> Json
+pub fn ImpactAssessment::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct ImpactDominationWitness {
   dominant_event_id : String
   dominated_event_id : String
   rule_id : String
-} derive(Eq, ToJson)
+}
 pub fn ImpactDominationWitness::equal(Self, Self) -> Bool
 pub fn ImpactDominationWitness::not_equal(Self, Self) -> Bool
-pub fn ImpactDominationWitness::to_json(Self) -> Json
+pub fn ImpactDominationWitness::to_json(Self) -> @json.Json
 
+#derive(Eq)
 pub(all) struct ImpactFrontierGroup {
   event_ids : Array[String]
   atomic_difference_ids : Array[String]
   measurements : ImpactMeasurement?
-} derive(Eq)
+}
 pub fn ImpactFrontierGroup::equal(Self, Self) -> Bool
 pub fn ImpactFrontierGroup::not_equal(Self, Self) -> Bool
-pub fn ImpactFrontierGroup::to_json(Self) -> Json
-pub impl ToJson for ImpactFrontierGroup
+pub fn ImpactFrontierGroup::to_json(Self) -> @json.Json
+pub impl @json.ToJson for ImpactFrontierGroup
 
+#derive(Eq, @json.ToJson)
 pub(all) struct ImpactMeasurement {
   changed_pixel_fraction : Double
   linear_premultiplied_rgba_rmse : Double
-} derive(Eq, ToJson)
+}
 pub fn ImpactMeasurement::equal(Self, Self) -> Bool
 pub fn ImpactMeasurement::not_equal(Self, Self) -> Bool
-pub fn ImpactMeasurement::to_json(Self) -> Json
+pub fn ImpactMeasurement::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct IntrinsicRasterMagnitude {
   before_width : Int32
   before_height : Int32
@@ -241,9 +262,10 @@ pub(all) struct IntrinsicRasterMagnitude {
   changed_pixel_fraction : Double?
   rgba8_rmse : Double?
   linear_premultiplied_rgba_rmse : Double?
-} derive(ToJson)
-pub fn IntrinsicRasterMagnitude::to_json(Self) -> Json
+}
+pub fn IntrinsicRasterMagnitude::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PaintedBoundaryDisplacementMagnitude {
   method_id : String
   before_sample_count : Int32
@@ -251,11 +273,12 @@ pub(all) struct PaintedBoundaryDisplacementMagnitude {
   mean_css_px : Double
   p95_css_px : Double
   max_css_px : Double
-} derive(Eq, ToJson)
+}
 pub fn PaintedBoundaryDisplacementMagnitude::equal(Self, Self) -> Bool
 pub fn PaintedBoundaryDisplacementMagnitude::not_equal(Self, Self) -> Bool
-pub fn PaintedBoundaryDisplacementMagnitude::to_json(Self) -> Json
+pub fn PaintedBoundaryDisplacementMagnitude::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PaintedCoverageDifferenceMagnitude {
   method_id : String
   before_coverage_css_px2 : Double
@@ -263,61 +286,67 @@ pub(all) struct PaintedCoverageDifferenceMagnitude {
   absolute_difference_css_px2 : Double
   union_coverage_css_px2 : Double
   fraction : Double
-} derive(Eq, ToJson)
+}
 pub fn PaintedCoverageDifferenceMagnitude::equal(Self, Self) -> Bool
 pub fn PaintedCoverageDifferenceMagnitude::not_equal(Self, Self) -> Bool
-pub fn PaintedCoverageDifferenceMagnitude::to_json(Self) -> Json
+pub fn PaintedCoverageDifferenceMagnitude::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub struct PerceptualBackground {
   red : Int32
   green : Int32
   blue : Int32
-} derive(Eq, ToJson)
+}
 pub fn PerceptualBackground::blue(Self) -> Int32
 pub fn PerceptualBackground::equal(Self, Self) -> Bool
 pub fn PerceptualBackground::green(Self) -> Int32
 pub fn PerceptualBackground::not_equal(Self, Self) -> Bool
 pub fn PerceptualBackground::parse_srgb(String) -> Self?
 pub fn PerceptualBackground::red(Self) -> Int32
-pub fn PerceptualBackground::to_json(Self) -> Json
+pub fn PerceptualBackground::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PerceptualColorEvidence {
   status : String
   reason_code : String?
   magnitude : PerceptualColorMagnitude?
-} derive(Eq, ToJson)
+}
 pub fn PerceptualColorEvidence::equal(Self, Self) -> Bool
 pub fn PerceptualColorEvidence::not_equal(Self, Self) -> Bool
-pub fn PerceptualColorEvidence::to_json(Self) -> Json
+pub fn PerceptualColorEvidence::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PerceptualColorMagnitude {
   method_id : String
   sample_count : Int32
   mean_delta_e_ok : Double
-} derive(Eq, ToJson)
+}
 pub fn PerceptualColorMagnitude::equal(Self, Self) -> Bool
 pub fn PerceptualColorMagnitude::not_equal(Self, Self) -> Bool
-pub fn PerceptualColorMagnitude::to_json(Self) -> Json
+pub fn PerceptualColorMagnitude::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PerceptualFlipAreaAboveThreshold {
   threshold : Double
   pixel_count : Int32
   canvas_fraction : Double
-} derive(Eq, ToJson)
+}
 pub fn PerceptualFlipAreaAboveThreshold::equal(Self, Self) -> Bool
 pub fn PerceptualFlipAreaAboveThreshold::not_equal(Self, Self) -> Bool
-pub fn PerceptualFlipAreaAboveThreshold::to_json(Self) -> Json
+pub fn PerceptualFlipAreaAboveThreshold::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PerceptualFlipEvidence {
   status : String
   reason_code : String?
   map : PerceptualFlipMap?
   statistics : PerceptualFlipStatistics?
-} derive(Eq, ToJson)
+}
 pub fn PerceptualFlipEvidence::equal(Self, Self) -> Bool
 pub fn PerceptualFlipEvidence::not_equal(Self, Self) -> Bool
-pub fn PerceptualFlipEvidence::to_json(Self) -> Json
+pub fn PerceptualFlipEvidence::to_json(Self) -> @json.Json
 
+#derive(Eq, @json.ToJson)
 pub(all) struct PerceptualFlipMap {
   method_id : String
   pixel_x : Int32
@@ -327,11 +356,12 @@ pub(all) struct PerceptualFlipMap {
   encoding : String
   quantization_step : Double
   values_base64 : String
-} derive(Eq, ToJson)
+}
 pub fn PerceptualFlipMap::equal(Self, Self) -> Bool
 pub fn PerceptualFlipMap::not_equal(Self, Self) -> Bool
-pub fn PerceptualFlipMap::to_json(Self) -> Json
+pub fn PerceptualFlipMap::to_json(Self) -> @json.Json
 
+#derive(Eq)
 pub(all) struct PerceptualFlipStatistics {
   method_id : String
   canvas_pixel_count : Int32
@@ -342,51 +372,57 @@ pub(all) struct PerceptualFlipStatistics {
   response_p95 : Double
   response_maximum : Double
   area_above_threshold : PerceptualFlipAreaAboveThreshold?
-} derive(Eq)
+}
 pub fn PerceptualFlipStatistics::equal(Self, Self) -> Bool
 pub fn PerceptualFlipStatistics::not_equal(Self, Self) -> Bool
-pub fn PerceptualFlipStatistics::to_json(Self) -> Json
-pub impl ToJson for PerceptualFlipStatistics
+pub fn PerceptualFlipStatistics::to_json(Self) -> @json.Json
+pub impl @json.ToJson for PerceptualFlipStatistics
 
+#derive(@json.ToJson)
 pub(all) struct PresenceMagnitude {
   affected_entity_count : Int32
   bounds_area_css_px2 : Double
   bounds_viewport_fraction : Double
   painted_area_css_px2 : Double
   painted_viewport_fraction : Double
-} derive(ToJson)
-pub fn PresenceMagnitude::to_json(Self) -> Json
+}
+pub fn PresenceMagnitude::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct RenderedEvidence {
   status : String
   reason_code : String?
   magnitude : RenderedMagnitude?
   perceptual_color : PerceptualColorEvidence
   perceptual_flip : PerceptualFlipEvidence
-} derive(ToJson)
-pub fn RenderedEvidence::to_json(Self) -> Json
+}
+pub fn RenderedEvidence::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct RenderedMagnitude {
   changed_pixels : Int32
   changed_pixel_fraction : Double
   rgba8_rmse : Double
   linear_premultiplied_rgba_rmse : Double
-} derive(ToJson)
-pub fn RenderedMagnitude::to_json(Self) -> Json
+}
+pub fn RenderedMagnitude::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct RendererCapabilityGap {
   capability_id : String
   support_status : String
   diagnostic_ids : Array[String]
-} derive(ToJson)
-pub fn RendererCapabilityGap::to_json(Self) -> Json
+}
+pub fn RendererCapabilityGap::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct ReportSourceSpan {
   start_offset : Int32
   end_offset : Int32
-} derive(ToJson)
-pub fn ReportSourceSpan::to_json(Self) -> Json
+}
+pub fn ReportSourceSpan::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct ResolvedVisualFact {
   subject_id : String
   property : String
@@ -395,16 +431,17 @@ pub(all) struct ResolvedVisualFact {
   declaration_owner_id : String?
   declaration : DeclaredVisualFact?
   inheritance_depth : Int32
-} derive(ToJson)
-pub fn ResolvedVisualFact::to_json(Self) -> Json
+}
+pub fn ResolvedVisualFact::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct SourceResolutionPair {
   subject_id : String
   property : String
   before : ResolvedVisualFact?
   after : ResolvedVisualFact?
-} derive(ToJson)
-pub fn SourceResolutionPair::to_json(Self) -> Json
+}
+pub fn SourceResolutionPair::to_json(Self) -> @json.Json
 
 pub(all) struct StructuredReport {
   schema_version : String
@@ -423,10 +460,11 @@ pub(all) struct StructuredReport {
   diagnostics : Array[Diagnostic]
 }
 pub fn StructuredReport::to_compact_json_string(Self) -> String
-pub fn StructuredReport::to_json(Self) -> Json
+pub fn StructuredReport::to_json(Self) -> @json.Json
 pub fn StructuredReport::to_json_string(Self) -> String
-pub impl ToJson for StructuredReport
+pub impl @json.ToJson for StructuredReport
 
+#derive(@json.ToJson)
 pub(all) struct SubjectAlignment {
   id : String
   subject_role : String
@@ -435,15 +473,16 @@ pub(all) struct SubjectAlignment {
   after : Array[SubjectReference]
   basis : String
   evidence : AlignmentEvidence
-} derive(ToJson)
-pub fn SubjectAlignment::to_json(Self) -> Json
+}
+pub fn SubjectAlignment::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct SubjectInstanceContext {
   instance_id : String
   definition_subject_id : String
   use_path : Array[String]
-} derive(ToJson)
-pub fn SubjectInstanceContext::to_json(Self) -> Json
+}
+pub fn SubjectInstanceContext::to_json(Self) -> @json.Json
 
 pub(all) struct SubjectReference {
   source_index : Int32
@@ -451,8 +490,8 @@ pub(all) struct SubjectReference {
   authored_id : String?
   instance_context : SubjectInstanceContext?
 }
-pub fn SubjectReference::to_json(Self) -> Json
-pub impl ToJson for SubjectReference
+pub fn SubjectReference::to_json(Self) -> @json.Json
+pub impl @json.ToJson for SubjectReference
 
 pub(all) enum TransformEffectMagnitude {
   TranslationEffect(TransformTranslationMagnitude)
@@ -461,42 +500,47 @@ pub(all) enum TransformEffectMagnitude {
   SkewEffect(TransformSkewMagnitude)
   ResidualMatrixEffect(TransformResidualMagnitude)
 }
-pub fn TransformEffectMagnitude::to_json(Self) -> Json
-pub impl ToJson for TransformEffectMagnitude
+pub fn TransformEffectMagnitude::to_json(Self) -> @json.Json
+pub impl @json.ToJson for TransformEffectMagnitude
 
+#derive(@json.ToJson)
 pub(all) struct TransformResidualMagnitude {
   before_matrix : Array[Double]
   after_matrix : Array[Double]
   before_determinant : Double
   after_determinant : Double
-} derive(ToJson)
-pub fn TransformResidualMagnitude::to_json(Self) -> Json
+}
+pub fn TransformResidualMagnitude::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct TransformRotationMagnitude {
   before_degrees : Double
   after_degrees : Double
   signed_delta_degrees : Double
   abs_delta_degrees : Double
-} derive(ToJson)
-pub fn TransformRotationMagnitude::to_json(Self) -> Json
+}
+pub fn TransformRotationMagnitude::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct TransformScaleMagnitude {
   before_x : Double
   before_y : Double
   after_x : Double
   after_y : Double
   max_abs_delta : Double
-} derive(ToJson)
-pub fn TransformScaleMagnitude::to_json(Self) -> Json
+}
+pub fn TransformScaleMagnitude::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct TransformSkewMagnitude {
   before_degrees : Double
   after_degrees : Double
   signed_delta_degrees : Double
   abs_delta_degrees : Double
-} derive(ToJson)
-pub fn TransformSkewMagnitude::to_json(Self) -> Json
+}
+pub fn TransformSkewMagnitude::to_json(Self) -> @json.Json
 
+#derive(@json.ToJson)
 pub(all) struct TransformTranslationMagnitude {
   before_x_css_px : Double
   before_y_css_px : Double
@@ -505,8 +549,8 @@ pub(all) struct TransformTranslationMagnitude {
   delta_x_css_px : Double
   delta_y_css_px : Double
   norm_css_px : Double
-} derive(ToJson)
-pub fn TransformTranslationMagnitude::to_json(Self) -> Json
+}
+pub fn TransformTranslationMagnitude::to_json(Self) -> @json.Json
 
 pub(all) struct VisualDifferenceCoverage {
   effective_difference_count : Int32
@@ -515,14 +559,15 @@ pub(all) struct VisualDifferenceCoverage {
   unresolved_domains : Array[VisualEvidenceDomain]
 }
 
+#derive(@json.ToJson)
 pub(all) struct VisualEvent {
   id : String
   primary_subject_id : String
   atomic_difference_ids : Array[String]
   rendered_outcome : RenderedEvidence
   difference_regions : Array[DifferenceRegion]
-} derive(ToJson)
-pub fn VisualEvent::to_json(Self) -> Json
+}
+pub fn VisualEvent::to_json(Self) -> @json.Json
 
 pub(all) struct VisualEvidenceCoverage {
   difference_to_object : VisualDifferenceCoverage
