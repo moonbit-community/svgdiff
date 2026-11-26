@@ -121,7 +121,7 @@ version=$(sed -n 's/^version = "\(.*\)"/\1/p' modules/svgdiff/moon.mod)
 test "$(head -n 1 "$tmp/version.txt")" = "svgdiff $version"
 grep -q '^schema: 5.0$' "$tmp/version.txt"
 
-moon runwasm -q modules/svgdiff/cmd/svgdiff \
+moon run -q --target wasm modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg \
   --output "$wasi_tmp/report.json" \
   --html "$wasi_tmp/report.html"
@@ -139,7 +139,7 @@ printf '%s\n' \
 resource_json=$(printf \
   '{"locator":"asset.png","media_type":"image/png","path":"%s"}' \
   "$wasi_tmp/red.png")
-moon runwasm -q modules/svgdiff/cmd/svgdiff \
+moon run -q --target wasm modules/svgdiff/cmd/svgdiff -- \
   "$wasi_tmp/resource.svg" "$wasi_tmp/resource.svg" \
   --before-resource "$resource_json" \
   --after-resource "$resource_json" \
@@ -153,7 +153,7 @@ assert_status 1 moon run -q --target native modules/svgdiff/cmd/svgdiff -- \
   >"$tmp/native-budget.out" 2>"$tmp/native-budget.err"
 grep -q 'checkpoint budget 1 exhausted' "$tmp/native-budget.err"
 
-assert_status 1 moon runwasm -q modules/svgdiff/cmd/svgdiff \
+assert_status 1 moon run -q --target wasm modules/svgdiff/cmd/svgdiff -- \
   testdata/before.svg testdata/after.svg --max-checkpoints 1 \
   >"$tmp/wasm-budget.out" 2>"$tmp/wasm-budget.err"
 grep -q 'checkpoint budget 1 exhausted' "$tmp/wasm-budget.err"
@@ -169,7 +169,7 @@ assert_status 2 moon run -q --target native modules/svgdiff/cmd/svgdiff -- \
 test ! -s "$tmp/missing-native.out"
 grep -q '^Failed to read .*missing.svg:' "$tmp/missing-native.err"
 
-assert_status 2 moon runwasm -q modules/svgdiff/cmd/svgdiff \
+assert_status 2 moon run -q --target wasm modules/svgdiff/cmd/svgdiff -- \
   "$wasi_tmp/missing.svg" testdata/after.svg \
   >"$tmp/missing-wasm.out" 2>"$tmp/missing-wasm.err"
 test ! -s "$tmp/missing-wasm.out"

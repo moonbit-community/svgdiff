@@ -11,13 +11,13 @@ From this repository, use the checked-in fixtures for a self-contained smoke
 test:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg --agent-json
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- testdata/before.svg testdata/after.svg --agent-json
 ```
 
-Run the published module version `0.10.1` directly:
+Run the published module version `0.10.9` directly:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.10.1 before.svg after.svg --agent-json
+moonx Milky2018/svgdiff/cmd/svgdiff@0.10.9 before.svg after.svg --agent-json
 ```
 
 The command writes canonical Structured Report schema `5.0` JSON by default;
@@ -25,17 +25,17 @@ pass `--agent-json` for the same report without formatting whitespace. It
 accepts exactly two guest-visible SVG paths. Use `-` for at most one input to
 read it from stdin.
 
-To inspect the skill's own help through `moon runwasm`, separate the forwarded
+To inspect the skill's own help through `moon run --target wasm`, separate the forwarded
 flag from the runner's flags:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff -- --help
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- --help
 ```
 
 Inspect the command and report schema versions before retaining a report:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff -- --version
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- --version
 ```
 
 Record this output alongside reports that will be persisted or handed off.
@@ -43,7 +43,7 @@ Record this output alongside reports that will be persisted or handed off.
 Useful explicit comparison inputs:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- before.svg after.svg \
   --width 256 \
   --height 256 \
   --max-checkpoints 1000000 \
@@ -54,7 +54,7 @@ Optional displayed-color evidence requires an opaque background. LDR-FLIP
 additionally requires pixels per degree:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- before.svg after.svg \
   --perceptual-background '#ffffff' \
   --flip-pixels-per-degree 67 \
   --agent-json
@@ -88,11 +88,9 @@ moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
 
 ## Filesystem and resources
 
-All input and resource paths are guest-visible. `moon runwasm` exposes the
-project directory when running the local package. The comparison runtime
-performs no network access or implicit SVG-authored path resolution; the
-`moon runwasm` launcher may still download the module or dependencies before
-execution.
+Run from the project directory and use input and resource paths visible to
+the Wasm guest. The comparison runtime performs no network access or implicit
+SVG-authored path resolution. `moonx` may download the command before execution.
 
 External raster resources may be supplied explicitly with the same repeatable
 `--before-resource` and `--after-resource` JSON options as the native CLI.

@@ -12,19 +12,19 @@ Try it online at <https://moonbit-community.github.io/svgdiff/>.
 Run the WASIp1 command directly from Mooncakes:
 
 ```sh
-moon runwasm Milky2018/svgdiff/cmd/svgdiff@0.10.1 before.svg after.svg
+moonx Milky2018/svgdiff/cmd/svgdiff@0.10.9 before.svg after.svg
 ```
 
 Run the repository version:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff testdata/before.svg testdata/after.svg
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- testdata/before.svg testdata/after.svg
 ```
 
 Write compact JSON and a self-contained HTML report:
 
 ```sh
-moon runwasm modules/svgdiff/cmd/svgdiff before.svg after.svg \
+moon run --target wasm modules/svgdiff/cmd/svgdiff -- before.svg after.svg \
   --agent-json \
   --output report.json \
   --html report.html
@@ -41,7 +41,7 @@ arguments or file I/O errors.
 ## Library
 
 ```sh
-moon add Milky2018/svgdiff@0.10.1
+moon add Milky2018/svgdiff@0.10.9
 ```
 
 ```mbt check
