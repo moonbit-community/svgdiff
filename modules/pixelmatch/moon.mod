@@ -1,6 +1,6 @@
 name = "Milky2018/svgdiff-pixelmatch"
 
-version = "0.1.1"
+version = "0.1.2"
 
 import {
   "Milky2018/svgdiff-image-compat@0.1.1",

@@ -72,36 +72,43 @@ let wasm_result_state : WasmResultState = {
 }
 
 ///|
+#export_name("abi_version")
 pub fn abi_version() -> Int32 {
   abi_version_number
 }
 
 ///|
+#export_name("transfer_ptr")
 pub fn transfer_ptr() -> Int32 {
   transfer_start
 }
 
 ///|
+#export_name("transfer_capacity")
 pub fn transfer_capacity() -> Int32 {
   transfer_size
 }
 
 ///|
+#export_name("result_len")
 pub fn result_len() -> Int32 {
   wasm_result_state.length
 }
 
 ///|
+#export_name("result_error_kind")
 pub fn result_error_kind() -> Int32 {
   wasm_result_state.error_kind
 }
 
 ///|
+#export_name("result_required_len")
 pub fn result_required_len() -> Int32 {
   wasm_result_state.required_length
 }
 
 ///|
+#export_name("compare")
 pub fn compare(request_len : Int32) -> Int32 {
   reset_result_state()
   let request_text = match read_request(request_len) {

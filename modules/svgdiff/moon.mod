@@ -11,7 +11,7 @@
 
 name = "Milky2018/svgdiff"
 
-version = "0.10.7"
+version = "0.10.8"
 
 readme = "README.mbt.md"
 
@@ -27,7 +27,7 @@ description = "Deterministic visual-semantic SVG comparison with typed reports f
 
 import {
   "moonbitlang/async@0.22.10",
-  "Milky2018/svgdiff-pixelmatch@0.1.1",
+  "Milky2018/svgdiff-pixelmatch@0.1.2",
   "Milky2018/xml@0.6.1",
   "moonbitlang/x@0.5.9",
   "Milky2018/svgdiff-raster-codec@0.1.4",

@@ -45,7 +45,7 @@ pub suberror CliError {
 ///|
 fn version_text(command_name : String) -> String {
   (
-    $|\{command_name} 0.10.7
+    $|\{command_name} 0.10.8
     $|schema: 5.0
   )
 }
